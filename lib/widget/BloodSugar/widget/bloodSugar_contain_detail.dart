@@ -1,0 +1,538 @@
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/bloc/glucose/glucose_bloc.dart';
+import 'package:medical/modal/glucose/glucose_distribution.dart';
+import 'package:medical/repo/glucose/glucose_client.dart';
+import 'package:medical/theme/app_theme.dart';
+import 'package:medical/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
+import 'package:medical/widget/components/samples/pie_chart/samples/indicator.dart';
+import 'package:medical/widget/helper/helper.dart';
+import 'package:medical/widget/helper/show_message.dart';
+
+class BloodSugarDetail extends StatefulWidget {
+  BloodSugarDetail({Key key}) : super(key: key);
+  @override
+  BloodSugarDetailState createState() => BloodSugarDetailState();
+}
+
+class BloodSugarDetailState extends State<BloodSugarDetail>
+    with AutomaticKeepAliveClientMixin<BloodSugarDetail> {
+  @override
+  bool get wantKeepAlive => true;
+
+  BuildContext currentContext;
+
+  int periodFilterType = 1;
+  @override
+  void initState() {
+    periodFilterType =
+        BloodSugarDetailTabbarController.of(context).periodFilterType;
+    super.initState();
+  }
+
+  reloadData(int periodFilter) async {
+    periodFilterType = periodFilter;
+    BlocProvider.of<GlucoseBloc>(currentContext).add(FetchGlucoseDistribution(
+        currentDateTime:
+            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+        periodFilterType: periodFilterType.toString(),
+        page: periodFilterType.toString()));
+  }
+
+  int selectedIndex = -1;
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return BlocProvider<GlucoseBloc>(
+        create: (context) => GlucoseBloc(),
+        child: BlocBuilder<GlucoseBloc, GlucoseState>(
+            builder: (BuildContext context, GlucoseState state) {
+          currentContext = context;
+          DistributionModel model;
+
+          if (state is GlucoseInitial) {
+            BlocProvider.of<GlucoseBloc>(context).add(FetchGlucoseDistribution(
+                currentDateTime:
+                    (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+                periodFilterType: periodFilterType.toString(),
+                page: '1'));
+          }
+          if (state is GlucoseError) {
+            Message.showToastMessage(context, state.message);
+          }
+          if (state is GlucoseLoading) {
+            return SizedBox();
+          }
+          if (state is GlucoseDistributionLoaded) {
+            model = state.listDistribution;
+            return Container(
+              child: Column(
+                children: [
+                  Stack(children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: 8, right: 8, top: 20, bottom: 12),
+                      child: Column(children: [
+                        Padding(
+                          padding:
+                              EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      BloodSugarDetailTabbarController.of(
+                                              context)
+                                          .loadInputWithId(1, model.lowestId);
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.only(
+                                          top: 16,
+                                          bottom: 16,
+                                          left: 12,
+                                          right: 12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                  model.lowest == 0
+                                                      ? '--'
+                                                      : roundNumber(
+                                                          model.lowest),
+                                                  style: TextStyle(
+                                                      fontFamily: 'Viga',
+                                                      color: model.average == 0
+                                                          ? textDark
+                                                          : Color(int.parse(
+                                                              '0xff${model.lowestColor.split('#').join()}')),
+                                                      fontSize: 22,
+                                                      fontWeight:
+                                                          FontWeight.w400)),
+                                              SizedBox(width: 10),
+                                              Image.asset(
+                                                  'assets/images/line_low.png',
+                                                  width: 20,
+                                                  height: 15)
+                                            ],
+                                          ),
+                                          SizedBox(height: 5),
+                                          Text(
+                                            'Thấp nhất',
+                                            style: TextStyle(
+                                              color: textDark,
+                                              fontSize: 15,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.only(
+                                        top: 16,
+                                        bottom: 16,
+                                        left: 12,
+                                        right: 12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                                model.average == 0
+                                                    ? '--'
+                                                    : roundNumber(
+                                                        model.average),
+                                                style: TextStyle(
+                                                    fontFamily: 'Viga',
+                                                    color: model.average == 0
+                                                        ? textDark
+                                                        : Color(int.parse(
+                                                            '0xff${model.averageColor.split('#').join()}')),
+                                                    fontSize: 22,
+                                                    fontWeight:
+                                                        FontWeight.w400)),
+                                            SizedBox(width: 10),
+                                            Image.asset(
+                                                'assets/images/line_average.png',
+                                                width: 20,
+                                                height: 15)
+                                          ],
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          'Trung bình',
+                                          style: TextStyle(
+                                            color: textDark,
+                                            fontSize: 15,
+                                            // fontWeight: FontWeight.w700
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      BloodSugarDetailTabbarController.of(
+                                              context)
+                                          .loadInputWithId(1, model.highestId);
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.only(
+                                          top: 16,
+                                          bottom: 16,
+                                          left: 12,
+                                          right: 12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                  model.highest == 0
+                                                      ? '--'
+                                                      : roundNumber(
+                                                          model.highest),
+                                                  style: TextStyle(
+                                                      fontFamily: 'Viga',
+                                                      color: model.highest == 0
+                                                          ? textDark
+                                                          : Color(int.parse(
+                                                              '0xff${model.highestColor.split('#').join()}')),
+                                                      fontSize: 22,
+                                                      fontWeight:
+                                                          FontWeight.w400)),
+                                              SizedBox(width: 10),
+                                              Image.asset(
+                                                  'assets/images/line_high.png',
+                                                  width: 20,
+                                                  height: 15)
+                                            ],
+                                          ),
+                                          SizedBox(height: 5),
+                                          Text(
+                                            'Cao nhất',
+                                            style: TextStyle(
+                                              color: textDark,
+                                              fontSize: 15,
+                                              // fontWeight: FontWeight.w700
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                        ),
+                        SizedBox(height: 14),
+                        Container(
+                            decoration: BoxDecoration(boxShadow: []),
+                            child: Column(
+                              children: [
+                                Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Text('Tần suất phân bổ',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w600)),
+                                      ),
+                                    ]),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8, right: 8, top: 16.0, bottom: 16),
+                                  child: model.totalCount == 0
+                                      ? GestureDetector(
+                                          onTap: () {
+                                            Navigator.pushNamed(
+                                                context, '/add_bloodSugar',
+                                                arguments: {
+                                                  'type': 'input',
+                                                  'id': null
+                                                });
+                                          },
+                                          child: Image.asset(
+                                              'assets/images/glucose_distribution.png'),
+                                        )
+                                      : buildChart(model),
+                                )
+                              ],
+                            )),
+                      ]),
+                    ),
+                  ]),
+                ],
+              ),
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        }));
+  }
+
+  buildChart(DistributionModel model) {
+    final total = model.veryHighCount +
+        model.highCount +
+        model.goodCount +
+        model.lowCount +
+        model.veryLowCount;
+
+    final width = MediaQuery.of(context).size.width;
+    return Padding(
+      padding: EdgeInsets.only(left: 8, right: 8),
+      child: Container(
+        decoration: BoxDecoration(boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ], borderRadius: BorderRadius.circular(14), color: Colors.white),
+        child: Row(
+          children: <Widget>[
+            const SizedBox(
+              height: 12,
+            ),
+            Expanded(
+                child: AspectRatio(
+                    aspectRatio: 1,
+                    child: PieChart(
+                      PieChartData(
+                          startDegreeOffset: 270,
+                          borderData: FlBorderData(
+                            show: false,
+                          ),
+                          sectionsSpace: 0,
+                          centerSpaceRadius: (width / 4) / 2,
+                          sections: List.generate(5, (i) {
+                            final double radius = 28;
+                            switch (i) {
+                              case 0:
+                                return PieChartSectionData(
+                                  color: toColor(model.veryHighColor),
+                                  value: model.veryHighCount / total * 100,
+                                  showTitle: false,
+                                  radius: radius,
+                                );
+                              case 1:
+                                return PieChartSectionData(
+                                  color: toColor(model.highColor),
+                                  value: model.highCount / total * 100,
+                                  showTitle: false,
+                                  radius: radius,
+                                );
+                              case 2:
+                                return PieChartSectionData(
+                                  color: toColor(model.goodColor),
+                                  value: model.goodCount / total * 100,
+                                  showTitle: false,
+                                  radius: radius,
+                                );
+                              case 3:
+                                return PieChartSectionData(
+                                  color: toColor(model.lowColor),
+                                  value: model.lowCount / total * 100,
+                                  showTitle: false,
+                                  radius: radius,
+                                );
+                              case 4:
+                                return PieChartSectionData(
+                                  color: toColor(model.veryLowColor),
+                                  value: model.veryLowCount / total * 100,
+                                  showTitle: false,
+                                  radius: radius,
+                                );
+                              default:
+                                return null;
+                            }
+                          })),
+                    ))),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 16, bottom: 8),
+                  child: Text(
+                    'Chú thích',
+                    style: TextStyle(fontSize: 14, color: textDark),
+                  ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, '/bloodSugarDistributionTable',
+                            arguments: {
+                              'title': 'Rất cao',
+                              'glucoseDistributionType': 5,
+                              'periodFilterType': periodFilterType
+                            });
+                      },
+                      child: Indicator(
+                        color: toColor(model.veryHighColor),
+                        number: (model.veryHighCount / total * 100)
+                                .round()
+                                .toString() +
+                            '%',
+                        text: 'Rất cao',
+                        textColor:
+                            toColor(model.veryHighAttributesColor.fontColor),
+                        isSquare: true,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, '/bloodSugarDistributionTable',
+                            arguments: {
+                              'title': 'Cao',
+                              'glucoseDistributionType': 4,
+                              'periodFilterType': periodFilterType
+                            });
+                      },
+                      child: Indicator(
+                        color: toColor(model.highColor),
+                        number:
+                            (model.highCount / total * 100).round().toString() +
+                                '%',
+                        text: 'Cao',
+                        textColor: toColor(model.highAttributesColor.fontColor),
+                        isSquare: true,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, '/bloodSugarDistributionTable',
+                            arguments: {
+                              'title': 'Tốt',
+                              'glucoseDistributionType': 3,
+                              'periodFilterType': periodFilterType
+                            });
+                      },
+                      child: Indicator(
+                        color: toColor(model.goodColor),
+                        number:
+                            (model.goodCount / total * 100).round().toString() +
+                                '%',
+                        text: 'Tốt',
+                        textColor: toColor(model.goodAttributesColor.fontColor),
+                        isSquare: true,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, '/bloodSugarDistributionTable',
+                            arguments: {
+                              'title': 'Thấp',
+                              'glucoseDistributionType': 2,
+                              'periodFilterType': periodFilterType
+                            });
+                      },
+                      child: Indicator(
+                        color: toColor(model.lowColor),
+                        number:
+                            (model.lowCount / total * 100).round().toString() +
+                                '%',
+                        text: 'Thấp',
+                        textColor: toColor(model.lowAttributesColor.fontColor),
+                        isSquare: true,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, '/bloodSugarDistributionTable',
+                            arguments: {
+                              'title': 'Rất thấp',
+                              'glucoseDistributionType': 1,
+                              'periodFilterType': periodFilterType
+                            });
+                      },
+                      child: Indicator(
+                        color: toColor(model.veryLowColor),
+                        number: (model.veryLowCount / total * 100)
+                                .round()
+                                .toString() +
+                            '%',
+                        text: 'Rất thấp',
+                        textColor:
+                            toColor(model.veryLowAttributesColor.fontColor),
+                        isSquare: true,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 18,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(
+              width: 28,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

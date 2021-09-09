@@ -1,0 +1,176 @@
+import 'dart:ui';
+
+import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter/material.dart';
+import 'package:medical/modal/food/food_category_model.dart';
+import 'package:medical/modal/food/food_model.dart';
+import 'package:medical/repo/food/food_client.dart';
+import 'package:medical/theme/app_theme.dart';
+import 'package:medical/widget/Food/widget/food_item.dart';
+
+typedef FoodCallback = Function(String);
+
+class FoodOfCategory extends StatefulWidget {
+  final FoodSubCategoryModel category;
+  final List<FoodModel> foods;
+  final FoodCallback callback;
+  FoodOfCategory({this.category, this.foods, this.callback});
+  @override
+  _FoodOfCategoryState createState() => _FoodOfCategoryState();
+}
+
+class _FoodOfCategoryState extends State<FoodOfCategory> {
+  DateTime selectedDate = DateTime.now();
+  List<FoodModel> foods = [];
+  List<FoodModel> selectedFoods = [];
+  @override
+  void initState() {
+    super.initState();
+    selectedFoods = [...widget.foods];
+    loadData();
+  }
+
+  loadData() async {
+    BotToast.showLoading();
+    final result =
+        await FoodClient().fetchFoodCategory(widget.category.id, null, null);
+    foods = result.foods;
+    BotToast.closeAllLoading();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.only(left: 16, right: 16),
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                ),
+                child: Container(
+                    height: MediaQuery.of(context).size.height * 3 / 4,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 16, bottom: 16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 16, right: 16, bottom: 8),
+                                  child: Text(
+                                      'Chọn món ${widget.category.name}',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500)),
+                                ),
+                                Expanded(
+                                  child: ListView.separated(
+                                      shrinkWrap: true,
+                                      padding: EdgeInsets.all(0),
+                                      itemCount: foods.length,
+                                      separatorBuilder:
+                                          (BuildContext context, int index) {
+                                        return Container(
+                                            height: 1,
+                                            color: Color(0xffE5E5E5));
+                                      },
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        final selectedIndex = selectedFoods
+                                            .lastIndexWhere((element) =>
+                                                element.id == foods[index].id);
+                                        return FoodItem(
+                                          model: foods[index],
+                                          selectedModel: selectedIndex != -1
+                                              ? selectedFoods[selectedIndex]
+                                              : null,
+                                          index: index,
+                                          isCategory: true,
+                                          categoryId: widget.category.id,
+                                          callback: (model, index) {
+                                            setState(() {
+                                              foods[index] = model;
+                                            });
+                                          },
+                                        );
+                                      }),
+                                )
+                              ],
+                            ),
+                          ),
+                          Row(children: [
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                        color: Color(0xffE2E4E7),
+                                        borderRadius:
+                                            BorderRadius.circular(21.5)),
+                                    child: Center(
+                                        child: Text('Huỷ',
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700)))),
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                        color: Color(0xff01645A),
+                                        borderRadius:
+                                            BorderRadius.circular(21.5),
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.centerRight,
+                                            colors: [
+                                              greenGradientTop,
+                                              greenGradientBottom
+                                            ])),
+                                    child: Center(
+                                        child: Text('Tiếp tục',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700)))),
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                          ]),
+                        ],
+                      ),
+                    )),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -1,0 +1,126 @@
+import 'dart:ui';
+
+import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/bloc/food/food_bloc.dart';
+import 'package:medical/modal/food/food_model.dart';
+import 'package:medical/widget/Food/widget/food_item.dart';
+import 'package:medical/widget/helper/show_message.dart';
+
+class NearFood extends StatefulWidget {
+  final List<FoodModel> foods;
+  NearFood({@required this.foods});
+  @override
+  _NearFoodState createState() => _NearFoodState();
+}
+
+class _NearFoodState extends State<NearFood>
+    with AutomaticKeepAliveClientMixin<NearFood> {
+  @override
+  bool get wantKeepAlive => true;
+
+  BuildContext currentContext;
+
+  List<FoodModel> selectedFoods = [];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedFoods = [...widget.foods];
+
+    DartNotificationCenter.subscribe(
+        channel: 'add_food_to_cart',
+        observer: this,
+        onNotification: (food) {
+          setState(() {
+            this.selectedFoods.removeWhere((element) => food.id == element.id);
+            this.selectedFoods.add(food);
+          });
+        });
+
+    DartNotificationCenter.subscribe(
+        channel: 'remove_food_from_cart',
+        observer: this,
+        onNotification: (food) {
+          if (food is FoodModel) {
+            setState(() {
+              selectedFoods.removeWhere((element) => element.id == food.id);
+            });
+          }
+        });
+  }
+
+  @override
+  void dispose() {
+    DartNotificationCenter.unsubscribe(
+        channel: 'add_food_to_cart', observer: this);
+    DartNotificationCenter.unsubscribe(
+        channel: 'remove_food_from_cart', observer: this);
+    super.dispose();
+  }
+
+  Future<bool> refresh() async {
+    BlocProvider.of<FoodBloc>(currentContext).add(FetchFoodLatest(page: 1));
+    return true;
+  }
+
+  likeFood(FoodModel model, int index) {
+    BlocProvider.of<FoodBloc>(currentContext)
+        .add(LikeFood(model: model, index: index));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return BlocProvider<FoodBloc>(
+        create: (context) => FoodBloc(),
+        child: BlocBuilder<FoodBloc, FoodState>(
+            builder: (BuildContext context, FoodState state) {
+          currentContext = context;
+          List<FoodModel> model;
+          if (state is FoodInitial) {
+            BlocProvider.of<FoodBloc>(context).add(FetchFoodLatest(page: 1));
+          }
+          if (state is FoodError) {
+            Message.showToastMessage(context, state.message);
+          }
+          if (state is FoodLoaded) {
+            model = state.model.foods;
+          }
+          return model == null
+              ? Center(child: CircularProgressIndicator())
+              : RefreshIndicator(
+                  onRefresh: refresh,
+                  child: ListView.separated(
+                      padding: EdgeInsets.all(0),
+                      itemCount: model.length == 0 ? 1 : model.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Container(height: 1, color: Color(0xffE5E5E5));
+                      },
+                      itemBuilder: (BuildContext context, int index) {
+                        if (model.length == 0) {
+                          return Padding(
+                            padding:
+                                EdgeInsets.only(left: 84, right: 84, top: 100),
+                            child: Image.asset(
+                                'assets/images/near_food_empty.png'),
+                          );
+                        } else {
+                          final selectedIndex = selectedFoods.lastIndexWhere(
+                              (element) => element.id == model[index].id);
+                          return FoodItem(
+                            model: model[index],
+                            selectedModel: selectedIndex != -1
+                                ? selectedFoods[selectedIndex]
+                                : null,
+                            index: index,
+                            callback: (model, index) {
+                              likeFood(model, index);
+                            },
+                          );
+                        }
+                      }));
+        }));
+  }
+}

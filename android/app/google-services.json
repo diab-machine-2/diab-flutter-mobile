@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "116899682757",
+    "project_id": "diab-655e2",
+    "storage_bucket": "diab-655e2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:116899682757:android:7c75d2f35137754ae013ac",
+        "android_client_info": {
+          "package_name": "com.vbhc.diab"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "116899682757-g67f9qfvd5rto58clbp9bil9sm2veam3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vbhc.diab",
+            "certificate_hash": "02f572d311582e9d6b768f49337f1fea1cc88266"
+          }
+        },
+        {
+          "client_id": "116899682757-jq2kko1djk72alrp6quh2h0d9nm0uki8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vbhc.diab",
+            "certificate_hash": "dc816e7286d1fbc625f62bf085751a2b91b2ef29"
+          }
+        },
+        {
+          "client_id": "116899682757-i4mr7ee06iuf945vosnv7k171bd4chim.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCm8_MTvMYRYDJ7YvTuyC6HFSM4-zrUiPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "116899682757-i4mr7ee06iuf945vosnv7k171bd4chim.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "116899682757-jft0pqq5kgva741rro06ob2r87o7isvo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.vbhc.diab"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

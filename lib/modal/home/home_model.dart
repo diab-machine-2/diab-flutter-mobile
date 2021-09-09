@@ -1,0 +1,297 @@
+import 'package:medical/app_setting/app_setting.dart';
+import 'package:medical/modal/base/images.dart';
+import 'package:meta/meta.dart';
+
+class HomeModel {
+  final GloucoseIndexModel glucoseIndex;
+  final BloodPressureIndexModel bloodPressureIndex;
+  final ExerciseIndexModel exercise;
+  final HbA1CIndexModel hbA1CIndex;
+  final WeightCardModel weightCard;
+  final EmotionCardModel emotionCard;
+  final EnergyCardModel energyCard;
+  final EnergyExerciseCardModel energyExerciseCard;
+
+  HomeModel(
+      {@required this.glucoseIndex,
+      @required this.bloodPressureIndex,
+      @required this.exercise,
+      @required this.hbA1CIndex,
+      @required this.weightCard,
+      @required this.emotionCard,
+      @required this.energyCard,
+      @required this.energyExerciseCard});
+
+  factory HomeModel.fromJson(Map<String, dynamic> json) {
+    return HomeModel(
+        glucoseIndex: GloucoseIndexModel.fromJson(json['glucoseIndex']),
+        bloodPressureIndex:
+            BloodPressureIndexModel.fromJson(json['bloodPressureIndex']),
+        exercise: json['exercise'] == null
+            ? null
+            : ExerciseIndexModel.fromJson(json['exercise']),
+        hbA1CIndex: HbA1CIndexModel.fromJson(json['hbA1CIndex']),
+        weightCard: json['weightCard'] == null
+            ? null
+            : WeightCardModel.fromJson(json['weightCard']),
+        emotionCard: json['emotionCard'] == null
+            ? null
+            : EmotionCardModel.fromJson(json['emotionCard']),
+        energyCard: json['energyCard'] == null
+            ? null
+            : EnergyCardModel.fromJson(json['energyCard']),
+        energyExerciseCard: json['energyExerciseCard'] == null
+            ? null
+            : EnergyExerciseCardModel.fromJson(json['energyExerciseCard']));
+  }
+
+  static List<HomeModel> toList(List<dynamic> items) {
+    return items.map((item) => HomeModel.fromJson(item)).toList();
+  }
+}
+
+class GloucoseIndexModel {
+  final double index;
+  final double indexChange;
+  final String unit;
+  final int createDateTime;
+  final String color;
+  final ImagesModel icon;
+
+  GloucoseIndexModel(
+      {@required this.index,
+      @required this.indexChange,
+      @required this.unit,
+      @required this.createDateTime,
+      @required this.color,
+      @required this.icon});
+
+  factory GloucoseIndexModel.fromJson(Map<String, dynamic> json) {
+    final unit = AppSettings.userInfo.glucoseUnit == 1 ? 'mg/dL' : 'mmol/L';
+    return GloucoseIndexModel(
+      index: AppSettings.userInfo.glucoseUnit == 1
+          ? json['index']
+          : json['indexMmoll'],
+      indexChange: AppSettings.userInfo.glucoseUnit == 1
+          ? json['indexChange']
+          : json['indexChangeMmoll'],
+      unit: unit,
+      createDateTime: json['createDateTime'],
+      color: json['color'],
+      icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
+    );
+  }
+
+  static List<GloucoseIndexModel> toList(List<dynamic> items) {
+    return items.map((item) => GloucoseIndexModel.fromJson(item)).toList();
+  }
+}
+
+class BloodPressureIndexModel {
+  final double systolic;
+  final double systolicChange;
+  final double diastolic;
+  final double diastolicChange;
+  final String color;
+  final ImagesModel icon;
+  final int createDateTime;
+
+  BloodPressureIndexModel(
+      {@required this.systolic,
+      @required this.systolicChange,
+      @required this.diastolic,
+      @required this.diastolicChange,
+      @required this.color,
+      @required this.icon,
+      @required this.createDateTime});
+
+  factory BloodPressureIndexModel.fromJson(Map<String, dynamic> json) {
+    return BloodPressureIndexModel(
+      systolic: json['systolic'],
+      systolicChange: json['systolicChange'],
+      diastolic: json['diastolic'],
+      diastolicChange: json['diastolicChange'],
+      color: json['color'],
+      icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
+      createDateTime: json['createDateTime'],
+    );
+  }
+
+  static List<BloodPressureIndexModel> toList(List<dynamic> items) {
+    return items.map((item) => BloodPressureIndexModel.fromJson(item)).toList();
+  }
+}
+
+class ExerciseIndexModel {
+  final double index;
+  final double indexChange;
+  final String unit;
+  final int createDateTime;
+  final String color;
+  final ImagesModel icon;
+
+  ExerciseIndexModel(
+      {@required this.index,
+      @required this.indexChange,
+      @required this.unit,
+      @required this.createDateTime,
+      @required this.color,
+      @required this.icon});
+
+  factory ExerciseIndexModel.fromJson(Map<String, dynamic> json) {
+    return ExerciseIndexModel(
+      index: json['index'],
+      indexChange: json['indexChange'],
+      unit: json['unit'],
+      createDateTime: json['createDateTime'],
+      color: json['color'],
+      icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
+    );
+  }
+
+  static List<ExerciseIndexModel> toList(List<dynamic> items) {
+    return items.map((item) => ExerciseIndexModel.fromJson(item)).toList();
+  }
+}
+
+class HbA1CIndexModel {
+  final double index;
+  final double indexChange;
+  final int createDateTime;
+  final String color;
+  final ImagesModel icon;
+
+  HbA1CIndexModel(
+      {@required this.index,
+      @required this.indexChange,
+      @required this.createDateTime,
+      @required this.color,
+      @required this.icon});
+
+  factory HbA1CIndexModel.fromJson(Map<String, dynamic> json) {
+    return HbA1CIndexModel(
+      index: json['index'],
+      indexChange: json['indexChange'],
+      createDateTime: json['createDateTime'],
+      color: json['color'],
+      icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
+    );
+  }
+
+  static List<HbA1CIndexModel> toList(List<dynamic> items) {
+    return items.map((item) => HbA1CIndexModel.fromJson(item)).toList();
+  }
+}
+
+class WeightCardModel {
+  final double weight;
+  final double goalWeight;
+  final int weightDateTime;
+  final String weightColorCode;
+
+  WeightCardModel(
+      {@required this.weight,
+      @required this.goalWeight,
+      @required this.weightDateTime,
+      @required this.weightColorCode});
+
+  factory WeightCardModel.fromJson(Map<String, dynamic> json) {
+    return WeightCardModel(
+        weight: json['weight'],
+        goalWeight: json['goalWeight'],
+        weightDateTime: json['weightDateTime'],
+        weightColorCode: json['weightColorCode']);
+  }
+
+  static List<WeightCardModel> toList(List<dynamic> items) {
+    return items.map((item) => WeightCardModel.fromJson(item)).toList();
+  }
+}
+
+class EmotionCardModel {
+  final int emotionDateTime;
+  final List<EmotionCardItemModel> details;
+
+  EmotionCardModel({@required this.emotionDateTime, @required this.details});
+
+  factory EmotionCardModel.fromJson(Map<String, dynamic> json) {
+    return EmotionCardModel(
+      emotionDateTime: json['emotionDateTime'],
+      details: json['details'] == null
+          ? null
+          : EmotionCardItemModel.toList(json['details']),
+    );
+  }
+
+  static List<EmotionCardModel> toList(List<dynamic> items) {
+    return items.map((item) => EmotionCardModel.fromJson(item)).toList();
+  }
+}
+
+class EmotionCardItemModel {
+  final String text;
+  final ImagesModel icon;
+
+  EmotionCardItemModel({@required this.text, @required this.icon});
+
+  factory EmotionCardItemModel.fromJson(Map<String, dynamic> json) {
+    return EmotionCardItemModel(
+      text: json['text'],
+      icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
+    );
+  }
+
+  static List<EmotionCardItemModel> toList(List<dynamic> items) {
+    return items.map((item) => EmotionCardItemModel.fromJson(item)).toList();
+  }
+}
+
+class EnergyCardModel {
+  final int consumedEnergyDateTime;
+  final double consumedEnergy;
+  final ImagesModel energyIcon;
+
+  EnergyCardModel(
+      {@required this.consumedEnergyDateTime,
+      @required this.consumedEnergy,
+      @required this.energyIcon});
+
+  factory EnergyCardModel.fromJson(Map<String, dynamic> json) {
+    return EnergyCardModel(
+      consumedEnergyDateTime: json['consumedEnergyDateTime'],
+      consumedEnergy: json['consumedEnergy'],
+      energyIcon: json['energyIcon'] == null
+          ? null
+          : ImagesModel.fromJson(json['energyIcon']),
+    );
+  }
+
+  static List<EnergyCardModel> toList(List<dynamic> items) {
+    return items.map((item) => EnergyCardModel.fromJson(item)).toList();
+  }
+}
+
+class EnergyExerciseCardModel {
+  final double value;
+  final double energyGoal;
+  final String text;
+  final String corlorCode;
+
+  EnergyExerciseCardModel(
+      {@required this.value,
+      @required this.energyGoal,
+      @required this.text,
+      @required this.corlorCode});
+
+  factory EnergyExerciseCardModel.fromJson(Map<String, dynamic> json) {
+    return EnergyExerciseCardModel(
+        value: json['value'],
+        energyGoal: json['energyGoal'],
+        text: json['text'],
+        corlorCode: json['corlorCode']);
+  }
+
+  static List<EnergyExerciseCardModel> toList(List<dynamic> items) {
+    return items.map((item) => EnergyExerciseCardModel.fromJson(item)).toList();
+  }
+}

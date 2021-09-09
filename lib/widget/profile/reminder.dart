@@ -1,0 +1,385 @@
+import 'package:bot_toast/bot_toast.dart';
+import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:loadmore/loadmore.dart';
+import 'package:medical/modal/user/schedule_reminder_model.dart';
+import 'package:medical/repo/user/user_client.dart';
+import 'package:medical/theme/app_theme.dart';
+import 'package:medical/widget/base/custom_appbar.dart';
+import 'package:medical/widget/components/load_more.dart';
+import 'package:medical/widget/helper/helper.dart';
+import 'package:medical/widget/helper/tracking_manager.dart';
+import 'package:medical/widget/helper/show_message.dart';
+import 'package:medical/modal/error/error_model.dart';
+
+class ReminderController extends StatefulWidget {
+  @override
+  _ReminderControllerState createState() => _ReminderControllerState();
+}
+
+class _ReminderControllerState extends State<ReminderController> {
+  List<ScheduleReminderModel> models;
+
+  int page = 1;
+  bool hasMore = false;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: 'Schedule Glucose');
+    DartNotificationCenter.subscribe(
+        channel: 'schedule_change',
+        observer: this,
+        onNotification: (_) {
+          loadData();
+        });
+    loadData();
+  }
+
+  Future<bool> loadData() async {
+    page = 1;
+    final result = await UserClient().fetchScheduleReminders(page);
+    models = result.models;
+    hasMore = result.hasMore;
+    if (hasMore) {
+      page += 1;
+    }
+    setState(() {});
+    return true;
+  }
+
+  Future<bool> _loadMore() async {
+    if (isLoading || !hasMore) {
+      return true;
+    } else {
+      isLoading = true;
+      final result = await UserClient().fetchScheduleReminders(page);
+      models.addAll(result.models);
+      hasMore = result.hasMore;
+      if (hasMore) {
+        page += 1;
+      }
+      isLoading = false;
+      setState(() {});
+    }
+    return true;
+  }
+
+  @override
+  void dispose() {
+    DartNotificationCenter.unsubscribe(
+        channel: 'schedule_change', observer: this);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+          body: Container(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      colors: [
+                        Color(0xFFFDC798).withOpacity(0.3),
+                        Color(0xFFE6F6ED).withOpacity(0.9),
+                      ],
+                      begin: FractionalOffset(1, 1),
+                      end: FractionalOffset(0.9, 0.5),
+                      stops: [0.0, 1.0])),
+              child: Column(children: [
+                CustomAppBar(
+                  backgroundColor: Colors.transparent,
+                  title: Text('Lịch nhắc nhở',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: textDark)),
+                  leadingIcon: IconButton(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      icon: Icon(Icons.arrow_back, color: textDark),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                ),
+                Expanded(
+                    child: SafeArea(
+                        top: false,
+                        child: RefreshIndicator(
+                          onRefresh: loadData,
+                          child: models == null
+                              ? Center(child: CircularProgressIndicator())
+                              : LoadMore(
+                                  onLoadMore: _loadMore,
+                                  isFinish: !hasMore,
+                                  whenEmptyLoad: false,
+                                  delegate: CustomLoadMoreDelegate(),
+                                  textBuilder:
+                                      DefaultLoadMoreTextBuilder.english,
+                                  child: ListView(
+                                      padding: EdgeInsets.all(0),
+                                      keyboardDismissBehavior:
+                                          ScrollViewKeyboardDismissBehavior
+                                              .onDrag,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Image.asset(
+                                                'assets/images/icon_reminder.png',
+                                                height: 113),
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 16,
+                                                  right: 16,
+                                                  top: 32,
+                                                  bottom: 32),
+                                              child: Text(
+                                                  'Để DiaB giúp bạn ghi nhớ và nhắc nhở những việc cần làm nhé!',
+                                                  style:
+                                                      TextStyle(fontSize: 16),
+                                                  textAlign: TextAlign.center),
+                                            )
+                                          ],
+                                        ),
+                                        ListView.separated(
+                                          padding: EdgeInsets.all(0),
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: models.length,
+                                          separatorBuilder:
+                                              (BuildContext context,
+                                                  int index) {
+                                            return Container(
+                                                height: 1,
+                                                color: Color(0xffE5E5E5));
+                                          },
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return buildItem(index);
+                                          },
+                                        )
+                                      ]),
+                                ),
+                        ))),
+                SizedBox(height: 32)
+              ])),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/add_reminder',
+                  arguments: {'type': 'input'});
+            },
+            child: Image.asset('assets/images/button_plus.png',
+                width: 80, height: 80),
+          )),
+    );
+  }
+
+  Widget buildItem(int index) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/add_reminder',
+            arguments: {'type': 'update', 'id': models[index].id});
+      },
+      child: Slidable(
+        actionPane: SlidableDrawerActionPane(),
+        secondaryActions: [
+          IconSlideAction(
+            color: Color(0xffFF5552),
+            iconWidget:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Image.asset('assets/images/icon_trash2.png',
+                  width: 24, height: 24),
+              SizedBox(height: 4),
+              Text('Xoá\nthông báo',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.center),
+            ]),
+            onTap: () {
+              _showDialogDelete(context, models[index]);
+            },
+          ),
+        ],
+        child: Padding(
+          padding: EdgeInsets.only(left: 16, right: 16),
+          child: Container(
+            color: Colors.transparent,
+            padding: EdgeInsets.only(top: 16, bottom: 24),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text(convertToUTC(models[index].time, 'HH:mm'),
+                    style: TextStyle(
+                        color: Colors.black, fontFamily: 'Viga', fontSize: 24)),
+                CupertinoSwitch(
+                  activeColor: Color(0xff008479),
+                  value: models[index].isActive,
+                  onChanged: (value) {
+                    edit(models[index]);
+                  },
+                )
+              ]),
+              SizedBox(height: 8),
+              Text(models[index].name,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600)),
+              models[index].content == null || models[index].content.isEmpty
+                  ? SizedBox()
+                  : Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Text(models[index].content,
+                          style: TextStyle(
+                              color: Color(0xff666666),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400)),
+                    )
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
+  edit(ScheduleReminderModel model) async {
+    try {
+      BotToast.showLoading();
+      await UserClient().editScheduleReminder(model.id, model.name,
+          model.remindType, model.time, model.content, !model.isActive);
+      loadData();
+      BotToast.closeAllLoading();
+    } catch (e, _) {
+      BotToast.closeAllLoading();
+      if (e is Error) {
+        Message.showToastMessage(context, e.message);
+      } else {
+        Message.showToastMessage(context, e.toString());
+      }
+    }
+  }
+
+  delete(ScheduleReminderModel model) async {
+    try {
+      BotToast.showLoading();
+      await UserClient().deleteScheduleReminder(model.id);
+      loadData();
+      BotToast.closeAllLoading();
+    } catch (e, _) {
+      BotToast.closeAllLoading();
+      if (e is Error) {
+        Message.showToastMessage(context, e.message);
+      } else {
+        Message.showToastMessage(context, e.toString());
+      }
+    }
+  }
+
+  _showDialogDelete(BuildContext context, ScheduleReminderModel model) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          child: AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Stack(children: [
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset('assets/images/earseIcon.png',
+                          width: 64, height: 64),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text('Xoá thông báo?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: textDark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text('Bạn chắc chắn muốn xoá thông báo này?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: textDark,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400)),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 16),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                      height: 43,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(200),
+                                          color: grayBorder),
+                                      child: Center(
+                                        child: Text('Để sau',
+                                            style: TextStyle(
+                                                color: textDark,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      )),
+                                ),
+                              ),
+                              SizedBox(width: 14),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    delete(model);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                      color: red,
+                                      borderRadius: BorderRadius.circular(200),
+                                    ),
+                                    child: Center(
+                                      child: Text('Xoá',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                )
+              ])),
+        );
+      },
+    );
+  }
+}
