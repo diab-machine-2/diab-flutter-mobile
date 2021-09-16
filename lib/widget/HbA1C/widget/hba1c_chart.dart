@@ -213,9 +213,9 @@ class HbA1CChartState extends State<HbA1CChart>
                       minY: minY.toDouble(),
                       barTouchData: BarTouchData(
                         enabled: true,
-                        touchCallback: (BarTouchResponse barTouch) {
-                          if (barTouch.touchInput is! FlLongPressEnd &&
-                              barTouch.touchInput is! FlPanEnd) {
+                        touchCallback: (FlTouchEvent event, BarTouchResponse barTouch) {
+                          if (event is! FlLongPressEnd &&
+                              event is! FlPanEndEvent) {
                             final value = barTouch.spot.touchedBarGroupIndex;
                             setState(() {
                               touchIndex = value.toInt();
@@ -232,7 +232,7 @@ class HbA1CChartState extends State<HbA1CChart>
                                   .backgroundColor),
                           tooltipPadding: const EdgeInsets.only(
                               left: 8, right: 8, top: 4, bottom: 0),
-                          tooltipBottomMargin: 22,
+                          tooltipMargin: 22,
                           getTooltipItem: (
                             BarChartGroupData group,
                             int groupIndex,
@@ -256,7 +256,7 @@ class HbA1CChartState extends State<HbA1CChart>
                         show: true,
                         bottomTitles: SideTitles(
                           showTitles: true,
-                          getTextStyles: (value) => const TextStyle(
+                          getTextStyles: (context, value) => const TextStyle(
                               color: Colors.black,
                               fontSize: 14,
                               fontWeight: FontWeight.normal),
@@ -270,7 +270,7 @@ class HbA1CChartState extends State<HbA1CChart>
                         ),
                         leftTitles: SideTitles(
                           showTitles: false,
-                          getTextStyles: (value) => const TextStyle(
+                          getTextStyles: (context, value) => const TextStyle(
                               color: Colors.black, fontSize: 14),
                         ),
                       ),
@@ -296,7 +296,7 @@ class HbA1CChartState extends State<HbA1CChart>
                     LineChartData(
                       gridData: FlGridData(show: false),
                       showingTooltipIndicators: [
-                        ShowingTooltipIndicators(0, [
+                        ShowingTooltipIndicators([
                           LineBarSpot(
                               LineChartBarData(show: true),
                               model.trendItems.items.length - 1,
@@ -315,7 +315,7 @@ class HbA1CChartState extends State<HbA1CChart>
                                 toColor(model.trendItems.items.last.color),
                             tooltipPadding: const EdgeInsets.only(
                                 left: 8, right: 8, top: 4, bottom: 4),
-                            tooltipBottomMargin: 22,
+                            tooltipMargin: 22,
                             getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
                               return lineBarsSpot.map((lineBarSpot) {
                                 return LineTooltipItem(

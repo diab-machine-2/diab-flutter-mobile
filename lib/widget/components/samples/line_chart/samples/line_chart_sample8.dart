@@ -134,7 +134,7 @@
 //         bottomTitles: SideTitles(
 //           showTitles: true,
 //           reservedSize: 22,
-//           getTextStyles: (value) => const TextStyle(color: Colors.black87, fontSize: 10),
+//           getTextStyles: (context, value) => const TextStyle(color: Colors.black87, fontSize: 10),
 //           interval: 4,
 //           margin: 8,
 //           checkToShowTitle: (minValue, maxValue, sideTitles, appliedInterval, value) => true,
@@ -142,7 +142,7 @@
 //         leftTitles: SideTitles(
 //           interval: 2,
 //           showTitles: true,
-//           getTextStyles: (value) => const TextStyle(
+//           getTextStyles: (context, value) => const TextStyle(
 //             color: Colors.black87,
 //             fontSize: 10,
 //           ),
@@ -151,7 +151,8 @@
 //         ),
 //       ),
 //       lineTouchData: LineTouchData(
-//         fullHeightTouchLine: true,
+//          getTouchLineStart: (barData, index) => -double.infinity, // default: from bottom
+//                                getTouchLineEnd: (barData, index) => double.infinity, //to top
 //         getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
 //           return spotIndexes.map((spotIndex) {
 //             return TouchedSpotIndicatorData(

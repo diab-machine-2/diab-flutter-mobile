@@ -86,7 +86,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
       child: LineChart(
         LineChartData(
           showingTooltipIndicators: showIndexes.map((index) {
-            return ShowingTooltipIndicators(index, [
+            return ShowingTooltipIndicators([
               LineBarSpot(tooltipsOnBar, lineBarsData.indexOf(tooltipsOnBar),
                   tooltipsOnBar.spots[index]),
             ]);
@@ -138,7 +138,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
             bottomTitles: SideTitles(
               showTitles: true,
               reservedSize: 15,
-              getTextStyles: (value) =>
+              getTextStyles: (context, value) =>
                   const TextStyle(color: Color(0xff0A2836), fontSize: 16),
               getTitles: (value) {
                 switch (value.toInt()) {
@@ -159,7 +159,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
             ),
             leftTitles: SideTitles(
               showTitles: true,
-              getTextStyles: (value) => const TextStyle(
+              getTextStyles: (context, value) => const TextStyle(
                 color: Color(0xff0A2836),
                 fontSize: 14,
               ),

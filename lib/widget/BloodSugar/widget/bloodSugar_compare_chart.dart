@@ -224,7 +224,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                 tooltipBgColor: Color(0xffFDB913),
                                 tooltipPadding: const EdgeInsets.only(
                                     left: 12, right: 12, top: 4, bottom: 0),
-                                tooltipBottomMargin: 22,
+                                tooltipMargin: 22,
                                 fitInsideVertically: true,
                                 fitInsideHorizontally: true,
                                 getTooltipItem: (
@@ -265,7 +265,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                               show: true,
                               bottomTitles: SideTitles(
                                 showTitles: true,
-                                getTextStyles: (value) => const TextStyle(
+                                getTextStyles: (context, value) => const TextStyle(
                                     color: Colors.black,
                                     fontSize: 14,
                                     fontWeight: FontWeight.normal),
@@ -281,7 +281,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                               ),
                               leftTitles: SideTitles(
                                   showTitles: false,
-                                  getTextStyles: (value) => const TextStyle(
+                                  getTextStyles: (context, value) => const TextStyle(
                                       color: Colors.black, fontSize: 14)),
                             ),
                             borderData: FlBorderData(

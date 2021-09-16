@@ -77,7 +77,7 @@ class BarChartSample2State extends State<BarChartSample2> {
                             tooltipBgColor: Colors.grey,
                             getTooltipItem: (_a, _b, _c, _d) => null,
                           ),
-                          touchCallback: (response) {
+                          touchCallback: (event, response) {
                             print(response);
                             if (response.spot == null) {
                               setState(() {
@@ -91,8 +91,8 @@ class BarChartSample2State extends State<BarChartSample2> {
                                 response.spot.touchedBarGroupIndex;
 
                             setState(() {
-                              if (response.touchInput is FlLongPressEnd ||
-                                  response.touchInput is FlPanEnd) {
+                              if (event is FlLongPressEnd ||
+                                  event is FlPanEndEvent) {
                                 touchedGroupIndex = -1;
                                 showingBarGroups = List.of(rawBarGroups);
                               } else {
@@ -126,7 +126,7 @@ class BarChartSample2State extends State<BarChartSample2> {
                         show: true,
                         bottomTitles: SideTitles(
                           showTitles: true,
-                          getTextStyles: (value) => const TextStyle(
+                          getTextStyles: (context, value) => const TextStyle(
                               color: Color(0xff7589a2),
                               fontWeight: FontWeight.bold,
                               fontSize: 14),
@@ -151,7 +151,7 @@ class BarChartSample2State extends State<BarChartSample2> {
                         ),
                         leftTitles: SideTitles(
                           showTitles: true,
-                          getTextStyles: (value) => const TextStyle(
+                          getTextStyles: (context, value) => const TextStyle(
                               color: Color(0xff7589a2),
                               fontWeight: FontWeight.bold,
                               fontSize: 14),

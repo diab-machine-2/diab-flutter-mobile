@@ -54,7 +54,7 @@ class LineChartSample5 extends StatelessWidget {
       child: LineChart(
         LineChartData(
           showingTooltipIndicators: showIndexes.map((index) {
-            return ShowingTooltipIndicators(index, [
+            return ShowingTooltipIndicators([
               LineBarSpot(tooltipsOnBar, lineBarsData.indexOf(tooltipsOnBar),
                   tooltipsOnBar.spots[index]),
             ]);
@@ -123,7 +123,7 @@ class LineChartSample5 extends StatelessWidget {
                   }
                   return '';
                 },
-                getTextStyles: (value) => const TextStyle(
+                getTextStyles: (context, value) => const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.blueGrey,
                       fontFamily: 'Digital',

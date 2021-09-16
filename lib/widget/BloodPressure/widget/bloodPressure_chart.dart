@@ -209,7 +209,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                         child: LineChart(
                           LineChartData(
                             lineTouchData: LineTouchData(
-                                fullHeightTouchLine: true,
+                                getTouchLineStart: (barData, index) => -double.infinity, // default: from bottom
+                                getTouchLineEnd: (barData, index) => double.infinity, //to top
                                 getTouchedSpotIndicator:
                                     (LineChartBarData barData,
                                         List<int> spotIndexes) {
@@ -251,9 +252,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                     }).toList();
                                   },
                                 ),
-                                touchCallback: (LineTouchResponse lineTouch) {
-                                  if (lineTouch.touchInput is! FlLongPressEnd &&
-                                      lineTouch.touchInput is! FlPanEnd) {
+                                touchCallback: (FlTouchEvent event, LineTouchResponse lineTouch) {
+                                  if (event is! FlLongPressEnd &&
+                                      event is! FlPanEndEvent) {
                                     final value = lineTouch.lineBarSpots[0].x;
                                     setState(() {
                                       touchIndex = value.toInt();
@@ -268,7 +269,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 showTitles: true,
                                 margin: 16,
                                 reservedSize: -16,
-                                getTextStyles: (value) {
+                                getTextStyles: (context, value) {
                                   return TextStyle(
                                       color: touchIndex == value.toInt()
                                           ? Colors.black

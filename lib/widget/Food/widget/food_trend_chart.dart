@@ -284,7 +284,8 @@ class FoodTrendChartState extends State<FoodTrendChart>
                         child: LineChart(
                           LineChartData(
                             lineTouchData: LineTouchData(
-                                fullHeightTouchLine: true,
+                                 getTouchLineStart: (barData, index) => -double.infinity, // default: from bottom
+                                getTouchLineEnd: (barData, index) => double.infinity, //to top
                                 getTouchedSpotIndicator:
                                     (LineChartBarData barData,
                                         List<int> spotIndexes) {
@@ -335,10 +336,10 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                     }).toList();
                                   },
                                 ),
-                                touchCallback: (LineTouchResponse lineTouch) {
+                                touchCallback: (FlTouchEvent event, LineTouchResponse lineTouch) {
                                   if (lineTouch.lineBarSpots.length == 1 &&
-                                      lineTouch.touchInput is! FlLongPressEnd &&
-                                      lineTouch.touchInput is! FlPanEnd) {
+                                      event is! FlLongPressEnd &&
+                                      event is! FlPanEndEvent) {
                                     final value = lineTouch.lineBarSpots[0].x;
                                     setState(() {
                                       touchIndex = value.toInt();
@@ -353,7 +354,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                 showTitles: true,
                                 margin: 16,
                                 reservedSize: -16,
-                                getTextStyles: (value) {
+                                getTextStyles: (context, value) {
                                   return TextStyle(
                                       color: Colors.black,
                                       fontSize: 14,

@@ -105,10 +105,10 @@ class _LineChartSample3State extends State<LineChartSample3> {
                           );
                         }).toList();
                       }),
-                  touchCallback: (LineTouchResponse lineTouch) {
+                  touchCallback: (FlTouchEvent event, LineTouchResponse lineTouch) {
                     if (lineTouch.lineBarSpots.length == 1 &&
-                        lineTouch.touchInput is! FlLongPressEnd &&
-                        lineTouch.touchInput is! FlPanEnd) {
+                        event is! FlLongPressEnd &&
+                        event is! FlPanEndEvent) {
                       final value = lineTouch.lineBarSpots[0].x;
 
                       if (value == 0 || value == 6) {
@@ -244,7 +244,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
 
                     return '';
                   },
-                  getTextStyles: (value) =>
+                  getTextStyles: (context, value) =>
                       const TextStyle(color: Colors.black, fontSize: 10),
                 ),
                 bottomTitles: SideTitles(
@@ -252,7 +252,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
                   getTitles: (value) {
                     return widget.weekDays[value.toInt()];
                   },
-                  getTextStyles: (value) {
+                  getTextStyles: (context, value) {
                     final isTouched = value == touchedValue;
                     return TextStyle(
                       color: isTouched

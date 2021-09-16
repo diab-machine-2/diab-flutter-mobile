@@ -333,9 +333,9 @@ class FoodChartState extends State<FoodChart>
                           minY: minY,
                           barTouchData: BarTouchData(
                             enabled: true,
-                            touchCallback: (BarTouchResponse barTouch) {
-                              if (barTouch.touchInput is! FlLongPressEnd &&
-                                  barTouch.touchInput is! FlPanEnd) {
+                            touchCallback: (FlTouchEvent event, BarTouchResponse barTouch) {
+                              if (event is! FlLongPressEnd &&
+                                  event is! FlPanEndEvent) {
                                 final value =
                                     barTouch.spot.touchedBarGroupIndex;
                                 setState(() {
@@ -355,7 +355,7 @@ class FoodChartState extends State<FoodChart>
                                       : model.carbChart[touchIndex].colorCode),
                               tooltipPadding: const EdgeInsets.only(
                                   left: 12, right: 12, top: 4, bottom: 0),
-                              tooltipBottomMargin: 22,
+                              tooltipMargin: 22,
                               getTooltipItem: (
                                 BarChartGroupData group,
                                 int groupIndex,
@@ -377,7 +377,7 @@ class FoodChartState extends State<FoodChart>
                             bottomTitles: SideTitles(
                               margin: 16, reservedSize: -16,
                               showTitles: true,
-                              getTextStyles: (value) => const TextStyle(
+                              getTextStyles: (context, value) => const TextStyle(
                                   color: Colors.black,
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal),
@@ -390,7 +390,7 @@ class FoodChartState extends State<FoodChart>
                             ),
                             leftTitles: SideTitles(
                                 showTitles: false,
-                                getTextStyles: (value) => const TextStyle(
+                                getTextStyles: (context, value) => const TextStyle(
                                     color: Colors.black, fontSize: 14)),
                           ),
                           borderData: FlBorderData(

@@ -457,7 +457,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                               maxContentWidth: 180,
                               tooltipPadding: const EdgeInsets.only(
                                   top: 8, bottom: 4, left: 8, right: 8),
-                              tooltipBottomMargin: 8,
+                              tooltipMargin: 8,
                               getTooltipItem: (
                                 BarChartGroupData group,
                                 int groupIndex,
@@ -488,9 +488,9 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                       fontSize: 14),
                                 );
                               }),
-                          touchCallback: (BarTouchResponse barTouch) {
-                            if (barTouch.touchInput is! FlLongPressEnd &&
-                                barTouch.touchInput is! FlPanEnd) {
+                          touchCallback: (FlTouchEvent event, BarTouchResponse barTouch) {
+                            if (event is! FlLongPressEnd &&
+                                event is! FlPanEndEvent) {
                               final value = barTouch.spot.touchedBarGroupIndex;
                               touchIndex = value.toInt();
                             }
@@ -502,7 +502,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                           showTitles: true,
                           reservedSize: -16,
                           margin: 16,
-                          getTextStyles: (value) => const TextStyle(
+                          getTextStyles: (context, value) => const TextStyle(
                               color: Colors.black,
                               fontSize: 12,
                               fontWeight: FontWeight.w400),
@@ -529,7 +529,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                         ),
                         leftTitles: SideTitles(
                             showTitles: false,
-                            getTextStyles: (value) => const TextStyle(
+                            getTextStyles: (context, value) => const TextStyle(
                                 color: Colors.black,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),

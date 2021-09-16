@@ -39,14 +39,14 @@ class PieChart2State extends State {
                   child: PieChart(
                     PieChartData(
                         pieTouchData:
-                            PieTouchData(touchCallback: (pieTouchResponse) {
+                            PieTouchData(touchCallback: (event, pieTouchResponse) {
                           setState(() {
-                            if (pieTouchResponse.touchInput is FlLongPressEnd ||
-                                pieTouchResponse.touchInput is FlPanEnd) {
+                            if (event is FlLongPressEnd ||
+                                event is FlPanEndEvent) {
                               touchedIndex = -1;
                             } else {
                               touchedIndex =
-                                  pieTouchResponse.touchedSectionIndex;
+                                  pieTouchResponse.touchedSection.touchedSectionIndex;
                             }
                           });
                         }),
