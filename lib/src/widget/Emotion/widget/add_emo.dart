@@ -83,7 +83,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: backgroundColor,
+        backgroundColor:  R.color.backgroundColor,
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
@@ -101,11 +101,11 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark)),
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
                     splashColor: R.color.transparent,
                     highlightColor: R.color.transparent,
-                    icon: Icon(Icons.arrow_back, color: textDark),
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -148,7 +148,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                           Center(
                             child: Text('Hôm nay bạn\ncảm thấy thế nào?',
                                 style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 24,
                                     fontWeight: FontWeight.w700),
                                 textAlign: TextAlign.center),
@@ -158,7 +158,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                             child: Text(
                                 'Trượt sang trái hoặc phải để chọn 1 cảm xúc',
                                 style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
                           ),
@@ -239,12 +239,12 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                       height: 48,
                       width: 195,
                       decoration: BoxDecoration(
-                          color: mainColor,
+                          color: R.color.mainColor,
                           borderRadius: BorderRadius.circular(200),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [greenGradientTop, greenGradientBottom])),
+                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
                           child: Text(
                               widget.type == 'input' ? 'Tiếp tục' : 'Cập nhật',

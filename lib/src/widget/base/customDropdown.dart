@@ -25,7 +25,7 @@ class CustomDropDown extends StatelessWidget {
             alignment: Alignment.topLeft,
             child: Row(
               children: [
-                Text(name, style: TextStyle(color: textDark)),
+                Text(name, style: TextStyle(color: R.color.textDark)),
                 Text(" *", style: TextStyle(color: R.color.red))
               ],
             )),

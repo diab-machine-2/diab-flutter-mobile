@@ -120,7 +120,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           return false;
         },
         child: Scaffold(
-          backgroundColor: backgroundColor,
+          backgroundColor:  R.color.backgroundColor,
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
@@ -137,11 +137,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
                       splashColor: R.color.transparent,
                       highlightColor: R.color.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
                       }),
@@ -205,7 +205,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                     children: [
                                       Text('Chỉ số BMI của bạn:',
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w500)),
                                       SizedBox(height: 6),
@@ -213,7 +213,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         children: [
                                           Text(roundNumber(bmiNumber),
                                               style: TextStyle(
-                                                  color: textDark,
+                                                  color: R.color.textDark,
                                                   fontSize: 24,
                                                   fontWeight: FontWeight.w700)),
                                           Padding(
@@ -222,7 +222,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                             child: Text(
                                               'kg/m²',
                                               style: TextStyle(
-                                                  color: textDark,
+                                                  color: R.color.textDark,
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 16.0),
                                             ),
@@ -315,7 +315,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                             0
                                                                         ? Color(
                                                                             0xff9C9C9C)
-                                                                        : textDark,
+                                                                        : R.color.textDark,
                                                                     fontSize:
                                                                         34,
                                                                     fontWeight:
@@ -396,7 +396,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                               : selectedHeight
                                                                                   .toString(),
                                                                           style: TextStyle(
-                                                                              color: selectedHeight == 0 ? Color(0xff9C9C9C) : textDark,
+                                                                              color: selectedHeight == 0 ? Color(0xff9C9C9C) : R.color.textDark,
                                                                               fontSize: 34,
                                                                               fontWeight: FontWeight.w500)),
                                                                     ),
@@ -430,7 +430,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         fontSize: 14,
-                                                        color: red,
+                                                        color:R.color.red,
                                                         fontWeight:
                                                             FontWeight.w400)),
                                               ],
@@ -504,7 +504,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                           0
                                                                       ? Color(
                                                                           0xff9C9C9C)
-                                                                      : textDark,
+                                                                      : R.color.textDark,
                                                                   fontSize: 34,
                                                                   fontWeight:
                                                                       FontWeight
@@ -538,7 +538,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         fontSize: 14,
-                                                        color: red,
+                                                        color:R.color.red,
                                                         fontWeight:
                                                             FontWeight.w400)),
                                               ],
@@ -607,7 +607,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                           1000,
                                                       'HH:mm - dd/MM/yyyy'),
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w400)),
@@ -789,14 +789,14 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                               height: 48,
                               width: 195,
                               decoration: BoxDecoration(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                   child: Text('Lưu',
@@ -825,7 +825,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             border: Border.all(
-                                                color: red, width: 2)),
+                                                color:R.color.red, width: 2)),
                                         child: Center(
                                           child: Text('Xoá dữ liệu',
                                               style: TextStyle(
@@ -842,15 +842,15 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           gradient: LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.centerRight,
                                               colors: [
-                                                greenGradientTop,
-                                                greenGradientBottom
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
                                               ])),
                                       child: Center(
                                         child: Text('Lưu',
@@ -1084,7 +1084,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                         child: Text('Bạn muốn xoá dữ liệu?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -1094,7 +1094,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                             'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1113,11 +1113,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
                                         child: Text('Quay lại',
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -1133,7 +1133,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color: red,
+                                      color:R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
@@ -1208,7 +1208,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                         child: Text('Bạn muốn quay lại ?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -1218,7 +1218,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                             'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1236,11 +1236,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
                                         child: Text('Vẫn ở lại',
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -1255,15 +1255,15 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color:R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
                                       child: Text('Thoát',
@@ -1826,11 +1826,11 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                                 width: 150,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -1848,8 +1848,8 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.centerRight,
                                     colors: [
-                                      greenGradientTop,
-                                      greenGradientBottom
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
                                     ]),
                                 borderRadius: BorderRadius.circular(200),
                               ),

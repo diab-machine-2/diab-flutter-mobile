@@ -11,7 +11,7 @@ class CustomLoadMoreDelegate extends LoadMoreDelegate {
   Widget buildChild(LoadMoreStatus status,
       {LoadMoreTextBuilder builder = DefaultLoadMoreTextBuilder.chinese}) {
     if (status == LoadMoreStatus.idle || status == LoadMoreStatus.loading) {
-      return SpinKitThreeBounce(color: mainColor, size: 20);
+      return SpinKitThreeBounce(color: R.color.mainColor, size: 20);
     } else {
       return Container(color: R.color.red);
     }

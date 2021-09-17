@@ -90,7 +90,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                       model.hbA1C == 0 || model.hbA1C == null
                                           ? Text('--',
                                               style: TextStyle(
-                                                  color: textDark,
+                                                  color: R.color.textDark,
                                                   fontSize: 34,
                                                   fontWeight: FontWeight.w700))
                                           : Text(
@@ -108,7 +108,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                           style: TextStyle(
                                               color: model.hbA1C == 0 ||
                                                       model.hbA1C == null
-                                                  ? textDark
+                                                  ? R.color.textDark
                                                   : toColor(model.percentColor),
                                               fontSize: 24,
                                               fontWeight: FontWeight.w700)),
@@ -199,7 +199,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                                       SizedBox(height: 8),
                                                       Text(model.description,
                                                           style: TextStyle(
-                                                              color: textDark,
+                                                              color: R.color.textDark,
                                                               fontSize: 15,
                                                               fontWeight:
                                                                   FontWeight

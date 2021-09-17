@@ -58,7 +58,7 @@ class _BottomTabbar extends State<BottomTabbar> {
                   //           Text('Trang chủ',
                   //               style: TextStyle(
                   //                   color: index == 0
-                  //                       ? mainColor
+                  //                       ? R.color.mainColor
                   //                       : primaryGreyColor,
                   //                   fontSize: 13,
                   //                   fontWeight: FontWeight.w400))
@@ -88,7 +88,7 @@ class _BottomTabbar extends State<BottomTabbar> {
                   //           Text('Khoá học',
                   //               style: TextStyle(
                   //                   color: index == 1
-                  //                       ? mainColor
+                  //                       ? R.color.mainColor
                   //                       : primaryGreyColor,
                   //                   fontSize: 13,
                   //                   fontWeight: FontWeight.w400))

@@ -138,11 +138,11 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(200),
-                                            color: grayBorder),
+                                            color: R.color.grayBorder),
                                         child: Center(
                                           child: Text('Huỷ',
                                               style: TextStyle(
-                                                  color: textDark,
+                                                  color: R.color.textDark,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         )),
@@ -166,8 +166,8 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ]),
                                         borderRadius:
                                             BorderRadius.circular(200),
@@ -220,10 +220,10 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                 children: [
                                   Text('Tính lại theo công thức TDEE',
                                       style: TextStyle(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)),
-                                  Icon(Icons.arrow_forward, color: mainColor)
+                                  Icon(Icons.arrow_forward, color: R.color.mainColor)
                                 ],
                               ),
                             ),

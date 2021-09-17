@@ -82,11 +82,11 @@ class _SettingScheduleGlucoseControllerState
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
                       splashColor: R.color.transparent,
                       highlightColor: R.color.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -129,7 +129,7 @@ class _SettingScheduleGlucoseControllerState
                                       groupValue:
                                           timeModel.glucoseUnit == 2 ? 0 : 1,
                                       backgroundColor:
-                                          mainColor.withOpacity(0.15),
+                                          R.color.mainColor.withOpacity(0.15),
                                       children: {
                                         0: SizedBox(
                                             height: 46,
@@ -139,7 +139,7 @@ class _SettingScheduleGlucoseControllerState
                                                         color: timeModel
                                                                     .glucoseUnit ==
                                                                 2
-                                                            ? mainColor
+                                                            ? R.color.mainColor
                                                             : Color(0xff666666),
                                                         fontWeight: timeModel
                                                                     .glucoseUnit ==
@@ -155,7 +155,7 @@ class _SettingScheduleGlucoseControllerState
                                                         color: timeModel
                                                                     .glucoseUnit ==
                                                                 1
-                                                            ? mainColor
+                                                            ? R.color.mainColor
                                                             : Color(0xff666666),
                                                         fontWeight: timeModel
                                                                     .glucoseUnit ==
@@ -191,14 +191,14 @@ class _SettingScheduleGlucoseControllerState
                         height: 48,
                         width: 195,
                         decoration: BoxDecoration(
-                            color: mainColor,
+                            color: R.color.mainColor,
                             borderRadius: BorderRadius.circular(200),
                             gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.centerRight,
                                 colors: [
-                                  greenGradientTop,
-                                  greenGradientBottom
+                                  R.color.greenGradientTop,
+                                  R.color.greenGradientBottom
                                 ])),
                         child: Center(
                             child: Text('Lưu',

@@ -92,7 +92,7 @@ class _Hba1cDetailTabbarControllerState
                       fontFamily: 'Montserrat',
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
-                      color: textDark)),
+                      color: R.color.textDark)),
               leadingIcon: GestureDetector(
                   onTap: () {
                     showDialog(
@@ -102,7 +102,7 @@ class _Hba1cDetailTabbarControllerState
                       builder: (_) => ActionListPanel(selectedIndex: 0),
                     );
                   },
-                  child: Icon(Icons.format_list_bulleted, color: textDark)),
+                  child: Icon(Icons.format_list_bulleted, color: R.color.textDark)),
               actions: [
                 CustomActionDescription(
                     key: customActionDesKey,
@@ -203,12 +203,12 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
               children: [
                 TabBar(
                     isScrollable: true,
-                    labelColor: mainColor,
+                    labelColor: R.color.mainColor,
                     labelStyle: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: mainColor),
-                    unselectedLabelColor: captionColorGray,
+                        color: R.color.mainColor),
+                    unselectedLabelColor: R.color.captionColorGray,
                     unselectedLabelStyle:
                         TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
@@ -216,7 +216,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                       Tab(text: 'Chi tiết'),
                     ],
                     controller: widget.tabController,
-                    indicatorColor: mainColor,
+                    indicatorColor: R.color.mainColor,
                     indicatorWeight: 3),
                 ActionFilter(
                   callback: (periodFilter) {
@@ -262,7 +262,7 @@ class _ActionFilterState extends State<ActionFilter> {
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: textDark)),
+                      color: R.color.textDark)),
             ),
           ],
         ),

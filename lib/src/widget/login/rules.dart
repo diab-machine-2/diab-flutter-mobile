@@ -101,8 +101,8 @@ class _RulesControllerState extends State<RulesController> {
                                 begin: Alignment.topLeft,
                                 end: Alignment.centerRight,
                                 colors: [
-                                  greenGradientTop,
-                                  greenGradientBottom
+                                  R.color.greenGradientTop,
+                                  R.color.greenGradientBottom
                                 ]),
                             borderRadius: BorderRadius.circular(200),
                           ),

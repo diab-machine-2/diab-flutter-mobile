@@ -87,13 +87,13 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
                   text: TextSpan(
                     text: 'Công ty cổ phần công nghệ y tế ',
                     style: TextStyle(
-                        color: mainColor,
+                        color: R.color.mainColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w400),
                     children: <TextSpan>[
                       TextSpan(
                           style: TextStyle(
-                              color: mainColor,
+                              color: R.color.mainColor,
                               fontSize: 14,
                               fontWeight: FontWeight.w700),
                           text: 'dia-B'),

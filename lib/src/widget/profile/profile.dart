@@ -60,11 +60,11 @@ class _ProfileControllerState extends State<ProfileController> {
           backgroundColor: Color(0xffB1DDDB).withOpacity(0.2),
           title: Text('Hồ sơ',
               style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.w600, color: textDark)),
+                  fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
           leadingIcon: IconButton(
               splashColor: R.color.transparent,
               highlightColor: R.color.transparent,
-              icon: Icon(Icons.arrow_back, color: textDark),
+              icon: Icon(Icons.arrow_back, color: R.color.textDark),
               onPressed: () {
                 Navigator.pop(context);
               }),
@@ -80,7 +80,7 @@ class _ProfileControllerState extends State<ProfileController> {
                     Container(
                         clipBehavior: Clip.hardEdge,
                         decoration: BoxDecoration(
-                            color: mainColor,
+                            color: R.color.mainColor,
                             borderRadius: BorderRadius.circular(52)),
                         child: user.imageUrl.url == null
                             ? Icon(Icons.person, size: 104, color: R.color.white)
@@ -94,7 +94,7 @@ class _ProfileControllerState extends State<ProfileController> {
                             Text(
                               user.fullName,
                               style: TextStyle(
-                                  color: textDark,
+                                  color: R.color.textDark,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700),
                               maxLines: 1,
@@ -124,7 +124,7 @@ class _ProfileControllerState extends State<ProfileController> {
                                       SizedBox(width: 8),
                                       Text('Gói Coaching',
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w700))
                                     ],
@@ -198,7 +198,7 @@ class _ProfileControllerState extends State<ProfileController> {
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: textDark),
+                      color: R.color.textDark),
                   textAlign: TextAlign.center)
             ])),
       ),
@@ -242,7 +242,7 @@ class _ProfileControllerState extends State<ProfileController> {
                   SizedBox(width: 16),
                   Text(title, style: TextStyle(fontSize: 16))
                 ]),
-                Icon(Icons.arrow_forward_ios, color: mainColor, size: 16)
+                Icon(Icons.arrow_forward_ios, color: R.color.mainColor, size: 16)
               ]),
               SizedBox(height: 20),
               Container(height: 1, color: R.color.grey.withOpacity(0.2))
@@ -269,7 +269,7 @@ class _ProfileControllerState extends State<ProfileController> {
                       children: [
                         Text('Cập nhật số điện thoại',
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
@@ -289,7 +289,7 @@ class _ProfileControllerState extends State<ProfileController> {
                           maxLines: 1,
                           obscureText: false,
                           decoration: InputDecoration(
-                            fillColor: textDark,
+                            fillColor: R.color.textDark,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: Color(0xffDDDDDD), width: 1.0),
@@ -297,7 +297,7 @@ class _ProfileControllerState extends State<ProfileController> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide:
-                                  BorderSide(color: mainColor, width: 1.0),
+                                  BorderSide(color: R.color.mainColor, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             contentPadding:
@@ -320,11 +320,11 @@ class _ProfileControllerState extends State<ProfileController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -344,14 +344,14 @@ class _ProfileControllerState extends State<ProfileController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                 child: Text('Lưu',

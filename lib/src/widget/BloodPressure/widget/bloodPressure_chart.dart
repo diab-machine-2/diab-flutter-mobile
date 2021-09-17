@@ -339,7 +339,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
               color: R.color.transparent,
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text('Xem chi tiết', style: TextStyle(color: mainColor)),
+                Text('Xem chi tiết', style: TextStyle(color: R.color.mainColor)),
                 Image.asset('assets/images/icon_arrow_right.png',
                     width: 20, height: 20)
               ]),

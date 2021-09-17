@@ -480,7 +480,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
               child: Text(
                 'Ngày sinh',
                 style: TextStyle(
-                    color: textDark, fontSize: 16, fontWeight: FontWeight.w700),
+                    color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -498,7 +498,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
               child: Text(
                 '$done',
                 style: TextStyle(
-                    color: mainColor,
+                    color: R.color.mainColor,
                     fontSize: 16,
                     fontWeight: FontWeight.w600),
               ),

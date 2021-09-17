@@ -40,11 +40,11 @@ class _ContactControllerState extends State<ContactController> {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark)),
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
                     splashColor: R.color.transparent,
                     highlightColor: R.color.transparent,
-                    icon: Icon(Icons.arrow_back, color: textDark),
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -120,7 +120,7 @@ class _ContactControllerState extends State<ContactController> {
                         child: Text('Hotline: ${widget.model.hotline}',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -130,7 +130,7 @@ class _ContactControllerState extends State<ContactController> {
                             'Bạn muốn gọi đến Hotline của diaB để được trợ giúp?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -149,11 +149,11 @@ class _ContactControllerState extends State<ContactController> {
                                     decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(200),
-                                        color: grayBorder),
+                                        color: R.color.grayBorder),
                                     child: Center(
                                       child: Text('Huỷ',
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     )),
@@ -169,14 +169,14 @@ class _ContactControllerState extends State<ContactController> {
                                   height: 48,
                                   width: 119,
                                   decoration: BoxDecoration(
-                                      color: red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                       gradient: LinearGradient(
                                           begin: Alignment.topLeft,
                                           end: Alignment.centerRight,
                                           colors: [
-                                            greenGradientTop,
-                                            greenGradientBottom
+                                            R.color.greenGradientTop,
+                                            R.color.greenGradientBottom
                                           ])),
                                   child: Center(
                                     child: Text('Gọi',

@@ -86,11 +86,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark)),
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
                     splashColor: R.color.transparent,
                     highlightColor: R.color.transparent,
-                    icon: Icon(Icons.arrow_back, color: textDark),
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -120,7 +120,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         child: Container(
                                           clipBehavior: Clip.hardEdge,
                                           decoration: BoxDecoration(
-                                              color: mainColor,
+                                              color: R.color.mainColor,
                                               borderRadius:
                                                   BorderRadius.circular(80)),
                                           child: user.imageUrl.url == null
@@ -182,7 +182,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                         Text('Chỉnh sửa',
                                                             style: TextStyle(
                                                                 color:
-                                                                    mainColor,
+                                                                    R.color.mainColor,
                                                                 fontSize: 16))
                                                       ]),
                                                     ),
@@ -191,7 +191,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                             SizedBox(height: 16),
                                             Text('“${motivation.content}”',
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 16)),
                                           ]),
@@ -214,7 +214,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                 child: Center(
                                                   child: Text('Xem nhật ký',
                                                       style: TextStyle(
-                                                          color: mainColor,
+                                                          color: R.color.mainColor,
                                                           fontSize: 16)),
                                                 ),
                                               ),
@@ -235,7 +235,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                 child: Center(
                                                   child: Text('Động lực mới',
                                                       style: TextStyle(
-                                                          color: mainColor,
+                                                          color: R.color.mainColor,
                                                           fontSize: 16)),
                                                 ),
                                               ),
@@ -561,7 +561,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         : user.fullName,
                                     'Google',
                                     CupertinoSwitch(
-                                      activeColor: mainColor,
+                                      activeColor: R.color.mainColor,
                                       value: user.isLinkedGoogle ?? false,
                                       onChanged: (value) {
                                         print(value);
@@ -577,7 +577,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 //         : user.fullName,
                                 //     'Facebook',
                                 //     CupertinoSwitch(
-                                //       activeColor: mainColor,
+                                //       activeColor: R.color.mainColor,
                                 //       value: user.isLinkedFacebook ?? false,
                                 //       onChanged: (value) {
                                 //         print(value);
@@ -1026,7 +1026,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                             child: Text('Bạn muốn đăng xuất?',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                           ),
@@ -1036,7 +1036,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 'Bạn sẽ không thể theo dõi sức khoẻ của mình sau khi thoát. Bạn vẫn muốn đăng xuất khỏi DiaB?',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
                           ),
@@ -1056,11 +1056,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                           decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(200),
-                                              color: grayBorder),
+                                              color: R.color.grayBorder),
                                           child: Center(
                                             child: Text('Vẫn ở lại',
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.w600)),
@@ -1076,15 +1076,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                       child: Container(
                                         height: 43,
                                         decoration: BoxDecoration(
-                                            color: red,
+                                            color: R.color.red,
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             gradient: LinearGradient(
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.centerRight,
                                                 colors: [
-                                                  greenGradientTop,
-                                                  greenGradientBottom
+                                                  R.color.greenGradientTop,
+                                                  R.color.greenGradientBottom
                                                 ])),
                                         child: Center(
                                           child: Text('Đăng xuất',
@@ -1122,7 +1122,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                       children: [
                         Text('Họ và tên',
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
@@ -1145,7 +1145,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           ],
                           obscureText: false,
                           decoration: InputDecoration(
-                              fillColor: textDark,
+                              fillColor: R.color.textDark,
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                     color: Color(0xffDDDDDD), width: 1.0),
@@ -1153,7 +1153,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide:
-                                    BorderSide(color: mainColor, width: 1.0),
+                                    BorderSide(color: R.color.mainColor, width: 1.0),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               contentPadding:
@@ -1174,11 +1174,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -1233,14 +1233,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                 child: Text('Lưu',
@@ -1275,7 +1275,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                       children: [
                         Text('Ngày sinh',
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
@@ -1309,11 +1309,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -1362,14 +1362,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                 child: Text('Đồng ý',
@@ -1404,7 +1404,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                       children: [
                         Text('Giới tính',
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
@@ -1432,11 +1432,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -1484,14 +1484,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                 child: Text('Đồng ý',
@@ -1525,7 +1525,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                       children: [
                         Text('Loại bệnh',
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
@@ -1558,11 +1558,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -1609,14 +1609,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                 child: Text('Đồng ý',
@@ -1650,7 +1650,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                       children: [
                         Text('Năm phát hiện bệnh',
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
@@ -1684,11 +1684,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -1737,14 +1737,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                 child: Text('Đồng ý',
@@ -1889,7 +1889,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                       children: [
                         Text('Số điện thoại 2',
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
@@ -1909,7 +1909,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           maxLines: 1,
                           obscureText: false,
                           decoration: InputDecoration(
-                            fillColor: textDark,
+                            fillColor: R.color.textDark,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                   color: Color(0xffDDDDDD), width: 1.0),
@@ -1917,7 +1917,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide:
-                                  BorderSide(color: mainColor, width: 1.0),
+                                  BorderSide(color: R.color.mainColor, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             contentPadding:
@@ -1939,11 +1939,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -1997,14 +1997,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                 child: Text('Lưu',
@@ -2145,7 +2145,7 @@ class _EmailValidateState extends State<EmailValidate> {
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text('Email',
                 style: TextStyle(
-                    color: textDark,
+                    color: R.color.textDark,
                     fontSize: 16,
                     fontWeight: FontWeight.w600)),
             GestureDetector(
@@ -2165,14 +2165,14 @@ class _EmailValidateState extends State<EmailValidate> {
                   maxLines: 1,
                   obscureText: false,
                   decoration: InputDecoration(
-                    fillColor: textDark,
+                    fillColor: R.color.textDark,
                     enabledBorder: OutlineInputBorder(
                       borderSide:
                           BorderSide(color: Color(0xffDDDDDD), width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: mainColor, width: 1.0),
+                      borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     contentPadding:
@@ -2219,11 +2219,11 @@ class _EmailValidateState extends State<EmailValidate> {
                         width: 119,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(200),
-                            color: grayBorder),
+                            color: R.color.grayBorder),
                         child: Center(
                           child: Text('Huỷ',
                               style: TextStyle(
-                                  color: textDark,
+                                  color: R.color.textDark,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600)),
                         )),
@@ -2253,12 +2253,12 @@ class _EmailValidateState extends State<EmailValidate> {
                       height: 48,
                       width: 119,
                       decoration: BoxDecoration(
-                          color: red,
+                          color: R.color.red,
                           borderRadius: BorderRadius.circular(200),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [greenGradientTop, greenGradientBottom])),
+                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
                         child: Text('Lưu',
                             style: TextStyle(
@@ -2501,7 +2501,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
                         ? 'Động lực mới'
                         : 'Chỉnh sửa động lực',
                     style: TextStyle(
-                        color: textDark,
+                        color: R.color.textDark,
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 SizedBox(height: 8),
@@ -2530,14 +2530,14 @@ class _MotivationPopupState extends State<MotivationPopup> {
                 ],
                 obscureText: false,
                 decoration: InputDecoration(
-                    fillColor: textDark,
+                    fillColor: R.color.textDark,
                     enabledBorder: OutlineInputBorder(
                       borderSide:
                           BorderSide(color: Color(0xffDDDDDD), width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: mainColor, width: 1.0),
+                      borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     hintText: 'Nhập động lực mới',
@@ -2559,11 +2559,11 @@ class _MotivationPopupState extends State<MotivationPopup> {
                   width: 119,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(200),
-                      color: grayBorder),
+                      color: R.color.grayBorder),
                   child: Center(
                     child: Text('Huỷ',
                         style: TextStyle(
-                            color: textDark,
+                            color: R.color.textDark,
                             fontSize: 16,
                             fontWeight: FontWeight.w600)),
                   )),
@@ -2590,12 +2590,12 @@ class _MotivationPopupState extends State<MotivationPopup> {
                 height: 48,
                 width: 119,
                 decoration: BoxDecoration(
-                    color: red,
+                    color: R.color.red,
                     borderRadius: BorderRadius.circular(200),
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.centerRight,
-                        colors: [greenGradientTop, greenGradientBottom])),
+                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                 child: Center(
                   child: Text('Lưu',
                       style: TextStyle(

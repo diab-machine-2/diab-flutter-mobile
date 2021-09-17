@@ -149,7 +149,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           return false;
         },
         child: Scaffold(
-          backgroundColor: backgroundColor,
+          backgroundColor:  R.color.backgroundColor,
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
@@ -166,11 +166,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
                       splashColor: R.color.transparent,
                       highlightColor: R.color.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
                       }),
@@ -303,7 +303,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                 style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
-                                                    color: mainColor)),
+                                                    color: R.color.mainColor)),
                                           ),
                                         ],
                                       ),
@@ -340,7 +340,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                               splashColor: R.color.green,
                                               combine:
                                                   ItemTagsCombine.withTextAfter,
-                                              textActiveColor: textDark,
+                                              textActiveColor: R.color.textDark,
                                               textStyle:
                                                   TextStyle(fontSize: 14),
                                               elevation: 0,
@@ -373,7 +373,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                       Text('Khác',
                                                           style: TextStyle(
                                                               fontSize: 14,
-                                                              color: textDark,
+                                                              color: R.color.textDark,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700)),
@@ -383,7 +383,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                             otherSymptom,
                                                             style: TextStyle(
                                                                 fontSize: 14,
-                                                                color: textDark,
+                                                                color: R.color.textDark,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w400)),
@@ -452,7 +452,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                 style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
-                                                    color: mainColor)),
+                                                    color: R.color.mainColor)),
                                           ),
                                         ],
                                       ),
@@ -490,7 +490,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                               splashColor: R.color.green,
                                               combine:
                                                   ItemTagsCombine.withTextAfter,
-                                              textActiveColor: textDark,
+                                              textActiveColor: R.color.textDark,
                                               textStyle:
                                                   TextStyle(fontSize: 14),
                                               elevation: 0,
@@ -523,7 +523,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                       Text('Khác',
                                                           style: TextStyle(
                                                               fontSize: 14,
-                                                              color: textDark,
+                                                              color: R.color.textDark,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700)),
@@ -533,7 +533,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                             otherActivity,
                                                             style: TextStyle(
                                                                 fontSize: 14,
-                                                                color: textDark,
+                                                                color: R.color.textDark,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w400)),
@@ -606,7 +606,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                           1000,
                                                       'HH:mm - dd/MM/yyyy'),
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w400)),
@@ -788,14 +788,14 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               height: 48,
                               width: 195,
                               decoration: BoxDecoration(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                   child: Text('Lưu',
@@ -827,7 +827,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             border: Border.all(
-                                                color: red, width: 2)),
+                                                color:R.color.red, width: 2)),
                                         child: Center(
                                           child: Text('Xoá dữ liệu',
                                               style: TextStyle(
@@ -844,15 +844,15 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           gradient: LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.centerRight,
                                               colors: [
-                                                greenGradientTop,
-                                                greenGradientBottom
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
                                               ])),
                                       child: Center(
                                         child: Text('Lưu',
@@ -1043,7 +1043,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                         child: Text('Bạn muốn xoá dữ liệu?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -1053,7 +1053,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                             'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1072,11 +1072,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
                                         child: Text('Quay lại',
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -1092,7 +1092,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color: red,
+                                      color:R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
@@ -1168,7 +1168,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                         child: Text('Bạn muốn quay lại ?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -1178,7 +1178,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                             'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1196,11 +1196,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
                                         child: Text('Vẫn ở lại',
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -1215,15 +1215,15 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color:R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
                                       child: Text('Thoát',

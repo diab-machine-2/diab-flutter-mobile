@@ -119,7 +119,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                     SizedBox(width: 4),
                                     Text('Mục tiêu mới',
                                         style: TextStyle(
-                                            color: mainColor,
+                                            color: R.color.mainColor,
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700)),
                                   ],
@@ -159,7 +159,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                           children: [
                                             Text('Hiện tại',
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14.0)),
                                             Row(
@@ -169,7 +169,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                                         model.current == 0
                                                     ? Text('--',
                                                         style: TextStyle(
-                                                            color: textDark,
+                                                            color: R.color.textDark,
                                                             fontSize: 24,
                                                             fontWeight:
                                                                 FontWeight
@@ -180,7 +180,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                                             .toString(),
                                                         style: TextStyle(
                                                             fontFamily: 'Viga',
-                                                            color: textDark,
+                                                            color: R.color.textDark,
                                                             fontSize: 24,
                                                             fontWeight:
                                                                 FontWeight
@@ -194,7 +194,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                                   child: Text(
                                                     'cm',
                                                     style: TextStyle(
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         fontSize: 14.0),
@@ -213,7 +213,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                           children: [
                                             Text('Mục tiêu',
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14.0)),
                                             Row(
@@ -221,7 +221,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                                 model.goal == null
                                                     ? Text('--',
                                                         style: TextStyle(
-                                                            color: textDark,
+                                                            color: R.color.textDark,
                                                             fontSize: 24,
                                                             fontWeight:
                                                                 FontWeight
@@ -232,7 +232,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                                             .toString(),
                                                         style: TextStyle(
                                                             fontFamily: 'Viga',
-                                                            color: green,
+                                                            color:  R.color.green,
                                                             fontSize: 24,
                                                             fontWeight:
                                                                 FontWeight
@@ -244,7 +244,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                                   child: Text(
                                                     'cm',
                                                     style: TextStyle(
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         fontSize: 14.0),
@@ -573,7 +573,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                 Expanded(
                   child: Text(model.message,
                       style: TextStyle(
-                          color: textDark,
+                          color: R.color.textDark,
                           fontWeight: FontWeight.w400,
                           fontSize: 14.0)),
                 ),

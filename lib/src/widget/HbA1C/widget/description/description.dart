@@ -54,7 +54,7 @@ class Description extends StatelessWidget {
         //                 Text('Tìm hiểu thêm',
         //                     style: TextStyle(
         //                         fontSize: 16,
-        //                         color: mainColor,
+        //                         color: R.color.mainColor,
         //                         fontWeight: FontWeight.w700)),
         //                 SizedBox(width: 4),
         //                 Image.asset('assets/images/icon_arrow_des.png',
@@ -96,7 +96,7 @@ class Description extends StatelessWidget {
                         Text('Tìm hiểu thêm',
                             style: TextStyle(
                                 fontSize: 14,
-                                color: mainColor,
+                                color: R.color.mainColor,
                                 fontWeight: FontWeight.w700)),
                         SizedBox(width: 4),
                         Image.asset('assets/images/icon_arrow_des.png',

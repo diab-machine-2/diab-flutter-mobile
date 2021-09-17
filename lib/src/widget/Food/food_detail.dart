@@ -99,7 +99,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
           return RefreshIndicator(
               onRefresh: refresh,
               child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
@@ -268,7 +268,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                         child: Text(
                                                                             'Lúc ' +
                                                                                 convertToUTC(inputModel.date, 'HH:mm'),
-                                                                            style: TextStyle(color: textDark, fontSize: 16, fontWeight: FontWeight.normal)),
+                                                                            style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal)),
                                                                       ),
                                                                       ListView.separated(
                                                                           physics: NeverScrollableScrollPhysics(),
@@ -302,7 +302,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                                         children: [
                                                                                           Text(food.name, style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w500)),
                                                                                           SizedBox(height: 4),
-                                                                                          Text(food.text, style: TextStyle(color: textDark, fontSize: 16, fontWeight: FontWeight.normal))
+                                                                                          Text(food.text, style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal))
                                                                                         ],
                                                                                       )
                                                                                     ]),

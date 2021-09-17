@@ -90,13 +90,13 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: textDark),
+                            color: R.color.textDark),
                       ),
                       backgroundColor: R.color.transparent,
                       leadingIcon: IconButton(
                           splashColor: R.color.transparent,
                           highlightColor: R.color.transparent,
-                          icon: Icon(Icons.close, color: textDark),
+                          icon: Icon(Icons.close, color: R.color.textDark),
                           onPressed: () {
                             Navigator.pop(context);
                           })),

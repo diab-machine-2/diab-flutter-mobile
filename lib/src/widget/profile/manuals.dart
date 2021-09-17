@@ -55,11 +55,11 @@ class _ManualControllerState extends State<ManualController> {
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: textDark)),
+                            color: R.color.textDark)),
                     leadingIcon: IconButton(
                         splashColor: R.color.transparent,
                         highlightColor: R.color.transparent,
-                        icon: Icon(Icons.arrow_back, color: textDark),
+                        icon: Icon(Icons.arrow_back, color: R.color.textDark),
                         onPressed: () {
                           Navigator.pop(context);
                         }),
@@ -71,7 +71,7 @@ class _ManualControllerState extends State<ManualController> {
                       decoration: BoxDecoration(
                           color: R.color.white,
                           borderRadius: BorderRadius.circular(30),
-                          border: Border.all(color: grayComponentBorder)),
+                          border: Border.all(color: R.color.grayComponentBorder)),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -99,11 +99,11 @@ class _ManualControllerState extends State<ManualController> {
                                         contentPadding:
                                             EdgeInsets.only(top: -20),
                                         hintText: 'Tìm kiếm hoạt động',
-                                        fillColor: textDark),
+                                        fillColor: R.color.textDark),
                                   )),
                             ),
                             Image.asset('assets/images/search.png',
-                                width: 24, height: 24, color: mainColor),
+                                width: 24, height: 24, color: R.color.mainColor),
                           ])),
                   Expanded(
                     child: ListView.separated(

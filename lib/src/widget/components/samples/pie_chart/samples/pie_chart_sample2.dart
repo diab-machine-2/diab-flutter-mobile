@@ -67,7 +67,7 @@ class PieChart2State extends State {
                     padding: const EdgeInsets.only(top: 2.0, bottom: 8),
                     child: Text(
                       'Chú thích',
-                      style: TextStyle(fontSize: 14, color: textDark),
+                      style: TextStyle(fontSize: 14, color: R.color.textDark),
                     ),
                   ),
                   Column(

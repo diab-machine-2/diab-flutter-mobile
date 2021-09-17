@@ -122,8 +122,8 @@ class _StepListControllerState extends State<StepListController> {
                         effect: ExpandingDotsEffect(
                             dotWidth: 5,
                             dotHeight: 5,
-                            dotColor: notActiveGreen,
-                            activeDotColor: mainColor),
+                            dotColor: R.color.notActiveGreen,
+                            activeDotColor: R.color.mainColor),
                       ),
                       SizedBox(height: 32),
                       Container(
@@ -141,15 +141,15 @@ class _StepListControllerState extends State<StepListController> {
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           gradient: LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.centerRight,
                                               colors: [
-                                                greenGradientTop,
-                                                greenGradientBottom
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
                                               ])),
                                       child: Center(
                                         child: Text('Tạo tài khoản',
@@ -170,11 +170,11 @@ class _StepListControllerState extends State<StepListController> {
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         border: Border.all(
-                                            color: mainColor, width: 2)),
+                                            color: R.color.mainColor, width: 2)),
                                     child: Center(
                                       child: Text('Đã có tài khoản',
                                           style: TextStyle(
-                                              color: mainColor,
+                                              color: R.color.mainColor,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -204,7 +204,7 @@ class _StepListControllerState extends State<StepListController> {
         Expanded(child: Image.asset(image)),
         Text(name,
             style: TextStyle(
-                color: mainColor, fontSize: 20, fontWeight: FontWeight.w700),
+                color: R.color.mainColor, fontSize: 20, fontWeight: FontWeight.w700),
             textAlign: TextAlign.center),
         SizedBox(
           height: 20,
@@ -213,7 +213,7 @@ class _StepListControllerState extends State<StepListController> {
           padding: const EdgeInsets.only(left: 16, right: 16),
           child: Text(text,
               style: TextStyle(
-                  color: textDark, fontSize: 16, fontWeight: FontWeight.w400),
+                  color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
               textAlign: TextAlign.center),
         ),
       ],

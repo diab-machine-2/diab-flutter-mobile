@@ -114,7 +114,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                                   style: TextStyle(
                                                       fontFamily: 'Viga',
                                                       color: model.average == 0
-                                                          ? textDark
+                                                          ? R.color.textDark
                                                           : Color(int.parse(
                                                               '0xff${model.lowestColor.split('#').join()}')),
                                                       fontSize: 22,
@@ -131,7 +131,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                           Text(
                                             'Thấp nhất',
                                             style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 15,
                                             ),
                                             maxLines: 1,
@@ -170,7 +170,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                                 style: TextStyle(
                                                     fontFamily: 'Viga',
                                                     color: model.average == 0
-                                                        ? textDark
+                                                        ? R.color.textDark
                                                         : Color(int.parse(
                                                             '0xff${model.averageColor.split('#').join()}')),
                                                     fontSize: 22,
@@ -187,7 +187,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                         Text(
                                           'Trung bình',
                                           style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 15,
                                             // fontWeight: FontWeight.w700
                                           ),
@@ -232,7 +232,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                                   style: TextStyle(
                                                       fontFamily: 'Viga',
                                                       color: model.highest == 0
-                                                          ? textDark
+                                                          ? R.color.textDark
                                                           : Color(int.parse(
                                                               '0xff${model.highestColor.split('#').join()}')),
                                                       fontSize: 22,
@@ -249,7 +249,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                           Text(
                                             'Cao nhất',
                                             style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 15,
                                               // fontWeight: FontWeight.w700
                                             ),
@@ -398,7 +398,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                   padding: EdgeInsets.only(top: 16, bottom: 8),
                   child: Text(
                     'Chú thích',
-                    style: TextStyle(fontSize: 14, color: textDark),
+                    style: TextStyle(fontSize: 14, color: R.color.textDark),
                   ),
                 ),
                 Column(

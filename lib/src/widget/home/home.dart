@@ -711,7 +711,7 @@ class _HomeControllerState extends State<HomeController> {
                               children: [
                                 Text(model.details[index].text,
                                     style: TextStyle(
-                                        color: textDark,
+                                        color: R.color.textDark,
                                         fontSize: 14,
                                         fontWeight: FontWeight.w400)),
                                 SizedBox(width: 4),

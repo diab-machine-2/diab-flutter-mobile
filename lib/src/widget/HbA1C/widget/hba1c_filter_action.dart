@@ -22,14 +22,14 @@ class FilterAction extends StatelessWidget {
         decoration: BoxDecoration(
             color: R.color.white,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: primaryColor)),
+            border: Border.all(color: R.color.primaryColor)),
         height: 40,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('assets/images/icon_filter.png', width: 24, height: 24),
             SizedBox(width: 8),
-            Text('Bộ lọc', style: TextStyle(color: primaryColor)),
+            Text('Bộ lọc', style: TextStyle(color: R.color.primaryColor)),
           ],
         ));
   }
@@ -49,14 +49,14 @@ class ItemFilter extends StatelessWidget {
           decoration: BoxDecoration(
               color: R.color.white,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: primaryColor)),
+              border: Border.all(color: R.color.primaryColor)),
           height: 40,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(this.image, width: 24, height: 24),
               SizedBox(width: 8),
-              Text(this.name, style: TextStyle(color: primaryColor)),
+              Text(this.name, style: TextStyle(color: R.color.primaryColor)),
             ],
           )),
     );

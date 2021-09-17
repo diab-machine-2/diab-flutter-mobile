@@ -140,7 +140,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                                     0
                                                                 ? Color(
                                                                     0xff9C9C9C)
-                                                                : textDark,
+                                                                : R.color.textDark,
                                                             fontSize: 34,
                                                             fontWeight:
                                                                 FontWeight
@@ -226,7 +226,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                                     0
                                                                 ? Color(
                                                                     0xff9C9C9C)
-                                                                : textDark,
+                                                                : R.color.textDark,
                                                             fontSize: 34,
                                                             fontWeight:
                                                                 FontWeight
@@ -312,7 +312,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                                     0
                                                                 ? Color(
                                                                     0xff9C9C9C)
-                                                                : textDark,
+                                                                : R.color.textDark,
                                                             fontSize: 34,
                                                             fontWeight:
                                                                 FontWeight
@@ -375,7 +375,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                             Icon(
                                               Icons.arrow_forward_ios_outlined,
                                               size: 17,
-                                              color: textDark,
+                                              color: R.color.textDark,
                                             )
                                           ],
                                         ),
@@ -403,11 +403,11 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(200),
-                                            color: grayBorder),
+                                            color: R.color.grayBorder),
                                         child: Center(
                                           child: Text('Huỷ',
                                               style: TextStyle(
-                                                  color: textDark,
+                                                  color: R.color.textDark,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         )),
@@ -424,8 +424,8 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ]),
                                         borderRadius:
                                             BorderRadius.circular(200),

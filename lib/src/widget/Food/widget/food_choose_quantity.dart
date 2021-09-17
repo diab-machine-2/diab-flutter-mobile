@@ -302,8 +302,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                         begin: Alignment.topLeft,
                                         end: Alignment.centerRight,
                                         colors: [
-                                          greenGradientTop,
-                                          greenGradientBottom
+                                          R.color.greenGradientTop,
+                                          R.color.greenGradientBottom
                                         ])),
                                 child: Center(
                                     child: Text('Đồng ý',
@@ -333,7 +333,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
         Text(title, style: TextStyle(color: Color(0xff666666))),
         SizedBox(height: 4),
         Text('$number $unit',
-            style: TextStyle(color: mainColor, fontWeight: FontWeight.w600))
+            style: TextStyle(color: R.color.mainColor, fontWeight: FontWeight.w600))
       ],
     ));
   }

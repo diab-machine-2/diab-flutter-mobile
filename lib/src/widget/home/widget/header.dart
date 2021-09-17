@@ -113,7 +113,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                                               BorderRadius.circular(21)),
                                       child: user.imageUrl.url == null
                                           ? Icon(Icons.person,
-                                              size: 42, color: mainColor)
+                                              size: 42, color: R.color.mainColor)
                                           : Image.network(user.imageUrl.url,
                                               width: 42, height: 42)),
                                 ),
@@ -217,7 +217,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                                         children: [
                                           Text('Viết động lực',
                                               style: TextStyle(
-                                                  color: mainColor,
+                                                  color: R.color.mainColor,
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w600)),
                                           SizedBox(width: 4),

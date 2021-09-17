@@ -178,7 +178,7 @@ class BloodPressureDetailControllerState
           return RefreshIndicator(
             onRefresh: _refresh,
             child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(

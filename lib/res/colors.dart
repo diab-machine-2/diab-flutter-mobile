@@ -4,10 +4,6 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const transparent = Color(0x00000000);
-  static const primaryColor = Color(0xFF226BCC);
-  static const backgroundColor = Color(0xFFf2f2f4);
-  static const primaryGreyColor = Color(0xff666666);
-  static const primaryLightGreyColor = Color(0xFFEEEEEE);
   static const white = Color(0xffffffff);
   static const black = Color(0xff000000);
   static const black26 = Color(0x42000000);
@@ -25,6 +21,16 @@ class AppColors {
   static const blueAccent = Color(0xFF448AFF);
   static const lightBlueAccent = Color(0xFF40C4FF);
   static const blueGrey = Color(0xFF607D8B);
+  static const accentColor = Color(0xff01645A);
+  static const yellowAccent = Color(0xFFFFFF00);
+  static const redAccent = Color(0xFFFF5252);
+  static const teal = Color(0xFF009688);
+  static const lightBlue100 = Color(0xFFB3E5FC);
+  static const grey200 = Color(0xFFEEEEEE);
+  static const primaryColor = Color(0xFF226BCC);
+  static const backgroundColor = Color(0xFFf2f2f4);
+  static const primaryGreyColor = Color(0xff666666);
+  static const primaryLightGreyColor = Color(0xFFEEEEEE);
   static const textDark = Color(0xff0A2836);
   static const captionColorGray = Color(0xff9C9C9C);
   static const statusGood = Color(0xff7CB5FF);
@@ -33,20 +39,14 @@ class AppColors {
   static const grayComponentBorder = Color(0xffDDDDDD);
   static const blueText = Color(0xff004D84);
   static const mainColor = Color(0xff01645A);
-  static const accentColor = Color(0xff01645A);
   static const notActiveGreen = Color(0xff7EC8C3);
   static const yellow = Color(0xffFDB913);
-  static const yellowAccent = Color(0xFFFFFF00);
   static const green = Color(0xff21A567);
   static const greenLight = Color(0xff9CD9B8);
   static const redLight = Color(0xffFFCDD2);
   static const red = Color(0xffE53935);
-  static const redAccent = Color(0xFFFF5252);
   static const greenbg = Color(0xffE6F6ED);
   static const grayCaption = Color(0xff9C9C9C);
   static const greenGradientTop = Color(0xff4BB2AB);
   static const greenGradientBottom = Color(0xff008479);
-  static const teal = Color(0xFF009688);
-  static const lightBlue100 = Color(0xFFB3E5FC);
-  static const grey200 = Color(0xFFEEEEEE);
 }

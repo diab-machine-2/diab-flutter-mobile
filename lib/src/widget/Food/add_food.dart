@@ -111,7 +111,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
           return false;
         },
         child: Scaffold(
-          backgroundColor: backgroundColor,
+          backgroundColor: R.color.backgroundColor,
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
@@ -128,11 +128,11 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
                       splashColor: R.color.transparent,
                       highlightColor: R.color.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
                       }),
@@ -359,7 +359,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                               SizedBox(width: 4),
                                               Text('Thêm món ăn',
                                                   style: TextStyle(
-                                                      color: mainColor,
+                                                      color: R.color.mainColor,
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w400)),
@@ -416,7 +416,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                                     .name,
                                                                 style: TextStyle(
                                                                     color:
-                                                                        textDark,
+                                                                        R.color.textDark,
                                                                     fontSize:
                                                                         16,
                                                                     fontWeight:
@@ -429,7 +429,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                                 'Đã ăn ${roundAsFixed(selectedFoods[index].portion * selectedFoods[index].quantity)} ${selectedFoods[index].unit}, ${formatNumber(selectedFoods[index].quantity * selectedFoods[index].calorie)} kcal',
                                                                 style: TextStyle(
                                                                     color:
-                                                                        textDark,
+                                                                        R.color.textDark,
                                                                     fontSize:
                                                                         16,
                                                                     fontWeight:
@@ -589,14 +589,14 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                               width: 195,
                               margin: EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                   child: Text('Lưu',
@@ -625,7 +625,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             border: Border.all(
-                                                color: red, width: 2)),
+                                                color: R.color.red, width: 2)),
                                         child: Center(
                                           child: Text('Xoá dữ liệu',
                                               style: TextStyle(
@@ -642,15 +642,15 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           gradient: LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.centerRight,
                                               colors: [
-                                                greenGradientTop,
-                                                greenGradientBottom
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
                                               ])),
                                       child: Center(
                                         child: Text('Lưu',
@@ -832,7 +832,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                         child: Text('Bạn muốn xoá dữ liệu?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -842,7 +842,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                             'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -861,11 +861,11 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
                                         child: Text('Quay lại',
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -881,7 +881,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color: red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
@@ -952,7 +952,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                         child: Text('Bạn muốn quay lại ?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -962,7 +962,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                             'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -980,11 +980,11 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
                                         child: Text('Vẫn ở lại',
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -999,15 +999,15 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color: R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
                                       child: Text('Thoát',

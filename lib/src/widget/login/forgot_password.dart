@@ -66,7 +66,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [greenGradientTop, greenGradientBottom])),
+                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                     child: Center(
                         child: Text('Tiếp tục',
                             style: TextStyle(
@@ -93,7 +93,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                   alignment: Alignment.topLeft,
                   child: Text(
                     'Quên mật khẩu',
-                    style: TextStyle(fontSize: 20, color: textDark),
+                    style: TextStyle(fontSize: 20, color: R.color.textDark),
                   ),
                 ),
                 backgroundColor: R.color.transparent, //No more green

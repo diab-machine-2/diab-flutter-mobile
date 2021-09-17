@@ -45,7 +45,7 @@ class _AddressControllerState extends State<AddressController> {
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text('Địa chỉ',
               style: TextStyle(
-                  color: textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                  color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
           GestureDetector(
               child: Icon(Icons.close, color: Color(0xffBEC0C8)),
               onTap: () {
@@ -55,7 +55,7 @@ class _AddressControllerState extends State<AddressController> {
         SizedBox(height: 26),
         Text('Địa chỉ cụ thể',
             style: TextStyle(
-                color: textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
         SizedBox(height: 8),
         Container(
             height: 54,
@@ -66,14 +66,14 @@ class _AddressControllerState extends State<AddressController> {
                 maxLines: 1,
                 obscureText: false,
                 decoration: InputDecoration(
-                  fillColor: textDark,
+                  fillColor: R.color.textDark,
                   enabledBorder: OutlineInputBorder(
                     borderSide:
                         BorderSide(color: Color(0xffDDDDDD), width: 1.0),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: mainColor, width: 1.0),
+                    borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   contentPadding: EdgeInsets.only(top: 0, left: 16, right: 16),
@@ -83,7 +83,7 @@ class _AddressControllerState extends State<AddressController> {
         SizedBox(height: 8),
         Text('Tỉnh thành',
             style: TextStyle(
-                color: textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
         SizedBox(height: 8),
         GestureDetector(
           onTap: () {
@@ -125,7 +125,7 @@ class _AddressControllerState extends State<AddressController> {
                         style: TextStyle(
                             color: selectedProvince == null
                                 ? Color(0xff9C9C9C)
-                                : textDark),
+                                : R.color.textDark),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
                   ),
@@ -169,7 +169,7 @@ class _AddressControllerState extends State<AddressController> {
                     children: [
                       Text('Quận/Huyện',
                           style: TextStyle(
-                              color: textDark,
+                              color: R.color.textDark,
                               fontSize: 16,
                               fontWeight: FontWeight.w600)),
                       SizedBox(height: 8),
@@ -193,7 +193,7 @@ class _AddressControllerState extends State<AddressController> {
                                     style: TextStyle(
                                         color: selectedDistrict == null
                                             ? Color(0xff9C9C9C)
-                                            : textDark),
+                                            : R.color.textDark),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis),
                               ),
@@ -243,7 +243,7 @@ class _AddressControllerState extends State<AddressController> {
                     children: [
                       Text('Phường/Xã',
                           style: TextStyle(
-                              color: textDark,
+                              color: R.color.textDark,
                               fontSize: 16,
                               fontWeight: FontWeight.w600)),
                       SizedBox(height: 8),
@@ -267,7 +267,7 @@ class _AddressControllerState extends State<AddressController> {
                                     style: TextStyle(
                                         color: selectedWard == null
                                             ? Color(0xff9C9C9C)
-                                            : textDark),
+                                            : R.color.textDark),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis),
                               ),
@@ -291,11 +291,11 @@ class _AddressControllerState extends State<AddressController> {
                   width: 119,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(200),
-                      color: grayBorder),
+                      color: R.color.grayBorder),
                   child: Center(
                     child: Text('Huỷ',
                         style: TextStyle(
-                            color: textDark,
+                            color: R.color.textDark,
                             fontSize: 16,
                             fontWeight: FontWeight.w600)),
                   )),
@@ -328,12 +328,12 @@ class _AddressControllerState extends State<AddressController> {
                 height: 48,
                 width: 119,
                 decoration: BoxDecoration(
-                    color: red,
+                    color: R.color.red,
                     borderRadius: BorderRadius.circular(200),
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.centerRight,
-                        colors: [greenGradientTop, greenGradientBottom])),
+                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                 child: Center(
                   child: Text('Lưu',
                       style: TextStyle(

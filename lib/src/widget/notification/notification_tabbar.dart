@@ -62,21 +62,21 @@ class _NotificationTabbarControllerState
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: textDark)),
+                    color: R.color.textDark)),
             leadingIcon: IconButton(
                 splashColor: R.color.transparent,
                 highlightColor: R.color.transparent,
-                icon: Icon(Icons.arrow_back, color: textDark),
+                icon: Icon(Icons.arrow_back, color: R.color.textDark),
                 onPressed: () {
                   Navigator.pop(context);
                 }),
           ),
           TabBar(
               isScrollable: true,
-              labelColor: mainColor,
+              labelColor: R.color.mainColor,
               labelStyle: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w600, color: mainColor),
-              unselectedLabelColor: captionColorGray,
+                  fontSize: 14, fontWeight: FontWeight.w600, color: R.color.mainColor),
+              unselectedLabelColor: R.color.captionColorGray,
               unselectedLabelStyle:
                   TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
               labelPadding: EdgeInsets.all(0),
@@ -86,7 +86,7 @@ class _NotificationTabbarControllerState
                 SizedBox(width: width / 3, child: Tab(text: 'Đã đọc')),
               ],
               controller: _tabController,
-              indicatorColor: mainColor,
+              indicatorColor: R.color.mainColor,
               indicatorWeight: 3),
           Expanded(
               child: TabBarView(controller: _tabController, children: [

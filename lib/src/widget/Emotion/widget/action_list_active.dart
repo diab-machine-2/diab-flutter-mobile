@@ -98,11 +98,11 @@ class ActionListActiveState extends State<ActionListActive> {
                                     decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(200),
-                                        color: grayBorder),
+                                        color: R.color.grayBorder),
                                     child: Center(
                                       child: Text('Huỷ',
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     )),
@@ -120,8 +120,8 @@ class ActionListActiveState extends State<ActionListActive> {
                                         begin: Alignment.topLeft,
                                         end: Alignment.centerRight,
                                         colors: [
-                                          greenGradientTop,
-                                          greenGradientBottom
+                                          R.color.greenGradientTop,
+                                          R.color.greenGradientBottom
                                         ]),
                                     borderRadius: BorderRadius.circular(200),
                                   ),
@@ -158,7 +158,7 @@ class ActionListActiveState extends State<ActionListActive> {
               });
             },
             child: Container(
-              color: selected == model ? greenbg : R.color.white,
+              color: selected == model ? R.color.greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(
@@ -178,7 +178,7 @@ class ActionListActiveState extends State<ActionListActive> {
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: mainColor)),
+                                      color: R.color.mainColor)),
                           selected == model
                               ? Image.asset('assets/images/check_mark.png',
                                   width: 24, height: 24)
@@ -195,7 +195,7 @@ class ActionListActiveState extends State<ActionListActive> {
                               height: 1,
                               width: 373,
                               color: selected == model
-                                  ? greenbg
+                                  ? R.color.greenbg
                                   : Color(0xffD6D8E0)),
                         )
                       : SizedBox(),

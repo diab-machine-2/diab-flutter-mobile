@@ -97,7 +97,7 @@ class _SearchExercrisesControllerState
               FocusScope.of(context).unfocus();
             },
             child: Scaffold(
-              backgroundColor: backgroundColor,
+              backgroundColor: R.color.backgroundColor,
               body: Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
@@ -115,11 +115,11 @@ class _SearchExercrisesControllerState
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: textDark)),
+                              color: R.color.textDark)),
                       leadingIcon: IconButton(
                           splashColor: R.color.transparent,
                           highlightColor: R.color.transparent,
-                          icon: Icon(Icons.arrow_back, color: textDark),
+                          icon: Icon(Icons.arrow_back, color: R.color.textDark),
                           onPressed: () {
                             Navigator.pop(context);
 
@@ -160,7 +160,7 @@ class _SearchExercrisesControllerState
                             decoration: BoxDecoration(
                                 color: R.color.white,
                                 borderRadius: BorderRadius.circular(30),
-                                border: Border.all(color: grayComponentBorder)),
+                                border: Border.all(color: R.color.grayComponentBorder)),
                             child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -175,11 +175,11 @@ class _SearchExercrisesControllerState
                                               contentPadding:
                                                   EdgeInsets.only(top: -20),
                                               hintText: 'Tìm kiếm hoạt động',
-                                              fillColor: textDark),
+                                              fillColor: R.color.textDark),
                                         )),
                                   ),
                                   Image.asset('assets/images/search.png',
-                                      width: 24, height: 24, color: mainColor),
+                                      width: 24, height: 24, color: R.color.mainColor),
                                 ])),
                         model == null
                             ? Center(child: CircularProgressIndicator())
@@ -221,7 +221,7 @@ class _SearchExercrisesControllerState
                                     children: [
                                       Text(formatNumber(sumCalories.toDouble()),
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 20,
                                               fontWeight: FontWeight.w700)),
                                       Padding(
@@ -230,7 +230,7 @@ class _SearchExercrisesControllerState
                                         child: Text(
                                           'kcal',
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontWeight: FontWeight.w400,
                                               fontSize: 14.0),
                                         ),
@@ -255,15 +255,15 @@ class _SearchExercrisesControllerState
                                         height: 48,
                                         width: 195,
                                         decoration: BoxDecoration(
-                                            color: mainColor,
+                                            color: R.color.mainColor,
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             gradient: LinearGradient(
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.centerRight,
                                                 colors: [
-                                                  greenGradientTop,
-                                                  greenGradientBottom
+                                                  R.color.greenGradientTop,
+                                                  R.color.greenGradientBottom
                                                 ])),
                                         child: Center(
                                             child: Text('Lưu',
@@ -295,7 +295,7 @@ class _SearchExercrisesControllerState
                                                             BorderRadius
                                                                 .circular(200),
                                                         border: Border.all(
-                                                            color: red,
+                                                            color: R.color.red,
                                                             width: 2)),
                                                     child: Center(
                                                       child: Text('Xoá dữ liệu',
@@ -318,7 +318,7 @@ class _SearchExercrisesControllerState
                                                   height: 48,
                                                   width: 164,
                                                   decoration: BoxDecoration(
-                                                      color: mainColor,
+                                                      color: R.color.mainColor,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               200),
@@ -328,8 +328,8 @@ class _SearchExercrisesControllerState
                                                           end: Alignment
                                                               .centerRight,
                                                           colors: [
-                                                            greenGradientTop,
-                                                            greenGradientBottom
+                                                            R.color.greenGradientTop,
+                                                            R.color.greenGradientBottom
                                                           ])),
                                                   child: Center(
                                                     child: Text('Lưu',
@@ -447,7 +447,7 @@ class _SearchExercrisesControllerState
                                   children: [
                                     Text(model[index].category,
                                         style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 15,
                                             fontWeight: FontWeight.w600)),
                                     SizedBox(
@@ -472,7 +472,7 @@ class _SearchExercrisesControllerState
                                                               .duration
                                                               .toString(),
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w400)),
@@ -483,7 +483,7 @@ class _SearchExercrisesControllerState
                                                   ? SizedBox()
                                                   : Text('phút,',
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 14,
                                                           fontWeight:
                                                               FontWeight.w400)),
@@ -497,7 +497,7 @@ class _SearchExercrisesControllerState
                                                           selectedModel
                                                               .burnedCalorie),
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w400)),
@@ -510,7 +510,7 @@ class _SearchExercrisesControllerState
                                                       : selectedModel.unit
                                                           .toString(),
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w400)),

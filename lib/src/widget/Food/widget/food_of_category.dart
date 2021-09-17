@@ -151,8 +151,8 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
                                         child: Text('Tiếp tục',

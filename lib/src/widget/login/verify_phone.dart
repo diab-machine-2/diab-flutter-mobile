@@ -137,7 +137,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                   selectedFillColor: R.color.white,
                                   activeColor:
                                       error ? R.color.red : Color(0xff7EC8C3),
-                                  selectedColor: mainColor,
+                                  selectedColor: R.color.mainColor,
                                   disabledColor:
                                       error ? R.color.red : Color(0xff7EC8C3),
                                   inactiveColor:
@@ -200,8 +200,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                           begin: Alignment.topLeft,
                                           end: Alignment.centerRight,
                                           colors: [
-                                            greenGradientTop,
-                                            greenGradientBottom
+                                            R.color.greenGradientTop,
+                                            R.color.greenGradientBottom
                                           ])),
                                   child: Center(
                                       child: Text(
@@ -241,13 +241,13 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(200),
                                       border: Border.all(
-                                          color: mainColor, width: 1)),
+                                          color: R.color.mainColor, width: 1)),
                                   child: Center(
                                       child: Text('Thay đổi số điện thoại',
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
-                                              color: mainColor))),
+                                              color: R.color.mainColor))),
                                 ),
                               ),
                               SizedBox(
@@ -288,7 +288,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                     alignment: Alignment.topLeft,
                     child: Text(
                       "Xác nhận số điện thoại",
-                      style: TextStyle(fontSize: 20, color: textDark),
+                      style: TextStyle(fontSize: 20, color: R.color.textDark),
                     ),
                   ),
                   backgroundColor: R.color.transparent, //No more green

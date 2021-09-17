@@ -107,11 +107,11 @@ class _InputDetailExercrisesControllerState
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark)),
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
                     splashColor: R.color.transparent,
                     highlightColor: R.color.transparent,
-                    icon: Icon(Icons.arrow_back, color: textDark),
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -144,7 +144,7 @@ class _InputDetailExercrisesControllerState
                                   children: [
                                     Text(formatNumber(calorisesNumber),
                                         style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 24,
                                             fontWeight: FontWeight.w700)),
                                     Padding(
@@ -153,7 +153,7 @@ class _InputDetailExercrisesControllerState
                                       child: Text(
                                         'kcal',
                                         style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontWeight: FontWeight.w400,
                                             fontSize: 16.0),
                                       ),
@@ -359,7 +359,7 @@ class _InputDetailExercrisesControllerState
                                                   child: Text(
                                                       selectedHour.toString(),
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 30,
                                                           fontWeight:
                                                               FontWeight.w500)),
@@ -390,7 +390,7 @@ class _InputDetailExercrisesControllerState
                                                   child: Text(
                                                       selectedMinute.toString(),
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 30,
                                                           fontWeight:
                                                               FontWeight.w500)),
@@ -425,7 +425,7 @@ class _InputDetailExercrisesControllerState
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     fontSize: 14,
-                                                    color: red,
+                                                    color: R.color.red,
                                                     fontWeight:
                                                         FontWeight.w400)),
                                           ],
@@ -446,12 +446,12 @@ class _InputDetailExercrisesControllerState
                     height: 48,
                     width: 195,
                     decoration: BoxDecoration(
-                        color: mainColor,
+                        color: R.color.mainColor,
                         borderRadius: BorderRadius.circular(200),
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [greenGradientTop, greenGradientBottom])),
+                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                     child: Center(
                         child: Text('Lưu',
                             style: TextStyle(
@@ -557,7 +557,7 @@ class _InputDetailExercrisesControllerState
                                       .toString() +
                                   ' phút',
                               style: TextStyle(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600)),
                           Image.asset('assets/images/bg_congrat.png'),
@@ -740,11 +740,11 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                 width: 150,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -767,8 +767,8 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.centerRight,
                                     colors: [
-                                      greenGradientTop,
-                                      greenGradientBottom
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
                                     ]),
                                 borderRadius: BorderRadius.circular(200),
                               ),

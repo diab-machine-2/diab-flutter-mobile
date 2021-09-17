@@ -237,7 +237,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                               'Chú thích',
                                               style: TextStyle(
                                                   fontSize: 14,
-                                                  color: textDark),
+                                                  color: R.color.textDark),
                                             ),
                                           ),
                                           Column(

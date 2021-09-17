@@ -151,7 +151,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                       SizedBox(height: 8),
                                       Text('Thấp nhất',
                                           style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 15,
                                           )),
                                     ],
@@ -205,7 +205,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                     SizedBox(height: 8),
                                     Text('Trung bình',
                                         style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 15,
                                           // fontWeight: FontWeight.w700
                                         )),
@@ -267,7 +267,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                       SizedBox(height: 8),
                                       Text('Cao nhất',
                                           style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 15,
                                             // fontWeight: FontWeight.w700
                                           )),
@@ -342,7 +342,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         SizedBox(height: 8),
                                         Text('Thấp nhất',
                                             style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 15,
                                             )),
                                       ],
@@ -394,7 +394,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                       SizedBox(height: 8),
                                       Text('Trung bình',
                                           style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 15,
                                             // fontWeight: FontWeight.w700
                                           )),
@@ -453,7 +453,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                       SizedBox(height: 8),
                                       Text('Cao nhất',
                                           style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 15,
                                             // fontWeight: FontWeight.w700
                                           )),
@@ -472,7 +472,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                             children: [
                               Text('Gần nhất',
                                   style: TextStyle(
-                                      color: textDark,
+                                      color: R.color.textDark,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                               SizedBox(
@@ -482,7 +482,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                 children: [
                                   Text('Nhập vào ',
                                       style: TextStyle(
-                                        color: grayCaption,
+                                        color: R.color.grayCaption,
                                         fontSize: 12,
                                       )),
                                   Text(
@@ -491,7 +491,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                           : convertToUTC(
                                               modelLastest.date, 'dd/MM/yyyy'),
                                       style: TextStyle(
-                                        color: grayCaption,
+                                        color: R.color.grayCaption,
                                         fontSize: 12,
                                       )),
                                 ],
@@ -532,7 +532,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                             children: [
                               Text('Huyết áp',
                                   style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 18,
                                   )),
                               SizedBox(height: 4),
@@ -563,7 +563,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                     padding: const EdgeInsets.only(top: 12.0),
                                     child: Text('mmHg',
                                         style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 18,
                                         )),
                                   ),
@@ -576,7 +576,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                             children: [
                               Text('Nhịp tim',
                                   style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 16,
                                   )),
                               SizedBox(height: 4),
@@ -592,7 +592,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                   .toString(),
                                       style: TextStyle(
                                           fontFamily: 'Viga',
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 32,
                                           fontWeight: FontWeight.w400)),
                                   SizedBox(
@@ -602,7 +602,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                     padding: const EdgeInsets.only(top: 14.0),
                                     child: Text('lần/phút',
                                         style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                         )),
                                   ),

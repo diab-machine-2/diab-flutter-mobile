@@ -94,7 +94,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.centerRight,
-                        colors: [greenGradientTop, greenGradientBottom]),
+                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                     borderRadius: BorderRadius.circular(200)),
                 child: Center(
                   child: Text('Lưu',
@@ -120,7 +120,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
               });
             },
             child: Container(
-              color: selectedIndex == index ? greenbg : R.color.white,
+              color: selectedIndex == index ? R.color.greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(
@@ -140,7 +140,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: mainColor)),
+                                      color: R.color.mainColor)),
                           selectedIndex == index
                               ? Image.asset('assets/images/check_mark.png',
                                   width: 24, height: 24)
@@ -155,7 +155,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
                           height: 1,
                           width: 373,
                           color: selectedIndex == index
-                              ? greenbg
+                              ? R.color.greenbg
                               : Color(0xffD6D8E0))
                       : SizedBox(),
                 ],

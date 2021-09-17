@@ -124,7 +124,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           return false;
         },
         child: Scaffold(
-          backgroundColor: backgroundColor,
+          backgroundColor: R.color.backgroundColor,
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
@@ -141,11 +141,11 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
                       splashColor: R.color.transparent,
                       highlightColor: R.color.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
                       }),
@@ -209,7 +209,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                 children: [
                                   Text('Lượng calo bạn đã tiêu hao:',
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400)),
                                   SizedBox(height: 6),
@@ -217,7 +217,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                     children: [
                                       Text(formatNumber(sumCalories.toDouble()),
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 24,
                                               fontWeight: FontWeight.w700)),
                                       Padding(
@@ -226,7 +226,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                         child: Text(
                                           'kcal',
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontWeight: FontWeight.w400,
                                               fontSize: 16.0),
                                         ),
@@ -387,7 +387,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                   SizedBox(width: 4),
                                                   Text('Thêm hoạt động',
                                                       style: TextStyle(
-                                                          color: mainColor,
+                                                          color: R.color.mainColor,
                                                           fontSize: 14,
                                                           fontWeight:
                                                               FontWeight.w400)),
@@ -470,7 +470,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                         selectedCategory[index]
                                                             .category,
                                                         style: TextStyle(
-                                                            color: textDark,
+                                                            color: R.color.textDark,
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight
@@ -483,7 +483,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                         Text(
                                                             '${selectedCategory[index].duration.toInt().toString()} phút,',
                                                             style: TextStyle(
-                                                                color: textDark,
+                                                                color: R.color.textDark,
                                                                 fontSize: 16,
                                                                 fontWeight:
                                                                     FontWeight
@@ -494,7 +494,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                         Text(
                                                             '${formatNumber(selectedCategory[index].burnedCalorie)} ${selectedCategory[index].unit}',
                                                             style: TextStyle(
-                                                                color: textDark,
+                                                                color: R.color.textDark,
                                                                 fontSize: 16,
                                                                 fontWeight:
                                                                     FontWeight
@@ -591,7 +591,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                                 index]
                                                             .category,
                                                         style: TextStyle(
-                                                            color: textDark,
+                                                            color: R.color.textDark,
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight
@@ -604,7 +604,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                         Text(
                                                             '${exercriseRegularly[index].duration.toInt().toString()} phút,',
                                                             style: TextStyle(
-                                                                color: textDark,
+                                                                color: R.color.textDark,
                                                                 fontSize: 16,
                                                                 fontWeight:
                                                                     FontWeight
@@ -615,7 +615,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                         Text(
                                                             '${exercriseRegularly[index].burnedCalorie.round()} ${exercriseRegularly[index].unit}',
                                                             style: TextStyle(
-                                                                color: textDark,
+                                                                color: R.color.textDark,
                                                                 fontSize: 16,
                                                                 fontWeight:
                                                                     FontWeight
@@ -682,7 +682,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                 SizedBox(width: 4),
                                                 Text('Thêm hoạt động',
                                                     style: TextStyle(
-                                                        color: mainColor,
+                                                        color: R.color.mainColor,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -814,14 +814,14 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                               height: 48,
                               width: 195,
                               decoration: BoxDecoration(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                   child: Text('Lưu',
@@ -850,7 +850,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           border:
-                                              Border.all(color: red, width: 2)),
+                                              Border.all(color: R.color.red, width: 2)),
                                       child: Center(
                                         child: Text('Xoá dữ liệu',
                                             style: TextStyle(
@@ -867,15 +867,15 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                     height: 48,
                                     width: 164,
                                     decoration: BoxDecoration(
-                                        color: mainColor,
+                                        color: R.color.mainColor,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
                                       child: Text('Lưu',
@@ -965,7 +965,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                       .toString() +
                                   ' phút',
                               style: TextStyle(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600)),
                           Image.asset('assets/images/bg_congrat.png'),
@@ -1139,7 +1139,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                         child: Text('Bạn muốn xoá dữ liệu?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -1149,7 +1149,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                             'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1168,11 +1168,11 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
                                         child: Text('Quay lại',
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -1188,7 +1188,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color: red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
@@ -1259,7 +1259,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                         child: Text('Bạn muốn quay lại ?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -1269,7 +1269,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                             'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1287,11 +1287,11 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
                                         child: Text('Vẫn ở lại',
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -1306,15 +1306,15 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color: R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
                                       child: Text('Thoát',

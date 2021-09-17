@@ -48,7 +48,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
               alignment: Alignment.bottomCenter,
               startingAngleInRadian: 3.45,
               endingAngleInRadian: 6,
-              toggleButtonColor: mainColor,
+              toggleButtonColor: R.color.mainColor,
               titles: [
                 // Text('HbA1C', style: TextStyle(color: R.color.white)),
                 // Text('Huyết áp', style: TextStyle(color: R.color.white)),

@@ -88,7 +88,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: backgroundColor,
+        backgroundColor: R.color.backgroundColor,
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
@@ -105,11 +105,11 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark)),
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
                     splashColor: R.color.transparent,
                     highlightColor: R.color.transparent,
-                    icon: Icon(Icons.arrow_back, color: textDark),
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -152,7 +152,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                           child: Text(
                             'Bạn đã làm gì\ntrong ngày?',
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700),
                             textAlign: TextAlign.center,
@@ -163,7 +163,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                           child: Text(
                               'Nhấn \'Tiếp tục\' nếu bạn không có hoạt động nào',
                               style: TextStyle(
-                                  color: textDark,
+                                  color: R.color.textDark,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400)),
                         ),
@@ -213,12 +213,12 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       height: 48,
                       width: 195,
                       decoration: BoxDecoration(
-                          color: mainColor,
+                          color: R.color.mainColor,
                           borderRadius: BorderRadius.circular(200),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [greenGradientTop, greenGradientBottom])),
+                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
                           child: Text('Tiếp tục',
                               style: TextStyle(
@@ -323,7 +323,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('Nhập hoạt động khác',
                     style: TextStyle(
-                        color: textDark,
+                        color: R.color.textDark,
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 GestureDetector(
@@ -345,14 +345,14 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       maxLines: 5,
                       obscureText: false,
                       decoration: InputDecoration(
-                        fillColor: textDark,
+                        fillColor: R.color.textDark,
                         enabledBorder: OutlineInputBorder(
                           borderSide:
                               BorderSide(color: Color(0xffDDDDDD), width: 1.0),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: mainColor, width: 1.0),
+                          borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         contentPadding: EdgeInsets.all(16),
@@ -373,11 +373,11 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                               height: 48,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(200),
-                                  color: grayBorder),
+                                  color: R.color.grayBorder),
                               child: Center(
                                 child: Text('Huỷ',
                                     style: TextStyle(
-                                        color: textDark,
+                                        color: R.color.textDark,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               )),
@@ -397,14 +397,14 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                           child: Container(
                             height: 48,
                             decoration: BoxDecoration(
-                                color: red,
+                                color: R.color.red,
                                 borderRadius: BorderRadius.circular(200),
                                 gradient: LinearGradient(
                                     begin: Alignment.topLeft,
                                     end: Alignment.centerRight,
                                     colors: [
-                                      greenGradientTop,
-                                      greenGradientBottom
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
                                     ])),
                             child: Center(
                               child: Text('Lưu',

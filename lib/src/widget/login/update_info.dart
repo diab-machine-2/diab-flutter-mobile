@@ -102,7 +102,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                         : 'Chào mừng ${widget.type == 'google' ? widget.googleAccount.displayName.split(' ').last : widget.type == 'facebook' ? widget.userInfo['name'].split(' ').last : widget.appleAccount.givenName ?? 'Bạn'},\nHãy để DiaB thấu hiểu bạn hơn!',
                                     style: TextStyle(
                                         height: 1.5,
-                                        color: mainColor,
+                                        color: R.color.mainColor,
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -136,7 +136,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                               children: [
                                                 Text('Họ & tên',
                                                     style: TextStyle(
-                                                        color: textDark)),
+                                                        color: R.color.textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
                                                         color: R.color.red))
@@ -208,7 +208,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                               children: [
                                                 Text('Ngày sinh',
                                                     style: TextStyle(
-                                                        color: textDark)),
+                                                        color: R.color.textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
                                                         color: R.color.red))
@@ -244,7 +244,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                                 'dd/MM/yyyy')
                                                             : 'Chọn ngày sinh',
                                                         style: TextStyle(
-                                                            color: textDark,
+                                                            color: R.color.textDark,
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight
@@ -268,7 +268,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                               children: [
                                                 Text('Giới tính',
                                                     style: TextStyle(
-                                                        color: textDark)),
+                                                        color: R.color.textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
                                                         color: R.color.red))
@@ -301,14 +301,14 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                               ? 'Nam'
                                                               : 'Nữ',
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 16,
                                                           fontWeight:
                                                               FontWeight.w400)),
                                                   Icon(
                                                     Icons
                                                         .keyboard_arrow_down_rounded,
-                                                    color: mainColor,
+                                                    color: R.color.mainColor,
                                                     size: 24,
                                                   ),
                                                 ]),
@@ -326,7 +326,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                 Text(
                                                     'Tình trạng bệnh tiểu đường',
                                                     style: TextStyle(
-                                                        color: textDark)),
+                                                        color: R.color.textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
                                                         color: R.color.red))
@@ -358,14 +358,14 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                           : diabetesStatus[
                                                               'value'],
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 16,
                                                           fontWeight:
                                                               FontWeight.w400)),
                                                   Icon(
                                                     Icons
                                                         .keyboard_arrow_down_rounded,
-                                                    color: mainColor,
+                                                    color: R.color.mainColor,
                                                     size: 24,
                                                   ),
                                                 ]),
@@ -382,7 +382,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                               children: [
                                                 Text('Năm phát hiện bệnh',
                                                     style: TextStyle(
-                                                        color: textDark)),
+                                                        color: R.color.textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
                                                         color: R.color.red))
@@ -417,14 +417,14 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                               'yyyy')
                                                           : 'Chọn năm',
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 16,
                                                           fontWeight:
                                                               FontWeight.w400)),
                                                   Icon(
                                                     Icons
                                                         .keyboard_arrow_down_rounded,
-                                                    color: mainColor,
+                                                    color: R.color.mainColor,
                                                     size: 24,
                                                   ),
                                                 ]),
@@ -449,8 +449,8 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ]),
                                         borderRadius:
                                             BorderRadius.circular(200)),
@@ -487,7 +487,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('Loại bệnh',
                     style: TextStyle(
-                        color: textDark,
+                        color: R.color.textDark,
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 GestureDetector(
@@ -520,11 +520,11 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                             width: 119,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(200),
-                                color: grayBorder),
+                                color: R.color.grayBorder),
                             child: Center(
                               child: Text('Huỷ',
                                   style: TextStyle(
-                                      color: textDark,
+                                      color: R.color.textDark,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                             )),
@@ -540,14 +540,14 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                           height: 48,
                           width: 119,
                           decoration: BoxDecoration(
-                              color: red,
+                              color: R.color.red,
                               borderRadius: BorderRadius.circular(200),
                               gradient: LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.centerRight,
                                   colors: [
-                                    greenGradientTop,
-                                    greenGradientBottom
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
                                   ])),
                           child: Center(
                             child: Text('Đồng ý',
@@ -587,7 +587,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('Giới tính',
                     style: TextStyle(
-                        color: textDark,
+                        color: R.color.textDark,
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 GestureDetector(
@@ -615,11 +615,11 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                             width: 119,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(200),
-                                color: grayBorder),
+                                color: R.color.grayBorder),
                             child: Center(
                               child: Text('Huỷ',
                                   style: TextStyle(
-                                      color: textDark,
+                                      color: R.color.textDark,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                             )),
@@ -636,14 +636,14 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                           height: 48,
                           width: 119,
                           decoration: BoxDecoration(
-                              color: red,
+                              color: R.color.red,
                               borderRadius: BorderRadius.circular(200),
                               gradient: LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.centerRight,
                                   colors: [
-                                    greenGradientTop,
-                                    greenGradientBottom
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
                                   ])),
                           child: Center(
                             child: Text('Đồng ý',

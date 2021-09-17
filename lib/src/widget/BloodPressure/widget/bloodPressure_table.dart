@@ -75,7 +75,7 @@ class _BloodPressureTableControllerState
                         leadingIcon: IconButton(
                             splashColor: R.color.transparent,
                             highlightColor: R.color.transparent,
-                            icon: Icon(Icons.close, color: textDark),
+                            icon: Icon(Icons.close, color: R.color.textDark),
                             onPressed: () {
                               Navigator.pop(context);
                             }),
@@ -89,7 +89,7 @@ class _BloodPressureTableControllerState
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
-                                color: textDark)),
+                                color: R.color.textDark)),
                       ),
                       Container(
                         color: Color(0xffB1DDDB),

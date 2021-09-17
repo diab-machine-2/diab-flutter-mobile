@@ -189,19 +189,19 @@ chooseColor(status) {
   switch (status) {
     case 'high':
       {
-        return red;
+        return R.color.red;
       }
       break;
 
     case 'low':
       {
-        return green;
+        return R.color.green;
       }
       break;
 
     default:
       {
-        return statusAverage;
+        return R.color.statusAverage;
       }
       break;
   }

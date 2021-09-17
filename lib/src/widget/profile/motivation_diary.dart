@@ -85,11 +85,11 @@ class _MotivationControllerState extends State<MotivationController> {
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
                       splashColor: R.color.transparent,
                       highlightColor: R.color.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -129,7 +129,7 @@ class _MotivationControllerState extends State<MotivationController> {
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w400,
-                                                      color: textDark)),
+                                                      color: R.color.textDark)),
                                               SizedBox(height: 12),
                                               Text(
                                                   convertToUTC(

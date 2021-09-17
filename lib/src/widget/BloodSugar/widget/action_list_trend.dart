@@ -115,7 +115,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [greenGradientTop, greenGradientBottom]),
+                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                         borderRadius: BorderRadius.circular(200)),
                     child: Center(
                       child: Text('Lưu',
@@ -144,7 +144,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
             },
             child: Container(
               color: (selected != null && selected.id == model.id)
-                  ? greenbg
+                  ? R.color.greenbg
                   : R.color.white,
               child: Column(
                 children: [
@@ -161,7 +161,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400,
-                                      color: mainColor))
+                                      color: R.color.mainColor))
                               : Text(model.name,
                                   style: TextStyle(
                                       fontSize: 16,
@@ -181,7 +181,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
                           height: 1,
                           width: 373,
                           color: (selected != null && selected.id == model.id)
-                              ? greenbg
+                              ? R.color.greenbg
                               : Color(0xffD6D8E0))
                       : SizedBox(),
                 ],

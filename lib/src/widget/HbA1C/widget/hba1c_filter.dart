@@ -89,7 +89,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.centerRight,
-                        colors: [greenGradientTop, greenGradientBottom]),
+                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                     borderRadius: BorderRadius.circular(200)),
                 child: Center(
                   child: Text('Lưu',
@@ -115,7 +115,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
               });
             },
             child: Container(
-              color: selectedIndex == index ? greenbg : R.color.white,
+              color: selectedIndex == index ? R.color.greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(
@@ -135,7 +135,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: mainColor)),
+                                      color: R.color.mainColor)),
                           selectedIndex == index
                               ? Image.asset('assets/images/check_mark.png',
                                   width: 24, height: 24)
@@ -150,7 +150,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
                           height: 1,
                           width: 373,
                           color: selectedIndex == index
-                              ? greenbg
+                              ? R.color.greenbg
                               : Color(0xffD6D8E0))
                       : SizedBox(),
                 ],

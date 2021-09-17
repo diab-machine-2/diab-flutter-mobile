@@ -59,7 +59,7 @@ class _AddressListControllerState extends State<AddressListController> {
                 children: [
                   Text('Địa chỉ',
                       style: TextStyle(
-                          color: textDark,
+                          color: R.color.textDark,
                           fontSize: 16,
                           fontWeight: FontWeight.w600)),
                   GestureDetector(

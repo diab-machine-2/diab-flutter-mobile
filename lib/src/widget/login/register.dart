@@ -99,15 +99,15 @@ class _RegisterControllerState extends State<RegisterController> {
                                       height: 48,
                                       width: 195,
                                       decoration: BoxDecoration(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           gradient: LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.centerRight,
                                               colors: [
-                                                greenGradientTop,
-                                                greenGradientBottom
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
                                               ])),
                                       child: Center(
                                         child: Text('Tiếp tục',
@@ -129,7 +129,7 @@ class _RegisterControllerState extends State<RegisterController> {
                         children: [
                           Text('Hoặc đăng nhập bằng',
                               style: TextStyle(
-                                  color: textDark,
+                                  color: R.color.textDark,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400)),
                           SizedBox(height: 16),
@@ -257,7 +257,7 @@ class _RegisterControllerState extends State<RegisterController> {
                     child: Text(
                       "Tạo tài khoản",
                       style: TextStyle(
-                          color: textDark,
+                          color: R.color.textDark,
                           fontSize: 24,
                           fontWeight: FontWeight.w600),
                     ),

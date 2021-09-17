@@ -234,7 +234,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
             children: [
               Text(
                 'Chú thích:',
-                style: TextStyle(fontSize: 14, color: textDark),
+                style: TextStyle(fontSize: 14, color: R.color.textDark),
               ),
               SizedBox(height: 8),
               Row(
@@ -269,7 +269,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                     ),
                                     Text(model.emotions[index].text,
                                         style: TextStyle(
-                                            fontSize: 14, color: textDark))
+                                            fontSize: 14, color: R.color.textDark))
                                   ],
                                 ),
                               ),

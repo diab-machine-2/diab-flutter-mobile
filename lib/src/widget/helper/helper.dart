@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 String convertToUTC(int timeStamp, String fotmat) {
@@ -80,12 +81,12 @@ String toWeek(int timeStamp) {
 
 Color toColor(String hex) {
   if (hex == null) {
-    return mainColor;
+    return R.color.mainColor;
   } else {
     if (hex.length == 7) {
       return Color(int.parse('0xff${hex.split('#').join()}'));
     } else {
-      return mainColor;
+      return R.color.mainColor;
     }
   }
 }

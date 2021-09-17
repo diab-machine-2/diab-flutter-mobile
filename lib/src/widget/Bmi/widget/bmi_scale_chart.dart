@@ -272,7 +272,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             lengthUnit: GaugeSizeUnit.factor,
                             needleEndWidth: 5,
                             needleLength: 0.65,
-                            needleColor: mainColor,
+                            needleColor: R.color.mainColor,
                             value: bmiNumber,
                             knobStyle: KnobStyle(knobRadius: 0),
                           ),
@@ -280,7 +280,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             needleStartWidth: 0,
                             needleEndWidth: 0,
                             knobStyle:
-                                KnobStyle(knobRadius: 0.0275, color: mainColor),
+                                KnobStyle(knobRadius: 0.0275, color: R.color.mainColor),
                           ),
                           NeedlePointer(
                             needleStartWidth: 0,

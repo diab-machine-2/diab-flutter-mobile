@@ -232,7 +232,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                               Text(
                                                   'Bình quân trong nhóm tuổi của tôi: ',
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 14.0)),
@@ -264,7 +264,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                           Expanded(
                                             child: Text(model.description,
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14.0)),
                                           ),
@@ -306,7 +306,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                   begin: Alignment(0, 0.5),
                   end: Alignment(0, 0.5),
                   colors: partientIndex == index
-                      ? [mainColor, mainColor]
+                      ? [R.color.mainColor, R.color.mainColor]
                       : index == avarageIndex
                           ? [Color(0xff72CB9C), Color(0xff72CB9C)]
                           : [
@@ -320,7 +320,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
             height: 8,
             decoration: BoxDecoration(
               color: partientIndex == index
-                  ? mainColor
+                  ? R.color.mainColor
                   : index == avarageIndex
                       ? Color(0xff72CB9C)
                       : R.color.transparent,

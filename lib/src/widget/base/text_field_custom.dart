@@ -52,7 +52,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           Row(
             children: [
               Text(widget.title,
-                  style: TextStyle(color: textDark, fontSize: 16)),
+                  style: TextStyle(color: R.color.textDark, fontSize: 16)),
               widget.showStar
                   ? Text(" *", style: TextStyle(color: R.color.red))
                   : SizedBox()
@@ -79,7 +79,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                       : 'assets/images/icon_phone.png',
                   width: 20,
                   height: 20,
-                  color: mainColor),
+                  color: R.color.mainColor),
               SizedBox(width: 16),
               Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -97,17 +97,17 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                   obscureText: !showPassword,
                                   style: TextStyle(
                                       fontFamily: 'Viga',
-                                      color: textDark,
+                                      color: R.color.textDark,
                                       fontSize: 18,
                                       fontWeight: FontWeight.w500),
                                   decoration: InputDecoration(
-                                      fillColor: textDark,
+                                      fillColor: R.color.textDark,
                                       border: InputBorder.none,
                                       contentPadding: EdgeInsets.only(top: -22),
                                       hintText: widget.placeholder,
                                       hintStyle: TextStyle(
                                           fontFamily: 'roboto',
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 15,
                                           fontWeight: FontWeight.w300)),
                                   onChanged: (value) {
@@ -132,12 +132,12 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                 Text('+84',
                                     style: TextStyle(
                                         fontFamily: 'Viga',
-                                        color: textDark,
+                                        color: R.color.textDark,
                                         fontSize: 18,
                                         fontWeight: FontWeight.w500)),
                                 SizedBox(width: 8),
                                 Container(
-                                    height: 20, width: 1, color: textDark),
+                                    height: 20, width: 1, color: R.color.textDark),
                                 SizedBox(width: 8),
                                 Container(
                                   height: 25,
@@ -149,7 +149,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                         autofocus: widget.autoFocus,
                                         style: TextStyle(
                                             fontFamily: 'Viga',
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 18,
                                             fontWeight: FontWeight.w500),
                                         decoration: InputDecoration(
@@ -159,10 +159,10 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                             hintText: widget.placeholder,
                                             hintStyle: TextStyle(
                                                 fontFamily: 'roboto',
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w300),
-                                            fillColor: textDark),
+                                            fillColor: R.color.textDark),
                                         onChanged: (value) {
                                           String pattern =
                                               r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';

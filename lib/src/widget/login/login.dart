@@ -58,7 +58,7 @@ class _LoginControllerState extends State<LoginController> {
                           Text(
                             'Đăng nhập',
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 28,
                                 fontWeight: FontWeight.w600),
                           ),
@@ -90,14 +90,14 @@ class _LoginControllerState extends State<LoginController> {
                               height: 48,
                               width: 195,
                               decoration: BoxDecoration(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
                                 child: Text('Đăng nhập',
@@ -118,7 +118,7 @@ class _LoginControllerState extends State<LoginController> {
                               child: Center(
                                 child: Text('Quên mật khẩu?',
                                     style: TextStyle(
-                                        color: mainColor,
+                                        color: R.color.mainColor,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               )),
@@ -127,7 +127,7 @@ class _LoginControllerState extends State<LoginController> {
                       Column(children: [
                         Text('Hoặc đăng nhập bằng',
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400)),
                         SizedBox(height: 16),
@@ -228,11 +228,11 @@ class _LoginControllerState extends State<LoginController> {
                                   borderRadius: BorderRadius.circular(200),
                                   color: R.color.white,
                                   border:
-                                      Border.all(color: mainColor, width: 1)),
+                                      Border.all(color: R.color.mainColor, width: 1)),
                               child: Center(
                                 child: Text('Tạo tài khoản mới',
                                     style: TextStyle(
-                                        color: mainColor,
+                                        color: R.color.mainColor,
                                         fontWeight: FontWeight.w600)),
                               )),
                         ),

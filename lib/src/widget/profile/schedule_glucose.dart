@@ -230,7 +230,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                                     SizedBox(width: 8),
                                                     Text('Thiết lập',
                                                         style: TextStyle(
-                                                            color: mainColor,
+                                                            color: R.color.mainColor,
                                                             fontSize: 14,
                                                             fontWeight:
                                                                 FontWeight
@@ -275,7 +275,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                           color: selected == index
                                               ? (!hasData[index]
                                                   ? R.color.black
-                                                  : mainColor)
+                                                  : R.color.mainColor)
                                               : (!hasData[index]
                                                   ? Color(0xffE2E4E7)
                                                   : Color(0xffE4F5F5))),
@@ -288,10 +288,10 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                               color: selected == index
                                                   ? (!hasData[index]
                                                       ? R.color.black
-                                                      : mainColor)
+                                                      : R.color.mainColor)
                                                   : (!hasData[index]
                                                       ? Color(0xff666666)
-                                                      : mainColor))))),
+                                                      : R.color.mainColor))))),
                             );
                           }),
                         )),
@@ -434,11 +434,11 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: textDark)),
+                      color: R.color.textDark)),
               leadingIcon: IconButton(
                   splashColor: R.color.transparent,
                   highlightColor: R.color.transparent,
-                  icon: Icon(Icons.arrow_back, color: textDark),
+                  icon: Icon(Icons.arrow_back, color: R.color.textDark),
                   onPressed: () {
                     _showDialogSave();
                   }),
@@ -454,12 +454,12 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                     height: 48,
                     width: 195,
                     decoration: BoxDecoration(
-                        color: mainColor,
+                        color: R.color.mainColor,
                         borderRadius: BorderRadius.circular(200),
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [greenGradientTop, greenGradientBottom])),
+                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                     child: Center(
                         child: Text('Lưu',
                             style: TextStyle(
@@ -622,7 +622,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
               SizedBox(width: 8),
               Text(title,
                   style: TextStyle(
-                      color: highlight ? mainColor : Color(0xffA1A3A6),
+                      color: highlight ? R.color.mainColor : Color(0xffA1A3A6),
                       fontSize: 16))
             ])),
       ),
@@ -653,7 +653,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                         child: Text('Bạn muốn quay lại ?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -663,7 +663,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                             'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -681,11 +681,11 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
                                         child: Text('Vẫn ở lại',
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -700,15 +700,15 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color: R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
                                       child: Text('Thoát',

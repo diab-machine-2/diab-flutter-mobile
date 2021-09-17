@@ -214,7 +214,7 @@ class BloodPressureDistributionChartState
                     top: 16.0, bottom: 4, left: 8, right: 8),
                 child: Text(
                   'Chú thích',
-                  style: TextStyle(fontSize: 14, color: textDark),
+                  style: TextStyle(fontSize: 14, color: R.color.textDark),
                 ),
               ),
               Padding(

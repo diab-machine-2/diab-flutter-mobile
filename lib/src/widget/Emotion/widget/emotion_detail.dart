@@ -114,7 +114,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
           return RefreshIndicator(
               onRefresh: _refresh,
               child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
@@ -322,7 +322,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                       ItemTagsCombine
                                                                           .withTextAfter,
                                                                   textActiveColor:
-                                                                      textDark,
+                                                                      R.color.textDark,
                                                                   textStyle:
                                                                       TextStyle(
                                                                           fontSize:
@@ -456,7 +456,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                       ItemTagsCombine
                                                                           .withTextAfter,
                                                                   textActiveColor:
-                                                                      textDark,
+                                                                      R.color.textDark,
                                                                   textStyle:
                                                                       TextStyle(
                                                                           fontSize:

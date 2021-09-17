@@ -33,7 +33,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                     SizedBox(height: 180),
                     Text('Đăng ký thành công!',
                         style: TextStyle(
-                            color: mainColor,
+                            color: R.color.mainColor,
                             fontSize: 20,
                             fontWeight: FontWeight.w600)),
                     SizedBox(height: 20),
@@ -63,12 +63,12 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                       width: 195,
                       margin: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                          color: mainColor,
+                          color: R.color.mainColor,
                           borderRadius: BorderRadius.circular(200),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [greenGradientTop, greenGradientBottom])),
+                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
                           child: Text('Cập nhật hồ sơ',
                               style: TextStyle(

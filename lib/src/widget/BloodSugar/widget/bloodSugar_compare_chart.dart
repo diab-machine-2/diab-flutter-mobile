@@ -89,7 +89,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                 decoration: BoxDecoration(
                                     color: R.color.white,
                                     borderRadius: BorderRadius.circular(200.0),
-                                    border: Border.all(color: grayBorder)),
+                                    border: Border.all(color: R.color.grayBorder)),
                                 child: GestureDetector(
                                   onTap: () {
                                     showActionCompareFilter(context);
@@ -316,7 +316,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                   arguments: {'model': model, 'title': name});
             },
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text('Xem chi tiết', style: TextStyle(color: mainColor)),
+              Text('Xem chi tiết', style: TextStyle(color: R.color.mainColor)),
               Image.asset('assets/images/icon_arrow_right.png',
                   width: 20, height: 20)
             ]),

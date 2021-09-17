@@ -91,11 +91,11 @@ class ActionListIntensityState extends State<ActionListIntensity> {
                                     decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(200),
-                                        color: grayBorder),
+                                        color: R.color.grayBorder),
                                     child: Center(
                                       child: Text('Huỷ',
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     )),
@@ -113,8 +113,8 @@ class ActionListIntensityState extends State<ActionListIntensity> {
                                         begin: Alignment.topLeft,
                                         end: Alignment.centerRight,
                                         colors: [
-                                          greenGradientTop,
-                                          greenGradientBottom
+                                          R.color.greenGradientTop,
+                                          R.color.greenGradientBottom
                                         ]),
                                     borderRadius: BorderRadius.circular(200),
                                   ),
@@ -151,7 +151,7 @@ class ActionListIntensityState extends State<ActionListIntensity> {
               });
             },
             child: Container(
-              color: selected.id == model.id ? greenbg : R.color.white,
+              color: selected.id == model.id ? R.color.greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(
@@ -171,7 +171,7 @@ class ActionListIntensityState extends State<ActionListIntensity> {
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: mainColor)),
+                                      color: R.color.mainColor)),
                           selected.id == model.id
                               ? Image.asset('assets/images/check_mark.png',
                                   width: 24, height: 24)
@@ -188,7 +188,7 @@ class ActionListIntensityState extends State<ActionListIntensity> {
                               height: 1,
                               width: 373,
                               color: selected.id == model.id
-                                  ? greenbg
+                                  ? R.color.greenbg
                                   : Color(0xffD6D8E0)),
                         )
                       : SizedBox(),

@@ -82,7 +82,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [greenGradientTop, greenGradientBottom])),
+                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                     child: Center(
                         child: Text('Lưu mật khẩu',
                             style: TextStyle(
@@ -109,7 +109,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
                   alignment: Alignment.topLeft,
                   child: Text(
                     'Tạo mật khẩu mới',
-                    style: TextStyle(fontSize: 20, color: textDark),
+                    style: TextStyle(fontSize: 20, color: R.color.textDark),
                   ),
                 ),
                 backgroundColor: R.color.transparent, //No more green

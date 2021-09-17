@@ -155,7 +155,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                               Text(
                                                 "/${exercriseSummaryModel.targetDuration.toInt().toString()} phút",
                                                 style: TextStyle(
-                                                    color: primaryGreyColor,
+                                                    color: R.color.primaryGreyColor,
                                                     fontWeight: FontWeight.w300,
                                                     fontSize: 14.0),
                                               ),
@@ -185,7 +185,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                     .toString(),
                                                 style: TextStyle(
                                                     fontFamily: 'Viga',
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 32.0),
                                               ),
@@ -198,7 +198,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                 child: Text(
                                                   '%',
                                                   style: TextStyle(
-                                                      color: primaryGreyColor,
+                                                      color: R.color.primaryGreyColor,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 16.0),
@@ -226,7 +226,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                     .toString(),
                                                 style: TextStyle(
                                                     fontFamily: 'Viga',
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 32.0),
                                               ),
@@ -239,7 +239,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                 child: Text(
                                                   'kcal',
                                                   style: TextStyle(
-                                                      color: primaryGreyColor,
+                                                      color: R.color.primaryGreyColor,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 16.0),
@@ -290,7 +290,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                   exercriseSummaryModel
                                                       .mainExerciseName,
                                                   style: TextStyle(
-                                                      color: primaryGreyColor,
+                                                      color: R.color.primaryGreyColor,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 14.0)),
@@ -307,7 +307,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                               .toInt()
                                                               .toString(),
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontWeight:
                                                               FontWeight.w700,
                                                           fontSize: 20.0)),
@@ -319,7 +319,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                     child: Text('phút',
                                                         style: TextStyle(
                                                             color:
-                                                                primaryGreyColor,
+                                                                R.color.primaryGreyColor,
                                                             fontWeight:
                                                                 FontWeight.w400,
                                                             fontSize: 14.0)),
@@ -365,7 +365,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                   exercriseSummaryModel
                                                       .otherExerciseName,
                                                   style: TextStyle(
-                                                      color: primaryGreyColor,
+                                                      color:  R.color.primaryGreyColor,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 14.0),
@@ -386,7 +386,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                                 .toInt()
                                                                 .toString(),
                                                         style: TextStyle(
-                                                            color: textDark,
+                                                            color: R.color.textDark,
                                                             fontWeight:
                                                                 FontWeight.w700,
                                                             fontSize: 20.0)),
@@ -398,7 +398,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                       child: Text('phút',
                                                           style: TextStyle(
                                                               color:
-                                                                  primaryGreyColor,
+                                                                   R.color.primaryGreyColor,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w400,
@@ -465,7 +465,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                 SizedBox(width: 4),
                                                 Text('Mục tiêu mới',
                                                     style: TextStyle(
-                                                        color: mainColor,
+                                                        color: R.color.mainColor,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w700)),
@@ -522,7 +522,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                                     fontFamily:
                                                                         'Viga',
                                                                     color:
-                                                                        textDark,
+                                                                        R.color.textDark,
                                                                     fontSize:
                                                                         24,
                                                                     fontWeight:
@@ -538,7 +538,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                                 "/ ${exercriseWalkSummaryModel.targetDuration.toInt().toString()} phút",
                                                                 style: TextStyle(
                                                                     color:
-                                                                        primaryGreyColor,
+                                                                         R.color.primaryGreyColor,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w400,
@@ -570,7 +570,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                                     fontFamily:
                                                                         'Viga',
                                                                     color:
-                                                                        textDark,
+                                                                        R.color.textDark,
                                                                     fontSize:
                                                                         24,
                                                                     fontWeight:
@@ -586,7 +586,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                                 'kcal',
                                                                 style: TextStyle(
                                                                     color:
-                                                                        primaryGreyColor,
+                                                                         R.color.primaryGreyColor,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w400,
@@ -629,7 +629,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                                       .targetDescription,
                                                                   style: TextStyle(
                                                                       color:
-                                                                          textDark,
+                                                                          R.color.textDark,
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w400,

@@ -106,7 +106,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
           return RefreshIndicator(
               onRefresh: _refresh,
               child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor:  R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
@@ -201,7 +201,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                     'BMI: ',
                                                                     style: TextStyle(
                                                                         color:
-                                                                            textDark,
+                                                                            R.color.textDark,
                                                                         fontSize:
                                                                             16,
                                                                         fontWeight:

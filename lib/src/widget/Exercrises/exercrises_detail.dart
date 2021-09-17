@@ -108,7 +108,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
           return RefreshIndicator(
               onRefresh: _refresh,
               child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
@@ -140,7 +140,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                     children: [
                                       Text(convertCustomDate(item.date),
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 20,
                                               fontWeight: FontWeight.w700)),
                                       SizedBox(height: 16),
@@ -193,7 +193,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                           .timeFrame,
                                                                   style: TextStyle(
                                                                       color:
-                                                                          textDark,
+                                                                          R.color.textDark,
                                                                       fontSize:
                                                                           16,
                                                                       fontWeight:
@@ -207,7 +207,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                           fontFamily:
                                                                               'Viga',
                                                                           color:
-                                                                              green,
+                                                                              R.color.green,
                                                                           fontSize:
                                                                               24,
                                                                           fontWeight:
@@ -311,15 +311,15 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                         children: [
                                                                           Text(
                                                                               itemInputExercrise.category,
-                                                                              style: TextStyle(color: textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                                                              style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
                                                                           Row(
                                                                             children: [
-                                                                              Text(formatNumber(itemInputExercrise.burnedCalorie), style: TextStyle(fontFamily: 'Viga', color: textDark, fontSize: 20, fontWeight: FontWeight.w400)),
+                                                                              Text(formatNumber(itemInputExercrise.burnedCalorie), style: TextStyle(fontFamily: 'Viga', color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w400)),
                                                                               Padding(
                                                                                 padding: EdgeInsets.only(top: 0, left: 4),
                                                                                 child: Text(
                                                                                   itemInputExercrise.unit,
-                                                                                  style: TextStyle(color: textDark, fontWeight: FontWeight.w400, fontSize: 16.0),
+                                                                                  style: TextStyle(color: R.color.textDark, fontWeight: FontWeight.w400, fontSize: 16.0),
                                                                                 ),
                                                                               ),
                                                                             ],
@@ -335,7 +335,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                         children: [
                                                                           Expanded(
                                                                             child:
-                                                                                Text(itemInputExercrise.name, style: TextStyle(color: primaryGreyColor, fontSize: 12, fontWeight: FontWeight.w400)),
+                                                                                Text(itemInputExercrise.name, style: TextStyle(color: R.color.primaryGreyColor, fontSize: 12, fontWeight: FontWeight.w400)),
                                                                           ),
                                                                           // SizedBox(
                                                                           //   width: 2,
@@ -343,7 +343,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                           Text(
                                                                             '${itemInputExercrise.duration.toInt().toString()} phút',
                                                                             style: TextStyle(
-                                                                                color: primaryGreyColor,
+                                                                                color: R.color.primaryGreyColor,
                                                                                 fontWeight: FontWeight.w400,
                                                                                 fontSize: 12.0),
                                                                           ),

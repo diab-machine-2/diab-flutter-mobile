@@ -127,7 +127,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                     SizedBox(width: 4),
                                     Text('Mục tiêu mới',
                                         style: TextStyle(
-                                            color: mainColor,
+                                            color: R.color.mainColor,
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700)),
                                   ],
@@ -157,7 +157,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                           children: [
                                             Text('Tổng cộng',
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14.0)),
                                             Row(
@@ -165,7 +165,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                                 Text(formatNumber(model.total),
                                                     style: TextStyle(
                                                         fontFamily: 'Viga',
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontSize: 24,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -176,7 +176,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                                   child: Text(
                                                     'kcal',
                                                     style: TextStyle(
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         fontSize: 14.0),
@@ -195,7 +195,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                           children: [
                                             Text(model.targetTitle ?? '',
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14.0)),
                                             Row(
@@ -206,7 +206,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                                         .toString(),
                                                     style: TextStyle(
                                                         fontFamily: 'Viga',
-                                                        color: green,
+                                                        color: R.color.green,
                                                         fontSize: 24,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -217,7 +217,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                                   child: Text(
                                                     model.targetUnit ?? '',
                                                     style: TextStyle(
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         fontSize: 14.0),
@@ -301,7 +301,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                                           .items[touchIndex]
                                                           .targetDescription,
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 14.0))
@@ -474,7 +474,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                         .toString() +
                                     ' kcal',
                                 TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontWeight: FontWeight.w400,
                                     fontSize: 12),
                               );
@@ -718,11 +718,11 @@ class _InputCaloState extends State<InputCalo> {
                                 width: 150,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -747,8 +747,8 @@ class _InputCaloState extends State<InputCalo> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.centerRight,
                                     colors: [
-                                      greenGradientTop,
-                                      greenGradientBottom
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
                                     ]),
                                 borderRadius: BorderRadius.circular(200),
                               ),

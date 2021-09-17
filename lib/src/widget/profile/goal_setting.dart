@@ -100,11 +100,11 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
                       splashColor: R.color.transparent,
                       highlightColor: R.color.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -134,7 +134,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                                         Row(children: [
                                           Text('$total/7',
                                               style: TextStyle(
-                                                  color: mainColor,
+                                                  color: R.color.mainColor,
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w700)),
                                           SizedBox(width: 4),
@@ -178,7 +178,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                                 subGridWidth: 8,
                                 titleTextColor: R.color.black,
                                 scaleColor: Color(0xffDDDDDD),
-                                indicatorColor: mainColor,
+                                indicatorColor: R.color.mainColor,
                                 onSelectedChanged: (value) {
                                   goalWaist = value.toDouble();
                                 },
@@ -196,14 +196,14 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                         height: 48,
                         width: 195,
                         decoration: BoxDecoration(
-                            color: mainColor,
+                            color: R.color.mainColor,
                             borderRadius: BorderRadius.circular(200),
                             gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.centerRight,
                                 colors: [
-                                  greenGradientTop,
-                                  greenGradientBottom
+                                  R.color.greenGradientTop,
+                                  R.color.greenGradientBottom
                                 ])),
                         child: Center(
                             child: Text('Lưu',

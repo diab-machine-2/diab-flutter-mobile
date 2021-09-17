@@ -128,7 +128,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                     SizedBox(width: 4),
                                     Text('Mục tiêu mới',
                                         style: TextStyle(
-                                            color: mainColor,
+                                            color: R.color.mainColor,
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700)),
                                   ],
@@ -159,7 +159,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                           children: [
                                             Text('Tổng cộng',
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14.0)),
                                             Row(
@@ -168,7 +168,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                     '${(model.total / 60).floor()}',
                                                     style: TextStyle(
                                                         fontFamily: 'Viga',
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontSize: 24,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -181,7 +181,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                   child: Text(
                                                     'giờ',
                                                     style: TextStyle(
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         fontSize: 14.0),
@@ -192,7 +192,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                     '${(model.total - ((model.total / 60).floor() * 60)).round()}',
                                                     style: TextStyle(
                                                         fontFamily: 'Viga',
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontSize: 24,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -203,7 +203,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                   child: Text(
                                                     'phút',
                                                     style: TextStyle(
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         fontSize: 14.0),
@@ -222,7 +222,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                           children: [
                                             Text(model.targetTitle ?? '',
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14.0)),
                                             Row(
@@ -233,7 +233,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                         .toString(),
                                                     style: TextStyle(
                                                         fontFamily: 'Viga',
-                                                        color: green,
+                                                        color: R.color.green,
                                                         fontSize: 24,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -244,7 +244,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                   child: Text(
                                                     model.targetUnit ?? '',
                                                     style: TextStyle(
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         fontSize: 14.0),
@@ -328,7 +328,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                           .items[touchIndex]
                                                           .targetDescription,
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 14.0)),
@@ -484,7 +484,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                           .toString() +
                                       'kcal',
                                   TextStyle(
-                                      color: textDark,
+                                      color: R.color.textDark,
                                       fontWeight: FontWeight.w400,
                                       fontSize: 14),
                                 );

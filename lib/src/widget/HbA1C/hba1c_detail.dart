@@ -97,7 +97,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
           return RefreshIndicator(
               onRefresh: refresh,
               child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
@@ -150,7 +150,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                         'dd/MM/yyyy'),
                                                     style: TextStyle(
                                                         fontFamily: 'Viga',
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontSize: 20,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -304,7 +304,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                           Text('Ghi chú: ',
                                                               style: TextStyle(
                                                                   color:
-                                                                      textDark,
+                                                                      R.color.textDark,
                                                                   fontSize: 16,
                                                                   fontWeight:
                                                                       FontWeight

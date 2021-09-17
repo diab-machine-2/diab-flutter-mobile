@@ -88,7 +88,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                               decoration: BoxDecoration(
                                   color: R.color.white,
                                   borderRadius: BorderRadius.circular(200.0),
-                                  border: Border.all(color: grayBorder)),
+                                  border: Border.all(color: R.color.grayBorder)),
                               child: GestureDetector(
                                 onTap: () {
                                   showActionTrendFilter(context);
@@ -166,7 +166,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                         children: [
                                           Text('Xem chi tiết',
                                               style:
-                                                  TextStyle(color: mainColor)),
+                                                  TextStyle(color: R.color.mainColor)),
                                           Image.asset(
                                               'assets/images/icon_arrow_right.png',
                                               width: 20,

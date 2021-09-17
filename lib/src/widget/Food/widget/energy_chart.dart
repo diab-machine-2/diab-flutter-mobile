@@ -162,7 +162,7 @@ class EnergyChartState extends State<EnergyChart>
                                     SizedBox(width: 4),
                                     Text('Mục tiêu mới',
                                         style: TextStyle(
-                                            color: mainColor,
+                                            color: R.color.mainColor,
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700)),
                                   ],
