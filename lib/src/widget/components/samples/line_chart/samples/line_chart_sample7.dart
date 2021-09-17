@@ -30,7 +30,7 @@ class LineChartSample7 extends StatelessWidget {
               isCurved: true,
               barWidth: 2,
               colors: [
-                Colors.green,
+                R.color.green,
               ],
               dotData: FlDotData(
                 show: false,
@@ -96,8 +96,8 @@ class LineChartSample7 extends StatelessWidget {
           titlesData: FlTitlesData(
             bottomTitles: SideTitles(
                 showTitles: true,
-                getTextStyles: (context, value) => const TextStyle(
-                    fontSize: 10, color: Colors.purple, fontWeight: FontWeight.bold),
+                getTextStyles: (context, value) => TextStyle(
+                    fontSize: 10, color: R.color.purple, fontWeight: FontWeight.bold),
                 getTitles: (value) {
                   switch (value.toInt()) {
                     case 0:

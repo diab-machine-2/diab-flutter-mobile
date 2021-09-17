@@ -63,8 +63,8 @@ class LineChartSample6 extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           gradient: LinearGradient(colors: [
-            Colors.yellowAccent,
-            Colors.yellowAccent.withOpacity(0.1),
+            R.color.yellowAccent,
+            R.color.yellowAccent.withOpacity(0.1),
           ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
         ),
         child: Padding(
@@ -78,8 +78,8 @@ class LineChartSample6 extends StatelessWidget {
                 lineBarsData: [
                   LineChartBarData(
                     colors: [
-                      Colors.deepOrangeAccent,
-                      Colors.orangeAccent,
+                      R.color.deepOrangeAccent,
+                      R.color.orangeAccent,
                     ],
                     spots: reverseSpots(spots, minSpotY, maxSpotY),
                     isCurved: true,
@@ -91,13 +91,13 @@ class LineChartSample6 extends StatelessWidget {
                     dotData: FlDotData(
                       show: true,
                       getDotPainter: (spot, percent, barData, index) =>
-                          FlDotCirclePainter(radius: 12, color: Colors.deepOrange.withOpacity(0.5)),
+                          FlDotCirclePainter(radius: 12, color: R.color.deepOrange.withOpacity(0.5)),
                     ),
                   ),
                   LineChartBarData(
                     colors: [
-                      Colors.lightBlueAccent,
-                      Colors.blue,
+                      R.color.lightBlueAccent,
+                      R.color.blue,
                     ],
                     spots: reverseSpots(spots2, minSpotY, maxSpotY),
                     isCurved: true,
@@ -109,7 +109,7 @@ class LineChartSample6 extends StatelessWidget {
                     dotData: FlDotData(
                       show: true,
                       getDotPainter: (spot, percent, barData, index) =>
-                          FlDotCirclePainter(radius: 12, color: Colors.blue.withOpacity(0.5)),
+                          FlDotCirclePainter(radius: 12, color: R.color.blue.withOpacity(0.5)),
                     ),
                   ),
                 ],
@@ -127,8 +127,8 @@ class LineChartSample6 extends StatelessWidget {
 
                       return intValue.toString();
                     },
-                    getTextStyles: (context, value) => const TextStyle(
-                        color: Colors.deepOrange, fontWeight: FontWeight.bold, fontSize: 18),
+                    getTextStyles: (context, value) => TextStyle(
+                        color: R.color.deepOrange, fontWeight: FontWeight.bold, fontSize: 18),
                     margin: 16,
                   ),
                   rightTitles: SideTitles(
@@ -143,8 +143,8 @@ class LineChartSample6 extends StatelessWidget {
 
                       return intValue.toString();
                     },
-                    getTextStyles: (context, value) => const TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 18),
+                    getTextStyles: (context, value) => TextStyle(
+                        color: R.color.blue, fontWeight: FontWeight.bold, fontSize: 18),
                     margin: 16,
                   ),
                   bottomTitles: SideTitles(showTitles: false),

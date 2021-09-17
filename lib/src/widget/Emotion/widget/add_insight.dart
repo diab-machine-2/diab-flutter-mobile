@@ -337,7 +337,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                               activeColor: R.color.white,
                                               textOverflow:
                                                   TextOverflow.visible,
-                                              splashColor: Colors.green,
+                                              splashColor: R.color.green,
                                               combine:
                                                   ItemTagsCombine.withTextAfter,
                                               textActiveColor: textDark,
@@ -487,7 +487,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                               activeColor: R.color.white,
                                               textOverflow:
                                                   TextOverflow.visible,
-                                              splashColor: Colors.green,
+                                              splashColor: R.color.green,
                                               combine:
                                                   ItemTagsCombine.withTextAfter,
                                               textActiveColor: textDark,

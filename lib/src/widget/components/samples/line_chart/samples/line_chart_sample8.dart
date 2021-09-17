@@ -156,15 +156,15 @@
 //         getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
 //           return spotIndexes.map((spotIndex) {
 //             return TouchedSpotIndicatorData(
-//               FlLine(color: Colors.orange, strokeWidth: 3),
+//               FlLine(color: R.color.orange, strokeWidth: 3),
 //               FlDotData(
 //                   getDotPainter: (spot, percent, barData, index) =>
-//                       FlDotCirclePainter(radius: 8, color: Colors.deepOrange)),
+//                       FlDotCirclePainter(radius: 8, color: R.color.deepOrange)),
 //             );
 //           }).toList();
 //         },
 //         touchTooltipData: LineTouchTooltipData(
-//           tooltipBgColor: Colors.blueAccent,
+//           tooltipBgColor: R.color.blueAccent,
 //         ),
 //       ),
 //       borderData:
@@ -197,7 +197,7 @@
 //           ),
 //           belowBarData: BarAreaData(
 //             show: false,
-//             colors: gradientColors.map((color) => color.withOpacity(0.5)).toList(),
+//             colors: gradientR.color.map((color) => color.withOpacity(0.5)).toList(),
 //           ),
 //         ),
 //       ],

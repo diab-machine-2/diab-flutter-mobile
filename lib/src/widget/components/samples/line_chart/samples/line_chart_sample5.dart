@@ -67,7 +67,7 @@ class LineChartSample5 extends StatelessWidget {
               return spotIndexes.map((index) {
                 return TouchedSpotIndicatorData(
                   FlLine(
-                    color: Colors.pink,
+                    color: R.color.pink,
                   ),
                   FlDotData(
                     show: true,
@@ -84,7 +84,7 @@ class LineChartSample5 extends StatelessWidget {
               }).toList();
             },
             touchTooltipData: LineTouchTooltipData(
-              tooltipBgColor: Colors.pink,
+              tooltipBgColor: R.color.pink,
               tooltipRoundedRadius: 8,
               getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
                 return lineBarsSpot.map((lineBarSpot) {
@@ -124,9 +124,9 @@ class LineChartSample5 extends StatelessWidget {
                   }
                   return '';
                 },
-                getTextStyles: (context, value) => const TextStyle(
+                getTextStyles: (context, value) => TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.blueGrey,
+                      color: R.color.blueGrey,
                       fontFamily: 'Digital',
                       fontSize: 18,
                     )),

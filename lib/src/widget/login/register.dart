@@ -38,7 +38,7 @@ class _RegisterControllerState extends State<RegisterController> {
       },
       child: Scaffold(
           resizeToAvoidBottomInset: false,
-          backgroundColor: Colors.lightBlue[100],
+          backgroundColor: R.color.lightBlue100,
           body: Stack(children: [
             Container(
               decoration: BoxDecoration(

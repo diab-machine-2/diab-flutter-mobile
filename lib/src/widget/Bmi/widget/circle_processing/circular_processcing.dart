@@ -34,7 +34,7 @@ class _CircularPageState extends State<CircularPage> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
               ),
               circularStrokeCap: CircularStrokeCap.round,
-              progressColor: Colors.purple,
+              progressColor: R.color.purple,
               widgetIndicator: RotatedBox(
                 quarterTurns: 1,
                 child: Icon(Icons.airplanemode_active, size: 30),
@@ -51,7 +51,7 @@ class _CircularPageState extends State<CircularPage> {
               linearGradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.orange, Colors.yellow],
+                colors: [R.color.orange, R.color.yellow],
               ),
             ),
             CircularPercentIndicator(
@@ -62,11 +62,11 @@ class _CircularPageState extends State<CircularPage> {
               center: Icon(
                 Icons.person_pin,
                 size: 50.0,
-                color: Colors.blue,
+                color: R.color.blue,
               ),
               reverse: true,
               backgroundColor: R.color.grey,
-              progressColor: Colors.blue,
+              progressColor: R.color.blue,
             ),
             Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
               CircularPercentIndicator(
@@ -75,7 +75,7 @@ class _CircularPageState extends State<CircularPage> {
                 animationDuration: 2000,
                 lineWidth: 10.0,
                 percent: 0.5,
-                arcBackgroundColor: Colors.orangeAccent,
+                arcBackgroundColor: R.color.orangeAccent,
                 arcType: ArcType.HALF,
                 center: Text(
                   "40 hours",
@@ -92,14 +92,14 @@ class _CircularPageState extends State<CircularPage> {
                 lineWidth: 10.0,
                 percent: 0.5,
                 reverse: true,
-                arcBackgroundColor: Colors.teal,
+                arcBackgroundColor: R.color.teal,
                 arcType: ArcType.FULL,
                 center: Text(
                   "20 hours",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
                 ),
                 circularStrokeCap: CircularStrokeCap.butt,
-                backgroundColor: Colors.yellow,
+                backgroundColor: R.color.yellow,
                 progressColor: R.color.red,
               ),
             ]),
@@ -135,7 +135,7 @@ class _CircularPageState extends State<CircularPage> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
               ),
               circularStrokeCap: CircularStrokeCap.round,
-              progressColor: Colors.purple,
+              progressColor: R.color.purple,
             ),
             Padding(
               padding: EdgeInsets.all(15.0),
@@ -144,7 +144,7 @@ class _CircularPageState extends State<CircularPage> {
                 lineWidth: 5.0,
                 percent: 1.0,
                 center: Text("100%"),
-                progressColor: Colors.green,
+                progressColor: R.color.green,
               ),
             ),
             Container(
@@ -171,7 +171,7 @@ class _CircularPageState extends State<CircularPage> {
                       percent: 0.2,
                       animation: true,
                       center: Text("20%"),
-                      progressColor: Colors.orangeAccent,
+                      progressColor: R.color.orangeAccent,
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -181,7 +181,7 @@ class _CircularPageState extends State<CircularPage> {
                       lineWidth: 4.0,
                       percent: 0.30,
                       center: Text("30%"),
-                      progressColor: Colors.orange,
+                      progressColor: R.color.orange,
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -194,7 +194,7 @@ class _CircularPageState extends State<CircularPage> {
                       animationDuration: 200,
                       percent: 0.60,
                       center: Text("60%"),
-                      progressColor: Colors.yellow,
+                      progressColor: R.color.yellow,
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -204,7 +204,7 @@ class _CircularPageState extends State<CircularPage> {
                       lineWidth: 4.0,
                       percent: 0.90,
                       center: Text("90%"),
-                      progressColor: Colors.green,
+                      progressColor: R.color.green,
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -218,7 +218,7 @@ class _CircularPageState extends State<CircularPage> {
                       center: CircleAvatar(
                         child: Icon(Icons.person),
                       ),
-                      progressColor: Colors.redAccent,
+                      progressColor: R.color.redAccent,
                     ),
                   ],
                 ),
@@ -240,7 +240,7 @@ class _CircularPageState extends State<CircularPage> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17.0),
               ),
               circularStrokeCap: CircularStrokeCap.round,
-              progressColor: Colors.blueAccent,
+              progressColor: R.color.blueAccent,
               onAnimationEnd: () =>
                   setState(() => state = 'End Animation at 50%'),
             ),

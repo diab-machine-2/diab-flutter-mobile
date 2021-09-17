@@ -46,7 +46,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
           spotsLine: BarAreaSpotsLine(
             show: true,
             flLineStyle: FlLine(
-              color: Colors.blue,
+              color: R.color.blue,
               strokeWidth: 10,
             ),
             checkToShowSpotLine: (spot) {
@@ -115,7 +115,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               }).toList();
             },
             touchTooltipData: LineTouchTooltipData(
-              tooltipBgColor: Colors.blue,
+              tooltipBgColor: R.color.blue,
               tooltipRoundedRadius: 8,
               getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
                 return lineBarsSpot.map((lineBarSpot) {

@@ -1,12 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class LineChartSample4 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const cutOffYValue = 5.0;
-    const dateTextStyle = TextStyle(
-        fontSize: 10, color: Colors.purple, fontWeight: FontWeight.bold);
+    final TextStyle dateTextStyle = TextStyle(
+        fontSize: 10, color: R.color.purple, fontWeight: FontWeight.bold);
 
     return SizedBox(
       width: 300,
@@ -33,17 +34,17 @@ class LineChartSample4 extends StatelessWidget {
               isCurved: true,
               barWidth: 8,
               colors: [
-                Colors.purpleAccent,
+                R.color.purpleAccent,
               ],
               belowBarData: BarAreaData(
                 show: true,
-                colors: [Colors.deepPurple.withOpacity(0.4)],
+                colors: [R.color.deepPurple.withOpacity(0.4)],
                 cutOffY: cutOffYValue,
                 applyCutOffY: true,
               ),
               aboveBarData: BarAreaData(
                 show: true,
-                colors: [Colors.orange.withOpacity(0.6)],
+                colors: [R.color.orange.withOpacity(0.6)],
                 cutOffY: cutOffYValue,
                 applyCutOffY: true,
               ),

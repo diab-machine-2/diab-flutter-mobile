@@ -32,7 +32,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
             Text(
               'Average Line',
               style: TextStyle(
-                  color: Colors.green,
+                  color: R.color.green,
                   fontWeight: FontWeight.bold,
                   fontSize: 16),
             ),
@@ -46,7 +46,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
             Text(
               'Indicators',
               style: TextStyle(
-                  color: Colors.blue,
+                  color: R.color.blue,
                   fontWeight: FontWeight.bold,
                   fontSize: 16),
             ),
@@ -69,7 +69,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
                         return null;
                       }
                       return TouchedSpotIndicatorData(
-                        FlLine(color: Colors.blue, strokeWidth: 4),
+                        FlLine(color: R.color.blue, strokeWidth: 4),
                         FlDotData(
                           getDotPainter: (spot, percent, barData, index) {
                             if (index % 2 == 0) {
@@ -77,13 +77,13 @@ class _LineChartSample3State extends State<LineChartSample3> {
                                   radius: 8,
                                   color: R.color.white,
                                   strokeWidth: 5,
-                                  strokeColor: Colors.deepOrange);
+                                  strokeColor: R.color.deepOrange);
                             } else {
                               return FlDotSquarePainter(
                                 size: 16,
                                 color: R.color.white,
                                 strokeWidth: 5,
-                                strokeColor: Colors.deepOrange,
+                                strokeColor: R.color.deepOrange,
                               );
                             }
                           },
@@ -92,7 +92,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
                     }).toList();
                   },
                   touchTooltipData: LineTouchTooltipData(
-                      tooltipBgColor: Colors.blueAccent,
+                      tooltipBgColor: R.color.blueAccent,
                       getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                         return touchedBarSpots.map((barSpot) {
                           final flSpot = barSpot;
@@ -131,7 +131,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
               extraLinesData: ExtraLinesData(horizontalLines: [
                 HorizontalLine(
                   y: 1.8,
-                  color: Colors.green.withOpacity(0.8),
+                  color: R.color.green.withOpacity(0.8),
                   strokeWidth: 3,
                   dashArray: [20, 2],
                 ),
@@ -145,13 +145,13 @@ class _LineChartSample3State extends State<LineChartSample3> {
                   isCurved: false,
                   barWidth: 4,
                   colors: [
-                    Colors.orange,
+                    R.color.orange,
                   ],
                   belowBarData: BarAreaData(
                     show: true,
                     colors: [
-                      Colors.orange.withOpacity(0.5),
-                      Colors.orange.withOpacity(0.0),
+                      R.color.orange.withOpacity(0.5),
+                      R.color.orange.withOpacity(0.0),
                     ],
                     gradientColorStops: [0.5, 1.0],
                     gradientFrom: const Offset(0, 0),
@@ -159,7 +159,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
                     spotsLine: BarAreaSpotsLine(
                       show: true,
                       flLineStyle: FlLine(
-                        color: Colors.blue,
+                        color: R.color.blue,
                         strokeWidth: 2,
                       ),
                       checkToShowSpotLine: (spot) {
@@ -179,13 +179,13 @@ class _LineChartSample3State extends State<LineChartSample3> {
                               radius: 6,
                               color: R.color.white,
                               strokeWidth: 3,
-                              strokeColor: Colors.deepOrange);
+                              strokeColor: R.color.deepOrange);
                         } else {
                           return FlDotSquarePainter(
                             size: 12,
                             color: R.color.white,
                             strokeWidth: 3,
-                            strokeColor: Colors.deepOrange,
+                            strokeColor: R.color.deepOrange,
                           );
                         }
                       },
@@ -202,7 +202,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
                 getDrawingHorizontalLine: (value) {
                   if (value == 0) {
                     return FlLine(
-                      color: Colors.deepOrange,
+                      color: R.color.deepOrange,
                       strokeWidth: 2,
                     );
                   } else {
@@ -257,8 +257,8 @@ class _LineChartSample3State extends State<LineChartSample3> {
                     final isTouched = value == touchedValue;
                     return TextStyle(
                       color: isTouched
-                          ? Colors.deepOrange
-                          : Colors.deepOrange.withOpacity(0.5),
+                          ? R.color.deepOrange
+                          : R.color.deepOrange.withOpacity(0.5),
                       fontWeight: FontWeight.bold,
                     );
                   },
