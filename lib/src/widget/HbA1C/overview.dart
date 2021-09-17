@@ -1,0 +1,73 @@
+import 'package:flutter/material.dart';
+import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
+import 'package:medical/src/widget/HbA1C/widget/hba1c_chart.dart';
+import 'package:medical/src/widget/HbA1C/widget/hba1c_contain_detail.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
+
+class HbA1COverviewController extends StatefulWidget {
+  HbA1COverviewController({
+    Key key,
+  }) : super(key: key);
+  @override
+  HbA1COverviewControllerState createState() => HbA1COverviewControllerState();
+}
+
+class HbA1COverviewControllerState extends State<HbA1COverviewController>
+    with AutomaticKeepAliveClientMixin<HbA1COverviewController> {
+  @override
+  bool get wantKeepAlive => true;
+
+  ScrollController _scrollController = ScrollController();
+  GlobalKey<HbA1CDetailState> detailKey = GlobalKey();
+  GlobalKey<HbA1CChartState> chartKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingManager.analytics.setCurrentScreen(screenName: 'HbA1C Dashboard');
+  }
+
+  reloadData(int periodFilterType) {
+    _scrollController.jumpTo(0);
+    if (detailKey.currentState != null) {
+      detailKey.currentState.reloadData(periodFilterType);
+    }
+    if (chartKey.currentState != null) {
+      chartKey.currentState.reloadData(periodFilterType);
+    }
+  }
+
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Scaffold(
+        // backgroundColor: backgroundColor,
+        body: Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              colors: [
+                Color(0xFFFDC798).withOpacity(0.3),
+                Color(0xFFE6F6ED).withOpacity(0.3),
+                Color(0xFFE6F6ED).withOpacity(0.3),
+                Color(0xFFFDC798).withOpacity(0.3),
+              ],
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft, //FractionalOffset(1.0, 0.0),
+              stops: [0.0, 0.3, 0.8, 1.0])
+          // image: DecorationImage(
+          //     image: AssetImage('assets/images/HbA1c_high.png'),
+          //     fit: BoxFit.cover)
+          ),
+      child: ListView(
+          controller: _scrollController,
+          physics: ClampingScrollPhysics(),
+          children: [
+            // FilterAction(),
+            HbA1CDetail(key: detailKey),
+            HbA1CChart(key: chartKey),
+            SizedBox(height: 8),
+            CourseSuggest(position: 8),
+            SizedBox(height: 32)
+          ]),
+    ));
+  }
+}
