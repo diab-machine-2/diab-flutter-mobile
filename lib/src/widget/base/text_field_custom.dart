@@ -69,8 +69,8 @@ class TextFieldCustomState extends State<TextFieldCustom> {
               border: Border.all(
                   width: 2,
                   color: isCorrect
-                      ? Color(0xff008479)
-                      : (showValidate ? Color(0xffFF5756) : R.color.white)),
+                      ? R.color.greenGradientBottom
+                      : (showValidate ? R.color.color0xffFF5756 : R.color.white)),
             ),
             child: Row(children: [
               Image.asset(
@@ -197,7 +197,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                           child: Container(
                               color: R.color.transparent,
                               child: Text(!showPassword ? 'Hiện' : 'Ẩn',
-                                  style: TextStyle(color: Color(0xff787A7D)))))
+                                  style: TextStyle(color: R.color.color0xff787A7D))))
                       : SizedBox(),
                   isCorrect
                       ? Padding(
@@ -222,7 +222,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                 padding: EdgeInsets.only(top: 4),
                 child: Text(validateText,
                     style: TextStyle(
-                        color: Color(0xffFF5756),
+                        color: R.color.color0xffFF5756,
                         fontSize: 14,
                         fontWeight: FontWeight.w400)),
               )

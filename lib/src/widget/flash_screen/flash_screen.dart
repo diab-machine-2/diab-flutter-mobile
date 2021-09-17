@@ -65,10 +65,10 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         decoration: BoxDecoration(
             gradient: LinearGradient(
                 colors: [
-                  Color(0xFFFDC798).withOpacity(0.5),
-                  Color(0xFFE6F6ED).withOpacity(0.5),
-                  Color(0xFFE6F6ED).withOpacity(0.5),
-                  Color(0xFFFDC798).withOpacity(0.5),
+                  R.color.color0xFFFDC798.withOpacity(0.5),
+                  R.color.greenbg.withOpacity(0.5),
+                  R.color.greenbg.withOpacity(0.5),
+                  R.color.color0xFFFDC798.withOpacity(0.5),
                 ],
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft, //FractionalOffset(1.0, 0.0),

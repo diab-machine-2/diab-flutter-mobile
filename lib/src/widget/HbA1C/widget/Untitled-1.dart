@@ -28,7 +28,7 @@ class HbA1CDetailItem extends StatelessWidget {
                     height: 26,
                     padding: EdgeInsets.only(left: 14, right: 14),
                     decoration: BoxDecoration(
-                        color: hasNote ? Color(0xffFF5756) : Color(0xff4AAF05),
+                        color: hasNote ? R.color.color0xffFF5756 : R.color.color0xff4AAF05,
                         // borderRadius: BorderRadius.circular(13))
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(13),
@@ -54,7 +54,7 @@ class HbA1CDetailItem extends StatelessWidget {
                         fontWeight: FontWeight.w400)),
                 Text(hasNote ? '9.0%' : '6.2%',
                     style: TextStyle(
-                        color: hasNote ? Color(0xffFF5756) : Color(0xff4AAF05),
+                        color: hasNote ? R.color.color0xffFF5756 : R.color.color0xff4AAF05,
                         fontSize: 24,
                         fontWeight: FontWeight.w700))
               ],
@@ -80,7 +80,7 @@ class HbA1CDetailItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 16),
-                      Container(height: 1, color: Color(0xffEEEFF3)),
+                      Container(height: 1, color: R.color.color0xffEEEFF3),
                       SizedBox(height: 16),
                       Text(
                           'Ghi chú: Tôi đi khám và đo chỉ số này tại bệnh viện Nguyễn Tri Phương',

@@ -158,7 +158,7 @@ class StarchChartState extends State<StarchChart>
                                     model.goal == null
                                         ? '0 g'
                                         : '/${formatNumber(model.goal)} g',
-                                    style: TextStyle(color: Color(0xff666666)))
+                                    style: TextStyle(color: R.color.primaryGreyColor))
                               ],
                             ),
                           )),
@@ -245,9 +245,9 @@ class StarchChartState extends State<StarchChart>
                                               percent: model.percent > 100
                                                   ? 1
                                                   : (model.percent / 100),
-                                              backgroundColor: Color(0xff21A567)
+                                              backgroundColor: R.color.green
                                                   .withOpacity(0.2),
-                                              progressColor: Color(0xff21A567),
+                                              progressColor: R.color.green,
                                             ),
                                           ],
                                         ),

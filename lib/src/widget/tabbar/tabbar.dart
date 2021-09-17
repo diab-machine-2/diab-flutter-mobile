@@ -110,7 +110,7 @@ class _TabbarControllerState extends State<TabbarController>
     //     context: context,
     //     builder: (context) => ActionPanel());
     showDialog(
-      barrierColor: Color(0xff003F38).withOpacity(0.8),
+      barrierColor: R.color.color0xff003F38.withOpacity(0.8),
       useSafeArea: false,
       context: context,
       builder: (_) => FunkyOverlay(),
@@ -176,7 +176,7 @@ class _TabbarControllerState extends State<TabbarController>
 
 showPopupWeight() {
   showDialog(
-    barrierColor: Color(0xff003F38).withOpacity(0.5),
+    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
     context: navigatorKey.currentContext,
     builder: (_) => CustomNumPicker(
         callback: (number) async {

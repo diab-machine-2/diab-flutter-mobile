@@ -85,7 +85,7 @@ class _CourseSuggestState extends State<CourseSuggest>
                                 //       style: TextStyle(
                                 //           fontWeight: FontWeight.w400,
                                 //           fontSize: 14,
-                                //           color: Color(0xff666666)))
+                                //           color: R.color.primaryGreyColor))
                                 // ])
                               ]),
                         ),

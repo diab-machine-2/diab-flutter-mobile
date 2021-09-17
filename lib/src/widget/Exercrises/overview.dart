@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_contain_detail.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_ranking_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_calo_chart.dart';
@@ -55,10 +56,10 @@ class ExercrisesOverviewControllerState
       decoration: BoxDecoration(
           gradient: LinearGradient(
               colors: [
-                Color(0xFFFDC798).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFFDC798).withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
               ],
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,

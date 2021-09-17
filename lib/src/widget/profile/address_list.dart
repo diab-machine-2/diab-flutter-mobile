@@ -63,7 +63,7 @@ class _AddressListControllerState extends State<AddressListController> {
                           fontSize: 16,
                           fontWeight: FontWeight.w600)),
                   GestureDetector(
-                      child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onTap: () {
                         Navigator.pop(context);
                       })
@@ -86,7 +86,7 @@ class _AddressListControllerState extends State<AddressListController> {
                         color: widget.selected == null
                             ? R.color.white
                             : widget.selected.id == model[index].id
-                                ? Color(0xffDFF6EC)
+                                ? R.color.color0xffDFF6EC
                                 : R.color.white,
                         child: Container(
                           child: Row(

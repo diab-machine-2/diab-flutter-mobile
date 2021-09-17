@@ -204,7 +204,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                                   (width + 20))
                                               .toDouble() -
                                           36,
-                                      color: Color(0xffDDDDDD),
+                                      color: R.color.grayComponentBorder,
                                     ),
                                   )))),
                   Container(
@@ -221,7 +221,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                             barTouchData: BarTouchData(
                               enabled: true,
                               touchTooltipData: BarTouchTooltipData(
-                                tooltipBgColor: Color(0xffFDB913),
+                                tooltipBgColor: R.color.yellow,
                                 tooltipPadding: const EdgeInsets.only(
                                     left: 12, right: 12, top: 4, bottom: 0),
                                 tooltipMargin: 22,
@@ -298,12 +298,12 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
           SizedBox(height: comparerType == 1 ? 56 : 36),
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             Row(children: [
-              Container(width: 14, height: 14, color: Color(0xff01645A)),
+              Container(width: 14, height: 14, color: R.color.mainColor),
               SizedBox(width: 8),
               Text(comparerType == 1 ? 'Truớc ăn' : 'Truớc tập luyện')
             ]),
             Row(children: [
-              Container(width: 14, height: 14, color: Color(0xffFDB913)),
+              Container(width: 14, height: 14, color: R.color.yellow),
               SizedBox(width: 8),
               Text(comparerType == 1 ? 'Sau ăn' : 'Sau tập luyện')
             ])

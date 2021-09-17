@@ -393,7 +393,7 @@ class _SearchExercrisesControllerState
                     padding: EdgeInsets.all(0),
                     itemCount: model.length,
                     separatorBuilder: (context, index) {
-                      return Container(height: 1, color: Color(0xffD6D8E0));
+                      return Container(height: 1, color: R.color.color0xffD6D8E0);
                     },
                     itemBuilder: (BuildContext context, int index) {
                       final filterResult = selectedCategories.where((element) =>
@@ -422,11 +422,11 @@ class _SearchExercrisesControllerState
                             decoration: BoxDecoration(
                                 color: selectedModel == null
                                     ? R.color.transparent
-                                    : Color(0xffC3E8D3).withOpacity(0.5),
+                                    : R.color.color0xFFC3E8D3.withOpacity(0.5),
                                 border: Border.all(
                                     color: selectedModel == null
                                         ? R.color.transparent
-                                        : Color(0xff72CB9C))),
+                                        : R.color.color0xff72CB9C)),
                             child: Row(
                               children: [
                                 Stack(

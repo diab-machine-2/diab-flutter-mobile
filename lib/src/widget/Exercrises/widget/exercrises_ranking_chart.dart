@@ -31,28 +31,26 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
   int periodFilterType = 1;
 
   final List<List<Color>> colors = [
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xffC1D98B).withOpacity(0.5), Color(0xffaad8a2)],
-    // [Color(0xffC1D98B).withOpacity(0.8), Color(0xffC1D98B)],
-    // [Color(0xffFFB913), Color(0xff86D087)],
-    [Color(0xffC1D98B).withOpacity(0.8), Color(0xffC1D98B)],
-    [Color(0xffDADA72).withOpacity(0.8), Color(0xffDADA72)],
-    [Color(0xffDADA72).withOpacity(0.8), Color(0xffDADA72)],
-    [Color(0xffDADA72).withOpacity(0.8), Color(0xffDADA72)],
-    [Color(0xffDADA72).withOpacity(0.8), Color(0xffDADA72)],
-    [Color(0xffE2DB6B).withOpacity(0.8), Color(0xffE2DB6B)],
-    [Color(0xffE2DB6B).withOpacity(0.8), Color(0xffE2DB6B)],
-    [Color(0xffE2DB6B).withOpacity(0.8), Color(0xffE2DB6B)],
-    [Color(0xffE2DB6B).withOpacity(0.8), Color(0xffE2DB6B)],
-    [Color(0xffE2DB6B).withOpacity(0.8), Color(0xffE2DB6B)],
-    [Color(0xE2DB6B), Color(0xE2DB6B)]
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xffC1D98B.withOpacity(0.5), R.color.color0xffaad8a2],
+    [R.color.color0xffC1D98B.withOpacity(0.8), R.color.color0xffC1D98B],
+    [R.color.color0xffDADA72.withOpacity(0.8), R.color.color0xffDADA72],
+    [R.color.color0xffDADA72.withOpacity(0.8), R.color.color0xffDADA72],
+    [R.color.color0xffDADA72.withOpacity(0.8), R.color.color0xffDADA72],
+    [R.color.color0xffDADA72.withOpacity(0.8), R.color.color0xffDADA72],
+    [R.color.color0xffE2DB6B.withOpacity(0.8), R.color.color0xffE2DB6B],
+    [R.color.color0xffE2DB6B.withOpacity(0.8), R.color.color0xffE2DB6B],
+    [R.color.color0xffE2DB6B.withOpacity(0.8), R.color.color0xffE2DB6B],
+    [R.color.color0xffE2DB6B.withOpacity(0.8), R.color.color0xffE2DB6B],
+    [R.color.color0xffE2DB6B.withOpacity(0.8), R.color.color0xffE2DB6B],
+    [R.color.color0xE2DB6B, R.color.color0xE2DB6B]
   ];
 
   @override
@@ -144,8 +142,8 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                 decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                         colors: [
-                                          Color(0xFFE6F6ED),
-                                          Color(0xFFFFF7C0),
+                                          R.color.greenbg,
+                                          R.color.color0xFFFFF7C0,
                                         ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
@@ -221,7 +219,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                                   width: 8,
                                                   height: 8,
                                                   decoration: BoxDecoration(
-                                                    color: Color(0xff72CB9C),
+                                                    color: R.color.color0xff72CB9C,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             4),
@@ -242,7 +240,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                                           .toString() +
                                                       '%',
                                                   style: TextStyle(
-                                                      color: Color(0xff72CB9C),
+                                                      color: R.color.color0xff72CB9C,
                                                       fontWeight:
                                                           FontWeight.w600,
                                                       fontSize: 14.0)),
@@ -252,7 +250,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                       ),
                                     ),
                                     Container(
-                                        height: 0.5, color: Color(0xff01645A)),
+                                        height: 0.5, color: R.color.mainColor),
                                     Padding(
                                       padding: EdgeInsets.only(
                                           top: 16,
@@ -308,7 +306,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                   colors: partientIndex == index
                       ? [R.color.mainColor, R.color.mainColor]
                       : index == avarageIndex
-                          ? [Color(0xff72CB9C), Color(0xff72CB9C)]
+                          ? [R.color.color0xff72CB9C, R.color.color0xff72CB9C]
                           : [
                               startColor,
                               endColor.withOpacity(0.8),
@@ -322,7 +320,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
               color: partientIndex == index
                   ? R.color.mainColor
                   : index == avarageIndex
-                      ? Color(0xff72CB9C)
+                      ? R.color.color0xff72CB9C
                       : R.color.transparent,
               borderRadius: BorderRadius.circular(4),
             )),

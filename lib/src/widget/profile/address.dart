@@ -47,7 +47,7 @@ class _AddressControllerState extends State<AddressController> {
               style: TextStyle(
                   color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
           GestureDetector(
-              child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+              child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
               onTap: () {
                 Navigator.pop(context);
               })
@@ -69,7 +69,7 @@ class _AddressControllerState extends State<AddressController> {
                   fillColor: R.color.textDark,
                   enabledBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Color(0xffDDDDDD), width: 1.0),
+                        BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -113,7 +113,7 @@ class _AddressControllerState extends State<AddressController> {
               decoration: BoxDecoration(
                   color: R.color.transparent,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(width: 1, color: Color(0xffDDDDDD))),
+                  border: Border.all(width: 1, color: R.color.grayComponentBorder)),
               child: Center(
                   child: Row(
                 children: [
@@ -124,7 +124,7 @@ class _AddressControllerState extends State<AddressController> {
                             : selectedProvince.name,
                         style: TextStyle(
                             color: selectedProvince == null
-                                ? Color(0xff9C9C9C)
+                                ? R.color.captionColorGray
                                 : R.color.textDark),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
@@ -181,7 +181,7 @@ class _AddressControllerState extends State<AddressController> {
                               color: R.color.transparent,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                  width: 1, color: Color(0xffDDDDDD))),
+                                  width: 1, color: R.color.grayComponentBorder)),
                           child: Center(
                               child: Row(
                             children: [
@@ -192,7 +192,7 @@ class _AddressControllerState extends State<AddressController> {
                                         : selectedDistrict.name,
                                     style: TextStyle(
                                         color: selectedDistrict == null
-                                            ? Color(0xff9C9C9C)
+                                            ? R.color.captionColorGray
                                             : R.color.textDark),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis),
@@ -255,7 +255,7 @@ class _AddressControllerState extends State<AddressController> {
                               color: R.color.transparent,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                  width: 1, color: Color(0xffDDDDDD))),
+                                  width: 1, color: R.color.grayComponentBorder)),
                           child: Center(
                               child: Row(
                             children: [
@@ -266,7 +266,7 @@ class _AddressControllerState extends State<AddressController> {
                                         : selectedWard.name,
                                     style: TextStyle(
                                         color: selectedWard == null
-                                            ? Color(0xff9C9C9C)
+                                            ? R.color.captionColorGray
                                             : R.color.textDark),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis),

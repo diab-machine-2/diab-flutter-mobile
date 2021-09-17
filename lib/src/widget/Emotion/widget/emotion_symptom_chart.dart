@@ -79,8 +79,8 @@ class EmotionSymptomChartState extends State<EmotionSymptomChart>
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
                               colors: [
-                                Color(0xFFE4F5F5).withOpacity(0.5),
-                                Color(0xFFF4DBBD).withOpacity(0.5),
+                                R.color.color0xFFE4F5F5.withOpacity(0.5),
+                                R.color.color0xffF4DBBD.withOpacity(0.5),
                               ],
                               begin: FractionalOffset(0.1, 0.0),
                               end: FractionalOffset(0.5, 0.5),

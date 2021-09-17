@@ -107,7 +107,7 @@ class _BloodSugarDetailTabbarControllerState
             leadingIcon: GestureDetector(
                 onTap: () {
                   showDialog(
-                    barrierColor: Color(0xff003F38).withOpacity(0.3),
+                    barrierColor: R.color.color0xff003F38.withOpacity(0.3),
                     useSafeArea: false,
                     context: context,
                     builder: (_) => ActionListPanel(selectedIndex: 1),
@@ -201,7 +201,7 @@ class _BloodSugarDetailTabbarControllerState
     Navigator.pushNamed(context, '/add_bloodSugar',
         arguments: {'type': 'input'});
     // showDialog(
-    //   barrierColor: Color(0xff003F38).withOpacity(0.8),
+    //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
     //   useSafeArea: false,
     //   context: context,
     //   builder: (_) => FunkyOverlay(),

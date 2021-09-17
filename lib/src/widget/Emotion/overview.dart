@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_activity_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_symptom_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_distribution_chart.dart';
@@ -47,10 +48,10 @@ class EmotionOverviewControllerState extends State<EmotionOverviewController>
       decoration: BoxDecoration(
           gradient: LinearGradient(
               colors: [
-                Color(0xFFFDC798).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFFDC798).withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
               ],
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,

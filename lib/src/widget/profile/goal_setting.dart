@@ -87,8 +87,8 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                       colors: [
-                        Color(0xFFFDC798).withOpacity(0.3),
-                        Color(0xFFE6F6ED).withOpacity(0.9),
+                        R.color.color0xFFFDC798.withOpacity(0.3),
+                        R.color.greenbg.withOpacity(0.9),
                       ],
                       begin: FractionalOffset(1, 1),
                       end: FractionalOffset(0.9, 0.5),
@@ -177,7 +177,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                                 subGridCountPerGrid: 10,
                                 subGridWidth: 8,
                                 titleTextColor: R.color.black,
-                                scaleColor: Color(0xffDDDDDD),
+                                scaleColor: R.color.grayComponentBorder,
                                 indicatorColor: R.color.mainColor,
                                 onSelectedChanged: (value) {
                                   goalWaist = value.toDouble();
@@ -254,7 +254,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                             fontSize: 24,
                             fontWeight: FontWeight.w700)),
                   ),
-                  Container(height: 1, width: 72, color: Color(0xffDDDDDD))
+                  Container(height: 1, width: 72, color: R.color.grayComponentBorder)
                 ]),
                 Text(unit)
               ]),

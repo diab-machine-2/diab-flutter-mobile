@@ -101,7 +101,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
               leadingIcon: GestureDetector(
                   onTap: () {
                     showDialog(
-                      barrierColor: Color(0xff003F38).withOpacity(0.3),
+                      barrierColor: R.color.color0xff003F38.withOpacity(0.3),
                       useSafeArea: false,
                       context: context,
                       builder: (_) => ActionListPanel(selectedIndex: 4),
@@ -155,7 +155,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
     Navigator.pushNamed(context, '/add_food',
         arguments: {'type': 'input', 'id': null});
     // showDialog(
-    //   barrierColor: Color(0xff003F38).withOpacity(0.8),
+    //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
     //   useSafeArea: false,
     //   context: context,
     //   builder: (_) => FunkyOverlay(),

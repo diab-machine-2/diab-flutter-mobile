@@ -87,8 +87,8 @@ class _ReminderControllerState extends State<ReminderController> {
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                       colors: [
-                        Color(0xFFFDC798).withOpacity(0.3),
-                        Color(0xFFE6F6ED).withOpacity(0.9),
+                        R.color.color0xFFFDC798.withOpacity(0.3),
+                        R.color.greenbg.withOpacity(0.9),
                       ],
                       begin: FractionalOffset(1, 1),
                       end: FractionalOffset(0.9, 0.5),
@@ -159,7 +159,7 @@ class _ReminderControllerState extends State<ReminderController> {
                                                   int index) {
                                             return Container(
                                                 height: 1,
-                                                color: Color(0xffE5E5E5));
+                                                color: R.color.color0xffE5E5E5);
                                           },
                                           itemBuilder: (BuildContext context,
                                               int index) {
@@ -192,7 +192,7 @@ class _ReminderControllerState extends State<ReminderController> {
         actionPane: SlidableDrawerActionPane(),
         secondaryActions: [
           IconSlideAction(
-            color: Color(0xffFF5552),
+            color: R.color.color0xffFF5552,
             iconWidget:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Image.asset('assets/images/icon_trash2.png',
@@ -220,7 +220,7 @@ class _ReminderControllerState extends State<ReminderController> {
                     style: TextStyle(
                         color: R.color.black, fontFamily: 'Viga', fontSize: 24)),
                 CupertinoSwitch(
-                  activeColor: Color(0xff008479),
+                  activeColor: R.color.greenGradientBottom,
                   value: models[index].isActive,
                   onChanged: (value) {
                     edit(models[index]);
@@ -239,7 +239,7 @@ class _ReminderControllerState extends State<ReminderController> {
                       padding: EdgeInsets.only(top: 8),
                       child: Text(models[index].content,
                           style: TextStyle(
-                              color: Color(0xff666666),
+                              color: R.color.primaryGreyColor,
                               fontSize: 16,
                               fontWeight: FontWeight.w400)),
                     )
@@ -373,7 +373,7 @@ class _ReminderControllerState extends State<ReminderController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),

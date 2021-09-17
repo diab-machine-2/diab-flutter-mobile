@@ -88,7 +88,7 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                           (BuildContext context, int index) {
                                         return Container(
                                             height: 1,
-                                            color: Color(0xffE5E5E5));
+                                            color: R.color.color0xffE5E5E5);
                                       },
                                       itemBuilder:
                                           (BuildContext context, int index) {
@@ -124,7 +124,7 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                 child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: Color(0xffE2E4E7),
+                                        color: R.color.grayBorder,
                                         borderRadius:
                                             BorderRadius.circular(21.5)),
                                     child: Center(
@@ -144,7 +144,7 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                 child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: Color(0xff01645A),
+                                        color: R.color.mainColor,
                                         borderRadius:
                                             BorderRadius.circular(21.5),
                                         gradient: LinearGradient(

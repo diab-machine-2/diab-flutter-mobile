@@ -27,8 +27,8 @@ class _ContactControllerState extends State<ContactController> {
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                     colors: [
-                      Color(0xFFFDC798).withOpacity(0.3),
-                      Color(0xFFE6F6ED).withOpacity(0.9),
+                      R.color.color0xFFFDC798.withOpacity(0.3),
+                      R.color.greenbg.withOpacity(0.9),
                     ],
                     begin: FractionalOffset(1, 1),
                     end: FractionalOffset(0.9, 0.5),
@@ -196,7 +196,7 @@ class _ContactControllerState extends State<ContactController> {
                 //   top: 0,
                 //   right: 0,
                 //   child: IconButton(
-                //       icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                //       icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                 //       onPressed: () {
                 //         Navigator.pop(context);
                 //       }),

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class GuidlinePanel extends StatelessWidget {
   @override
@@ -18,7 +19,7 @@ class GuidlinePanel extends StatelessWidget {
                 child: Container(
                   height: 3.86,
                   width: 60,
-                  decoration: BoxDecoration(color: Color(0xffE5E5E5)),
+                  decoration: BoxDecoration(color: R.color.color0xffE5E5E5),
                 ),
               ),
               SizedBox(height: 27),

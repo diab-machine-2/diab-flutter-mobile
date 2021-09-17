@@ -475,7 +475,7 @@ class _HomeControllerState extends State<HomeController> {
                           ? convertToUTC(model.createDateTime, 'dd/MM/yyyy')
                           : getStringToday(model.createDateTime),
                       style: TextStyle(
-                          color: Color(0xff9C9C9C),
+                          color: R.color.captionColorGray,
                           fontSize: 12,
                           fontWeight: FontWeight.w400)),
                 ]),
@@ -493,7 +493,7 @@ class _HomeControllerState extends State<HomeController> {
                       padding: EdgeInsets.only(top: 8),
                       child: Text(model.unit,
                           style: TextStyle(
-                              color: Color(0xff9C9C9C),
+                              color: R.color.captionColorGray,
                               fontSize: 12,
                               fontWeight: FontWeight.w400)),
                     )
@@ -514,7 +514,7 @@ class _HomeControllerState extends State<HomeController> {
                                     roundNumber(
                                         roundAsFixed(model.indexChange)),
                                 style: TextStyle(
-                                    color: Color(0xff9C9C9C),
+                                    color: R.color.captionColorGray,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400)),
                           )
@@ -555,7 +555,7 @@ class _HomeControllerState extends State<HomeController> {
                               model.createDateTime ?? 0, 'dd/MM/yyyy')
                           : getStringToday(model.createDateTime ?? 0),
                       style: TextStyle(
-                          color: Color(0xff9C9C9C),
+                          color: R.color.captionColorGray,
                           fontSize: 12,
                           fontWeight: FontWeight.w400)),
                 ]),
@@ -576,7 +576,7 @@ class _HomeControllerState extends State<HomeController> {
                       padding: EdgeInsets.only(top: 8),
                       child: Text('mmHg',
                           style: TextStyle(
-                              color: Color(0xff9C9C9C),
+                              color: R.color.captionColorGray,
                               fontSize: 12,
                               fontWeight: FontWeight.w400)),
                     )
@@ -596,7 +596,7 @@ class _HomeControllerState extends State<HomeController> {
                               (model.diastolicChange > 0 ? '+' : '') +
                               model.diastolicChange.round().toString(),
                           style: TextStyle(
-                              color: Color(0xff9C9C9C),
+                              color: R.color.captionColorGray,
                               fontSize: 12,
                               fontWeight: FontWeight.w400)),
                     )
@@ -637,7 +637,7 @@ class _HomeControllerState extends State<HomeController> {
                               model.weightDateTime ?? 0, 'dd/MM/yyyy')
                           : getStringToday(model.weightDateTime ?? 0),
                       style: TextStyle(
-                          color: Color(0xff9C9C9C),
+                          color: R.color.captionColorGray,
                           fontSize: 12,
                           fontWeight: FontWeight.w400)),
                 ]),
@@ -655,7 +655,7 @@ class _HomeControllerState extends State<HomeController> {
                       padding: EdgeInsets.only(top: 8),
                       child: Text('/ ${model.goalWeight.round()} kg',
                           style: TextStyle(
-                              color: Color(0xff9C9C9C),
+                              color: R.color.captionColorGray,
                               fontSize: 12,
                               fontWeight: FontWeight.w400)),
                     )
@@ -696,7 +696,7 @@ class _HomeControllerState extends State<HomeController> {
                               model.emotionDateTime ?? 0, 'dd/MM/yyyy')
                           : getStringToday(model.emotionDateTime ?? 0),
                       style: TextStyle(
-                          color: Color(0xff9C9C9C),
+                          color: R.color.captionColorGray,
                           fontSize: 12,
                           fontWeight: FontWeight.w400)),
                 ]),
@@ -757,7 +757,7 @@ class _HomeControllerState extends State<HomeController> {
                                 model.createDateTime ?? 0, 'dd/MM/yyyy')
                             : getStringToday(model.createDateTime ?? 0),
                         style: TextStyle(
-                            color: Color(0xff9C9C9C),
+                            color: R.color.captionColorGray,
                             fontSize: 12,
                             fontWeight: FontWeight.w400))
                   ],
@@ -780,7 +780,7 @@ class _HomeControllerState extends State<HomeController> {
                             padding: EdgeInsets.only(top: 8),
                             child: Text('%',
                                 style: TextStyle(
-                                    color: Color(0xff9C9C9C),
+                                    color: R.color.captionColorGray,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400)),
                           )
@@ -801,7 +801,7 @@ class _HomeControllerState extends State<HomeController> {
                                           roundNumber(model.indexChange) +
                                           '% so với lần trước!',
                                       style: TextStyle(
-                                          color: Color(0xff9C9C9C),
+                                          color: R.color.captionColorGray,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w400)),
                                 )
@@ -900,7 +900,7 @@ class _HomeControllerState extends State<HomeController> {
                                             .consumedEnergyDateTime ??
                                         0),
                             style: TextStyle(
-                                color: Color(0xff9C9C9C),
+                                color: R.color.captionColorGray,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400))
                       ],
@@ -924,7 +924,7 @@ class _HomeControllerState extends State<HomeController> {
                                     : getStringToday(
                                         model.exercise.createDateTime ?? 0),
                             style: TextStyle(
-                                color: Color(0xff9C9C9C),
+                                color: R.color.captionColorGray,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400))
                       ],
@@ -967,7 +967,7 @@ class _HomeControllerState extends State<HomeController> {
                               padding: EdgeInsets.only(top: 8),
                               child: Text('kcal',
                                   style: TextStyle(
-                                      color: Color(0xff9C9C9C),
+                                      color: R.color.captionColorGray,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400)),
                             )
@@ -1004,7 +1004,7 @@ class _HomeControllerState extends State<HomeController> {
                               padding: EdgeInsets.only(top: 8),
                               child: Text('kcal',
                                   style: TextStyle(
-                                      color: Color(0xff9C9C9C),
+                                      color: R.color.captionColorGray,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400)),
                             )
@@ -1020,7 +1020,7 @@ class _HomeControllerState extends State<HomeController> {
         ),
         Positioned(
             top: 16,
-            child: Container(width: 1, height: 20, color: Color(0xffC0C2C5))),
+            child: Container(width: 1, height: 20, color: R.color.color0xffC0C2C5)),
         Stack(alignment: AlignmentDirectional.bottomCenter, children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -1036,12 +1036,12 @@ class _HomeControllerState extends State<HomeController> {
               SizedBox(height: 3),
               Text('/' + formatNumber(model.energyExerciseCard.energyGoal),
                   style: TextStyle(
-                      color: Color(0xff9C9C9C),
+                      color: R.color.captionColorGray,
                       fontSize: 11,
                       fontWeight: FontWeight.w400)),
               Text(model.energyExerciseCard.text,
                   style: TextStyle(
-                      color: Color(0xff9C9C9C),
+                      color: R.color.captionColorGray,
                       fontSize: 11,
                       fontWeight: FontWeight.w400)),
               SizedBox(height: height * 34 / 160)

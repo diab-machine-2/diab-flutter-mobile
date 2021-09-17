@@ -199,8 +199,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                       style: TextStyle(
                                                                           fontFamily:
                                                                               'Viga',
-                                                                          color: Color(
-                                                                              0xff21A567),
+                                                                          color: R.color.green,
                                                                           fontSize:
                                                                               24,
                                                                           fontWeight:
@@ -278,7 +277,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                           separatorBuilder: (BuildContext context, int index) {
                                                                             return Container(
                                                                               height: 1,
-                                                                              color: Color(0xffE2E4E7),
+                                                                              color: R.color.grayBorder,
                                                                             );
                                                                           },
                                                                           itemBuilder: (BuildContext context, int index) {

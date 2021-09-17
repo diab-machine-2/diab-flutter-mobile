@@ -173,8 +173,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                         controller:
                                                             nameController,
                                                         style: TextStyle(
-                                                            color: Color(
-                                                                0xff232527)),
+                                                            color: R.color.color0xff232527),
                                                         decoration: InputDecoration(
                                                             border: InputBorder
                                                                 .none,
@@ -185,8 +184,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                                 'Nhập họ tên',
                                                             counterText: '',
                                                             hintStyle: TextStyle(
-                                                                color: Color(
-                                                                    0xff232527))),
+                                                                color: R.color.color0xff232527)),
                                                       ),
                                                     ),
                                                   ],
@@ -491,7 +489,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 GestureDetector(
-                    child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                    child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                     onTap: () {
                       Navigator.pop(context);
                     })
@@ -591,7 +589,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 GestureDetector(
-                    child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                    child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                     onTap: () {
                       Navigator.pop(context);
                     })

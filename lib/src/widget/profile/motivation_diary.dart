@@ -72,8 +72,8 @@ class _MotivationControllerState extends State<MotivationController> {
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                       colors: [
-                        Color(0xFFFDC798).withOpacity(0.3),
-                        Color(0xFFE6F6ED).withOpacity(0.9),
+                        R.color.color0xFFFDC798.withOpacity(0.3),
+                        R.color.greenbg.withOpacity(0.9),
                       ],
                       begin: FractionalOffset(1, 1),
                       end: FractionalOffset(0.9, 0.5),
@@ -114,7 +114,7 @@ class _MotivationControllerState extends State<MotivationController> {
                                   separatorBuilder:
                                       (BuildContext context, int index) {
                                     return Container(
-                                        height: 1, color: Color(0xffE5E5E5));
+                                        height: 1, color: R.color.color0xffE5E5E5);
                                   },
                                   itemBuilder:
                                       (BuildContext context, int index) {
@@ -140,7 +140,7 @@ class _MotivationControllerState extends State<MotivationController> {
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w400,
-                                                      color: Color(0xff9C9C9C)))
+                                                      color: R.color.captionColorGray))
                                             ]));
                                   }))),
                 )

@@ -198,7 +198,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                                     (width + 20))
                                                 .toDouble() -
                                             36,
-                                        color: Color(0xffDDDDDD),
+                                        color: R.color.grayComponentBorder,
                                       ),
                                     )))),
                     Container(
@@ -274,7 +274,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                   return TextStyle(
                                       color: touchIndex == value.toInt()
                                           ? R.color.black
-                                          : Color(0xffC0C2C5),
+                                          : R.color.color0xffC0C2C5,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
                                 },

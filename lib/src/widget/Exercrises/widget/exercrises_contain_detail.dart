@@ -100,8 +100,8 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                               borderRadius: BorderRadius.circular(16),
                               gradient: LinearGradient(
                                   colors: [
-                                    Color(0xFFB1DDDB).withAlpha(90),
-                                    Color(0xFFFED31B).withAlpha(40),
+                                    R.color.color0xffB1DDDB.withAlpha(90),
+                                    R.color.color0xFFFED31B.withAlpha(40),
                                   ],
                                   begin: FractionalOffset(0.3, 0.0),
                                   end: FractionalOffset(0.0, 1),
@@ -136,8 +136,8 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                         .factDuration /
                                                     exercriseSummaryModel
                                                         .targetDuration,
-                                                startColor: Color(0xff21A567),
-                                                endColor: Color(0xff21A567)
+                                                startColor: R.color.green,
+                                                endColor: R.color.green
                                                     .withOpacity(0.8),
                                                 width: 8.0,
                                               ))),
@@ -436,7 +436,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                         GestureDetector(
                                           onTap: () {
                                             showDialog(
-                                                barrierColor: Color(0xff003F38)
+                                                barrierColor: R.color.color0xff003F38
                                                     .withOpacity(0.5),
                                                 context: context,
                                                 builder: (_) =>
@@ -602,8 +602,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                         Container(
                                                             height: 1,
                                                             width: 375,
-                                                            color: Color(
-                                                                0xffD6D8E0)),
+                                                            color: R.color.color0xffD6D8E0),
                                                         SizedBox(
                                                           height: 16,
                                                         ),

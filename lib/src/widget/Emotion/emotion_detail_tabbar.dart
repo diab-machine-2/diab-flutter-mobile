@@ -100,7 +100,7 @@ class _EmotionDetailTabbarControllerState
               leadingIcon: GestureDetector(
                   onTap: () {
                     showDialog(
-                      barrierColor: Color(0xff003F38).withOpacity(0.3),
+                      barrierColor: R.color.color0xff003F38.withOpacity(0.3),
                       useSafeArea: false,
                       context: context,
                       builder: (_) => ActionListPanel(selectedIndex: 6),
@@ -154,7 +154,7 @@ class _EmotionDetailTabbarControllerState
     Navigator.pushNamed(context, '/add_emo',
         arguments: {'type': 'input', 'id': null});
     // showDialog(
-    //   barrierColor: Color(0xff003F38).withOpacity(0.8),
+    //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
     //   useSafeArea: false,
     //   context: context,
     //   builder: (_) => FunkyOverlay(),

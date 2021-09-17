@@ -103,7 +103,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                               onTap: () {
                                 showDialog(
                                     barrierColor:
-                                        Color(0xff003F38).withOpacity(0.5),
+                                        R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,
                                     builder: (_) => CustomInputTimePicker(
                                         title: periodFilterType == 1 ||
@@ -427,7 +427,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                             (width + 20))
                                         .toDouble() -
                                     15,
-                                color: Color(0xffDDDDDD),
+                                color: R.color.grayComponentBorder,
                               ),
                             )))),
             Container(
@@ -560,7 +560,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Container(
-                            color: Color(0xff72CB9C),
+                            color: R.color.color0xff72CB9C,
                             width: ((model.trendItems.items.length < 5
                                             ? 5
                                             : model.trendItems.items.length) *

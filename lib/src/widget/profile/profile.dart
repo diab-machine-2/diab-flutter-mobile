@@ -57,7 +57,7 @@ class _ProfileControllerState extends State<ProfileController> {
     final user = AppSettings.userInfo;
     return Scaffold(
         appBar: CustomAppBar(
-          backgroundColor: Color(0xffB1DDDB).withOpacity(0.2),
+          backgroundColor: R.color.color0xffB1DDDB.withOpacity(0.2),
           title: Text('Hồ sơ',
               style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
@@ -70,7 +70,7 @@ class _ProfileControllerState extends State<ProfileController> {
               }),
         ),
         body: Container(
-            color: Color(0xffB1DDDB).withOpacity(0.2),
+            color: R.color.color0xffB1DDDB.withOpacity(0.2),
             padding: EdgeInsets.all(16),
             child: Center(
               child: ListView(
@@ -103,7 +103,7 @@ class _ProfileControllerState extends State<ProfileController> {
                             SizedBox(height: 8),
                             Text('Mã người dùng: ${user.code ?? '0'}',
                                 style: TextStyle(
-                                    color: Color(0xff666666),
+                                    color: R.color.primaryGreyColor,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
                             SizedBox(height: 8),
@@ -137,18 +137,18 @@ class _ProfileControllerState extends State<ProfileController> {
                   ]),
                   SizedBox(height: 16),
                   Row(children: [
-                    buildItem(Color(0xffD3EFEE), 'Thiết lập mục tiêu',
+                    buildItem(R.color.color0xffD3EFEE, 'Thiết lập mục tiêu',
                         'assets/images/icon_muc_tieu.png', 0),
                     SizedBox(width: 16),
-                    buildItem(Color(0xffFEEDDC), 'Nhắc nhở',
+                    buildItem(R.color.color0xffFEEDDC, 'Nhắc nhở',
                         'assets/images/icon_nhac_nho.png', 1)
                   ]),
                   SizedBox(height: 16),
                   Row(children: [
-                    buildItem(Color(0xffFCF8DA), 'Lịch sinh hoạt\ncá nhân',
+                    buildItem(R.color.color0xffFCF8DA, 'Lịch sinh hoạt\ncá nhân',
                         'assets/images/icon_lich.png', 2),
                     SizedBox(width: 16),
-                    buildItem(Color(0xffFDE9E9), 'Lịch đo\nđường huyết',
+                    buildItem(R.color.color0xffFDE9E9, 'Lịch đo\nđường huyết',
                         'assets/images/icon_lich_do_duong_huyet.png', 3)
                   ]),
                   SizedBox(height: 16),
@@ -273,7 +273,7 @@ class _ProfileControllerState extends State<ProfileController> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -292,7 +292,7 @@ class _ProfileControllerState extends State<ProfileController> {
                             fillColor: R.color.textDark,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Color(0xffDDDDDD), width: 1.0),
+                                  color: R.color.grayComponentBorder, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(

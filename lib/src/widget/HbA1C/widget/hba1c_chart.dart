@@ -195,7 +195,7 @@ class HbA1CChartState extends State<HbA1CChart>
                                             (width + 20))
                                         .toDouble() -
                                     36,
-                                color: Color(0xffDDDDDD),
+                                color: R.color.grayComponentBorder,
                               ),
                             )))),
             Container(

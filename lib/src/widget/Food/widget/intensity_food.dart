@@ -189,7 +189,7 @@ class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
                               width: 373,
                               color: selected.id == model.id
                                   ? R.color.greenbg
-                                  : Color(0xffD6D8E0)),
+                                  : R.color.color0xffD6D8E0),
                         )
                       : SizedBox(),
                 ],

@@ -122,7 +122,7 @@ class _SearchFoodState extends State<SearchFood> {
                       decoration: BoxDecoration(
                           color: R.color.white,
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: Color(0xffDDDDDD))),
+                          border: Border.all(color: R.color.grayComponentBorder)),
                       child: Padding(
                         padding: EdgeInsets.only(left: 16, right: 8),
                         child: Row(
@@ -201,7 +201,7 @@ class _SearchFoodState extends State<SearchFood> {
                                             (BuildContext context, int index) {
                                           return Container(
                                               height: 1,
-                                              color: Color(0xffE5E5E5));
+                                              color: R.color.color0xffE5E5E5);
                                         },
                                         itemBuilder:
                                             (BuildContext context, int index) {

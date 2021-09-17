@@ -116,7 +116,7 @@ class _CategoryFoodState extends State<CategoryFood>
                                 separatorBuilder:
                                     (BuildContext context, int index) {
                                   return Container(
-                                      height: 1, color: Color(0xffE5E5E5));
+                                      height: 1, color: R.color.color0xffE5E5E5);
                                 },
                                 itemBuilder: (BuildContext context, int index) {
                                   // final selectedIndex =
@@ -143,12 +143,12 @@ class _CategoryFoodState extends State<CategoryFood>
                                     child: Container(
                                         decoration: BoxDecoration(
                                             color: foodOfCategory.length != 0
-                                                ? Color(0xffC3E8D3)
+                                                ? R.color.color0xFFC3E8D3
                                                 : R.color.transparent,
                                             border: Border.all(
                                                 color:
                                                     foodOfCategory.length != 0
-                                                        ? Color(0xff72CB9C)
+                                                        ? R.color.color0xff72CB9C
                                                         : R.color.transparent)),
                                         padding: EdgeInsets.only(
                                             left: 16,
@@ -205,7 +205,7 @@ class _CategoryFoodState extends State<CategoryFood>
 
   showListFood(FoodSubCategoryModel category) {
     showDialog(
-      barrierColor: Color(0xff003F38).withOpacity(0.5),
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => FoodOfCategory(
           category: category, foods: selectedFoods, callback: (value) {}),

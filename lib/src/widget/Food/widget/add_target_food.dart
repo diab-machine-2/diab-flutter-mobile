@@ -107,7 +107,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                       Container(
                                           height: 1,
                                           width: 72,
-                                          color: Color(0xffDDDDDD))
+                                          color: R.color.grayComponentBorder)
                                     ]),
                                     Text('kcal',
                                         style: TextStyle(
@@ -189,21 +189,21 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                 Container(
                                     height: 1,
                                     width: 88,
-                                    color: Color(0xffE5E5E5)),
+                                    color: R.color.color0xffE5E5E5),
                                 SizedBox(width: 16),
                                 Text('Hoặc'),
                                 SizedBox(width: 16),
                                 Container(
                                     height: 1,
                                     width: 88,
-                                    color: Color(0xffE5E5E5))
+                                    color: R.color.color0xffE5E5E5)
                               ]),
                           SizedBox(height: 16),
                           GestureDetector(
                             onTap: () {
                               showDialog(
                                 barrierColor:
-                                    Color(0xff003F38).withOpacity(0.5),
+                                    R.color.color0xff003F38.withOpacity(0.5),
                                 context: context,
                                 builder: (_) =>
                                     CalculatorTDEEFood(callback: (number) {

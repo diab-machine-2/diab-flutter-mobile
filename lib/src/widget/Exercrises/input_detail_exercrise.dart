@@ -209,7 +209,7 @@ class _InputDetailExercrisesControllerState
                                       ]),
                                   SizedBox(height: 16),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                 ]),
                               ),
@@ -293,7 +293,7 @@ class _InputDetailExercrisesControllerState
                                       ]),
                                   SizedBox(height: 16),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                 ]),
                               ),
@@ -308,7 +308,7 @@ class _InputDetailExercrisesControllerState
                           onTap: () {
                             showDialog(
                                 barrierColor:
-                                    Color(0xff003F38).withOpacity(0.5),
+                                    R.color.color0xff003F38.withOpacity(0.5),
                                 context: context,
                                 builder: (_) => CustomInputTimePicker(
                                     time: selectedMinute + selectedHour * 60.0,
@@ -371,7 +371,7 @@ class _InputDetailExercrisesControllerState
                                               Container(
                                                   height: 1,
                                                   width: 54,
-                                                  color: Color(0xffE5E5E5))
+                                                  color: R.color.color0xffE5E5E5)
                                             ],
                                           ),
                                           Padding(
@@ -402,7 +402,7 @@ class _InputDetailExercrisesControllerState
                                               Container(
                                                   height: 1,
                                                   width: 54,
-                                                  color: Color(0xffE5E5E5))
+                                                  color: R.color.color0xffE5E5E5)
                                             ],
                                           ),
                                           Padding(
@@ -520,7 +520,7 @@ class _InputDetailExercrisesControllerState
     }
     if (description.isNotEmpty) {
       showDialog(
-          barrierColor: Color(0xff003F38).withOpacity(0.5),
+          barrierColor: R.color.color0xff003F38.withOpacity(0.5),
           context: context,
           builder: (_) {
             Future.delayed(const Duration(seconds: 5), () {
@@ -684,8 +684,8 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                                 '$e',
                                                 style: TextStyle(
                                                     color: selectedHour == e
-                                                        ? Color(0xff01645A)
-                                                        : Color(0xffC0C2C5),
+                                                        ? R.color.mainColor
+                                                        : R.color.color0xffC0C2C5,
                                                     fontSize: 24,
                                                     fontWeight:
                                                         FontWeight.bold)),
@@ -716,8 +716,8 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                             '${e * 5}',
                                             style: TextStyle(
                                                 color: selectedMinute == e
-                                                    ? Color(0xff01645A)
-                                                    : Color(0xffC0C2C5),
+                                                    ? R.color.mainColor
+                                                    : R.color.color0xffC0C2C5,
                                                 fontSize: 24,
                                                 fontWeight: FontWeight.bold)),
                                       ))

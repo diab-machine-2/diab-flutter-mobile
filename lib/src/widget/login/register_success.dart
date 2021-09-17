@@ -42,7 +42,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                       child: Text(
                           'Vui lòng cập nhật hồ sơ để\nDiaB có thể hỗ trợ bạn tốt hơn!',
                           style: TextStyle(
-                              color: Color(0xff333333),
+                              color: R.color.color0xff333333,
                               fontSize: 16,
                               fontWeight: FontWeight.w400),
                           textAlign: TextAlign.center),

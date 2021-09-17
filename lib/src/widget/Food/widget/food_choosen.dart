@@ -83,7 +83,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
           // height: height,
           decoration: BoxDecoration(
               color: R.color.white,
-              border: Border.all(color: Color(0xffE5E5E5), width: 2),
+              border: Border.all(color: R.color.color0xffE5E5E5, width: 2),
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(16), topRight: Radius.circular(16))),
           padding: EdgeInsets.only(bottom: 16),
@@ -143,7 +143,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                           itemCount: foods.length,
                           separatorBuilder: (BuildContext context, int index) {
                             return Container(
-                                height: 1, color: Color(0xfff5f5f5));
+                                height: 1, color: R.color.color0xfff5f5f5);
                           },
                           itemBuilder: (BuildContext context, int index) {
                             return Container(
@@ -165,7 +165,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                                         Text(
                                             'Đã ăn ${roundAsFixed(foods[index].portion * foods[index].quantity)} ${foods[index].unit}, ${formatNumber(foods[index].quantity * foods[index].calorie)} kcal',
                                             style: TextStyle(
-                                                color: Color(0xff172823),
+                                                color: R.color.color0xff172823,
                                                 fontWeight: FontWeight.w400))
                                       ],
                                     ),

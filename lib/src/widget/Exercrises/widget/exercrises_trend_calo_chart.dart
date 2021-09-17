@@ -104,7 +104,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                               onTap: () {
                                 showDialog(
                                     barrierColor:
-                                        Color(0xff003F38).withOpacity(0.5),
+                                        R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,
                                     builder: (_) => InputCalo(
                                         title: periodFilterType == 1 ||
@@ -424,7 +424,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                             (width + 20))
                                         .toDouble() -
                                     36,
-                                color: Color(0xffDDDDDD),
+                                color: R.color.grayComponentBorder,
                               ),
                             )))),
             Container(
@@ -547,7 +547,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Container(
-                            color: Color(0xff72CB9C),
+                            color: R.color.color0xff72CB9C,
                             width: ((model.trendItems.items.length < 5
                                             ? 5
                                             : model.trendItems.items.length) *
@@ -699,7 +699,7 @@ class _InputCaloState extends State<InputCalo> {
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700)),
                       ),
-                      Container(height: 1, width: 72, color: Color(0xffDDDDDD))
+                      Container(height: 1, width: 72, color: R.color.grayComponentBorder)
                     ]),
                     SizedBox(width: 8),
                     Text('kcal')

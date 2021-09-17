@@ -98,7 +98,7 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
               leadingIcon: GestureDetector(
                   onTap: () {
                     showDialog(
-                      barrierColor: Color(0xff003F38).withOpacity(0.3),
+                      barrierColor: R.color.color0xff003F38.withOpacity(0.3),
                       useSafeArea: false,
                       context: context,
                       builder: (_) => ActionListPanel(selectedIndex: 5),
@@ -152,7 +152,7 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
     Navigator.pushNamed(context, '/add_bmi',
         arguments: {'type': 'input', 'id': null});
     // showDialog(
-    //   barrierColor: Color(0xff003F38).withOpacity(0.8),
+    //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
     //   useSafeArea: false,
     //   context: context,
     //   builder: (_) => FunkyOverlay(),

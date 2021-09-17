@@ -185,7 +185,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                   Container(
                                                       height: 58,
 
-                                                      // color: Color(0xff50C087),
+                                                      // color: R.color.color0xff50C087,
                                                       child: Padding(
                                                         padding:
                                                             const EdgeInsets
@@ -386,8 +386,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                           ),
                                                           Container(
                                                               height: 1,
-                                                              color: Color(
-                                                                  0xffE5E5E5)),
+                                                              color: R.color.color0xffE5E5E5),
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets

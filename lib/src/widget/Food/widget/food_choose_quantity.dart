@@ -94,8 +94,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                         decoration: BoxDecoration(
                             gradient: LinearGradient(
                                 colors: [
-                                  Color(0xFFB1DDDB).withAlpha(90),
-                                  Color(0xFFFED31B).withAlpha(90),
+                                  R.color.color0xffB1DDDB.withAlpha(90),
+                                  R.color.color0xFFFED31B.withAlpha(90),
                                 ],
                                 begin: FractionalOffset(0.3, -0.5),
                                 end: FractionalOffset(0, 1),
@@ -199,8 +199,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                             child: Text((e).toString(),
                                                 style: TextStyle(
                                                     color: selectedQuantity == e
-                                                        ? Color(0xff01645A)
-                                                        : Color(0xffC0C2C5),
+                                                        ? R.color.mainColor
+                                                        : R.color.color0xffC0C2C5,
                                                     fontSize: 24,
                                                     fontWeight:
                                                         FontWeight.bold)),
@@ -209,7 +209,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                           SizedBox(width: 8),
                           Text(',',
                               style: TextStyle(
-                                  color: Color(0xff01645A),
+                                  color: R.color.mainColor,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                           SizedBox(width: 8),
@@ -231,8 +231,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                             child: Text('$e',
                                                 style: TextStyle(
                                                     color: selectedPercent == e
-                                                        ? Color(0xff01645A)
-                                                        : Color(0xffC0C2C5),
+                                                        ? R.color.mainColor
+                                                        : R.color.color0xffC0C2C5,
                                                     fontSize: 24,
                                                     fontWeight:
                                                         FontWeight.bold)),
@@ -251,7 +251,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                             child: Container(
                                 height: 43,
                                 decoration: BoxDecoration(
-                                    color: Color(0xffE2E4E7),
+                                    color: R.color.grayBorder,
                                     borderRadius: BorderRadius.circular(21.5)),
                                 child: Center(
                                     child: Text('Huỷ',
@@ -296,7 +296,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                             child: Container(
                                 height: 43,
                                 decoration: BoxDecoration(
-                                    color: Color(0xff01645A),
+                                    color: R.color.mainColor,
                                     borderRadius: BorderRadius.circular(21.5),
                                     gradient: LinearGradient(
                                         begin: Alignment.topLeft,
@@ -330,7 +330,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     return Container(
         child: Column(
       children: [
-        Text(title, style: TextStyle(color: Color(0xff666666))),
+        Text(title, style: TextStyle(color: R.color.primaryGreyColor)),
         SizedBox(height: 4),
         Text('$number $unit',
             style: TextStyle(color: R.color.mainColor, fontWeight: FontWeight.w600))

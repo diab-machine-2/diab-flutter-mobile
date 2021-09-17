@@ -246,7 +246,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                                 (width + 20))
                                             .toDouble() -
                                         36,
-                                    color: Color(0xffDDDDDD),
+                                    color: R.color.grayComponentBorder,
                                   ),
                                 )))),
                 trendTypeIndex == 1 ||
@@ -271,7 +271,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                             .toDouble() -
                                         36,
                                 height: 0.75,
-                                color: Color(0xff21A567)),
+                                color: R.color.green),
                             Container(
                                 width:
                                     ((length < 5 ? 5 : length) * (width + 20))
@@ -280,14 +280,14 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 height: ((model.goodRange.value -
                                         model.goodRange.key) *
                                     (284 / (maxY - minY))),
-                                color: Color(0xff21A567).withOpacity(0.1)),
+                                color: R.color.green.withOpacity(0.1)),
                             Container(
                                 width:
                                     ((length < 5 ? 5 : length) * (width + 20))
                                             .toDouble() -
                                         36,
                                 height: 0.75,
-                                color: Color(0xff21A567)),
+                                color: R.color.green),
                           ],
                         ),
                       ),
@@ -372,7 +372,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                               return TextStyle(
                                   color: touchIndex == value.toInt()
                                       ? R.color.black
-                                      : Color(0xffC0C2C5),
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal);
                             },

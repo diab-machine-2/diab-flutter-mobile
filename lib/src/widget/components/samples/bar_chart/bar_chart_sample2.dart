@@ -8,8 +8,8 @@ class BarChartSample2 extends StatefulWidget {
 }
 
 class BarChartSample2State extends State<BarChartSample2> {
-  final Color leftBarColor = const Color(0xff01645A);
-  final Color rightBarColor = const Color(0xffFDB913);
+  final Color leftBarColor = R.color.mainColor;
+  final Color rightBarColor = R.color.yellow;
   final double width = 7;
 
   List<BarChartGroupData> rawBarGroups;
@@ -127,8 +127,8 @@ class BarChartSample2State extends State<BarChartSample2> {
                         show: true,
                         bottomTitles: SideTitles(
                           showTitles: true,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Color(0xff7589a2),
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.color0xff7589a2,
                               fontWeight: FontWeight.bold,
                               fontSize: 14),
                           margin: 20,
@@ -152,8 +152,8 @@ class BarChartSample2State extends State<BarChartSample2> {
                         ),
                         leftTitles: SideTitles(
                           showTitles: true,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Color(0xff7589a2),
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.color0xff7589a2,
                               fontWeight: FontWeight.bold,
                               fontSize: 14),
                           margin: 32,

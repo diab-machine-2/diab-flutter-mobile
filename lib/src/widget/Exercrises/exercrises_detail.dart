@@ -244,8 +244,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                   int index) {
                                                             return Container(
                                                                 height: 1,
-                                                                color: Color(
-                                                                    0xffE2E4E7));
+                                                                color: R.color.grayBorder);
                                                           },
                                                           itemBuilder:
                                                               (BuildContext

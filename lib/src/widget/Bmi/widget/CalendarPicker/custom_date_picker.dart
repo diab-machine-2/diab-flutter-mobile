@@ -760,7 +760,7 @@ class _MonthPickerState extends State<_MonthPicker> {
         '${_localizations.previousMonthTooltip} ${_localizations.formatMonthYear(_previousMonthDate)}';
     final String nextTooltipText =
         '${_localizations.nextMonthTooltip} ${_localizations.formatMonthYear(_nextMonthDate)}';
-    final Color controlColor = Color(0xff01645A); //.withOpacity(0.60);
+    final Color controlColor = R.color.mainColor; //.withOpacity(0.60);
 
     return Semantics(
       child: Column(
@@ -992,20 +992,20 @@ class _DayPickerState extends State<_DayPicker> {
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
     final TextTheme textTheme = Theme.of(context).textTheme;
-    final TextStyle headerStyle = TextStyle(color: Color(0xff9C9C9C));
+    final TextStyle headerStyle = TextStyle(color: R.color.captionColorGray);
     // final TextStyle headerStyle = textTheme.caption?.apply(
     //   color: colorScheme.onSurface.withOpacity(0.60),
     // );
     final TextStyle dayStyle =
-        TextStyle(color: Color(0xffC0C2C5), fontSize: 16); //textTheme.caption;
+        TextStyle(color: R.color.color0xffC0C2C5, fontSize: 16); //textTheme.caption;
     final Color enabledDayColor =
         R.color.black; //colorScheme.onSurface.withOpacity(0.87);
     final Color disabledDayColor =
-        Color(0xffC0C2C5); //colorScheme.onSurface.withOpacity(0.38);
+        R.color.color0xffC0C2C5; //colorScheme.onSurface.withOpacity(0.38);
     final Color selectedDayColor = colorScheme.onPrimary;
     final Color selectedDayBackground =
-        Color(0xff01645A); //colorScheme.primary;
-    final Color todayColor = Color(0xff01645A); //colorScheme.primary;
+        R.color.mainColor; //colorScheme.primary;
+    final Color todayColor = R.color.mainColor; //colorScheme.primary;
 
     final int year = widget.displayedMonth.year;
     final int month = widget.displayedMonth.month;

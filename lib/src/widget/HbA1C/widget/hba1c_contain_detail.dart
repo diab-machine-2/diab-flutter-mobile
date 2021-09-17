@@ -122,7 +122,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                                   ? '(+${model.differentPercentage}%)'
                                                   : '(${model.differentPercentage}%)'),
                                           style: TextStyle(
-                                              color: Color(0xff666666),
+                                              color: R.color.primaryGreyColor,
                                               fontSize: 20,
                                               fontWeight: FontWeight.w400)),
                                     ],

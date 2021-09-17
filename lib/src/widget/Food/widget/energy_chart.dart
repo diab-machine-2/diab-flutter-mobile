@@ -141,7 +141,7 @@ class EnergyChartState extends State<EnergyChart>
                               onTap: () {
                                 showDialog(
                                   barrierColor:
-                                      Color(0xff003F38).withOpacity(0.5),
+                                      R.color.color0xff003F38.withOpacity(0.5),
                                   context: context,
                                   builder: (_) => AddTargetFood(
                                       goal: model.goal.round(),
@@ -249,7 +249,7 @@ class EnergyChartState extends State<EnergyChart>
                                   model.goal == null
                                       ? '0 kcal'
                                       : '/${formatNumber(model.goal)} kcal',
-                                  style: TextStyle(color: Color(0xff666666)))
+                                  style: TextStyle(color: R.color.primaryGreyColor))
                             ],
                           ),
                         ),

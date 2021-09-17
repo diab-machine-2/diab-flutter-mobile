@@ -158,18 +158,18 @@ class FoodTrendChartState extends State<FoodTrendChart>
                   padding: EdgeInsets.only(left: 18, right: 18),
                   decoration: BoxDecoration(
                       color:
-                          isEnergyTab ? Color(0xff01645A) : R.color.transparent,
+                          isEnergyTab ? R.color.mainColor : R.color.transparent,
                       border: Border.all(
                           color: isEnergyTab
-                              ? Color(0xff01645A)
-                              : Color(0xff666666),
+                              ? R.color.mainColor
+                              : R.color.primaryGreyColor,
                           width: 0.5),
                       borderRadius: BorderRadius.circular(16)),
                   child: Center(
                     child: Text('Năng lượng',
                         style: TextStyle(
                             color:
-                                isEnergyTab ? R.color.white : Color(0xff666666),
+                                isEnergyTab ? R.color.white : R.color.primaryGreyColor,
                             fontSize: 14,
                             fontWeight: isEnergyTab
                                 ? FontWeight.w700
@@ -188,16 +188,16 @@ class FoodTrendChartState extends State<FoodTrendChart>
                   width: 135,
                   decoration: BoxDecoration(
                       color:
-                          isEnergyTab ? R.color.transparent : Color(0xff01645A),
+                          isEnergyTab ? R.color.transparent : R.color.mainColor,
                       border: Border.all(
-                          color: isEnergyTab ? Color(0xff666666) : R.color.white,
+                          color: isEnergyTab ? R.color.primaryGreyColor : R.color.white,
                           width: 0.5),
                       borderRadius: BorderRadius.circular(16)),
                   child: Center(
                     child: Text('Chất bột đường',
                         style: TextStyle(
                             color:
-                                isEnergyTab ? Color(0xff666666) : R.color.white,
+                                isEnergyTab ? R.color.primaryGreyColor : R.color.white,
                             fontSize: 14,
                             fontWeight: isEnergyTab
                                 ? FontWeight.w400
@@ -245,7 +245,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                                     (width + 20))
                                                 .toDouble() -
                                             36,
-                                        color: Color(0xffDDDDDD),
+                                        color: R.color.grayComponentBorder,
                                       ),
                                     )))),
                     model.avgValue > maxY || model.avgValue < minY
@@ -261,7 +261,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                 Padding(
                                   padding: EdgeInsets.only(left: 8),
                                   child: Container(
-                                    color: Color(0xff72CB9C),
+                                    color: R.color.color0xff72CB9C,
                                     width: ((model.items.length < 5
                                                     ? 5
                                                     : model.items.length) *

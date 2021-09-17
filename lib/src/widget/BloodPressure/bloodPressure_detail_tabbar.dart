@@ -111,7 +111,7 @@ class _BloodPressureDetailTabbarControllerState
             leadingIcon: GestureDetector(
                 onTap: () {
                   showDialog(
-                    barrierColor: Color(0xff003F38).withOpacity(0.3),
+                    barrierColor: R.color.color0xff003F38.withOpacity(0.3),
                     useSafeArea: false,
                     context: context,
                     builder: (_) => ActionListPanel(selectedIndex: 2),
@@ -168,7 +168,7 @@ class _BloodPressureDetailTabbarControllerState
     Navigator.pushNamed(context, '/add_bloodPressure',
         arguments: {'type': 'input', 'id': null});
     // showDialog(
-    //   barrierColor: Color(0xff003F38).withOpacity(0.8),
+    //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
     //   useSafeArea: false,
     //   context: context,
     //   builder: (_) => FunkyOverlay(),

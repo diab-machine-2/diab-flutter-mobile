@@ -265,7 +265,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             needleStartWidth: 0,
                             needleEndWidth: 0,
                             knobStyle: KnobStyle(
-                                knobRadius: 0.07, color: Color(0xffEFEFEF)),
+                                knobRadius: 0.07, color: R.color.color0xffEFEFEF),
                           ),
                           NeedlePointer(
                             needleStartWidth: 0.1,
@@ -296,43 +296,43 @@ class BmiScaleChartState extends State<BmiScaleChart>
                               startWidth: 0.2,
                               endWidth: 0.2,
                               sizeUnit: GaugeSizeUnit.factor,
-                              color: const Color(0xffF58220)),
+                              color: R.color.color0xffF58220),
                           GaugeRange(
                               startValue: 8.2,
                               endValue: 15.8,
                               startWidth: 0.2,
                               sizeUnit: GaugeSizeUnit.factor,
                               endWidth: 0.2,
-                              color: const Color(0xff50C087)),
+                              color: R.color.color0xff50C087),
                           GaugeRange(
                               startValue: 16.2,
                               endValue: 23.8,
                               startWidth: 0.2,
                               sizeUnit: GaugeSizeUnit.factor,
                               endWidth: 0.2,
-                              color: const Color(0xffFFE3E3)),
+                              color: R.color.color0xffFFE3E3),
                           GaugeRange(
                               startValue: 24.2,
                               endValue: 31.8,
                               startWidth: 0.2,
                               sizeUnit: GaugeSizeUnit.factor,
                               endWidth: 0.2,
-                              color: const Color(0xffFF8E8E)),
+                              color: R.color.color0xffFF8E8E),
                           GaugeRange(
                               startValue: 32.2,
                               endValue: 39.8,
                               sizeUnit: GaugeSizeUnit.factor,
                               startWidth: 0.2,
                               endWidth: 0.2,
-                              color: const Color(0xffE53935)),
+                              color: R.color.red),
                         ]),
                     RadialAxis(
                       minorTicksPerInterval: 8,
                       tickOffset: 0,
                       minorTickStyle:
-                          MinorTickStyle(color: Color(0xffDDDDDD), length: 2),
+                          MinorTickStyle(color: R.color.grayComponentBorder, length: 2),
                       majorTickStyle:
-                          MajorTickStyle(color: Color(0xffDDDDDD), length: 2),
+                          MajorTickStyle(color: R.color.grayComponentBorder, length: 2),
                       showAxisLine: false,
                       showLabels: false,
                       showTicks: true,
@@ -349,7 +349,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             textStyle: GaugeTextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
-                                color: Color(0xff666666)),
+                                color: R.color.primaryGreyColor),
                             offsetUnit: GaugeSizeUnit.factor,
                             markerOffset: -0.5),
                         MarkerPointer(
@@ -359,7 +359,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             textStyle: GaugeTextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
-                                color: Color(0xff666666)),
+                                color: R.color.primaryGreyColor),
                             offsetUnit: GaugeSizeUnit.factor,
                             markerOffset: -0.5),
                         MarkerPointer(
@@ -369,7 +369,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             textStyle: GaugeTextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
-                                color: Color(0xff666666)),
+                                color: R.color.primaryGreyColor),
                             offsetUnit: GaugeSizeUnit.factor,
                             markerOffset: -0.5),
                         MarkerPointer(
@@ -379,7 +379,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             textStyle: GaugeTextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
-                                color: Color(0xff666666)),
+                                color: R.color.primaryGreyColor),
                             offsetUnit: GaugeSizeUnit.factor,
                             markerOffset: -0.5),
                         MarkerPointer(
@@ -389,7 +389,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             textStyle: GaugeTextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
-                                color: Color(0xff666666)),
+                                color: R.color.primaryGreyColor),
                             offsetUnit: GaugeSizeUnit.factor,
                             markerOffset: -0.5)
                       ],

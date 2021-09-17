@@ -86,7 +86,7 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
                                 color: R.color.textDark)),
                       ),
                       Container(
-                        color: Color(0xffB1DDDB),
+                        color: R.color.color0xffB1DDDB,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Row(
@@ -129,7 +129,7 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
                                   separatorBuilder:
                                       (BuildContext context, int index) {
                                     return Container(
-                                        height: 1, color: Color(0xffE5E5E5));
+                                        height: 1, color: R.color.color0xffE5E5E5);
                                   },
                                   itemBuilder:
                                       (BuildContext context, int index) {
@@ -187,7 +187,7 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
                   ),
                 ),
                 // index != data.length - 1
-                //     ? Container(height: 1, width: 380, color: Color(0xffD6D8E0))
+                //     ? Container(height: 1, width: 380, color: R.color.color0xffD6D8E0)
                 //     : SizedBox()
               ],
             ),

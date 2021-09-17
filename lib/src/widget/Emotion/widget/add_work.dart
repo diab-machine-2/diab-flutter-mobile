@@ -267,14 +267,14 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
           decoration: BoxDecoration(
             color: selectedIndex != -1 ||
                     (activityModel == null && otherActivity != null)
-                ? Color(0xffF4DBBD).withOpacity(0.7)
+                ? R.color.color0xffF4DBBD.withOpacity(0.7)
                 : R.color.white,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: selectedIndex != -1 ||
                       (activityModel == null && otherActivity != null)
-                  ? Color(0xffE5B440)
-                  : Color(0xffB1DDDB),
+                  ? R.color.color0xffE5B440
+                  : R.color.color0xffB1DDDB,
               width: 1.0,
             ),
           ),
@@ -327,7 +327,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 GestureDetector(
-                    child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                    child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                     onTap: () {
                       Navigator.pop(context);
                     })
@@ -337,7 +337,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                   width: width - 137,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(width: 0.5, color: Color(0xff008479))),
+                      border: Border.all(width: 0.5, color: R.color.greenGradientBottom)),
                   child: TextField(
                       controller: textEditingController,
                       keyboardType: TextInputType.multiline,
@@ -348,7 +348,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                         fillColor: R.color.textDark,
                         enabledBorder: OutlineInputBorder(
                           borderSide:
-                              BorderSide(color: Color(0xffDDDDDD), width: 1.0),
+                              BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         focusedBorder: OutlineInputBorder(

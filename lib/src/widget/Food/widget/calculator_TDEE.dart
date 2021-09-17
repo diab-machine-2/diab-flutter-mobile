@@ -105,7 +105,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                               onTap: () {
                                                 showDialog(
                                                   barrierColor:
-                                                      Color(0xff003F38)
+                                                      R.color.color0xff003F38
                                                           .withOpacity(0.5),
                                                   context: context,
                                                   builder: (_) =>
@@ -138,8 +138,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                         style: TextStyle(
                                                             color: selectedWeight ==
                                                                     0
-                                                                ? Color(
-                                                                    0xff9C9C9C)
+                                                                ? R.color.captionColorGray
                                                                 : R.color.textDark,
                                                             fontSize: 34,
                                                             fontWeight:
@@ -150,7 +149,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                             Container(
                                                 height: 1,
                                                 width: 100,
-                                                color: Color(0xffE5E5E5))
+                                                color: R.color.color0xffE5E5E5)
                                           ],
                                         ),
                                         Text('kg',
@@ -191,7 +190,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                               onTap: () {
                                                 showDialog(
                                                   barrierColor:
-                                                      Color(0xff003F38)
+                                                      R.color.color0xff003F38
                                                           .withOpacity(0.5),
                                                   context: context,
                                                   builder: (_) =>
@@ -224,8 +223,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                         style: TextStyle(
                                                             color: selectedHeight ==
                                                                     0
-                                                                ? Color(
-                                                                    0xff9C9C9C)
+                                                                ? R.color.captionColorGray
                                                                 : R.color.textDark,
                                                             fontSize: 34,
                                                             fontWeight:
@@ -236,7 +234,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                             Container(
                                                 height: 1,
                                                 width: 100,
-                                                color: Color(0xffE5E5E5))
+                                                color: R.color.color0xffE5E5E5)
                                           ],
                                         ),
                                         Text('cm',
@@ -277,7 +275,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                               onTap: () {
                                                 showDialog(
                                                   barrierColor:
-                                                      Color(0xff003F38)
+                                                      R.color.color0xff003F38
                                                           .withOpacity(0.5),
                                                   context: context,
                                                   builder: (_) =>
@@ -310,8 +308,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                         style: TextStyle(
                                                             color: selectedYear ==
                                                                     0
-                                                                ? Color(
-                                                                    0xff9C9C9C)
+                                                                ? R.color.captionColorGray
                                                                 : R.color.textDark,
                                                             fontSize: 34,
                                                             fontWeight:
@@ -322,7 +319,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                             Container(
                                                 height: 1,
                                                 width: 100,
-                                                color: Color(0xffE5E5E5))
+                                                color: R.color.color0xffE5E5E5)
                                           ],
                                         ),
                                         SizedBox(
@@ -350,7 +347,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                   GestureDetector(
                                     onTap: () {
                                       showDialog(
-                                          barrierColor: Color(0xff003F38)
+                                          barrierColor: R.color.color0xff003F38
                                               .withOpacity(0.5),
                                           context: context,
                                           builder: (_) =>
@@ -381,7 +378,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                         ),
                                         SizedBox(height: 16),
                                         Container(
-                                            height: 1, color: Color(0xffE5E5E5))
+                                            height: 1, color: R.color.color0xffE5E5E5)
                                       ]),
                                     ),
                                   )

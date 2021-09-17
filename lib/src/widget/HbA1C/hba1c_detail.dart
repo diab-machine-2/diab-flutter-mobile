@@ -293,8 +293,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                       SizedBox(height: 16),
                                                       Container(
                                                           height: 1,
-                                                          color: Color(
-                                                              0xffEEEFF3)),
+                                                          color: R.color.color0xffEEEFF3),
                                                       SizedBox(height: 16),
                                                       Row(
                                                         crossAxisAlignment:

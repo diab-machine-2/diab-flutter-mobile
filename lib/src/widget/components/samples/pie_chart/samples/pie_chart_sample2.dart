@@ -73,7 +73,7 @@ class PieChart2State extends State {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const <Widget>[
+                    children: <Widget>[
                       Indicator(
                         color: Color(0xffE53935),
                         number: '10%',
@@ -93,7 +93,7 @@ class PieChart2State extends State {
                         height: 4,
                       ),
                       Indicator(
-                        color: Color(0xff21A567),
+                        color: R.color.green,
                         text: 'Tốt',
                         number: '10%',
                         isSquare: true,
@@ -111,7 +111,7 @@ class PieChart2State extends State {
                         height: 4,
                       ),
                       Indicator(
-                        color: Color(0xffF58220),
+                        color: R.color.color0xffF58220,
                         number: '10%',
                         text: 'Rất thấp',
                         isSquare: true,
@@ -149,14 +149,14 @@ class PieChart2State extends State {
           );
         case 1:
           return PieChartSectionData(
-            color: const Color(0xff21A567),
+            color: R.color.green,
             value: 30,
             showTitle: false,
             radius: radius,
           );
         case 2:
           return PieChartSectionData(
-            color: const Color(0xffF58220),
+            color: R.color.color0xffF58220,
             value: 15,
             showTitle: false,
             radius: radius,

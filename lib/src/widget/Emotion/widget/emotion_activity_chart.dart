@@ -79,8 +79,8 @@ class EmotionActivityChartState extends State<EmotionActivityChart>
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
                               colors: [
-                                Color(0xFFC3E8D3).withOpacity(0.1),
-                                Color(0xFFB1DDDB).withOpacity(0.1),
+                                R.color.color0xFFC3E8D3.withOpacity(0.1),
+                                R.color.color0xffB1DDDB.withOpacity(0.1),
                               ],
                               begin: FractionalOffset(0.1, 0.0),
                               end: FractionalOffset(0.5, 0.5),

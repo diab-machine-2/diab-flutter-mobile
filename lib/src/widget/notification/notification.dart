@@ -125,7 +125,7 @@ class NotificationControllerState extends State<NotificationController>
                                     padding:
                                         EdgeInsets.only(left: 16, right: 16),
                                     child: Container(
-                                        color: Color(0xffE5E5E5), height: 1));
+                                        color: R.color.color0xffE5E5E5, height: 1));
                               },
                               itemBuilder: (BuildContext context, int index) {
                                 if (model.length == 0) {
@@ -206,7 +206,7 @@ class NotificationControllerState extends State<NotificationController>
                                             ? []
                                             : [
                                                 IconSlideAction(
-                                                  color: Color(0xffFF5552),
+                                                  color: R.color.color0xffFF5552,
                                                   iconWidget: Column(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
@@ -289,7 +289,7 @@ class NotificationControllerState extends State<NotificationController>
                                                                           height:
                                                                               10,
                                                                           decoration: BoxDecoration(
-                                                                              color: Color(0xff4BB2AB),
+                                                                              color: R.color.greenGradientTop,
                                                                               borderRadius: BorderRadius.circular(5)))
                                                                 ],
                                                               ),
@@ -313,8 +313,7 @@ class NotificationControllerState extends State<NotificationController>
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w400,
-                                                                      color: Color(
-                                                                          0xffA1A3A6))),
+                                                                      color: R.color.color0xffA1A3A6)),
                                                             )
                                                           ]),
                                                     )
@@ -418,7 +417,7 @@ class NotificationControllerState extends State<NotificationController>
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),

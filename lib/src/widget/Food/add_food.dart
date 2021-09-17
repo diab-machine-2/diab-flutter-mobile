@@ -182,7 +182,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                   height: 136,
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(16),
-                                      color: Color(0xffF4DBBD)),
+                                      color: R.color.color0xffF4DBBD),
                                 ),
                               ),
                               Row(
@@ -235,7 +235,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                 onTap: () {
                                   showDialog(
                                     barrierColor:
-                                        Color(0xff003F38).withOpacity(0.5),
+                                        R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                       initDate: selectedDate,
@@ -272,7 +272,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -316,7 +316,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -368,7 +368,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     ListView.separated(
                                         physics: NeverScrollableScrollPhysics(),
                                         shrinkWrap: true,
@@ -377,7 +377,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                         separatorBuilder: (context, index) {
                                           return Container(
                                               height: 1,
-                                              color: Color(0xffD6D8E0));
+                                              color: R.color.color0xffD6D8E0);
                                         },
                                         itemBuilder:
                                             (BuildContext context, int index) {
@@ -505,9 +505,9 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: Color(0xff666666)))),
+                                              color: R.color.primaryGreyColor))),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -903,7 +903,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1026,7 +1026,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1068,7 +1068,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chọn trong thư viện",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1086,7 +1086,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chụp ảnh",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1098,7 +1098,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         ],
         cancelButton: CupertinoActionSheetAction(
           child: Text("Huỷ",
-              style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
           },

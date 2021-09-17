@@ -186,7 +186,7 @@ class ActionListIntensityState extends State<ActionListIntensity> {
                               width: 373,
                               color: selected == model
                                   ? R.color.greenbg
-                                  : Color(0xffD6D8E0)),
+                                  : R.color.color0xffD6D8E0),
                         )
                       : SizedBox(),
                 ],

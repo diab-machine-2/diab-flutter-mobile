@@ -143,7 +143,7 @@ class BloodPressureDetailItem extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(height: 16),
-                                Container(height: 1, color: Color(0xffEEEFF3)),
+                                Container(height: 1, color: R.color.color0xffEEEFF3),
                                 SizedBox(height: 16),
                                 Text(element['note'],
                                     style: TextStyle(

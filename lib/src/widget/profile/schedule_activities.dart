@@ -58,8 +58,8 @@ class _ScheduleActivityControllerState
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                       colors: [
-                        Color(0xFFFDC798).withOpacity(0.3),
-                        Color(0xFFE6F6ED).withOpacity(0.9),
+                        R.color.color0xFFFDC798.withOpacity(0.3),
+                        R.color.greenbg.withOpacity(0.9),
                       ],
                       begin: FractionalOffset(1, 1),
                       end: FractionalOffset(0.9, 0.5),
@@ -148,7 +148,7 @@ class _ScheduleActivityControllerState
             GestureDetector(
               onTap: () {
                 showDialog(
-                    barrierColor: Color(0xff003F38).withOpacity(0.5),
+                    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                     context: context,
                     builder: (_) => CustomInputTimePicker(
                         title: 'Thời gian ' +
@@ -192,7 +192,7 @@ class _ScheduleActivityControllerState
                             color: R.color.black,
                             fontSize: 40,
                             fontWeight: FontWeight.w700)),
-                    Container(height: 1, width: 120, color: Color(0xffDDDDDD))
+                    Container(height: 1, width: 120, color: R.color.grayComponentBorder)
                   ])
                 ]),
               ),
@@ -300,7 +300,7 @@ class _ScheduleActivityControllerState
                       top: 0,
                       right: 0,
                       child: IconButton(
-                          icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                          icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                           onPressed: () {
                             Navigator.pop(context);
                           }),

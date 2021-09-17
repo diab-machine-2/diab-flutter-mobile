@@ -77,7 +77,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
                     height: 48,
                     width: 195,
                     decoration: BoxDecoration(
-                        color: Color(0xff01645A),
+                        color: R.color.mainColor,
                         borderRadius: BorderRadius.circular(21.5),
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,

@@ -45,7 +45,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
           child: Container(
             height: 3.86,
             width: 60,
-            decoration: BoxDecoration(color: Color(0xffE5E5E5)),
+            decoration: BoxDecoration(color: R.color.color0xffE5E5E5),
           ),
         ),
         SizedBox(height: 27),
@@ -156,7 +156,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
                           width: 373,
                           color: selectedIndex == index
                               ? R.color.greenbg
-                              : Color(0xffD6D8E0))
+                              : R.color.color0xffD6D8E0)
                       : SizedBox(),
                 ],
               ),

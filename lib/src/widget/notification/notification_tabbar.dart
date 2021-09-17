@@ -54,7 +54,7 @@ class _NotificationTabbarControllerState
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Container(
-        color: Color(0xfff5f5f5),
+        color: R.color.color0xfff5f5f5,
         child: Column(children: [
           CustomAppBar(
             backgroundColor: R.color.transparent,

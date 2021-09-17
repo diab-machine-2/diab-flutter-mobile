@@ -39,7 +39,7 @@ class _NotificationDetailControllerState
         body: notification == null
             ? Center(child: CircularProgressIndicator())
             : Container(
-                color: Color(0xfff5f5f5),
+                color: R.color.color0xfff5f5f5,
                 child: Stack(children: [
                   Column(
                     children: [

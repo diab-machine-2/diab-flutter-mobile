@@ -46,11 +46,11 @@ class FoodItem extends StatelessWidget {
       child: Container(
           decoration: BoxDecoration(
               color: selectedModel != null
-                  ? Color(0xffC3E8D3)
+                  ? R.color.color0xFFC3E8D3
                   : R.color.transparent,
               border: Border.all(
                   color: selectedModel != null
-                      ? Color(0xff72CB9C)
+                      ? R.color.color0xff72CB9C
                       : R.color.transparent)),
           padding: EdgeInsets.only(left: 16, right: 16, top: 11, bottom: 11),
           child: Row(children: [
@@ -112,7 +112,7 @@ class FoodItem extends StatelessWidget {
 
   showFoodQuantity(BuildContext context) {
     showDialog(
-      barrierColor: Color(0xff003F38).withOpacity(0.5),
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => FoodChooseQuantity(
           model: model,

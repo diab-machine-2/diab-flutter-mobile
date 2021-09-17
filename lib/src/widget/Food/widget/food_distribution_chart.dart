@@ -135,12 +135,12 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                   left: 18, right: 18),
                                               decoration: BoxDecoration(
                                                   color: isEnergyTab
-                                                      ? Color(0xff01645A)
+                                                      ? R.color.mainColor
                                                       : R.color.transparent,
                                                   border: Border.all(
                                                       color: isEnergyTab
-                                                          ? Color(0xff01645A)
-                                                          : Color(0xff666666),
+                                                          ? R.color.mainColor
+                                                          : R.color.primaryGreyColor,
                                                       width: 0.5),
                                                   borderRadius:
                                                       BorderRadius.circular(
@@ -150,7 +150,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                     style: TextStyle(
                                                         color: isEnergyTab
                                                             ? R.color.white
-                                                            : Color(0xff666666),
+                                                            : R.color.primaryGreyColor,
                                                         fontSize: 14,
                                                         fontWeight: isEnergyTab
                                                             ? FontWeight.w700
@@ -170,10 +170,10 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                               decoration: BoxDecoration(
                                                   color: isEnergyTab
                                                       ? R.color.transparent
-                                                      : Color(0xff01645A),
+                                                      : R.color.mainColor,
                                                   border: Border.all(
                                                       color: isEnergyTab
-                                                          ? Color(0xff666666)
+                                                          ? R.color.primaryGreyColor
                                                           : R.color.white,
                                                       width: 0.5),
                                                   borderRadius:
@@ -183,7 +183,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                 child: Text('Chất bột đường',
                                                     style: TextStyle(
                                                         color: isEnergyTab
-                                                            ? Color(0xff666666)
+                                                            ? R.color.primaryGreyColor
                                                             : R.color.white,
                                                         fontSize: 14,
                                                         fontWeight: isEnergyTab

@@ -71,8 +71,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
           decoration: BoxDecoration(
               gradient: LinearGradient(
                   colors: [
-                    Color(0xFFFDC798).withOpacity(0.3),
-                    Color(0xFFE6F6ED).withOpacity(0.9),
+                    R.color.color0xFFFDC798.withOpacity(0.3),
+                    R.color.greenbg.withOpacity(0.9),
                   ],
                   begin: FractionalOffset(1, 1),
                   end: FractionalOffset(0.9, 0.5),
@@ -198,7 +198,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                     ),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffe5e5e5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
@@ -223,7 +223,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                           Container(
                                               height: 46,
                                               width: 1,
-                                              color: Color(0xffe5e5e5)),
+                                              color: R.color.color0xffE5E5E5),
                                           Expanded(
                                             child: GestureDetector(
                                               onTap: () {
@@ -635,7 +635,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                     children: [
                       Text(title, style: TextStyle(color: R.color.black)),
                       SizedBox(height: 2),
-                      Text(subTitle, style: TextStyle(color: Color(0xff9c9c9c)))
+                      Text(subTitle, style: TextStyle(color: R.color.captionColorGray))
                     ]),
               )
             ]),
@@ -658,7 +658,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                     width: 24, height: 24),
                 SizedBox(width: 16),
                 Text("Chọn trong thư viện",
-                    style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                    style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
           ),
@@ -676,7 +676,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                     width: 24, height: 24),
                 SizedBox(width: 16),
                 Text("Chụp ảnh",
-                    style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                    style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
           ),
@@ -688,7 +688,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
       ],
       cancelButton: CupertinoActionSheetAction(
         child: Text("Huỷ",
-            style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+            style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
         onPressed: () {
           Navigator.pop(context);
         },
@@ -1126,7 +1126,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1148,7 +1148,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               fillColor: R.color.textDark,
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: Color(0xffDDDDDD), width: 1.0),
+                                    color: R.color.grayComponentBorder, width: 1.0),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               focusedBorder: OutlineInputBorder(
@@ -1279,7 +1279,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1408,7 +1408,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1529,7 +1529,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1654,7 +1654,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1764,7 +1764,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
   showDialogWeight() {
     showDialog(
-      barrierColor: Color(0xff003F38).withOpacity(0.5),
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => CustomNumPicker(
           callback: (number) {
@@ -1819,7 +1819,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
   showDialogHeight() {
     showDialog(
-      barrierColor: Color(0xff003F38).withOpacity(0.5),
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => CustomNumPicker(
           callback: (data) {
@@ -1893,7 +1893,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1912,7 +1912,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                             fillColor: R.color.textDark,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Color(0xffDDDDDD), width: 1.0),
+                                  color: R.color.grayComponentBorder, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
@@ -2149,7 +2149,7 @@ class _EmailValidateState extends State<EmailValidate> {
                     fontSize: 16,
                     fontWeight: FontWeight.w600)),
             GestureDetector(
-                child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                 onTap: () {
                   Navigator.pop(context);
                 })
@@ -2168,7 +2168,7 @@ class _EmailValidateState extends State<EmailValidate> {
                     fillColor: R.color.textDark,
                     enabledBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Color(0xffDDDDDD), width: 1.0),
+                          BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -2200,7 +2200,7 @@ class _EmailValidateState extends State<EmailValidate> {
                   padding: EdgeInsets.only(top: 4),
                   child: Text('Email không hợp lệ',
                       style: TextStyle(
-                          color: Color(0xffFF5756),
+                          color: R.color.color0xffFF5756,
                           fontSize: 14,
                           fontWeight: FontWeight.w400)),
                 )
@@ -2342,8 +2342,8 @@ class _GenderPickerState extends State<GenderPicker> {
                   child: Text(e == 0 ? 'Nam' : 'Nữ',
                       style: TextStyle(
                           color: selectedItem == e
-                              ? Color(0xff01645A)
-                              : Color(0xffC0C2C5),
+                              ? R.color.mainColor
+                              : R.color.color0xffC0C2C5,
                           fontSize: 24,
                           fontWeight: FontWeight.bold)),
                 ))
@@ -2407,8 +2407,8 @@ class _DiabetesStatusPickerState extends State<DiabetesStatusPicker> {
                       child: Text(diabeteStates[e]['value'],
                           style: TextStyle(
                               color: selectedItem == e
-                                  ? Color(0xff01645A)
-                                  : Color(0xffC0C2C5),
+                                  ? R.color.mainColor
+                                  : R.color.color0xffC0C2C5,
                               fontSize: 20,
                               fontWeight: FontWeight.bold)),
                     ))
@@ -2456,8 +2456,8 @@ class _DiabetesStatusDatePickerState extends State<DiabetesStatusDatePicker> {
                   child: Text((e + 1900).toString(),
                       style: TextStyle(
                           color: (selectedYear) == e
-                              ? Color(0xff01645A)
-                              : Color(0xffC0C2C5),
+                              ? R.color.mainColor
+                              : R.color.color0xffC0C2C5,
                           fontSize: 24,
                           fontWeight: FontWeight.bold)),
                 ))
@@ -2507,12 +2507,12 @@ class _MotivationPopupState extends State<MotivationPopup> {
                 SizedBox(height: 8),
                 Text('Còn ${100 - textEditingController.text.length} ký tự',
                     style: TextStyle(
-                        color: Color(0xff666666),
+                        color: R.color.primaryGreyColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w400))
               ]),
               GestureDetector(
-                  child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                  child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                   onTap: () {
                     Navigator.pop(context);
                   })
@@ -2533,7 +2533,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
                     fillColor: R.color.textDark,
                     enabledBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Color(0xffDDDDDD), width: 1.0),
+                          BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(

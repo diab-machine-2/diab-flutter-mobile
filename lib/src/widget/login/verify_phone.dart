@@ -136,12 +136,12 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                   inactiveFillColor: R.color.white,
                                   selectedFillColor: R.color.white,
                                   activeColor:
-                                      error ? R.color.red : Color(0xff7EC8C3),
+                                      error ? R.color.red : R.color.notActiveGreen,
                                   selectedColor: R.color.mainColor,
                                   disabledColor:
-                                      error ? R.color.red : Color(0xff7EC8C3),
+                                      error ? R.color.red : R.color.notActiveGreen,
                                   inactiveColor:
-                                      error ? R.color.red : Color(0xff7EC8C3)),
+                                      error ? R.color.red : R.color.notActiveGreen),
                               backgroundColor: R.color.transparent,
                               enableActiveFill: true,
                               onCompleted: (value) {
@@ -194,7 +194,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                   height: 48,
                                   width: 227,
                                   decoration: BoxDecoration(
-                                      color: Color(0xff01645A),
+                                      color: R.color.mainColor,
                                       borderRadius: BorderRadius.circular(21.5),
                                       gradient: LinearGradient(
                                           begin: Alignment.topLeft,
@@ -219,16 +219,16 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                     Container(
                                         height: 1,
                                         width: 36,
-                                        color: Color(0xffD6D8E0)),
+                                        color: R.color.color0xffD6D8E0),
                                     SizedBox(width: 8),
                                     Text('Hoặc',
                                         style: TextStyle(
-                                            color: Color(0xff232527))),
+                                            color: R.color.color0xff232527)),
                                     SizedBox(width: 8),
                                     Container(
                                         height: 1,
                                         width: 36,
-                                        color: Color(0xffD6D8E0))
+                                        color: R.color.color0xffD6D8E0)
                                   ]),
                               SizedBox(height: 8),
                               GestureDetector(
@@ -509,7 +509,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                 textAlign: TextAlign.center,
                 text: TextSpan(
                   text: 'Đã gửi OTP 5 lần cho số điện thoại ',
-                  style: TextStyle(color: Color(0xff172823), fontSize: 16),
+                  style: TextStyle(color: R.color.color0xff172823, fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(
                         text: widget.phone,
@@ -519,7 +519,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                         text:
                             '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
                         style:
-                            TextStyle(color: Color(0xff172823), fontSize: 16)),
+                            TextStyle(color: R.color.color0xff172823, fontSize: 16)),
                   ],
                 ),
               )

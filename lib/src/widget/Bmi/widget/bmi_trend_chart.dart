@@ -101,7 +101,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                               onTap: () {
                                 showDialog(
                                   barrierColor:
-                                      Color(0xff003F38).withOpacity(0.5),
+                                      R.color.color0xff003F38.withOpacity(0.5),
                                   context: context,
                                   builder: (_) => CustomNumPicker(
                                       callback: (number) {
@@ -325,7 +325,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 8, right: 8),
-            child: Container(height: 1, color: Color(0xffE5E5E5)),
+            child: Container(height: 1, color: R.color.color0xffE5E5E5),
           ),
           SizedBox(height: 16),
           Padding(
@@ -426,7 +426,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                                         (width + 20))
                                                     .toDouble() -
                                                 36,
-                                            color: Color(0xffDDDDDD),
+                                            color: R.color.grayComponentBorder,
                                           ),
                                         )))),
                       ],
@@ -451,7 +451,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                     height: ((model.safeWeightTo -
                                             model.safeWeightFrom) *
                                         (296 / (maxY - minY))),
-                                    color: Color(0xff21A567).withOpacity(0.1)),
+                                    color: R.color.green.withOpacity(0.1)),
                               ],
                             ),
                           ),
@@ -474,7 +474,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                             .toDouble() -
                                         36,
                                     height: 0.5,
-                                    color: Color(0xff21A567)),
+                                    color: R.color.green),
                               ],
                             ),
                           ),
@@ -560,7 +560,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                   return TextStyle(
                                       color: touchIndex == value.toInt()
                                           ? R.color.black
-                                          : Color(0xffC0C2C5),
+                                          : R.color.color0xffC0C2C5,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
                                 },

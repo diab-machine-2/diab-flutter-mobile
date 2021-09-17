@@ -131,7 +131,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                         fontWeight: FontWeight.w500))
                               ]),
                               CupertinoSwitch(
-                                activeColor: Color(0xff008479),
+                                activeColor: R.color.greenGradientBottom,
                                 value: status,
                                 onChanged: (value) {
                                   setState(() {
@@ -165,7 +165,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                 int minute = selectedMinute;
                                 showDialog(
                                     barrierColor:
-                                        Color(0xff003F38).withOpacity(0.5),
+                                        R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,
                                     builder: (_) => GestureDetector(
                                           onTap: () {
@@ -230,8 +230,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                       height:
                                                                           43,
                                                                       decoration: BoxDecoration(
-                                                                          color: Color(
-                                                                              0xffE2E4E7),
+                                                                          color: R.color.grayBorder,
                                                                           borderRadius: BorderRadius.circular(
                                                                               21.5)),
                                                                       child: Center(
@@ -321,7 +320,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                       fontSize: 40)),
                                               Container(
                                                   height: 1,
-                                                  color: Color(0xffDDDDDD))
+                                                  color: R.color.grayComponentBorder)
                                             ],
                                           ),
                                         ),
@@ -344,7 +343,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                       fontSize: 40)),
                                               Container(
                                                   height: 1,
-                                                  color: Color(0xffDDDDDD))
+                                                  color: R.color.grayComponentBorder)
                                             ],
                                           ),
                                         ),
@@ -394,7 +393,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                   ),
                                   SizedBox(height: 16),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                 ]),
                               ),
@@ -426,7 +425,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                     decoration: BoxDecoration(),
                                     placeholder: 'Nhập tên nhắc nhở'),
                               ),
-                              Container(height: 1, color: Color(0xffE5E5E5)),
+                              Container(height: 1, color: R.color.color0xffE5E5E5),
                               SizedBox(height: 32),
                               Row(children: [
                                 Image.asset('assets/images/note_text.png',
@@ -444,7 +443,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                   placeholder: 'Nhập nội dung nhắc nhở',
                                   maxLines: null,
                                   maxLength: 1000),
-                              Container(height: 1, color: Color(0xffE5E5E5)),
+                              Container(height: 1, color: R.color.color0xffE5E5E5),
                               SizedBox(height: 8),
                             ]))
                       ]),
@@ -606,7 +605,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),

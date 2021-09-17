@@ -28,7 +28,7 @@ class PolicyController extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Color(0xffDDDDDD))),
+                border: Border.all(color: R.color.grayComponentBorder)),
             child: ListView(padding: EdgeInsets.all(16), children: [
               Image.asset('assets/images/icon_banner.png',
                   width: 106, height: 37),

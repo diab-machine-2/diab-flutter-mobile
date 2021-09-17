@@ -482,7 +482,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                 children: [
                                   Text('Nhập vào ',
                                       style: TextStyle(
-                                        color: R.color.grayCaption,
+                                        color: R.color.captionColorGray,
                                         fontSize: 12,
                                       )),
                                   Text(
@@ -491,7 +491,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                           : convertToUTC(
                                               modelLastest.date, 'dd/MM/yyyy'),
                                       style: TextStyle(
-                                        color: R.color.grayCaption,
+                                        color: R.color.captionColorGray,
                                         fontSize: 12,
                                       )),
                                 ],

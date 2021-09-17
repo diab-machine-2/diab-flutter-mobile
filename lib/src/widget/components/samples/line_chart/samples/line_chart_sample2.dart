@@ -189,7 +189,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               show: true,
               border: Border(
                 // left: BorderSide(width: 1.0, color: Color(0xff0A2836)),
-                bottom: BorderSide(width: 1, color: Color(0xffE5E5E5)),
+                bottom: BorderSide(width: 1, color: R.color.color0xffE5E5E5),
               )),
         ),
       ),

@@ -353,7 +353,7 @@ class _RegisterControllerState extends State<RegisterController> {
                 textAlign: TextAlign.center,
                 text: TextSpan(
                   text: 'Đã gửi OTP 5 lần cho số điện thoại ',
-                  style: TextStyle(color: Color(0xff172823), fontSize: 16),
+                  style: TextStyle(color: R.color.color0xff172823, fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(
                         text: phone,
@@ -363,7 +363,7 @@ class _RegisterControllerState extends State<RegisterController> {
                         text:
                             '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
                         style:
-                            TextStyle(color: Color(0xff172823), fontSize: 16)),
+                            TextStyle(color: R.color.color0xff172823, fontSize: 16)),
                   ],
                 ),
               )

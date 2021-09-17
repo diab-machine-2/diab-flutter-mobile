@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/widget/Food/widget/food_item.dart';
@@ -96,7 +97,7 @@ class _NearFoodState extends State<NearFood>
                       padding: EdgeInsets.all(0),
                       itemCount: model.length == 0 ? 1 : model.length,
                       separatorBuilder: (BuildContext context, int index) {
-                        return Container(height: 1, color: Color(0xffE5E5E5));
+                        return Container(height: 1, color: R.color.color0xffE5E5E5);
                       },
                       itemBuilder: (BuildContext context, int index) {
                         if (model.length == 0) {

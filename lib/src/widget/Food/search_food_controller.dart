@@ -120,14 +120,14 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                           decoration: BoxDecoration(
                               color: R.color.white,
                               borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: Color(0xffDDDDDD))),
+                              border: Border.all(color: R.color.grayComponentBorder)),
                           child: Padding(
                             padding: EdgeInsets.only(left: 16, right: 16),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('Tìm kiếm món ăn',
-                                    style: TextStyle(color: Color(0xff666666))),
+                                    style: TextStyle(color: R.color.primaryGreyColor)),
                                 Image.asset('assets/images/ic_search.png',
                                     width: 24, height: 24)
                               ],
@@ -189,9 +189,9 @@ class CustomSegmentState extends State<CustomSegment> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width - 32 / 3;
     return CupertinoSegmentedControl(
-        selectedColor: Color(0xff008479),
+        selectedColor: R.color.greenGradientBottom,
         unselectedColor: R.color.transparent,
-        borderColor: Color(0xff008479),
+        borderColor: R.color.greenGradientBottom,
         groupValue: segmentedControlValue,
         onValueChanged: (int val) {
           widget.onchange(val);

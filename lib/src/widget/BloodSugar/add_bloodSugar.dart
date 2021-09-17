@@ -219,7 +219,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                     EdgeInsets.only(bottom: 8),
                                                 border: InputBorder.none,
                                                 hintStyle: TextStyle(
-                                                    color: Color(0xff9C9C9C),
+                                                    color: R.color.captionColorGray,
                                                     fontSize: 34,
                                                     fontWeight:
                                                         FontWeight.w500)),
@@ -259,7 +259,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   child: Container(
                                       height: 1,
                                       width: 74,
-                                      color: Color(0xffE5E5E5))),
+                                      color: R.color.color0xffE5E5E5)),
                               _controller.text.isEmpty
                                   ? SizedBox()
                                   : Padding(
@@ -347,10 +347,10 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                 hintStyle: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w400,
-                                                    color: Color(0xff666666)))),
+                                                    color: R.color.primaryGreyColor))),
                                         Container(
                                             height: 1,
-                                            color: Color(0xffE5E5E5)),
+                                            color: R.color.color0xffE5E5E5),
                                         SizedBox(height: 8),
                                       ]),
                                 ),
@@ -369,7 +369,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                 onTap: () {
                                   showDialog(
                                     barrierColor:
-                                        Color(0xff003F38).withOpacity(0.5),
+                                        R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                       initDate: selectedDate,
@@ -416,7 +416,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -460,7 +460,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -504,9 +504,9 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: Color(0xff666666)))),
+                                              color: R.color.primaryGreyColor))),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -895,7 +895,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1025,7 +1025,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1067,7 +1067,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chọn trong thư viện",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1085,7 +1085,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chụp ảnh",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1097,7 +1097,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
         ],
         cancelButton: CupertinoActionSheetAction(
           child: Text("Huỷ",
-              style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -1232,7 +1232,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                     fontWeight: FontWeight.w700)),
                             IconButton(
                                 icon:
-                                    Icon(Icons.close, color: Color(0xffBEC0C8)),
+                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
@@ -1278,7 +1278,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xffE2E4E7),
+                                  color: R.color.grayBorder,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
                                   child: Text('Huỷ',
@@ -1306,7 +1306,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xff01645A),
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
                                   child: Text('Đồng ý',
@@ -1386,8 +1386,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedHour == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))
@@ -1411,8 +1411,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedMinute == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))

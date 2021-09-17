@@ -154,7 +154,7 @@ class FoodDescription extends StatelessWidget {
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Color(0xff4BB2AB),
+                            color: R.color.greenGradientTop,
                             borderRadius: BorderRadius.circular(30)),
                         child: IconButton(
                             icon: Icon(Icons.close, color: R.color.white),

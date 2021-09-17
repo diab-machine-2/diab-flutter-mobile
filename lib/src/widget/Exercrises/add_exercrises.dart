@@ -188,7 +188,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                       child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
-                            color: Color(0xffB1DDDB)
+                            color: R.color.color0xffB1DDDB
                             // image: DecorationImage(
                             //   image: AssetImage('assets/images/bg_sub_exe.png'),
                             //   fit: BoxFit.cover,
@@ -254,7 +254,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                             onTap: () {
                               showDialog(
                                 barrierColor:
-                                    Color(0xff003F38).withOpacity(0.5),
+                                    R.color.color0xff003F38.withOpacity(0.5),
                                 context: context,
                                 builder: (_) => DateMultiPicker(
                                   initDate: selectedDate,
@@ -290,7 +290,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                               fontWeight: FontWeight.w400))
                                     ]),
                                 SizedBox(height: 16),
-                                Container(height: 1, color: Color(0xffE5E5E5)),
+                                Container(height: 1, color: R.color.color0xffE5E5E5),
                                 SizedBox(height: 8),
                               ]),
                             ),
@@ -333,7 +333,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                               fontWeight: FontWeight.w400))
                                     ]),
                                 SizedBox(height: 16),
-                                Container(height: 1, color: Color(0xffE5E5E5)),
+                                Container(height: 1, color: R.color.color0xffE5E5E5),
                                 SizedBox(height: 8),
                               ]),
                             ),
@@ -401,7 +401,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                               selectedCategory.length == 0
                                   ? SizedBox()
                                   : Container(
-                                      height: 1, color: Color(0xffD6D8E0)),
+                                      height: 1, color: R.color.color0xffD6D8E0),
                               ListView.separated(
                                   physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
@@ -409,14 +409,14 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                   itemCount: selectedCategory.length,
                                   separatorBuilder: (context, index) {
                                     return Container(
-                                        height: 1, color: Color(0xffD6D8E0));
+                                        height: 1, color: R.color.color0xffD6D8E0);
                                   },
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return GestureDetector(
                                       onTap: () {
                                         showDialog(
-                                            barrierColor: Color(0xff003F38)
+                                            barrierColor: R.color.color0xff003F38
                                                 .withOpacity(0.5),
                                             context: context,
                                             builder: (_) =>
@@ -537,7 +537,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                               exercriseRegularly.length == 0
                                   ? SizedBox()
                                   : Container(
-                                      height: 1, color: Color(0xffD6D8E0)),
+                                      height: 1, color: R.color.color0xffD6D8E0),
                               ListView.separated(
                                   physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
@@ -545,7 +545,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                   itemCount: exercriseRegularly.length,
                                   separatorBuilder: (context, index) {
                                     return Container(
-                                        height: 1, color: Color(0xffD6D8E0));
+                                        height: 1, color: R.color.color0xffD6D8E0);
                                   },
                                   itemBuilder:
                                       (BuildContext context, int index) {
@@ -668,7 +668,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                         children: [
                                           Container(
                                               height: 1,
-                                              color: Color(0xffD6D8E0)),
+                                              color: R.color.color0xffD6D8E0),
                                           Container(
                                             color: R.color.transparent,
                                             padding: EdgeInsets.only(top: 16),
@@ -735,8 +735,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                       hintStyle: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400,
-                                          color: Color(0xff666666)))),
-                              Container(height: 1, color: Color(0xffE5E5E5)),
+                                          color: R.color.primaryGreyColor))),
+                              Container(height: 1, color: R.color.color0xffE5E5E5),
                               SizedBox(height: 8),
                               GridView.builder(
                                   physics: NeverScrollableScrollPhysics(),
@@ -929,7 +929,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
 
     if (description.isNotEmpty) {
       showDialog(
-          barrierColor: Color(0xff003F38).withOpacity(0.5),
+          barrierColor: R.color.color0xff003F38.withOpacity(0.5),
           context: context,
           builder: (_) {
             Future.delayed(const Duration(seconds: 5), () {
@@ -1210,7 +1210,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1333,7 +1333,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1375,7 +1375,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chọn trong thư viện",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1393,7 +1393,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chụp ảnh",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1405,7 +1405,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
         ],
         cancelButton: CupertinoActionSheetAction(
           child: Text("Huỷ",
-              style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -1540,7 +1540,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                     fontWeight: FontWeight.w700)),
                             IconButton(
                                 icon:
-                                    Icon(Icons.close, color: Color(0xffBEC0C8)),
+                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
@@ -1586,7 +1586,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xffE2E4E7),
+                                  color: R.color.grayBorder,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
                                   child: Text('Huỷ',
@@ -1614,7 +1614,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xff01645A),
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
                                   child: Text('Đồng ý',
@@ -1694,8 +1694,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedHour == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))
@@ -1719,8 +1719,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedMinute == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))

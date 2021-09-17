@@ -113,7 +113,7 @@ class ActionListPanel extends StatelessWidget {
       },
       child: Container(
           height: 74,
-          color: selectedIndex == index ? Color(0xffE4F5F5) : R.color.white,
+          color: selectedIndex == index ? R.color.color0xFFE4F5F5 : R.color.white,
           padding: EdgeInsets.only(left: 16, right: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -130,7 +130,7 @@ class ActionListPanel extends StatelessWidget {
                               : FontWeight.w400,
                           color: selectedIndex == index
                               ? R.color.mainColor
-                              : Color(0xff454649))),
+                              : R.color.color0xff454649)),
                 ],
               ),
               selectedIndex == index
