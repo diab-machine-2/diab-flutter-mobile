@@ -126,7 +126,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                   color: R.color.white,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
+                                      color: R.color.grey.withOpacity(0.5),
                                       spreadRadius: 1,
                                       blurRadius: 7,
                                       offset: Offset(

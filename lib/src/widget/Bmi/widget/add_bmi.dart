@@ -1773,7 +1773,7 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                         ),
                         IconButton(
                             // padding: EdgeInsets.only(right: 30),
-                            icon: Icon(Icons.close, color: Colors.grey),
+                            icon: Icon(Icons.close, color: R.color.grey),
                             onPressed: () {
                               Navigator.pop(context);
                             })

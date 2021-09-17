@@ -207,7 +207,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
                     );
                   } else {
                     return FlLine(
-                      color: Colors.grey,
+                      color: R.color.grey,
                       strokeWidth: 0.5,
                     );
                   }
@@ -220,7 +220,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
                     );
                   } else {
                     return FlLine(
-                      color: Colors.grey,
+                      color: R.color.grey,
                       strokeWidth: 0.5,
                     );
                   }

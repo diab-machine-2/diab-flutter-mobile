@@ -245,7 +245,7 @@ class _ProfileControllerState extends State<ProfileController> {
                 Icon(Icons.arrow_forward_ios, color: mainColor, size: 16)
               ]),
               SizedBox(height: 20),
-              Container(height: 1, color: Colors.grey.withOpacity(0.2))
+              Container(height: 1, color: R.color.grey.withOpacity(0.2))
             ],
           )),
     );

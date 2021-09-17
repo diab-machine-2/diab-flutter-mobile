@@ -184,7 +184,7 @@ class _StepListControllerState extends State<StepListController> {
                         ),
                       ),
                       Text('Version $version ($buildNumber)',
-                          style: TextStyle(color: Colors.grey)),
+                          style: TextStyle(color: R.color.grey)),
                       SizedBox(height: 16)
                     ],
                   )

@@ -46,7 +46,7 @@ class _CircularPageState extends State<CircularPage> {
               percent: 0.5,
               center: Text("50%"),
               circularStrokeCap: CircularStrokeCap.round,
-              backgroundColor: Colors.grey,
+              backgroundColor: R.color.grey,
               maskFilter: MaskFilter.blur(BlurStyle.solid, 3),
               linearGradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -65,7 +65,7 @@ class _CircularPageState extends State<CircularPage> {
                 color: Colors.blue,
               ),
               reverse: true,
-              backgroundColor: Colors.grey,
+              backgroundColor: R.color.grey,
               progressColor: Colors.blue,
             ),
             Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
@@ -116,7 +116,7 @@ class _CircularPageState extends State<CircularPage> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
               ),
               circularStrokeCap: CircularStrokeCap.butt,
-              backgroundColor: Colors.grey,
+              backgroundColor: R.color.grey,
               progressColor: R.color.red,
             ),
             CircularPercentIndicator(
