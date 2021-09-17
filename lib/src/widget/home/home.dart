@@ -1,6 +1,7 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/main.dart';
@@ -297,7 +298,7 @@ class _HomeControllerState extends State<HomeController> {
                                               child: Container(
                                                 padding: EdgeInsets.all(16),
                                                 decoration: BoxDecoration(
-                                                    color: Colors.white,
+                                                    color: R.color.white,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10)),
@@ -334,7 +335,7 @@ class _HomeControllerState extends State<HomeController> {
                                                     },
                                                     child: Container(
                                                         color:
-                                                            Colors.transparent),
+                                                            R.color.transparent),
                                                   )),
                                                   Expanded(
                                                       child: GestureDetector(
@@ -345,7 +346,7 @@ class _HomeControllerState extends State<HomeController> {
                                                     },
                                                     child: Container(
                                                         color:
-                                                            Colors.transparent),
+                                                            R.color.transparent),
                                                   ))
                                                 ])
                                           ]),
@@ -368,7 +369,7 @@ class _HomeControllerState extends State<HomeController> {
                                                 child: Container(
                                                   padding: EdgeInsets.all(16),
                                                   decoration: BoxDecoration(
-                                                      color: Colors.white,
+                                                      color: R.color.white,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               10)),
@@ -431,7 +432,7 @@ class _HomeControllerState extends State<HomeController> {
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Text(name,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           ),
@@ -459,7 +460,7 @@ class _HomeControllerState extends State<HomeController> {
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -538,7 +539,7 @@ class _HomeControllerState extends State<HomeController> {
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -620,7 +621,7 @@ class _HomeControllerState extends State<HomeController> {
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -679,7 +680,7 @@ class _HomeControllerState extends State<HomeController> {
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -739,7 +740,7 @@ class _HomeControllerState extends State<HomeController> {
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -834,8 +835,8 @@ class _HomeControllerState extends State<HomeController> {
               child: CustomPaint(
                   painter: GradientArcPainter(
                 progress: 1,
-                startColor: Colors.white,
-                endColor: Colors.white,
+                startColor: R.color.white,
+                endColor: R.color.white,
                 width: 36,
               ))),
           SizedBox(
@@ -868,7 +869,7 @@ class _HomeControllerState extends State<HomeController> {
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.transparent,
+                color: R.color.transparent,
                 borderRadius: BorderRadius.circular(10)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -958,7 +959,7 @@ class _HomeControllerState extends State<HomeController> {
                                         model.energyCard.consumedEnergy),
                                 style: TextStyle(
                                     fontFamily: 'Viga',
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 26,
                                     fontWeight: FontWeight.w400)),
                             SizedBox(width: 4),
@@ -995,7 +996,7 @@ class _HomeControllerState extends State<HomeController> {
                             Text(formatNumber(model.exercise.index),
                                 style: TextStyle(
                                     fontFamily: 'Viga',
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 26,
                                     fontWeight: FontWeight.w400)),
                             SizedBox(width: 4),
@@ -1053,14 +1054,14 @@ class _HomeControllerState extends State<HomeController> {
             onTap: () {
               Navigator.pushNamed(context, '/detail_food');
             },
-            child: Container(color: Colors.transparent),
+            child: Container(color: R.color.transparent),
           )),
           Expanded(
               child: GestureDetector(
             onTap: () {
               Navigator.pushNamed(context, '/detail_exercrises');
             },
-            child: Container(color: Colors.transparent),
+            child: Container(color: R.color.transparent),
           ))
         ])
       ]),

@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_trend_calo.dart';
@@ -88,7 +89,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +116,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                         }));
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Row(
                                   children: [
                                     Image.asset(
@@ -139,7 +140,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                         Container(
                             width: width,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Column(
@@ -396,7 +397,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
               return Text(formatNumber(number[index]),
                   style: TextStyle(
                       fontSize: 14,
-                      color: Colors.black,
+                      color: R.color.black,
                       fontWeight: FontWeight.normal));
             })),
       ),
@@ -493,8 +494,8 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                           showTitles: true,
                           margin: 16,
                           reservedSize: -16,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Colors.black,
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.black,
                               fontSize: 10,
                               fontWeight: FontWeight.normal),
                           //margin: 10,
@@ -521,8 +522,8 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                         ),
                         leftTitles: SideTitles(
                           showTitles: false,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Colors.black, fontSize: 14),
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.black, fontSize: 14),
                         ),
                       ),
                       borderData: FlBorderData(
@@ -593,7 +594,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
   //           (index + 0.5).toDouble(), model.trendItems.items[index].hbA1C);
   //     }),
   //     isCurved: false,
-  //     colors: [Colors.black],
+  //     colors: [R.color.black],
   //     barWidth: 1,
   //     isStrokeCapRound: true,
   //     dotData: FlDotData(
@@ -640,14 +641,14 @@ class _InputCaloState extends State<InputCalo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: R.color.transparent,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 16.0, right: 16),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
+              color: R.color.white,
             ),
             child: Padding(
               padding: const EdgeInsets.only(top: 8, bottom: 16),
@@ -686,15 +687,15 @@ class _InputCaloState extends State<InputCalo> {
                             ],
                             maxLength: 5,
                             decoration:
-                                BoxDecoration(color: Colors.transparent),
+                                BoxDecoration(color: R.color.transparent),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700),
                             placeholder: '--',
                             placeholderStyle: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700)),
                       ),
@@ -754,7 +755,7 @@ class _InputCaloState extends State<InputCalo> {
                               child: Center(
                                 child: Text('Đồng ý',
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),

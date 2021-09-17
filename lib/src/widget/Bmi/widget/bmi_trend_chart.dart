@@ -6,6 +6,7 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
@@ -85,7 +86,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.all(16),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +118,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                 );
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Row(
                                   children: [
                                     Image.asset(
@@ -142,7 +143,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                             width: width,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
-                              color: Colors.white,
+                              color: R.color.white,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.5),
@@ -281,17 +282,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(16),
-                                          color: Colors.white,
-                                          // boxShadow: [
-                                          //   BoxShadow(
-                                          //     color:
-                                          //         Colors.grey.withOpacity(0.5),
-                                          //     spreadRadius: 1,
-                                          //     blurRadius: 7,
-                                          //     offset: Offset(0,
-                                          //         2), // changes position of shadow
-                                          //   ),
-                                          // ],
+                                          color: R.color.white,
                                         ),
                                         child: Padding(
                                             padding: const EdgeInsets.only(
@@ -347,7 +338,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                     Text('Nhẹ nhất:',
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w400)),
                     SizedBox(
                       width: 4,
@@ -355,7 +346,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                     Text('${model.lowest.toInt()}',
                         style: TextStyle(
                             fontSize: 16,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w600)),
                     SizedBox(
                       width: 4,
@@ -363,7 +354,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                     Text('kg',
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w400)),
                   ],
                 ),
@@ -372,7 +363,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                     Text('Nặng nhất:',
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w400)),
                     SizedBox(
                       width: 4,
@@ -380,7 +371,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                     Text('${model.highest.toInt()}',
                         style: TextStyle(
                             fontSize: 16,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w600)),
                     SizedBox(
                       width: 4,
@@ -388,7 +379,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                     Text('kg',
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w400)),
                   ],
                 ),
@@ -407,7 +398,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                     return Text(number[index].toString(),
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.normal));
                   })),
             ),
@@ -527,7 +518,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                   showOnTopOfTheChartBoxArea: true,
                                   fitInsideVertically: true,
                                   tooltipBgColor: touchIndex == -1
-                                      ? Colors.transparent
+                                      ? R.color.transparent
                                       : toColor(trends[touchIndex].colorCode)
                                           .withOpacity(0.2),
                                   tooltipRoundedRadius: 8,
@@ -568,7 +559,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                 getTextStyles: (context, value) {
                                   return TextStyle(
                                       color: touchIndex == value.toInt()
-                                          ? Colors.black
+                                          ? R.color.black
                                           : Color(0xffC0C2C5),
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
@@ -646,7 +637,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                 return FlSpot((index).toDouble(), trends[index].value);
               }),
               isCurved: false,
-              colors: [Colors.black],
+              colors: [R.color.black],
               barWidth: 0.75,
               isStrokeCapRound: true,
               dotData: FlDotData(

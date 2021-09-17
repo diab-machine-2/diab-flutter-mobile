@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description_detail.dart';
@@ -27,7 +28,7 @@ class Description extends StatelessWidget {
                 );
         },
         // child: Container(
-        //   color: Colors.transparent,
+        //   color: R.color.transparent,
         //   child: Stack(
         //     alignment: AlignmentDirectional.centerStart,
         //     children: [
@@ -69,7 +70,7 @@ class Description extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.only(bottom: 8),
           child: Container(
-            color: Colors.transparent,
+            color: R.color.transparent,
             height: 110,
             child: Row(
               children: [

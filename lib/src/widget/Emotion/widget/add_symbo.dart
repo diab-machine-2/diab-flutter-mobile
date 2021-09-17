@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/emotion/emotion_model.dart';
@@ -89,7 +90,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
           child: Column(
             children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 title: Text(
                     widget.type == 'update'
                         ? 'Chỉnh sửa cảm xúc'
@@ -99,8 +100,8 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                         fontWeight: FontWeight.w600,
                         color: textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
                     icon: Icon(Icons.arrow_back, color: textDark),
                     onPressed: () {
                       Navigator.pop(context);
@@ -210,7 +211,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                           child: Text(
                               widget.type == 'input' ? 'Tiếp tục' : 'Cập nhật',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16)))),
                 ),
@@ -261,7 +262,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
             color: selectedIndex != -1 ||
                     (symptomModel == null && otherSymptom != null)
                 ? Color(0xffF4DBBD).withOpacity(0.7)
-                : Colors.white,
+                : R.color.white,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: selectedIndex != -1 ||
@@ -393,7 +394,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                             child: Center(
                               child: Text('Lưu',
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: R.color.white,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                             ),

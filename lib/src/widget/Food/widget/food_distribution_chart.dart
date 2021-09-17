@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
@@ -86,7 +87,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                     children: [
                       Text('Năng lượng phân bổ',
                           style: TextStyle(
-                              color: Colors.black,
+                              color: R.color.black,
                               fontSize: 20,
                               fontWeight: FontWeight.w600)),
                       SizedBox(height: 16),
@@ -111,7 +112,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                     ),
                                   ],
                                   borderRadius: BorderRadius.circular(14),
-                                  color: Colors.white),
+                                  color: R.color.white),
                               child: Column(
                                 children: [
                                   SizedBox(
@@ -135,7 +136,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                               decoration: BoxDecoration(
                                                   color: isEnergyTab
                                                       ? Color(0xff01645A)
-                                                      : Colors.transparent,
+                                                      : R.color.transparent,
                                                   border: Border.all(
                                                       color: isEnergyTab
                                                           ? Color(0xff01645A)
@@ -148,7 +149,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                 child: Text('Năng lượng',
                                                     style: TextStyle(
                                                         color: isEnergyTab
-                                                            ? Colors.white
+                                                            ? R.color.white
                                                             : Color(0xff666666),
                                                         fontSize: 14,
                                                         fontWeight: isEnergyTab
@@ -168,12 +169,12 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                               width: 135,
                                               decoration: BoxDecoration(
                                                   color: isEnergyTab
-                                                      ? Colors.transparent
+                                                      ? R.color.transparent
                                                       : Color(0xff01645A),
                                                   border: Border.all(
                                                       color: isEnergyTab
                                                           ? Color(0xff666666)
-                                                          : Colors.white,
+                                                          : R.color.white,
                                                       width: 0.5),
                                                   borderRadius:
                                                       BorderRadius.circular(
@@ -183,7 +184,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                     style: TextStyle(
                                                         color: isEnergyTab
                                                             ? Color(0xff666666)
-                                                            : Colors.white,
+                                                            : R.color.white,
                                                         fontSize: 14,
                                                         fontWeight: isEnergyTab
                                                             ? FontWeight.w400
@@ -262,7 +263,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                             item.percentValue) +
                                                         '%',
                                                     text: item.text,
-                                                    textColor: Colors.white,
+                                                    textColor: R.color.white,
                                                     isSquare: true,
                                                   ),
                                                 );

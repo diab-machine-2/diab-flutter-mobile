@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_summary.dart';
 import 'package:medical/src/modal/exercrises/exercrise_walk_summary.dart';
@@ -90,7 +91,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                       children: [
                         Text('Hoạt động trong ngày',
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700)),
                         Container(
@@ -122,8 +123,8 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                               child: CustomPaint(
                                                   painter: GradientArcPainter(
                                                 progress: 1,
-                                                startColor: Colors.white,
-                                                endColor: Colors.white,
+                                                startColor: R.color.white,
+                                                endColor: R.color.white,
                                                 width: 8.0,
                                               ))),
                                           SizedBox(
@@ -255,7 +256,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                               Padding(
                                 padding: EdgeInsets.only(top: 16),
                                 child:
-                                    Container(height: 1, color: Colors.white),
+                                    Container(height: 1, color: R.color.white),
                               ),
                               Row(
                                 mainAxisAlignment:
@@ -334,7 +335,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                   Container(
                                       width: 1,
                                       height: 60,
-                                      color: Colors.white),
+                                      color: R.color.white),
                                   Expanded(
                                     child: Padding(
                                       padding: EdgeInsets.only(left: 32),
@@ -429,7 +430,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                       children: [
                                         Text('Đi bộ trong ngày',
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: R.color.black,
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.w700)),
                                         GestureDetector(
@@ -453,7 +454,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                         }));
                                           },
                                           child: Container(
-                                            color: Colors.transparent,
+                                            color: R.color.transparent,
                                             child: Row(
                                               children: [
                                                 Image.asset(
@@ -478,7 +479,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                         margin: EdgeInsets.only(top: 16),
                                         padding: EdgeInsets.only(left: 16),
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           borderRadius:
                                               BorderRadius.circular(16),
                                         ),
@@ -490,7 +491,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                             //   padding: const EdgeInsets.only(top: 0.0),
                                             //   child: Text('Chi tiết',
                                             //       style: TextStyle(
-                                            //           color: Colors.black,
+                                            //           color: R.color.black,
                                             //           fontSize: 16,
                                             //           fontWeight: FontWeight.w700)),
                                             // ),

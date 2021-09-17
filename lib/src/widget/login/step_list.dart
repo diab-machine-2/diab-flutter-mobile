@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -153,7 +154,7 @@ class _StepListControllerState extends State<StepListController> {
                                       child: Center(
                                         child: Text('Tạo tài khoản',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),

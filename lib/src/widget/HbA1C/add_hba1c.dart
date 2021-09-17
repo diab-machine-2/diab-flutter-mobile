@@ -6,6 +6,7 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/main.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
@@ -101,7 +102,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
                           ? 'Cập nhật chỉ số HbA1C'
@@ -111,8 +112,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                           fontWeight: FontWeight.w600,
                           color: textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: textDark),
                       onPressed: () {
                         _showDialogSave();
@@ -160,7 +161,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -183,7 +184,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                                     .numberWithOptions(
                                                         decimal: true),
                                                 style: TextStyle(
-                                                    color: Colors.black,
+                                                    color: R.color.black,
                                                     fontSize: 34,
                                                     fontWeight:
                                                         FontWeight.w500),
@@ -218,7 +219,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -239,7 +240,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                   );
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
@@ -295,7 +296,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -317,7 +318,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                       maxLines: 3,
                                       keyboardType: TextInputType.multiline,
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
@@ -424,7 +425,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                               child: Center(
                                   child: Text('Lưu',
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)))),
                         ),
@@ -453,7 +454,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                         child: Center(
                                           child: Text('Xoá dữ liệu',
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: R.color.red,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         )),
@@ -479,7 +480,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                       child: Center(
                                         child: Text('Lưu',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ),
@@ -572,7 +573,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                     child: Center(
                                       child: Text('Xoá',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -697,7 +698,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                     child: Center(
                                       child: Text('Thoát',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -998,7 +999,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -1007,7 +1008,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1019,7 +1020,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           children: [
                             Text('Chọn ngày',
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
@@ -1058,7 +1059,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                               child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1078,7 +1079,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                               child: Center(
                                   child: Text('Đồng ý',
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),

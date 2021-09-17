@@ -4,6 +4,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -131,17 +132,17 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                   borderRadius: BorderRadius.circular(8),
                                   fieldHeight: 44,
                                   fieldWidth: 44,
-                                  activeFillColor: Colors.white,
-                                  inactiveFillColor: Colors.white,
-                                  selectedFillColor: Colors.white,
+                                  activeFillColor: R.color.white,
+                                  inactiveFillColor: R.color.white,
+                                  selectedFillColor: R.color.white,
                                   activeColor:
-                                      error ? Colors.red : Color(0xff7EC8C3),
+                                      error ? R.color.red : Color(0xff7EC8C3),
                                   selectedColor: mainColor,
                                   disabledColor:
-                                      error ? Colors.red : Color(0xff7EC8C3),
+                                      error ? R.color.red : Color(0xff7EC8C3),
                                   inactiveColor:
-                                      error ? Colors.red : Color(0xff7EC8C3)),
-                              backgroundColor: Colors.transparent,
+                                      error ? R.color.red : Color(0xff7EC8C3)),
+                              backgroundColor: R.color.transparent,
                               enableActiveFill: true,
                               onCompleted: (value) {
                                 setState(() {
@@ -167,7 +168,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                   padding: EdgeInsets.only(left: 32, right: 32),
                                   child: Text(
                                     'Mã xác nhận không chính xác. Vui lòng kiểm tra lại',
-                                    style: TextStyle(color: Colors.red),
+                                    style: TextStyle(color: R.color.red),
                                     textAlign: TextAlign.center,
                                   ),
                                 )
@@ -208,7 +209,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
-                                              color: Colors.white))),
+                                              color: R.color.white))),
                                 ),
                               ),
                               SizedBox(height: 8),
@@ -263,7 +264,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                               //           style: TextStyle(
                               //               fontSize: 16,
                               //               fontWeight: FontWeight.w500,
-                              //               color: Colors.white))),
+                              //               color: R.color.white))),
                               // ),
                             ],
                           ),
@@ -277,9 +278,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                 right: 0,
                 child: AppBar(
                   leading: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: Colors.black),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.black),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -290,7 +291,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                       style: TextStyle(fontSize: 20, color: textDark),
                     ),
                   ),
-                  backgroundColor: Colors.transparent, //No more green
+                  backgroundColor: R.color.transparent, //No more green
                   elevation: 0.0, //Shadow gone
                 )),
           ])),

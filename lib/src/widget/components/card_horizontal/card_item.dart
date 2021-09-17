@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:medical/res/R.dart';
 
 abstract class CardItem {
   Widget buildWidget(double diffPosition);
@@ -56,7 +57,7 @@ class IconTitleCardItem extends CardItem {
             decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black26,
+                      color: R.color.black26,
                       offset: Offset(0, 4),
                       blurRadius: 6)
                 ],
@@ -91,7 +92,7 @@ class IconTitleCardItem extends CardItem {
             decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black26,
+                      color: R.color.black26,
                       offset: Offset(0, 4),
                       blurRadius: 6),
                 ],

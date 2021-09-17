@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class ActionPanel extends StatelessWidget {
   final List<String> titles = [
@@ -27,7 +28,7 @@ class ActionPanel extends StatelessWidget {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Container(
           child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
             GridView.builder(
@@ -77,11 +78,11 @@ class ActionPanel extends StatelessWidget {
                       }
                     },
                     child: Container(
-                        color: Colors.transparent,
+                        color: R.color.transparent,
                         child: Column(children: [
                           Container(
                             decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: R.color.white,
                                 borderRadius: BorderRadius.circular(30)),
                             width: 60,
                             height: 60,
@@ -95,7 +96,7 @@ class ActionPanel extends StatelessWidget {
                           ),
                           SizedBox(height: 10),
                           Text(titles[index],
-                              style: TextStyle(color: Colors.white))
+                              style: TextStyle(color: R.color.white))
                         ])),
                   );
                 }),
@@ -106,11 +107,11 @@ class ActionPanel extends StatelessWidget {
                     arguments: {'type': 'input', 'id': null});
               },
               child: Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   child: Column(children: [
                     Container(
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(30)),
                       width: 60,
                       height: 60,
@@ -121,7 +122,7 @@ class ActionPanel extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 10),
-                    Text('HbA1C', style: TextStyle(color: Colors.white))
+                    Text('HbA1C', style: TextStyle(color: R.color.white))
                   ])),
             ),
             SizedBox(height: 60),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 typedef TimeCallback = Function(String, int);
@@ -97,7 +98,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
                   child: Center(
                     child: Text('Lưu',
                         style: TextStyle(
-                            color: Colors.white,
+                            color: R.color.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600)),
                   )),
@@ -119,7 +120,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
               });
             },
             child: Container(
-              color: selectedIndex == index ? greenbg : Colors.white,
+              color: selectedIndex == index ? greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 class FilterAction extends StatelessWidget {
@@ -19,7 +20,7 @@ class FilterAction extends StatelessWidget {
     return Container(
         padding: EdgeInsets.only(left: 24, right: 24),
         decoration: BoxDecoration(
-            color: Colors.white,
+            color: R.color.white,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: primaryColor)),
         height: 40,
@@ -46,7 +47,7 @@ class ItemFilter extends StatelessWidget {
       child: Container(
           padding: EdgeInsets.only(left: 24, right: 24),
           decoration: BoxDecoration(
-              color: Colors.white,
+              color: R.color.white,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: primaryColor)),
           height: 40,

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -90,7 +91,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
                           ? 'Chỉnh sửa lịch nhắc nhở'
@@ -100,8 +101,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                           fontWeight: FontWeight.w600,
                           color: textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: textDark),
                       onPressed: () {
                         _showDialogSave();
@@ -113,7 +114,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: R.color.white,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           padding: EdgeInsets.all(16),
@@ -144,7 +145,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                         SizedBox(height: 8),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: R.color.white,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           padding: EdgeInsets.all(16),
@@ -171,7 +172,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                             Navigator.pop(context);
                                           },
                                           child: Scaffold(
-                                            backgroundColor: Colors.transparent,
+                                            backgroundColor: R.color.transparent,
                                             body: Center(
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.min,
@@ -182,7 +183,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                       onTap: () {},
                                                       child: Container(
                                                         decoration: BoxDecoration(
-                                                            color: Colors.white,
+                                                            color: R.color.white,
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
@@ -236,7 +237,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                       child: Center(
                                                                           child: Text(
                                                                               'Huỷ',
-                                                                              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w700)))),
+                                                                              style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)))),
                                                                 ),
                                                               ),
                                                               SizedBox(
@@ -281,7 +282,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                       child: Center(
                                                                           child: Text(
                                                                               'Đồng ý',
-                                                                              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)))),
+                                                                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w700)))),
                                                                 ),
                                                               ),
                                                               SizedBox(
@@ -299,7 +300,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                         ));
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -315,7 +316,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                       ? '--'
                                                       : selectedHour.toString(),
                                                   style: TextStyle(
-                                                      color: Colors.black,
+                                                      color: R.color.black,
                                                       fontFamily: 'Viga',
                                                       fontSize: 40)),
                                               Container(
@@ -338,7 +339,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                       : selectedMinute
                                                           .toString(),
                                                   style: TextStyle(
-                                                      color: Colors.black,
+                                                      color: R.color.black,
                                                       fontFamily: 'Viga',
                                                       fontSize: 40)),
                                               Container(
@@ -358,7 +359,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                         SizedBox(height: 8),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: R.color.white,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           padding: EdgeInsets.all(16),
@@ -368,7 +369,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                 showTimeFrame(context);
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Column(children: [
                                   Row(
                                     mainAxisAlignment:
@@ -403,7 +404,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                         SizedBox(height: 8),
                         Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -475,7 +476,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                         child: Center(
                             child: Text('Lưu',
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16)))),
                   ),
@@ -591,7 +592,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                     child: Center(
                                       child: Text('Thoát',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -620,7 +621,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => FillterBloodPanel(

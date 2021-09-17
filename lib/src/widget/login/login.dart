@@ -4,6 +4,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -36,7 +37,7 @@ class _LoginControllerState extends State<LoginController> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         body: Stack(children: [
           Container(
               decoration: BoxDecoration(
@@ -101,7 +102,7 @@ class _LoginControllerState extends State<LoginController> {
                               child: Center(
                                 child: Text('Đăng nhập',
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               )),
@@ -113,7 +114,7 @@ class _LoginControllerState extends State<LoginController> {
                           },
                           child: Container(
                               height: 48,
-                              color: Colors.transparent,
+                              color: R.color.transparent,
                               child: Center(
                                 child: Text('Quên mật khẩu?',
                                     style: TextStyle(
@@ -145,7 +146,7 @@ class _LoginControllerState extends State<LoginController> {
                                             height: 50,
                                             width: 50,
                                             decoration: BoxDecoration(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 borderRadius:
                                                     BorderRadius.circular(25)),
                                             child: Row(
@@ -172,7 +173,7 @@ class _LoginControllerState extends State<LoginController> {
                               //         width: 50,
                               //         decoration: BoxDecoration(
                               //           borderRadius: BorderRadius.circular(25),
-                              //           color: Colors.white,
+                              //           color: R.color.white,
                               //         ),
                               //         child: Row(
                               //             mainAxisAlignment:
@@ -196,7 +197,7 @@ class _LoginControllerState extends State<LoginController> {
                                       height: 50,
                                       width: 50,
                                       decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           borderRadius:
                                               BorderRadius.circular(25)),
                                       child: Row(
@@ -225,7 +226,7 @@ class _LoginControllerState extends State<LoginController> {
                               width: 195,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(200),
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   border:
                                       Border.all(color: mainColor, width: 1)),
                               child: Center(
@@ -246,11 +247,11 @@ class _LoginControllerState extends State<LoginController> {
             right: 0,
             child: AppBar(
                 leading: SizedBox(),
-                backgroundColor: Colors.transparent, //No more green
+                backgroundColor: R.color.transparent, //No more green
                 actions: [
                   IconButton(
                       padding: EdgeInsets.only(right: 30),
-                      icon: Icon(Icons.close, color: Colors.black),
+                      icon: Icon(Icons.close, color: R.color.black),
                       onPressed: () {
                         Navigator.pop(context);
                       })

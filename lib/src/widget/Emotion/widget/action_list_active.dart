@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercrises_active.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -45,14 +46,14 @@ class ActionListActiveState extends State<ActionListActive> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: R.color.transparent,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 16.0, right: 16),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
+              color: R.color.white,
             ),
             child: Padding(
               padding: const EdgeInsets.only(top: 16, bottom: 16),
@@ -127,7 +128,7 @@ class ActionListActiveState extends State<ActionListActive> {
                                   child: Center(
                                     child: Text('Tiếp tục',
                                         style: TextStyle(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600)),
                                   ),
@@ -157,7 +158,7 @@ class ActionListActiveState extends State<ActionListActive> {
               });
             },
             child: Container(
-              color: selected == model ? greenbg : Colors.white,
+              color: selected == model ? greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(

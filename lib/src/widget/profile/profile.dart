@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/modal/user/secure.dart';
@@ -61,8 +62,8 @@ class _ProfileControllerState extends State<ProfileController> {
               style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w600, color: textDark)),
           leadingIcon: IconButton(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
+              splashColor: R.color.transparent,
+              highlightColor: R.color.transparent,
               icon: Icon(Icons.arrow_back, color: textDark),
               onPressed: () {
                 Navigator.pop(context);
@@ -82,7 +83,7 @@ class _ProfileControllerState extends State<ProfileController> {
                             color: mainColor,
                             borderRadius: BorderRadius.circular(52)),
                         child: user.imageUrl.url == null
-                            ? Icon(Icons.person, size: 104, color: Colors.white)
+                            ? Icon(Icons.person, size: 104, color: R.color.white)
                             : Image.network(user.imageUrl.url,
                                 width: 104, height: 104)),
                     SizedBox(width: 16),
@@ -111,7 +112,7 @@ class _ProfileControllerState extends State<ProfileController> {
                                 Container(
                                   height: 32,
                                   decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: R.color.white,
                                       borderRadius: BorderRadius.circular(16)),
                                   padding: EdgeInsets.only(left: 16, right: 16),
                                   child: Row(
@@ -231,7 +232,7 @@ class _ProfileControllerState extends State<ProfileController> {
         }
       },
       child: Container(
-          color: Colors.transparent,
+          color: R.color.transparent,
           padding: EdgeInsets.only(left: 16, right: 16, top: 20),
           child: Column(
             children: [
@@ -355,7 +356,7 @@ class _ProfileControllerState extends State<ProfileController> {
                               child: Center(
                                 child: Text('Lưu',
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),

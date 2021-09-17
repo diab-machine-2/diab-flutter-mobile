@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class BarChartSample2 extends StatefulWidget {
   @override
@@ -45,7 +46,7 @@ class BarChartSample2State extends State<BarChartSample2> {
       child: Card(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: Colors.white,
+        color: R.color.white,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -217,7 +218,7 @@ class BarChartSample2State extends State<BarChartSample2> {
         Container(
           width: width,
           height: 10,
-          color: Colors.white.withOpacity(0.4),
+          color: R.color.white.withOpacity(0.4),
         ),
         const SizedBox(
           width: space,
@@ -225,7 +226,7 @@ class BarChartSample2State extends State<BarChartSample2> {
         Container(
           width: width,
           height: 28,
-          color: Colors.white.withOpacity(0.8),
+          color: R.color.white.withOpacity(0.8),
         ),
         const SizedBox(
           width: space,
@@ -233,7 +234,7 @@ class BarChartSample2State extends State<BarChartSample2> {
         Container(
           width: width,
           height: 42,
-          color: Colors.white.withOpacity(1),
+          color: R.color.white.withOpacity(1),
         ),
         const SizedBox(
           width: space,
@@ -241,7 +242,7 @@ class BarChartSample2State extends State<BarChartSample2> {
         Container(
           width: width,
           height: 28,
-          color: Colors.white.withOpacity(0.8),
+          color: R.color.white.withOpacity(0.8),
         ),
         const SizedBox(
           width: space,
@@ -249,7 +250,7 @@ class BarChartSample2State extends State<BarChartSample2> {
         Container(
           width: width,
           height: 10,
-          color: Colors.white.withOpacity(0.4),
+          color: R.color.white.withOpacity(0.4),
         ),
       ],
     );

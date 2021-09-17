@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -85,7 +86,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                           ),
                           Container(
                               decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   borderRadius: BorderRadius.circular(200.0),
                                   border: Border.all(color: grayBorder)),
                               child: GestureDetector(
@@ -95,7 +96,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 child: Align(
                                     alignment: Alignment.center,
                                     child: Container(
-                                      color: Colors.transparent,
+                                      color: R.color.transparent,
                                       padding: const EdgeInsets.only(
                                           top: 4,
                                           bottom: 4,
@@ -130,7 +131,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                           : Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(16),
-                                color: Colors.white,
+                                color: R.color.white,
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.grey.withOpacity(0.5),
@@ -158,7 +159,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                         });
                                   },
                                   child: Container(
-                                    color: Colors.transparent,
+                                    color: R.color.transparent,
                                     child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -220,7 +221,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 return Text(number[index].toString(),
                     style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black,
+                        color: R.color.black,
                         fontWeight: FontWeight.normal));
               })),
         ),
@@ -327,7 +328,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                               fitInsideHorizontally: true,
                               fitInsideVertically: true,
                               tooltipBgColor: touchIndex == -1
-                                  ? Colors.transparent
+                                  ? R.color.transparent
                                   : toColor(trends[touchIndex].color)
                                       .withOpacity(0.2),
                               tooltipRoundedRadius: 8,
@@ -370,7 +371,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                             getTextStyles: (context, value) {
                               return TextStyle(
                                   color: touchIndex == value.toInt()
-                                      ? Colors.black
+                                      ? R.color.black
                                       : Color(0xffC0C2C5),
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal);
@@ -426,7 +427,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
               }),
               isCurved: false,
               colors:
-                  trendTypeIndex == 1 ? [Colors.transparent] : [Colors.black],
+                  trendTypeIndex == 1 ? [R.color.transparent] : [R.color.black],
               barWidth: 0.75,
               isStrokeCapRound: true,
               dotData: FlDotData(
@@ -463,7 +464,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => ActionListFilterTrend(

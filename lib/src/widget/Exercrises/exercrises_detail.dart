@@ -2,6 +2,7 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_input.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -170,7 +171,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               16),
-                                                      color: Colors.white),
+                                                      color: R.color.white),
                                                   child: Column(
                                                     children: [
                                                       Padding(
@@ -213,7 +214,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                               FontWeight.w400)),
                                                                   Text(' kcal',
                                                                       style: TextStyle(
-                                                                          color: Colors
+                                                                          color: R.color
                                                                               .black,
                                                                           fontSize:
                                                                               16,
@@ -271,7 +272,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                       BorderRadius
                                                                           .circular(
                                                                               0),
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .white),
                                                               child: Row(
                                                                 children: [

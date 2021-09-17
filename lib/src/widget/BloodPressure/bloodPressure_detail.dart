@@ -2,6 +2,7 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -237,15 +238,15 @@ class BloodPressureDetailControllerState
                                           decoration: BoxDecoration(
                                               border: Border.all(
                                                   color: bloodPressureID == null
-                                                      ? Colors.white
+                                                      ? R.color.white
                                                       : (bloodPressureID ==
                                                               element.id
-                                                          ? Colors.red
-                                                          : Colors.white),
+                                                          ? R.color.red
+                                                          : R.color.white),
                                                   width: 2),
                                               borderRadius:
                                                   BorderRadius.circular(16),
-                                              color: Colors.white),
+                                              color: R.color.white),
                                           child: Padding(
                                             padding: const EdgeInsets.all(16.0),
                                             child: Column(children: [
@@ -333,7 +334,7 @@ class BloodPressureDetailControllerState
                                                       Text('mmHg',
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.black,
+                                                                  R.color.black,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -346,7 +347,7 @@ class BloodPressureDetailControllerState
                                                                 bottom: 10.0),
                                                         child: Text('.',
                                                             style: TextStyle(
-                                                                color: Colors
+                                                                color: R.color
                                                                     .black,
                                                                 fontSize: 30,
                                                                 fontWeight:
@@ -372,7 +373,7 @@ class BloodPressureDetailControllerState
                                                       Text('lần/phút',
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.black,
+                                                                  R.color.black,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -388,14 +389,14 @@ class BloodPressureDetailControllerState
                                                     convertToUTC(
                                                         element.date, 'HH:mm'),
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.w400),
                                                   ),
                                                   Text(', ' + element.timeFrame,
                                                       style: TextStyle(
-                                                          color: Colors.black,
+                                                          color: R.color.black,
                                                           fontSize: 16,
                                                           fontWeight:
                                                               FontWeight.w400)),
@@ -422,7 +423,7 @@ class BloodPressureDetailControllerState
                                                             Text(
                                                               'Lý do: ',
                                                               style: TextStyle(
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .black,
                                                                   fontSize: 16,
                                                                   fontWeight:
@@ -433,7 +434,7 @@ class BloodPressureDetailControllerState
                                                               child: Text(
                                                                 element.reason,
                                                                 style: TextStyle(
-                                                                    color: Colors
+                                                                    color: R.color
                                                                         .black,
                                                                     fontSize:
                                                                         16,

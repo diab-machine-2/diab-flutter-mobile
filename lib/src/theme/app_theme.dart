@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class AppTheme {
   static ThemeData theme = ThemeData(
       platform: TargetPlatform.iOS,
-      primaryColor: Colors.white,
+      primaryColor: R.color.white,
       indicatorColor: mainColor,
       accentColor: mainColor,
       appBarTheme: AppBarTheme(
@@ -15,8 +16,8 @@ class AppTheme {
               headline6: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white))),
-      primaryIconTheme: IconThemeData(color: Colors.white),
+                  color: R.color.white))),
+      primaryIconTheme: IconThemeData(color: R.color.white),
       brightness: Brightness.light);
 }
 

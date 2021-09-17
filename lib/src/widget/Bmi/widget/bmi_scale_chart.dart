@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/bmi_trend.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -86,7 +87,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.all(16),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,7 +109,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                                     fontWeight: FontWeight.w400,
                                     color: model.value == null ||
                                             model.value == 0
-                                        ? Colors.black
+                                        ? R.color.black
                                         : toColor(
                                             model.currentLedend.colorCode))),
                             model.currentLedend == null
@@ -138,7 +139,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             width: width,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
-                              color: Colors.white,
+                              color: R.color.white,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.5),
@@ -151,40 +152,10 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             ),
                             child: Column(
                               children: [
-                                // Padding(
-                                //   padding: EdgeInsets.only(top: 18, bottom: 16),
-                                //   child: Row(
-                                //       mainAxisAlignment:
-                                //           MainAxisAlignment.spaceAround,
-                                //       children: []),
-                                // ),
-                                // model.trendItems.items.length != 0
-                                //     ? GestureDetector(
-                                //         onTap: () {
-                                //           Navigator.pushNamed(
-                                //               context, '/add_bmi',
-                                //               arguments: {
-                                //                 'type': 'input',
-                                //               });
-                                //         },
-                                //         child: Image.asset(
-                                //             'assets/images/nothing_chart_weight.png'),
-                                //       )
-                                //     :
                                 Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16),
-                                    color: Colors.white,
-                                    // boxShadow: [
-                                    //   BoxShadow(
-                                    //     color:
-                                    //         Colors.grey.withOpacity(0.5),
-                                    //     spreadRadius: 1,
-                                    //     blurRadius: 7,
-                                    //     offset: Offset(0,
-                                    //         2), // changes position of shadow
-                                    //   ),
-                                    // ],
+                                    color: R.color.white,
                                   ),
                                   padding: EdgeInsets.only(
                                       top: 32, left: 16, right: 16, bottom: 16),
@@ -315,7 +286,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             needleStartWidth: 0,
                             needleEndWidth: 0,
                             knobStyle: KnobStyle(
-                                knobRadius: 0.005, color: Colors.white),
+                                knobRadius: 0.005, color: R.color.white),
                           )
                         ],
                         ranges: <GaugeRange>[

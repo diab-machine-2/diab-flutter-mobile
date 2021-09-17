@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/notification/notification_bloc.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
@@ -218,7 +219,7 @@ class NotificationControllerState extends State<NotificationController>
                                                         SizedBox(height: 4),
                                                         Text('Xoá\nthông báo',
                                                             style: TextStyle(
-                                                                color: Colors
+                                                                color: R.color
                                                                     .white,
                                                                 fontWeight:
                                                                     FontWeight
@@ -233,7 +234,7 @@ class NotificationControllerState extends State<NotificationController>
                                                 ),
                                               ],
                                         child: Container(
-                                          color: Colors.transparent,
+                                          color: R.color.transparent,
                                           child: Padding(
                                               padding: EdgeInsets.all(16),
                                               child: Row(
@@ -278,7 +279,7 @@ class NotificationControllerState extends State<NotificationController>
                                                                                 16,
                                                                             fontWeight:
                                                                                 FontWeight.w700,
-                                                                            color: Colors.black)),
+                                                                            color: R.color.black)),
                                                                   ),
                                                                   isRead
                                                                       ? SizedBox()
@@ -401,7 +402,7 @@ class NotificationControllerState extends State<NotificationController>
                                     child: Center(
                                       child: Text('Xoá',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),

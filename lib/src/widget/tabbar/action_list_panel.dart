@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 class ActionListPanel extends StatelessWidget {
@@ -43,14 +44,14 @@ class ActionListPanel extends StatelessWidget {
           Navigator.pop(context);
         },
         child: Scaffold(
-            backgroundColor: Colors.transparent,
+            backgroundColor: R.color.transparent,
             body: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   clipBehavior: Clip.hardEdge,
                   decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: R.color.white,
                       borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(16),
                           bottomRight: Radius.circular(16))),
@@ -62,12 +63,12 @@ class ActionListPanel extends StatelessWidget {
                           padding: EdgeInsets.only(
                               left: 16, right: 16, top: 16, bottom: 16),
                           child: Row(children: [
-                            Icon(Icons.close, color: Colors.black),
+                            Icon(Icons.close, color: R.color.black),
                             SizedBox(width: 16),
                             Text('Chọn chỉ số khác',
                                 style: TextStyle(
                                     fontSize: 16,
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontWeight: FontWeight.w700))
                           ]),
                         ),
@@ -112,7 +113,7 @@ class ActionListPanel extends StatelessWidget {
       },
       child: Container(
           height: 74,
-          color: selectedIndex == index ? Color(0xffE4F5F5) : Colors.white,
+          color: selectedIndex == index ? Color(0xffE4F5F5) : R.color.white,
           padding: EdgeInsets.only(left: 16, right: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

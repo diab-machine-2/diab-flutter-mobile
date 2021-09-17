@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -113,7 +114,7 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
                     child: Center(
                       child: Text('Lưu',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: R.color.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w600)),
                     )),
@@ -138,7 +139,7 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
             child: Container(
               color: (selected != null && selected.id == model.id)
                   ? greenbg
-                  : Colors.white,
+                  : R.color.white,
               child: Column(
                 children: [
                   Padding(

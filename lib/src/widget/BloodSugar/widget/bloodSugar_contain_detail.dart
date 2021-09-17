@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
@@ -94,7 +95,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                           left: 12,
                                           right: 12),
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         borderRadius: BorderRadius.circular(16),
                                       ),
                                       child: Column(
@@ -150,7 +151,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                         left: 12,
                                         right: 12),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: R.color.white,
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: Column(
@@ -212,7 +213,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                           left: 12,
                                           right: 12),
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         borderRadius: BorderRadius.circular(16),
                                       ),
                                       child: Column(
@@ -276,7 +277,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                             const EdgeInsets.only(left: 8.0),
                                         child: Text('Tần suất phân bổ',
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: R.color.black,
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.w600)),
                                       ),
@@ -330,7 +331,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
             blurRadius: 4,
             offset: Offset(0, 2),
           ),
-        ], borderRadius: BorderRadius.circular(14), color: Colors.white),
+        ], borderRadius: BorderRadius.circular(14), color: R.color.white),
         child: Row(
           children: <Widget>[
             const SizedBox(

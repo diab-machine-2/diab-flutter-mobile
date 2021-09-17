@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 import 'circular_menu_item.dart';
 
@@ -266,7 +267,7 @@ class CircularMenuState extends State<CircularMenu>
               angle: -animationController.value * 0.8,
               child: CircularMenuItem(
                 bottom: widget.bottom,
-                icon: Icon(Icons.add, color: Colors.white, size: 30),
+                icon: Icon(Icons.add, color: R.color.white, size: 30),
                 title: SizedBox(),
                 margin: widget.toggleButtonMargin,
                 color:
@@ -288,7 +289,7 @@ class CircularMenuState extends State<CircularMenu>
                 //   icon:
                 //       widget.toggleButtonAnimatedIconData, //AnimatedIcons.menu_close,
                 //   size: widget.toggleButtonSize,
-                //   color: widget.toggleButtonIconColor ?? Colors.white,
+                //   color: widget.toggleButtonIconColor ?? R.color.white,
                 //   progress: _animation,
                 // ),
               ))),
@@ -303,7 +304,7 @@ class CircularMenuState extends State<CircularMenu>
         //   onTap: () {
         //     //Navigator
         //   },
-        //   child: Container(color: Colors.black.withOpacity(0.7)),
+        //   child: Container(color: R.color.black.withOpacity(0.7)),
         // ), //widget.backgroundWidget ?? Container(),
 
         _buildMenuButton(context),

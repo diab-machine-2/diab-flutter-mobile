@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/patient_time_frame.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -65,15 +66,15 @@ class _ScheduleActivityControllerState
                       stops: [0.0, 1.0])),
               child: Column(children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text('Lịch sinh hoạt cá nhân',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: textDark),
                       onPressed: () {
                         _showDialogSave();
@@ -117,7 +118,7 @@ class _ScheduleActivityControllerState
                         child: Center(
                             child: Text('Lưu',
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16)))),
                   ),
@@ -139,7 +140,7 @@ class _ScheduleActivityControllerState
                 SizedBox(width: 16),
                 Text(model[index].timeFrameName,
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 14,
                         fontWeight: FontWeight.w700)),
               ],
@@ -177,7 +178,7 @@ class _ScheduleActivityControllerState
                         }));
               },
               child: Container(
-                color: Colors.transparent,
+                color: R.color.transparent,
                 padding: EdgeInsets.all(8.0),
                 child:
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -188,7 +189,7 @@ class _ScheduleActivityControllerState
                             ? '--'
                             : convertToUTC(model[index].time, 'HH:mm'),
                         style: TextStyle(
-                            color: Colors.black,
+                            color: R.color.black,
                             fontSize: 40,
                             fontWeight: FontWeight.w700)),
                     Container(height: 1, width: 120, color: Color(0xffDDDDDD))
@@ -285,7 +286,7 @@ class _ScheduleActivityControllerState
                                         child: Center(
                                           child: Text('Thoát',
                                               style: TextStyle(
-                                                  color: Colors.white,
+                                                  color: R.color.white,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         ),

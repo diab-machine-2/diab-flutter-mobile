@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/emotion/activity_model.dart';
@@ -96,7 +97,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
           child: Column(
             children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 title: Text(
                     widget.type == 'update'
                         ? 'Chỉnh sửa cảm xúc'
@@ -106,8 +107,8 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                         fontWeight: FontWeight.w600,
                         color: textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
                     icon: Icon(Icons.arrow_back, color: textDark),
                     onPressed: () {
                       Navigator.pop(context);
@@ -221,7 +222,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       child: Center(
                           child: Text('Tiếp tục',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16)))),
                 ),
@@ -267,7 +268,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
             color: selectedIndex != -1 ||
                     (activityModel == null && otherActivity != null)
                 ? Color(0xffF4DBBD).withOpacity(0.7)
-                : Colors.white,
+                : R.color.white,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: selectedIndex != -1 ||
@@ -408,7 +409,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                             child: Center(
                               child: Text('Lưu',
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: R.color.white,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 
 class DetailDescription extends StatelessWidget {
@@ -11,7 +12,7 @@ class DetailDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: R.color.transparent,
       body: SafeArea(
           child: Padding(
               padding: EdgeInsets.all(16),
@@ -39,7 +40,7 @@ class DetailDescription extends StatelessWidget {
                             Expanded(
                               child: Text(title,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600)),
                             )
@@ -69,7 +70,7 @@ class DetailDescription extends StatelessWidget {
                             color: Color(0xff4BB2AB),
                             borderRadius: BorderRadius.circular(30)),
                         child: IconButton(
-                            icon: Icon(Icons.close, color: Colors.white),
+                            icon: Icon(Icons.close, color: R.color.white),
                             onPressed: () {
                               Navigator.pop(context);
                             }),

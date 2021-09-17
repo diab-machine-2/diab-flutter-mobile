@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -103,10 +104,10 @@ class _SearchFoodState extends State<SearchFood> {
                         fontWeight: FontWeight.w600,
                         color: textDark),
                   ),
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.close, color: textDark),
                       onPressed: () {
                         Navigator.pop(context);
@@ -119,7 +120,7 @@ class _SearchFoodState extends State<SearchFood> {
                   child: Container(
                       height: 48,
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(color: Color(0xffDDDDDD))),
                       child: Padding(

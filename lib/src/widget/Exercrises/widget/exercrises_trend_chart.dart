@@ -6,6 +6,7 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_trend_time.dart';
@@ -86,7 +87,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding:
                       EdgeInsets.only(top: 30, bottom: 16, left: 16, right: 16),
                   child: Column(
@@ -116,7 +117,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                         }));
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Row(
                                   children: [
                                     Image.asset(
@@ -141,7 +142,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                         Container(
                             width: width,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Column(
@@ -399,7 +400,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
               return Text(number[index].toString() + 'h',
                   style: TextStyle(
                       fontSize: 14,
-                      color: Colors.black,
+                      color: R.color.black,
                       fontWeight: FontWeight.normal));
             })),
       ),
@@ -502,8 +503,8 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                           showTitles: true,
                           reservedSize: -16,
                           margin: 16,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Colors.black,
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.black,
                               fontSize: 12,
                               fontWeight: FontWeight.w400),
                           getTitles: (double value) {
@@ -529,8 +530,8 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                         ),
                         leftTitles: SideTitles(
                             showTitles: false,
-                            getTextStyles: (context, value) => const TextStyle(
-                                color: Colors.black,
+                            getTextStyles: (context, value) => TextStyle(
+                                color: R.color.black,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -614,7 +615,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
   //             }),
   //             isCurved: false,
   //             colors:
-  //                 trendTypeIndex == 1 ? [Colors.transparent] : [Colors.black],
+  //                 trendTypeIndex == 1 ? [R.color.transparent] : [R.color.black],
   //             barWidth: 0.75,
   //             isStrokeCapRound: true,
   //             dotData: FlDotData(

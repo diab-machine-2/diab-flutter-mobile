@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -79,15 +80,15 @@ class _MotivationControllerState extends State<MotivationController> {
                       stops: [0.0, 1.0])),
               child: Column(children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text('Nhật ký động lực',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: textDark),
                       onPressed: () {
                         Navigator.pop(context);

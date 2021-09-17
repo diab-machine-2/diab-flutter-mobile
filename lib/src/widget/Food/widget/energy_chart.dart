@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
@@ -95,8 +96,8 @@ class EnergyChartState extends State<EnergyChart>
                                   child: CustomPaint(
                                       painter: GradientArcPainter(
                                     progress: 1,
-                                    startColor: Colors.white,
-                                    endColor: Colors.white,
+                                    startColor: R.color.white,
+                                    endColor: R.color.white,
                                     width: 56.0,
                                   ))),
                               SizedBox(
@@ -133,7 +134,7 @@ class EnergyChartState extends State<EnergyChart>
                           children: [
                             Text('Năng lượng',
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700)),
                             GestureDetector(
@@ -150,7 +151,7 @@ class EnergyChartState extends State<EnergyChart>
                                 );
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Row(
                                   children: [
                                     Image.asset(
@@ -211,7 +212,7 @@ class EnergyChartState extends State<EnergyChart>
                                                   .toString(),
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
-                                                  color: Colors.black,
+                                                  color: R.color.black,
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 18)),
                                         )),
@@ -238,7 +239,7 @@ class EnergyChartState extends State<EnergyChart>
                                   Text(formatNumber(model.total),
                                       style: TextStyle(
                                           fontFamily: 'Viga',
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 30,
                                           fontWeight: FontWeight.w400)),
                                 ],

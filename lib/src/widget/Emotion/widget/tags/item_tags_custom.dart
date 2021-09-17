@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_tags/src/tags.dart';
+import 'package:medical/res/R.dart';
 
 /// Used by [ItemTags.onPressed].
 typedef OnPressedCallback = void Function(Item i);
@@ -224,14 +225,13 @@ class _ItemTagsCustomState extends State<ItemTagsCustom> {
       borderRadius:
           widget.borderRadius ?? BorderRadius.circular(_initBorderRadius),
       elevation: widget.elevation,
-      //shadowColor: _dataList.highlights? Colors.red : Colors.blue,
       child: InkWell(
         borderRadius:
             widget.borderRadius ?? BorderRadius.circular(_initBorderRadius),
         highlightColor:
-            widget.pressEnabled ? widget.highlightColor : Colors.transparent,
+            widget.pressEnabled ? widget.highlightColor : R.color.transparent,
         splashColor:
-            widget.pressEnabled ? widget.splashColor : Colors.transparent,
+            widget.pressEnabled ? widget.splashColor : R.color.transparent,
         child: Container(
             decoration: BoxDecoration(
                 border: widget.border ??
@@ -313,7 +313,7 @@ class _ItemTagsCustomState extends State<ItemTagsCustom> {
                     CircleAvatar(
                       radius: widget.image.radius *
                           (widget.textStyle.fontSize / 14),
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: R.color.transparent,
                       backgroundImage: widget.image.image,
                     ),
               ),
@@ -401,14 +401,14 @@ class _ItemTagsCustomState extends State<ItemTagsCustom> {
                                 (widget.textStyle.fontSize / 14),
                         decoration: BoxDecoration(
                           color: widget.removeButton.backgroundColor ??
-                              Colors.black,
+                              R.color.black,
                           borderRadius: widget.removeButton.borderRadius ??
                               BorderRadius.circular(_initBorderRadius),
                         ),
                         child: widget.removeButton.padding ??
                             Icon(
                               Icons.clear,
-                              color: widget.removeButton.color ?? Colors.white,
+                              color: widget.removeButton.color ?? R.color.white,
                               size: (widget.removeButton.size ?? 12) *
                                   (widget.textStyle.fontSize / 14),
                             ),

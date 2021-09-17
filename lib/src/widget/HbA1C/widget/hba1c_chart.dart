@@ -5,6 +5,7 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_lastestSumary.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
@@ -66,7 +67,7 @@ class HbA1CChartState extends State<HbA1CChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.all(18),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,7 +89,7 @@ class HbA1CChartState extends State<HbA1CChart>
                             : Container(
                                 width: width,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Column(
@@ -167,7 +168,7 @@ class HbA1CChartState extends State<HbA1CChart>
               return Text(number[index].toString().split('.').join(','),
                   style: TextStyle(
                       fontSize: 14,
-                      color: Colors.black,
+                      color: R.color.black,
                       fontWeight: FontWeight.normal));
             })),
       ),
@@ -227,7 +228,7 @@ class HbA1CChartState extends State<HbA1CChart>
                         touchTooltipData: BarTouchTooltipData(
                           fitInsideVertically: true,
                           tooltipBgColor: touchIndex == -1
-                              ? Colors.transparent
+                              ? R.color.transparent
                               : toColor(model.trendItems.items[touchIndex]
                                   .backgroundColor),
                           tooltipPadding: const EdgeInsets.only(
@@ -243,7 +244,7 @@ class HbA1CChartState extends State<HbA1CChart>
                               rod.y.toString().split('.').join(',') + '%',
                               TextStyle(
                                 color: touchIndex == -1
-                                    ? Colors.white
+                                    ? R.color.white
                                     : toColor(model.trendItems.items[touchIndex]
                                         .fontColor),
                                 fontWeight: FontWeight.bold,
@@ -256,8 +257,8 @@ class HbA1CChartState extends State<HbA1CChart>
                         show: true,
                         bottomTitles: SideTitles(
                           showTitles: true,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Colors.black,
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.black,
                               fontSize: 14,
                               fontWeight: FontWeight.normal),
                           margin: 16,
@@ -270,8 +271,8 @@ class HbA1CChartState extends State<HbA1CChart>
                         ),
                         leftTitles: SideTitles(
                           showTitles: false,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Colors.black, fontSize: 14),
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.black, fontSize: 14),
                         ),
                       ),
                       borderData: FlBorderData(
@@ -388,7 +389,7 @@ class HbA1CChartState extends State<HbA1CChart>
             (index + 0.5).toDouble(), model.trendItems.items[index].hbA1C);
       }),
       isCurved: false,
-      colors: [Colors.black],
+      colors: [R.color.black],
       barWidth: 1,
       isStrokeCapRound: true,
       dotData: FlDotData(

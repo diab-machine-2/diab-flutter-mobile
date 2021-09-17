@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/modal/exercrises/exercrises_active.dart';
 import 'package:medical/src/modal/exercrises/exercrises_categogy_request.dart';
@@ -101,15 +102,15 @@ class _InputDetailExercrisesControllerState
           child: Column(
             children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 title: Text(widget.model.category,
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
                     icon: Icon(Icons.arrow_back, color: textDark),
                     onPressed: () {
                       Navigator.pop(context);
@@ -169,7 +170,7 @@ class _InputDetailExercrisesControllerState
                             bottom: 16, left: 16, right: 16),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: R.color.white,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           padding: EdgeInsets.all(16),
@@ -187,7 +188,7 @@ class _InputDetailExercrisesControllerState
                                         }));
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Column(children: [
                                   Row(
                                       mainAxisAlignment:
@@ -221,7 +222,7 @@ class _InputDetailExercrisesControllerState
                             bottom: 16, left: 16, right: 16),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: R.color.white,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           padding: EdgeInsets.all(16),
@@ -256,7 +257,7 @@ class _InputDetailExercrisesControllerState
                                         context, 'Bạn chưa chọn cường độ');
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Column(children: [
                                   Row(
                                       mainAxisAlignment:
@@ -327,7 +328,7 @@ class _InputDetailExercrisesControllerState
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -354,7 +355,6 @@ class _InputDetailExercrisesControllerState
                                             children: [
                                               Container(
                                                 width: 80,
-                                                //color: Colors.red,
                                                 child: Center(
                                                   child: Text(
                                                       selectedHour.toString(),
@@ -386,7 +386,6 @@ class _InputDetailExercrisesControllerState
                                             children: [
                                               Container(
                                                 width: 80,
-                                                //color: Colors.red,
                                                 child: Center(
                                                   child: Text(
                                                       selectedMinute.toString(),
@@ -456,7 +455,7 @@ class _InputDetailExercrisesControllerState
                     child: Center(
                         child: Text('Lưu',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: R.color.white,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16)))),
               )
@@ -529,13 +528,13 @@ class _InputDetailExercrisesControllerState
               callbackData();
             });
             return Scaffold(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 body: Center(
                     child: Padding(
                   padding: EdgeInsets.all(16),
                   child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(10)),
                       padding: EdgeInsets.only(top: 32, left: 32, right: 32),
                       child: Column(
@@ -543,7 +542,7 @@ class _InputDetailExercrisesControllerState
                         children: [
                           Text('Chúc mừng!',
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500)),
                           SizedBox(height: 16),
@@ -625,14 +624,14 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: R.color.transparent,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 16.0, right: 16),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
+              color: R.color.white,
             ),
             child: Padding(
               padding: const EdgeInsets.only(top: 8, bottom: 16),
@@ -779,7 +778,7 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                         ? 'Tiếp tục'
                                         : 'Đồng ý',
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),

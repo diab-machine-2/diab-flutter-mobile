@@ -2,6 +2,7 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -170,7 +171,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                               decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(16),
-                                                  color: Colors.white),
+                                                  color: R.color.white),
                                               child: Padding(
                                                 padding:
                                                     const EdgeInsets.all(16.0),
@@ -263,7 +264,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                         children: [
                                                           Text('Cân nặng:',
                                                               style: TextStyle(
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .black,
                                                                   fontSize: 16,
                                                                   fontWeight:
@@ -275,7 +276,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                               style: TextStyle(
                                                                   fontFamily:
                                                                       'Viga',
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .black,
                                                                   fontSize: 20,
                                                                   fontWeight:
@@ -284,7 +285,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                           SizedBox(width: 4),
                                                           Text('kg',
                                                               style: TextStyle(
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .black,
                                                                   fontSize: 16,
                                                                   fontWeight:
@@ -299,7 +300,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                         10.0),
                                                             child: Text('.',
                                                                 style: TextStyle(
-                                                                    color: Colors
+                                                                    color: R.color
                                                                         .black,
                                                                     fontSize:
                                                                         30,
@@ -310,7 +311,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                           SizedBox(width: 8),
                                                           Text('Vòng eo:',
                                                               style: TextStyle(
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .black,
                                                                   fontSize: 16,
                                                                   fontWeight:
@@ -332,7 +333,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                           SizedBox(width: 4),
                                                           Text('cm',
                                                               style: TextStyle(
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .black,
                                                                   fontSize: 16,
                                                                   fontWeight:
@@ -351,7 +352,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                 'HH:mm') +
                                                             ',',
                                                         style: TextStyle(
-                                                            color: Colors.black,
+                                                            color: R.color.black,
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight
@@ -362,7 +363,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                           element.timeFrameText,
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.black,
+                                                                  R.color.black,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -389,7 +390,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                 Text(
                                                                     'Ghi chú: ',
                                                                     style: TextStyle(
-                                                                        color: Colors
+                                                                        color: R.color
                                                                             .black,
                                                                         fontSize:
                                                                             16,
@@ -399,7 +400,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                     element
                                                                         .note,
                                                                     style: TextStyle(
-                                                                        color: Colors
+                                                                        color: R.color
                                                                             .black,
                                                                         fontSize:
                                                                             16,

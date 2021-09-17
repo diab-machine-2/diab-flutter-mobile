@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class EmoDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: R.color.transparent,
       body: SafeArea(
           child: Padding(
               padding: EdgeInsets.all(16),
@@ -31,7 +32,7 @@ class EmoDescription extends StatelessWidget {
                             Expanded(
                               child: Text('Kiểm soát cảm xúc bệnh tiểu đường',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                             )
@@ -61,7 +62,7 @@ class EmoDescription extends StatelessWidget {
                             color: Color(0xff4BB2AB),
                             borderRadius: BorderRadius.circular(30)),
                         child: IconButton(
-                            icon: Icon(Icons.close, color: Colors.white),
+                            icon: Icon(Icons.close, color: R.color.white),
                             onPressed: () {
                               Navigator.pop(context);
                             }),

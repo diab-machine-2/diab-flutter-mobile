@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/widget/Food/search_food_controller.dart';
@@ -46,11 +47,11 @@ class FoodItem extends StatelessWidget {
           decoration: BoxDecoration(
               color: selectedModel != null
                   ? Color(0xffC3E8D3)
-                  : Colors.transparent,
+                  : R.color.transparent,
               border: Border.all(
                   color: selectedModel != null
                       ? Color(0xff72CB9C)
-                      : Colors.transparent)),
+                      : R.color.transparent)),
           padding: EdgeInsets.only(left: 16, right: 16, top: 11, bottom: 11),
           child: Row(children: [
             Image.network(model.image == null ? '' : model.image.url ?? '',
@@ -62,7 +63,7 @@ class FoodItem extends StatelessWidget {
                 children: [
                   Text(model.name,
                       style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.w500)),
+                          color: R.color.black, fontWeight: FontWeight.w500)),
                   selectedModel == null
                       ? SizedBox()
                       : Padding(
@@ -70,7 +71,7 @@ class FoodItem extends StatelessWidget {
                           child: Text(
                               'Đã ăn ${roundAsFixed(selectedModel.portion * selectedModel.quantity)} ${selectedModel.unit}, ${formatNumber(selectedModel.quantity * selectedModel.calorie)} kcal',
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontWeight: FontWeight.w400)),
                         )
                 ],

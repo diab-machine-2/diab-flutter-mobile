@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_heart_rate.dart';
@@ -89,7 +90,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                           padding: const EdgeInsets.only(bottom: 8.0),
                           child: Text('Huyết áp',
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700)),
                         ),
@@ -109,7 +110,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   padding: EdgeInsets.only(
                                       top: 16, bottom: 16, left: 8, right: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Column(
@@ -135,7 +136,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
                                                   color: model == null
-                                                      ? Colors.black
+                                                      ? R.color.black
                                                       : toColor(
                                                           model.lowestColor),
                                                   fontSize: 15,
@@ -164,7 +165,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                 padding: EdgeInsets.only(
                                     top: 16, bottom: 16, left: 8, right: 8),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Column(
@@ -189,7 +190,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                             style: TextStyle(
                                                 fontFamily: 'Viga',
                                                 color: model == null
-                                                    ? Colors.black
+                                                    ? R.color.black
                                                     : toColor(
                                                         model.averageColor),
                                                 fontSize: 15,
@@ -225,7 +226,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   padding: EdgeInsets.only(
                                       top: 16, bottom: 16, left: 8, right: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Column(
@@ -251,7 +252,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
                                                   color: model == null
-                                                      ? Colors.black
+                                                      ? R.color.black
                                                       : toColor(
                                                           model.highestColor),
                                                   fontSize: 15,
@@ -283,7 +284,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                           padding: const EdgeInsets.only(bottom: 8.0),
                           child: Text('Nhịp tim',
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700)),
                         ),
@@ -303,7 +304,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                     padding: EdgeInsets.only(
                                         top: 16, bottom: 16, left: 8, right: 8),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: R.color.white,
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: Column(
@@ -325,7 +326,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                 style: TextStyle(
                                                     fontFamily: 'Viga',
                                                     color: model == null
-                                                        ? Colors.black
+                                                        ? R.color.black
                                                         : toColor(
                                                             model.lowestColor),
                                                     fontSize: 24,
@@ -356,7 +357,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   padding: EdgeInsets.only(
                                       top: 16, bottom: 16, left: 8, right: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Column(
@@ -378,7 +379,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
                                                   color: model == null
-                                                      ? Colors.black
+                                                      ? R.color.black
                                                       : toColor(
                                                           model.averageColor),
                                                   fontSize: 24,
@@ -415,7 +416,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   padding: EdgeInsets.only(
                                       top: 16, bottom: 16, left: 8, right: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Column(
@@ -437,7 +438,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
                                                   color: model == null
-                                                      ? Colors.black
+                                                      ? R.color.black
                                                       : toColor(
                                                           model.highestColor),
                                                   fontSize: 24,
@@ -551,7 +552,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                       style: TextStyle(
                                           fontFamily: 'Viga',
                                           color: modelLastest == null
-                                              ? Colors.black
+                                              ? R.color.black
                                               : toColor(modelLastest.color),
                                           fontSize: 32,
                                           fontWeight: FontWeight.w400)),

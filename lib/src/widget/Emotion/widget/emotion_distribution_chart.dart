@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_model.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -98,7 +99,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                 child: Text(
                                     'Cảm xúc của bạn ${periodFilterType == 1 ? '7' : periodFilterType == 2 ? '14' : periodFilterType == 3 ? '30' : '90'} ngày qua',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -145,7 +146,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                                   Expanded(
                                                     child: Text(model.note,
                                                         style: TextStyle(
-                                                            color: Colors.black,
+                                                            color: R.color.black,
                                                             fontSize: 14,
                                                             fontWeight:
                                                                 FontWeight
@@ -196,7 +197,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
           blurRadius: 4,
           offset: Offset(0, 2),
         ),
-      ], borderRadius: BorderRadius.circular(14), color: Colors.white),
+      ], borderRadius: BorderRadius.circular(14), color: R.color.white),
       padding: EdgeInsets.all(16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,7 +255,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                               },
                               child: Container(
                                 height: 40,
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -291,7 +292,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                               },
                               child: Container(
                                   height: 40,
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Center(
                                     child: Text(
                                         model.emotions[index].count.toString(),

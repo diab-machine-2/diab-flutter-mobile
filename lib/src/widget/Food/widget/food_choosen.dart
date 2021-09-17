@@ -1,5 +1,6 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -77,11 +78,11 @@ class _FoodChoosenState extends State<FoodChoosen> {
                   });
                 });
               },
-              child: Container(color: Colors.black.withOpacity(0.5))),
+              child: Container(color: R.color.black.withOpacity(0.5))),
       Container(
           // height: height,
           decoration: BoxDecoration(
-              color: Colors.white,
+              color: R.color.white,
               border: Border.all(color: Color(0xffE5E5E5), width: 2),
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(16), topRight: Radius.circular(16))),
@@ -101,7 +102,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                     });
                   },
                   child: Container(
-                    color: Colors.transparent,
+                    color: R.color.transparent,
                     margin: EdgeInsets.only(
                         top: 16, left: 16, right: 16, bottom: 16),
                     child: Row(
@@ -109,19 +110,19 @@ class _FoodChoosenState extends State<FoodChoosen> {
                         children: [
                           Text('${foods.length} món ăn',
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16)),
                           Row(
                             children: [
                               Text('${totalKcal.round()} ',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 16)),
                               Text('kcal',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontWeight: FontWeight.w400)),
                               Icon(showAll
                                   ? Icons.keyboard_arrow_down
@@ -159,7 +160,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                                       children: [
                                         Text(foods[index].name,
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: R.color.black,
                                                 fontWeight: FontWeight.w500)),
                                         Text(
                                             'Đã ăn ${roundAsFixed(foods[index].portion * foods[index].quantity)} ${foods[index].unit}, ${formatNumber(foods[index].quantity * foods[index].calorie)} kcal',
@@ -208,7 +209,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                       child: Center(
                           child: Text('Lưu',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16)))),
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu.dart';
@@ -39,7 +40,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
     return GestureDetector(
       onTap: onClose,
       child: Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: R.color.transparent,
           body: SafeArea(
             child: CircularMenu(
               key: menuKey,
@@ -49,21 +50,21 @@ class FunkyOverlayState extends State<FunkyOverlay>
               endingAngleInRadian: 6,
               toggleButtonColor: mainColor,
               titles: [
-                // Text('HbA1C', style: TextStyle(color: Colors.white)),
-                // Text('Huyết áp', style: TextStyle(color: Colors.white)),
-                // Text('Cảm xúc', style: TextStyle(color: Colors.white)),
-                // Text('Cân nặng', style: TextStyle(color: Colors.white)),
-                // Text('Dinh dưỡng', style: TextStyle(color: Colors.white)),
-                // Text('Vận động', style: TextStyle(color: Colors.white)),
-                // Text('Đường huyết', style: TextStyle(color: Colors.white))
+                // Text('HbA1C', style: TextStyle(color: R.color.white)),
+                // Text('Huyết áp', style: TextStyle(color: R.color.white)),
+                // Text('Cảm xúc', style: TextStyle(color: R.color.white)),
+                // Text('Cân nặng', style: TextStyle(color: R.color.white)),
+                // Text('Dinh dưỡng', style: TextStyle(color: R.color.white)),
+                // Text('Vận động', style: TextStyle(color: R.color.white)),
+                // Text('Đường huyết', style: TextStyle(color: R.color.white))
               ],
               items: [
                 CircularMenuItem(
                     bottom: bottom,
                     icon: Image.asset('assets/images/icon_a1c.png',
                         width: 40, height: 40),
-                    title: Text('HbA1C', style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                    title: Text('HbA1C', style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
                       Navigator.pushNamed(context, '/add_hba1c',
@@ -74,8 +75,8 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     icon: Image.asset('assets/images/icon_huyet_ap.png',
                         width: 40, height: 40),
                     title:
-                        Text('Huyết áp', style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                        Text('Huyết áp', style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
                       Navigator.pushNamed(context, '/add_bloodPressure',
@@ -86,8 +87,8 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     icon: Image.asset('assets/images/icon_cam_xuc.png',
                         width: 40, height: 40),
                     title:
-                        Text('Cảm xúc', style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                        Text('Cảm xúc', style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
                       Navigator.pushNamed(context, '/add_emo',
@@ -98,8 +99,8 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     icon: Image.asset('assets/images/icon_can_nang.png',
                         width: 40, height: 40),
                     title:
-                        Text('Cân nặng', style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                        Text('Cân nặng', style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
                       Navigator.pushNamed(context, '/add_bmi',
@@ -110,8 +111,8 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     icon: Image.asset('assets/images/icon_dinh_duong.png',
                         width: 40, height: 40),
                     title: Text('Dinh dưỡng',
-                        style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                        style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
                       Navigator.pushNamed(context, '/add_food',
@@ -122,8 +123,8 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     icon: Image.asset('assets/images/icon_van_dong.png',
                         width: 40, height: 40),
                     title:
-                        Text('Vận động', style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                        Text('Vận động', style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
                       if (AppSettings.userInfo.weight == null ||
@@ -139,8 +140,8 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     icon: Image.asset('assets/images/icon_duong_huyet.png',
                         width: 40, height: 40),
                     title: Text('Đường huyết',
-                        style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                        style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
                       Navigator.pushNamed(context, '/add_bloodSugar',

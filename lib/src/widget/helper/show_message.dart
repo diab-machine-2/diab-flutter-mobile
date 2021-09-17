@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -51,7 +52,7 @@ class ToastMessage extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black,
+                  color: R.color.black,
                   blurRadius: 3,
                   offset: Offset(0, 0),
                 )
@@ -71,7 +72,7 @@ class ToastMessage extends StatelessWidget {
               SizedBox(width: 16),
               Expanded(
                 child: Text(title,
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
+                    style: TextStyle(color: R.color.white, fontSize: 16)),
               ),
             ],
           )),
@@ -113,7 +114,7 @@ class _NotificationMessage extends State<NotificationMessage> {
             Container(
               padding: EdgeInsets.all(18),
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: R.color.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -147,7 +148,7 @@ class _NotificationMessage extends State<NotificationMessage> {
                                   widget.model.title,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500),
                                   maxLines: 2,
@@ -158,7 +159,7 @@ class _NotificationMessage extends State<NotificationMessage> {
                                   widget.model.title,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500),
                                   maxLines: 2,
@@ -168,7 +169,7 @@ class _NotificationMessage extends State<NotificationMessage> {
                                   widget.model.body,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400),
                                   maxLines: 2,

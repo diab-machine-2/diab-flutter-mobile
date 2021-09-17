@@ -3,12 +3,16 @@
 import 'dart:ui';
 
 class Colors {
+	Color get transparent => Color(0x00000000);
 	Color get primaryColor => Color(0xFF226BCC);
 	Color get backgroundColor => Color(0xFFf2f2f4);
 	Color get primaryGreyColor => Color(0xff666666);
 	Color get primaryLightGreyColor => Color(0xFFEEEEEE);
 	Color get white => Color(0xffffffff);
 	Color get black => Color(0xff000000);
+	Color get black26 => Color(0x42000000);
+	Color get black54 => Color(0x8A000000);
+	Color get grey => Color(0xff9e9e9e);
 	Color get textDark => Color(0xff0A2836);
 	Color get captionColorGray => Color(0xff9C9C9C);
 	Color get statusGood => Color(0xff7CB5FF);

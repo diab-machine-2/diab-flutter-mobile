@@ -5,6 +5,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/emotion/activity_model.dart';
@@ -157,7 +158,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
                           ? 'Chỉnh sửa cảm xúc'
@@ -167,8 +168,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                           fontWeight: FontWeight.w600,
                           color: textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: textDark),
                       onPressed: () {
                         _showDialogSave();
@@ -226,7 +227,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                             }));
                           },
                           child: Container(
-                            color: Colors.transparent,
+                            color: R.color.transparent,
                             child: Column(
                               children: [
                                 Image.network(
@@ -253,10 +254,10 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
+                            // color: R.color.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
                               children: [
@@ -333,7 +334,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                     height: 24),
                                               ),
                                               title: item.name,
-                                              activeColor: Colors.white,
+                                              activeColor: R.color.white,
                                               textOverflow:
                                                   TextOverflow.visible,
                                               splashColor: Colors.green,
@@ -402,10 +403,10 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
+                            // color: R.color.white,
                             padding: EdgeInsets.all(20),
                             child: Column(
                               children: [
@@ -483,7 +484,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                     height: 24),
                                               ),
                                               title: item.name,
-                                              activeColor: Colors.white,
+                                              activeColor: R.color.white,
                                               textOverflow:
                                                   TextOverflow.visible,
                                               splashColor: Colors.green,
@@ -552,7 +553,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -585,7 +586,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   );
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
@@ -627,7 +628,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -637,7 +638,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   showActionFilter(context);
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
@@ -671,10 +672,10 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
+                            // color: R.color.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -692,7 +693,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   TextField(
                                       controller: _controllerNote,
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
@@ -799,7 +800,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               child: Center(
                                   child: Text('Lưu',
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)))),
                         ),
@@ -830,7 +831,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         child: Center(
                                           child: Text('Xoá dữ liệu',
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: R.color.red,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         )),
@@ -856,7 +857,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                       child: Center(
                                         child: Text('Lưu',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ),
@@ -1097,7 +1098,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                     child: Center(
                                       child: Text('Xoá',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1227,7 +1228,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                     child: Center(
                                       child: Text('Thoát',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1256,7 +1257,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => ActionListTrend(
@@ -1423,7 +1424,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -1432,7 +1433,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1444,7 +1445,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           children: [
                             Text('Chọn ngày',
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
@@ -1471,7 +1472,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         ),
                         Text('Chọn thời gian',
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700)),
                       ],
@@ -1500,7 +1501,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                               child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1528,7 +1529,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                               child: Center(
                                   child: Text('Đồng ý',
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 class BloodPressureDetailItem extends StatelessWidget {
@@ -35,7 +36,7 @@ class BloodPressureDetailItem extends StatelessWidget {
         groupBy: (element) => element['group'],
         order: GroupedListOrder.DESC,
         useStickyGroupSeparators: true,
-        stickyHeaderBackgroundColor: Colors.transparent,
+        stickyHeaderBackgroundColor: R.color.transparent,
         groupSeparatorBuilder: (dynamic value) => Padding(
           padding:
               const EdgeInsets.only(left: 16, right: 16, top: 24, bottom: 8),
@@ -57,7 +58,7 @@ class BloodPressureDetailItem extends StatelessWidget {
               child: Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      color: Colors.white),
+                      color: R.color.white),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(children: [
@@ -76,7 +77,7 @@ class BloodPressureDetailItem extends StatelessWidget {
                                     bottomRight: Radius.circular(13))),
                             child: Text(element['title'],
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700)),
                           ),
@@ -91,7 +92,7 @@ class BloodPressureDetailItem extends StatelessWidget {
                               SizedBox(width: 4),
                               Text('mmHg',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400)),
                               SizedBox(width: 8),
@@ -99,7 +100,7 @@ class BloodPressureDetailItem extends StatelessWidget {
                                 padding: const EdgeInsets.only(bottom: 10.0),
                                 child: Text('.',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 30,
                                         fontWeight: FontWeight.w700)),
                               ),
@@ -112,7 +113,7 @@ class BloodPressureDetailItem extends StatelessWidget {
                               SizedBox(width: 4),
                               Text('lần/phút',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400)),
                             ],
@@ -125,14 +126,14 @@ class BloodPressureDetailItem extends StatelessWidget {
                           Text(
                             element['hour'],
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400),
                           ),
                           SizedBox(width: 4),
                           Text(element['name'],
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400)),
                         ],
@@ -146,7 +147,7 @@ class BloodPressureDetailItem extends StatelessWidget {
                                 SizedBox(height: 16),
                                 Text(element['note'],
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400)),
                               ],

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:medical/res/R.dart';
 
 /// Local import
 
@@ -290,13 +291,13 @@ class SampleModel extends Listenable {
   Color textColor = const Color.fromRGBO(51, 51, 51, 1);
 
   /// Holds theme based drawer text color
-  Color drawerTextIconColor = Colors.black;
+  Color drawerTextIconColor = R.color.black;
 
   /// Holds theme based bottom sheet color
-  Color bottomSheetBackgroundColor = Colors.white;
+  Color bottomSheetBackgroundColor = R.color.white;
 
   /// Holds theme based card color
-  Color cardThemeColor = Colors.white;
+  Color cardThemeColor = R.color.white;
 
   /// Holds theme based web page background color
   Color webBackgroundColor = const Color.fromRGBO(246, 246, 246, 1);
@@ -311,10 +312,10 @@ class SampleModel extends Listenable {
   Color webInputColor = const Color.fromRGBO(242, 242, 242, 1);
 
   /// Holds theme based web outputcontainer color
-  Color webOutputContainerColor = Colors.white;
+  Color webOutputContainerColor = R.color.white;
 
   /// Holds the theme based card's color
-  Color cardColor = Colors.white;
+  Color cardColor = R.color.white;
 
   /// Holds the theme based divider color
   Color dividerColor = const Color.fromRGBO(204, 204, 204, 1);
@@ -385,7 +386,7 @@ class SampleModel extends Listenable {
           webOutputContainerColor = const Color.fromRGBO(23, 23, 23, 1);
           webInputColor = const Color.fromRGBO(44, 44, 44, 1);
           webBackgroundColor = const Color.fromRGBO(33, 33, 33, 1);
-          drawerTextIconColor = Colors.white;
+          drawerTextIconColor = R.color.white;
           bottomSheetBackgroundColor = const Color.fromRGBO(34, 39, 51, 1);
           textColor = const Color.fromRGBO(242, 242, 242, 1);
           cardThemeColor = const Color.fromRGBO(33, 33, 33, 1);
@@ -394,15 +395,15 @@ class SampleModel extends Listenable {
       default:
         {
           dividerColor = const Color.fromRGBO(204, 204, 204, 1);
-          cardColor = Colors.white;
+          cardColor = R.color.white;
           webIconColor = const Color.fromRGBO(55, 55, 55, 1);
-          webOutputContainerColor = Colors.white;
+          webOutputContainerColor = R.color.white;
           webInputColor = const Color.fromRGBO(242, 242, 242, 1);
           webBackgroundColor = const Color.fromRGBO(246, 246, 246, 1);
-          drawerTextIconColor = Colors.black;
-          bottomSheetBackgroundColor = Colors.white;
+          drawerTextIconColor = R.color.black;
+          bottomSheetBackgroundColor = R.color.white;
           textColor = const Color.fromRGBO(51, 51, 51, 1);
-          cardThemeColor = Colors.white;
+          cardThemeColor = R.color.white;
           break;
         }
     }

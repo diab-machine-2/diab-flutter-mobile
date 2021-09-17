@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class LineChartSample7 extends StatelessWidget {
   @override
@@ -53,7 +54,7 @@ class LineChartSample7 extends StatelessWidget {
               isCurved: true,
               barWidth: 2,
               colors: [
-                Colors.black,
+                R.color.black,
               ],
               dotData: FlDotData(
                 show: false,
@@ -77,7 +78,7 @@ class LineChartSample7 extends StatelessWidget {
               isCurved: false,
               barWidth: 2,
               colors: [
-                Colors.red,
+                R.color.red,
               ],
               dotData: FlDotData(
                 show: false,
@@ -88,7 +89,7 @@ class LineChartSample7 extends StatelessWidget {
             BetweenBarsData(
               fromIndex: 0,
               toIndex: 2,
-              colors: [Colors.red.withOpacity(0.3)],
+              colors: [R.color.red.withOpacity(0.3)],
             )
           ],
           minY: 0,

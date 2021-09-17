@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/modal/user/patient_time_frame.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
@@ -76,15 +77,15 @@ class _SettingScheduleGlucoseControllerState
                       stops: [0.0, 1.0])),
               child: Column(children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text('Thiết lập',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: textDark),
                       onPressed: () {
                         Navigator.pop(context);
@@ -104,7 +105,7 @@ class _SettingScheduleGlucoseControllerState
                             padding: EdgeInsets.all(16),
                             child: Text('Thời gian',
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                           ),
@@ -118,7 +119,7 @@ class _SettingScheduleGlucoseControllerState
                               children: [
                                 Text('Đơn vị đo dường huyết',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 16),
@@ -202,7 +203,7 @@ class _SettingScheduleGlucoseControllerState
                         child: Center(
                             child: Text('Lưu',
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16)))),
                   ),
@@ -224,7 +225,7 @@ class _SettingScheduleGlucoseControllerState
                 SizedBox(width: 16),
                 Text(title,
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 14,
                         fontWeight: FontWeight.w400)),
               ],
@@ -269,7 +270,7 @@ class _SettingScheduleGlucoseControllerState
                 );
               },
               child: Container(
-                color: Colors.transparent,
+                color: R.color.transparent,
                 padding: EdgeInsets.all(8.0),
                 child:
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -283,14 +284,14 @@ class _SettingScheduleGlucoseControllerState
                                     : timeModel.beforeSleeping)
                             .toString(),
                         style: TextStyle(
-                            color: Colors.black,
+                            color: R.color.black,
                             fontSize: 40,
                             fontWeight: FontWeight.w700)),
                     Container(height: 1, width: 120, color: Color(0xffDDDDDD))
                   ]),
                   Text(unit,
                       style: TextStyle(
-                          color: Colors.black,
+                          color: R.color.black,
                           fontSize: 14,
                           fontWeight: FontWeight.w400))
                 ]),

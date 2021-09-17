@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
@@ -71,7 +72,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                       child: Center(
                           child: Text('Cập nhật hồ sơ',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600)))),
                 ),

@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -87,7 +88,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
                             style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.white))),
+                                color: R.color.white))),
                   ),
                 ),
               ]),
@@ -103,7 +104,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                    child: Icon(Icons.arrow_back, color: Colors.black)),
+                    child: Icon(Icons.arrow_back, color: R.color.black)),
                 title: Align(
                   alignment: Alignment.topLeft,
                   child: Text(
@@ -111,7 +112,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
                     style: TextStyle(fontSize: 20, color: textDark),
                   ),
                 ),
-                backgroundColor: Colors.transparent, //No more green
+                backgroundColor: R.color.transparent, //No more green
                 elevation: 0.0, //Shadow gone
               )),
         ],

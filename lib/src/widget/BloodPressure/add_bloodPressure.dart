@@ -5,6 +5,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
@@ -125,7 +126,7 @@ class _AddBloodPressureControllerState
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
                           ? 'Cập nhật chỉ số huyết áp'
@@ -135,8 +136,8 @@ class _AddBloodPressureControllerState
                           fontWeight: FontWeight.w600,
                           color: textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: textDark),
                       onPressed: () {
                         _showDialogSave();
@@ -182,10 +183,9 @@ class _AddBloodPressureControllerState
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
                             padding: EdgeInsets.all(20),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,7 +210,6 @@ class _AddBloodPressureControllerState
                                             children: [
                                               Container(
                                                 width: 80,
-                                                //color: Colors.red,
                                                 child: TextField(
                                                     autofocus:
                                                         widget.type != 'update',
@@ -231,7 +230,7 @@ class _AddBloodPressureControllerState
                                                     keyboardType:
                                                         TextInputType.number,
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 34,
                                                         fontWeight:
                                                             FontWeight.w500),
@@ -268,7 +267,6 @@ class _AddBloodPressureControllerState
                                             children: [
                                               Container(
                                                 width: 80,
-                                                //color: Colors.red,
                                                 child: TextField(
                                                     focusNode: diastolicFocus,
                                                     onChanged: (value) {
@@ -288,7 +286,7 @@ class _AddBloodPressureControllerState
                                                     keyboardType:
                                                         TextInputType.number,
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 34,
                                                         fontWeight:
                                                             FontWeight.w500),
@@ -345,10 +343,9 @@ class _AddBloodPressureControllerState
                                     bottom: 16, left: 16, right: 16),
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
-                                  // color: Colors.white,
                                   padding: EdgeInsets.all(16),
                                   child: Column(
                                       crossAxisAlignment:
@@ -369,7 +366,7 @@ class _AddBloodPressureControllerState
                                         TextField(
                                             controller: _controllerReason,
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: R.color.black,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w400),
                                             decoration: InputDecoration(
@@ -393,10 +390,9 @@ class _AddBloodPressureControllerState
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,7 +416,6 @@ class _AddBloodPressureControllerState
                                             children: [
                                               Container(
                                                 width: 80,
-                                                //color: Colors.red,
                                                 child: TextField(
                                                     focusNode: heartFocus,
                                                     controller:
@@ -430,7 +425,7 @@ class _AddBloodPressureControllerState
                                                     keyboardType:
                                                         TextInputType.number,
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 34,
                                                         fontWeight:
                                                             FontWeight.w500),
@@ -471,7 +466,7 @@ class _AddBloodPressureControllerState
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -504,7 +499,7 @@ class _AddBloodPressureControllerState
                                   );
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
@@ -546,7 +541,7 @@ class _AddBloodPressureControllerState
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -556,7 +551,7 @@ class _AddBloodPressureControllerState
                                   showActionFilter(context);
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
@@ -590,10 +585,9 @@ class _AddBloodPressureControllerState
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,7 +605,7 @@ class _AddBloodPressureControllerState
                                   TextField(
                                       controller: _controllerNote,
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
@@ -718,7 +712,7 @@ class _AddBloodPressureControllerState
                               child: Center(
                                   child: Text('Lưu',
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)))),
                         ),
@@ -746,7 +740,7 @@ class _AddBloodPressureControllerState
                                         child: Center(
                                           child: Text('Xoá dữ liệu',
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: R.color.red,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         )),
@@ -772,7 +766,7 @@ class _AddBloodPressureControllerState
                                       child: Center(
                                         child: Text('Lưu',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ),
@@ -1054,7 +1048,7 @@ class _AddBloodPressureControllerState
                                     child: Center(
                                       child: Text('Xoá',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1191,7 +1185,7 @@ class _AddBloodPressureControllerState
                                     child: Center(
                                       child: Text('Thoát',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1220,7 +1214,7 @@ class _AddBloodPressureControllerState
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => ActionListTrend(
@@ -1386,7 +1380,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -1395,7 +1389,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1407,7 +1401,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           children: [
                             Text('Chọn ngày',
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
@@ -1434,7 +1428,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         ),
                         Text('Chọn thời gian',
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700)),
                       ],
@@ -1463,7 +1457,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                               child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1491,7 +1485,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                               child: Center(
                                   child: Text('Đồng ý',
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),

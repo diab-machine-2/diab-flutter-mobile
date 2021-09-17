@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -110,7 +111,7 @@ class _AddressControllerState extends State<AddressController> {
               height: 48,
               padding: EdgeInsets.only(left: 16, right: 16),
               decoration: BoxDecoration(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(width: 1, color: Color(0xffDDDDDD))),
               child: Center(
@@ -162,7 +163,7 @@ class _AddressControllerState extends State<AddressController> {
                 );
               },
               child: Container(
-                color: Colors.transparent,
+                color: R.color.transparent,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -177,7 +178,7 @@ class _AddressControllerState extends State<AddressController> {
                           //width: 200,
                           padding: EdgeInsets.only(left: 16, right: 16),
                           decoration: BoxDecoration(
-                              color: Colors.transparent,
+                              color: R.color.transparent,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
                                   width: 1, color: Color(0xffDDDDDD))),
@@ -236,7 +237,7 @@ class _AddressControllerState extends State<AddressController> {
                 );
               },
               child: Container(
-                color: Colors.transparent,
+                color: R.color.transparent,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -251,7 +252,7 @@ class _AddressControllerState extends State<AddressController> {
                           //width: 200,
                           padding: EdgeInsets.only(left: 16, right: 16),
                           decoration: BoxDecoration(
-                              color: Colors.transparent,
+                              color: R.color.transparent,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
                                   width: 1, color: Color(0xffDDDDDD))),
@@ -336,7 +337,7 @@ class _AddressControllerState extends State<AddressController> {
                 child: Center(
                   child: Text('Lưu',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: R.color.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600)),
                 ),

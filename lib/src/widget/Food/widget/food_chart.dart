@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
@@ -78,7 +79,7 @@ class FoodChartState extends State<FoodChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.all(18),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,7 +103,7 @@ class FoodChartState extends State<FoodChart>
                             : Container(
                                 width: width,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Padding(
@@ -211,7 +212,7 @@ class FoodChartState extends State<FoodChart>
                   padding: EdgeInsets.only(left: 18, right: 18),
                   decoration: BoxDecoration(
                       color:
-                          isEnergyTab ? Color(0xff01645A) : Colors.transparent,
+                          isEnergyTab ? Color(0xff01645A) : R.color.transparent,
                       border: Border.all(
                           color: isEnergyTab
                               ? Color(0xff01645A)
@@ -222,7 +223,7 @@ class FoodChartState extends State<FoodChart>
                     child: Text('Năng lượng',
                         style: TextStyle(
                             color:
-                                isEnergyTab ? Colors.white : Color(0xff666666),
+                                isEnergyTab ? R.color.white : Color(0xff666666),
                             fontSize: 14,
                             fontWeight: isEnergyTab
                                 ? FontWeight.w700
@@ -241,16 +242,16 @@ class FoodChartState extends State<FoodChart>
                   width: 135,
                   decoration: BoxDecoration(
                       color:
-                          isEnergyTab ? Colors.transparent : Color(0xff01645A),
+                          isEnergyTab ? R.color.transparent : Color(0xff01645A),
                       border: Border.all(
-                          color: isEnergyTab ? Color(0xff666666) : Colors.white,
+                          color: isEnergyTab ? Color(0xff666666) : R.color.white,
                           width: 0.5),
                       borderRadius: BorderRadius.circular(16)),
                   child: Center(
                     child: Text('Chất bột đường',
                         style: TextStyle(
                             color:
-                                isEnergyTab ? Color(0xff666666) : Colors.white,
+                                isEnergyTab ? Color(0xff666666) : R.color.white,
                             fontSize: 14,
                             fontWeight: isEnergyTab
                                 ? FontWeight.w400
@@ -270,7 +271,7 @@ class FoodChartState extends State<FoodChart>
                   return Text(formatNumber(number[index].toDouble()),
                       style: TextStyle(
                           fontSize: 14,
-                          color: Colors.black,
+                          color: R.color.black,
                           fontWeight: FontWeight.normal));
                 })),
           ),
@@ -312,7 +313,6 @@ class FoodChartState extends State<FoodChart>
                                   ),
                                 )))),
                 Container(
-                    //color: Colors.green,
                     width: (((isEnergyTab
                                         ? model.energyChart.length
                                         : model.carbChart.length) <
@@ -349,7 +349,7 @@ class FoodChartState extends State<FoodChart>
                               fitInsideVertically: true,
                               fitInsideHorizontally: true,
                               tooltipBgColor: touchIndex == -1
-                                  ? Colors.transparent
+                                  ? R.color.transparent
                                   : toColor(isEnergyTab
                                       ? model.energyChart[touchIndex].colorCode
                                       : model.carbChart[touchIndex].colorCode),
@@ -365,7 +365,7 @@ class FoodChartState extends State<FoodChart>
                                 return BarTooltipItem(
                                   getToolTips(model),
                                   TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 );
@@ -377,11 +377,10 @@ class FoodChartState extends State<FoodChart>
                             bottomTitles: SideTitles(
                               margin: 16, reservedSize: -16,
                               showTitles: true,
-                              getTextStyles: (context, value) => const TextStyle(
-                                  color: Colors.black,
+                              getTextStyles: (context, value) => TextStyle(
+                                  color: R.color.black,
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal),
-                              //margin: 10,
                               getTitles: (double value) {
                                 return convertToUTC(
                                     model.energyChart[value.toInt()].date,
@@ -390,8 +389,8 @@ class FoodChartState extends State<FoodChart>
                             ),
                             leftTitles: SideTitles(
                                 showTitles: false,
-                                getTextStyles: (context, value) => const TextStyle(
-                                    color: Colors.black, fontSize: 14)),
+                                getTextStyles: (context, value) => TextStyle(
+                                    color: R.color.black, fontSize: 14)),
                           ),
                           borderData: FlBorderData(
                             show: false,
@@ -428,7 +427,7 @@ class FoodChartState extends State<FoodChart>
             width: 20,
             borderRadius: BorderRadius.circular(0),
             y: model.value,
-            colors: [Colors.transparent],
+            colors: [R.color.transparent],
             rodStackItems: List.generate(model.details.length, (idx) {
               final total = totalValue;
               totalValue += model.details[idx].value;

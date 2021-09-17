@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
@@ -97,7 +98,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                         Navigator.pushNamed(context, '/profile');
                       },
                       child: Container(
-                        color: Colors.transparent,
+                        color: R.color.transparent,
                         child: Row(children: [
                           Stack(
                               alignment: AlignmentDirectional.bottomEnd,
@@ -107,7 +108,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                                   child: Container(
                                       clipBehavior: Clip.hardEdge,
                                       decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           borderRadius:
                                               BorderRadius.circular(21)),
                                       child: user.imageUrl.url == null
@@ -125,13 +126,13 @@ class _HomeHeaderState extends State<HomeHeader> {
                               children: [
                                 Text(user.fullName.trim(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700)),
                                 SizedBox(height: 4),
                                 Text('Thành viên cơ bản',
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 14,
                                         fontWeight: FontWeight.w400))
                               ]),
@@ -162,7 +163,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                           },
                           child: Container(
                             padding: EdgeInsets.all(4),
-                            color: Colors.transparent,
+                            color: R.color.transparent,
                             child: Image.asset(
                                 notificationCount > 0
                                     ? 'assets/images/bell_dot.png'
@@ -183,7 +184,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                             padding: EdgeInsets.only(top: 16),
                             child: Text(motivation.content,
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
                           )
@@ -193,7 +194,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                               child: Text(
                                   'Điều gì tạo động lực sống khỏe hơn mỗi ngày cho bạn? Hãy chia sẻ cùng diaB nhé!',
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: R.color.white,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400)),
                             ),
@@ -206,7 +207,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                                 child: Container(
                                     height: 32,
                                     decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         borderRadius:
                                             BorderRadius.circular(16)),
                                     padding:

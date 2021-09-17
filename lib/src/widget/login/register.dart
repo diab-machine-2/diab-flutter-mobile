@@ -3,6 +3,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -111,13 +112,13 @@ class _RegisterControllerState extends State<RegisterController> {
                                       child: Center(
                                         child: Text('Tiếp tục',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
                                   // Positioned.fill(
                                   //     child: Container(
-                                  //         color: Colors.white.withOpacity(0.5)))
+                                  //         color: R.color.white.withOpacity(0.5)))
                                 ]),
                               )
                             ])
@@ -147,7 +148,7 @@ class _RegisterControllerState extends State<RegisterController> {
                                               height: 50,
                                               width: 50,
                                               decoration: BoxDecoration(
-                                                  color: Colors.white,
+                                                  color: R.color.white,
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           25)),
@@ -175,7 +176,7 @@ class _RegisterControllerState extends State<RegisterController> {
                                 //         width: 50,
                                 //         decoration: BoxDecoration(
                                 //           borderRadius: BorderRadius.circular(25),
-                                //           color: Colors.white,
+                                //           color: R.color.white,
                                 //         ),
                                 //         child: Row(
                                 //             mainAxisAlignment:
@@ -199,7 +200,7 @@ class _RegisterControllerState extends State<RegisterController> {
                                         height: 50,
                                         width: 50,
                                         decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             borderRadius:
                                                 BorderRadius.circular(25)),
                                         child: Row(
@@ -227,12 +228,12 @@ class _RegisterControllerState extends State<RegisterController> {
             //   right: 0,
             //   child: AppBar(
             //       leading: SizedBox(),
-            //       backgroundColor: Colors.transparent, //No more green
+            //       backgroundColor: R.color.transparent, //No more green
             //       elevation: 0.0, //Shadow gone
             //       actions: [
             //         IconButton(
             //             padding: EdgeInsets.only(right: 30),
-            //             icon: Icon(Icons.close, color: Colors.black),
+            //             icon: Icon(Icons.close, color: R.color.black),
             //             onPressed: () {
             //               Navigator.pop(context);
             //             })
@@ -245,9 +246,9 @@ class _RegisterControllerState extends State<RegisterController> {
                 right: 0,
                 child: AppBar(
                   leading: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: Colors.black),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.black),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -261,7 +262,7 @@ class _RegisterControllerState extends State<RegisterController> {
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-                  backgroundColor: Colors.transparent, //No more green
+                  backgroundColor: R.color.transparent, //No more green
                   elevation: 0.0, //Shadow gone
                 )),
           ])),

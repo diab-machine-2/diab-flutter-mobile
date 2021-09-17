@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -33,7 +34,7 @@ class _RulesControllerState extends State<RulesController> {
     // final width = MediaQuery.of(context).size.width;
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         body: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -49,7 +50,7 @@ class _RulesControllerState extends State<RulesController> {
                   padding: EdgeInsets.only(left: 16, top: 16),
                   child: Text('Điều khoản & điều kiện',
                       style: TextStyle(
-                          color: Colors.black,
+                          color: R.color.black,
                           fontWeight: FontWeight.bold,
                           fontSize: 20)),
                 ),
@@ -59,7 +60,7 @@ class _RulesControllerState extends State<RulesController> {
                         top: 30.0, left: 16, right: 16, bottom: 16),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: R.color.white,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: ListView(padding: EdgeInsets.all(16), children: [
@@ -108,7 +109,7 @@ class _RulesControllerState extends State<RulesController> {
                           child: Center(
                               child: Text('Tôi đồng ý',
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: R.color.white,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500)))),
                     ),

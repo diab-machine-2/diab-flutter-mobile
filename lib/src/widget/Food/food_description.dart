@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class FoodDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: R.color.transparent,
       body: SafeArea(
           child: Padding(
               padding: EdgeInsets.all(16),
@@ -31,7 +32,7 @@ class FoodDescription extends StatelessWidget {
                             Expanded(
                               child: Text('Chế độ dinh dưỡng bệnh tiểu đường',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                             )
@@ -48,13 +49,13 @@ class FoodDescription extends StatelessWidget {
                                   text: TextSpan(
                                     text: 'Nhóm đường bột: ',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500),
                                     children: <TextSpan>[
                                       TextSpan(
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 14,
                                               fontWeight: FontWeight.normal),
                                           text:
@@ -67,13 +68,13 @@ class FoodDescription extends StatelessWidget {
                                   text: TextSpan(
                                     text: 'Nhóm thịt cá: ',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500),
                                     children: <TextSpan>[
                                       TextSpan(
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 14,
                                               fontWeight: FontWeight.normal),
                                           text:
@@ -86,13 +87,13 @@ class FoodDescription extends StatelessWidget {
                                   text: TextSpan(
                                     text: 'Nhóm chất béo, đường: ',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500),
                                     children: <TextSpan>[
                                       TextSpan(
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 14,
                                               fontWeight: FontWeight.normal),
                                           text:
@@ -105,13 +106,13 @@ class FoodDescription extends StatelessWidget {
                                   text: TextSpan(
                                     text: 'Nhóm rau: ',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500),
                                     children: <TextSpan>[
                                       TextSpan(
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 14,
                                               fontWeight: FontWeight.normal),
                                           text:
@@ -124,13 +125,13 @@ class FoodDescription extends StatelessWidget {
                                   text: TextSpan(
                                     text: 'Hoa quả: ',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500),
                                     children: <TextSpan>[
                                       TextSpan(
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 14,
                                               fontWeight: FontWeight.normal),
                                           text:
@@ -156,7 +157,7 @@ class FoodDescription extends StatelessWidget {
                             color: Color(0xff4BB2AB),
                             borderRadius: BorderRadius.circular(30)),
                         child: IconButton(
-                            icon: Icon(Icons.close, color: Colors.white),
+                            icon: Icon(Icons.close, color: R.color.white),
                             onPressed: () {
                               Navigator.pop(context);
                             }),

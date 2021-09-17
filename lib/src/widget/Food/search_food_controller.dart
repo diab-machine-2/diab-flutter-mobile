@@ -1,6 +1,7 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Food/widget/category_food.dart';
@@ -91,10 +92,10 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                             fontWeight: FontWeight.w600,
                             color: textDark),
                       ),
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: R.color.transparent,
                       leadingIcon: IconButton(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
+                          splashColor: R.color.transparent,
+                          highlightColor: R.color.transparent,
                           icon: Icon(Icons.close, color: textDark),
                           onPressed: () {
                             Navigator.pop(context);
@@ -117,7 +118,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                       child: Container(
                           height: 48,
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(color: Color(0xffDDDDDD))),
                           child: Padding(
@@ -189,7 +190,7 @@ class CustomSegmentState extends State<CustomSegment> {
     final width = MediaQuery.of(context).size.width - 32 / 3;
     return CupertinoSegmentedControl(
         selectedColor: Color(0xff008479),
-        unselectedColor: Colors.transparent,
+        unselectedColor: R.color.transparent,
         borderColor: Color(0xff008479),
         groupValue: segmentedControlValue,
         onValueChanged: (int val) {
@@ -208,8 +209,8 @@ class CustomSegmentState extends State<CustomSegment> {
                             ? FontWeight.w600
                             : FontWeight.normal,
                         color: segmentedControlValue == 0
-                            ? Colors.white
-                            : Colors.black)),
+                            ? R.color.white
+                            : R.color.black)),
               )),
           1: Container(
               width: width,
@@ -220,8 +221,8 @@ class CustomSegmentState extends State<CustomSegment> {
                             ? FontWeight.w600
                             : FontWeight.normal,
                         color: segmentedControlValue == 1
-                            ? Colors.white
-                            : Colors.black)),
+                            ? R.color.white
+                            : R.color.black)),
               )),
           2: Container(
               width: width,
@@ -232,8 +233,8 @@ class CustomSegmentState extends State<CustomSegment> {
                               ? FontWeight.w600
                               : FontWeight.normal,
                           color: segmentedControlValue == 2
-                              ? Colors.white
-                              : Colors.black))))
+                              ? R.color.white
+                              : R.color.black))))
         });
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_item_model.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
@@ -92,7 +93,7 @@ class EmotionActivityChartState extends State<EmotionActivityChart>
                             children: [
                               Text('Tổng quan hoạt động',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                               Padding(
@@ -137,7 +138,7 @@ class EmotionActivityChartState extends State<EmotionActivityChart>
               ),
               Text(name,
                   style: TextStyle(
-                      color: Colors.black,
+                      color: R.color.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w400)),
             ],

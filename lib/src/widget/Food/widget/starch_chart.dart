@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
@@ -90,8 +91,8 @@ class StarchChartState extends State<StarchChart>
                                   child: CustomPaint(
                                       painter: GradientArcPainter(
                                     progress: 1,
-                                    startColor: Colors.white,
-                                    endColor: Colors.white,
+                                    startColor: R.color.white,
+                                    endColor: R.color.white,
                                     width: 56,
                                   ))),
                               SizedBox(
@@ -125,7 +126,7 @@ class StarchChartState extends State<StarchChart>
                         padding: EdgeInsets.only(top: 16, left: 16),
                         child: Text('Tinh bột',
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700)),
                       ),
@@ -147,7 +148,7 @@ class StarchChartState extends State<StarchChart>
                                     Text(model.total.round().toString(),
                                         style: TextStyle(
                                             fontFamily: 'Viga',
-                                            color: Colors.black,
+                                            color: R.color.black,
                                             fontSize: 30,
                                             fontWeight: FontWeight.w400)),
                                   ],
@@ -201,7 +202,7 @@ class StarchChartState extends State<StarchChart>
                                                   .toString(),
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
-                                                  color: Colors.black,
+                                                  color: R.color.black,
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 18)),
                                         )),
@@ -231,7 +232,7 @@ class StarchChartState extends State<StarchChart>
                                               children: [
                                                 Text(roundNumber(model.percent),
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 20,
                                                         fontWeight:
                                                             FontWeight.bold)),

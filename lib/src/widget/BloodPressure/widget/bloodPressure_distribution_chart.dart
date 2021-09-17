@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_distribution.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -91,7 +92,7 @@ class BloodPressureDistributionChartState
                               padding: EdgeInsets.only(left: 16.0),
                               child: Text('Tần suất phân bổ',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                             ),
@@ -136,7 +137,7 @@ class BloodPressureDistributionChartState
           blurRadius: 4,
           offset: Offset(0, 2),
         ),
-      ], borderRadius: BorderRadius.circular(14), color: Colors.white),
+      ], borderRadius: BorderRadius.circular(14), color: R.color.white),
       child: Row(
         children: <Widget>[
           const SizedBox(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -60,7 +61,7 @@ class _BloodPressureTableControllerState
             },
             child: Scaffold(
               resizeToAvoidBottomInset: false,
-              backgroundColor: Colors.white,
+              backgroundColor: R.color.white,
               body: Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
@@ -72,13 +73,13 @@ class _BloodPressureTableControllerState
                       CustomAppBar(
                         // leading: SizedBox(),
                         leadingIcon: IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
+                            splashColor: R.color.transparent,
+                            highlightColor: R.color.transparent,
                             icon: Icon(Icons.close, color: textDark),
                             onPressed: () {
                               Navigator.pop(context);
                             }),
-                        backgroundColor: Colors.transparent, //No more green
+                        backgroundColor: R.color.transparent, //No more green
                         title: Text(
                             widget.isPulseRate == null
                                 ? widget.title
@@ -101,14 +102,14 @@ class _BloodPressureTableControllerState
                                   width: width + width / 4,
                                   child: Text('Thời gian',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
                                   width: width,
                                   child: Text('Khung giờ',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
@@ -116,7 +117,7 @@ class _BloodPressureTableControllerState
                                   child: Center(
                                       child: Text('Chỉ số',
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600)))),
                             ],
@@ -171,7 +172,7 @@ class _BloodPressureTableControllerState
       child: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: R.color.white,
             child: Column(
               children: [
                 Padding(
@@ -206,7 +207,7 @@ class _BloodPressureTableControllerState
                                   color: widget.isPulseRate == null ||
                                           !widget.isPulseRate
                                       ? toColor(color)
-                                      : Colors.black)),
+                                      : R.color.black)),
                         ),
                       )
                     ],

@@ -4,6 +4,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -72,7 +73,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -81,7 +82,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Padding(
                   padding: EdgeInsets.only(bottom: 16),
@@ -118,7 +119,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                       SizedBox(width: 12),
                                       Text(widget.model.name,
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500)),
                                     ],
@@ -132,7 +133,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                       likeFood();
                                     },
                                     child: Container(
-                                        color: Colors.transparent,
+                                        color: R.color.transparent,
                                         child: !isLike
                                             ? Image.asset(
                                                 'assets/images/icon_heart_line.png',
@@ -148,14 +149,14 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                               SizedBox(height: 12),
                               Text(widget.model.description ?? '',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400)),
                               SizedBox(height: 12),
                               Text(
                                   'Khẩu phần ${widget.model.portion.round()} ${widget.model.unit} bao gồm:',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400)),
                               SizedBox(height: 12),
@@ -172,7 +173,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                         padding: EdgeInsets.only(left: 16),
                         child: Text('Khẩu phần của bạn',
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500)),
                       ),
@@ -255,7 +256,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                 child: Center(
                                     child: Text('Huỷ',
                                         style: TextStyle(
-                                            color: Colors.black,
+                                            color: R.color.black,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700)))),
                           ),
@@ -307,7 +308,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                 child: Center(
                                     child: Text('Đồng ý',
                                         style: TextStyle(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700)))),
                           ),

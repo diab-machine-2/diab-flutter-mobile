@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class CircularMenuItem extends StatelessWidget {
   /// if icon and animatedIcon are passed, icon will be ignored
@@ -55,7 +56,7 @@ class CircularMenuItem extends StatelessWidget {
     return Container(
       margin: EdgeInsets.all(margin),
       decoration: BoxDecoration(
-        color: Colors.transparent,
+        color: R.color.transparent,
         boxShadow: boxShadow ??
             [
               BoxShadow(
@@ -75,7 +76,7 @@ class CircularMenuItem extends StatelessWidget {
                   ? Icon(
                       icon,
                       size: iconSize,
-                      color: iconColor ?? Colors.white,
+                      color: iconColor ?? R.color.white,
                     )
                   : animatedIcon,
             ),

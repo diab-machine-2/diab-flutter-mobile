@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 typedef OnChangeCallback = Function(String);
@@ -53,7 +54,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
               Text(widget.title,
                   style: TextStyle(color: textDark, fontSize: 16)),
               widget.showStar
-                  ? Text(" *", style: TextStyle(color: Colors.red))
+                  ? Text(" *", style: TextStyle(color: R.color.red))
                   : SizedBox()
             ],
           ),
@@ -63,24 +64,13 @@ class TextFieldCustomState extends State<TextFieldCustom> {
             height: 54,
             padding: EdgeInsets.only(left: 16, right: 8),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: R.color.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                   width: 2,
                   color: isCorrect
                       ? Color(0xff008479)
-                      : (showValidate ? Color(0xffFF5756) : Colors.white)),
-              // boxShadow: [
-              //   BoxShadow(
-              //     color: Colors.white,
-              //     blurRadius: 4.0, // soften the shadow
-              //     spreadRadius: 1.0, //extend the shadow
-              //     offset: Offset(
-              //       1.0, // Move to right 10  horizontally
-              //       1.0, // Move to bottom 10 Vertically
-              //     ),
-              //   )
-              // ],
+                      : (showValidate ? Color(0xffFF5756) : R.color.white)),
             ),
             child: Row(children: [
               Image.asset(
@@ -205,7 +195,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                             });
                           },
                           child: Container(
-                              color: Colors.transparent,
+                              color: R.color.transparent,
                               child: Text(!showPassword ? 'Hiện' : 'Ẩn',
                                   style: TextStyle(color: Color(0xff787A7D)))))
                       : SizedBox(),

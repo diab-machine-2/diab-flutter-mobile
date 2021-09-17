@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
@@ -176,7 +177,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                               decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(16),
-                                                  color: Colors.white),
+                                                  color: R.color.white),
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
@@ -205,7 +206,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                           'HH:mm') +
                                                                       ',',
                                                                   style: TextStyle(
-                                                                      color: Colors
+                                                                      color: R.color
                                                                           .black,
                                                                       fontSize:
                                                                           16,
@@ -219,7 +220,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                     element
                                                                         .timeFrameText,
                                                                     style: TextStyle(
-                                                                        color: Colors
+                                                                        color: R.color
                                                                             .black,
                                                                         fontSize:
                                                                             16,
@@ -260,7 +261,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                           Text(
                                                             'Triệu chứng',
                                                             style: TextStyle(
-                                                                color: Colors
+                                                                color: R.color
                                                                     .black,
                                                                 fontSize: 14,
                                                                 fontWeight:
@@ -309,7 +310,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                   title: item.name ??
                                                                       '',
                                                                   activeColor:
-                                                                      Colors
+                                                                      R.color
                                                                           .white,
                                                                   textOverflow:
                                                                       TextOverflow
@@ -355,7 +356,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                       Text(
                                                                         'Triệu chứng khác:',
                                                                         style: TextStyle(
-                                                                            color: Colors
+                                                                            color: R.color
                                                                                 .black,
                                                                             fontSize:
                                                                                 14,
@@ -372,7 +373,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                           model[index]
                                                                               .otherSymptom,
                                                                           style: TextStyle(
-                                                                              color: Colors.black,
+                                                                              color: R.color.black,
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w400),
                                                                         ),
@@ -396,7 +397,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                             child: Text(
                                                               'Hoạt động',
                                                               style: TextStyle(
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .black,
                                                                   fontSize: 14,
                                                                   fontWeight:
@@ -443,7 +444,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                   title: item.name ??
                                                                       '',
                                                                   activeColor:
-                                                                      Colors
+                                                                      R.color
                                                                           .white,
                                                                   textOverflow:
                                                                       TextOverflow
@@ -489,7 +490,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                       Text(
                                                                         'Hoạt động khác:',
                                                                         style: TextStyle(
-                                                                            color: Colors
+                                                                            color: R.color
                                                                                 .black,
                                                                             fontSize:
                                                                                 14,
@@ -506,7 +507,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                           model[index]
                                                                               .otherActivity,
                                                                           style: TextStyle(
-                                                                              color: Colors.black,
+                                                                              color: R.color.black,
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w400),
                                                                         ),

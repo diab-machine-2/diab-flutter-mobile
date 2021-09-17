@@ -1,6 +1,7 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_lastestSumary.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
@@ -75,7 +76,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                 children: [
                                   Text('Gần nhất',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 20,
                                           fontWeight: FontWeight.w700)),
                                 ]),
@@ -138,7 +139,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                               border: Border.all(
                                                   color: model.borderColor ==
                                                           'None'
-                                                      ? Colors.transparent
+                                                      ? R.color.transparent
                                                       : toColor(
                                                           model.borderColor),
                                                   width: model.borderColor ==
@@ -167,7 +168,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                       padding: EdgeInsets.only(
                                           top: 16, right: 16, left: 16),
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         borderRadius: BorderRadius.circular(16),
                                       ),
                                       child: Row(
@@ -190,7 +191,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                                       Text('Chi tiết',
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.black,
+                                                                  R.color.black,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight

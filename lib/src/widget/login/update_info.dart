@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker2.dart';
@@ -66,7 +67,6 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: Container(
-              // color: Colors.red,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   image: DecorationImage(
@@ -139,14 +139,14 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                         color: textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
-                                                        color: Colors.red))
+                                                        color: R.color.red))
                                               ],
                                             )),
                                         SizedBox(height: 12),
                                         Container(
                                           height: 52,
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             borderRadius:
                                                 BorderRadius.circular(10),
                                           ),
@@ -211,7 +211,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                         color: textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
-                                                        color: Colors.red))
+                                                        color: R.color.red))
                                               ],
                                             )),
                                         SizedBox(height: 12),
@@ -223,13 +223,13 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                           child: Container(
                                             height: 52,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                             ),
                                             padding: EdgeInsets.all(12),
                                             child: Container(
-                                              color: Colors.transparent,
+                                              color: R.color.transparent,
                                               child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
@@ -271,7 +271,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                         color: textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
-                                                        color: Colors.red))
+                                                        color: R.color.red))
                                               ],
                                             )),
                                         SizedBox(height: 12),
@@ -283,7 +283,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                           child: Container(
                                             height: 52,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                             ),
@@ -329,7 +329,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                         color: textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
-                                                        color: Colors.red))
+                                                        color: R.color.red))
                                               ],
                                             )),
                                         SizedBox(height: 12),
@@ -341,7 +341,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                           child: Container(
                                             height: 52,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                             ),
@@ -385,7 +385,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                         color: textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
-                                                        color: Colors.red))
+                                                        color: R.color.red))
                                               ],
                                             )),
                                         SizedBox(height: 12),
@@ -397,7 +397,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                           child: Container(
                                             height: 52,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                             ),
@@ -457,7 +457,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                     child: Center(
                                         child: Text('Lưu thông tin',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w500)))),
                               ),
@@ -552,7 +552,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                           child: Center(
                             child: Text('Đồng ý',
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                           ),
@@ -648,7 +648,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                           child: Center(
                             child: Text('Đồng ý',
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                           ),

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 class LineChartSample2 extends StatefulWidget {
@@ -35,12 +36,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
         barWidth: 1,
         isStrokeCapRound: true,
         colors: [
-          Colors.black,
+          R.color.black,
         ],
         belowBarData: BarAreaData(
           show: true,
           colors: [
-            Colors.transparent,
+            R.color.transparent,
           ],
           spotsLine: BarAreaSpotsLine(
             show: true,
@@ -63,15 +64,15 @@ class _LineChartSample2State extends State<LineChartSample2> {
               if (index == 4) {
                 return FlDotCirclePainter(
                     radius: 5,
-                    color: Colors.red,
+                    color: R.color.red,
                     strokeWidth: 2,
-                    strokeColor: Colors.white);
+                    strokeColor: R.color.white);
               } else {
                 return FlDotCirclePainter(
                   radius: 0,
-                  color: Colors.white,
+                  color: R.color.white,
                   strokeWidth: 0,
-                  strokeColor: Colors.black,
+                  strokeColor: R.color.black,
                 );
               }
             },
@@ -98,16 +99,16 @@ class _LineChartSample2State extends State<LineChartSample2> {
               return spotIndexes.map((index) {
                 return TouchedSpotIndicatorData(
                   FlLine(
-                    color: Colors.transparent,
+                    color: R.color.transparent,
                   ),
                   FlDotData(
                     show: true,
                     getDotPainter: (spot, percent, barData, index) =>
                         FlDotCirclePainter(
                       radius: 5,
-                      color: Colors.red,
+                      color: R.color.red,
                       strokeWidth: 1,
-                      strokeColor: Colors.white,
+                      strokeColor: R.color.white,
                     ),
                   ),
                 );
@@ -120,8 +121,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
                 return lineBarsSpot.map((lineBarSpot) {
                   return LineTooltipItem(
                     lineBarSpot.y.toString(),
-                    const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                    TextStyle(
+                        color: R.color.white, fontWeight: FontWeight.bold),
                   );
                 }).toList();
               },

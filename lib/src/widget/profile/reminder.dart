@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -94,15 +95,15 @@ class _ReminderControllerState extends State<ReminderController> {
                       stops: [0.0, 1.0])),
               child: Column(children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text('Lịch nhắc nhở',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: textDark),
                       onPressed: () {
                         Navigator.pop(context);
@@ -199,7 +200,7 @@ class _ReminderControllerState extends State<ReminderController> {
               SizedBox(height: 4),
               Text('Xoá\nthông báo',
                   style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w500),
+                      color: R.color.white, fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center),
             ]),
             onTap: () {
@@ -210,14 +211,14 @@ class _ReminderControllerState extends State<ReminderController> {
         child: Padding(
           padding: EdgeInsets.only(left: 16, right: 16),
           child: Container(
-            color: Colors.transparent,
+            color: R.color.transparent,
             padding: EdgeInsets.only(top: 16, bottom: 24),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text(convertToUTC(models[index].time, 'HH:mm'),
                     style: TextStyle(
-                        color: Colors.black, fontFamily: 'Viga', fontSize: 24)),
+                        color: R.color.black, fontFamily: 'Viga', fontSize: 24)),
                 CupertinoSwitch(
                   activeColor: Color(0xff008479),
                   value: models[index].isActive,
@@ -229,7 +230,7 @@ class _ReminderControllerState extends State<ReminderController> {
               SizedBox(height: 8),
               Text(models[index].name,
                   style: TextStyle(
-                      color: Colors.black,
+                      color: R.color.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w600)),
               models[index].content == null || models[index].content.isEmpty
@@ -356,7 +357,7 @@ class _ReminderControllerState extends State<ReminderController> {
                                     child: Center(
                                       child: Text('Xoá',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),

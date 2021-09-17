@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
@@ -32,7 +33,7 @@ class _BottomTabbar extends State<BottomTabbar> {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-        color: Colors.white,
+        color: R.color.white,
         shape: CircularNotchedRectangle(),
         notchMargin: 12,
         child: SafeArea(
@@ -43,7 +44,7 @@ class _BottomTabbar extends State<BottomTabbar> {
                 children: [
                   // GestureDetector(
                   //     child: Container(
-                  //       color: Colors.transparent,
+                  //       color: R.color.transparent,
                   //       padding: EdgeInsets.only(left: 8, right: 8),
                   //       child: Column(
                   //         mainAxisAlignment: MainAxisAlignment.center,
@@ -73,7 +74,7 @@ class _BottomTabbar extends State<BottomTabbar> {
 
                   // GestureDetector(
                   //     child: Container(
-                  //       color: Colors.transparent,
+                  //       color: R.color.transparent,
                   //       padding: EdgeInsets.only(left: 8, right: 8),
                   //       child: Column(
                   //         mainAxisAlignment: MainAxisAlignment.center,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 class CustomLoadMoreDelegate extends LoadMoreDelegate {
@@ -12,7 +13,7 @@ class CustomLoadMoreDelegate extends LoadMoreDelegate {
     if (status == LoadMoreStatus.idle || status == LoadMoreStatus.loading) {
       return SpinKitThreeBounce(color: mainColor, size: 20);
     } else {
-      return Container(color: Colors.red);
+      return Container(color: R.color.red);
     }
   }
 

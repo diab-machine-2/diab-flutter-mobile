@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 class CustomDropDown extends StatelessWidget {
@@ -25,7 +26,7 @@ class CustomDropDown extends StatelessWidget {
             child: Row(
               children: [
                 Text(name, style: TextStyle(color: textDark)),
-                Text(" *", style: TextStyle(color: Colors.red))
+                Text(" *", style: TextStyle(color: R.color.red))
               ],
             )),
         Padding(
@@ -33,7 +34,7 @@ class CustomDropDown extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
+              color: R.color.white,
             ),
             child: DropdownButtonHideUnderline(
               child: Padding(

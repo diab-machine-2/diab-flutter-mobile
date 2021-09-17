@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/secure.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -34,15 +35,15 @@ class _ContactControllerState extends State<ContactController> {
                     stops: [0.0, 1.0])),
             child: Column(children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 title: Text('Liên hệ với diaB',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
                     icon: Icon(Icons.arrow_back, color: textDark),
                     onPressed: () {
                       Navigator.pop(context);
@@ -180,7 +181,7 @@ class _ContactControllerState extends State<ContactController> {
                                   child: Center(
                                     child: Text('Gọi',
                                         style: TextStyle(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600)),
                                   ),

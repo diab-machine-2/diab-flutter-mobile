@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
@@ -103,7 +104,7 @@ class _CategoryFoodState extends State<CategoryFood>
                               padding: EdgeInsets.all(16),
                               child: Text(category.name,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600)),
                             ),
@@ -143,12 +144,12 @@ class _CategoryFoodState extends State<CategoryFood>
                                         decoration: BoxDecoration(
                                             color: foodOfCategory.length != 0
                                                 ? Color(0xffC3E8D3)
-                                                : Colors.transparent,
+                                                : R.color.transparent,
                                             border: Border.all(
                                                 color:
                                                     foodOfCategory.length != 0
                                                         ? Color(0xff72CB9C)
-                                                        : Colors.transparent)),
+                                                        : R.color.transparent)),
                                         padding: EdgeInsets.only(
                                             left: 16,
                                             right: 16,
@@ -172,7 +173,7 @@ class _CategoryFoodState extends State<CategoryFood>
                                                         .subCategories[index]
                                                         .name,
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontWeight:
                                                             FontWeight.w500)),
                                                 foodOfCategory.length == 0
@@ -184,7 +185,7 @@ class _CategoryFoodState extends State<CategoryFood>
                                                         child: Text(
                                                             'Đã chọn $number món, ${formatNumber(totalCalo)} kcal',
                                                             style: TextStyle(
-                                                                color: Colors
+                                                                color: R.color
                                                                     .black,
                                                                 fontWeight:
                                                                     FontWeight

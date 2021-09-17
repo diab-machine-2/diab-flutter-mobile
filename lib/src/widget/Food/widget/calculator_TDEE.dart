@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
 import 'package:medical/src/repo/food/food_client.dart';
@@ -47,14 +48,14 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
             child: Padding(
                 padding: const EdgeInsets.only(left: 16.0, right: 16),
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
+                    color: R.color.white,
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8, bottom: 16),
@@ -88,7 +89,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                 padding: EdgeInsets.only(left: 16, right: 16),
                                 child: Text('Cân nặng',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                               ),
                               Center(
@@ -174,7 +175,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                 padding: EdgeInsets.only(left: 16, right: 16),
                                 child: Text('Chiều cao',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                               ),
                               Center(
@@ -260,7 +261,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                 padding: EdgeInsets.only(left: 16, right: 16),
                                 child: Text('Năm sinh',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                               ),
                               Center(
@@ -342,7 +343,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                 children: [
                                   Text('Cường độ tập luyện',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 14)),
                                   SizedBox(height: 24),
@@ -362,7 +363,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                   }));
                                     },
                                     child: Container(
-                                      color: Colors.transparent,
+                                      color: R.color.transparent,
                                       child: Column(children: [
                                         Row(
                                           mainAxisAlignment:
@@ -432,7 +433,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                       child: Center(
                                         child: Text('Tiếp tục',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ),

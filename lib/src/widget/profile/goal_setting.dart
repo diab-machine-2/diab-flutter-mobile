@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -94,15 +95,15 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                       stops: [0.0, 1.0])),
               child: Column(children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text('Thiết lập mục tiêu',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: textDark),
                       onPressed: () {
                         Navigator.pop(context);
@@ -159,7 +160,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                               top: 32, left: 16, right: 16, bottom: 16),
                           child: Text('Mục tiêu Vòng eo',
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700)),
                         ),
@@ -175,7 +176,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                                     MediaQuery.of(context).size.width.round(),
                                 subGridCountPerGrid: 10,
                                 subGridWidth: 8,
-                                titleTextColor: Colors.black,
+                                titleTextColor: R.color.black,
                                 scaleColor: Color(0xffDDDDDD),
                                 indicatorColor: mainColor,
                                 onSelectedChanged: (value) {
@@ -207,7 +208,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                         child: Center(
                             child: Text('Lưu',
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16)))),
                   ),
@@ -228,7 +229,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
               padding: EdgeInsets.only(bottom: 8),
               child: Text(title,
                   style: TextStyle(
-                      color: Colors.black,
+                      color: R.color.black,
                       fontSize: 14,
                       fontWeight: FontWeight.w700)),
             ),
@@ -240,16 +241,16 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                     width: 100,
                     child: CupertinoTextField(
                         controller: controller,
-                        decoration: BoxDecoration(color: Colors.transparent),
+                        decoration: BoxDecoration(color: R.color.transparent),
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
                         style: TextStyle(
-                            color: Colors.black,
+                            color: R.color.black,
                             fontSize: 24,
                             fontWeight: FontWeight.w700),
                         placeholder: '--',
                         placeholderStyle: TextStyle(
-                            color: Colors.black,
+                            color: R.color.black,
                             fontSize: 24,
                             fontWeight: FontWeight.w700)),
                   ),

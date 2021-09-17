@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 // ignore: must_be_immutable
 class LineChartSample6 extends StatelessWidget {
@@ -49,11 +50,11 @@ class LineChartSample6 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: R.color.white,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: Colors.black,
+              color: R.color.black,
               blurRadius: 10,
               spreadRadius: 0,
             )
@@ -152,7 +153,7 @@ class LineChartSample6 extends StatelessWidget {
                     reservedSize: 28,
                     margin: 8,
                     getTextStyles: (context, value) =>
-                        const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                        TextStyle(fontWeight: FontWeight.bold, color: R.color.black),
                     getTitles: (double value) {
                       return value.toInt().toString();
                     },
@@ -172,11 +173,11 @@ class LineChartSample6 extends StatelessWidget {
                     }),
                 borderData: FlBorderData(
                   show: true,
-                  border: const Border(
-                    left: BorderSide(color: Colors.black),
-                    top: BorderSide(color: Colors.black),
-                    bottom: BorderSide(color: Colors.transparent),
-                    right: BorderSide(color: Colors.transparent),
+                  border: Border(
+                    left: BorderSide(color: R.color.black),
+                    top: BorderSide(color: R.color.black),
+                    bottom: BorderSide(color: R.color.transparent),
+                    right: BorderSide(color: R.color.transparent),
                   ),
                 ),
               ),

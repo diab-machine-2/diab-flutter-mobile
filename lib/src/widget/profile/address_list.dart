@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -45,7 +46,7 @@ class _AddressListControllerState extends State<AddressListController> {
     final height = MediaQuery.of(context).size.height / 2;
     return Container(
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(20)),
+          color: R.color.white, borderRadius: BorderRadius.circular(20)),
       padding: EdgeInsets.only(top: 16, bottom: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -83,10 +84,10 @@ class _AddressListControllerState extends State<AddressListController> {
                         padding: EdgeInsets.only(left: 16, right: 16),
                         height: 46,
                         color: widget.selected == null
-                            ? Colors.white
+                            ? R.color.white
                             : widget.selected.id == model[index].id
                                 ? Color(0xffDFF6EC)
-                                : Colors.white,
+                                : R.color.white,
                         child: Container(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,5 +1,6 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -87,7 +88,7 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
       child: Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: CustomAppBar(
-              backgroundColor: Colors.white,
+              backgroundColor: R.color.white,
               title: Text('Cân nặng',
                   style: TextStyle(
                       fontFamily: 'Montserrat',
@@ -111,7 +112,7 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
                       customTabbarKey.currentState.showDescription();
                     }),
                 IconButton(
-                    icon: Icon(Icons.close, color: Colors.black),
+                    icon: Icon(Icons.close, color: R.color.black),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -185,7 +186,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
 
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: R.color.white,
       child: Column(
         children: [
           showDes
@@ -250,7 +251,7 @@ class _ActionFilterState extends State<ActionFilter> {
         showActionFilter(context);
       },
       child: Container(
-        color: Colors.transparent,
+        color: R.color.transparent,
         padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
         child: Row(
           children: [
@@ -274,7 +275,7 @@ class _ActionFilterState extends State<ActionFilter> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => FillterBloodPanel(

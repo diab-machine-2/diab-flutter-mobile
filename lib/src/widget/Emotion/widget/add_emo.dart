@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 // import 'package:horizontal_card_pager/card_item.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
@@ -92,7 +93,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 title: Text(
                     widget.type == 'update'
                         ? 'Chỉnh sửa cảm xúc'
@@ -102,8 +103,8 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                         fontWeight: FontWeight.w600,
                         color: textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
                     icon: Icon(Icons.arrow_back, color: textDark),
                     onPressed: () {
                       Navigator.pop(context);
@@ -187,7 +188,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                                                         model[index].id
                                                     ? 0
                                                     : 12),
-                                            //color: Colors.red,
+                                            //color: R.color.red,
                                             child: Image.network(
                                               model[index].imageUrl ?? '',
                                               // width: selectedEmotion.id ==
@@ -248,7 +249,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                           child: Text(
                               widget.type == 'input' ? 'Tiếp tục' : 'Cập nhật',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16)))),
                 ),

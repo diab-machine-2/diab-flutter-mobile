@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/repo/learning/learning_client.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,7 +35,7 @@ class _CourseSuggestState extends State<CourseSuggest>
     return models.length == 0
         ? SizedBox()
         : Container(
-            color: Colors.transparent,
+            color: R.color.transparent,
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Padding(
@@ -58,7 +59,7 @@ class _CourseSuggestState extends State<CourseSuggest>
                           _launchInBrowser(models[index].link);
                         },
                         child: Container(
-                          color: Colors.transparent,
+                          color: R.color.transparent,
                           width: 223,
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

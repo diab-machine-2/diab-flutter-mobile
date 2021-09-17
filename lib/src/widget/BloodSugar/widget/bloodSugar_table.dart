@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
@@ -62,7 +63,7 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
             },
             child: Scaffold(
               resizeToAvoidBottomInset: false,
-              backgroundColor: Colors.white,
+              backgroundColor: R.color.white,
               body: Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
@@ -74,13 +75,13 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
                       CustomAppBar(
                         // leading: SizedBox(),
                         leadingIcon: IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
+                            splashColor: R.color.transparent,
+                            highlightColor: R.color.transparent,
                             icon: Icon(Icons.close, color: textDark),
                             onPressed: () {
                               Navigator.pop(context);
                             }),
-                        backgroundColor: Colors.transparent, //No more green
+                        backgroundColor: R.color.transparent, //No more green
                         title: Text(widget.title,
                             style: TextStyle(
                                 fontSize: 18,
@@ -98,14 +99,14 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
                                   width: width + width / 4,
                                   child: Text('Thời gian',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
                                   width: width,
                                   child: Text('Khung giờ',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
@@ -113,7 +114,7 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
                                   child: Center(
                                       child: Text('Chỉ số',
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600)))),
                             ],
@@ -163,7 +164,7 @@ class _BloodSugarTableControllerState extends State<BloodSugarTableController> {
       child: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: R.color.white,
             child: Column(
               children: [
                 Padding(

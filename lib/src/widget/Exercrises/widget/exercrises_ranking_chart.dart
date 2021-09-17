@@ -4,6 +4,7 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
@@ -111,7 +112,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.all(18),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -299,7 +300,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
           width: 8,
           height: height,
           decoration: BoxDecoration(
-              color: Colors.white,
+              color: R.color.white,
               borderRadius: BorderRadius.circular(16),
               gradient: LinearGradient(
                   begin: Alignment(0, 0.5),
@@ -322,7 +323,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                   ? mainColor
                   : index == avarageIndex
                       ? Color(0xff72CB9C)
-                      : Colors.transparent,
+                      : R.color.transparent,
               borderRadius: BorderRadius.circular(4),
             )),
       ],

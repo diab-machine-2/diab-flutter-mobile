@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class LineChartSample5 extends StatelessWidget {
   final List<int> showIndexes = const [1, 3, 5];
@@ -21,9 +22,9 @@ class LineChartSample5 extends StatelessWidget {
           spots: allSpots,
           isCurved: true,
           barWidth: 4,
-          shadow: const Shadow(
+          shadow: Shadow(
             blurRadius: 8,
-            color: Colors.black,
+            color: R.color.black,
           ),
           belowBarData: BarAreaData(
             show: true,
@@ -76,7 +77,7 @@ class LineChartSample5 extends StatelessWidget {
                       color: lerpGradient(
                           barData.colors, barData.colorStops, percent / 100),
                       strokeWidth: 2,
-                      strokeColor: Colors.black,
+                      strokeColor: R.color.black,
                     ),
                   ),
                 );
@@ -89,8 +90,8 @@ class LineChartSample5 extends StatelessWidget {
                 return lineBarsSpot.map((lineBarSpot) {
                   return LineTooltipItem(
                     lineBarSpot.y.toString(),
-                    const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                    TextStyle(
+                        color: R.color.white, fontWeight: FontWeight.bold),
                   );
                 }).toList();
               },

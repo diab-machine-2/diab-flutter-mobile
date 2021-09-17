@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -49,15 +50,15 @@ class _ManualControllerState extends State<ManualController> {
               child: Column(
                 children: [
                   CustomAppBar(
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: R.color.transparent,
                     title: Text('Hướng dẫn sử dụng',
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                             color: textDark)),
                     leadingIcon: IconButton(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
+                        splashColor: R.color.transparent,
+                        highlightColor: R.color.transparent,
                         icon: Icon(Icons.arrow_back, color: textDark),
                         onPressed: () {
                           Navigator.pop(context);
@@ -68,7 +69,7 @@ class _ManualControllerState extends State<ManualController> {
                       margin: EdgeInsets.only(left: 16, right: 16),
                       padding: EdgeInsets.only(left: 16, right: 16),
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(30),
                           border: Border.all(color: grayComponentBorder)),
                       child: Row(
@@ -119,7 +120,7 @@ class _ManualControllerState extends State<ManualController> {
                           },
                           child: Container(
                               padding: EdgeInsets.only(top: 16, bottom: 16),
-                              color: Colors.transparent,
+                              color: R.color.transparent,
                               child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -127,7 +128,7 @@ class _ManualControllerState extends State<ManualController> {
                                     Expanded(
                                       child: Text(manualsSearch[index].question,
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -135,7 +136,7 @@ class _ManualControllerState extends State<ManualController> {
                                     Icon(
                                       Icons.arrow_forward_ios_outlined,
                                       size: 16,
-                                      color: Colors.black,
+                                      color: R.color.black,
                                     )
                                   ])),
                         );

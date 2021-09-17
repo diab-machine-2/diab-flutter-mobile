@@ -6,6 +6,7 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
@@ -79,7 +80,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.all(16),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +108,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                 );
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Row(
                                   children: [
                                     Image.asset(
@@ -132,7 +133,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                             width: width,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
-                              color: Colors.white,
+                              color: R.color.white,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.5),
@@ -271,17 +272,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(16),
-                                          color: Colors.white,
-                                          // boxShadow: [
-                                          //   BoxShadow(
-                                          //     color:
-                                          //         Colors.grey.withOpacity(0.5),
-                                          //     spreadRadius: 1,
-                                          //     blurRadius: 7,
-                                          //     offset: Offset(0,
-                                          //         2), // changes position of shadow
-                                          //   ),
-                                          // ],
+                                          color: R.color.white,
                                         ),
                                         child: Padding(
                                             padding: const EdgeInsets.only(
@@ -335,7 +326,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                     Text('Nhỏ nhất:',
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w400)),
                     SizedBox(
                       width: 4,
@@ -343,7 +334,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                     Text('${model.lowest.toInt()}',
                         style: TextStyle(
                             fontSize: 16,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w600)),
                     SizedBox(
                       width: 4,
@@ -351,7 +342,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                     Text('cm',
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w400)),
                   ],
                 ),
@@ -360,7 +351,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                     Text('Lớn nhất:',
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w400)),
                     SizedBox(
                       width: 4,
@@ -368,7 +359,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                     Text('${model.highest.toInt()}',
                         style: TextStyle(
                             fontSize: 16,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w600)),
                     SizedBox(
                       width: 4,
@@ -376,7 +367,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                     Text('cm',
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.w400)),
                   ],
                 ),
@@ -388,7 +379,6 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
             Container(
               width: 30,
               height: 300,
-              // color: Colors.red,
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -396,7 +386,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                     return Text(number[index].toString(),
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.normal));
                   })),
             ),
@@ -501,7 +491,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                                 ' cm'
                                             : lineBarSpot.y.toString() + ' cm',
                                         TextStyle(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             fontWeight: FontWeight.bold),
                                       );
                                     }).toList();
@@ -528,7 +518,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                 getTextStyles: (context, value) {
                                   return TextStyle(
                                       color: touchIndex == value.toInt()
-                                          ? Colors.black
+                                          ? R.color.black
                                           : Color(0xffC0C2C5),
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
@@ -606,7 +596,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                 return FlSpot((index).toDouble(), trends[index].value);
               }),
               isCurved: false,
-              colors: [Colors.black],
+              colors: [R.color.black],
               barWidth: 0.75,
               isStrokeCapRound: true,
               dotData: FlDotData(

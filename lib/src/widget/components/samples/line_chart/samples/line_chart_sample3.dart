@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class LineChartSample3 extends StatefulWidget {
   final weekDays = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
@@ -27,7 +28,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
       children: <Widget>[
         Row(
           mainAxisSize: MainAxisSize.min,
-          children: const <Widget>[
+          children: <Widget>[
             Text(
               'Average Line',
               style: TextStyle(
@@ -38,7 +39,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
             Text(
               ' and ',
               style: TextStyle(
-                  color: Colors.black,
+                  color: R.color.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16),
             ),
@@ -74,13 +75,13 @@ class _LineChartSample3State extends State<LineChartSample3> {
                             if (index % 2 == 0) {
                               return FlDotCirclePainter(
                                   radius: 8,
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   strokeWidth: 5,
                                   strokeColor: Colors.deepOrange);
                             } else {
                               return FlDotSquarePainter(
                                 size: 16,
-                                color: Colors.white,
+                                color: R.color.white,
                                 strokeWidth: 5,
                                 strokeColor: Colors.deepOrange,
                               );
@@ -101,7 +102,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
 
                           return LineTooltipItem(
                             '${widget.weekDays[flSpot.x.toInt()]} \n${flSpot.y} k calories',
-                            const TextStyle(color: Colors.white),
+                            TextStyle(color: R.color.white),
                           );
                         }).toList();
                       }),
@@ -176,13 +177,13 @@ class _LineChartSample3State extends State<LineChartSample3> {
                         if (index % 2 == 0) {
                           return FlDotCirclePainter(
                               radius: 6,
-                              color: Colors.white,
+                              color: R.color.white,
                               strokeWidth: 3,
                               strokeColor: Colors.deepOrange);
                         } else {
                           return FlDotSquarePainter(
                             size: 12,
-                            color: Colors.white,
+                            color: R.color.white,
                             strokeWidth: 3,
                             strokeColor: Colors.deepOrange,
                           );
@@ -214,7 +215,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
                 getDrawingVerticalLine: (value) {
                   if (value == 0) {
                     return FlLine(
-                      color: Colors.black,
+                      color: R.color.black,
                       strokeWidth: 2,
                     );
                   } else {
@@ -245,7 +246,7 @@ class _LineChartSample3State extends State<LineChartSample3> {
                     return '';
                   },
                   getTextStyles: (context, value) =>
-                      const TextStyle(color: Colors.black, fontSize: 10),
+                      TextStyle(color: R.color.black, fontSize: 10),
                 ),
                 bottomTitles: SideTitles(
                   showTitles: true,

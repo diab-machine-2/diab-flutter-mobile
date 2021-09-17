@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class HbA1CDetailItem extends StatelessWidget {
   final bool hasNote;
@@ -10,7 +11,7 @@ class HbA1CDetailItem extends StatelessWidget {
       child: Container(
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: R.color.white,
             borderRadius: BorderRadius.circular(16),
           ),
           child:
@@ -20,7 +21,7 @@ class HbA1CDetailItem extends StatelessWidget {
               children: [
                 Text('30/08/2020',
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 20,
                         fontWeight: FontWeight.w700)),
                 Container(
@@ -36,7 +37,7 @@ class HbA1CDetailItem extends StatelessWidget {
                     child: Center(
                       child: Text(hasNote ? 'Rất cao' : 'Tuyệt vời',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: R.color.white,
                               fontSize: 14,
                               fontWeight: FontWeight.w600)),
                     ))
@@ -48,7 +49,7 @@ class HbA1CDetailItem extends StatelessWidget {
               children: [
                 Text('HbA1C',
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w400)),
                 Text(hasNote ? '9.0%' : '6.2%',
@@ -64,12 +65,12 @@ class HbA1CDetailItem extends StatelessWidget {
               children: [
                 Text('Đuờng huyết',
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w400)),
                 Text(hasNote ? '243 (ml/dL)' : '136 (ml/dL)',
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w600))
               ],
@@ -84,7 +85,7 @@ class HbA1CDetailItem extends StatelessWidget {
                       Text(
                           'Ghi chú: Tôi đi khám và đo chỉ số này tại bệnh viện Nguyễn Tri Phương',
                           style: TextStyle(
-                              color: Colors.black,
+                              color: R.color.black,
                               fontSize: 16,
                               fontWeight: FontWeight.w400)),
                     ],

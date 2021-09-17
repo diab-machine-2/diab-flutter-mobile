@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 import 'indicator.dart';
@@ -26,8 +27,8 @@ class PieChart2State extends State {
               blurRadius: 4,
               offset: Offset(0, 2), // changes position of shadow
             ),
-          ], borderRadius: BorderRadius.circular(14), color: Colors.white),
-          // color: Colors.white,
+          ], borderRadius: BorderRadius.circular(14), color: R.color.white),
+          // color: R.color.white,
           child: Row(
             children: <Widget>[
               const SizedBox(

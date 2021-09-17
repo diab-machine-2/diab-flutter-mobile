@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/main.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -43,10 +44,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
       leading: widget.leadingIcon != null
           ? widget.leadingIcon
           : IconButton(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
+              splashColor: R.color.transparent,
+              highlightColor: R.color.transparent,
               icon: widget.leadingIcon == null
-                  ? Icon(Icons.arrow_back, color: Colors.white)
+                  ? Icon(Icons.arrow_back, color: R.color.white)
                   : widget.leadingIcon,
               onPressed: () {
                 navigatorKey.currentState.pop();

@@ -282,7 +282,7 @@ class CircularMenuState extends State<CircularMenu>
           //   icon:
           //       widget.toggleButtonAnimatedIconData, //AnimatedIcons.menu_close,
           //   size: widget.toggleButtonSize,
-          //   color: widget.toggleButtonIconColor ?? Colors.white,
+          //   color: widget.toggleButtonIconColor ?? R.color.white,
           //   progress: _animation,
           // ),
         ),
@@ -298,7 +298,7 @@ class CircularMenuState extends State<CircularMenu>
         //   onTap: () {
         //     //Navigator
         //   },
-        //   child: Container(color: Colors.black.withOpacity(0.7)),
+        //   child: Container(color: R.color.black.withOpacity(0.7)),
         // ), //widget.backgroundWidget ?? Container(),
         ..._buildMenuItems(),
         _buildMenuButton(context),

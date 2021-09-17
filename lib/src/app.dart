@@ -82,7 +82,7 @@ class _AppState extends State<App> {
         designSize: Size(375, 812),
         builder: () => MaterialApp(
             title: 'diaB',
-            color: Colors.white,
+            color: R.color.white,
             theme: AppTheme.theme,
             builder: BotToastInit(),
             navigatorKey: navigatorKey,

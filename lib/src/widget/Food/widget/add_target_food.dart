@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/Food/widget/calculator_TDEE.dart';
@@ -30,14 +31,14 @@ class AddTargetFoodState extends State<AddTargetFood> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
             child: Padding(
                 padding: const EdgeInsets.only(left: 16.0, right: 16),
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
+                    color: R.color.white,
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8, bottom: 16),
@@ -76,7 +77,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                         child: CupertinoTextField(
                                           controller: controller,
                                           decoration: BoxDecoration(
-                                              color: Colors.transparent),
+                                              color: R.color.transparent),
                                           textAlign: TextAlign.center,
                                           enableInteractiveSelection: false,
                                           keyboardType: TextInputType.number,
@@ -85,12 +86,12 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                                 RegExp(r'[-.]'))
                                           ],
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 34,
                                               fontWeight: FontWeight.w700),
                                           placeholder: '--',
                                           placeholderStyle: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 34,
                                               fontWeight: FontWeight.w500),
                                           onChanged: (value) {
@@ -174,7 +175,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                       child: Center(
                                         child: Text('Tiếp tục',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ),
@@ -213,7 +214,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                               );
                             },
                             child: Container(
-                              color: Colors.transparent,
+                              color: R.color.transparent,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [

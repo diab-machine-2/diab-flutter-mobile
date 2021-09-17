@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -65,7 +66,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                   height: 530,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.only(left: 18, right: 18, bottom: 40),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +87,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                 padding: const EdgeInsets.only(
                                     left: 10.0, right: 10.0),
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(200.0),
                                     border: Border.all(color: grayBorder)),
                                 child: GestureDetector(
@@ -122,7 +123,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                             : Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.grey.withOpacity(0.5),
@@ -170,7 +171,6 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
             Container(
               width: 30,
               height: 300,
-              //color: Colors.red,
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -178,7 +178,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                     return Text(number[index].toString(),
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.normal));
                   })),
             ),
@@ -254,7 +254,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                                         .round())
                                                     .toString()),
                                     TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   );
@@ -265,8 +265,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                               show: true,
                               bottomTitles: SideTitles(
                                 showTitles: true,
-                                getTextStyles: (context, value) => const TextStyle(
-                                    color: Colors.black,
+                                getTextStyles: (context, value) => TextStyle(
+                                    color: R.color.black,
                                     fontSize: 14,
                                     fontWeight: FontWeight.normal),
                                 reservedSize: -16,
@@ -281,8 +281,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                               ),
                               leftTitles: SideTitles(
                                   showTitles: false,
-                                  getTextStyles: (context, value) => const TextStyle(
-                                      color: Colors.black, fontSize: 14)),
+                                  getTextStyles: (context, value) => TextStyle(
+                                      color: R.color.black, fontSize: 14)),
                             ),
                             borderData: FlBorderData(
                               show: false,
@@ -363,7 +363,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => ActionListCompare(

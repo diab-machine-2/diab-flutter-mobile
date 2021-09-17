@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -76,7 +77,7 @@ class HeartChartState extends State<HeartChart>
                   height: 240,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.only(left: 18, right: 18),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,7 +109,7 @@ class HeartChartState extends State<HeartChart>
                             : Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.grey.withOpacity(0.5),
@@ -164,7 +165,7 @@ class HeartChartState extends State<HeartChart>
                     return Text(number[index].toString(),
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.normal));
                   })),
             ),
@@ -210,7 +211,7 @@ class HeartChartState extends State<HeartChart>
                                   return spotIndexes.map((index) {
                                     return TouchedSpotIndicatorData(
                                       FlLine(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           strokeWidth: 0.5),
                                       FlDotData(
                                         show: false,
@@ -232,7 +233,7 @@ class HeartChartState extends State<HeartChart>
                                         lineBarSpot.y.round().toString() +
                                             ' lần/phút',
                                         TextStyle(
-                                            color: Colors.black,
+                                            color: R.color.black,
                                             fontWeight: FontWeight.normal),
                                       );
                                     }).toList();
@@ -258,7 +259,7 @@ class HeartChartState extends State<HeartChart>
                                 getTextStyles: (context, value) {
                                   return TextStyle(
                                       color: touchIndex == value.toInt()
-                                          ? Colors.black
+                                          ? R.color.black
                                           : Color(0xffC0C2C5),
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
@@ -306,7 +307,7 @@ class HeartChartState extends State<HeartChart>
               });
             },
             child: Container(
-              color: Colors.transparent,
+              color: R.color.transparent,
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text('Xem chi tiết', style: TextStyle(color: mainColor)),

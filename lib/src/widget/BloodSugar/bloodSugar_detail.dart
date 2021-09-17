@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -213,15 +214,15 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                             decoration: BoxDecoration(
                                                 border: Border.all(
                                                     color: glucoseID == null
-                                                        ? Colors.white
+                                                        ? R.color.white
                                                         : (glucoseID ==
                                                                 element.id
-                                                            ? Colors.red
-                                                            : Colors.white),
+                                                            ? R.color.red
+                                                            : R.color.white),
                                                     width: 2),
                                                 borderRadius:
                                                     BorderRadius.circular(16),
-                                                color: Colors.white),
+                                                color: R.color.white),
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.all(16.0),
@@ -262,7 +263,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                             SizedBox(width: 8),
                                                             Text(element.unit,
                                                                 style: TextStyle(
-                                                                    color: Colors
+                                                                    color: R.color
                                                                         .black,
                                                                     fontSize:
                                                                         16,
@@ -282,13 +283,13 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                             decoration: BoxDecoration(
                                                                 color: element.backgroundColor ==
                                                                         'None'
-                                                                    ? Colors
+                                                                    ? R.color
                                                                         .white
                                                                     : toColor(element
                                                                         .backgroundColor),
                                                                 border: Border.all(
                                                                     color: element.borderColor == 'None'
-                                                                        ? Colors
+                                                                        ? R.color
                                                                             .transparent
                                                                         : toColor(element
                                                                             .borderColor),
@@ -307,7 +308,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                       color: element
                                                                                   .fontColor ==
                                                                               'None'
-                                                                          ? Colors
+                                                                          ? R.color
                                                                               .white
                                                                           : toColor(element
                                                                               .fontColor),
@@ -329,7 +330,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                               'HH:mm'),
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.black,
+                                                                  R.color.black,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -338,7 +339,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                         Text(
                                                             ', ${element.timeFrame}',
                                                             style: TextStyle(
-                                                                color: Colors
+                                                                color: R.color
                                                                     .black,
                                                                 fontSize: 16,
                                                                 fontWeight:
@@ -368,7 +369,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                   Text(
                                                                       'Lý do: ',
                                                                       style: TextStyle(
-                                                                          color: Colors
+                                                                          color: R.color
                                                                               .black,
                                                                           fontSize:
                                                                               16,
@@ -379,7 +380,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                         element
                                                                             .reason,
                                                                         style: TextStyle(
-                                                                            color: Colors
+                                                                            color: R.color
                                                                                 .black,
                                                                             fontSize:
                                                                                 16,

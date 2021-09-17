@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class PolicyController extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         // appBar: AppBar(
-        //     backgroundColor: Colors.white,
+        //     backgroundColor: R.color.white,
         //     title: Text(
         //       'Điều khoản & điều kiện',
-        //       style: TextStyle(fontSize: 20, color: Colors.black),
+        //       style: TextStyle(fontSize: 20, color: R.color.black),
         //     ),
         //     centerTitle: false,
         //     automaticallyImplyLeading: false,
         //     actions: [
         //       IconButton(
-        //           icon: Icon(Icons.close, color: Colors.black),
+        //           icon: Icon(Icons.close, color: R.color.black),
         //           onPressed: () {
         //             Navigator.pop(context);
         //           })
         //     ]),
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         body: SafeArea(
             child: Padding(
           padding: EdgeInsets.all(16),

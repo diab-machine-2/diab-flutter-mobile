@@ -3,12 +3,16 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class AppColors {
+  static const transparent = Color(0x00000000);
   static const primaryColor = Color(0xFF226BCC);
   static const backgroundColor = Color(0xFFf2f2f4);
   static const primaryGreyColor = Color(0xff666666);
   static const primaryLightGreyColor = Color(0xFFEEEEEE);
   static const white = Color(0xffffffff);
   static const black = Color(0xff000000);
+  static const black26 = Color(0x42000000);
+  static const black54 = Color(0x8A000000);
+  static const grey = Color(0xff9e9e9e);
   static const textDark = Color(0xff0A2836);
   static const captionColorGray = Color(0xff9C9C9C);
   static const statusGood = Color(0xff7CB5FF);

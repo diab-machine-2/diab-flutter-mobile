@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/exercrises/exercrise_Input_detail_model.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
@@ -132,7 +133,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
                           ? 'Chỉnh sửa vận động'
@@ -142,8 +143,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                           fontWeight: FontWeight.w600,
                           color: textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: textDark),
                       onPressed: () {
                         _showDialogSave();
@@ -244,7 +245,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                           bottom: 16, left: 16, right: 16),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         padding: EdgeInsets.all(16),
@@ -267,7 +268,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                               );
                             },
                             child: Container(
-                              color: Colors.transparent,
+                              color: R.color.transparent,
                               child: Column(children: [
                                 Row(
                                     mainAxisAlignment:
@@ -302,7 +303,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                           bottom: 16, left: 16, right: 16),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         padding: EdgeInsets.all(16),
@@ -312,7 +313,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                               showActionFilter(context);
                             },
                             child: Container(
-                              color: Colors.transparent,
+                              color: R.color.transparent,
                               child: Column(children: [
                                 Row(
                                     mainAxisAlignment:
@@ -345,13 +346,13 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                           bottom: 16, left: 16, right: 16),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         padding: EdgeInsets.all(16),
                         child: Column(children: [
                           Container(
-                            color: Colors.transparent,
+                            color: R.color.transparent,
                             child: Column(children: [
                               Row(
                                   mainAxisAlignment:
@@ -364,7 +365,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                         SizedBox(width: 8),
                                         Text('Vận động',
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: R.color.black,
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w500))
                                       ],
@@ -375,7 +376,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                               addActivity();
                                             },
                                             child: Container(
-                                              color: Colors.transparent,
+                                              color: R.color.transparent,
                                               child: Row(
                                                 children: [
                                                   Image.asset(
@@ -431,7 +432,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                     }));
                                       },
                                       child: Container(
-                                        color: Colors.transparent,
+                                        color: R.color.transparent,
                                         padding: EdgeInsets.only(
                                             bottom: 12, top: 12),
                                         child: Row(
@@ -550,7 +551,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                       (BuildContext context, int index) {
                                     return Stack(children: [
                                       Container(
-                                        color: Colors.transparent,
+                                        color: R.color.transparent,
                                         padding: EdgeInsets.only(
                                             bottom: 12, top: 12),
                                         child: Row(
@@ -653,7 +654,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                         right: 20,
                                         child: Container(
                                             decoration: BoxDecoration(
-                                                color: Colors.white
+                                                color: R.color.white
                                                     .withOpacity(0.6))),
                                       )
                                     ]);
@@ -669,7 +670,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                               height: 1,
                                               color: Color(0xffD6D8E0)),
                                           Container(
-                                            color: Colors.transparent,
+                                            color: R.color.transparent,
                                             padding: EdgeInsets.only(top: 16),
                                             child: Row(
                                               children: [
@@ -702,10 +703,10 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                           bottom: 16, left: 16, right: 16),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        // color: Colors.white,
+                        // color: R.color.white,
                         padding: EdgeInsets.all(16),
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -723,7 +724,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                               TextField(
                                   controller: _controllerNote,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400),
                                   decoration: InputDecoration(
@@ -825,7 +826,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                               child: Center(
                                   child: Text('Lưu',
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)))),
                         ),
@@ -853,7 +854,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                       child: Center(
                                         child: Text('Xoá dữ liệu',
                                             style: TextStyle(
-                                                color: Colors.red,
+                                                color: R.color.red,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -879,7 +880,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                     child: Center(
                                       child: Text('Lưu',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -935,13 +936,13 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
               Navigator.pop(context);
             });
             return Scaffold(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 body: Center(
                     child: Padding(
                   padding: EdgeInsets.all(16),
                   child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(10)),
                       padding: EdgeInsets.only(top: 32, left: 32, right: 32),
                       child: Column(
@@ -949,7 +950,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                         children: [
                           Text('Chúc mừng!',
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500)),
                           SizedBox(height: 16),
@@ -1193,7 +1194,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                     child: Center(
                                       child: Text('Xoá',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1318,7 +1319,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                     child: Center(
                                       child: Text('Thoát',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1347,7 +1348,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => ActionListTrend(
@@ -1513,7 +1514,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -1522,7 +1523,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1534,7 +1535,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           children: [
                             Text('Chọn ngày',
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
@@ -1561,7 +1562,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         ),
                         Text('Chọn thời gian',
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700)),
                       ],
@@ -1590,7 +1591,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                               child: Center(
                                   child: Text('Huỷ',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1618,7 +1619,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                               child: Center(
                                   child: Text('Đồng ý',
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),

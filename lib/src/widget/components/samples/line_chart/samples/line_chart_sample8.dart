@@ -101,7 +101,7 @@
 //               show: true,
 //               alignment: Alignment.topRight,
 //               padding: const EdgeInsets.only(right: 5, bottom: 5),
-//               style: const TextStyle(color: Colors.black, fontSize: 9),
+//               style: const TextStyle(color: R.color.black, fontSize: 9),
 //               labelResolver: (line) => 'H: ${line.y}',
 //             ),
 //           ),
@@ -116,13 +116,13 @@
 //               show: true,
 //               alignment: Alignment.topRight,
 //               padding: const EdgeInsets.only(left: 10, top: 5),
-//               style: const TextStyle(color: Colors.black, fontSize: 9),
+//               style: const TextStyle(color: R.color.black, fontSize: 9),
 //               labelResolver: (line) => 'V: ${line.x}',
 //             ),
 //           ),
 //           VerticalLine(
 //             x: 8.5,
-//             color: Colors.transparent,
+//             color: R.color.transparent,
 //             sizedPicture: sizedPicture,
 //           )
 //         ],
@@ -134,7 +134,7 @@
 //         bottomTitles: SideTitles(
 //           showTitles: true,
 //           reservedSize: 22,
-//           getTextStyles: (context, value) => const TextStyle(color: Colors.black87, fontSize: 10),
+//           getTextStyles: (context, value) => const TextStyle(color: R.color.black87, fontSize: 10),
 //           interval: 4,
 //           margin: 8,
 //           checkToShowTitle: (minValue, maxValue, sideTitles, appliedInterval, value) => true,
@@ -143,7 +143,7 @@
 //           interval: 2,
 //           showTitles: true,
 //           getTextStyles: (context, value) => const TextStyle(
-//             color: Colors.black87,
+//             color: R.color.black87,
 //             fontSize: 10,
 //           ),
 //           reservedSize: 28,

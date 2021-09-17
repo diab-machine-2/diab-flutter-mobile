@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/main.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
@@ -119,7 +120,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
                           ? 'Cập nhật chỉ số dinh dưỡng'
@@ -129,8 +130,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                           fontWeight: FontWeight.w600,
                           color: textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: textDark),
                       onPressed: () {
                         _showDialogSave();
@@ -204,7 +205,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                           children: [
                                             Text(formatNumber(totalKcal),
                                                 style: TextStyle(
-                                                    color: Colors.black,
+                                                    color: R.color.black,
                                                     fontSize: 24,
                                                     fontWeight:
                                                         FontWeight.w600)),
@@ -225,7 +226,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -248,7 +249,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                   );
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
@@ -284,7 +285,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -294,7 +295,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                   showActionFilter(context);
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
@@ -328,7 +329,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -338,7 +339,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                   addFood(context);
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
@@ -381,7 +382,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                         itemBuilder:
                                             (BuildContext context, int index) {
                                           return Container(
-                                            color: Colors.transparent,
+                                            color: R.color.transparent,
                                             padding: EdgeInsets.only(
                                                 bottom: 12, top: 12),
                                             child: Row(
@@ -472,10 +473,10 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
+                            // color: R.color.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -493,7 +494,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                   TextField(
                                       controller: _controllerNote,
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
@@ -600,7 +601,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                               child: Center(
                                   child: Text('Lưu',
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)))),
                         ),
@@ -628,7 +629,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                         child: Center(
                                           child: Text('Xoá dữ liệu',
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: R.color.red,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         )),
@@ -654,7 +655,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                       child: Center(
                                         child: Text('Lưu',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ),
@@ -886,7 +887,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                     child: Center(
                                       child: Text('Xoá',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1011,7 +1012,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                     child: Center(
                                       child: Text('Thoát',
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1040,7 +1041,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => FoodTimeFrame(

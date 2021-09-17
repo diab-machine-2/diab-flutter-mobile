@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter_datetime_picker/src/datetime_picker_theme.dart';
 import 'package:flutter_datetime_picker/src/date_model.dart';
 import 'package:flutter_datetime_picker/src/i18n_model.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 export 'package:flutter_datetime_picker/src/datetime_picker_theme.dart';
@@ -203,7 +204,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
   final String barrierLabel;
 
   @override
-  Color get barrierColor => Colors.black54;
+  Color get barrierColor => R.color.black54;
 
   AnimationController _animationController;
 
@@ -292,7 +293,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
                   bottomPadding: bottomPadding),
               child: GestureDetector(
                 child: Material(
-                  color: theme.backgroundColor ?? Colors.white,
+                  color: theme.backgroundColor ?? R.color.white,
                   child: _renderPickerView(theme),
                 ),
               ),
@@ -336,7 +337,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
           padding: EdgeInsets.all(8.0),
           height: theme.containerHeight,
           decoration:
-              BoxDecoration(color: theme.backgroundColor ?? Colors.white),
+              BoxDecoration(color: theme.backgroundColor ?? R.color.white),
           child: NotificationListener(
               onNotification: (ScrollNotification notification) {
                 if (notification.depth == 0 &&
@@ -351,7 +352,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
               },
               child: CupertinoPicker.builder(
                   key: key,
-                  backgroundColor: theme.backgroundColor ?? Colors.white,
+                  backgroundColor: theme.backgroundColor ?? R.color.white,
                   scrollController: scrollController,
                   selectionOverlay: null,
                   itemExtent: theme.itemHeight,
@@ -379,7 +380,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
 
   Widget _renderItemView(DatePickerTheme theme) {
     return Container(
-      color: theme.backgroundColor ?? Colors.white,
+      color: theme.backgroundColor ?? R.color.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -413,7 +414,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
     return Container(
       height: theme.titleHeight,
       decoration: BoxDecoration(
-        color: theme.headerColor ?? theme.backgroundColor ?? Colors.white,
+        color: theme.headerColor ?? theme.backgroundColor ?? R.color.white,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

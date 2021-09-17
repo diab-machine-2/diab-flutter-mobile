@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 
 typedef TimeCallback = Function(String, int);
@@ -93,7 +94,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
                 child: Center(
                   child: Text('Lưu',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: R.color.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600)),
                 )),
@@ -114,7 +115,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
               });
             },
             child: Container(
-              color: selectedIndex == index ? greenbg : Colors.white,
+              color: selectedIndex == index ? greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(

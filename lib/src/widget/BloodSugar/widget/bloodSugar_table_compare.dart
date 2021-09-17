@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -43,7 +44,7 @@ class _BloodSugarTableCompareControllerState
             },
             child: Scaffold(
               resizeToAvoidBottomInset: false,
-              backgroundColor: Colors.white,
+              backgroundColor: R.color.white,
               body: Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
@@ -55,13 +56,13 @@ class _BloodSugarTableCompareControllerState
                       CustomAppBar(
                         // leading: SizedBox(),
                         leadingIcon: IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
+                            splashColor: R.color.transparent,
+                            highlightColor: R.color.transparent,
                             icon: Icon(Icons.close, color: textDark),
                             onPressed: () {
                               Navigator.pop(context);
                             }),
-                        backgroundColor: Colors.transparent, //No more green
+                        backgroundColor: R.color.transparent, //No more green
                         title: Text(widget.title,
                             style: TextStyle(
                                 fontSize: 18,
@@ -79,14 +80,14 @@ class _BloodSugarTableCompareControllerState
                                   width: width - 10,
                                   child: Text('Thời gian',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
                                   width: width + 10,
                                   child: Text('Khung giờ',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
@@ -95,7 +96,7 @@ class _BloodSugarTableCompareControllerState
                                   child: Center(
                                     child: Text('Trước/Sau',
                                         style: TextStyle(
-                                            color: Colors.black,
+                                            color: R.color.black,
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600)),
                                   )),
@@ -162,7 +163,7 @@ class _BloodSugarTableCompareControllerState
       child: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: R.color.white,
             child: Column(
               children: [
                 Padding(
@@ -172,14 +173,12 @@ class _BloodSugarTableCompareControllerState
                     children: [
                       Container(
                         width: width - 10,
-                        // color: Colors.yellow,
                         child: Text(convertToUTC(time, 'HH:mm - dd/MM'),
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w400)),
                       ),
                       Container(
                         width: width + 10,
-                        // color: Colors.blue,
                         child: Text(widget.title,
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w400)),

@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
@@ -80,15 +81,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
             Image.asset('assets/images/profile_bg.png'),
             Column(children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 title: Text('Thông tin cá nhân',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
                     icon: Icon(Icons.arrow_back, color: textDark),
                     onPressed: () {
                       Navigator.pop(context);
@@ -110,7 +111,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 showActionSheet(context);
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Stack(
                                     alignment: AlignmentDirectional.bottomEnd,
                                     children: [
@@ -125,7 +126,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                           child: user.imageUrl.url == null
                                               ? Icon(Icons.person,
                                                   size: 160,
-                                                  color: Colors.white)
+                                                  color: R.color.white)
                                               : Image.network(user.imageUrl.url,
                                                   width: 160, height: 160),
                                         ),
@@ -143,7 +144,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                         motivation != null
                             ? Container(
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: Column(
                                   children: [
@@ -161,7 +162,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                 children: [
                                                   Text('Động lực của tôi',
                                                       style: TextStyle(
-                                                          color: Colors.black,
+                                                          color: R.color.black,
                                                           fontWeight:
                                                               FontWeight.w700,
                                                           fontSize: 16)),
@@ -171,7 +172,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                           motivation);
                                                     },
                                                     child: Container(
-                                                      color: Colors.transparent,
+                                                      color: R.color.transparent,
                                                       child: Row(children: [
                                                         Image.asset(
                                                             'assets/images/icon_edit.png',
@@ -209,7 +210,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                     context, '/motivation');
                                               },
                                               child: Container(
-                                                color: Colors.transparent,
+                                                color: R.color.transparent,
                                                 child: Center(
                                                   child: Text('Xem nhật ký',
                                                       style: TextStyle(
@@ -230,7 +231,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                     null);
                                               },
                                               child: Container(
-                                                color: Colors.transparent,
+                                                color: R.color.transparent,
                                                 child: Center(
                                                   child: Text('Động lực mới',
                                                       style: TextStyle(
@@ -249,7 +250,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.transparent,
+                                    color: R.color.transparent,
                                     image: DecorationImage(
                                         image: AssetImage(
                                             'assets/images/bg_dongluc.png'),
@@ -262,14 +263,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                       children: [
                                         Text('Động lực của tôi',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 16)),
                                         SizedBox(height: 8),
                                         Text(
                                             'Điều gì tạo động lực sống khoẻ cho bạn?',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 16)),
                                         Padding(
@@ -285,7 +286,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                       left: 16, right: 16),
                                                   decoration: BoxDecoration(
                                                       border: Border.all(
-                                                          color: Colors.white,
+                                                          color: R.color.white,
                                                           width: 2),
                                                       borderRadius:
                                                           BorderRadius.circular(
@@ -293,13 +294,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                   child: Row(
                                                     children: [
                                                       Icon(Icons.add,
-                                                          color: Colors.white,
+                                                          color: R.color.white,
                                                           size: 28),
                                                       SizedBox(width: 8),
                                                       Text('Viết động lực  ',
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.white,
+                                                                  R.color.white,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700,
@@ -315,7 +316,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                         SizedBox(height: 16),
                         Container(
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
                           child: Column(
@@ -323,7 +324,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               children: [
                                 Text('Thông tin chung',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
@@ -366,7 +367,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                         SizedBox(height: 16),
                         Container(
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
                           child: Column(
@@ -374,7 +375,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               children: [
                                 Text('Thông tin bệnh lý',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
@@ -402,7 +403,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                         SizedBox(height: 16),
                         Container(
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
                           child: Column(
@@ -410,7 +411,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               children: [
                                 Text('Chỉ số cơ thể',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
@@ -442,7 +443,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                         SizedBox(height: 16),
                         Container(
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
                           child: Column(
@@ -450,7 +451,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               children: [
                                 Text('Thông liên lạc',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
@@ -593,7 +594,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           },
                           child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   borderRadius: BorderRadius.circular(10)),
                               padding: EdgeInsets.all(16),
                               child: Row(children: [
@@ -601,7 +602,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                     width: 33, height: 33),
                                 SizedBox(width: 12),
                                 Text('Đăng xuất',
-                                    style: TextStyle(color: Colors.black))
+                                    style: TextStyle(color: R.color.black))
                               ])),
                         )
                       ]),
@@ -620,7 +621,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
         callback();
       },
       child: Container(
-        color: Colors.transparent,
+        color: R.color.transparent,
         padding: EdgeInsets.only(top: 8, bottom: 8),
         child:
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -632,7 +633,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: TextStyle(color: Colors.black)),
+                      Text(title, style: TextStyle(color: R.color.black)),
                       SizedBox(height: 2),
                       Text(subTitle, style: TextStyle(color: Color(0xff9c9c9c)))
                     ]),
@@ -1088,7 +1089,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         child: Center(
                                           child: Text('Đăng xuất',
                                               style: TextStyle(
-                                                  color: Colors.white,
+                                                  color: R.color.white,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         ),
@@ -1244,7 +1245,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               child: Center(
                                 child: Text('Lưu',
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -1373,7 +1374,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               child: Center(
                                 child: Text('Đồng ý',
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -1495,7 +1496,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               child: Center(
                                 child: Text('Đồng ý',
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -1620,7 +1621,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               child: Center(
                                 child: Text('Đồng ý',
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -1748,7 +1749,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               child: Center(
                                 child: Text('Đồng ý',
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -2008,7 +2009,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               child: Center(
                                 child: Text('Lưu',
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -2261,7 +2262,7 @@ class _EmailValidateState extends State<EmailValidate> {
                       child: Center(
                         child: Text('Lưu',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: R.color.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -2598,7 +2599,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
                 child: Center(
                   child: Text('Lưu',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: R.color.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600)),
                 ),

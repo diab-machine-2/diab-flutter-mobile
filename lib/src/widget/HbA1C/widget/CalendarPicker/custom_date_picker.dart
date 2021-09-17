@@ -8,6 +8,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
 import 'date_utils.dart' as utils;
 
@@ -782,7 +783,7 @@ class _MonthPickerState extends State<_MonthPicker> {
                     formatDate(widget
                         .currentDisplayedMonthDate.millisecondsSinceEpoch),
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w700)),
                 // Expanded(
@@ -998,7 +999,7 @@ class _DayPickerState extends State<_DayPicker> {
     final TextStyle dayStyle =
         TextStyle(color: Color(0xffC0C2C5), fontSize: 16); //textTheme.caption;
     final Color enabledDayColor =
-        Colors.black; //colorScheme.onSurface.withOpacity(0.87);
+        R.color.black; //colorScheme.onSurface.withOpacity(0.87);
     final Color disabledDayColor =
         Color(0xffC0C2C5); //colorScheme.onSurface.withOpacity(0.38);
     final Color selectedDayColor = colorScheme.onPrimary;

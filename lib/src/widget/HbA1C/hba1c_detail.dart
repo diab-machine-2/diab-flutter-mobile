@@ -1,6 +1,7 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
@@ -134,7 +135,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(16),
-                                            color: Colors.white),
+                                            color: R.color.white),
                                         child: Padding(
                                           padding: const EdgeInsets.all(16.0),
                                           child: Column(children: [
@@ -163,7 +164,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                         border: Border.all(
                                                             color: model[index].borderColor ==
                                                                     'None'
-                                                                ? Colors
+                                                                ? R.color
                                                                     .transparent
                                                                 : toColor(model[index]
                                                                     .borderColor),
@@ -198,7 +199,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                               children: [
                                                 Text('HbA1C',
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -240,7 +241,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                               children: [
                                                 Text('Đuờng huyết',
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -253,7 +254,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                             .toString(),
                                                         style: TextStyle(
                                                             fontFamily: 'Viga',
-                                                            color: Colors.black,
+                                                            color: R.color.black,
                                                             fontSize: 20,
                                                             fontWeight:
                                                                 FontWeight
@@ -273,7 +274,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                               ')',
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.black,
+                                                                  R.color.black,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -313,7 +314,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                                 model[index]
                                                                     .description,
                                                                 style: TextStyle(
-                                                                    color: Colors
+                                                                    color: R.color
                                                                         .black,
                                                                     fontSize:
                                                                         16,

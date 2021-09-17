@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class HbA1CTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white.withOpacity(0.90),
+        backgroundColor: R.color.white.withOpacity(0.90),
         body: GestureDetector(
           onTap: () {
             Navigator.pop(context);

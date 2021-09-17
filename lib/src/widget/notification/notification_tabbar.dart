@@ -1,5 +1,6 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Food/food_description.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
@@ -56,15 +57,15 @@ class _NotificationTabbarControllerState
         color: Color(0xfff5f5f5),
         child: Column(children: [
           CustomAppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: R.color.transparent,
             title: Text('Thông báo',
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: textDark)),
             leadingIcon: IconButton(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
+                splashColor: R.color.transparent,
+                highlightColor: R.color.transparent,
                 icon: Icon(Icons.arrow_back, color: textDark),
                 onPressed: () {
                   Navigator.pop(context);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -158,7 +159,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               16),
-                                                      color: Colors.white),
+                                                      color: R.color.white),
                                                   padding: EdgeInsets.only(
                                                       bottom: 8),
                                                   child: Column(
@@ -181,7 +182,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                               Text(
                                                                   mealItem.text,
                                                                   style: TextStyle(
-                                                                      color: Colors
+                                                                      color: R.color
                                                                           .black,
                                                                       fontSize:
                                                                           16,
@@ -208,7 +209,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                       width: 4),
                                                                   Text('kcal',
                                                                       style: TextStyle(
-                                                                          color: Colors
+                                                                          color: R.color
                                                                               .black,
                                                                           fontSize:
                                                                               14,
@@ -249,7 +250,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                 },
                                                                 child:
                                                                     Container(
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .transparent,
                                                                   child: Column(
                                                                     crossAxisAlignment:
@@ -299,7 +300,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                                       Column(
                                                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                                                         children: [
-                                                                                          Text(food.name, style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500)),
+                                                                                          Text(food.name, style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w500)),
                                                                                           SizedBox(height: 4),
                                                                                           Text(food.text, style: TextStyle(color: textDark, fontSize: 16, fontWeight: FontWeight.normal))
                                                                                         ],
@@ -307,9 +308,9 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                                     ]),
                                                                                     Row(
                                                                                       children: [
-                                                                                        Text(food.calorie.round().toString(), style: TextStyle(fontFamily: 'Viga', color: Colors.black, fontSize: 20, fontWeight: FontWeight.w400)),
+                                                                                        Text(food.calorie.round().toString(), style: TextStyle(fontFamily: 'Viga', color: R.color.black, fontSize: 20, fontWeight: FontWeight.w400)),
                                                                                         SizedBox(width: 4),
-                                                                                        Text('kcal', style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400))
+                                                                                        Text('kcal', style: TextStyle(color: R.color.black, fontSize: 14, fontWeight: FontWeight.w400))
                                                                                       ],
                                                                                     )
                                                                                   ],

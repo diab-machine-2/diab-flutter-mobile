@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'horizontal_numberpicker.dart';
 
 ///对HorizontalNumberPicker进行简单包装，添加顶部的选中值显示和两边的半透明遮罩
@@ -151,8 +152,8 @@ class HorizontalNumberPickerWrapperState
                 height: numberPickerHeight.toDouble(),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                    Colors.white.withOpacity(0.8),
-                    Colors.white.withOpacity(0)
+                    R.color.white.withOpacity(0.8),
+                    R.color.white.withOpacity(0)
                   ]),
                 ),
               ),
@@ -164,8 +165,8 @@ class HorizontalNumberPickerWrapperState
                 height: numberPickerHeight.toDouble(),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                    Colors.white.withOpacity(0),
-                    Colors.white.withOpacity(0.8)
+                    R.color.white.withOpacity(0),
+                    R.color.white.withOpacity(0.8)
                   ]),
                 ),
               ),

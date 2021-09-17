@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -90,7 +91,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
+      statusBarColor: R.color.transparent,
       statusBarIconBrightness: Brightness.dark,
       statusBarBrightness: Brightness.light));
   SystemChrome.setPreferredOrientations([

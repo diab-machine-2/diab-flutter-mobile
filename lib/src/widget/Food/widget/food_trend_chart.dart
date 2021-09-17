@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
@@ -79,7 +80,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding:
                       EdgeInsets.only(left: 18, right: 18, bottom: 18, top: 18),
                   child: Column(
@@ -107,7 +108,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                             : Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.grey.withOpacity(0.5),
@@ -157,7 +158,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                   padding: EdgeInsets.only(left: 18, right: 18),
                   decoration: BoxDecoration(
                       color:
-                          isEnergyTab ? Color(0xff01645A) : Colors.transparent,
+                          isEnergyTab ? Color(0xff01645A) : R.color.transparent,
                       border: Border.all(
                           color: isEnergyTab
                               ? Color(0xff01645A)
@@ -168,7 +169,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                     child: Text('Năng lượng',
                         style: TextStyle(
                             color:
-                                isEnergyTab ? Colors.white : Color(0xff666666),
+                                isEnergyTab ? R.color.white : Color(0xff666666),
                             fontSize: 14,
                             fontWeight: isEnergyTab
                                 ? FontWeight.w700
@@ -187,16 +188,16 @@ class FoodTrendChartState extends State<FoodTrendChart>
                   width: 135,
                   decoration: BoxDecoration(
                       color:
-                          isEnergyTab ? Colors.transparent : Color(0xff01645A),
+                          isEnergyTab ? R.color.transparent : Color(0xff01645A),
                       border: Border.all(
-                          color: isEnergyTab ? Color(0xff666666) : Colors.white,
+                          color: isEnergyTab ? Color(0xff666666) : R.color.white,
                           width: 0.5),
                       borderRadius: BorderRadius.circular(16)),
                   child: Center(
                     child: Text('Chất bột đường',
                         style: TextStyle(
                             color:
-                                isEnergyTab ? Color(0xff666666) : Colors.white,
+                                isEnergyTab ? Color(0xff666666) : R.color.white,
                             fontSize: 14,
                             fontWeight: isEnergyTab
                                 ? FontWeight.w400
@@ -210,7 +211,6 @@ class FoodTrendChartState extends State<FoodTrendChart>
             Container(
               width: 44,
               height: 300,
-              //color: Colors.red,
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -218,7 +218,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                     return Text(formatNumber(number[index].toDouble()),
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.normal));
                   })),
             ),
@@ -317,7 +317,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                   fitInsideVertically: true,
                                   fitInsideHorizontally: true,
                                   tooltipBgColor: touchIndex == -1
-                                      ? Colors.transparent
+                                      ? R.color.transparent
                                       : toColor(
                                               model.items[touchIndex].colorCode)
                                           .withOpacity(0.2),
@@ -356,7 +356,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                 reservedSize: -16,
                                 getTextStyles: (context, value) {
                                   return TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
                                 },
@@ -407,7 +407,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                 return FlSpot((index).toDouble(), model.items[index].value);
               }),
               isCurved: false,
-              colors: [Colors.black],
+              colors: [R.color.black],
               barWidth: 0.75,
               isStrokeCapRound: true,
               dotData: FlDotData(

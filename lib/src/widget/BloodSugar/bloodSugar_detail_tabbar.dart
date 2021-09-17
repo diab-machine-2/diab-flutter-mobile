@@ -1,5 +1,6 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -96,7 +97,7 @@ class _BloodSugarDetailTabbarControllerState
       child: Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: CustomAppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: R.color.white,
             title: Text('Đường huyết',
                 style: TextStyle(
                     fontFamily: 'Montserrat',
@@ -120,7 +121,7 @@ class _BloodSugarDetailTabbarControllerState
                     customTabbarKey.currentState.showDescription();
                   }),
               IconButton(
-                  icon: Icon(Icons.close, color: Colors.black),
+                  icon: Icon(Icons.close, color: R.color.black),
                   onPressed: () {
                     Navigator.pop(context);
                   }),
@@ -186,7 +187,7 @@ class _BloodSugarDetailTabbarControllerState
             ),
           ]),
           floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.transparent,
+            backgroundColor: R.color.transparent,
             onPressed: () {
               _showMaterialDialog();
             },
@@ -236,7 +237,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: R.color.white,
       child: Column(
         children: [
           showDes
@@ -301,7 +302,7 @@ class _ActionFilterState extends State<ActionFilter> {
         showActionFilter(context);
       },
       child: Container(
-        color: Colors.transparent,
+        color: R.color.transparent,
         padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
         child: Row(
           children: [
@@ -328,7 +329,7 @@ class _ActionFilterState extends State<ActionFilter> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => FillterBloodPanel(

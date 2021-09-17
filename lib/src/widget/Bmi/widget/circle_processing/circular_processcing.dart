@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class CircularPage extends StatefulWidget {
@@ -81,8 +82,8 @@ class _CircularPageState extends State<CircularPage> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
                 ),
                 circularStrokeCap: CircularStrokeCap.butt,
-                backgroundColor: Colors.transparent,
-                progressColor: Colors.red,
+                backgroundColor: R.color.transparent,
+                progressColor: R.color.red,
               ),
               CircularPercentIndicator(
                 radius: 120.0,
@@ -99,7 +100,7 @@ class _CircularPageState extends State<CircularPage> {
                 ),
                 circularStrokeCap: CircularStrokeCap.butt,
                 backgroundColor: Colors.yellow,
-                progressColor: Colors.red,
+                progressColor: R.color.red,
               ),
             ]),
             CircularPercentIndicator(
@@ -116,7 +117,7 @@ class _CircularPageState extends State<CircularPage> {
               ),
               circularStrokeCap: CircularStrokeCap.butt,
               backgroundColor: Colors.grey,
-              progressColor: Colors.red,
+              progressColor: R.color.red,
             ),
             CircularPercentIndicator(
               radius: 120.0,
@@ -158,7 +159,7 @@ class _CircularPageState extends State<CircularPage> {
                       lineWidth: 4.0,
                       percent: 0.10,
                       center: Text("10%"),
-                      progressColor: Colors.red,
+                      progressColor: R.color.red,
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -246,13 +247,13 @@ class _CircularPageState extends State<CircularPage> {
             const SizedBox(height: 20),
             CircularPercentIndicator(
               radius: 80.0,
-              backgroundColor: Colors.white,
+              backgroundColor: R.color.white,
               percent: .7,
               lineWidth: 10,
               backgroundWidth: 15,
-              fillColor: Colors.transparent,
+              fillColor: R.color.transparent,
               circularStrokeCap: CircularStrokeCap.round,
-              arcBackgroundColor: Colors.transparent,
+              arcBackgroundColor: R.color.transparent,
               arcType: ArcType.HALF,
             ),
           ],

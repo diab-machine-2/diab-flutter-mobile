@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/modal/exercrises/exercrises_categogy_request.dart';
@@ -106,7 +107,7 @@ class _SearchExercrisesControllerState
                 child: Column(
                   children: [
                     CustomAppBar(
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: R.color.transparent,
                       title: Text(
                           widget.type == 'update'
                               ? 'Chỉnh sửa vận động'
@@ -116,8 +117,8 @@ class _SearchExercrisesControllerState
                               fontWeight: FontWeight.w600,
                               color: textDark)),
                       leadingIcon: IconButton(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
+                          splashColor: R.color.transparent,
+                          highlightColor: R.color.transparent,
                           icon: Icon(Icons.arrow_back, color: textDark),
                           onPressed: () {
                             Navigator.pop(context);
@@ -157,7 +158,7 @@ class _SearchExercrisesControllerState
                             margin: EdgeInsets.only(left: 16, right: 16),
                             padding: EdgeInsets.only(left: 16, right: 16),
                             decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: R.color.white,
                                 borderRadius: BorderRadius.circular(30),
                                 border: Border.all(color: grayComponentBorder)),
                             child: Row(
@@ -205,7 +206,7 @@ class _SearchExercrisesControllerState
                         // _submitData();
                       },
                       child: Container(
-                        color: Colors.white,
+                        color: R.color.white,
                         child: Column(
                           children: [
                             Padding(
@@ -267,7 +268,7 @@ class _SearchExercrisesControllerState
                                         child: Center(
                                             child: Text('Lưu',
                                                 style: TextStyle(
-                                                    color: Colors.white,
+                                                    color: R.color.white,
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 16))),
                                       ))
@@ -299,7 +300,7 @@ class _SearchExercrisesControllerState
                                                     child: Center(
                                                       child: Text('Xoá dữ liệu',
                                                           style: TextStyle(
-                                                              color: Colors.red,
+                                                              color: R.color.red,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -333,7 +334,7 @@ class _SearchExercrisesControllerState
                                                   child: Center(
                                                     child: Text('Lưu',
                                                         style: TextStyle(
-                                                            color: Colors.white,
+                                                            color: R.color.white,
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight
@@ -379,7 +380,7 @@ class _SearchExercrisesControllerState
                 padding: const EdgeInsets.all(16),
                 child: Text(title,
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 18,
                         fontWeight: FontWeight.w600)),
               ),
@@ -420,11 +421,11 @@ class _SearchExercrisesControllerState
                                 left: 16, right: 16, top: 8, bottom: 8),
                             decoration: BoxDecoration(
                                 color: selectedModel == null
-                                    ? Colors.transparent
+                                    ? R.color.transparent
                                     : Color(0xffC3E8D3).withOpacity(0.5),
                                 border: Border.all(
                                     color: selectedModel == null
-                                        ? Colors.transparent
+                                        ? R.color.transparent
                                         : Color(0xff72CB9C))),
                             child: Row(
                               children: [

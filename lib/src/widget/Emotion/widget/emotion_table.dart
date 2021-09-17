@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
@@ -59,7 +60,7 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
             },
             child: Scaffold(
               resizeToAvoidBottomInset: false,
-              backgroundColor: Colors.white,
+              backgroundColor: R.color.white,
               body: Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
@@ -71,13 +72,13 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
                       CustomAppBar(
                         // leading: SizedBox(),
                         leadingIcon: IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
+                            splashColor: R.color.transparent,
+                            highlightColor: R.color.transparent,
                             icon: Icon(Icons.close, color: textDark),
                             onPressed: () {
                               Navigator.pop(context);
                             }),
-                        backgroundColor: Colors.transparent, //No more green
+                        backgroundColor: R.color.transparent, //No more green
                         title: Text(widget.title,
                             style: TextStyle(
                                 fontSize: 18,
@@ -95,14 +96,14 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
                                   width: width + width / 4,
                                   child: Text('Thời gian',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
                                   width: width,
                                   child: Text('Khung giờ',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
@@ -110,7 +111,7 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
                                   child: Center(
                                       child: Text('Cảm xúc',
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600)))),
                             ],
@@ -156,7 +157,7 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
       child: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: R.color.white,
             child: Column(
               children: [
                 Padding(
