@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_chart.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_distribution_chart.dart';
 import 'package:medical/src/widget/BloodPressure/widget/heart_chart.dart';
@@ -55,7 +56,7 @@ class BloodPressureOverviewControllerState
         body: Container(
       decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/images/HbA1c_high.png'),
+              image: AssetImage(R.drawable.HbA1c_high),
               fit: BoxFit.cover)),
       child: ListView(
           controller: _scrollController,

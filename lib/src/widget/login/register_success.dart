@@ -19,7 +19,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
       body: Container(
         decoration: BoxDecoration(
             image: DecorationImage(
-          image: AssetImage('assets/images/background_splash.png'),
+          image: AssetImage(R.drawable.background_splash),
           fit: BoxFit.cover,
         )),
         child: Column(
@@ -28,7 +28,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
             Expanded(
               child: ListView(children: [
                 Stack(alignment: AlignmentDirectional.center, children: [
-                  Image.asset('assets/images/RegisterSuccess.png'),
+                  Image.asset(R.drawable.RegisterSuccess),
                   Column(children: [
                     SizedBox(height: 180),
                     Text('Đăng ký thành công!',

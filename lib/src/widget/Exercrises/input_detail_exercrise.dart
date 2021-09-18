@@ -97,7 +97,7 @@ class _InputDetailExercrisesControllerState
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/images/background_splash.png'),
+                  image: AssetImage(R.drawable.background_splash),
                   fit: BoxFit.cover)),
           child: Column(
             children: [
@@ -129,7 +129,7 @@ class _InputDetailExercrisesControllerState
                               borderRadius: BorderRadius.circular(16),
                               image: DecorationImage(
                                 image:
-                                    AssetImage('assets/images/bg_sub_exe.png'),
+                                    AssetImage(R.drawable.bg_sub_exe),
                                 fit: BoxFit.cover,
                               )),
                           child: Padding(
@@ -195,7 +195,7 @@ class _InputDetailExercrisesControllerState
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Image.asset(
-                                            'assets/images/icon_bar_chart.png',
+                                            R.drawable.icon_bar_chart,
                                             width: 24,
                                             height: 24),
                                         SizedBox(width: 8),
@@ -266,7 +266,7 @@ class _InputDetailExercrisesControllerState
                                           CrossAxisAlignment.start,
                                       children: [
                                         Image.asset(
-                                            'assets/images/icon_clock.png',
+                                            R.drawable.icon_clock,
                                             width: 24,
                                             height: 24),
                                         SizedBox(width: 8),
@@ -336,7 +336,7 @@ class _InputDetailExercrisesControllerState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset('assets/images/stopwatch.png',
+                                    Image.asset(R.drawable.stopwatch,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
                                     Text('Thời gian vận động',
@@ -560,7 +560,7 @@ class _InputDetailExercrisesControllerState
                                   color: R.color.mainColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600)),
-                          Image.asset('assets/images/bg_congrat.png'),
+                          Image.asset(R.drawable.bg_congrat),
                         ],
                       )),
                 )));

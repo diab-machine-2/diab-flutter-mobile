@@ -137,7 +137,7 @@ class NotificationControllerState extends State<NotificationController>
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Image.asset(
-                                                'assets/images/notification_empty.png',
+                                                R.drawable.notification_empty,
                                                 width: 235,
                                                 height: 172),
                                             SizedBox(height: 24),
@@ -213,7 +213,7 @@ class NotificationControllerState extends State<NotificationController>
                                                               .center,
                                                       children: [
                                                         Image.asset(
-                                                            'assets/images/icon_trash2.png',
+                                                            R.drawable.icon_trash2,
                                                             width: 24,
                                                             height: 24),
                                                         SizedBox(height: 4),
@@ -340,7 +340,7 @@ class NotificationControllerState extends State<NotificationController>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/earseIcon.png',
+                      Image.asset(R.drawable.earseIcon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),

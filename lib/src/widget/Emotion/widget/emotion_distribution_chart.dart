@@ -84,7 +84,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
               : Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                    image: AssetImage('assets/images/bg_emotion_1.png'),
+                    image: AssetImage(R.drawable.bg_emotion_1),
                     fit: BoxFit.cover,
                   )),
                   child: Padding(
@@ -114,7 +114,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                   padding: EdgeInsets.only(
                                       top: 16, left: 16, right: 16),
                                   child: Image.asset(
-                                      'assets/images/icon_emotion_empty.png'),
+                                      R.drawable.icon_emotion_empty),
                                 ),
                               )
                             : Column(children: [

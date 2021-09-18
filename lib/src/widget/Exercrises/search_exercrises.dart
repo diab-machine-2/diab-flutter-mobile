@@ -102,7 +102,7 @@ class _SearchExercrisesControllerState
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         image:
-                            AssetImage('assets/images/background_splash.png'),
+                            AssetImage(R.drawable.background_splash),
                         fit: BoxFit.cover)),
                 child: Column(
                   children: [
@@ -136,10 +136,10 @@ class _SearchExercrisesControllerState
                       //       padding: const EdgeInsets.only(left: 16, right: 16),
                       //       child: isClicked
                       //           ? Image.asset(
-                      //               'assets/images/help_circle_active.png',
+                      //               R.drawable.help_circle_active,
                       //               width: 24,
                       //               height: 24)
-                      //           : Image.asset('assets/images/help_circle.png',
+                      //           : Image.asset(R.drawable.help_circle,
                       //               width: 24, height: 24),
                       //     ),
                       //   ),
@@ -151,7 +151,7 @@ class _SearchExercrisesControllerState
                             padding: const EdgeInsets.only(
                                 left: 16, right: 16, bottom: 16),
                             child: isClicked
-                                ? Image.asset('assets/images/Bg_add_HbA1c.png')
+                                ? Image.asset(R.drawable.Bg_add_HbA1c)
                                 : SizedBox()),
                         Container(
                             height: 54,
@@ -178,7 +178,7 @@ class _SearchExercrisesControllerState
                                               fillColor: R.color.textDark),
                                         )),
                                   ),
-                                  Image.asset('assets/images/search.png',
+                                  Image.asset(R.drawable.search,
                                       width: 24, height: 24, color: R.color.mainColor),
                                 ])),
                         model == null
@@ -433,7 +433,7 @@ class _SearchExercrisesControllerState
                                     alignment: AlignmentDirectional.center,
                                     children: [
                                       Image.asset(
-                                          'assets/images/activity_empty.png',
+                                          R.drawable.activity_empty,
                                           width: 50,
                                           height: 50),
                                       Image.network(

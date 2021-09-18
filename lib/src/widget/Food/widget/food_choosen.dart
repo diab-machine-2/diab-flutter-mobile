@@ -183,7 +183,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                                       });
                                     },
                                     child: Image.asset(
-                                      'assets/images/trash.png',
+                                      R.drawable.trash,
                                       width: 20,
                                       height: 20,
                                     ),

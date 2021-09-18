@@ -61,7 +61,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
               items: [
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_a1c.png',
+                    icon: Image.asset(R.drawable.icon_a1c,
                         width: 40, height: 40),
                     title: Text('HbA1C', style: TextStyle(color: R.color.white)),
                     color: R.color.white,
@@ -72,7 +72,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_huyet_ap.png',
+                    icon: Image.asset(R.drawable.icon_huyet_ap,
                         width: 40, height: 40),
                     title:
                         Text('Huyết áp', style: TextStyle(color: R.color.white)),
@@ -84,7 +84,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_cam_xuc.png',
+                    icon: Image.asset(R.drawable.icon_cam_xuc,
                         width: 40, height: 40),
                     title:
                         Text('Cảm xúc', style: TextStyle(color: R.color.white)),
@@ -96,7 +96,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_can_nang.png',
+                    icon: Image.asset(R.drawable.icon_can_nang,
                         width: 40, height: 40),
                     title:
                         Text('Cân nặng', style: TextStyle(color: R.color.white)),
@@ -108,7 +108,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_dinh_duong.png',
+                    icon: Image.asset(R.drawable.icon_dinh_duong,
                         width: 40, height: 40),
                     title: Text('Dinh dưỡng',
                         style: TextStyle(color: R.color.white)),
@@ -120,7 +120,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_van_dong.png',
+                    icon: Image.asset(R.drawable.icon_van_dong,
                         width: 40, height: 40),
                     title:
                         Text('Vận động', style: TextStyle(color: R.color.white)),
@@ -137,7 +137,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_duong_huyet.png',
+                    icon: Image.asset(R.drawable.icon_duong_huyet,
                         width: 40, height: 40),
                     title: Text('Đường huyết',
                         style: TextStyle(color: R.color.white)),

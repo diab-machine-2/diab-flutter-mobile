@@ -27,19 +27,19 @@ class _StepListControllerState extends State<StepListController> {
   var data = [
     {
       'name': 'Đồng hành & sẻ chia',
-      'image': 'assets/images/step1.png',
+      'image': R.drawable.step1,
       'text':
           'Hướng đến những thay đổi lành mạnh cùng đội ngũ huấn luyện sức khỏe (Health Coach)',
     },
     {
       'name': 'Hiểu để yêu bản thân hơn',
-      'image': 'assets/images/step2.png',
+      'image': R.drawable.step2,
       'text':
           'Theo dõi sức khỏe dễ dàng, học cách yêu thương bản thân hơn chỉ trên một ứng dụng ',
     },
     {
       'name': 'Và không chỉ có bạn...',
-      'image': 'assets/images/step3.png',
+      'image': R.drawable.step3,
       'text':
           'Kết nối bạn với gia đình, cộng đồng người mắc Đái tháo đường suốt hành trình dài phía trước',
     }
@@ -90,7 +90,7 @@ class _StepListControllerState extends State<StepListController> {
       body: Container(
         decoration: BoxDecoration(
             image: DecorationImage(
-          image: AssetImage('assets/images/background_splash.png'),
+          image: AssetImage(R.drawable.background_splash),
           fit: BoxFit.cover,
         )),
         child: SafeArea(

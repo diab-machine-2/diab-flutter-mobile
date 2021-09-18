@@ -118,7 +118,7 @@ class _ProfileControllerState extends State<ProfileController> {
                                   child: Row(
                                     children: [
                                       Image.asset(
-                                          'assets/images/icon_crown.png',
+                                          R.drawable.icon_crown,
                                           width: 20,
                                           height: 20),
                                       SizedBox(width: 8),
@@ -138,29 +138,29 @@ class _ProfileControllerState extends State<ProfileController> {
                   SizedBox(height: 16),
                   Row(children: [
                     buildItem(R.color.color0xffD3EFEE, 'Thiết lập mục tiêu',
-                        'assets/images/icon_muc_tieu.png', 0),
+                        R.drawable.icon_muc_tieu, 0),
                     SizedBox(width: 16),
                     buildItem(R.color.color0xffFEEDDC, 'Nhắc nhở',
-                        'assets/images/icon_nhac_nho.png', 1)
+                        R.drawable.icon_nhac_nho, 1)
                   ]),
                   SizedBox(height: 16),
                   Row(children: [
                     buildItem(R.color.color0xffFCF8DA, 'Lịch sinh hoạt\ncá nhân',
-                        'assets/images/icon_lich.png', 2),
+                        R.drawable.icon_lich, 2),
                     SizedBox(width: 16),
                     buildItem(R.color.color0xffFDE9E9, 'Lịch đo\nđường huyết',
-                        'assets/images/icon_lich_do_duong_huyet.png', 3)
+                        R.drawable.icon_lich_do_duong_huyet, 3)
                   ]),
                   SizedBox(height: 16),
                   buildAction(
-                      'Thông tin cá nhân', 'assets/images/icon_user.png', 0),
+                      'Thông tin cá nhân', R.drawable.icon_user, 0),
                   buildAction(
-                      'Hướng dẫn sử dụng', 'assets/images/question.png', 1),
+                      'Hướng dẫn sử dụng', R.drawable.question, 1),
                   buildAction('Bảo mật thông tin',
-                      'assets/images/icon_security.png', 2),
+                      R.drawable.icon_security, 2),
                   buildAction(
-                      'Liên hệ với DiaB', 'assets/images/icon_contact.png', 3),
-                  buildAction('Mật khẩu', 'assets/images/icon_password.png', 4),
+                      'Liên hệ với DiaB', R.drawable.icon_contact, 3),
+                  buildAction('Mật khẩu', R.drawable.icon_password, 4),
                 ],
               ),
             )));

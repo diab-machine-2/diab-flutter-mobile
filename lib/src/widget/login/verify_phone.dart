@@ -89,7 +89,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
             Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                  image: AssetImage('assets/images/background_splash.png'),
+                  image: AssetImage(R.drawable.background_splash),
                   fit: BoxFit.cover,
                 )),
                 child: Padding(
@@ -98,7 +98,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(children: [
-                          Image.asset('assets/images/checkPhone.png',
+                          Image.asset(R.drawable.checkPhone,
                               width: 90, height: 74),
                           SizedBox(height: 20),
                           Text('Nhập 4 số trong tin nhắn văn bản đã gửi đến',
@@ -481,7 +481,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/checkSuccess.png',
+              Image.asset(R.drawable.checkSuccess,
                   width: 64, height: 64),
               Text('Đã gửi lại mã OTP.\nVui lòng kiểm tra tin nhắn',
                   textAlign: TextAlign.center)
@@ -502,7 +502,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/checkError.png',
+              Image.asset(R.drawable.checkError,
                   width: 64, height: 64),
               SizedBox(height: 8),
               RichText(

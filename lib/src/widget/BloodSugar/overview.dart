@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_chart.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_compare_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
@@ -47,7 +48,7 @@ class BloodSugarOverviewControllerState
         body: Container(
       decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/images/HbA1c_high.png'),
+              image: AssetImage(R.drawable.HbA1c_high),
               fit: BoxFit.cover)),
       child: ListView(
           controller: _scrollController,

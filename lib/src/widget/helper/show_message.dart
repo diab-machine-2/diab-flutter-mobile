@@ -64,7 +64,7 @@ class ToastMessage extends StatelessWidget {
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.circular(8)),
                 child: Image.asset(
-                  'assets/images/icon_app.png',
+                  R.drawable.icon_app,
                   width: 40,
                   height: 40,
                 ),
@@ -94,8 +94,6 @@ class NotificationMessage extends StatefulWidget {
 }
 
 class _NotificationMessage extends State<NotificationMessage> {
-  String icon = 'assets/images/icon_app.png';
-
   @override
   void initState() {
     super.initState();
@@ -132,7 +130,7 @@ class _NotificationMessage extends State<NotificationMessage> {
                     decoration:
                         BoxDecoration(borderRadius: BorderRadius.circular(8)),
                     child: Image.asset(
-                      icon,
+                      R.drawable.icon_app,
                       width: 40,
                       height: 40,
                     ),

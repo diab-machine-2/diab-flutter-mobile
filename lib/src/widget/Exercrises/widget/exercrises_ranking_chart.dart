@@ -134,7 +134,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                       });
                                 },
                                 child: Image.asset(
-                                  'assets/images/nothing.png',
+                                  R.drawable.nothing,
                                 ),
                               )
                             : Container(
@@ -162,7 +162,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                             CrossAxisAlignment.start,
                                         children: [
                                           Image.asset(
-                                            'assets/images/badge_exe.png',
+                                            R.drawable.badge_exe,
                                             width: 24,
                                             height: 24,
                                           ),

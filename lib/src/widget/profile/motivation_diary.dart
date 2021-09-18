@@ -95,7 +95,7 @@ class _MotivationControllerState extends State<MotivationController> {
                       }),
                 ),
                 SizedBox(height: 8),
-                Image.asset('assets/images/motivation_bg.png', height: 120),
+                Image.asset(R.drawable.motivation_bg, height: 120),
                 SizedBox(height: 8),
                 Expanded(
                   child: RefreshIndicator(

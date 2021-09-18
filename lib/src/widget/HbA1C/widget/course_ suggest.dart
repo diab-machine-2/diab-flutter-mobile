@@ -77,16 +77,6 @@ class _CourseSuggestState extends State<CourseSuggest>
                                         fontSize: 16),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis),
-                                // Row(children: [
-                                //   Image.asset('assets/images/icon_calendar_grey.png',
-                                //       width: 18, height: 18),
-                                //   SizedBox(width: 4),
-                                //   Text('Thời luợng: 1 tháng',
-                                //       style: TextStyle(
-                                //           fontWeight: FontWeight.w400,
-                                //           fontSize: 14,
-                                //           color: R.color.primaryGreyColor))
-                                // ])
                               ]),
                         ),
                       );

@@ -77,7 +77,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
         Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/images/background_splash.png'),
+                  image: AssetImage(R.drawable.background_splash),
                   fit: BoxFit.cover)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -128,7 +128,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                               children: [
                                 Text('Tìm kiếm món ăn',
                                     style: TextStyle(color: R.color.primaryGreyColor)),
-                                Image.asset('assets/images/ic_search.png',
+                                Image.asset(R.drawable.ic_search,
                                     width: 24, height: 24)
                               ],
                             ),

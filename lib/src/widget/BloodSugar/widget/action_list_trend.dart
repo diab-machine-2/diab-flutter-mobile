@@ -74,7 +74,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
                   child: Container(
                     height: 24,
                     width: 24,
-                    child: Image.asset('assets/images/x_icon.png'),
+                    child: Image.asset(R.drawable.x_icon),
                   ),
                 ),
               ],
@@ -167,7 +167,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                           (selected != null && selected.id == model.id)
-                              ? Image.asset('assets/images/check_mark.png',
+                              ? Image.asset(R.drawable.check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],

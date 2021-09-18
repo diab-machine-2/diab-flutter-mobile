@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 typedef ActionDescriptionCallback = Function(bool);
 
@@ -28,9 +29,9 @@ class CustomActionDescriptionState extends State<CustomActionDescription> {
         });
       },
       child: isClicked
-          ? Image.asset('assets/images/help_circle_active.png',
+          ? Image.asset(R.drawable.help_circle_active,
               width: 24, height: 24)
-          : Image.asset('assets/images/help_circle.png', width: 24, height: 24),
+          : Image.asset(R.drawable.help_circle, width: 24, height: 24),
     );
   }
 }

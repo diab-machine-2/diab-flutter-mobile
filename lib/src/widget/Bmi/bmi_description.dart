@@ -16,7 +16,7 @@ class BmiDescription extends StatelessWidget {
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('assets/images/bg_des.png'),
+                          image: AssetImage(R.drawable.bg_des),
                           fit: BoxFit.fill,
                         ),
                       ),
@@ -24,7 +24,7 @@ class BmiDescription extends StatelessWidget {
                         children: [
                           Row(children: [
                             Image.asset(
-                              'assets/images/icon_des_person.png',
+                              R.drawable.icon_des_person,
                               width: 71,
                               height: 76,
                             ),

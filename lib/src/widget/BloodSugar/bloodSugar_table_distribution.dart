@@ -66,7 +66,7 @@ class _BloodSugarDistribuitonTableControllerState
               body: Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.background_splash),
                     fit: BoxFit.cover,
                   )),
                   child: Column(

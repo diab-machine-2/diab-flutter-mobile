@@ -86,7 +86,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.background_splash),
                     fit: BoxFit.cover)),
             child: Column(
               children: [
@@ -122,7 +122,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(children: [
-                                Image.asset('assets/images/icon_clock.png',
+                                Image.asset(R.drawable.icon_clock,
                                     width: 24, height: 24),
                                 SizedBox(width: 8),
                                 Text('Trạng thái',
@@ -151,7 +151,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                           padding: EdgeInsets.all(16),
                           child: Column(children: [
                             Row(children: [
-                              Image.asset('assets/images/stopwatch.png',
+                              Image.asset(R.drawable.stopwatch,
                                   width: 24, height: 24),
                               SizedBox(width: 8),
                               Text('Thời gian nhắc nhở',
@@ -376,7 +376,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                     children: [
                                       Row(children: [
                                         Image.asset(
-                                            'assets/images/icon_clock.png',
+                                            R.drawable.icon_clock,
                                             width: 24,
                                             height: 24),
                                         SizedBox(width: 8),
@@ -409,7 +409,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                             padding: EdgeInsets.all(16),
                             child: Column(children: [
                               Row(children: [
-                                Image.asset('assets/images/comment_checked.png',
+                                Image.asset(R.drawable.comment_checked,
                                     width: 24, height: 24),
                                 SizedBox(width: 8),
                                 Text('Tên nhắc nhở',
@@ -428,7 +428,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                               Container(height: 1, color: R.color.color0xffE5E5E5),
                               SizedBox(height: 32),
                               Row(children: [
-                                Image.asset('assets/images/note_text.png',
+                                Image.asset(R.drawable.note_text,
                                     width: 24, height: 24),
                                 SizedBox(width: 8),
                                 Text('Nội dung nhắc nhở',
@@ -524,7 +524,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/backIcon.png',
+                      Image.asset(R.drawable.backIcon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),

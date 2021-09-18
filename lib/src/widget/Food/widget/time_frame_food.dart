@@ -73,7 +73,7 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
                   child: Container(
                     height: 24,
                     width: 24,
-                    child: Image.asset('assets/images/x_icon.png'),
+                    child: Image.asset(R.drawable.x_icon),
                   ),
                 ),
               ],
@@ -161,7 +161,7 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400)),
                           selected != null && selected.id == model.id
-                              ? Image.asset('assets/images/check_mark.png',
+                              ? Image.asset(R.drawable.check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],

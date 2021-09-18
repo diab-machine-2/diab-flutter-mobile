@@ -109,7 +109,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                               : 'Tất cả'),
                                           SizedBox(width: 4),
                                           Image.asset(
-                                              'assets/images/chevron_down.png',
+                                              R.drawable.chevron_down,
                                               width: 24,
                                               height: 24)
                                         ],
@@ -126,7 +126,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                     arguments: {'type': 'input', 'id': null});
                               },
                               child: Image.asset(
-                                  'assets/images/glucose_trend.png'),
+                                  R.drawable.glucose_trend),
                             )
                           : Container(
                               decoration: BoxDecoration(
@@ -168,7 +168,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                               style:
                                                   TextStyle(color: R.color.mainColor)),
                                           Image.asset(
-                                              'assets/images/icon_arrow_right.png',
+                                              R.drawable.icon_arrow_right,
                                               width: 20,
                                               height: 20)
                                         ]),

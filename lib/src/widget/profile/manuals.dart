@@ -102,7 +102,7 @@ class _ManualControllerState extends State<ManualController> {
                                         fillColor: R.color.textDark),
                                   )),
                             ),
-                            Image.asset('assets/images/search.png',
+                            Image.asset(R.drawable.search,
                                 width: 24, height: 24, color: R.color.mainColor),
                           ])),
                   Expanded(

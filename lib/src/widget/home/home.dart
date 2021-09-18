@@ -25,43 +25,31 @@ class _HomeControllerState extends State<HomeController> {
     {
       'name': 'Đường huyết',
       'image': '',
-      'icon': 'assets/images/icon_bloodSugar.png',
+      'icon': R.drawable.icon_bloodSugar,
       'dataDetail': []
     },
     {
       'name': 'Huyết áp',
-      'image': 'assets/images/im_bloodPresser.png',
-      'icon': 'assets/images/icon_heartPresse.png',
+      'image': R.drawable.im_bloodPresser,
+      'icon': R.drawable.icon_heartPresse,
       'dataDetail': []
     },
     {
       'name': 'Cân nặng',
-      'image': 'assets/images/im_weight.png',
-      'icon': 'assets/images/icon_weight.png',
+      'image': R.drawable.im_weight,
+      'icon': R.drawable.icon_weight,
       'dataDetail': []
     },
     {
       'name': 'Cảm xúc',
-      'image': 'assets/images/im_emotion.png',
-      'icon': 'assets/images/icon_emotion.png',
+      'image': R.drawable.im_emotion,
+      'icon': R.drawable.icon_emotion,
       'dataDetail': [
-        {'name': 'Vui vẻ', 'image': 'assets/images/laughing.png'},
-        {'name': 'Buồn ngủ', 'image': 'assets/images/sleeping.png'},
-        {'name': 'Ốm', 'image': 'assets/images/sick.png'}
+        {'name': 'Vui vẻ', 'image': R.drawable.laughing},
+        {'name': 'Buồn ngủ', 'image': R.drawable.sleeping},
+        {'name': 'Ốm', 'image': R.drawable.sick}
       ]
     },
-    // {
-    //   'name': 'Vận động',
-    //   'image': 'assets/images/im_active.png',
-    //   'icon': 'assets/images/icon_active.png',
-    //   'dataDetail': []
-    // },
-    // {
-    //   'name': 'Dinh dưỡng',
-    //   'image': 'assets/images/im_nutrition.png',
-    //   'icon': 'assets/images/icon_nutrition.png',
-    //   'dataDetail': []
-    // }
   ];
 
   var dataDetail = [{}];
@@ -215,7 +203,7 @@ class _HomeControllerState extends State<HomeController> {
               body: Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                  image: AssetImage('assets/images/bg_home.jpg'),
+                  image: AssetImage(R.drawable.bg_home),
                   fit: BoxFit.fill,
                 )),
                 child: Column(
@@ -315,10 +303,10 @@ class _HomeControllerState extends State<HomeController> {
                                                 bottom: 0,
                                                 left: 0,
                                                 child: Image.asset(
-                                                    'assets/images/im_food_and_excersire.png')),
+                                                    R.drawable.im_food_and_excersire)),
                                             Center(
                                                 child: Image.asset(
-                                                    'assets/images/icon_food_and_excersire.png',
+                                                    R.drawable.icon_food_and_excersire,
                                                     width: 58,
                                                     height: 58)),
                                             Row(
@@ -385,10 +373,10 @@ class _HomeControllerState extends State<HomeController> {
                                                   bottom: 0,
                                                   right: 0,
                                                   child: Image.asset(
-                                                      'assets/images/im_hba1c.png')),
+                                                      R.drawable.im_hba1c)),
                                               Center(
                                                   child: Image.asset(
-                                                      'assets/images/icon_HbA1Cn.png',
+                                                      R.drawable.icon_HbA1Cn,
                                                       width: 58,
                                                       height: 58))
                                             ]),
@@ -864,7 +852,7 @@ class _HomeControllerState extends State<HomeController> {
                   width: heightLA * 4,
                   color: toColor(model.energyExerciseCard.corlorCode))),
         ),
-        Image.asset('assets/images/apple_home.png'),
+        Image.asset(R.drawable.apple_home),
         Positioned.fill(
           child: Container(
             padding: EdgeInsets.all(16),
@@ -940,7 +928,7 @@ class _HomeControllerState extends State<HomeController> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Image.asset('assets/images/icon_home_energy.png',
+                            Image.asset(R.drawable.icon_home_energy,
                                 width: 20, height: 20),
                             SizedBox(width: 4),
                             Text('Đã nạp',
@@ -981,7 +969,7 @@ class _HomeControllerState extends State<HomeController> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Image.asset('assets/images/icon_home_excercise.png',
+                            Image.asset(R.drawable.icon_home_excercise,
                                 width: 20, height: 20),
                             SizedBox(width: 4),
                             Text('Tiêu hao',

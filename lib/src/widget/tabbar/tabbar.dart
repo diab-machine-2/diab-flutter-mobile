@@ -13,7 +13,6 @@ import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/version.dart';
-import 'package:medical/src/widget/tabbar/action_panel.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:medical/src/widget/home/home.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -36,7 +35,6 @@ class _TabbarControllerState extends State<TabbarController>
   BottomTabbar _bottomTabbar;
 
   final List<Widget> tabs = [
-    //HomeController(),
     HomeController(),
   ];
 
@@ -47,7 +45,6 @@ class _TabbarControllerState extends State<TabbarController>
     pageController = PageController();
     _bottomTabbar = BottomTabbar(callback: (index) {
       if (index == -1) {
-        // showAction(context);
         _showMaterialDialog();
       } else {
         jumpTo(index);
@@ -86,7 +83,7 @@ class _TabbarControllerState extends State<TabbarController>
             _showMaterialDialog();
           },
           child: Image.asset(
-            'assets/images/buttonPlusHome.png',
+            R.drawable.buttonPlusHome,
             width: 82,
             height: 82,
           )),
@@ -94,21 +91,7 @@ class _TabbarControllerState extends State<TabbarController>
     );
   }
 
-  showAction(BuildContext context) {
-    showModalBottomSheet(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: R.color.white,
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => ActionPanel());
-  }
-
   _showMaterialDialog() {
-    // showDialog(
-    //     barrierColor: main.withOpacity(0.9),
-    //     context: context,
-    //     builder: (context) => ActionPanel());
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.8),
       useSafeArea: false,

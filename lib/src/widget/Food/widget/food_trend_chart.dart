@@ -103,7 +103,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child:
-                                    Image.asset('assets/images/food_empty.png'),
+                                    Image.asset(R.drawable.food_empty),
                               )
                             : Container(
                                 decoration: BoxDecoration(

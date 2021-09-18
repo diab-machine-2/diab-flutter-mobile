@@ -121,7 +121,7 @@ class _AddBloodPressureControllerState
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.background_splash),
                     fit: BoxFit.cover)),
             child: Column(
               children: [
@@ -153,10 +153,10 @@ class _AddBloodPressureControllerState
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
                             ? Image.asset(
-                                'assets/images/help_circle_active.png',
+                                R.drawable.help_circle_active,
                                 width: 24,
                                 height: 24)
-                            : Image.asset('assets/images/help_circle.png',
+                            : Image.asset(R.drawable.help_circle,
                                 width: 24, height: 24),
                       ),
                     ),
@@ -191,7 +191,7 @@ class _AddBloodPressureControllerState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset('assets/images/heart_rate.png',
+                                    Image.asset(R.drawable.heart_rate,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
                                     Text('Tâm thu / tâm trương',
@@ -351,7 +351,7 @@ class _AddBloodPressureControllerState
                                       children: [
                                         Row(children: [
                                           Image.asset(
-                                              'assets/images/note_text.png',
+                                              R.drawable.note_text,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
@@ -396,7 +396,7 @@ class _AddBloodPressureControllerState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset('assets/images/heart.png',
+                                    Image.asset(R.drawable.heart,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
                                     Text('Nhịp tim',
@@ -503,7 +503,7 @@ class _AddBloodPressureControllerState
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              'assets/images/icon_calendar.png',
+                                              R.drawable.icon_calendar,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
@@ -555,7 +555,7 @@ class _AddBloodPressureControllerState
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              'assets/images/icon_clock.png',
+                                              R.drawable.icon_clock,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
@@ -590,7 +590,7 @@ class _AddBloodPressureControllerState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset('assets/images/note_text.png',
+                                    Image.asset(R.drawable.note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
                                     Text('Ghi chú',
@@ -638,7 +638,7 @@ class _AddBloodPressureControllerState
                                             child: index == files.length
                                                 ? Container(
                                                     child: Image.asset(
-                                                        'assets/images/icon_add_photo.png'))
+                                                        R.drawable.icon_add_photo))
                                                 : Stack(
                                                     alignment:
                                                         AlignmentDirectional
@@ -662,7 +662,7 @@ class _AddBloodPressureControllerState
                                                         ),
                                                         IconButton(
                                                             icon: Image.asset(
-                                                                'assets/images/icon_trash.png'),
+                                                                R.drawable.icon_trash),
                                                             onPressed: () {
                                                               setState(() {
                                                                 if (files[index]
@@ -983,7 +983,7 @@ class _AddBloodPressureControllerState
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/earseIcon.png',
+                      Image.asset(R.drawable.earseIcon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
@@ -1115,7 +1115,7 @@ class _AddBloodPressureControllerState
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/backIcon.png',
+                      Image.asset(R.drawable.backIcon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
@@ -1234,7 +1234,7 @@ class _AddBloodPressureControllerState
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_photo.png',
+                  Image.asset(R.drawable.icon_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chọn trong thư viện",
@@ -1252,7 +1252,7 @@ class _AddBloodPressureControllerState
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_camera_black.png',
+                  Image.asset(R.drawable.icon_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chụp ảnh",

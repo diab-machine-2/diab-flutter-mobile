@@ -92,7 +92,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/images/background_splash.png'),
+                  image: AssetImage(R.drawable.background_splash),
                   fit: BoxFit.cover)),
           child: Column(
             children: [
@@ -123,9 +123,9 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 16, right: 16),
                       child: isClicked
-                          ? Image.asset('assets/images/help_circle_active.png',
+                          ? Image.asset(R.drawable.help_circle_active,
                               width: 24, height: 24)
-                          : Image.asset('assets/images/help_circle.png',
+                          : Image.asset(R.drawable.help_circle,
                               width: 24, height: 24),
                     ),
                   ),

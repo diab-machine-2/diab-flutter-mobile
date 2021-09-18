@@ -70,7 +70,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.background_splash),
                     fit: BoxFit.fill,
                   )),
               child: Column(
@@ -88,7 +88,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                           children: [
                             Align(
                                 alignment: Alignment.topRight,
-                                child: Image.asset('assets/images/Parent.png',
+                                child: Image.asset(R.drawable.Parent,
                                     height: 175)),
                             SizedBox(height: 8),
                             Padding(
@@ -248,7 +248,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                                 FontWeight
                                                                     .w400)),
                                                     Image.asset(
-                                                        'assets/images/icon_calendar.png',
+                                                        R.drawable.icon_calendar,
                                                         width: 24,
                                                         height: 24),
                                                   ]),

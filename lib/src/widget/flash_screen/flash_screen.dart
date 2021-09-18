@@ -79,7 +79,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
             children: [
               SizedBox(),
               Center(
-                  child: Image.asset('assets/images/logo.png',
+                  child: Image.asset(R.drawable.logo,
                       width: 190, height: 95)),
               Padding(
                 padding: EdgeInsets.only(bottom: 16),

@@ -23,7 +23,7 @@ class DetailDescription extends StatelessWidget {
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('assets/images/bg_des.png'),
+                          image: AssetImage(R.drawable.bg_des),
                           fit: BoxFit.fill,
                         ),
                       ),
@@ -32,7 +32,7 @@ class DetailDescription extends StatelessWidget {
                           SizedBox(height: 8),
                           Row(children: [
                             Image.asset(
-                              'assets/images/icon_des.png',
+                              R.drawable.icon_des,
                               width: 99,
                               height: 85,
                             ),

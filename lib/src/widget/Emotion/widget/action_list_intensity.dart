@@ -170,7 +170,7 @@ class ActionListIntensityState extends State<ActionListIntensity> {
                                       fontWeight: FontWeight.w600,
                                       color: R.color.mainColor)),
                           selected == model
-                              ? Image.asset('assets/images/check_mark.png',
+                              ? Image.asset(R.drawable.check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],

@@ -117,7 +117,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                                           : Image.network(user.imageUrl.url,
                                               width: 42, height: 42)),
                                 ),
-                                Image.asset('assets/images/icon_crown.png',
+                                Image.asset(R.drawable.icon_crown,
                                     width: 20, height: 20)
                               ]),
                           SizedBox(width: 8),
@@ -150,10 +150,10 @@ class _HomeHeaderState extends State<HomeHeader> {
                           },
                           child: isChoose
                               ? Image.asset(
-                                  'assets/images/book_question_selected.png',
+                                  R.drawable.book_question_selected,
                                   width: 24,
                                   height: 24)
-                              : Image.asset('assets/images/book_question.png',
+                              : Image.asset(R.drawable.book_question,
                                   width: 24, height: 24),
                         ),
                         SizedBox(width: 8),
@@ -166,8 +166,8 @@ class _HomeHeaderState extends State<HomeHeader> {
                             color: R.color.transparent,
                             child: Image.asset(
                                 notificationCount > 0
-                                    ? 'assets/images/bell_dot.png'
-                                    : 'assets/images/bell.png',
+                                    ? R.drawable.bell_dot
+                                    : R.drawable.bell,
                                 width: 24,
                                 height: 24),
                           ),
@@ -222,7 +222,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                                                   fontWeight: FontWeight.w600)),
                                           SizedBox(width: 4),
                                           Image.asset(
-                                              'assets/images/icon_arrow_right.png',
+                                              R.drawable.icon_arrow_right,
                                               width: 24,
                                               height: 24)
                                         ])),

@@ -122,7 +122,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                 child: Row(
                                   children: [
                                     Image.asset(
-                                      'assets/images/circle_plus_exe.png',
+                                      R.drawable.circle_plus_exe,
                                       width: 24,
                                       height: 24,
                                     ),
@@ -276,7 +276,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                               });
                                         },
                                         child: Image.asset(
-                                            'assets/images/nothing_chart_weight.png'),
+                                            R.drawable.nothing_chart_weight),
                                       )
                                     : Container(
                                         decoration: BoxDecoration(
@@ -604,7 +604,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                 model.iconUrl.isEmpty
                     ? SizedBox()
                     : Image.asset(
-                        'assets/images/happy_weight.png',
+                        R.drawable.happy_weight,
                         width: 24,
                         height: 24,
                       ),

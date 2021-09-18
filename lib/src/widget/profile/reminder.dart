@@ -132,7 +132,7 @@ class _ReminderControllerState extends State<ReminderController> {
                                         Column(
                                           children: [
                                             Image.asset(
-                                                'assets/images/icon_reminder.png',
+                                                R.drawable.icon_reminder,
                                                 height: 113),
                                             Padding(
                                               padding: EdgeInsets.only(
@@ -176,7 +176,7 @@ class _ReminderControllerState extends State<ReminderController> {
               Navigator.pushNamed(context, '/add_reminder',
                   arguments: {'type': 'input'});
             },
-            child: Image.asset('assets/images/button_plus.png',
+            child: Image.asset(R.drawable.button_plus,
                 width: 80, height: 80),
           )),
     );
@@ -195,7 +195,7 @@ class _ReminderControllerState extends State<ReminderController> {
             color: R.color.color0xffFF5552,
             iconWidget:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Image.asset('assets/images/icon_trash2.png',
+              Image.asset(R.drawable.icon_trash2,
                   width: 24, height: 24),
               SizedBox(height: 4),
               Text('Xoá\nthông báo',
@@ -296,7 +296,7 @@ class _ReminderControllerState extends State<ReminderController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/earseIcon.png',
+                      Image.asset(R.drawable.earseIcon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),

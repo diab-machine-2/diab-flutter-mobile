@@ -55,14 +55,7 @@ class _ContactControllerState extends State<ContactController> {
                       onTap: () {
                         showDialogCall();
                       },
-                      child: Image.asset('assets/images/hotline.png')),
-                  // SizedBox(height: 16),
-                  // GestureDetector(
-                  //     onTap: () {
-                  //       Message.showToastMessage(context,
-                  //           'Tính năng này sẽ được ra mắt trong bản nâng cấp tiếp theo');
-                  //     },
-                  //     child: Image.asset('assets/images/sms.png')),
+                      child: Image.asset(R.drawable.hotline)),
                   SizedBox(height: 16),
                   GestureDetector(
                       onTap: () async {
@@ -94,7 +87,7 @@ class _ContactControllerState extends State<ContactController> {
 
                         launch(_emailLaunchUri.toString());
                       },
-                      child: Image.asset('assets/images/email_support.png'))
+                      child: Image.asset(R.drawable.email_support))
                 ]),
               )
             ])));
@@ -113,7 +106,7 @@ class _ContactControllerState extends State<ContactController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/icon_hotline.png',
+                      Image.asset(R.drawable.icon_hotline,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),

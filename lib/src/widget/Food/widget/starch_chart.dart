@@ -121,7 +121,7 @@ class StarchChartState extends State<StarchChart>
                               color: toColor(model.colorCode)),
                         ),
                       ),
-                      Image.asset('assets/images/apple_green.png'),
+                      Image.asset(R.drawable.apple_green),
                       Padding(
                         padding: EdgeInsets.only(top: 16, left: 16),
                         child: Text('Tinh bột',
@@ -142,7 +142,7 @@ class StarchChartState extends State<StarchChart>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.asset('assets/images/icon_bat.png',
+                                    Image.asset(R.drawable.icon_bat,
                                         width: 24, height: 24),
                                     SizedBox(width: 4),
                                     Text(model.total.round().toString(),

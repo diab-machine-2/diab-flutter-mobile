@@ -128,7 +128,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.background_splash),
                     fit: BoxFit.cover)),
             child: Column(
               children: [
@@ -160,10 +160,10 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
                             ? Image.asset(
-                                'assets/images/help_circle_active.png',
+                                R.drawable.help_circle_active,
                                 width: 24,
                                 height: 24)
-                            : Image.asset('assets/images/help_circle.png',
+                            : Image.asset(R.drawable.help_circle,
                                 width: 24, height: 24),
                       ),
                     ),
@@ -189,10 +189,6 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
                             color: R.color.color0xffB1DDDB
-                            // image: DecorationImage(
-                            //   image: AssetImage('assets/images/bg_sub_exe.png'),
-                            //   fit: BoxFit.cover,
-                            // )
                             ),
                         padding: EdgeInsets.only(right: 20),
                         child: Row(
@@ -200,7 +196,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                             Container(
                               margin: const EdgeInsets.only(right: 16),
                               child: Image.asset(
-                                  'assets/images/runner_left.png',
+                                  R.drawable.runner_left,
                                   height: 130),
                             ),
                             Expanded(
@@ -275,7 +271,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Image.asset(
-                                          'assets/images/icon_calendar.png',
+                                          R.drawable.icon_calendar,
                                           width: 24,
                                           height: 24),
                                       SizedBox(width: 8),
@@ -320,7 +316,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Image.asset(
-                                          'assets/images/icon_clock.png',
+                                          R.drawable.icon_clock,
                                           width: 24,
                                           height: 24),
                                       SizedBox(width: 8),
@@ -360,7 +356,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                   children: [
                                     Row(
                                       children: [
-                                        Image.asset('assets/images/pulse.png',
+                                        Image.asset(R.drawable.pulse,
                                             width: 24, height: 24),
                                         SizedBox(width: 8),
                                         Text('Vận động',
@@ -380,7 +376,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                               child: Row(
                                                 children: [
                                                   Image.asset(
-                                                    'assets/images/circle_plus_exe.png',
+                                                    R.drawable.circle_plus_exe,
                                                     width: 24,
                                                     height: 24,
                                                   ),
@@ -447,7 +443,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                             .center,
                                                     children: [
                                                       Image.asset(
-                                                          'assets/images/activity_empty.png',
+                                                          R.drawable.activity_empty,
                                                           width: 50,
                                                           height: 50),
                                                       Image.network(
@@ -524,7 +520,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                 sumCalo();
                                               },
                                               child: Image.asset(
-                                                'assets/images/icon_remove_excersire.png',
+                                                R.drawable.icon_remove_excersire,
                                                 width: 20,
                                                 height: 20,
                                               ),
@@ -566,7 +562,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                             .center,
                                                     children: [
                                                       Image.asset(
-                                                          'assets/images/activity_empty.png',
+                                                          R.drawable.activity_empty,
                                                           width: 50,
                                                           height: 50),
                                                       Image.network(
@@ -642,7 +638,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                 sumCalo();
                                               },
                                               child: Image.asset(
-                                                'assets/images/icon_add_excersire.png',
+                                                R.drawable.icon_add_excersire,
                                                 width: 20,
                                                 height: 20,
                                               ),
@@ -675,7 +671,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                             child: Row(
                                               children: [
                                                 Image.asset(
-                                                  'assets/images/circle_plus_exe.png',
+                                                  R.drawable.circle_plus_exe,
                                                   width: 24,
                                                   height: 24,
                                                 ),
@@ -712,7 +708,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(children: [
-                                Image.asset('assets/images/note_text.png',
+                                Image.asset(R.drawable.note_text,
                                     width: 24, height: 24),
                                 SizedBox(width: 8),
                                 Text('Ghi chú',
@@ -759,7 +755,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                         child: index == files.length
                                             ? Container(
                                                 child: Image.asset(
-                                                    'assets/images/icon_add_photo.png'))
+                                                    R.drawable.icon_add_photo))
                                             : Stack(
                                                 alignment:
                                                     AlignmentDirectional.topEnd,
@@ -779,7 +775,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                     ),
                                                     IconButton(
                                                         icon: Image.asset(
-                                                            'assets/images/icon_trash.png'),
+                                                            R.drawable.icon_trash),
                                                         onPressed: () {
                                                           setState(() {
                                                             if (files[index]
@@ -968,7 +964,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                   color: R.color.mainColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600)),
-                          Image.asset('assets/images/bg_congrat.png'),
+                          Image.asset(R.drawable.bg_congrat),
                         ],
                       )),
                 )));
@@ -1132,7 +1128,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/earseIcon.png',
+                      Image.asset(R.drawable.earseIcon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
@@ -1252,7 +1248,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/backIcon.png',
+                      Image.asset(R.drawable.backIcon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
@@ -1371,7 +1367,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_photo.png',
+                  Image.asset(R.drawable.icon_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chọn trong thư viện",
@@ -1389,7 +1385,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_camera_black.png',
+                  Image.asset(R.drawable.icon_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chụp ảnh",

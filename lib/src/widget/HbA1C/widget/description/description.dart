@@ -27,46 +27,6 @@ class Description extends StatelessWidget {
                       input: input, data: data, title: titleDetail),
                 );
         },
-        // child: Container(
-        //   color: R.color.transparent,
-        //   child: Stack(
-        //     alignment: AlignmentDirectional.centerStart,
-        //     children: [
-        //       Image.asset(input
-        //           ? 'assets/images/hba1c_des_input.png'
-        //           : 'assets/images/hba1c_des.png'),
-        //       Padding(
-        //         padding: EdgeInsets.only(top: 8, left: 130, right: 26, bottom: 0),
-        //         child: Column(
-        //           mainAxisAlignment: MainAxisAlignment.spaceAround,
-        //           children: [
-        //             SizedBox(
-        //                 height: height,
-        //                 child: data == null
-        //                     ? SizedBox()
-        //                     : Center(
-        //                         child: Html(
-        //                             data:
-        //                                 input ? data.content1 : data.content3))),
-        //             Padding(
-        //               padding: EdgeInsets.only(top: 12, left: 8),
-        //               child: Row(children: [
-        //                 Text('Tìm hiểu thêm',
-        //                     style: TextStyle(
-        //                         fontSize: 16,
-        //                         color: R.color.mainColor,
-        //                         fontWeight: FontWeight.w700)),
-        //                 SizedBox(width: 4),
-        //                 Image.asset('assets/images/icon_arrow_des.png',
-        //                     width: 24, height: 24)
-        //               ]),
-        //             )
-        //           ],
-        //         ),
-        //       )
-        //     ],
-        //   ),
-        // ),
         child: Padding(
           padding: EdgeInsets.only(bottom: 8),
           child: Container(
@@ -76,7 +36,7 @@ class Description extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.only(top: 20, left: 8, bottom: 8),
-                  child: Image.asset('assets/images/icon_des.png'),
+                  child: Image.asset(R.drawable.icon_des),
                 ),
                 SizedBox(width: 8),
                 Column(
@@ -99,7 +59,7 @@ class Description extends StatelessWidget {
                                 color: R.color.mainColor,
                                 fontWeight: FontWeight.w700)),
                         SizedBox(width: 4),
-                        Image.asset('assets/images/icon_arrow_des.png',
+                        Image.asset(R.drawable.icon_arrow_des,
                             width: 20, height: 20)
                       ]),
                     )

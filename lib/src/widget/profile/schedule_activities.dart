@@ -25,11 +25,11 @@ class _ScheduleActivityControllerState
   List<PatientTimeFrameModel> tempModel = [];
 
   List<String> icons = [
-    'assets/images/icon_activity_1.png',
-    'assets/images/icon_activity_2.png',
-    'assets/images/icon_activity_3.png',
-    'assets/images/icon_activity_4.png',
-    'assets/images/icon_activity_5.png'
+    R.drawable.icon_activity_1,
+    R.drawable.icon_activity_2,
+    R.drawable.icon_activity_3,
+    R.drawable.icon_activity_4,
+    R.drawable.icon_activity_5,
   ];
 
   @override
@@ -218,7 +218,7 @@ class _ScheduleActivityControllerState
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset('assets/images/backIcon.png',
+                          Image.asset(R.drawable.backIcon,
                               width: 64, height: 64),
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),

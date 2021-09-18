@@ -106,7 +106,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                         decoration: BoxDecoration(
                             image: DecorationImage(
                           image:
-                              AssetImage('assets/images/detail_Background.png'),
+                              AssetImage(R.drawable.detail_Background),
                           fit: BoxFit.cover,
                         )),
                         child: LoadMore(

@@ -101,7 +101,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                           Text(name),
                                           SizedBox(width: 2),
                                           Image.asset(
-                                              'assets/images/chevron_down.png',
+                                              R.drawable.chevron_down,
                                               width: 24,
                                               height: 24)
                                         ],
@@ -118,7 +118,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                    'assets/images/glucose_trend.png'),
+                                    R.drawable.glucose_trend),
                               )
                             : Container(
                                 decoration: BoxDecoration(
@@ -135,10 +135,6 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                   ],
                                 ),
                                 child: buildChart(model)),
-                        // Stack(children: [
-                        //   // Image.asset('assets/images/compare_chart.png',
-                        //   //     width: 380, height: 380)
-                        // ]),
                       ]),
                 );
         }));
@@ -317,7 +313,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
             },
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text('Xem chi tiết', style: TextStyle(color: R.color.mainColor)),
-              Image.asset('assets/images/icon_arrow_right.png',
+              Image.asset(R.drawable.icon_arrow_right,
                   width: 20, height: 20)
             ]),
           )

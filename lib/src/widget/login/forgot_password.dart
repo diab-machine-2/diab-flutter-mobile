@@ -29,7 +29,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
           Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-              image: AssetImage('assets/images/background_splash.png'),
+              image: AssetImage(R.drawable.background_splash),
               fit: BoxFit.cover,
             )),
             child: Padding(
@@ -41,7 +41,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                     textAlign: TextAlign.center),
                 Padding(
                   padding: const EdgeInsets.only(top: 40, bottom: 40),
-                  child: Image.asset('assets/images/forgotPass.png',
+                  child: Image.asset(R.drawable.forgotPass,
                       width: 112, height: 90),
                 ),
                 TextFieldCustom(
@@ -150,7 +150,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/checkError.png',
+              Image.asset(R.drawable.checkError,
                   width: 64, height: 64),
               SizedBox(height: 8),
               RichText(

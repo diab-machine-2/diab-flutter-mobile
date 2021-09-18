@@ -96,7 +96,7 @@ class _AddressListControllerState extends State<AddressListController> {
                               widget.selected == null ||
                                       widget.selected.id != model[index].id
                                   ? SizedBox()
-                                  : Image.asset('assets/images/icon_check.png',
+                                  : Image.asset(R.drawable.icon_check,
                                       width: 24, height: 22)
                             ],
                           ),

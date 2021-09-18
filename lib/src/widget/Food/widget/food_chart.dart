@@ -97,7 +97,7 @@ class FoodChartState extends State<FoodChart>
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                  'assets/images/food_empty.png',
+                                  R.drawable.food_empty,
                                 ),
                               )
                             : Container(

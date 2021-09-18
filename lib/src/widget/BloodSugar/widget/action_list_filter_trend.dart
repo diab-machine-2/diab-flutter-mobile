@@ -62,7 +62,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
                 child: Container(
                   height: 24,
                   width: 24,
-                  child: Image.asset('assets/images/x_icon.png'),
+                  child: Image.asset(R.drawable.x_icon),
                 ),
               ),
             ],
@@ -142,7 +142,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
                                       fontWeight: FontWeight.w600,
                                       color: R.color.mainColor)),
                           selectedIndex == index
-                              ? Image.asset('assets/images/check_mark.png',
+                              ? Image.asset(R.drawable.check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],

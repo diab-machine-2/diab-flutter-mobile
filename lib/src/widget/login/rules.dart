@@ -39,7 +39,7 @@ class _RulesControllerState extends State<RulesController> {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               image: DecorationImage(
-                image: AssetImage('assets/images/background_splash.png'),
+                image: AssetImage(R.drawable.background_splash),
                 fit: BoxFit.cover,
               )),
           child: SafeArea(
@@ -66,7 +66,7 @@ class _RulesControllerState extends State<RulesController> {
                       child: ListView(padding: EdgeInsets.all(16), children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 16, bottom: 16),
-                          child: Image.asset('assets/images/logo.png',
+                          child: Image.asset(R.drawable.logo,
                               width: 87, height: 50),
                         ),
                         Html(

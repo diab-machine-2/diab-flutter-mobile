@@ -104,7 +104,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                         decoration: BoxDecoration(
                             image: DecorationImage(
                           image:
-                              AssetImage('assets/images/detail_Background.png'),
+                              AssetImage(R.drawable.detail_Background),
                           fit: BoxFit.cover,
                         )),
                         child: LoadMore(

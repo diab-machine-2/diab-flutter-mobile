@@ -78,7 +78,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   end: FractionalOffset(0.9, 0.5),
                   stops: [0.0, 1.0])),
           child: Stack(children: [
-            Image.asset('assets/images/profile_bg.png'),
+            Image.asset(R.drawable.profile_bg),
             Column(children: [
               CustomAppBar(
                 backgroundColor: R.color.transparent,
@@ -132,7 +132,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         ),
                                       ),
                                       Image.asset(
-                                          'assets/images/icon_camera_picker.png',
+                                          R.drawable.icon_camera_picker,
                                           width: 50,
                                           height: 50)
                                     ]),
@@ -175,7 +175,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                       color: R.color.transparent,
                                                       child: Row(children: [
                                                         Image.asset(
-                                                            'assets/images/icon_edit.png',
+                                                            R.drawable.icon_edit,
                                                             width: 16,
                                                             height: 16),
                                                         SizedBox(width: 4),
@@ -253,7 +253,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                     color: R.color.transparent,
                                     image: DecorationImage(
                                         image: AssetImage(
-                                            'assets/images/bg_dongluc.png'),
+                                            R.drawable.bg_dongluc),
                                         fit: BoxFit.fill),
                                   ),
                                   padding: EdgeInsets.all(16),
@@ -328,10 +328,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                  'assets/images/icon_person.png',
+                                  R.drawable.icon_person,
                                   user.fullName,
                                   'Họ và tên',
-                                  Image.asset('assets/images/icon_right.png',
+                                  Image.asset(R.drawable.icon_right,
                                       width: 18, height: 18),
                                   0,
                                   callback: () {
@@ -339,10 +339,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  'assets/images/icon_birthday.png',
+                                  R.drawable.icon_birthday,
                                   convertToUTC(user.dateOfBirth, 'dd/MM/yyyy'),
                                   'Ngày sinh',
-                                  Image.asset('assets/images/icon_right.png',
+                                  Image.asset(R.drawable.icon_right,
                                       width: 18, height: 18),
                                   1,
                                   callback: () {
@@ -350,12 +350,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  'assets/images/icon_gender.png',
+                                  R.drawable.icon_gender,
                                   user.gender == null || user.gender.isEmpty
                                       ? 'Đang cập nhật'
                                       : user.gender,
                                   'Giới tính',
-                                  Image.asset('assets/images/icon_right.png',
+                                  Image.asset(R.drawable.icon_right,
                                       width: 18, height: 18),
                                   2,
                                   callback: () {
@@ -379,7 +379,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                  'assets/images/icon_folder.png',
+                                  R.drawable.icon_folder,
                                   user.diabetesName ?? 'Đang cập nhật',
                                   'Loại bệnh',
                                   null,
@@ -389,7 +389,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  'assets/images/icon_year.png',
+                                  R.drawable.icon_year,
                                   convertToUTC(user.diabetesDate, 'yyyy'),
                                   'Năm phát bệnh',
                                   null,
@@ -415,7 +415,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                  'assets/images/icon_kg.png',
+                                  R.drawable.icon_kg,
                                   user.weight == null
                                       ? 'Chưa cập nhật'
                                       : '${user.weight.round()} kg',
@@ -427,7 +427,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  'assets/images/icon_ruler.png',
+                                  R.drawable.icon_ruler,
                                   user.height == null
                                       ? 'Chưa cập nhật'
                                       : '${user.height.round()} cm',
@@ -455,14 +455,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                    'assets/images/icon_phone_info.png',
+                                    R.drawable.icon_phone_info,
                                     user.phoneNumber,
                                     'Số điện thoại 1',
-                                    Image.asset('assets/images/icon_ok.png',
+                                    Image.asset(R.drawable.icon_ok,
                                         width: 24, height: 24),
                                     7),
                                 buildItem(
-                                  'assets/images/icon_phone_info.png',
+                                  R.drawable.icon_phone_info,
                                   user.secondPhoneNumber == null ||
                                           user.secondPhoneNumber.isEmpty
                                       ? 'Chưa cập nhật'
@@ -475,7 +475,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  'assets/images/icon_email.png',
+                                  R.drawable.icon_email,
                                   user.email == null || user.email.isEmpty
                                       ? 'Chưa cập nhật'
                                       : user.email,
@@ -487,7 +487,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                    'assets/images/icon_location.png',
+                                    R.drawable.icon_location,
                                     ((user.address ?? '') +
                                                 (user.address ==
                                                             null ||
@@ -554,7 +554,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   _showDialogUpdateAddress();
                                 }),
                                 buildItem(
-                                    'assets/images/icon_google.png',
+                                    R.drawable.icon_google,
                                     user.isLinkedGoogle == null ||
                                             !user.isLinkedGoogle
                                         ? 'Chưa kết nối'
@@ -569,22 +569,6 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                       },
                                     ),
                                     11),
-                                // buildItem(
-                                //     'assets/images/icon_fb_info.png',
-                                //     user.isLinkedFacebook == null ||
-                                //             !user.isLinkedFacebook
-                                //         ? 'Chưa kết nối'
-                                //         : user.fullName,
-                                //     'Facebook',
-                                //     CupertinoSwitch(
-                                //       activeColor: R.color.mainColor,
-                                //       value: user.isLinkedFacebook ?? false,
-                                //       onChanged: (value) {
-                                //         print(value);
-                                //         linkedFacebook();
-                                //       },
-                                //     ),
-                                //     12)
                               ]),
                         ),
                         SizedBox(height: 16),
@@ -598,7 +582,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   borderRadius: BorderRadius.circular(10)),
                               padding: EdgeInsets.all(16),
                               child: Row(children: [
-                                Image.asset('assets/images/icon_logout.png',
+                                Image.asset(R.drawable.icon_logout,
                                     width: 33, height: 33),
                                 SizedBox(width: 12),
                                 Text('Đăng xuất',
@@ -654,7 +638,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
             padding: EdgeInsets.only(left: 8, right: 8),
             child: Row(
               children: [
-                Image.asset('assets/images/icon_photo.png',
+                Image.asset(R.drawable.icon_photo,
                     width: 24, height: 24),
                 SizedBox(width: 16),
                 Text("Chọn trong thư viện",
@@ -672,7 +656,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
             padding: EdgeInsets.only(left: 8, right: 8),
             child: Row(
               children: [
-                Image.asset('assets/images/icon_camera_black.png',
+                Image.asset(R.drawable.icon_camera_black,
                     width: 24, height: 24),
                 SizedBox(width: 16),
                 Text("Chụp ảnh",
@@ -1019,7 +1003,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset('assets/images/icon_logout.png',
+                          Image.asset(R.drawable.icon_logout,
                               width: 64, height: 64),
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),

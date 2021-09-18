@@ -105,7 +105,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                    'assets/images/blood_pressure_trend_empty.png'),
+                                    R.drawable.blood_pressure_trend_empty),
                               )
                             : Container(
                                 decoration: BoxDecoration(
@@ -340,7 +340,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text('Xem chi tiết', style: TextStyle(color: R.color.mainColor)),
-                Image.asset('assets/images/icon_arrow_right.png',
+                Image.asset(R.drawable.icon_arrow_right,
                     width: 20, height: 20)
               ]),
             ),

@@ -104,7 +104,7 @@ class HeartChartState extends State<HeartChart>
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                    'assets/images/blood_pressure_trend_empty.png'),
+                                    R.drawable.blood_pressure_trend_empty),
                               )
                             : Container(
                                 decoration: BoxDecoration(
@@ -203,8 +203,10 @@ class HeartChartState extends State<HeartChart>
                         child: LineChart(
                           LineChartData(
                             lineTouchData: LineTouchData(
-                                 getTouchLineStart: (barData, index) => -double.infinity, // default: from bottom
-                                getTouchLineEnd: (barData, index) => double.infinity, //to top
+                                getTouchLineStart: (barData, index) =>
+                                    -double.infinity, // default: from bottom
+                                getTouchLineEnd: (barData, index) =>
+                                    double.infinity, //to top
                                 getTouchedSpotIndicator:
                                     (LineChartBarData barData,
                                         List<int> spotIndexes) {
@@ -239,13 +241,17 @@ class HeartChartState extends State<HeartChart>
                                     }).toList();
                                   },
                                 ),
-                                touchCallback: (FlTouchEvent event, LineTouchResponse lineTouch) {
+                                touchCallback: (FlTouchEvent event,
+                                    LineTouchResponse lineTouch) {
                                   if (event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
-                                    final value = lineTouch.lineBarSpots[0].x;
-                                    setState(() {
-                                      touchIndex = value.toInt();
-                                    });
+                                    if (lineTouch?.lineBarSpots?.isNotEmpty == true) {
+                                      final double value =
+                                          lineTouch.lineBarSpots.first.x;
+                                      setState(() {
+                                        touchIndex = value.toInt();
+                                      });
+                                    }
                                   } else {
                                     touchIndex = -1;
                                   }
@@ -310,9 +316,9 @@ class HeartChartState extends State<HeartChart>
               color: R.color.transparent,
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text('Xem chi tiết', style: TextStyle(color: R.color.mainColor)),
-                Image.asset('assets/images/icon_arrow_right.png',
-                    width: 20, height: 20)
+                Text('Xem chi tiết',
+                    style: TextStyle(color: R.color.mainColor)),
+                Image.asset(R.drawable.icon_arrow_right, width: 20, height: 20)
               ]),
             ),
           )

@@ -91,7 +91,7 @@ class _SearchFoodState extends State<SearchFood> {
       body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/images/background_splash.png'),
+                  image: AssetImage(R.drawable.background_splash),
                   fit: BoxFit.cover)),
           child: SafeArea(
             top: false,
@@ -145,7 +145,7 @@ class _SearchFoodState extends State<SearchFood> {
                               onTap: () {
                                 Navigator.pop(context);
                               },
-                              child: Image.asset('assets/images/icon_clear.png',
+                              child: Image.asset(R.drawable.icon_clear,
                                   width: 35, height: 35),
                             )
                           ],
@@ -212,7 +212,7 @@ class _SearchFoodState extends State<SearchFood> {
                                                   right: 64,
                                                   top: 100),
                                               child: Image.asset(
-                                                  'assets/images/near_food_empty.png'),
+                                                  R.drawable.near_food_empty),
                                             );
                                           } else {
                                             final selectedIndex = selectedFoods

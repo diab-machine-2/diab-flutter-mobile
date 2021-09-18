@@ -37,7 +37,7 @@ class GuidlinePanel extends StatelessWidget {
                     child: Container(
                       height: 24,
                       width: 24,
-                      child: Image.asset('assets/images/x_icon.png'),
+                      child: Image.asset(R.drawable.x_icon),
                     ),
                   ),
                 ],
@@ -49,7 +49,7 @@ class GuidlinePanel extends StatelessWidget {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('Có xu hướng trở nên tiêu cực',
                     style: TextStyle(fontSize: 14)),
-                Image.asset('assets/images/angry.png', width: 24, height: 24)
+                Image.asset(R.drawable.angry, width: 24, height: 24)
               ]),
               Padding(
                 padding: const EdgeInsets.only(top: 16, bottom: 16),
@@ -57,21 +57,21 @@ class GuidlinePanel extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Không thay đổi', style: TextStyle(fontSize: 14)),
-                      Image.asset('assets/images/sad.png',
+                      Image.asset(R.drawable.sad,
                           width: 24, height: 24)
                     ]),
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('Có xu hướng trở nên tích cực',
                     style: TextStyle(fontSize: 14)),
-                Image.asset('assets/images/happy.png', width: 24, height: 24)
+                Image.asset(R.drawable.happy, width: 24, height: 24)
               ]),
               SizedBox(height: 27),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('Tốt / đạt mục tiêu',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                Image.asset('assets/images/coin.png', width: 24, height: 24)
+                Image.asset(R.drawable.coin, width: 24, height: 24)
               ]),
               SizedBox(height: 27),
             ]),

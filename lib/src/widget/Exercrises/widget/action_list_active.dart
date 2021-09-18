@@ -196,7 +196,7 @@ class ActionListActiveState extends State<ActionListActive> {
                                       overflow: TextOverflow.ellipsis),
                                 ),
                           selected.id == model.id
-                              ? Image.asset('assets/images/check_mark.png',
+                              ? Image.asset(R.drawable.check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],

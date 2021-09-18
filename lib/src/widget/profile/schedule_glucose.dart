@@ -174,7 +174,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                         SafeArea(
                           bottom: false,
                           child: Image.asset(
-                              'assets/images/schedule_glucose_bg.png',
+                              R.drawable.schedule_glucose_bg,
                               height: 220),
                         ),
                         Padding(
@@ -224,7 +224,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                                 child: Row(
                                                   children: [
                                                     Image.asset(
-                                                        'assets/images/alarm.png',
+                                                        R.drawable.alarm,
                                                         width: 24,
                                                         height: 24),
                                                     SizedBox(width: 8),
@@ -315,16 +315,16 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                   scheduleDay.isBeforeBreakfast,
                                   'Trước ăn',
                                   scheduleDay.isBeforeBreakfast
-                                      ? 'assets/images/before_eat_selected.png'
-                                      : 'assets/images/before_eat.png',
+                                      ? R.drawable.before_eat_selected
+                                      : R.drawable.before_eat,
                                   0),
                               SizedBox(width: 16),
                               buildItem(
                                   scheduleDay.isAfterBreakfast,
                                   'Sau ăn',
                                   scheduleDay.isAfterBreakfast
-                                      ? 'assets/images/after_eat_selected.png'
-                                      : 'assets/images/after_eat.png',
+                                      ? R.drawable.after_eat_selected
+                                      : R.drawable.after_eat,
                                   1)
                             ])
                           ],
@@ -349,16 +349,16 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                   scheduleDay.isBeforeLunch,
                                   'Trước ăn',
                                   scheduleDay.isBeforeLunch
-                                      ? 'assets/images/before_eat_selected.png'
-                                      : 'assets/images/before_eat.png',
+                                      ? R.drawable.before_eat_selected
+                                      : R.drawable.before_eat,
                                   2),
                               SizedBox(width: 16),
                               buildItem(
                                   scheduleDay.isAfterLunch,
                                   'Sau ăn',
                                   scheduleDay.isAfterLunch
-                                      ? 'assets/images/after_eat_selected.png'
-                                      : 'assets/images/after_eat.png',
+                                      ? R.drawable.after_eat_selected
+                                      : R.drawable.after_eat,
                                   3)
                             ])
                           ],
@@ -383,16 +383,16 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                   scheduleDay.isBeforeDinner,
                                   'Trước ăn',
                                   scheduleDay.isBeforeDinner
-                                      ? 'assets/images/before_eat_selected.png'
-                                      : 'assets/images/before_eat.png',
+                                      ? R.drawable.before_eat_selected
+                                      : R.drawable.before_eat,
                                   4),
                               SizedBox(width: 16),
                               buildItem(
                                   scheduleDay.isAfterDinner,
                                   'Sau ăn',
                                   scheduleDay.isAfterDinner
-                                      ? 'assets/images/after_eat_selected.png'
-                                      : 'assets/images/after_eat.png',
+                                      ? R.drawable.after_eat_selected
+                                      : R.drawable.after_eat,
                                   5)
                             ])
                           ],
@@ -418,8 +418,8 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                     scheduleDay.isBeforeSleeping,
                                     'Trước khi ngủ',
                                     scheduleDay.isBeforeSleeping
-                                        ? 'assets/images/before_sleep_selected.png'
-                                        : 'assets/images/before_sleep.png',
+                                        ? R.drawable.before_sleep_selected
+                                        : R.drawable.before_sleep,
                                     6),
                               ],
                             )
@@ -646,7 +646,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/backIcon.png',
+                      Image.asset(R.drawable.backIcon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),

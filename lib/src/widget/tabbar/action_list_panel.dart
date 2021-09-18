@@ -9,31 +9,31 @@ class ActionListPanel extends StatelessWidget {
   final data = [
     {
       'name': 'HbA1C',
-      'icon': 'assets/images/ic_hba1c.png',
+      'icon': R.drawable.ic_hba1c,
     },
     {
       'name': 'Đường huyết',
-      'icon': 'assets/images/ic_glucose.png',
+      'icon': R.drawable.ic_glucose,
     },
     {
       'name': 'Huyết áp',
-      'icon': 'assets/images/ic_blood_pressure.png',
+      'icon': R.drawable.ic_blood_pressure,
     },
     {
       'name': 'Vận động',
-      'icon': 'assets/images/ic_excersire.png',
+      'icon': R.drawable.ic_excersire,
     },
     {
       'name': 'Dinh dưỡng',
-      'icon': 'assets/images/ic_food_action.png',
+      'icon': R.drawable.ic_food_action,
     },
     {
       'name': 'Cân nặng',
-      'icon': 'assets/images/ic_weight.png',
+      'icon': R.drawable.ic_weight,
     },
     {
       'name': 'Cảm xúc',
-      'icon': 'assets/images/ic_emotion.png',
+      'icon': R.drawable.ic_emotion,
     },
   ];
 
@@ -134,7 +134,7 @@ class ActionListPanel extends StatelessWidget {
                 ],
               ),
               selectedIndex == index
-                  ? Image.asset('assets/images/check_mark_bg.png',
+                  ? Image.asset(R.drawable.check_mark_bg,
                       width: 20, height: 20)
                   : SizedBox(),
             ],

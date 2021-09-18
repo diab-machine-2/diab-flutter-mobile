@@ -171,7 +171,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                           Row(
                                             children: [
                                               Image.asset(
-                                                'assets/images/clock_exe.png',
+                                                R.drawable.clock_exe,
                                                 width: 24,
                                                 height: 24,
                                               ),
@@ -212,7 +212,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                           Row(
                                             children: [
                                               Image.asset(
-                                                'assets/images/fire_exe.png',
+                                                R.drawable.fire_exe,
                                                 width: 24,
                                                 height: 24,
                                               ),
@@ -458,7 +458,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                             child: Row(
                                               children: [
                                                 Image.asset(
-                                                  'assets/images/circle_plus_exe.png',
+                                                  R.drawable.circle_plus_exe,
                                                   width: 24,
                                                   height: 24,
                                                 ),
@@ -506,7 +506,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                         Row(
                                                           children: [
                                                             Image.asset(
-                                                              'assets/images/shoe_exe.png',
+                                                              R.drawable.shoe_exe,
                                                               width: 24,
                                                               height: 24,
                                                             ),
@@ -554,7 +554,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                         Row(
                                                           children: [
                                                             Image.asset(
-                                                              'assets/images/fire_exe.png',
+                                                              R.drawable.fire_exe,
                                                               width: 24,
                                                               height: 24,
                                                             ),
@@ -642,7 +642,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                   ),
                                                 ),
                                                 Image.asset(
-                                                  'assets/images/runner.png',
+                                                  R.drawable.runner,
                                                   width: 109,
                                                   height: 178,
                                                 )

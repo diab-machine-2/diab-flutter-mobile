@@ -126,7 +126,7 @@ class EnergyChartState extends State<EnergyChart>
                               color: toColor(model.colorCode)),
                         ),
                       ),
-                      Image.asset('assets/images/apple_orange.png'),
+                      Image.asset(R.drawable.apple_orange),
                       Padding(
                         padding: EdgeInsets.only(top: 16, left: 16, right: 16),
                         child: Row(
@@ -155,7 +155,7 @@ class EnergyChartState extends State<EnergyChart>
                                 child: Row(
                                   children: [
                                     Image.asset(
-                                      'assets/images/circle_plus_exe.png',
+                                      R.drawable.circle_plus_exe,
                                       width: 24,
                                       height: 24,
                                     ),
@@ -233,7 +233,7 @@ class EnergyChartState extends State<EnergyChart>
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Image.asset('assets/images/icon_bat.png',
+                                  Image.asset(R.drawable.icon_bat,
                                       width: 24, height: 24),
                                   SizedBox(width: 4),
                                   Text(formatNumber(model.total),

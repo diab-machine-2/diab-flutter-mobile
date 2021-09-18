@@ -11,7 +11,6 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
-import 'package:medical/src/widget/tabbar/action_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -191,7 +190,7 @@ class _BloodSugarDetailTabbarControllerState
             onPressed: () {
               _showMaterialDialog();
             },
-            child: Image.asset('assets/images/button_plus.png',
+            child: Image.asset(R.drawable.button_plus,
                 width: 80, height: 80),
           )),
     );
@@ -306,7 +305,7 @@ class _ActionFilterState extends State<ActionFilter> {
         padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
         child: Row(
           children: [
-            Image.asset('assets/images/icon_filter.png', width: 24, height: 24),
+            Image.asset(R.drawable.icon_filter, width: 24, height: 24),
             SizedBox(width: 6),
             Padding(
               padding: const EdgeInsets.only(top: 6),

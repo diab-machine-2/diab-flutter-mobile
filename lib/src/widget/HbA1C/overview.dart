@@ -54,9 +54,6 @@ class HbA1COverviewControllerState extends State<HbA1COverviewController>
               begin: Alignment.topRight,
               end: Alignment.bottomLeft, //FractionalOffset(1.0, 0.0),
               stops: [0.0, 0.3, 0.8, 1.0])
-          // image: DecorationImage(
-          //     image: AssetImage('assets/images/HbA1c_high.png'),
-          //     fit: BoxFit.cover)
           ),
       child: ListView(
           controller: _scrollController,

@@ -107,7 +107,7 @@ class BloodPressureDistributionChartState
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                    'assets/images/blood_pressure_distribution_empty.png'),
+                                    R.drawable.blood_pressure_distribution_empty),
                               )
                             : buildChart(model),
                       )

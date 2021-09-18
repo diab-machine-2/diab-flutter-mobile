@@ -43,7 +43,7 @@ class _RegisterControllerState extends State<RegisterController> {
             Container(
               decoration: BoxDecoration(
                   image: DecorationImage(
-                image: AssetImage('assets/images/background_splash.png'),
+                image: AssetImage(R.drawable.background_splash),
                 fit: BoxFit.cover,
               )),
               child: Column(
@@ -157,39 +157,13 @@ class _RegisterControllerState extends State<RegisterController> {
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     Image.asset(
-                                                        'assets/images/icon_login_apple.png',
+                                                        R.drawable.icon_login_apple,
                                                         width: 26,
                                                         height: 26),
                                                   ])),
                                         ),
                                       )
                                     : SizedBox(),
-
-                                // GestureDetector(
-                                //   onTap: () {
-                                //     loginFB();
-                                //   },
-                                //   child: Padding(
-                                //     padding: EdgeInsets.only(left: 8, right: 8),
-                                //     child: Container(
-                                //         height: 50,
-                                //         width: 50,
-                                //         decoration: BoxDecoration(
-                                //           borderRadius: BorderRadius.circular(25),
-                                //           color: R.color.white,
-                                //         ),
-                                //         child: Row(
-                                //             mainAxisAlignment:
-                                //                 MainAxisAlignment.center,
-                                //             children: [
-                                //               Image.asset(
-                                //                   'assets/images/icon_fb.png',
-                                //                   width: 26,
-                                //                   height: 26),
-                                //             ])),
-                                //   ),
-                                // ),
-
                                 GestureDetector(
                                   onTap: () {
                                     loginGG();
@@ -208,7 +182,7 @@ class _RegisterControllerState extends State<RegisterController> {
                                                 MainAxisAlignment.center,
                                             children: [
                                               Image.asset(
-                                                  'assets/images/icon_gg.png',
+                                                  R.drawable.icon_gg,
                                                   width: 26,
                                                   height: 26),
                                             ])),
@@ -346,7 +320,7 @@ class _RegisterControllerState extends State<RegisterController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/checkError.png',
+              Image.asset(R.drawable.checkError,
                   width: 64, height: 64),
               SizedBox(height: 8),
               RichText(

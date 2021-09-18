@@ -122,7 +122,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                                           FontWeight.w400)),
                                               SizedBox(width: 10),
                                               Image.asset(
-                                                  'assets/images/line_low.png',
+                                                  R.drawable.line_low,
                                                   width: 20,
                                                   height: 15)
                                             ],
@@ -178,7 +178,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                                         FontWeight.w400)),
                                             SizedBox(width: 10),
                                             Image.asset(
-                                                'assets/images/line_average.png',
+                                                R.drawable.line_average,
                                                 width: 20,
                                                 height: 15)
                                           ],
@@ -240,7 +240,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                                           FontWeight.w400)),
                                               SizedBox(width: 10),
                                               Image.asset(
-                                                  'assets/images/line_high.png',
+                                                  R.drawable.line_high,
                                                   width: 20,
                                                   height: 15)
                                             ],
@@ -296,7 +296,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                                 });
                                           },
                                           child: Image.asset(
-                                              'assets/images/glucose_distribution.png'),
+                                              R.drawable.glucose_distribution),
                                         )
                                       : buildChart(model),
                                 )

@@ -115,7 +115,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                         decoration: BoxDecoration(
                             image: DecorationImage(
                           image:
-                              AssetImage('assets/images/detail_Background.png'),
+                              AssetImage(R.drawable.detail_Background),
                           fit: BoxFit.cover,
                         )),
                         child: LoadMore(
@@ -281,7 +281,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                               .center,
                                                                       children: [
                                                                         Image.asset(
-                                                                            'assets/images/activity_empty.png',
+                                                                            R.drawable.activity_empty,
                                                                             width:
                                                                                 50,
                                                                             height:

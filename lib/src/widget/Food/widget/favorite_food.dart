@@ -104,7 +104,7 @@ class FavoriteFoodState extends State<FavoriteFood>
                             padding:
                                 EdgeInsets.only(left: 64, right: 64, top: 100),
                             child: Image.asset(
-                                'assets/images/favorite_food_empty.png'),
+                                R.drawable.favorite_food_empty),
                           );
                         } else {
                           final selectedIndex = selectedFoods.lastIndexWhere(
