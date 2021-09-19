@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 
 class ActionListPanel extends StatelessWidget {
   ActionListPanel({@required this.selectedIndex});
@@ -96,19 +97,19 @@ class ActionListPanel extends StatelessWidget {
           return;
         }
         if (index == 0) {
-          Navigator.pushReplacementNamed(context, '/detail_hba1c');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_hba1c);
         } else if (index == 1) {
-          Navigator.pushReplacementNamed(context, '/detail_bloodSugar');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_blood_sugar);
         } else if (index == 2) {
-          Navigator.pushReplacementNamed(context, '/detail_bloodPressure');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_blood_pressure);
         } else if (index == 3) {
-          Navigator.pushReplacementNamed(context, '/detail_exercrises');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_exercrises);
         } else if (index == 4) {
-          Navigator.pushReplacementNamed(context, '/detail_food');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_food);
         } else if (index == 5) {
-          Navigator.pushReplacementNamed(context, '/detail_bmi');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_bmi);
         } else if (index == 6) {
-          Navigator.pushReplacementNamed(context, '/detail_emotion');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_emotion);
         }
       },
       child: Container(

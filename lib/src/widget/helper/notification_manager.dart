@@ -9,6 +9,7 @@ import 'package:medical/main.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 class NotificationManager {
@@ -92,13 +93,13 @@ class NotificationManager {
         true);
     if (model.data.notificationType == 1) {
       Navigator.pushNamed(
-          navigatorKey.currentState.context, '/notification_detail',
+          navigatorKey.currentState.context, NavigatorName.notification_detail,
           arguments: {'id': model.data.communicationId});
     } else if (model.data.notificationType == 2) {
-      Navigator.pushNamed(navigatorKey.currentState.context, '/add_reminder',
+      Navigator.pushNamed(navigatorKey.currentState.context, NavigatorName.add_reminder,
           arguments: {'type': 'update', 'id': model.data.remindId});
     } else if (model.data.notificationType == 3) {
-      Navigator.pushNamed(navigatorKey.currentState.context, '/add_bloodSugar',
+      Navigator.pushNamed(navigatorKey.currentState.context, NavigatorName.add_blood_sugar,
           arguments: {'type': 'input', 'id': null});
     }
   }

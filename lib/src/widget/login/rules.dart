@@ -5,6 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -91,7 +92,7 @@ class _RulesControllerState extends State<RulesController> {
                         await UserClient().fetchUser();
                         BotToast.closeAllLoading();
                         Navigator.popUntil(context, (route) => route.isFirst);
-                        Navigator.pushReplacementNamed(context, '/tabbar');
+                        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
                       },
                       child: Container(
                           height: 48,

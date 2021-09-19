@@ -4,6 +4,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail.dart';
 import 'package:medical/src/widget/BloodSugar/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -197,7 +198,7 @@ class _BloodSugarDetailTabbarControllerState
   }
 
   _showMaterialDialog() {
-    Navigator.pushNamed(context, '/add_bloodSugar',
+    Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
         arguments: {'type': 'input'});
     // showDialog(
     //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),

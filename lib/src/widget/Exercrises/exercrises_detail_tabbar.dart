@@ -5,6 +5,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail.dart';
 import 'package:medical/src/widget/Exercrises/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -155,7 +156,7 @@ class _ExercrisesDetailTabbarControllerState
         AppSettings.userInfo.weight == 0) {
       showPopupWeight();
     } else {
-      Navigator.pushNamed(context, '/add_exercrises',
+      Navigator.pushNamed(context, NavigatorName.add_exercrises,
           arguments: {'type': 'input'});
     }
     // showDialog(

@@ -5,6 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_model.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -107,7 +108,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                         count == 0
                             ? GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/add_emo',
+                                  Navigator.pushNamed(context, NavigatorName.add_emo,
                                       arguments: {'type': 'input'});
                                 },
                                 child: Padding(
@@ -246,7 +247,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                         model.emotions.length,
                         (index) => GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, '/emotionTable',
+                                Navigator.pushNamed(context, NavigatorName.emotion_table,
                                     arguments: {
                                       'title': model.emotions[index].text,
                                       'emotionId': model.emotions[index].id,
@@ -283,7 +284,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                         model.emotions.length,
                         (index) => GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, '/emotionTable',
+                                Navigator.pushNamed(context, NavigatorName.emotion_table,
                                     arguments: {
                                       'title': model.emotions[index].text,
                                       'emotionId': model.emotions[index].id,

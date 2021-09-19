@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 
 class RegisterSuccess extends StatefulWidget {
   final String phone;
@@ -96,7 +97,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
     BotToast.closeAllLoading();
     print(result);
     // if (result.access_token != null) {
-    Navigator.pushReplacementNamed(context, '/update_info',
+    Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         arguments: {'type': 'phone'});
     // }
   }

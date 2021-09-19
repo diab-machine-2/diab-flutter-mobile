@@ -8,6 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_compare.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
@@ -114,7 +115,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                             ? GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, '/add_bloodSugar',
+                                      context, NavigatorName.add_blood_sugar,
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
@@ -308,7 +309,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
           GestureDetector(
             onTap: () {
               print(name);
-              Navigator.pushNamed(context, '/bloodSugarCompareTable',
+              Navigator.pushNamed(context, NavigatorName.blood_sugar_compare_table,
                   arguments: {'model': model, 'title': name});
             },
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -346,7 +347,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   }
 
   showDialog(BuildContext context) {
-    //Navigator.pushNamed(context, '/hba1c_tabble');
+    //Navigator.pushNamed(context, NavigatorName.hba1c_tabble);
     Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
         pageBuilder: (BuildContext context, _, __) => HbA1CTable()));

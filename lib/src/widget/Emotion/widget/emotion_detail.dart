@@ -13,6 +13,7 @@ import 'package:medical/src/modal/emotion/input_emotion_model.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -147,7 +148,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                 return GestureDetector(
                                     onTap: () {
                                       Navigator.pushNamed(
-                                          context, '/add_insight', arguments: {
+                                          context, NavigatorName.add_insight, arguments: {
                                         'type': 'update',
                                         'id': model[index].id
                                       });

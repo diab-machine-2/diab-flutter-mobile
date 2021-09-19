@@ -10,6 +10,7 @@ import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_lastestSumary.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/components/samples/line_chart/samples/line_chart_sample2.dart';
@@ -79,7 +80,7 @@ class HbA1CChartState extends State<HbA1CChart>
                         model.trendItems == null
                             ? GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/add_hba1c',
+                                  Navigator.pushNamed(context, NavigatorName.add_hba1c,
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(

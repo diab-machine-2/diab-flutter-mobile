@@ -8,6 +8,7 @@ import 'package:medical/src/modal/user/schedule_glucose_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/horizontal_picker/horizontal_numberpicker_wrapper.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -210,7 +211,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                           GestureDetector(
                                             onTap: () {
                                               Navigator.pushNamed(context,
-                                                  '/setting_schedule_glucose');
+                                                  NavigatorName.setting_schedule_glucose);
                                             },
                                             child: Container(
                                                 height: 36,

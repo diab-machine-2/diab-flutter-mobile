@@ -4,6 +4,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail.dart';
 import 'package:medical/src/widget/HbA1C/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -146,7 +147,7 @@ class _Hba1cDetailTabbarControllerState
   }
 
   _showMaterialDialog() {
-    Navigator.pushNamed(context, '/add_hba1c',
+    Navigator.pushNamed(context, NavigatorName.add_hba1c,
         arguments: {'type': 'input', 'id': null});
     // showDialog(
     //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),

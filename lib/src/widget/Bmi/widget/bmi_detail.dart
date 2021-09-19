@@ -7,6 +7,7 @@ import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -138,7 +139,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                             previousElement.date));
                                 return GestureDetector(
                                     onTap: () {
-                                      Navigator.pushNamed(context, '/add_bmi',
+                                      Navigator.pushNamed(context, NavigatorName.add_bmi,
                                           arguments: {
                                             'type': 'update',
                                             'id': element.id,

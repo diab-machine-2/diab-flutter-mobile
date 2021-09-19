@@ -9,6 +9,7 @@ import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -171,16 +172,16 @@ class _ProfileControllerState extends State<ProfileController> {
       child: GestureDetector(
         onTap: () {
           if (index == 0) {
-            Navigator.pushNamed(context, '/goal_setting');
+            Navigator.pushNamed(context, NavigatorName.goal_setting);
           }
           if (index == 2) {
-            Navigator.pushNamed(context, '/schedule_activity');
+            Navigator.pushNamed(context, NavigatorName.schedule_activity);
           }
           if (index == 1) {
-            Navigator.pushNamed(context, '/reminder');
+            Navigator.pushNamed(context, NavigatorName.reminder);
           }
           if (index == 3) {
-            Navigator.pushNamed(context, '/schedule_glucose');
+            Navigator.pushNamed(context, NavigatorName.schedule_glucose);
           }
           // if (index == 1 || index == 3) {
           //   Message.showToastMessage(context,
@@ -213,22 +214,22 @@ class _ProfileControllerState extends State<ProfileController> {
               AppSettings.userInfo.phoneNumber.isEmpty) {
             showPopupUpdatePhone();
           } else {
-            Navigator.pushNamed(context, '/profile_info');
+            Navigator.pushNamed(context, NavigatorName.profile_info);
           }
         } else if (index == 1) {
-          Navigator.pushNamed(context, '/manual');
+          Navigator.pushNamed(context, NavigatorName.manual);
         } else if (index == 2) {
-          Navigator.pushNamed(context, '/manual_detail', arguments: {
+          Navigator.pushNamed(context, NavigatorName.manual_detail, arguments: {
             'manual': ManualModel(
                 id: '',
                 question: 'Bảo mật thông tin',
                 answer: secureModel.security)
           });
         } else if (index == 3) {
-          Navigator.pushNamed(context, '/contact',
+          Navigator.pushNamed(context, NavigatorName.contact,
               arguments: {'contact': secureModel});
         } else if (index == 4) {
-          Navigator.pushNamed(context, '/change_password');
+          Navigator.pushNamed(context, NavigatorName.change_password);
         }
       },
       child: Container(
@@ -313,7 +314,7 @@ class _ProfileControllerState extends State<ProfileController> {
                           GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
-                              Navigator.pushNamed(context, '/profile_info');
+                              Navigator.pushNamed(context, NavigatorName.profile_info);
                             },
                             child: Container(
                                 height: 48,
@@ -375,7 +376,7 @@ class _ProfileControllerState extends State<ProfileController> {
       await LoginClient().changePhoneNumber(phone);
       await UserClient().fetchUser();
       Navigator.pop(context);
-      Navigator.pushNamed(context, '/profile_info');
+      Navigator.pushNamed(context, NavigatorName.profile_info);
       BotToast.closeAllLoading();
     } catch (error) {
       BotToast.closeAllLoading();

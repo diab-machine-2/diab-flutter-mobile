@@ -4,6 +4,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
@@ -35,21 +36,13 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
           Message.showToastMessage(
               context, 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại');
           AppSettings.logout();
-          Navigator.pushReplacementNamed(context, '/step_list');
+          Navigator.pushReplacementNamed(context, NavigatorName.step_list);
         } else {
-          Navigator.pushReplacementNamed(context, '/tabbar');
+          Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
         }
       } else {
-        Navigator.pushReplacementNamed(context, '/step_list');
+        Navigator.pushReplacementNamed(context, NavigatorName.step_list);
       }
-
-      // Future.delayed(const Duration(milliseconds: 000), () {
-      //   if (token.isEmpty) {
-      //     Navigator.pushNamed(context, '/step_list');
-      //   } else {
-      //     Navigator.pushReplacementNamed(context, '/tabbar');
-      //   }
-      // });
     } catch (e) {
       Message.showToastMessage(
           context, 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại');

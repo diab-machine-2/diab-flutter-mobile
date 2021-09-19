@@ -7,6 +7,7 @@ import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/main.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -68,49 +69,49 @@ class _HomeControllerState extends State<HomeController> {
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_bloodPressure');
+          checkScreen(NavigatorName.detail_blood_pressure);
         });
     DartNotificationCenter.subscribe(
         channel: 'glucose_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_bloodSugar');
+          checkScreen(NavigatorName.detail_blood_sugar);
         });
     DartNotificationCenter.subscribe(
         channel: 'Weight_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_bmi');
+          checkScreen(NavigatorName.detail_bmi);
         });
     DartNotificationCenter.subscribe(
         channel: 'Emotion_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_emotion');
+          checkScreen(NavigatorName.detail_emotion);
         });
     DartNotificationCenter.subscribe(
         channel: 'active_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_exercrises');
+          checkScreen(NavigatorName.detail_exercrises);
         });
     DartNotificationCenter.subscribe(
         channel: 'food_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_food');
+          checkScreen(NavigatorName.detail_food);
         });
     DartNotificationCenter.subscribe(
         channel: 'hba1c_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_hba1c');
+          checkScreen(NavigatorName.detail_hba1c);
         });
     DartNotificationCenter.subscribe(
         channel: 'goal_calo_changed',
@@ -319,7 +320,7 @@ class _HomeControllerState extends State<HomeController> {
                                                     onTap: () {
                                                       Navigator.pushNamed(
                                                           context,
-                                                          '/detail_food');
+                                                          NavigatorName.detail_food);
                                                     },
                                                     child: Container(
                                                         color:
@@ -330,7 +331,7 @@ class _HomeControllerState extends State<HomeController> {
                                                     onTap: () {
                                                       Navigator.pushNamed(
                                                           context,
-                                                          '/detail_exercrises');
+                                                          NavigatorName.detail_exercrises);
                                                     },
                                                     child: Container(
                                                         color:
@@ -345,7 +346,7 @@ class _HomeControllerState extends State<HomeController> {
                                 child: GestureDetector(
                                     onTap: () {
                                       Navigator.pushNamed(
-                                          context, '/detail_hba1c');
+                                          context, NavigatorName.detail_hba1c);
                                     },
                                     child: model != null &&
                                             model.hbA1CIndex.index != 0
@@ -400,17 +401,17 @@ class _HomeControllerState extends State<HomeController> {
     return GestureDetector(
       onTap: () {
         if (index == 0)
-          Navigator.pushNamed(context, '/detail_bloodSugar');
+          Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
         else if (index == 1) {
-          Navigator.pushNamed(context, '/detail_bloodPressure');
+          Navigator.pushNamed(context, NavigatorName.detail_blood_pressure);
         } else if (index == 2) {
-          Navigator.pushNamed(context, '/detail_bmi');
+          Navigator.pushNamed(context, NavigatorName.detail_bmi);
         } else if (index == 3) {
-          Navigator.pushNamed(context, '/detail_emotion');
+          Navigator.pushNamed(context, NavigatorName.detail_emotion);
         } else if (index == 4) {
-          Navigator.pushNamed(context, '/detail_food');
+          Navigator.pushNamed(context, NavigatorName.detail_food);
         } else if (index == 2) {
-          Navigator.pushNamed(context, '/detail_exercrises');
+          Navigator.pushNamed(context, NavigatorName.detail_exercrises);
         }
 
         return null;
@@ -441,7 +442,7 @@ class _HomeControllerState extends State<HomeController> {
       String image, String icon, GloucoseIndexModel model) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/detail_bloodSugar');
+        Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
       },
       child: Stack(children: [
         Positioned.fill(
@@ -520,7 +521,7 @@ class _HomeControllerState extends State<HomeController> {
       String image, String icon, BloodPressureIndexModel model) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/detail_bloodPressure');
+        Navigator.pushNamed(context, NavigatorName.detail_blood_pressure);
       },
       child: Stack(children: [
         Positioned.fill(
@@ -602,7 +603,7 @@ class _HomeControllerState extends State<HomeController> {
       String image, String icon, WeightCardModel model) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/detail_bmi');
+        Navigator.pushNamed(context, NavigatorName.detail_bmi);
       },
       child: Stack(children: [
         Positioned.fill(
@@ -661,7 +662,7 @@ class _HomeControllerState extends State<HomeController> {
       String image, String icon, EmotionCardModel model) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/detail_emotion');
+        Navigator.pushNamed(context, NavigatorName.detail_emotion);
       },
       child: Stack(children: [
         Positioned.fill(
@@ -1040,14 +1041,14 @@ class _HomeControllerState extends State<HomeController> {
           Expanded(
               child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/detail_food');
+              Navigator.pushNamed(context, NavigatorName.detail_food);
             },
             child: Container(color: R.color.transparent),
           )),
           Expanded(
               child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/detail_exercrises');
+              Navigator.pushNamed(context, NavigatorName.detail_exercrises);
             },
             child: Container(color: R.color.transparent),
           ))

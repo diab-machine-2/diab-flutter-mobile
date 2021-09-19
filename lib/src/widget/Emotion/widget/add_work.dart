@@ -14,6 +14,7 @@ import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/emotion/emotion_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Emotion/widget/tags/item_tags_custom.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -193,7 +194,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                     Navigator.pop(context);
                     Navigator.pop(context);
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/add_insight', arguments: {
+                    Navigator.pushNamed(context, NavigatorName.add_insight, arguments: {
                       'type': 'input',
                       'emotion': widget.emotion,
                       'symptoms': widget.symptoms,

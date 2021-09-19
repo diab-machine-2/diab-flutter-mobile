@@ -4,6 +4,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
@@ -115,7 +116,7 @@ class _ManualControllerState extends State<ManualController> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, '/manual_detail',
+                            Navigator.pushNamed(context, NavigatorName.manual_detail,
                                 arguments: {'manual': manualsSearch[index]});
                           },
                           child: Container(

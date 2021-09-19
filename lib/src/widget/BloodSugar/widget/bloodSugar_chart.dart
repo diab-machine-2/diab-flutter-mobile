@@ -8,6 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_filter_trend.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
@@ -122,7 +123,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                       model.trendItems.items.length == 0
                           ? GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, '/add_bloodSugar',
+                                Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
                                     arguments: {'type': 'input', 'id': null});
                               },
                               child: Image.asset(
@@ -150,7 +151,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 GestureDetector(
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, '/bloodSugarTable',
+                                        context, NavigatorName.blood_sugar_table,
                                         arguments: {
                                           'title': trendType,
                                           'timeFrameType': trendTypeIndex,
@@ -451,7 +452,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
   }
 
   showDialog(BuildContext context) {
-    //Navigator.pushNamed(context, '/hba1c_tabble');
+    //Navigator.pushNamed(context, NavigatorName.hba1c_tabble);
     Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
         pageBuilder: (BuildContext context, _, __) => HbA1CTable()));

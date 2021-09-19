@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu_item.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
@@ -67,7 +68,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_hba1c',
+                      Navigator.pushNamed(context, NavigatorName.add_hba1c,
                           arguments: {'type': 'input', 'id': null});
                     }),
                 CircularMenuItem(
@@ -79,7 +80,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_bloodPressure',
+                      Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
                           arguments: {'type': 'input', 'id': null});
                     }),
                 CircularMenuItem(
@@ -91,7 +92,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_emo',
+                      Navigator.pushNamed(context, NavigatorName.add_emo,
                           arguments: {'type': 'input', 'id': null});
                     }),
                 CircularMenuItem(
@@ -103,7 +104,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_bmi',
+                      Navigator.pushNamed(context, NavigatorName.add_bmi,
                           arguments: {'type': 'input', 'id': null});
                     }),
                 CircularMenuItem(
@@ -115,7 +116,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_food',
+                      Navigator.pushNamed(context, NavigatorName.add_food,
                           arguments: {'type': 'input', 'id': null});
                     }),
                 CircularMenuItem(
@@ -131,7 +132,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                           AppSettings.userInfo.weight == 0) {
                         showPopupWeight();
                       } else {
-                        Navigator.pushNamed(context, '/add_exercrises',
+                        Navigator.pushNamed(context, NavigatorName.add_exercrises,
                             arguments: {'type': 'input'});
                       }
                     }),
@@ -144,7 +145,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_bloodSugar',
+                      Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
                           arguments: {'type': 'input'});
                     }),
               ],

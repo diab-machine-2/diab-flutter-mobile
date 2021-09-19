@@ -15,6 +15,7 @@ import 'package:medical/src/modal/exercrises/exercrise_trend_calo.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -239,7 +240,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                             showPopupWeight();
                                           } else {
                                             Navigator.pushNamed(
-                                                context, '/add_exercrises',
+                                                context, NavigatorName.add_exercrises,
                                                 arguments: {
                                                   'type': 'input',
                                                 });

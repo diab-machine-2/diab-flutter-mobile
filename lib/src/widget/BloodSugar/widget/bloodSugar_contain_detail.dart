@@ -6,6 +6,7 @@ import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -289,7 +290,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                       ? GestureDetector(
                                           onTap: () {
                                             Navigator.pushNamed(
-                                                context, '/add_bloodSugar',
+                                                context, NavigatorName.add_blood_sugar,
                                                 arguments: {
                                                   'type': 'input',
                                                   'id': null
@@ -408,7 +409,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(
-                            context, '/bloodSugarDistributionTable',
+                            context, NavigatorName.blood_sugar_distribution_table,
                             arguments: {
                               'title': 'Rất cao',
                               'glucoseDistributionType': 5,
@@ -433,7 +434,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(
-                            context, '/bloodSugarDistributionTable',
+                            context, NavigatorName.blood_sugar_distribution_table,
                             arguments: {
                               'title': 'Cao',
                               'glucoseDistributionType': 4,
@@ -456,7 +457,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(
-                            context, '/bloodSugarDistributionTable',
+                            context, NavigatorName.blood_sugar_distribution_table,
                             arguments: {
                               'title': 'Tốt',
                               'glucoseDistributionType': 3,
@@ -479,7 +480,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(
-                            context, '/bloodSugarDistributionTable',
+                            context, NavigatorName.blood_sugar_distribution_table,
                             arguments: {
                               'title': 'Thấp',
                               'glucoseDistributionType': 2,
@@ -502,7 +503,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(
-                            context, '/bloodSugarDistributionTable',
+                            context, NavigatorName.blood_sugar_distribution_table,
                             arguments: {
                               'title': 'Rất thấp',
                               'glucoseDistributionType': 1,

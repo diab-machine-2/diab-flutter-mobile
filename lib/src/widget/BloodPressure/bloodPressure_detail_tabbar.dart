@@ -4,6 +4,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_description.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail.dart';
 import 'package:medical/src/widget/BloodPressure/overview.dart';
@@ -164,7 +165,7 @@ class _BloodPressureDetailTabbarControllerState
   }
 
   _showMaterialDialog() {
-    Navigator.pushNamed(context, '/add_bloodPressure',
+    Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
         arguments: {'type': 'input', 'id': null});
     // showDialog(
     //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),

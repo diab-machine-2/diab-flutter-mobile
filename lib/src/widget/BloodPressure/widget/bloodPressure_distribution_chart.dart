@@ -5,6 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_distribution.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -103,7 +104,7 @@ class BloodPressureDistributionChartState
                             ? GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, '/add_bloodPressure',
+                                      context, NavigatorName.add_blood_pressure,
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
@@ -225,7 +226,7 @@ class BloodPressureDistributionChartState
                   children: <Widget>[
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/bloodPressureTable',
+                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': 'Tăng huyết áp độ 3',
                               'bloodPressureType': 6,
@@ -248,7 +249,7 @@ class BloodPressureDistributionChartState
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/bloodPressureTable',
+                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': 'Tăng huyết áp độ 2',
                               'bloodPressureType': 5,
@@ -271,7 +272,7 @@ class BloodPressureDistributionChartState
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/bloodPressureTable',
+                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': 'Tăng huyết áp độ 1',
                               'bloodPressureType': 4,
@@ -294,7 +295,7 @@ class BloodPressureDistributionChartState
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/bloodPressureTable',
+                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': 'Bình thường cao',
                               'bloodPressureType': 3,
@@ -317,7 +318,7 @@ class BloodPressureDistributionChartState
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/bloodPressureTable',
+                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': 'Bình thường',
                               'bloodPressureType': 2,
@@ -339,7 +340,7 @@ class BloodPressureDistributionChartState
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/bloodPressureTable',
+                        Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
                               'title': 'Thấp',
                               'bloodPressureType': 1,

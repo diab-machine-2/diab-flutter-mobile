@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/version.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -135,7 +136,7 @@ class _StepListControllerState extends State<StepListController> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    Navigator.pushNamed(context, '/register');
+                                    Navigator.pushNamed(context, NavigatorName.register);
                                   },
                                   child: Container(
                                       height: 48,
@@ -161,7 +162,7 @@ class _StepListControllerState extends State<StepListController> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    Navigator.pushNamed(context, '/login');
+                                    Navigator.pushNamed(context, NavigatorName.login);
                                   },
                                   child: Container(
                                     height: 48,

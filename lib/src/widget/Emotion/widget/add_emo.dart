@@ -12,6 +12,7 @@ import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/emotion/emotion_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -223,7 +224,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
               GestureDetector(
                 onTap: () async {
                   if (widget.type == 'input') {
-                    Navigator.pushNamed(context, '/add_symbo', arguments: {
+                    Navigator.pushNamed(context, NavigatorName.add_symbo, arguments: {
                       'type': 'input',
                       'emotion': selectedEmotion,
                     });

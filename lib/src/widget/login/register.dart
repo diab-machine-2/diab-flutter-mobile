@@ -7,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -288,7 +289,7 @@ class _RegisterControllerState extends State<RegisterController> {
         _showDialogError();
         return;
       }
-      Navigator.pushNamed(context, '/verify', arguments: {
+      Navigator.pushNamed(context, NavigatorName.verify, arguments: {
         'type': 'register',
         'otp': result.token,
         'phone': phone,
@@ -372,14 +373,14 @@ class _RegisterControllerState extends State<RegisterController> {
           if (user == null) {
             registerAccount(result.accessToken.userId, result.accessToken.token,
                 'Facebook', profile['name'] ?? 'Tài khoản nguời dùng', true);
-            // Navigator.pushReplacementNamed(context, '/update_info', arguments: {
+            // Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
             //   'type': 'facebook',
             //   'facebookAccount': result,
             //   'userInfo': profile
             // });
           } else {
             Navigator.popUntil(context, (route) => route.isFirst);
-            Navigator.pushReplacementNamed(context, '/tabbar');
+            Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
           }
         } catch (error) {
           BotToast.closeAllLoading();
@@ -391,7 +392,7 @@ class _RegisterControllerState extends State<RegisterController> {
                   'Facebook',
                   profile['name'] ?? 'Tài khoản nguời dùng',
                   false);
-              // Navigator.pushReplacementNamed(context, '/update_info',
+              // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
               //     arguments: {
               //       'type': 'facebook',
               //       'facebookAccount': result,
@@ -439,16 +440,16 @@ class _RegisterControllerState extends State<RegisterController> {
       if (user == null) {
         registerAccount(account.id, authen.accessToken, 'Google',
             account.displayName ?? 'Tài khoản nguời dùng', true);
-        // Navigator.pushReplacementNamed(context, '/update_info',
+        // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, '/tabbar');
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }
     } catch (error) {
       if (error is Error) {
         if (error.code == '5' && account != null) {
-          // Navigator.pushReplacementNamed(context, '/update_info',
+          // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
           //     arguments: {'type': 'google', 'googleAccount': account});
 
           registerAccount(account.id, authen.accessToken, 'Google',
@@ -491,19 +492,19 @@ class _RegisterControllerState extends State<RegisterController> {
       final user = await UserClient().fetchUser();
       BotToast.closeAllLoading();
       if (user == null) {
-        // Navigator.pushReplacementNamed(context, '/update_info',
+        // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'apple', 'appleAccount': credential});
         registerAccount(credential.userIdentifier, credential.identityToken,
             'Apple', credential.givenName ?? 'Tài khoản nguời dùng', true);
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, '/tabbar');
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }
     } catch (error) {
       BotToast.closeAllLoading();
       if (error is Error) {
         if (error.code == '5' && credential != null) {
-          // Navigator.pushReplacementNamed(context, '/update_info',
+          // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
           //     arguments: {'type': 'apple', 'appleAccount': credential});
           registerAccount(credential.userIdentifier, credential.identityToken,
               'Apple', credential.givenName ?? 'Tài khoản nguời dùng', false);
@@ -544,7 +545,7 @@ class _RegisterControllerState extends State<RegisterController> {
             (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
       });
       if (result == true) {
-        Navigator.pushReplacementNamed(context, '/rules');
+        Navigator.pushReplacementNamed(context, NavigatorName.rules);
       }
       BotToast.closeAllLoading();
     } catch (error) {

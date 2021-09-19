@@ -18,6 +18,7 @@ import 'package:medical/src/modal/glucose/glucose_trend.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -270,7 +271,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                     ? GestureDetector(
                                         onTap: () {
                                           Navigator.pushNamed(
-                                              context, '/add_bmi',
+                                              context, NavigatorName.add_bmi,
                                               arguments: {
                                                 'type': 'input',
                                               });

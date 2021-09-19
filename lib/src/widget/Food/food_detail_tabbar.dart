@@ -4,6 +4,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_description.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
@@ -151,7 +152,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   }
 
   _showMaterialDialog() {
-    Navigator.pushNamed(context, '/add_food',
+    Navigator.pushNamed(context, NavigatorName.add_food,
         arguments: {'type': 'input', 'id': null});
     // showDialog(
     //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),

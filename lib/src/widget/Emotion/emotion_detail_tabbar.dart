@@ -4,6 +4,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Emotion/emo_description.dart';
 import 'package:medical/src/widget/Emotion/overview.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_detail.dart';
@@ -150,7 +151,7 @@ class _EmotionDetailTabbarControllerState
   }
 
   _showMaterialDialog() {
-    Navigator.pushNamed(context, '/add_emo',
+    Navigator.pushNamed(context, NavigatorName.add_emo,
         arguments: {'type': 'input', 'id': null});
     // showDialog(
     //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),

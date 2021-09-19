@@ -5,6 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -239,7 +240,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                 onTap: () {
                                                                   Navigator.pushNamed(
                                                                       context,
-                                                                      '/add_food',
+                                                                      NavigatorName.add_food,
                                                                       arguments: {
                                                                         'type':
                                                                             'update',

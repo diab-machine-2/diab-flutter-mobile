@@ -8,6 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -100,7 +101,7 @@ class HeartChartState extends State<HeartChart>
                             ? GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, '/add_bloodPressure',
+                                      context, NavigatorName.add_blood_pressure,
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
@@ -305,7 +306,7 @@ class HeartChartState extends State<HeartChart>
           ]),
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/bloodPressureTable', arguments: {
+              Navigator.pushNamed(context, NavigatorName.blood_pressure_table, arguments: {
                 'title': '',
                 'bloodPressureType': null,
                 'periodFilterType': periodFilterType,

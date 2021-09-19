@@ -6,6 +6,7 @@ import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -122,7 +123,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                 return GestureDetector(
                                   onTap: () {
                                     print(model[index]);
-                                    Navigator.pushNamed(context, '/add_hba1c',
+                                    Navigator.pushNamed(context, NavigatorName.add_hba1c,
                                         arguments: {
                                           'type': 'update',
                                           'id': model[index].id

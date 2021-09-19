@@ -8,6 +8,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/main.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
@@ -200,7 +201,7 @@ showPopupWeight() {
             await UserClient()
                 .updateUserInfo(AppSettings.userInfo.id, userInfo);
             await UserClient().fetchUser();
-            Navigator.pushNamed(navigatorKey.currentContext, '/add_exercrises',
+            Navigator.pushNamed(navigatorKey.currentContext, NavigatorName.add_exercrises,
                 arguments: {'type': 'input'});
             BotToast.closeAllLoading();
           } catch (e, _) {

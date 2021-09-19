@@ -7,6 +7,7 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:medical/src/modal/user/user_model.dart';
@@ -126,7 +127,7 @@ class AppSettings {
   static Future<bool> logout() async {
     try {
       navigatorKey.currentState.popUntil((route) => route.isFirst);
-      navigatorKey.currentState.pushReplacementNamed('/step_list');
+      navigatorKey.currentState.pushReplacementNamed(NavigatorName.step_list);
       await FetchClient().checkNetwork();
       await LoginClient().logout();
       await clearToken();

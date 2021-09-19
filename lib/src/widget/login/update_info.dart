@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker2.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_year_picker.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
@@ -746,7 +747,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
           'providerKey': widget.googleAccount.id,
           'phoneNumber': phone
         });
-        Navigator.pushNamed(context, '/verify', arguments: {
+        Navigator.pushNamed(context, NavigatorName.verify, arguments: {
           'type': 'google',
           'otp': result.token,
           'phone': phone,
@@ -760,7 +761,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
           'providerKey': widget.facebookAccount.accessToken.userId,
           'phoneNumber': phone
         });
-        Navigator.pushNamed(context, '/verify', arguments: {
+        Navigator.pushNamed(context, NavigatorName.verify, arguments: {
           'type': 'facebook',
           'otp': result.token,
           'phone': phone,
@@ -774,7 +775,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
           'providerKey': widget.appleAccount.userIdentifier,
           'phoneNumber': phone
         });
-        Navigator.pushNamed(context, '/verify', arguments: {
+        Navigator.pushNamed(context, NavigatorName.verify, arguments: {
           'type': 'apple',
           'otp': result.token,
           'phone': phone,
@@ -785,7 +786,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       } else {
         final result = await LoginClient().createPatient(params);
         if (result == true) {
-          Navigator.pushReplacementNamed(context, '/rules');
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
       }
       BotToast.closeAllLoading();

@@ -4,6 +4,7 @@ import 'package:medical/main.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -119,7 +120,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
         _showDialogError();
         return;
       }
-      Navigator.pushNamed(context, '/verify', arguments: {
+      Navigator.pushNamed(context, NavigatorName.verify, arguments: {
         'type': 'forgot_password',
         'otp': result.token,
         'phone': phone,

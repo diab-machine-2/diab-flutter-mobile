@@ -12,6 +12,7 @@ import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
@@ -176,13 +177,13 @@ class NotificationControllerState extends State<NotificationController>
 
                                       if (model[index].notificationType == 1) {
                                         Navigator.pushNamed(
-                                            context, '/notification_detail',
+                                            context, NavigatorName.notification_detail,
                                             arguments: {'id': model[index].id});
                                       } else if (model[index]
                                               .notificationType ==
                                           2) {
                                         Navigator.pushNamed(
-                                            context, '/add_reminder',
+                                            context, NavigatorName.add_reminder,
                                             arguments: {
                                               'type': 'update',
                                               'id': model[index].id
@@ -191,7 +192,7 @@ class NotificationControllerState extends State<NotificationController>
                                               .notificationType ==
                                           3) {
                                         Navigator.pushNamed(
-                                            context, '/add_bloodSugar',
+                                            context, NavigatorName.add_blood_sugar,
                                             arguments: {
                                               'type': 'input',
                                               'id': null

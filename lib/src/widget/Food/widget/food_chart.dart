@@ -9,6 +9,7 @@ import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/modal/food/food_statistic_diet_model.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -93,7 +94,7 @@ class FoodChartState extends State<FoodChart>
                                 : model.carbChart.length == 0)
                             ? GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/add_food',
+                                  Navigator.pushNamed(context, NavigatorName.add_food,
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
@@ -141,7 +142,7 @@ class FoodChartState extends State<FoodChart>
   }
 
   showDialog(BuildContext context) {
-    //Navigator.pushNamed(context, '/hba1c_tabble');
+    //Navigator.pushNamed(context, NavigatorName.hba1c_tabble);
     // Navigator.of(context).push(PageRouteBuilder(
     //     opaque: false,
     //     pageBuilder: (BuildContext context, _, __) => HbA1CTable()));

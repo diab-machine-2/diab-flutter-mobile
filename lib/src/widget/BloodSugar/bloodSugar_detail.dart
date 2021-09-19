@@ -6,6 +6,7 @@ import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -183,7 +184,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                               return GestureDetector(
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, '/add_bloodSugar', arguments: {
+                                        context, NavigatorName.add_blood_sugar, arguments: {
                                       'type': 'update',
                                       'id': element.id
                                     });

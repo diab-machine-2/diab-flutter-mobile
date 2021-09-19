@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 
 class BloodPressureDetailItem extends StatelessWidget {
   List _elements = [
@@ -50,7 +51,7 @@ class BloodPressureDetailItem extends StatelessWidget {
           return GestureDetector(
             onTap: () {
               print(element['title']);
-              Navigator.pushNamed(context, '/bloodPressureTable',
+              Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                   arguments: element['title']);
             },
             child: Padding(

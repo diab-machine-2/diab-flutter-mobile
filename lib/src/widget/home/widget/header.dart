@@ -8,6 +8,7 @@ import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/tabbar/guidline_panel.dart';
@@ -95,7 +96,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/profile');
+                        Navigator.pushNamed(context, NavigatorName.profile);
                       },
                       child: Container(
                         color: R.color.transparent,
@@ -159,7 +160,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                         SizedBox(width: 8),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, '/notification');
+                            Navigator.pushNamed(context, NavigatorName.notification);
                           },
                           child: Container(
                             padding: EdgeInsets.all(4),

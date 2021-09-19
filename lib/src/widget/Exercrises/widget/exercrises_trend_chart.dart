@@ -13,6 +13,7 @@ import 'package:medical/src/modal/exercrises/exercrise_trend_time.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -266,7 +267,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                             showPopupWeight();
                                           } else {
                                             Navigator.pushNamed(
-                                                context, '/add_exercrises',
+                                                context, NavigatorName.add_exercrises,
                                                 arguments: {
                                                   'type': 'input',
                                                 });
@@ -364,7 +365,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
   }
 
   // showDialog(BuildContext context) {
-  //   //Navigator.pushNamed(context, '/hba1c_tabble');
+  //   //Navigator.pushNamed(context, NavigatorName.hba1c_tabble);
   //   Navigator.of(context).push(PageRouteBuilder(
   //       opaque: false,
   //       pageBuilder: (BuildContext context, _, __) => HbA1CTable()));

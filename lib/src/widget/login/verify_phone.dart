@@ -9,6 +9,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -316,7 +317,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
 
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          Navigator.pushReplacementNamed(context, '/rules');
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
         BotToast.closeAllLoading();
       } else if (widget.type == 'facebook') {
@@ -330,7 +331,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          Navigator.pushReplacementNamed(context, '/rules');
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
         BotToast.closeAllLoading();
       } else if (widget.type == 'apple') {
@@ -344,7 +345,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          Navigator.pushReplacementNamed(context, '/rules');
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
         BotToast.closeAllLoading();
       } else if (widget.type == 'linked_google') {
@@ -385,13 +386,13 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         final result =
             await LoginClient().verifyOTPRecover(widget.phone, otpCode);
         print(result);
-        Navigator.pushReplacementNamed(context, '/new_password',
+        Navigator.pushReplacementNamed(context, NavigatorName.new_password,
             arguments: {'phone': widget.phone, 'token': otpCode});
         BotToast.closeAllLoading();
       } else {
         final result = await LoginClient().verifyOTP(widget.phone, otpCode);
         print(result);
-        Navigator.pushReplacementNamed(context, '/register_success',
+        Navigator.pushReplacementNamed(context, NavigatorName.register_success,
             arguments: {'phone': widget.phone, 'password': widget.password});
         BotToast.closeAllLoading();
       }

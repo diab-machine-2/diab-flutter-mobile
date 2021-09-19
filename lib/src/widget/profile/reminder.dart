@@ -8,6 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -173,7 +174,7 @@ class _ReminderControllerState extends State<ReminderController> {
               ])),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/add_reminder',
+              Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'input'});
             },
             child: Image.asset(R.drawable.button_plus,
@@ -185,7 +186,7 @@ class _ReminderControllerState extends State<ReminderController> {
   Widget buildItem(int index) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/add_reminder',
+        Navigator.pushNamed(context, NavigatorName.add_reminder,
             arguments: {'type': 'update', 'id': models[index].id});
       },
       child: Slidable(

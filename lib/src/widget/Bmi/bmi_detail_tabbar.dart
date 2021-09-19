@@ -4,6 +4,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bmi_description.dart';
 import 'package:medical/src/widget/Bmi/overview.dart';
 import 'package:medical/src/widget/Bmi/widget/bmi_detail.dart';
@@ -148,7 +149,7 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
   }
 
   _showMaterialDialog() {
-    Navigator.pushNamed(context, '/add_bmi',
+    Navigator.pushNamed(context, NavigatorName.add_bmi,
         arguments: {'type': 'input', 'id': null});
     // showDialog(
     //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),

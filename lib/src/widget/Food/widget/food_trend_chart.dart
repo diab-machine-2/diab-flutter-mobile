@@ -11,6 +11,7 @@ import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/modal/glucose/glucose_trend.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -99,7 +100,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                 : model.carbChart.items.length == 0)
                             ? GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/add_food',
+                                  Navigator.pushNamed(context, NavigatorName.add_food,
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child:

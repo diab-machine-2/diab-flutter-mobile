@@ -15,6 +15,7 @@ import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -207,7 +208,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                             child: GestureDetector(
                                               onTap: () {
                                                 Navigator.pushNamed(
-                                                    context, '/motivation');
+                                                    context, NavigatorName.motivation);
                                               },
                                               child: Container(
                                                 color: R.color.transparent,
@@ -855,7 +856,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
         'phoneNumber': user.phoneNumber
       });
       BotToast.closeAllLoading();
-      Navigator.pushNamed(context, '/verify', arguments: {
+      Navigator.pushNamed(context, NavigatorName.verify, arguments: {
         'type': 'linked_google',
         'otp': result.token,
         'phone': user.phoneNumber,
@@ -898,7 +899,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
             'phoneNumber': user.phoneNumber
           });
           BotToast.closeAllLoading();
-          Navigator.pushNamed(context, '/verify', arguments: {
+          Navigator.pushNamed(context, NavigatorName.verify, arguments: {
             'type': 'linked_facebook',
             'otp': result.token,
             'phone': user.phoneNumber,
