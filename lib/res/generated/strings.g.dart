@@ -130,4 +130,8 @@ class Strings {
 	String get confirm_logout => 'confirm_logout';
 	String get close => 'close';
 	String get yes => 'yes';
+	String get plan => 'plan';
+	String get course => 'course';
+	String get individual => 'individual';
+	String get upgrade_account => 'upgrade_account';
 }

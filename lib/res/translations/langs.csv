@@ -127,4 +127,8 @@ no_notification,Không có thông báo nào
 notice,Thông báo,
 confirm_logout,Bạn có chắc chắn muốn thoát ứng dụng ?
 close,Đóng
-yes,Đồng ý
+yes,Đồng ý,
+plan,Kế hoạch,
+course,Khoá học,
+individual,Cá nhân,
+upgrade_account,Nâng cấp tài khoản

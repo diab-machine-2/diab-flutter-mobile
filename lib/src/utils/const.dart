@@ -65,6 +65,11 @@ class Const {
   static const int SIGN_UP_SCREEN = 3;
   static const int MAIN_SCREEN = 3;
 
+  static const int HOME_SCREEN = 0;
+  static const int PLAN_SCREEN = 1;
+  static const int COURSE_SCREEN = 2;
+  static const int ACCOUNT_SCREEN = 3;
+
   static const int DEFAULT_SIZE = 100;
 
   static const String EN = "en";

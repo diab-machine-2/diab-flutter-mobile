@@ -91,12 +91,9 @@ class _AppState extends State<App> {
               routeObserver,
               TrackingManager.observerFirebase
             ],
-            localizationsDelegates: [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: [Locale('vi')],
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
             home: FlashScreenController(),
             debugShowCheckedModeBanner: false,
             onGenerateRoute: (settings) {

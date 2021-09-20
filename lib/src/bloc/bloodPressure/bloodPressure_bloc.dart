@@ -13,8 +13,7 @@ part 'bloodPressure_bloc_event.dart';
 part 'bloodPressure_bloc_state.dart';
 
 class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
-  @override
-  BloodPressureState get initialState => BloodPressureInitial();
+  BloodPressureBloc() : super(BloodPressureInitial());
 
   @override
   Stream<BloodPressureState> mapEventToState(BloodPressureEvent event) async* {

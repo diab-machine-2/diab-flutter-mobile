@@ -8,8 +8,8 @@ part 'notification_bloc_event.dart';
 part 'notification_bloc_state.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
-  @override
-  NotificationState get initialState => NotificationInitial();
+
+  NotificationBloc() : super(NotificationInitial());
 
   @override
   Stream<NotificationState> mapEventToState(NotificationEvent event) async* {

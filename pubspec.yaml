@@ -26,8 +26,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # bkoc
-  flutter_bloc: ^3.2.0
+  # bloc
+  flutter_bloc: ^7.2.0
   equatable: ^2.0.3
   json_annotation: ^4.1.0
   bot_toast: ^4.0.1
@@ -35,7 +35,7 @@ dependencies:
   flutter_animated_dialog: ^2.0.1
   fluttertoast: ^8.0.8
   # image_picker: ^0.6.7+22
-  image_picker: ^0.8.4+1
+  image_picker: ^0.8.4+2
   permission_handler: ^8.1.6
   # permission_handler: ^5.0.1+1
   flutter_datetime_picker: ^1.5.1
@@ -47,11 +47,11 @@ dependencies:
   dart_notification_center: ^1.0.0+1
   grouped_list: ^4.1.0
   device_info: ^2.0.2
-  shared_preferences: ^2.0.7
+  shared_preferences: ^2.0.8
   #Networking
   dio: ^4.0.0
   retrofit: ^2.0.1
-  pretty_dio_logger: ^1.2.0-beta-1
+  pretty_dio_logger: ^1.1.1
   logger: ^1.1.0
   #freezed
   freezed: ^0.14.5
@@ -90,6 +90,7 @@ dev_dependencies:
   retrofit_generator: ^2.0.1+1
   build_runner:
   json_serializable: ^5.0.1
+  wakelock: ^0.5.6
 
 dependency_overrides:
   provider: ^6.0.0

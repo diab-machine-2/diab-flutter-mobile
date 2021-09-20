@@ -89,12 +89,13 @@ class Drawables {
 	String get heart_rate => "lib/res/drawables/heart_rate.png";
 	String get help_circle => "lib/res/drawables/help_circle.png";
 	String get help_circle_active => "lib/res/drawables/help_circle_active.png";
-	String get home => "lib/res/drawables/home.png";
 	String get home_Background => "lib/res/drawables/home_Background.png";
 	String get hotline => "lib/res/drawables/hotline.png";
 	String get hue => "lib/res/drawables/hue.png";
 	String get hurt => "lib/res/drawables/hurt.png";
+	String get ic_account => "lib/res/drawables/ic_account.png";
 	String get ic_blood_pressure => "lib/res/drawables/ic_blood_pressure.png";
+	String get ic_course => "lib/res/drawables/ic_course.png";
 	String get ic_emotion => "lib/res/drawables/ic_emotion.png";
 	String get ic_empty_food => "lib/res/drawables/ic_empty_food.png";
 	String get ic_excersire => "lib/res/drawables/ic_excersire.png";
@@ -103,6 +104,8 @@ class Drawables {
 	String get ic_food_action => "lib/res/drawables/ic_food_action.png";
 	String get ic_glucose => "lib/res/drawables/ic_glucose.png";
 	String get ic_hba1c => "lib/res/drawables/ic_hba1c.png";
+	String get ic_home => "lib/res/drawables/ic_home.png";
+	String get ic_plan => "lib/res/drawables/ic_plan.png";
 	String get ic_search => "lib/res/drawables/ic_search.png";
 	String get ic_weight => "lib/res/drawables/ic_weight.png";
 	String get icon_HbA1Cn => "lib/res/drawables/icon_HbA1Cn.png";

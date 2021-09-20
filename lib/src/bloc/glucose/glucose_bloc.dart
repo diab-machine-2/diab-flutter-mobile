@@ -13,8 +13,7 @@ part 'glucose_bloc_event.dart';
 part 'glucose_bloc_state.dart';
 
 class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
-  @override
-  GlucoseState get initialState => GlucoseInitial();
+  GlucoseBloc() : super(GlucoseInitial());
 
   @override
   Stream<GlucoseState> mapEventToState(GlucoseEvent event) async* {

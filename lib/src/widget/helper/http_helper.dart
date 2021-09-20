@@ -9,14 +9,16 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 class FetchClient {
   static String get identifyBaseURL {
     return 'is.diab.com.vn';
-    return 'is.stg.diab.cptech.vn';
-    return 'is.dev.diab.cptech.vn';
+    // return 'is.stg.diab.cptech.vn';
+    // return 'is.dev.diab.cptech.vn';
+    // return '139.162.21.142:6001';
   }
 
   static String get baseURL {
     return 'api.diab.com.vn';
-    return 'api.stg.diab.cptech.vn';
-    return 'api.mobile.dev.diab.cptech.vn';
+    // return 'api.stg.diab.cptech.vn';
+    // return 'api.mobile.dev.diab.cptech.vn';
+    // return '139.162.21.142:6002';
   }
 
   Future<Options> options() async {
@@ -220,8 +222,9 @@ class FetchClient {
       requestHeader: true,
       requestBody: true,
       responseBody: true,
-      responseHeader: false,
-      compact: false,
+      responseHeader: true,
+      compact: true,
+      error: true
     ));
   }
 
@@ -253,20 +256,22 @@ class FetchClient {
 // class FetchClient {
 //   static String get identifyBaseURL {
 //     return 'is.diab.com.vn';
-//     return 'is.stg.diab.cptech.vn';
-//     return 'is.dev.diab.cptech.vn';
+//     // return 'is.stg.diab.cptech.vn';
+//     // return 'is.dev.diab.cptech.vn';
+//     // return '139.162.21.142:6001';
 //   }
-
+//
 //   static String get baseURL {
 //     return 'api.diab.com.vn';
-//     return 'api.stg.diab.cptech.vn';
-//     return 'api.mobile.dev.diab.cptech.vn';
+//     // return 'api.stg.diab.cptech.vn';
+//     // return 'api.mobile.dev.diab.cptech.vn';
+//     // return'139.162.21.142:6002';
 //   }
-
+//
 //   Future<Options> options() async {
 //     await checkNetwork();
 //     final token = await AppSettings.getToken();
-
+//
 //     var option = Options(
 //         headers: {
 //           'Authorization': 'Bearer $token',
@@ -279,7 +284,7 @@ class FetchClient {
 //     print(option);
 //     return option;
 //   }
-
+//
 //   Future<Options> options1() async {
 //     await checkNetwork();
 //     final token = await AppSettings.getToken();
@@ -294,7 +299,7 @@ class FetchClient {
 //         });
 //     return option;
 //   }
-
+//
 //   Future<Options> options2() async {
 //     await checkNetwork();
 //     final token = await AppSettings.getToken();
@@ -311,7 +316,7 @@ class FetchClient {
 //         });
 //     return option;
 //   }
-
+//
 //   Future<Response> fetchData(
 //       {bool baseIdentify = false,
 //       @required String url,
@@ -322,7 +327,7 @@ class FetchClient {
 //     logRequest(dio);
 //     return await dio.getUri(Uri.http(domain, url, params), options: option);
 //   }
-
+//
 //   Future<Response> postData({
 //     bool baseIdentify = false,
 //     String url,
@@ -341,7 +346,7 @@ class FetchClient {
 //         data: params,
 //         options: option);
 //   }
-
+//
 //   Future<Response> postUri(
 //       {bool baseIdentify = false,
 //       bool baseOption = false,
@@ -359,7 +364,7 @@ class FetchClient {
 //         data: params,
 //         options: option);
 //   }
-
+//
 //   Future<http.StreamedResponse> postHttp(
 //       {bool baseIdentify = false,
 //       String path,
@@ -367,22 +372,24 @@ class FetchClient {
 //       List<String> files}) async {
 //     final token = await AppSettings.getToken();
 //     var headers = {'Authorization': 'Bearer $token'};
+//     print(headers);
 //     var request = http.MultipartRequest(
 //         'POST',
 //         Uri.parse(
 //             'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+//     print(params);
 //     request.fields.addAll(params);
-
+//
 //     for (var file in files) {
 //       final value = await http.MultipartFile.fromPath('images', file);
 //       request.files.add(value);
 //     }
-
+//
 //     request.headers.addAll(headers);
-
+//
 //     return await request.send();
 //   }
-
+//
 //   Future<http.StreamedResponse> postHttp2(
 //       {bool baseIdentify = false, String path, dynamic params}) async {
 //     final token = await AppSettings.getToken();
@@ -396,10 +403,10 @@ class FetchClient {
 //             'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
 //     request.body = params;
 //     request.headers.addAll(headers);
-
+//
 //     return await request.send();
 //   }
-
+//
 //   Future<http.StreamedResponse> putHttp(
 //       {bool baseIdentify = false,
 //       String path,
@@ -413,18 +420,18 @@ class FetchClient {
 //         Uri.parse(
 //             'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
 //     request.fields.addAll(params);
-
+//
 //     for (var file in files) {
 //       final value = await http.MultipartFile.fromPath(
 //           fileName == null ? 'images' : fileName, file);
 //       request.files.add(value);
 //     }
-
+//
 //     request.headers.addAll(headers);
-
+//
 //     return await request.send();
 //   }
-
+//
 //   Future<Response> putData(
 //       {bool baseIdentify = false,
 //       String url,
@@ -441,7 +448,7 @@ class FetchClient {
 //         data: params,
 //         options: option);
 //   }
-
+//
 //   Future<Response> delete(
 //       {bool baseIdentify = false,
 //       String url,
@@ -458,17 +465,18 @@ class FetchClient {
 //         data: params,
 //         options: option);
 //   }
-
+//
 //   logRequest(Dio dio) {
 //     dio.interceptors.add(PrettyDioLogger(
 //       requestHeader: true,
 //       requestBody: true,
 //       responseBody: true,
-//       responseHeader: false,
-//       compact: false,
+//       responseHeader: true,
+//       error: true,
+//       compact: true,
 //     ));
 //   }
-
+//
 //   checkNetwork() async {
 //     try {
 //       final result = await InternetAddress.lookup('google.com');
