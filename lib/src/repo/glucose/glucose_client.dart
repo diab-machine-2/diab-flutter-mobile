@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/glucose/Glucose_Input_data_model.dart';
@@ -8,6 +9,7 @@ import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GlucoseClient extends FetchClient {
   Future<List<TimeFrameModel>> fetchFlucoseTimeFrame({int time}) async {
@@ -24,7 +26,7 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -53,7 +55,7 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ lấy tất cả chỉ số Đường huyết theo chu kỳ =============/
@@ -95,7 +97,7 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 //============ lấy chi tiết chỉ số Đường huyết =============/
@@ -113,7 +115,7 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -149,7 +151,7 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -170,7 +172,7 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -206,7 +208,7 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -231,7 +233,7 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ update chỉ số đường huyết =============/
@@ -270,7 +272,7 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

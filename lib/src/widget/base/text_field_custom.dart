@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef OnChangeCallback = Function(String);
 
@@ -116,7 +116,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                     if (value.length < 6) {
                                       showValidate = true;
                                       validateText =
-                                          'Mật khẩu ít nhất 06 ký tự';
+                                          R.string.password_least_character.tr();
                                     } else if (value.length != 0 &&
                                         showValidate) {
                                       showValidate = false;
@@ -172,7 +172,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                               value.length != 10) {
                                             showValidate = true;
                                             validateText =
-                                                'Số điện thoại không đúng định dạng';
+                                                R.string.phone_not_valid.tr();
                                           } else if (value.length != 0 &&
                                               showValidate) {
                                             showValidate = false;
@@ -196,7 +196,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                           },
                           child: Container(
                               color: R.color.transparent,
-                              child: Text(!showPassword ? 'Hiện' : 'Ẩn',
+                              child: Text(!showPassword ? R.string.show.tr() : R.string.hide.tr(),
                                   style: TextStyle(color: R.color.color0xff787A7D))))
                       : SizedBox(),
                   isCorrect

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_distribution.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_heart_rate.dart';
@@ -8,6 +9,7 @@ import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 part 'bloodPressure_bloc_event.dart';
 part 'bloodPressure_bloc_state.dart';
@@ -52,8 +54,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
         yield BloodPressureError(message: e.message);
       } else {
         yield BloodPressureError(
-            message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+            message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -79,7 +80,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
       } else {
         yield BloodPressureError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -101,7 +102,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
       } else {
         yield BloodPressureError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -122,7 +123,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
       } else {
         yield BloodPressureError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -143,7 +144,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
       } else {
         yield BloodPressureError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -164,7 +165,7 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
       } else {
         yield BloodPressureError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

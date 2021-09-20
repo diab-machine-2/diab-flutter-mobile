@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/notification/notification_data_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 part 'notification_bloc_event.dart';
 part 'notification_bloc_state.dart';
 
@@ -37,7 +40,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       } else {
         yield NotificationError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

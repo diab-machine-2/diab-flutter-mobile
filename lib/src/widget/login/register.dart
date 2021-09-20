@@ -1,19 +1,20 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:http/http.dart' as http;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'dart:io' show Platform;
+import 'package:easy_localization/easy_localization.dart';
 
 class RegisterController extends StatefulWidget {
   @override
@@ -258,7 +259,7 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
     if (password.length < 6) {
-      passwordKey.currentState.validate('Mật khẩu ít nhất 06 ký tự');
+      passwordKey.currentState.validate(R.string.password_least_character.tr());
       return;
     }
     if (confirmPassword.isEmpty) {
@@ -275,7 +276,7 @@ class _RegisterControllerState extends State<RegisterController> {
     RegExp regExp = new RegExp(pattern);
     final isCorrect = regExp.hasMatch(phone);
     if (!isCorrect) {
-      phoneKey.currentState.validate('Số điện thoại không hợp lệ');
+      phoneKey.currentState.validate(R.string.phone_not_valid.tr());
       return;
     }
 

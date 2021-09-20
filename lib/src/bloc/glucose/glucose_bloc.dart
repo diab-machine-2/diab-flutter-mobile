@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
@@ -8,6 +9,7 @@ import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 part 'glucose_bloc_event.dart';
 part 'glucose_bloc_state.dart';
@@ -50,7 +52,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
       } else {
         yield GlucoseError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -69,7 +71,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
       } else {
         yield GlucoseError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -88,7 +90,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
       } else {
         yield GlucoseError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -118,7 +120,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
       } else {
         yield GlucoseError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -138,7 +140,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
       } else {
         yield GlucoseError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

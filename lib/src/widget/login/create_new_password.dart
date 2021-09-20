@@ -2,11 +2,10 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
-import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class NewPasswordController extends StatefulWidget {
   final String phone;
@@ -123,7 +122,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
   submit() async {
     FocusScope.of(context).unfocus();
     if (password.isEmpty || password.length < 6) {
-      passwordKey.currentState.validate('Mật khẩu ít nhất 06 ký tự');
+      passwordKey.currentState.validate(R.string.password_least_character.tr());
       return;
     }
     if (password.contains(' ')) {

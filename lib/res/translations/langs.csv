@@ -19,6 +19,7 @@ error_unable_process_data,Không thể xử lý dữ liệu,Unable to process th
 error_not_acceptable,Không được chấp nhận,Not acceptable
 error_invalid_status_code,Đã nhận mã trạng thái không hợp lệ: {},Received invalid status code: {},
 error_not_found_api,Không tìm thấy API,Not found API
+error_can_not_connect_to_server,diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi
 current_language,Tiếng Việt,
 please_enter_email,Vui lòng nhập Email,
 please_enter_user_name,Vui lòng nhập Tên đăng nhập,
@@ -32,7 +33,7 @@ please_enter_confirm_password,Vui lòng nhập Mật khẩu mới,
 please_enter_curr_password,Vui lòng nhập Mật khẩu cũ,
 cannot_same_current_password,Mật khẩu không trùng khớp,
 email_not_valid,Email không hợp lệ,
-phone_not_valid,Số điện thoại không hợp lệ,
+phone_not_valid,Số điện thoại không đúng định dạng,
 phone_email_not_valid,The phone number/email is not valid,
 user_name_at_least_character,Tên đăng nhập phải có ít nhất 4 kí tự,
 user_name_max_character,Tên đăng nhập không nhiều hơn 32 kí tự,
@@ -106,7 +107,7 @@ email_or_phone_number,Email/ Số điện thoại,
 input_pass,Nhập mật khẩu,
 input_email_or_phone_number,Nhập Email/ Số điện thoại,
 please_input_phone_number,Vui lòng nhập số điện thoại,
-password_least_character,Mật khẩu phải có ít nhất 4 kí tự,
+password_least_character,Mật khẩu ít nhất 06 ký tự,
 email_phone_not_valid,Email hoặc số điện thoại không đúng,
 setting,Thiết lập tài khoản,
 help_center,Trung tâm trợ giúp,
@@ -127,4 +128,6 @@ no_notification,Không có thông báo nào
 notice,Thông báo,
 confirm_logout,Bạn có chắc chắn muốn thoát ứng dụng ?
 close,Đóng
-yes,Đồng ý
+yes,Đồng ý,
+show,Hiện,
+hide,Ẩn,

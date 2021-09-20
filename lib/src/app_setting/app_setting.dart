@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:medical/main.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/modal/home/home_model.dart';
@@ -10,12 +9,9 @@ import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 
 class AppSettings {
-  static Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
   static UserModel userInfo;
 
   static final AppPreference appPreference = AppPreference();
@@ -121,7 +117,7 @@ class AppSettings {
       await LoginClient().logout();
       await clearToken();
       await clearRefreshToken();
-      GoogleSignIn _googleSignIn = GoogleSignIn();
+      final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
       facebookLogin.logOut();

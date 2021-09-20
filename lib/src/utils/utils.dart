@@ -2,20 +2,19 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:flutter/services.dart' show rootBundle;
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:path/path.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import 'const.dart';
 import 'logger.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class Utils {
   static Future<bool> checkConnection() async {

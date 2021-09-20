@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_item_model.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_model.dart';
 import 'package:medical/src/modal/emotion/input_emotion_data_model.dart';
 import 'package:medical/src/repo/emotion/emotion_client.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 part 'emotion_bloc_event.dart';
 part 'emotion_bloc_state.dart';
 
@@ -53,7 +55,7 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -71,7 +73,7 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -89,7 +91,7 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -107,7 +109,7 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

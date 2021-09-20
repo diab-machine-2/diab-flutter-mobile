@@ -3,8 +3,10 @@ import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FetchClient {
   static String get identifyBaseURL {
@@ -232,7 +234,7 @@ class FetchClient {
         print('connected');
       }
     } on SocketException catch (_) {
-      throw 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+      throw R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -476,7 +478,7 @@ class FetchClient {
 //         print('connected');
 //       }
 //     } on SocketException catch (_) {
-//       throw 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+//       throw R.string.error_can_not_connect_to_server.tr();
 //     }
 //   }
 // }

@@ -21,6 +21,7 @@ class Strings {
 	String get error_not_acceptable => 'error_not_acceptable';
 	String get error_invalid_status_code => 'error_invalid_status_code';
 	String get error_not_found_api => 'error_not_found_api';
+	String get error_can_not_connect_to_server => 'error_can_not_connect_to_server';
 	String get current_language => 'current_language';
 	String get please_enter_email => 'please_enter_email';
 	String get please_enter_user_name => 'please_enter_user_name';
@@ -130,4 +131,6 @@ class Strings {
 	String get confirm_logout => 'confirm_logout';
 	String get close => 'close';
 	String get yes => 'yes';
+	String get show => 'show';
+	String get hide => 'hide';
 }
