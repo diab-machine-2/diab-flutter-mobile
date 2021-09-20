@@ -88,7 +88,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage(R.drawable.background_splash),
+                  image: AssetImage(R.drawable.bg_splash),
                   fit: BoxFit.cover)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

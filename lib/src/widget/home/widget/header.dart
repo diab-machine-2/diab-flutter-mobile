@@ -151,10 +151,10 @@ class _HomeHeaderState extends State<HomeHeader> {
                           },
                           child: isChoose
                               ? Image.asset(
-                                  R.drawable.book_question_selected,
+                                  R.drawable.ic_book_question_selected,
                                   width: 24,
                                   height: 24)
-                              : Image.asset(R.drawable.book_question,
+                              : Image.asset(R.drawable.ic_book_question,
                                   width: 24, height: 24),
                         ),
                         SizedBox(width: 8),
@@ -167,8 +167,8 @@ class _HomeHeaderState extends State<HomeHeader> {
                             color: R.color.transparent,
                             child: Image.asset(
                                 notificationCount > 0
-                                    ? R.drawable.bell_dot
-                                    : R.drawable.bell,
+                                    ? R.drawable.ic_bell_dot
+                                    : R.drawable.ic_bell,
                                 width: 24,
                                 height: 24),
                           ),

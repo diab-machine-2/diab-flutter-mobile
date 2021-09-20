@@ -121,7 +121,7 @@ class StarchChartState extends State<StarchChart>
                               color: toColor(model.colorCode)),
                         ),
                       ),
-                      Image.asset(R.drawable.apple_green),
+                      Image.asset(R.drawable.bg_apple_green),
                       Padding(
                         padding: EdgeInsets.only(top: 16, left: 16),
                         child: Text('Tinh bột',

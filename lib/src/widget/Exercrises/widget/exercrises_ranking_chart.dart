@@ -163,7 +163,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                             CrossAxisAlignment.start,
                                         children: [
                                           Image.asset(
-                                            R.drawable.badge_exe,
+                                            R.drawable.ic_badge_exe,
                                             width: 24,
                                             height: 24,
                                           ),

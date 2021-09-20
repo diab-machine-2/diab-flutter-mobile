@@ -853,7 +853,7 @@ class _HomeControllerState extends State<HomeController> {
                   width: heightLA * 4,
                   color: toColor(model.energyExerciseCard.corlorCode))),
         ),
-        Image.asset(R.drawable.apple_home),
+        Image.asset(R.drawable.bg_apple_home),
         Positioned.fill(
           child: Container(
             padding: EdgeInsets.all(16),

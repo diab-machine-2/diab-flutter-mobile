@@ -135,7 +135,7 @@ class ActionListPanel extends StatelessWidget {
                 ],
               ),
               selectedIndex == index
-                  ? Image.asset(R.drawable.check_mark_bg,
+                  ? Image.asset(R.drawable.ic_check_mark_bg,
                       width: 20, height: 20)
                   : SizedBox(),
             ],

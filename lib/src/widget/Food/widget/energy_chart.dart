@@ -126,7 +126,7 @@ class EnergyChartState extends State<EnergyChart>
                               color: toColor(model.colorCode)),
                         ),
                       ),
-                      Image.asset(R.drawable.apple_orange),
+                      Image.asset(R.drawable.bg_apple_orange),
                       Padding(
                         padding: EdgeInsets.only(top: 16, left: 16, right: 16),
                         child: Row(

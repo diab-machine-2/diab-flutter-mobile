@@ -124,7 +124,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage(R.drawable.background_splash),
+                    image: AssetImage(R.drawable.bg_splash),
                     fit: BoxFit.cover)),
             child: Column(
               children: [
@@ -1195,7 +1195,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.backIcon,
+                      Image.asset(R.drawable.ic_back_icon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),

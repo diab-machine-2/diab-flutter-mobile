@@ -93,7 +93,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage(R.drawable.background_splash),
+                  image: AssetImage(R.drawable.bg_splash),
                   fit: BoxFit.cover)),
           child: Column(
             children: [

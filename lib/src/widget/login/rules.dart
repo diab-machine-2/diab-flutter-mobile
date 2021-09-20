@@ -40,7 +40,7 @@ class _RulesControllerState extends State<RulesController> {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               image: DecorationImage(
-                image: AssetImage(R.drawable.background_splash),
+                image: AssetImage(R.drawable.bg_splash),
                 fit: BoxFit.cover,
               )),
           child: SafeArea(

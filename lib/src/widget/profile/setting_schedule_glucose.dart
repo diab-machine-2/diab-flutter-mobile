@@ -27,9 +27,9 @@ class SettingScheduleGlucoseController extends StatefulWidget {
 class _SettingScheduleGlucoseControllerState
     extends State<SettingScheduleGlucoseController> {
   List<String> icons = [
-    R.drawable.before_eat_selected,
-    R.drawable.after_eat_selected,
-    R.drawable.before_sleep_selected
+    R.drawable.ic_before_eat_selected,
+    R.drawable.ic_after_eat_selected,
+    R.drawable.ic_before_sleep_selected
   ];
 
   ScheduleGlucoseTimeModel timeModel;

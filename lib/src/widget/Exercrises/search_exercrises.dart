@@ -102,7 +102,7 @@ class _SearchExercrisesControllerState
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         image:
-                            AssetImage(R.drawable.background_splash),
+                            AssetImage(R.drawable.bg_splash),
                         fit: BoxFit.cover)),
                 child: Column(
                   children: [
@@ -151,7 +151,7 @@ class _SearchExercrisesControllerState
                             padding: const EdgeInsets.only(
                                 left: 16, right: 16, bottom: 16),
                             child: isClicked
-                                ? Image.asset(R.drawable.Bg_add_HbA1c)
+                                ? Image.asset(R.drawable.im_add_hba1c)
                                 : SizedBox()),
                         Container(
                             height: 54,
@@ -433,7 +433,7 @@ class _SearchExercrisesControllerState
                                     alignment: AlignmentDirectional.center,
                                     children: [
                                       Image.asset(
-                                          R.drawable.activity_empty,
+                                          R.drawable.bg_activity_empty,
                                           width: 50,
                                           height: 50),
                                       Image.network(

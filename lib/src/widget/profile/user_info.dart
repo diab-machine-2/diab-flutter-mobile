@@ -254,7 +254,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                     color: R.color.transparent,
                                     image: DecorationImage(
                                         image: AssetImage(
-                                            R.drawable.bg_dongluc),
+                                            R.drawable.bg_dong_luc),
                                         fit: BoxFit.fill),
                                   ),
                                   padding: EdgeInsets.all(16),

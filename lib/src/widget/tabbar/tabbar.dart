@@ -84,7 +84,7 @@ class _TabbarControllerState extends State<TabbarController>
             _showMaterialDialog();
           },
           child: Image.asset(
-            R.drawable.buttonPlusHome,
+            R.drawable.ic_button_plus_home,
             width: 82,
             height: 82,
           )),

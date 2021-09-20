@@ -282,7 +282,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                               .center,
                                                                       children: [
                                                                         Image.asset(
-                                                                            R.drawable.activity_empty,
+                                                                            R.drawable.bg_activity_empty,
                                                                             width:
                                                                                 50,
                                                                             height:

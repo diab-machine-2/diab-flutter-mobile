@@ -218,7 +218,7 @@ class _ScheduleActivityControllerState
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset(R.drawable.backIcon,
+                          Image.asset(R.drawable.ic_back_icon,
                               width: 64, height: 64),
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),

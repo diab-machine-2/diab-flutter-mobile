@@ -191,7 +191,7 @@ class _BloodSugarDetailTabbarControllerState
             onPressed: () {
               _showMaterialDialog();
             },
-            child: Image.asset(R.drawable.button_plus,
+            child: Image.asset(R.drawable.ic_button_plus,
                 width: 80, height: 80),
           )),
     );

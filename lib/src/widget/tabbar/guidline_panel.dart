@@ -49,7 +49,7 @@ class GuidlinePanel extends StatelessWidget {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('Có xu hướng trở nên tiêu cực',
                     style: TextStyle(fontSize: 14)),
-                Image.asset(R.drawable.angry, width: 24, height: 24)
+                Image.asset(R.drawable.ic_angry, width: 24, height: 24)
               ]),
               Padding(
                 padding: const EdgeInsets.only(top: 16, bottom: 16),
