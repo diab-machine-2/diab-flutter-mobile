@@ -8,7 +8,7 @@ class FilterAction extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(16),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        ItemFilter(R.drawable.icon_filter, 'Xem nguỡng HbA1C',
+        ItemFilter(R.drawable.ic_filter, 'Xem nguỡng HbA1C',
             size: 3),
         SizedBox(width: 16),
         buildContainer()
@@ -27,7 +27,7 @@ class FilterAction extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(R.drawable.icon_filter, width: 24, height: 24),
+            Image.asset(R.drawable.ic_filter, width: 24, height: 24),
             SizedBox(width: 8),
             Text('Bộ lọc', style: TextStyle(color: R.color.primaryColor)),
           ],

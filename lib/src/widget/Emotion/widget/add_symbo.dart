@@ -117,9 +117,9 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 16, right: 16),
                       child: isClicked
-                          ? Image.asset(R.drawable.help_circle_active,
+                          ? Image.asset(R.drawable.ic_help_circle_active,
                               width: 24, height: 24)
-                          : Image.asset(R.drawable.help_circle,
+                          : Image.asset(R.drawable.ic_help_circle,
                               width: 24, height: 24),
                     ),
                   ),

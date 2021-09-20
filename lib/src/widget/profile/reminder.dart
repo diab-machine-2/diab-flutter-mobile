@@ -196,7 +196,7 @@ class _ReminderControllerState extends State<ReminderController> {
             color: R.color.color0xffFF5552,
             iconWidget:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Image.asset(R.drawable.icon_trash2,
+              Image.asset(R.drawable.ic_trash2,
                   width: 24, height: 24),
               SizedBox(height: 4),
               Text('Xoá\nthông báo',
@@ -297,7 +297,7 @@ class _ReminderControllerState extends State<ReminderController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.earseIcon,
+                      Image.asset(R.drawable.ic_earse,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),

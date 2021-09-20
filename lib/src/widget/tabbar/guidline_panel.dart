@@ -57,21 +57,21 @@ class GuidlinePanel extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Không thay đổi', style: TextStyle(fontSize: 14)),
-                      Image.asset(R.drawable.sad,
+                      Image.asset(R.drawable.ic_sad,
                           width: 24, height: 24)
                     ]),
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('Có xu hướng trở nên tích cực',
                     style: TextStyle(fontSize: 14)),
-                Image.asset(R.drawable.happy, width: 24, height: 24)
+                Image.asset(R.drawable.ic_happy, width: 24, height: 24)
               ]),
               SizedBox(height: 27),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('Tốt / đạt mục tiêu',
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                Image.asset(R.drawable.coin, width: 24, height: 24)
+                Image.asset(R.drawable.ic_coin, width: 24, height: 24)
               ]),
               SizedBox(height: 27),
             ]),

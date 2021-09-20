@@ -249,7 +249,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                                 FontWeight
                                                                     .w400)),
                                                     Image.asset(
-                                                        R.drawable.icon_calendar,
+                                                        R.drawable.ic_calendar,
                                                         width: 24,
                                                         height: 24),
                                                   ]),

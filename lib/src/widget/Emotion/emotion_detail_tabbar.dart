@@ -259,7 +259,7 @@ class _ActionFilterState extends State<ActionFilter> {
         padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
         child: Row(
           children: [
-            Image.asset(R.drawable.icon_filter, width: 24, height: 24),
+            Image.asset(R.drawable.ic_filter, width: 24, height: 24),
             SizedBox(width: 6),
             Padding(
               padding: const EdgeInsets.only(top: 6),

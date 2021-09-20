@@ -25,11 +25,11 @@ class _ScheduleActivityControllerState
   List<PatientTimeFrameModel> tempModel = [];
 
   List<String> icons = [
-    R.drawable.icon_activity_1,
-    R.drawable.icon_activity_2,
-    R.drawable.icon_activity_3,
-    R.drawable.icon_activity_4,
-    R.drawable.icon_activity_5,
+    R.drawable.ic_activity_1,
+    R.drawable.ic_activity_2,
+    R.drawable.ic_activity_3,
+    R.drawable.ic_activity_4,
+    R.drawable.ic_activity_5,
   ];
 
   @override

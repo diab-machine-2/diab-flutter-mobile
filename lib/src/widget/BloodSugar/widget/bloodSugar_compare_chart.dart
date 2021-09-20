@@ -102,7 +102,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                           Text(name),
                                           SizedBox(width: 2),
                                           Image.asset(
-                                              R.drawable.chevron_down,
+                                              R.drawable.ic_chevron_down,
                                               width: 24,
                                               height: 24)
                                         ],
@@ -314,7 +314,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
             },
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text('Xem chi tiết', style: TextStyle(color: R.color.mainColor)),
-              Image.asset(R.drawable.icon_arrow_right,
+              Image.asset(R.drawable.ic_arrow_right,
                   width: 20, height: 20)
             ]),
           )

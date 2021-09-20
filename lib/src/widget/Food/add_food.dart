@@ -147,10 +147,10 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
                             ? Image.asset(
-                                R.drawable.help_circle_active,
+                                R.drawable.ic_help_circle_active,
                                 width: 24,
                                 height: 24)
-                            : Image.asset(R.drawable.help_circle,
+                            : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
                     ),
@@ -256,7 +256,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              R.drawable.icon_calendar,
+                                              R.drawable.ic_calendar,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
@@ -302,7 +302,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              R.drawable.icon_clock,
+                                              R.drawable.ic_clock,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
@@ -346,13 +346,13 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              R.drawable.icon_bowl,
+                                              R.drawable.ic_bowl,
                                               width: 24,
                                               height: 24),
                                           Row(
                                             children: [
                                               Image.asset(
-                                                R.drawable.circle_plus_exe,
+                                                R.drawable.ic_circle_plus_exe,
                                                 width: 24,
                                                 height: 24,
                                               ),
@@ -482,7 +482,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset(R.drawable.note_text,
+                                    Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
                                     Text('Ghi chú',
@@ -530,7 +530,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                             child: index == files.length
                                                 ? Container(
                                                     child: Image.asset(
-                                                        R.drawable.icon_add_photo))
+                                                        R.drawable.ic_add_photo))
                                                 : Stack(
                                                     alignment:
                                                         AlignmentDirectional
@@ -554,7 +554,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                         ),
                                                         IconButton(
                                                             icon: Image.asset(
-                                                                R.drawable.icon_trash),
+                                                                R.drawable.ic_trash),
                                                             onPressed: () {
                                                               setState(() {
                                                                 if (files[index]
@@ -825,7 +825,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.earseIcon,
+                      Image.asset(R.drawable.ic_earse,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
@@ -1064,7 +1064,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset(R.drawable.icon_photo,
+                  Image.asset(R.drawable.ic_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chọn trong thư viện",
@@ -1082,7 +1082,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset(R.drawable.icon_camera_black,
+                  Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chụp ảnh",

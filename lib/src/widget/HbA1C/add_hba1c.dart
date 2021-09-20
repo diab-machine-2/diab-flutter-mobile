@@ -129,10 +129,10 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
                             ? Image.asset(
-                                R.drawable.help_circle_active,
+                                R.drawable.ic_help_circle_active,
                                 width: 24,
                                 height: 24)
-                            : Image.asset(R.drawable.help_circle,
+                            : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
                     ),
@@ -247,7 +247,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              R.drawable.icon_calendar,
+                                              R.drawable.ic_calendar,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
@@ -304,7 +304,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset(R.drawable.note_text,
+                                    Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
                                     Text('Ghi chú',
@@ -354,7 +354,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                             child: index == files.length
                                                 ? Container(
                                                     child: Image.asset(
-                                                        R.drawable.icon_add_photo))
+                                                        R.drawable.ic_add_photo))
                                                 : Stack(
                                                     alignment:
                                                         AlignmentDirectional
@@ -378,7 +378,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                                         ),
                                                         IconButton(
                                                             icon: Image.asset(
-                                                                R.drawable.icon_trash),
+                                                                R.drawable.ic_trash),
                                                             onPressed: () {
                                                               setState(() {
                                                                 if (files[index]
@@ -511,7 +511,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.earseIcon,
+                      Image.asset(R.drawable.ic_earse,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
@@ -860,7 +860,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset(R.drawable.icon_photo,
+                  Image.asset(R.drawable.ic_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chọn trong thư viện",
@@ -878,7 +878,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset(R.drawable.icon_camera_black,
+                  Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text("Chụp ảnh",

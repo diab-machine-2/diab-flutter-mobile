@@ -143,7 +143,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                   fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
                                           Image.asset(
-                                              R.drawable.line_low,
+                                              R.drawable.ic_line_low,
                                               width: 20,
                                               height: 15)
                                         ],
@@ -197,7 +197,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                 fontWeight: FontWeight.w400)),
                                         SizedBox(width: 10),
                                         Image.asset(
-                                            R.drawable.line_average,
+                                            R.drawable.ic_line_average,
                                             width: 20,
                                             height: 15)
                                       ],
@@ -259,7 +259,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                   fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
                                           Image.asset(
-                                              R.drawable.line_high,
+                                              R.drawable.ic_line_high,
                                               width: 20,
                                               height: 15)
                                         ],
@@ -334,7 +334,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                         FontWeight.w400)),
                                             SizedBox(width: 10),
                                             Image.asset(
-                                                R.drawable.line_low,
+                                                R.drawable.ic_line_low,
                                                 width: 20,
                                                 height: 15)
                                           ],
@@ -386,7 +386,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                   fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
                                           Image.asset(
-                                              R.drawable.line_average,
+                                              R.drawable.ic_line_average,
                                               width: 20,
                                               height: 15)
                                         ],
@@ -445,7 +445,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                   fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
                                           Image.asset(
-                                              R.drawable.line_high,
+                                              R.drawable.ic_line_high,
                                               width: 20,
                                               height: 15)
                                         ],

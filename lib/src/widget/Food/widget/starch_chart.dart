@@ -142,7 +142,7 @@ class StarchChartState extends State<StarchChart>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.asset(R.drawable.icon_bat,
+                                    Image.asset(R.drawable.ic_bat,
                                         width: 24, height: 24),
                                     SizedBox(width: 4),
                                     Text(model.total.round().toString(),

@@ -34,7 +34,7 @@ class HbA1CTable extends StatelessWidget {
                     child: Container(
                       height: 50,
                       width: 50,
-                      child: Image.asset(R.drawable.icon_close_border),
+                      child: Image.asset(R.drawable.ic_close_border),
                     ),
                   )
                 ],

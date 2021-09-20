@@ -113,7 +113,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                 child: Row(
                                   children: [
                                     Image.asset(
-                                      R.drawable.circle_plus_exe,
+                                      R.drawable.ic_circle_plus_exe,
                                       width: 24,
                                       height: 24,
                                     ),
@@ -564,7 +564,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                 model.iconUrl.isEmpty
                     ? SizedBox()
                     : Image.asset(
-                        R.drawable.happy_weight,
+                        R.drawable.ic_happy_weight,
                         width: 24,
                         height: 24,
                       ),

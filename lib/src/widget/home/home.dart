@@ -26,13 +26,13 @@ class _HomeControllerState extends State<HomeController> {
     {
       'name': 'Đường huyết',
       'image': '',
-      'icon': R.drawable.icon_bloodSugar,
+      'icon': R.drawable.ic_blood_sugar,
       'dataDetail': []
     },
     {
       'name': 'Huyết áp',
       'image': R.drawable.bg_blood_presser,
-      'icon': R.drawable.icon_heartPresse,
+      'icon': R.drawable.ic_heart_presse,
       'dataDetail': []
     },
     {
@@ -46,9 +46,9 @@ class _HomeControllerState extends State<HomeController> {
       'image': R.drawable.bg_emotion,
       'icon': R.drawable.icon_emotion,
       'dataDetail': [
-        {'name': 'Vui vẻ', 'image': R.drawable.laughing},
-        {'name': 'Buồn ngủ', 'image': R.drawable.sleeping},
-        {'name': 'Ốm', 'image': R.drawable.sick}
+        {'name': 'Vui vẻ', 'image': R.drawable.ic_laughing},
+        {'name': 'Buồn ngủ', 'image': R.drawable.ic_sleeping},
+        {'name': 'Ốm', 'image': R.drawable.ic_sick}
       ]
     },
   ];
@@ -307,7 +307,7 @@ class _HomeControllerState extends State<HomeController> {
                                                     R.drawable.bg_food_and_excersire)),
                                             Center(
                                                 child: Image.asset(
-                                                    R.drawable.icon_food_and_excersire,
+                                                    R.drawable.ic_food_and_excersire,
                                                     width: 58,
                                                     height: 58)),
                                             Row(
@@ -377,7 +377,7 @@ class _HomeControllerState extends State<HomeController> {
                                                       R.drawable.bg_hba1c)),
                                               Center(
                                                   child: Image.asset(
-                                                      R.drawable.icon_HbA1Cn,
+                                                      R.drawable.ic_hba1cn,
                                                       width: 58,
                                                       height: 58))
                                             ]),
@@ -929,7 +929,7 @@ class _HomeControllerState extends State<HomeController> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Image.asset(R.drawable.icon_home_energy,
+                            Image.asset(R.drawable.ic_home_energy,
                                 width: 20, height: 20),
                             SizedBox(width: 4),
                             Text('Đã nạp',
@@ -970,7 +970,7 @@ class _HomeControllerState extends State<HomeController> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Image.asset(R.drawable.icon_home_excercise,
+                            Image.asset(R.drawable.ic_home_excercise,
                                 width: 20, height: 20),
                             SizedBox(width: 4),
                             Text('Tiêu hao',

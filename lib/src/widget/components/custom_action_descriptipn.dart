@@ -29,9 +29,9 @@ class CustomActionDescriptionState extends State<CustomActionDescription> {
         });
       },
       child: isClicked
-          ? Image.asset(R.drawable.help_circle_active,
+          ? Image.asset(R.drawable.ic_help_circle_active,
               width: 24, height: 24)
-          : Image.asset(R.drawable.help_circle, width: 24, height: 24),
+          : Image.asset(R.drawable.ic_help_circle, width: 24, height: 24),
     );
   }
 }

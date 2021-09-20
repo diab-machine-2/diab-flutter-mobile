@@ -136,7 +136,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                         color: R.color.transparent,
                                         child: !isLike
                                             ? Image.asset(
-                                                R.drawable.icon_heart_line,
+                                                R.drawable.ic_heart_line,
                                                 width: 24,
                                                 height: 24)
                                             : Image.asset(

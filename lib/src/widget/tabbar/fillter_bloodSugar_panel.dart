@@ -142,7 +142,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
                                       fontWeight: FontWeight.w600,
                                       color: R.color.mainColor)),
                           selectedIndex == index
-                              ? Image.asset(R.drawable.check_mark,
+                              ? Image.asset(R.drawable.ic_check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],

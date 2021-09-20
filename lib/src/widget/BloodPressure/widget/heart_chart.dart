@@ -319,7 +319,7 @@ class HeartChartState extends State<HeartChart>
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text('Xem chi tiết',
                     style: TextStyle(color: R.color.mainColor)),
-                Image.asset(R.drawable.icon_arrow_right, width: 20, height: 20)
+                Image.asset(R.drawable.ic_arrow_right, width: 20, height: 20)
               ]),
             ),
           )

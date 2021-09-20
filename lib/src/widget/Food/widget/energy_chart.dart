@@ -155,7 +155,7 @@ class EnergyChartState extends State<EnergyChart>
                                 child: Row(
                                   children: [
                                     Image.asset(
-                                      R.drawable.circle_plus_exe,
+                                      R.drawable.ic_circle_plus_exe,
                                       width: 24,
                                       height: 24,
                                     ),
@@ -233,7 +233,7 @@ class EnergyChartState extends State<EnergyChart>
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Image.asset(R.drawable.icon_bat,
+                                  Image.asset(R.drawable.ic_bat,
                                       width: 24, height: 24),
                                   SizedBox(width: 4),
                                   Text(formatNumber(model.total),

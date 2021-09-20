@@ -118,7 +118,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                                           : Image.network(user.imageUrl.url,
                                               width: 42, height: 42)),
                                 ),
-                                Image.asset(R.drawable.icon_crown,
+                                Image.asset(R.drawable.ic_crown,
                                     width: 20, height: 20)
                               ]),
                           SizedBox(width: 8),
@@ -223,7 +223,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                                                   fontWeight: FontWeight.w600)),
                                           SizedBox(width: 4),
                                           Image.asset(
-                                              R.drawable.icon_arrow_right,
+                                              R.drawable.ic_arrow_right,
                                               width: 24,
                                               height: 24)
                                         ])),

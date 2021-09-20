@@ -195,7 +195,7 @@ class _InputDetailExercrisesControllerState
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Image.asset(
-                                            R.drawable.icon_bar_chart,
+                                            R.drawable.ic_bar_chart,
                                             width: 24,
                                             height: 24),
                                         SizedBox(width: 8),
@@ -266,7 +266,7 @@ class _InputDetailExercrisesControllerState
                                           CrossAxisAlignment.start,
                                       children: [
                                         Image.asset(
-                                            R.drawable.icon_clock,
+                                            R.drawable.ic_clock,
                                             width: 24,
                                             height: 24),
                                         SizedBox(width: 8),
@@ -336,7 +336,7 @@ class _InputDetailExercrisesControllerState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset(R.drawable.stopwatch,
+                                    Image.asset(R.drawable.ic_stopwatch,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
                                     Text('Thời gian vận động',

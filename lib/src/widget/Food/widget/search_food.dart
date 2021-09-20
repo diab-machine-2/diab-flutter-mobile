@@ -145,7 +145,7 @@ class _SearchFoodState extends State<SearchFood> {
                               onTap: () {
                                 Navigator.pop(context);
                               },
-                              child: Image.asset(R.drawable.icon_clear,
+                              child: Image.asset(R.drawable.ic_clear,
                                   width: 35, height: 35),
                             )
                           ],

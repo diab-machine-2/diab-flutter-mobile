@@ -106,7 +106,7 @@ class _ContactControllerState extends State<ContactController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.icon_hotline,
+                      Image.asset(R.drawable.ic_hotline,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),

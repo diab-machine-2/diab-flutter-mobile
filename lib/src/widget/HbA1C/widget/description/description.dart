@@ -59,7 +59,7 @@ class Description extends StatelessWidget {
                                 color: R.color.mainColor,
                                 fontWeight: FontWeight.w700)),
                         SizedBox(width: 4),
-                        Image.asset(R.drawable.icon_arrow_des,
+                        Image.asset(R.drawable.ic_arrow_des,
                             width: 20, height: 20)
                       ]),
                     )

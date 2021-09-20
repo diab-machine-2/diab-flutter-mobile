@@ -122,7 +122,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                               Padding(
                                 padding: EdgeInsets.only(left: 16, top: 20),
                                 child: Row(children: [
-                                  Image.asset(R.drawable.icon_fist,
+                                  Image.asset(R.drawable.ic_fist,
                                       width: 44, height: 47),
                                   SizedBox(width: 16),
                                   Column(

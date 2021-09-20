@@ -155,7 +155,7 @@ class _LoginControllerState extends State<LoginController> {
                                                     MainAxisAlignment.center,
                                                 children: [
                                                   Image.asset(
-                                                      R.drawable.icon_login_apple,
+                                                      R.drawable.ic_login_apple,
                                                       width: 26,
                                                       height: 26),
                                                 ])),
@@ -180,7 +180,7 @@ class _LoginControllerState extends State<LoginController> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Image.asset(
-                                                R.drawable.icon_gg,
+                                                R.drawable.ic_gg,
                                                 width: 26,
                                                 height: 26),
                                           ])),
@@ -330,7 +330,7 @@ class _LoginControllerState extends State<LoginController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(R.drawable.checkError,
+              Image.asset(R.drawable.ic_check_error,
                   width: 64, height: 64),
               SizedBox(height: 8),
               RichText(

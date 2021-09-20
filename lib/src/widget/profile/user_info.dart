@@ -133,7 +133,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         ),
                                       ),
                                       Image.asset(
-                                          R.drawable.icon_camera_picker,
+                                          R.drawable.ic_camera_picker,
                                           width: 50,
                                           height: 50)
                                     ]),
@@ -176,7 +176,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                       color: R.color.transparent,
                                                       child: Row(children: [
                                                         Image.asset(
-                                                            R.drawable.icon_edit,
+                                                            R.drawable.ic_edit,
                                                             width: 16,
                                                             height: 16),
                                                         SizedBox(width: 4),
@@ -329,10 +329,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                  R.drawable.icon_person,
+                                  R.drawable.ic_person,
                                   user.fullName,
                                   'Họ và tên',
-                                  Image.asset(R.drawable.icon_right,
+                                  Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   0,
                                   callback: () {
@@ -340,10 +340,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  R.drawable.icon_birthday,
+                                  R.drawable.ic_birthday,
                                   convertToUTC(user.dateOfBirth, 'dd/MM/yyyy'),
                                   'Ngày sinh',
-                                  Image.asset(R.drawable.icon_right,
+                                  Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   1,
                                   callback: () {
@@ -351,12 +351,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  R.drawable.icon_gender,
+                                  R.drawable.ic_gender,
                                   user.gender == null || user.gender.isEmpty
                                       ? 'Đang cập nhật'
                                       : user.gender,
                                   'Giới tính',
-                                  Image.asset(R.drawable.icon_right,
+                                  Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   2,
                                   callback: () {
@@ -380,7 +380,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                  R.drawable.icon_folder,
+                                  R.drawable.ic_folder,
                                   user.diabetesName ?? 'Đang cập nhật',
                                   'Loại bệnh',
                                   null,
@@ -390,7 +390,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  R.drawable.icon_year,
+                                  R.drawable.ic_year,
                                   convertToUTC(user.diabetesDate, 'yyyy'),
                                   'Năm phát bệnh',
                                   null,
@@ -416,7 +416,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                  R.drawable.icon_kg,
+                                  R.drawable.ic_kg,
                                   user.weight == null
                                       ? 'Chưa cập nhật'
                                       : '${user.weight.round()} kg',
@@ -428,7 +428,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  R.drawable.icon_ruler,
+                                  R.drawable.ic_ruler,
                                   user.height == null
                                       ? 'Chưa cập nhật'
                                       : '${user.height.round()} cm',
@@ -456,14 +456,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                    R.drawable.icon_phone_info,
+                                    R.drawable.ic_phone_info,
                                     user.phoneNumber,
                                     'Số điện thoại 1',
-                                    Image.asset(R.drawable.icon_ok,
+                                    Image.asset(R.drawable.ic_ok,
                                         width: 24, height: 24),
                                     7),
                                 buildItem(
-                                  R.drawable.icon_phone_info,
+                                  R.drawable.ic_phone_info,
                                   user.secondPhoneNumber == null ||
                                           user.secondPhoneNumber.isEmpty
                                       ? 'Chưa cập nhật'
@@ -476,7 +476,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  R.drawable.icon_email,
+                                  R.drawable.ic_email,
                                   user.email == null || user.email.isEmpty
                                       ? 'Chưa cập nhật'
                                       : user.email,
@@ -488,7 +488,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                    R.drawable.icon_location,
+                                    R.drawable.ic_location,
                                     ((user.address ?? '') +
                                                 (user.address ==
                                                             null ||
@@ -555,7 +555,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   _showDialogUpdateAddress();
                                 }),
                                 buildItem(
-                                    R.drawable.icon_google,
+                                    R.drawable.ic_google,
                                     user.isLinkedGoogle == null ||
                                             !user.isLinkedGoogle
                                         ? 'Chưa kết nối'
@@ -583,7 +583,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   borderRadius: BorderRadius.circular(10)),
                               padding: EdgeInsets.all(16),
                               child: Row(children: [
-                                Image.asset(R.drawable.icon_logout,
+                                Image.asset(R.drawable.ic_logout,
                                     width: 33, height: 33),
                                 SizedBox(width: 12),
                                 Text('Đăng xuất',
@@ -639,7 +639,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
             padding: EdgeInsets.only(left: 8, right: 8),
             child: Row(
               children: [
-                Image.asset(R.drawable.icon_photo,
+                Image.asset(R.drawable.ic_photo,
                     width: 24, height: 24),
                 SizedBox(width: 16),
                 Text("Chọn trong thư viện",
@@ -657,7 +657,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
             padding: EdgeInsets.only(left: 8, right: 8),
             child: Row(
               children: [
-                Image.asset(R.drawable.icon_camera_black,
+                Image.asset(R.drawable.ic_camera_black,
                     width: 24, height: 24),
                 SizedBox(width: 16),
                 Text("Chụp ảnh",
@@ -1004,7 +1004,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset(R.drawable.icon_logout,
+                          Image.asset(R.drawable.ic_logout,
                               width: 64, height: 64),
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),

@@ -482,7 +482,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(R.drawable.checkSuccess,
+              Image.asset(R.drawable.ic_check_success,
                   width: 64, height: 64),
               Text('Đã gửi lại mã OTP.\nVui lòng kiểm tra tin nhắn',
                   textAlign: TextAlign.center)
@@ -503,7 +503,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(R.drawable.checkError,
+              Image.asset(R.drawable.ic_check_error,
                   width: 64, height: 64),
               SizedBox(height: 8),
               RichText(

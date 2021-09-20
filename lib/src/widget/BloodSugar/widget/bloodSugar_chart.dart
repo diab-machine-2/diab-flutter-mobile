@@ -110,7 +110,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                               : 'Tất cả'),
                                           SizedBox(width: 4),
                                           Image.asset(
-                                              R.drawable.chevron_down,
+                                              R.drawable.ic_chevron_down,
                                               width: 24,
                                               height: 24)
                                         ],
@@ -169,7 +169,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                               style:
                                                   TextStyle(color: R.color.mainColor)),
                                           Image.asset(
-                                              R.drawable.icon_arrow_right,
+                                              R.drawable.ic_arrow_right,
                                               width: 20,
                                               height: 20)
                                         ]),

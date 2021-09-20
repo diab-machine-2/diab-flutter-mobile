@@ -75,8 +75,8 @@ class TextFieldCustomState extends State<TextFieldCustom> {
             child: Row(children: [
               Image.asset(
                   widget.isPassword
-                      ? R.drawable.icon_lock
-                      : R.drawable.icon_phone,
+                      ? R.drawable.ic_lock
+                      : R.drawable.ic_phone,
                   width: 20,
                   height: 20,
                   color: R.color.mainColor),
@@ -202,14 +202,14 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                   isCorrect
                       ? Padding(
                           padding: EdgeInsets.only(left: 8),
-                          child: Image.asset(R.drawable.icon_correct,
+                          child: Image.asset(R.drawable.ic_correct,
                               width: 24, height: 24),
                         )
                       : showValidate
                           ? Padding(
                               padding: EdgeInsets.only(left: 8),
                               child: Image.asset(
-                                  R.drawable.icon_warning,
+                                  R.drawable.ic_warning,
                                   width: 24,
                                   height: 24),
                             )

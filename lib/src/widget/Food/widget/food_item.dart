@@ -102,7 +102,7 @@ class FoodItem extends StatelessWidget {
               child: Image.asset(
                   model.liked
                       ? R.drawable.icon_heart
-                      : R.drawable.icon_heart_line,
+                      : R.drawable.ic_heart_line,
                   width: 24,
                   height: 24),
             )

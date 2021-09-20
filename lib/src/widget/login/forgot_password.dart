@@ -151,7 +151,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(R.drawable.checkError,
+              Image.asset(R.drawable.ic_check_error,
                   width: 64, height: 64),
               SizedBox(height: 8),
               RichText(

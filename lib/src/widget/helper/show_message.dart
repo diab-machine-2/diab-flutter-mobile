@@ -64,7 +64,7 @@ class ToastMessage extends StatelessWidget {
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.circular(8)),
                 child: Image.asset(
-                  R.drawable.icon_app,
+                  R.drawable.ic_app,
                   width: 40,
                   height: 40,
                 ),
@@ -130,7 +130,7 @@ class _NotificationMessage extends State<NotificationMessage> {
                     decoration:
                         BoxDecoration(borderRadius: BorderRadius.circular(8)),
                     child: Image.asset(
-                      R.drawable.icon_app,
+                      R.drawable.ic_app,
                       width: 40,
                       height: 40,
                     ),
