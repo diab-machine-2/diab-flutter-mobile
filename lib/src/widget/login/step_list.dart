@@ -28,19 +28,19 @@ class _StepListControllerState extends State<StepListController> {
   var data = [
     {
       'name': 'Đồng hành & sẻ chia',
-      'image': R.drawable.step1,
+      'image': R.drawable.im_step1,
       'text':
           'Hướng đến những thay đổi lành mạnh cùng đội ngũ huấn luyện sức khỏe (Health Coach)',
     },
     {
       'name': 'Hiểu để yêu bản thân hơn',
-      'image': R.drawable.step2,
+      'image': R.drawable.im_step2,
       'text':
           'Theo dõi sức khỏe dễ dàng, học cách yêu thương bản thân hơn chỉ trên một ứng dụng ',
     },
     {
       'name': 'Và không chỉ có bạn...',
-      'image': R.drawable.step3,
+      'image': R.drawable.im_step3,
       'text':
           'Kết nối bạn với gia đình, cộng đồng người mắc Đái tháo đường suốt hành trình dài phía trước',
     }

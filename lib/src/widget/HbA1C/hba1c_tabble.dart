@@ -25,7 +25,7 @@ class HbA1CTable extends StatelessWidget {
                   Expanded(
                       child: Center(
                           child:
-                              Image.asset(R.drawable.tabble_hba1c))),
+                              Image.asset(R.drawable.im_tabble_hba1c))),
                   SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {

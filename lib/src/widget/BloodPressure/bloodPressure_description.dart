@@ -24,7 +24,7 @@ class BloodPressureDescription extends StatelessWidget {
                         children: [
                           Row(children: [
                             Image.asset(
-                              R.drawable.icon_des_person,
+                              R.drawable.im_des_person,
                               width: 71,
                               height: 76,
                             ),

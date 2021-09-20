@@ -175,7 +175,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                         SafeArea(
                           bottom: false,
                           child: Image.asset(
-                              R.drawable.schedule_glucose_bg,
+                              R.drawable.im_schedule_glucose,
                               height: 220),
                         ),
                         Padding(

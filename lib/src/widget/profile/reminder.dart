@@ -133,7 +133,7 @@ class _ReminderControllerState extends State<ReminderController> {
                                         Column(
                                           children: [
                                             Image.asset(
-                                                R.drawable.icon_reminder,
+                                                R.drawable.im_reminder,
                                                 height: 113),
                                             Padding(
                                               padding: EdgeInsets.only(

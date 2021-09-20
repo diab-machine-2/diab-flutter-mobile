@@ -89,7 +89,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                           children: [
                             Align(
                                 alignment: Alignment.topRight,
-                                child: Image.asset(R.drawable.Parent,
+                                child: Image.asset(R.drawable.im_parent,
                                     height: 175)),
                             SizedBox(height: 8),
                             Padding(

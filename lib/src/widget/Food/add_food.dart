@@ -189,7 +189,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                 children: [
                                   SizedBox(width: 16),
                                   Image.asset(
-                                      R.drawable.icon_food_person,
+                                      R.drawable.im_food_person,
                                       width: 113,
                                       height: 148),
                                   SizedBox(width: 16),

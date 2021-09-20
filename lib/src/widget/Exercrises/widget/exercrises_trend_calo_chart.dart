@@ -247,7 +247,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                           }
                                         },
                                         child: Image.asset(
-                                          R.drawable.excerise_calo_empty,
+                                          R.drawable.im_excerise_calo_empty,
                                           fit: BoxFit.cover,
                                         ))
                                     : Column(children: [

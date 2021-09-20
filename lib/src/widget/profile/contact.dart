@@ -55,7 +55,7 @@ class _ContactControllerState extends State<ContactController> {
                       onTap: () {
                         showDialogCall();
                       },
-                      child: Image.asset(R.drawable.hotline)),
+                      child: Image.asset(R.drawable.im_hotline)),
                   SizedBox(height: 16),
                   GestureDetector(
                       onTap: () async {
@@ -87,7 +87,7 @@ class _ContactControllerState extends State<ContactController> {
 
                         launch(_emailLaunchUri.toString());
                       },
-                      child: Image.asset(R.drawable.email_support))
+                      child: Image.asset(R.drawable.im_email_support))
                 ]),
               )
             ])));

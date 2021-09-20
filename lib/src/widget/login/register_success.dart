@@ -29,7 +29,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
             Expanded(
               child: ListView(children: [
                 Stack(alignment: AlignmentDirectional.center, children: [
-                  Image.asset(R.drawable.RegisterSuccess),
+                  Image.asset(R.drawable.im_register_success),
                   Column(children: [
                     SizedBox(height: 180),
                     Text('Đăng ký thành công!',

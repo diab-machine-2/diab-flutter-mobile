@@ -212,7 +212,7 @@ class _SearchFoodState extends State<SearchFood> {
                                                   right: 64,
                                                   top: 100),
                                               child: Image.asset(
-                                                  R.drawable.near_food_empty),
+                                                  R.drawable.im_near_food_empty),
                                             );
                                           } else {
                                             final selectedIndex = selectedFoods

@@ -36,7 +36,7 @@ class Description extends StatelessWidget {
               children: [
                 Padding(
                   padding: EdgeInsets.only(top: 20, left: 8, bottom: 8),
-                  child: Image.asset(R.drawable.icon_des),
+                  child: Image.asset(R.drawable.im_des),
                 ),
                 SizedBox(width: 8),
                 Column(

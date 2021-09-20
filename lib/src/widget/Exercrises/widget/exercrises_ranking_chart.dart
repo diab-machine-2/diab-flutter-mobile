@@ -135,7 +135,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                       });
                                 },
                                 child: Image.asset(
-                                  R.drawable.nothing,
+                                  R.drawable.im_nothing,
                                 ),
                               )
                             : Container(

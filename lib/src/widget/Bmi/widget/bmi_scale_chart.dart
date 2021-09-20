@@ -165,7 +165,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                                     children: [
                                       model.value == null || model.value == 0
                                           ? Image.asset(
-                                              R.drawable.bmi_empty)
+                                              R.drawable.im_bmi_empty)
                                           : buildChart(model),
                                       SizedBox(height: 16),
                                       Padding(

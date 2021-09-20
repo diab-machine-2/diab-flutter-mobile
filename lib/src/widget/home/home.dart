@@ -31,19 +31,19 @@ class _HomeControllerState extends State<HomeController> {
     },
     {
       'name': 'Huyết áp',
-      'image': R.drawable.im_bloodPresser,
+      'image': R.drawable.bg_blood_presser,
       'icon': R.drawable.icon_heartPresse,
       'dataDetail': []
     },
     {
       'name': 'Cân nặng',
-      'image': R.drawable.im_weight,
+      'image': R.drawable.bg_weight,
       'icon': R.drawable.icon_weight,
       'dataDetail': []
     },
     {
       'name': 'Cảm xúc',
-      'image': R.drawable.im_emotion,
+      'image': R.drawable.bg_emotion,
       'icon': R.drawable.icon_emotion,
       'dataDetail': [
         {'name': 'Vui vẻ', 'image': R.drawable.laughing},
@@ -304,7 +304,7 @@ class _HomeControllerState extends State<HomeController> {
                                                 bottom: 0,
                                                 left: 0,
                                                 child: Image.asset(
-                                                    R.drawable.im_food_and_excersire)),
+                                                    R.drawable.bg_food_and_excersire)),
                                             Center(
                                                 child: Image.asset(
                                                     R.drawable.icon_food_and_excersire,
@@ -374,7 +374,7 @@ class _HomeControllerState extends State<HomeController> {
                                                   bottom: 0,
                                                   right: 0,
                                                   child: Image.asset(
-                                                      R.drawable.im_hba1c)),
+                                                      R.drawable.bg_hba1c)),
                                               Center(
                                                   child: Image.asset(
                                                       R.drawable.icon_HbA1Cn,

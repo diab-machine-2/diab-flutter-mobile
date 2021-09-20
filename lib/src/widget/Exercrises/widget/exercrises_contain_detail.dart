@@ -642,7 +642,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                   ),
                                                 ),
                                                 Image.asset(
-                                                  R.drawable.runner,
+                                                  R.drawable.im_runner,
                                                   width: 109,
                                                   height: 178,
                                                 )

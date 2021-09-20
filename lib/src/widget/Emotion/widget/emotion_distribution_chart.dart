@@ -115,7 +115,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                   padding: EdgeInsets.only(
                                       top: 16, left: 16, right: 16),
                                   child: Image.asset(
-                                      R.drawable.icon_emotion_empty),
+                                      R.drawable.im_emotion_empty),
                                 ),
                               )
                             : Column(children: [

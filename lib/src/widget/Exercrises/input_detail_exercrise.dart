@@ -560,7 +560,7 @@ class _InputDetailExercrisesControllerState
                                   color: R.color.mainColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600)),
-                          Image.asset(R.drawable.bg_congrat),
+                          Image.asset(R.drawable.im_congrat),
                         ],
                       )),
                 )));

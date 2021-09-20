@@ -196,7 +196,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                             Container(
                               margin: const EdgeInsets.only(right: 16),
                               child: Image.asset(
-                                  R.drawable.runner_left,
+                                  R.drawable.im_runner_left,
                                   height: 130),
                             ),
                             Expanded(
@@ -964,7 +964,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                   color: R.color.mainColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600)),
-                          Image.asset(R.drawable.bg_congrat),
+                          Image.asset(R.drawable.im_congrat),
                         ],
                       )),
                 )));

@@ -106,7 +106,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                    R.drawable.blood_pressure_trend_empty),
+                                    R.drawable.im_blood_pressure_trend_empty),
                               )
                             : Container(
                                 decoration: BoxDecoration(

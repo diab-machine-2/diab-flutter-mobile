@@ -138,7 +138,7 @@ class NotificationControllerState extends State<NotificationController>
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Image.asset(
-                                                R.drawable.notification_empty,
+                                                R.drawable.im_notification_empty,
                                                 width: 235,
                                                 height: 172),
                                             SizedBox(height: 24),
