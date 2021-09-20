@@ -48,7 +48,7 @@ class BloodSugarOverviewControllerState
         body: Container(
       decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage(R.drawable.HbA1c_high),
+              image: AssetImage(R.drawable.bg_hba1c_high),
               fit: BoxFit.cover)),
       child: ListView(
           controller: _scrollController,

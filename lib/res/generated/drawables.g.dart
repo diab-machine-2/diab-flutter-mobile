@@ -1,24 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY
 
 class Drawables {
-	String get HbA1c_high => "lib/res/drawables/HbA1c_high.png";
 	String get bg_activity_empty => "lib/res/drawables/bg_activity_empty.png";
 	String get bg_apple_green => "lib/res/drawables/bg_apple_green.png";
 	String get bg_apple_home => "lib/res/drawables/bg_apple_home.png";
 	String get bg_apple_orange => "lib/res/drawables/bg_apple_orange.png";
 	String get bg_blood_presser => "lib/res/drawables/bg_blood_presser.png";
 	String get bg_des => "lib/res/drawables/bg_des.png";
+	String get bg_detail => "lib/res/drawables/bg_detail.png";
 	String get bg_dong_luc => "lib/res/drawables/bg_dong_luc.png";
 	String get bg_emotion => "lib/res/drawables/bg_emotion.png";
 	String get bg_emotion_1 => "lib/res/drawables/bg_emotion_1.png";
 	String get bg_food_and_excersire => "lib/res/drawables/bg_food_and_excersire.png";
 	String get bg_hba1c => "lib/res/drawables/bg_hba1c.png";
+	String get bg_hba1c_high => "lib/res/drawables/bg_hba1c_high.png";
 	String get bg_home => "lib/res/drawables/bg_home.jpg";
+	String get bg_profile => "lib/res/drawables/bg_profile.png";
 	String get bg_splash => "lib/res/drawables/bg_splash.png";
 	String get bg_sub_exe => "lib/res/drawables/bg_sub_exe.png";
 	String get bg_weight => "lib/res/drawables/bg_weight.png";
 	String get checkError => "lib/res/drawables/checkError.png";
-	String get checkPhone => "lib/res/drawables/checkPhone.png";
 	String get checkSuccess => "lib/res/drawables/checkSuccess.png";
 	String get check_mark => "lib/res/drawables/check_mark.png";
 	String get chevron_down => "lib/res/drawables/chevron_down.png";
@@ -26,7 +27,6 @@ class Drawables {
 	String get clock_exe => "lib/res/drawables/clock_exe.png";
 	String get coin => "lib/res/drawables/coin.png";
 	String get comment_checked => "lib/res/drawables/comment_checked.png";
-	String get detail_Background => "lib/res/drawables/detail_Background.png";
 	String get earseIcon => "lib/res/drawables/earseIcon.png";
 	String get fire_exe => "lib/res/drawables/fire_exe.png";
 	String get happy => "lib/res/drawables/happy.png";
@@ -141,6 +141,7 @@ class Drawables {
 	String get im_blood_pressure_distribution_empty => "lib/res/drawables/im_blood_pressure_distribution_empty.png";
 	String get im_blood_pressure_trend_empty => "lib/res/drawables/im_blood_pressure_trend_empty.png";
 	String get im_bmi_empty => "lib/res/drawables/im_bmi_empty.png";
+	String get im_check_phone => "lib/res/drawables/im_check_phone.png";
 	String get im_congrat => "lib/res/drawables/im_congrat.png";
 	String get im_des => "lib/res/drawables/im_des.png";
 	String get im_des_person => "lib/res/drawables/im_des_person.png";
@@ -179,7 +180,6 @@ class Drawables {
 	String get line_high => "lib/res/drawables/line_high.png";
 	String get line_low => "lib/res/drawables/line_low.png";
 	String get note_text => "lib/res/drawables/note_text.png";
-	String get profile_bg => "lib/res/drawables/profile_bg.png";
 	String get pulse => "lib/res/drawables/pulse.png";
 	String get question => "lib/res/drawables/question.png";
 	String get repeat => "lib/res/drawables/repeat.png";

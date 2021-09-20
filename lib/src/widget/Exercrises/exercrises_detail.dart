@@ -116,7 +116,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                         decoration: BoxDecoration(
                             image: DecorationImage(
                           image:
-                              AssetImage(R.drawable.detail_Background),
+                              AssetImage(R.drawable.bg_detail),
                           fit: BoxFit.cover,
                         )),
                         child: LoadMore(

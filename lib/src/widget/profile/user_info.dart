@@ -79,7 +79,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   end: FractionalOffset(0.9, 0.5),
                   stops: [0.0, 1.0])),
           child: Stack(children: [
-            Image.asset(R.drawable.profile_bg),
+            Image.asset(R.drawable.bg_profile),
             Column(children: [
               CustomAppBar(
                 backgroundColor: R.color.transparent,

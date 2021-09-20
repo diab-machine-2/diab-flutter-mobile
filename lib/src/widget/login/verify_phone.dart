@@ -99,7 +99,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(children: [
-                          Image.asset(R.drawable.checkPhone,
+                          Image.asset(R.drawable.im_check_phone,
                               width: 90, height: 74),
                           SizedBox(height: 20),
                           Text('Nhập 4 số trong tin nhắn văn bản đã gửi đến',
