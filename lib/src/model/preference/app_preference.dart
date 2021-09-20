@@ -15,14 +15,12 @@ class AppPreference {
 
   SharedPreferences _preference;
 
-  static const String key_app_language = "AppLanguage";
-
   String get appLanguage {
-    return _preference?.getString(key_app_language) ?? Const.VI;
+    return _preference?.getString(Const.key_app_language) ?? Const.VI;
   }
 
   void saveAppLanguage(String language) {
-    _preference?.setString(key_app_language, language);
+    _preference?.setString(Const.key_app_language, language);
   }
 
   // void saveData(UserData user) {
