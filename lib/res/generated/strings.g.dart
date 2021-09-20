@@ -246,6 +246,7 @@ class Strings {
 	String get chinh_sua_thoi_gian => 'chinh_sua_thoi_gian';
 	String get ky_luc => 'ky_luc';
 	String get chuc_mung => 'chuc_mung';
+	String get hoat_dong_lower_case => 'hoat_dong_lower_case';
 	String get ban_chua_chon_hoat_dong => 'ban_chua_chon_hoat_dong';
 	String get chon_cuong_do_hoat_dong => 'chon_cuong_do_hoat_dong';
 	String get ban_chua_chon_cuong_do => 'ban_chua_chon_cuong_do';

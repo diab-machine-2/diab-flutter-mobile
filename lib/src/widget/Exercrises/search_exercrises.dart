@@ -215,7 +215,7 @@ class _SearchExercrisesControllerState
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('$selectedItem ${R.string.hoat_dong.tr()}'),
+                                  Text('$selectedItem ${R.string.hoat_dong_lower_case.tr()}'),
                                   Row(
                                     children: [
                                       Text(formatNumber(sumCalories.toDouble()),
