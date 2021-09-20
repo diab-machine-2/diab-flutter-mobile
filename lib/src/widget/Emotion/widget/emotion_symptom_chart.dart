@@ -6,7 +6,7 @@ import 'package:medical/src/modal/emotion/emotion_statistic_item_model.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 class EmotionSymptomChart extends StatefulWidget {
   EmotionSymptomChart({Key key}) : super(key: key);
   @override
@@ -91,7 +91,7 @@ class EmotionSymptomChartState extends State<EmotionSymptomChart>
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Tổng quan triệu chứng',
+                              Text(R.string.tong_quan_trieu_chung.tr(),
                                   style: TextStyle(
                                       color: R.color.black,
                                       fontSize: 20,

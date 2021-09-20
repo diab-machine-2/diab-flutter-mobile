@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description_detail.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class Description extends StatelessWidget {
   final bool input;
@@ -53,7 +53,7 @@ class Description extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(left: 8),
                       child: Row(children: [
-                        Text('Tìm hiểu thêm',
+                        Text(R.string.tim_hieu_them.tr(),
                             style: TextStyle(
                                 fontSize: 14,
                                 color: R.color.mainColor,

@@ -5,15 +5,14 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/modal/user/secure.dart';
-import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ProfileController extends StatefulWidget {
   @override
@@ -161,7 +160,7 @@ class _ProfileControllerState extends State<ProfileController> {
                       R.drawable.ic_security, 2),
                   buildAction(
                       'Liên hệ với DiaB', R.drawable.ic_contact, 3),
-                  buildAction('Mật khẩu', R.drawable.ic_password, 4),
+                  buildAction(R.string.password.tr(), R.drawable.ic_password, 4),
                 ],
               ),
             )));
@@ -303,7 +302,7 @@ class _ProfileControllerState extends State<ProfileController> {
                             ),
                             contentPadding:
                                 EdgeInsets.only(top: 0, left: 16, right: 16),
-                            hintText: 'Nhập số điện thoại',
+                            hintText: R.string.nhap_so_dien_thoai.tr(),
                           ),
                           onChanged: (value) {})),
                   Container(
@@ -323,7 +322,7 @@ class _ProfileControllerState extends State<ProfileController> {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -335,7 +334,7 @@ class _ProfileControllerState extends State<ProfileController> {
                               final phone = textEditingController.text ?? '';
                               if (phone.isEmpty) {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập số điện thoại');
+                                    context, R.string.ban_chua_nhap_so_dien_thoai.tr());
                                 return;
                               } else {
                                 updatePhone(phone);
@@ -355,7 +354,7 @@ class _ProfileControllerState extends State<ProfileController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Lưu',
+                                child: Text(R.string.save.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,

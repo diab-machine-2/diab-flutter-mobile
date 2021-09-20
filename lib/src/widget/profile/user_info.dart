@@ -7,14 +7,12 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -24,6 +22,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/profile/address.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ProfileInfoController extends StatefulWidget {
   @override
@@ -180,7 +179,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                             width: 16,
                                                             height: 16),
                                                         SizedBox(width: 4),
-                                                        Text('Chỉnh sửa',
+                                                        Text(R.string.chinh_sua.tr(),
                                                             style: TextStyle(
                                                                 color:
                                                                     R.color.mainColor,
@@ -342,7 +341,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 buildItem(
                                   R.drawable.ic_birthday,
                                   convertToUTC(user.dateOfBirth, 'dd/MM/yyyy'),
-                                  'Ngày sinh',
+                                  R.string.ngay_sinh.tr(),
                                   Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   1,
@@ -355,7 +354,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   user.gender == null || user.gender.isEmpty
                                       ? 'Đang cập nhật'
                                       : user.gender,
-                                  'Giới tính',
+                                  R.string.gioi_tinh.tr(),
                                   Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   2,
@@ -382,7 +381,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 buildItem(
                                   R.drawable.ic_folder,
                                   user.diabetesName ?? 'Đang cập nhật',
-                                  'Loại bệnh',
+                                  R.string.loai_benh.tr(),
                                   null,
                                   3,
                                   callback: () {
@@ -420,7 +419,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   user.weight == null
                                       ? 'Chưa cập nhật'
                                       : '${user.weight.round()} kg',
-                                  'Cân nặng',
+                                  R.string.can_nang.tr(),
                                   null,
                                   5,
                                   callback: () {
@@ -432,7 +431,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   user.height == null
                                       ? 'Chưa cập nhật'
                                       : '${user.height.round()} cm',
-                                  'Chiều cao',
+                                  R.string.chieu_cao.tr(),
                                   null,
                                   6,
                                   callback: () {
@@ -642,7 +641,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                 Image.asset(R.drawable.ic_photo,
                     width: 24, height: 24),
                 SizedBox(width: 16),
-                Text("Chọn trong thư viện",
+                Text(R.string.chon_trong_thu_vien.tr(),
                     style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
@@ -660,7 +659,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                 Image.asset(R.drawable.ic_camera_black,
                     width: 24, height: 24),
                 SizedBox(width: 16),
-                Text("Chụp ảnh",
+                Text(R.string.chup_anh.tr(),
                     style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
@@ -672,7 +671,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
         )
       ],
       cancelButton: CupertinoActionSheetAction(
-        child: Text("Huỷ",
+        child: Text(R.string.cancel.tr(),
             style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
         onPressed: () {
           Navigator.pop(context);
@@ -739,13 +738,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = FlatButton(
-      child: Text("Huỷ"),
+      child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Cấp quyền"),
+      child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -753,8 +752,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Thông báo"),
-      content: Text("Bạn cần cấp quyền truy cập để sử dụng tính năng này"),
+      title: Text(R.string.notification.tr()),
+      content: Text(R.string.ask_for_permission.tr()),
       actions: [
         cancelButton,
         continueButton,
@@ -1043,7 +1042,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                   BorderRadius.circular(200),
                                               color: R.color.grayBorder),
                                           child: Center(
-                                            child: Text('Vẫn ở lại',
+                                            child: Text(R.string.van_o_lai.tr(),
                                                 style: TextStyle(
                                                     color: R.color.textDark,
                                                     fontSize: 16,
@@ -1161,7 +1160,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -1228,7 +1227,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Lưu',
+                                child: Text(R.string.save.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,
@@ -1258,7 +1257,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Ngày sinh',
+                        Text(R.string.ngay_sinh.tr(),
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
@@ -1296,7 +1295,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -1357,7 +1356,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Đồng ý',
+                                child: Text(R.string.yes.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,
@@ -1387,7 +1386,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Giới tính',
+                        Text(R.string.gioi_tinh.tr(),
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
@@ -1419,7 +1418,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -1479,7 +1478,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Đồng ý',
+                                child: Text(R.string.yes.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,
@@ -1508,7 +1507,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Loại bệnh',
+                        Text(R.string.loai_benh.tr(),
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
@@ -1545,7 +1544,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -1604,7 +1603,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Đồng ý',
+                                child: Text(R.string.yes.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,
@@ -1633,7 +1632,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Năm phát hiện bệnh',
+                        Text(R.string.nam_phat_hien_benh.tr(),
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
@@ -1671,7 +1670,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -1732,7 +1731,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Đồng ý',
+                                child: Text(R.string.yes.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,
@@ -1791,7 +1790,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                 glucoseUnit: userInfo.glucoseUnit);
             updateUserInfo(userInfo);
           },
-          title: 'Nhập cân nặng',
+          title: R.string.nhap_can_nang.tr(),
           max: 180,
           numberDefault: (AppSettings.userInfo.weight == null ||
                       AppSettings.userInfo.weight == 0
@@ -1846,7 +1845,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                 glucoseUnit: userInfo.glucoseUnit);
             updateUserInfo(userInfo);
           },
-          title: 'Nhập chiều cao',
+          title: R.string.nhap_chieu_cao.tr(),
           max: 250,
           numberDefault: (AppSettings.userInfo.height == null ||
                       AppSettings.userInfo.height == 0
@@ -1926,7 +1925,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -1938,7 +1937,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               final phone = textEditingController.text ?? '';
                               if (phone.isEmpty) {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập số điện thoại');
+                                    context, R.string.ban_chua_nhap_so_dien_thoai.tr());
                                 return;
                               } else {
                                 UserModel userInfo = AppSettings.userInfo;
@@ -1992,7 +1991,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Lưu',
+                                child: Text(R.string.save.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,
@@ -2206,7 +2205,7 @@ class _EmailValidateState extends State<EmailValidate> {
                             borderRadius: BorderRadius.circular(200),
                             color: R.color.grayBorder),
                         child: Center(
-                          child: Text('Huỷ',
+                          child: Text(R.string.cancel.tr(),
                               style: TextStyle(
                                   color: R.color.textDark,
                                   fontSize: 16,
@@ -2245,7 +2244,7 @@ class _EmailValidateState extends State<EmailValidate> {
                               end: Alignment.centerRight,
                               colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
-                        child: Text('Lưu',
+                        child: Text(R.string.save.tr(),
                             style: TextStyle(
                                 color: R.color.white,
                                 fontSize: 16,
@@ -2324,7 +2323,7 @@ class _GenderPickerState extends State<GenderPicker> {
         itemExtent: 47.0,
         children: List<int>.generate(2, (i) => i)
             .map((e) => Center(
-                  child: Text(e == 0 ? 'Nam' : 'Nữ',
+                  child: Text(e == 0 ? R.string.nam.tr() : R.string.nu.tr(),
                       style: TextStyle(
                           color: selectedItem == e
                               ? R.color.mainColor
@@ -2546,7 +2545,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
                       borderRadius: BorderRadius.circular(200),
                       color: R.color.grayBorder),
                   child: Center(
-                    child: Text('Huỷ',
+                    child: Text(R.string.cancel.tr(),
                         style: TextStyle(
                             color: R.color.textDark,
                             fontSize: 16,
@@ -2582,7 +2581,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
                         end: Alignment.centerRight,
                         colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                 child: Center(
-                  child: Text('Lưu',
+                  child: Text(R.string.save.tr(),
                       style: TextStyle(
                           color: R.color.white,
                           fontSize: 16,

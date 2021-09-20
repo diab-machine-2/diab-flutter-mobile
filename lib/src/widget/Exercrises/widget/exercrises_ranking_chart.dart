@@ -1,20 +1,15 @@
 import 'dart:ui';
 
 import 'package:dart_notification_center/dart_notification_center.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
-import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
 import 'package:medical/src/modal/exercrises/excercise_rank_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
-import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ExercrisesRankingChart extends StatefulWidget {
   ExercrisesRankingChart({Key key}) : super(key: key);
@@ -119,7 +114,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Xếp hạng thời gian vận động',
+                            Text(R.string.xep_hang_thoi_gian_van_dong.tr(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w700)),
                           ],
@@ -229,7 +224,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                                 width: 8,
                                               ),
                                               Text(
-                                                  'Bình quân trong nhóm tuổi của tôi: ',
+                                                  '${R.string.binh_quan_trong_nhom_tuoi_cua_toi}: ',
                                                   style: TextStyle(
                                                       color: R.color.textDark,
                                                       fontWeight:

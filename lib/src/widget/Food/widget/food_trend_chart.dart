@@ -5,16 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
-import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
-import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
-import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
-import 'package:medical/src/modal/glucose/glucose_trend.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FoodTrendChart extends StatefulWidget {
   FoodTrendChart({Key key}) : super(key: key);
@@ -89,7 +85,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                       children: [
                         Row(
                           children: [
-                            Text('Xu hướng dinh dưỡng',
+                            Text(R.string.xu_huong_dinh_duong.tr(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600)),
                           ],
@@ -167,7 +163,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                           width: 0.5),
                       borderRadius: BorderRadius.circular(16)),
                   child: Center(
-                    child: Text('Năng lượng',
+                    child: Text(R.string.nang_luong.tr(),
                         style: TextStyle(
                             color:
                                 isEnergyTab ? R.color.white : R.color.primaryGreyColor,
@@ -195,7 +191,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                           width: 0.5),
                       borderRadius: BorderRadius.circular(16)),
                   child: Center(
-                    child: Text('Chất bột đường',
+                    child: Text(R.string.chat_bot_duong.tr(),
                         style: TextStyle(
                             color:
                                 isEnergyTab ? R.color.primaryGreyColor : R.color.white,

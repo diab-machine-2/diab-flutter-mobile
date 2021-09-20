@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ActionListPanel extends StatelessWidget {
   ActionListPanel({@required this.selectedIndex});
@@ -9,31 +9,31 @@ class ActionListPanel extends StatelessWidget {
 
   final data = [
     {
-      'name': 'HbA1C',
+      'name': R.string.hba1c.tr(),
       'icon': R.drawable.ic_hba1c,
     },
     {
-      'name': 'Đường huyết',
+      'name': R.string.duong_huyet.tr(),
       'icon': R.drawable.ic_glucose,
     },
     {
-      'name': 'Huyết áp',
+      'name': R.string.huyet_ap.tr(),
       'icon': R.drawable.ic_blood_pressure,
     },
     {
-      'name': 'Vận động',
+      'name': R.string.van_dong.tr(),
       'icon': R.drawable.ic_excersire,
     },
     {
-      'name': 'Dinh dưỡng',
+      'name': R.string.dinh_duong.tr(),
       'icon': R.drawable.ic_food_action,
     },
     {
-      'name': 'Cân nặng',
+      'name': R.string.can_nang.tr(),
       'icon': R.drawable.ic_weight,
     },
     {
-      'name': 'Cảm xúc',
+      'name': R.string.cam_xuc.tr(),
       'icon': R.drawable.ic_emotion,
     },
   ];

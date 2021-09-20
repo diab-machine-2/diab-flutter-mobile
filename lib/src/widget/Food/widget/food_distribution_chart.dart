@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
-import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FoodDistributionChart extends StatefulWidget {
   FoodDistributionChart({Key key}) : super(key: key);
@@ -86,7 +85,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Năng lượng phân bổ',
+                      Text(R.string.nang_luong_phan_bo.tr(),
                           style: TextStyle(
                               color: R.color.black,
                               fontSize: 20,
@@ -147,7 +146,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                       BorderRadius.circular(
                                                           16)),
                                               child: Center(
-                                                child: Text('Năng lượng',
+                                                child: Text(R.string.nang_luong.tr(),
                                                     style: TextStyle(
                                                         color: isEnergyTab
                                                             ? R.color.white
@@ -181,7 +180,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                       BorderRadius.circular(
                                                           16)),
                                               child: Center(
-                                                child: Text('Chất bột đường',
+                                                child: Text(R.string.chat_bot_duong.tr(),
                                                     style: TextStyle(
                                                         color: isEnergyTab
                                                             ? R.color.primaryGreyColor
@@ -235,7 +234,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                             padding: const EdgeInsets.only(
                                                 top: 2.0, bottom: 8),
                                             child: Text(
-                                              'Chú thích',
+                                              R.string.chu_thich.tr(),
                                               style: TextStyle(
                                                   fontSize: 14,
                                                   color: R.color.textDark),

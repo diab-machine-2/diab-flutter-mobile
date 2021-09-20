@@ -4,23 +4,17 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
-// import 'package:horizontal_card_pager/card_item.dart';
-import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/emotion/emotion_model.dart';
-import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/emotion/emotion_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/card_horizontal/card_horizontal.dart';
 import 'package:medical/src/widget/components/card_horizontal/card_item.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef EmotionCallback = Function(EmotionModel);
 
@@ -97,8 +91,8 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                 backgroundColor: R.color.transparent,
                 title: Text(
                     widget.type == 'update'
-                        ? 'Chỉnh sửa cảm xúc'
-                        : 'Nhập cảm xúc',
+                        ? R.string.chinh_sua_cam_xuc.tr()
+                        : R.string.nhap_cam_xuc.tr(),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -139,7 +133,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                           ? Description(
                               input: true,
                               data: des,
-                              titleDetail: 'Kiểm soát cảm xúc bệnh tiểu đường')
+                              titleDetail: R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr())
                           : SizedBox(),
                     ),
                     Expanded(
@@ -147,7 +141,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                         shrinkWrap: true,
                         children: [
                           Center(
-                            child: Text('Hôm nay bạn\ncảm thấy thế nào?',
+                            child: Text(R.string.hom_nay_ban_cam_thay_the_nao.tr(),
                                 style: TextStyle(
                                     color: R.color.textDark,
                                     fontSize: 24,
@@ -157,7 +151,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                           SizedBox(height: 10),
                           Center(
                             child: Text(
-                                'Trượt sang trái hoặc phải để chọn 1 cảm xúc',
+                                R.string.scroll_to_select_emotion.tr(),
                                 style: TextStyle(
                                     color: R.color.textDark,
                                     fontSize: 14,
@@ -248,7 +242,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                               colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
                           child: Text(
-                              widget.type == 'input' ? 'Tiếp tục' : 'Cập nhật',
+                              widget.type == 'input' ? R.string.tiep_tuc.tr() : R.string.cap_nhat.tr(),
                               style: TextStyle(
                                   color: R.color.white,
                                   fontWeight: FontWeight.w600,

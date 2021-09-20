@@ -4,12 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_distribution.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodPressureDistributionChart extends StatefulWidget {
   BloodPressureDistributionChart({Key key}) : super(key: key);
@@ -91,7 +91,7 @@ class BloodPressureDistributionChartState
                           children: [
                             Padding(
                               padding: EdgeInsets.only(left: 16.0),
-                              child: Text('Tần suất phân bổ',
+                              child: Text(R.string.tan_suat_phan_bo.tr(),
                                   style: TextStyle(
                                       color: R.color.black,
                                       fontSize: 20,
@@ -214,7 +214,7 @@ class BloodPressureDistributionChartState
                 padding: const EdgeInsets.only(
                     top: 16.0, bottom: 4, left: 8, right: 8),
                 child: Text(
-                  'Chú thích',
+                  R.string.chu_thich.tr(),
                   style: TextStyle(fontSize: 14, color: R.color.textDark),
                 ),
               ),
@@ -228,7 +228,7 @@ class BloodPressureDistributionChartState
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
-                              'title': 'Tăng huyết áp độ 3',
+                              'title': R.string.tang_huyet_ap_do_3.tr(),
                               'bloodPressureType': 6,
                               'periodFilterType': periodFilterType
                             });
@@ -239,7 +239,7 @@ class BloodPressureDistributionChartState
                                 .round()
                                 .toString() +
                             '%',
-                        text: 'Tăng huyết áp độ 3',
+                        text: R.string.tang_huyet_ap_do_3.tr(),
                         textColor: toColor(model.increaseLevelThreeFontColor),
                         isSquare: true,
                       ),
@@ -251,7 +251,7 @@ class BloodPressureDistributionChartState
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
-                              'title': 'Tăng huyết áp độ 2',
+                              'title': R.string.tang_huyet_ap_do_2.tr(),
                               'bloodPressureType': 5,
                               'periodFilterType': periodFilterType
                             });
@@ -262,7 +262,7 @@ class BloodPressureDistributionChartState
                                 .round()
                                 .toString() +
                             '%',
-                        text: 'Tăng huyết áp độ 2',
+                        text: R.string.tang_huyet_ap_do_2.tr(),
                         textColor: toColor(model.increaseLevelTwoFontColor),
                         isSquare: true,
                       ),
@@ -274,7 +274,7 @@ class BloodPressureDistributionChartState
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
-                              'title': 'Tăng huyết áp độ 1',
+                              'title': R.string.tang_huyet_ap_do_1.tr(),
                               'bloodPressureType': 4,
                               'periodFilterType': periodFilterType
                             });
@@ -285,7 +285,7 @@ class BloodPressureDistributionChartState
                                 .round()
                                 .toString() +
                             '%',
-                        text: 'Tăng huyết áp độ 1',
+                        text: R.string.tang_huyet_ap_do_1.tr(),
                         textColor: toColor(model.increaseLevelOneFontColor),
                         isSquare: true,
                       ),
@@ -297,7 +297,7 @@ class BloodPressureDistributionChartState
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
-                              'title': 'Bình thường cao',
+                              'title': R.string.binh_thuong_cao.tr(),
                               'bloodPressureType': 3,
                               'periodFilterType': periodFilterType
                             });
@@ -308,7 +308,7 @@ class BloodPressureDistributionChartState
                                 .round()
                                 .toString() +
                             '%',
-                        text: 'Bình thường cao',
+                        text: R.string.binh_thuong_cao.tr(),
                         textColor: toColor(model.preIncreaseFontColor),
                         isSquare: true,
                       ),
@@ -320,7 +320,7 @@ class BloodPressureDistributionChartState
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
-                              'title': 'Bình thường',
+                              'title': R.string.binh_thuong.tr(),
                               'bloodPressureType': 2,
                               'periodFilterType': periodFilterType
                             });
@@ -330,7 +330,7 @@ class BloodPressureDistributionChartState
                         number:
                             (model.normal / total * 100).round().toString() +
                                 '%',
-                        text: 'Bình thường',
+                        text: R.string.binh_thuong.tr(),
                         //textColor: toColor(model.normalFontColor),
                         isSquare: true,
                       ),
@@ -342,7 +342,7 @@ class BloodPressureDistributionChartState
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
-                              'title': 'Thấp',
+                              'title': R.string.low.tr(),
                               'bloodPressureType': 1,
                               'periodFilterType': periodFilterType
                             });
@@ -351,7 +351,7 @@ class BloodPressureDistributionChartState
                         color: toColor(model.lowColor),
                         number:
                             (model.low / total * 100).round().toString() + '%',
-                        text: 'Thấp',
+                        text: R.string.low.tr(),
                         textColor: toColor(model.lowFontColor),
                         isSquare: true,
                       ),

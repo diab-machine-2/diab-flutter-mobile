@@ -7,13 +7,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_compare.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarCompareChart extends StatefulWidget {
   BloodSugarCompareChart({Key key}) : super(key: key);
@@ -27,7 +27,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   bool get wantKeepAlive => true;
   BuildContext currentContext;
   int periodFilterType = 1;
-  String name = 'Trước & sau ăn';
+  String name = R.string.truoc_va_sau_an.tr();
   int comparerType = 1;
   @override
   void initState() {
@@ -39,8 +39,6 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    // final width = MediaQuery.of(context).size.width;
-    // final height = 37.0;
     return BlocProvider<GlucoseBloc>(
         create: (context) => GlucoseBloc(),
         child: BlocBuilder<GlucoseBloc, GlucoseState>(
@@ -77,7 +75,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                           children: [
                             Row(
                               children: [
-                                Text('So sánh',
+                                Text(R.string.so_sanh.tr(),
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700)),
@@ -297,12 +295,12 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
             Row(children: [
               Container(width: 14, height: 14, color: R.color.mainColor),
               SizedBox(width: 8),
-              Text(comparerType == 1 ? 'Truớc ăn' : 'Truớc tập luyện')
+              Text(comparerType == 1 ? R.string.truoc_an.tr() : R.string.truoc_tap_luyen.tr())
             ]),
             Row(children: [
               Container(width: 14, height: 14, color: R.color.yellow),
               SizedBox(width: 8),
-              Text(comparerType == 1 ? 'Sau ăn' : 'Sau tập luyện')
+              Text(comparerType == 1 ? R.string.sau_an.tr() : R.string.sau_tap_luyen.tr())
             ])
           ]),
           SizedBox(height: 16),
@@ -313,7 +311,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                   arguments: {'model': model, 'title': name});
             },
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text('Xem chi tiết', style: TextStyle(color: R.color.mainColor)),
+              Text(R.string.xem_chi_tiet.tr(), style: TextStyle(color: R.color.mainColor)),
               Image.asset(R.drawable.ic_arrow_right,
                   width: 20, height: 20)
             ]),

@@ -45,7 +45,7 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
               child: Column(children: [
                 Row(
                   children: [
-                    Text('Mật khẩu mới ít nhất 6 ký tự',
+                    Text(R.string.mat_khau_moi_it_nhat_6_ky_tu.tr(),
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w400)),
                   ],
@@ -53,8 +53,8 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
                 SizedBox(height: 24),
                 TextFieldCustom(
                   key: currentKey,
-                  title: 'Mật khẩu hiện tại',
-                  placeholder: 'Nhập mật khẩu',
+                  title: R.string.mat_khau_hien_tai.tr(),
+                  placeholder: R.string.nhap_mat_khau.tr(),
                   isPassword: true,
                   onChanged: (value) {
                     currentPassword = value;
@@ -63,8 +63,8 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
                 SizedBox(height: 16),
                 TextFieldCustom(
                   key: passwordKey,
-                  title: 'Mật khẩu mới',
-                  placeholder: 'Nhập mật khẩu mới',
+                  title: R.string.mat_khau_moi.tr(),
+                  placeholder: R.string.nhap_mat_khau_moi.tr(),
                   isPassword: true,
                   onChanged: (value) {
                     password = value;
@@ -73,8 +73,8 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
                 SizedBox(height: 16),
                 TextFieldCustom(
                   key: confirmPasswordKey,
-                  title: 'Xác nhận mật khẩu mới',
-                  placeholder: 'Nhập lại mật khẩu mới',
+                  title: R.string.xac_nhan_mat_khau_moi.tr(),
+                  placeholder: R.string.nhap_lai_mat_khau_moi.tr(),
                   isPassword: true,
                   onChanged: (value) {
                     newPassword = value;
@@ -96,7 +96,7 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
                             end: Alignment.centerRight,
                             colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                     child: Center(
-                        child: Text('Lưu mật khẩu',
+                        child: Text(R.string.luu_mat_khau.tr(),
                             style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
@@ -120,7 +120,7 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
                 title: Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    'Đổi mật khẩu',
+                    R.string.doi_mat_khau.tr(),
                     style: TextStyle(fontSize: 20, color: R.color.textDark),
                   ),
                 ),
@@ -135,7 +135,7 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
   submit() async {
     FocusScope.of(context).unfocus();
     if (currentPassword.isEmpty) {
-      currentKey.currentState.validate('Bạn chưa nhập mật khẩu');
+      currentKey.currentState.validate(R.string.ban_chua_nhap_mat_khau.tr());
       return;
     }
     if (password.isEmpty || password.length < 6) {
@@ -143,11 +143,11 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
       return;
     }
     if (password.contains(' ')) {
-      passwordKey.currentState.validate('Mật khẩu không chứa khoảng trắng');
+      passwordKey.currentState.validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
       return;
     }
     if (password != newPassword) {
-      confirmPasswordKey.currentState.validate('Mật khẩu không trùng khớp');
+      confirmPasswordKey.currentState.validate(R.string.mat_khau_khong_trung_khop.tr());
       return;
     }
 
@@ -155,7 +155,7 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
     try {
       await LoginClient().changePassword(currentPassword, password);
       Message.showToastMessage(context,
-          'Đổi mật khẩu thành công, bạn có thể đăng nhập lại với mật khẩu mới');
+          R.string.doi_mat_khau_thanh_cong.tr());
       BotToast.closeAllLoading();
       Navigator.pop(context);
     } catch (e, _) {
@@ -163,7 +163,7 @@ class _ChangePasswordControllerState extends State<ChangePasswordController> {
       if (e is Error) {
         Message.showToastMessage(context, e.message);
       } else {
-        Message.showToastMessage(context, 'Mật khẩu hiện tại không đúng');
+        Message.showToastMessage(context, R.string.mat_khau_hien_tai_khong_dung.tr());
       }
     }
   }

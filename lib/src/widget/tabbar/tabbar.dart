@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/main.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -18,6 +17,7 @@ import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:medical/src/widget/home/home.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class TabbarController extends StatefulWidget {
   final _TabbarControllerState currentTabbar = _TabbarControllerState();
@@ -57,7 +57,7 @@ class _TabbarControllerState extends State<TabbarController>
         observer: this,
         onNotification: (_) {
           Message.showToastMessage(
-              context, 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại');
+              context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
           AppSettings.logout();
         });
 
@@ -128,20 +128,20 @@ class _TabbarControllerState extends State<TabbarController>
         showDialog(
             context: context,
             builder: (BuildContext context) => CupertinoAlertDialog(
-                  title: Text('Cập nhật'),
+                  title: Text(R.string.cap_nhat.tr()),
                   content: Text(
                       'Phiên bản mới ${status.storeVersion}.\nBấm cập nhật để trải nghiệm những tính năng mới',
                       textAlign: TextAlign.center),
                   actions: <Widget>[
                     CupertinoDialogAction(
-                      child: Text('Huỷ'),
+                      child: Text(R.string.cancel.tr()),
                       onPressed: () {
                         Navigator.pop(context);
                       },
                     ),
                     CupertinoDialogAction(
                       isDefaultAction: true,
-                      child: Text('Cập nhật'),
+                      child: Text(R.string.cap_nhat.tr()),
                       onPressed: () async {
                         final _url = status.appStoreLink;
                         await canLaunch(_url)
@@ -219,6 +219,6 @@ showPopupWeight() {
             'Vui lòng cho chúng tôi biết số cân nặng của bạn trước khi nhập dữ liệu để ghi nhận chính xác hơn',
         max: 200,
         numberDefault: 50,
-        unit: 'kg'),
+        unit: R.string.kg.tr()),
   );
 }

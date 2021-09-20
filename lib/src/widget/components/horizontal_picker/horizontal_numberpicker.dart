@@ -1,6 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'dart:ui' as ui;
 
 // ignore: must_be_immutable
 class HorizontalNumberPicker extends StatefulWidget {

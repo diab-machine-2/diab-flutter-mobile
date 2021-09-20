@@ -3,10 +3,9 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FlashScreenController extends StatefulWidget {
   @override
@@ -34,7 +33,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         final user = await UserClient().fetchUser();
         if (user == null) {
           Message.showToastMessage(
-              context, 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại');
+              context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
           AppSettings.logout();
           Navigator.pushReplacementNamed(context, NavigatorName.step_list);
         } else {
@@ -45,7 +44,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       }
     } catch (e) {
       Message.showToastMessage(
-          context, 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại');
+          context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
       AppSettings.logout();
     }
   }
@@ -78,7 +77,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
                 padding: EdgeInsets.only(bottom: 16),
                 child: RichText(
                   text: TextSpan(
-                    text: 'Công ty cổ phần công nghệ y tế ',
+                    text: '${R.string.cong_ty_co_phan_cong_nghe_y_te} ',
                     style: TextStyle(
                         color: R.color.mainColor,
                         fontSize: 16,

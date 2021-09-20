@@ -1,21 +1,20 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:http/http.dart' as http;
-import 'dart:io' show Platform;
+import 'package:easy_localization/easy_localization.dart';
 
 class LoginController extends StatefulWidget {
   @override
@@ -57,7 +56,7 @@ class _LoginControllerState extends State<LoginController> {
                       Column(children: [
                         Row(children: [
                           Text(
-                            'Đăng nhập',
+                            R.string.login.tr(),
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 28,
@@ -67,8 +66,8 @@ class _LoginControllerState extends State<LoginController> {
                         SizedBox(height: 28),
                         TextFieldCustom(
                             key: phoneKey,
-                            title: 'Số điện thoại',
-                            placeholder: 'Nhập số điện thoại',
+                            title: R.string.so_dien_thoai.tr(),
+                            placeholder: R.string.nhap_so_dien_thoai.tr(),
                             autoFocus: true,
                             onChanged: (value) {
                               phone = value;
@@ -76,8 +75,8 @@ class _LoginControllerState extends State<LoginController> {
                         SizedBox(height: 20),
                         TextFieldCustom(
                             key: passwordKey,
-                            title: 'Mật khẩu',
-                            placeholder: 'Nhập mật khẩu',
+                            title: R.string.password.tr(),
+                            placeholder: R.string.nhap_mat_khau.tr(),
                             isPassword: true,
                             onChanged: (value) {
                               password = value;
@@ -101,7 +100,7 @@ class _LoginControllerState extends State<LoginController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Đăng nhập',
+                                child: Text(R.string.login.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,
@@ -117,7 +116,7 @@ class _LoginControllerState extends State<LoginController> {
                               height: 48,
                               color: R.color.transparent,
                               child: Center(
-                                child: Text('Quên mật khẩu?',
+                                child: Text(R.string.forgot_password.tr(),
                                     style: TextStyle(
                                         color: R.color.mainColor,
                                         fontSize: 16,
@@ -126,7 +125,7 @@ class _LoginControllerState extends State<LoginController> {
                         )
                       ]),
                       Column(children: [
-                        Text('Hoặc đăng nhập bằng',
+                        Text(R.string.hoac_dang_nhap_bang.tr(),
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
@@ -188,7 +187,7 @@ class _LoginControllerState extends State<LoginController> {
                               )
                             ]),
                         SizedBox(height: 30),
-                        Text('Chưa có tài khoản?',
+                        Text(R.string.chua_co_tai_khoan.tr(),
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w400)),
                         SizedBox(height: 10),
@@ -205,7 +204,7 @@ class _LoginControllerState extends State<LoginController> {
                                   border:
                                       Border.all(color: R.color.mainColor, width: 1)),
                               child: Center(
-                                child: Text('Tạo tài khoản mới',
+                                child: Text(R.string.tao_tai_khoan_moi.tr(),
                                     style: TextStyle(
                                         color: R.color.mainColor,
                                         fontWeight: FontWeight.w600)),
@@ -240,11 +239,11 @@ class _LoginControllerState extends State<LoginController> {
   login() async {
     FocusScope.of(context).unfocus();
     if (phone.isEmpty) {
-      phoneKey.currentState.validate('Bạn chưa nhập số điện thoại');
+      phoneKey.currentState.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
     if (password.isEmpty) {
-      passwordKey.currentState.validate('Bạn chưa nhập mật khẩu');
+      passwordKey.currentState.validate(R.string.ban_chua_nhap_mat_khau.tr());
       return;
     }
     BotToast.showLoading();
@@ -270,15 +269,15 @@ class _LoginControllerState extends State<LoginController> {
       if (e is Error) {
         if (e.code == '1') {
           passwordKey.currentState
-              .validate('Mật khẩu không chính xác. Vui lòng kiểm tra lại');
+              .validate(R.string.mat_khau_khong_chinh_xac.tr());
         } else if (e.code == '2') {
           phoneKey.currentState
-              .validate('Số điện thoại không tồn tại. Vui lòng kiểm tra lại');
+              .validate(R.string.so_dien_thoai_khong_chinh_xac.tr());
         } else if (e.code == '3') {
           verifyPhone();
         } else if (e.code == '4') {
           phoneKey.currentState.validate(
-              'Tài khoản của bạn đã hết hiệu lực, vui lòng liên lạc quản trị viên để được hỗ trợ');
+              R.string.tai_khoan_het_hieu_luc.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }
@@ -310,7 +309,7 @@ class _LoginControllerState extends State<LoginController> {
       if (e is Error) {
         if (e.code == 'USER002') {
           phoneKey.currentState.validate(
-              'Số điện thoại đã tồn tại. Vui lòng đăng nhập hoặc dùng số điện thoại khác để đăng ký!');
+              R.string.so_dien_thoai_da_ton_tai.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }
@@ -336,7 +335,7 @@ class _LoginControllerState extends State<LoginController> {
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: 'Đã gửi OTP 5 lần cho số điện thoại ',
+                  text: R.string.da_gui_otp_5_lan_cho_so_dien_thoai.tr(),
                   style: TextStyle(color: R.color.color0xff172823, fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(
@@ -345,7 +344,7 @@ class _LoginControllerState extends State<LoginController> {
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
                         text:
-                            '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
+                            R.string.dang_ky_lai_hom_sau.tr(),
                         style:
                             TextStyle(color: R.color.color0xff172823, fontSize: 16)),
                   ],
@@ -381,7 +380,7 @@ class _LoginControllerState extends State<LoginController> {
           BotToast.closeAllLoading();
           if (user == null) {
             registerAccount(result.accessToken.userId, result.accessToken.token,
-                'Facebook', profile['name'] ?? 'Tài khoản nguời dùng', true);
+                'Facebook', profile['name'] ?? R.string.user_name_default.tr(), true);
             // Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
             //   'type': 'facebook',
             //   'facebookAccount': result,
@@ -399,7 +398,7 @@ class _LoginControllerState extends State<LoginController> {
                   result.accessToken.userId,
                   result.accessToken.token,
                   'Facebook',
-                  profile['name'] ?? 'Tài khoản nguời dùng',
+                  profile['name'] ?? R.string.user_name_default.tr(),
                   false);
               // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
               //     arguments: {
@@ -448,7 +447,7 @@ class _LoginControllerState extends State<LoginController> {
       BotToast.closeAllLoading();
       if (user == null) {
         registerAccount(account.id, authen.accessToken, 'Google',
-            account.displayName ?? 'Tài khoản nguời dùng', true);
+            account.displayName ?? R.string.user_name_default.tr(), true);
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
@@ -462,7 +461,7 @@ class _LoginControllerState extends State<LoginController> {
           //     arguments: {'type': 'google', 'googleAccount': account});
 
           registerAccount(account.id, authen.accessToken, 'Google',
-              account.displayName ?? 'Tài khoản nguời dùng', false);
+              account.displayName ?? R.string.user_name_default.tr(), false);
         }
       } else {
         BotToast.closeAllLoading();
@@ -504,7 +503,7 @@ class _LoginControllerState extends State<LoginController> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'apple', 'appleAccount': credential});
         registerAccount(credential.userIdentifier, credential.identityToken,
-            'Apple', credential.givenName ?? 'Tài khoản nguời dùng', true);
+            'Apple', credential.givenName ?? R.string.user_name_default.tr(), true);
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
@@ -516,7 +515,7 @@ class _LoginControllerState extends State<LoginController> {
           // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
           //     arguments: {'type': 'apple', 'appleAccount': credential});
           registerAccount(credential.userIdentifier, credential.identityToken,
-              'Apple', credential.givenName ?? 'Tài khoản nguời dùng', false);
+              'Apple', credential.givenName ?? R.string.user_name_default.tr(), false);
         }
       } else {
         Message.showToastMessage(context, error.toString());

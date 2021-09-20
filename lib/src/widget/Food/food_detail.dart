@@ -4,13 +4,13 @@ import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FoodDetailController extends StatefulWidget {
   FoodDetailController({Key key}) : super(key: key);
@@ -207,7 +207,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                               FontWeight.w400)),
                                                                   SizedBox(
                                                                       width: 4),
-                                                                  Text('kcal',
+                                                                  Text(R.string.kcal.tr(),
                                                                       style: TextStyle(
                                                                           color: R.color
                                                                               .black,
@@ -266,7 +266,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                             left:
                                                                                 16),
                                                                         child: Text(
-                                                                            'Lúc ' +
+                                                                            '${R.string.when.tr()} ' +
                                                                                 convertToUTC(inputModel.date, 'HH:mm'),
                                                                             style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal)),
                                                                       ),
@@ -310,7 +310,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                                       children: [
                                                                                         Text(food.calorie.round().toString(), style: TextStyle(fontFamily: 'Viga', color: R.color.black, fontSize: 20, fontWeight: FontWeight.w400)),
                                                                                         SizedBox(width: 4),
-                                                                                        Text('kcal', style: TextStyle(color: R.color.black, fontSize: 14, fontWeight: FontWeight.w400))
+                                                                                        Text(R.string.kcal.tr(), style: TextStyle(color: R.color.black, fontSize: 14, fontWeight: FontWeight.w400))
                                                                                       ],
                                                                                     )
                                                                                   ],

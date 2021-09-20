@@ -1,9 +1,9 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/repo/learning/learning_client.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CourseSuggest extends StatefulWidget {
   final int position;
@@ -40,7 +40,7 @@ class _CourseSuggestState extends State<CourseSuggest>
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Padding(
                 padding: EdgeInsets.all(16),
-                child: Text('Bài viết nổi bật',
+                child: Text(R.string.bai_viet_noi_bat.tr(),
                     style:
                         TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               ),

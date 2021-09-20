@@ -7,12 +7,11 @@ import 'package:medical/src/modal/exercrises/exercrise_summary.dart';
 import 'package:medical/src/modal/exercrises/exercrise_walk_summary.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ExercrisesDetail extends StatefulWidget {
   ExercrisesDetail({Key key}) : super(key: key);
@@ -89,7 +88,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Hoạt động trong ngày',
+                        Text(R.string.hoat_dong_trong_ngay.tr(),
                             style: TextStyle(
                                 color: R.color.black,
                                 fontSize: 20,
@@ -237,7 +236,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                 padding: const EdgeInsets.only(
                                                     top: 8.0),
                                                 child: Text(
-                                                  'kcal',
+                                                  R.string.kcal.tr(),
                                                   style: TextStyle(
                                                       color: R.color.primaryGreyColor,
                                                       fontWeight:
@@ -316,7 +315,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                     padding:
                                                         const EdgeInsets.only(
                                                             top: 2.0),
-                                                    child: Text('phút',
+                                                    child: Text(R.string.minute.tr(),
                                                         style: TextStyle(
                                                             color:
                                                                 R.color.primaryGreyColor,
@@ -395,7 +394,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                       padding:
                                                           const EdgeInsets.only(
                                                               top: 2.0),
-                                                      child: Text('phút',
+                                                      child: Text(R.string.minute.tr(),
                                                           style: TextStyle(
                                                               color:
                                                                    R.color.primaryGreyColor,
@@ -428,7 +427,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text('Đi bộ trong ngày',
+                                        Text(R.string.di_bo_trong_ngay.tr(),
                                             style: TextStyle(
                                                 color: R.color.black,
                                                 fontSize: 20,
@@ -442,7 +441,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                 builder: (_) =>
                                                     CustomInputTimePicker(
                                                         title:
-                                                            'Số phút đi bộ mỗi ngày',
+                                                            R.string.so_phut_di_bo_moi_ngay.tr(),
                                                         time: 60,
                                                         callback:
                                                             (hour, minute) {
@@ -463,7 +462,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                   height: 24,
                                                 ),
                                                 SizedBox(width: 4),
-                                                Text('Mục tiêu mới',
+                                                Text(R.string.muc_tieu_moi.tr(),
                                                     style: TextStyle(
                                                         color: R.color.mainColor,
                                                         fontSize: 14,
@@ -489,7 +488,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                           children: [
                                             // Padding(
                                             //   padding: const EdgeInsets.only(top: 0.0),
-                                            //   child: Text('Chi tiết',
+                                            //   child: Text(R.string.chi_tiet.tr(),
                                             //       style: TextStyle(
                                             //           color: R.color.black,
                                             //           fontSize: 16,
@@ -535,7 +534,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                                       top: 4.0,
                                                                       left: 2),
                                                               child: Text(
-                                                                "/ ${exercriseWalkSummaryModel.targetDuration.toInt().toString()} phút",
+                                                                "/ ${exercriseWalkSummaryModel.targetDuration.toInt().toString()} ${R.string.minute.tr()}",
                                                                 style: TextStyle(
                                                                     color:
                                                                          R.color.primaryGreyColor,
@@ -583,7 +582,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                                       top: 2.0,
                                                                       left: 2),
                                                               child: Text(
-                                                                'kcal',
+                                                                R.string.kcal.tr(),
                                                                 style: TextStyle(
                                                                     color:
                                                                          R.color.primaryGreyColor,
@@ -673,7 +672,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
       await ExercrisesClient()
           .addExercriseTarget(1, 1, time, exerciseCategoryId);
       UserClient().fetchUser();
-      Message.showToastMessage(context, 'Thêm mục tiêu thành công');
+      Message.showToastMessage(context, R.string.them_muc_tieu_thanh_cong.tr());
       _refresh();
       BotToast.closeAllLoading();
     } catch (e, _) {

@@ -2,8 +2,8 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef FoodCallback = Function(List<FoodModel>);
 
@@ -108,7 +108,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${foods.length} món ăn',
+                          Text('${foods.length} ${R.string.mon_an.tr()}',
                               style: TextStyle(
                                   color: R.color.black,
                                   fontWeight: FontWeight.w700,
@@ -120,7 +120,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                                       color: R.color.black,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 16)),
-                              Text('kcal',
+                              Text(R.string.kcal.tr(),
                                   style: TextStyle(
                                       color: R.color.black,
                                       fontWeight: FontWeight.w400)),
@@ -163,7 +163,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                                                 color: R.color.black,
                                                 fontWeight: FontWeight.w500)),
                                         Text(
-                                            'Đã ăn ${roundAsFixed(foods[index].portion * foods[index].quantity)} ${foods[index].unit}, ${formatNumber(foods[index].quantity * foods[index].calorie)} kcal',
+                                            '${R.string.da_an.tr()} ${roundAsFixed(foods[index].portion * foods[index].quantity)} ${foods[index].unit}, ${formatNumber(foods[index].quantity * foods[index].calorie)} ${R.string.kcal.tr()}',
                                             style: TextStyle(
                                                 color: R.color.color0xff172823,
                                                 fontWeight: FontWeight.w400))
@@ -207,7 +207,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                               end: Alignment.centerRight,
                               colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
-                          child: Text('Lưu',
+                          child: Text(R.string.save.tr(),
                               style: TextStyle(
                                   color: R.color.white,
                                   fontWeight: FontWeight.w600,

@@ -1,16 +1,17 @@
 library flutter_datetime_picker;
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:flutter_datetime_picker/src/datetime_picker_theme.dart';
 import 'package:flutter_datetime_picker/src/date_model.dart';
+import 'package:flutter_datetime_picker/src/datetime_picker_theme.dart';
 import 'package:flutter_datetime_picker/src/i18n_model.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-export 'package:flutter_datetime_picker/src/datetime_picker_theme.dart';
 export 'package:flutter_datetime_picker/src/date_model.dart';
+export 'package:flutter_datetime_picker/src/datetime_picker_theme.dart';
 export 'package:flutter_datetime_picker/src/i18n_model.dart';
 
 typedef DateChangedCallback(DateTime time);
@@ -426,7 +427,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
               padding: EdgeInsets.only(left: 16, top: 0),
               onPressed: () {},
               child: Text(
-                'Năm phát hiện bệnh',
+                R.string.nam_phat_hien_benh.tr(),
                 style: TextStyle(
                     color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
               ),

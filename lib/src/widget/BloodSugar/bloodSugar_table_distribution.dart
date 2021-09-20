@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarDistribuitonTableController extends StatefulWidget {
   final String title;
@@ -81,8 +80,7 @@ class _BloodSugarDistribuitonTableControllerState
                               Navigator.pop(context);
                             }),
                         backgroundColor: R.color.transparent, //No more green
-                        title: Text(
-                            'Nhóm đường huyết ' + widget.title.toLowerCase(),
+                        title: Text('${R.string.nhom_duong_huyet.tr()} ' + widget.title.toLowerCase(),
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -102,7 +100,8 @@ class _BloodSugarDistribuitonTableControllerState
                                   separatorBuilder:
                                       (BuildContext context, int index) {
                                     return Container(
-                                        height: 1, color: R.color.color0xffE5E5E5);
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5);
                                   },
                                   itemBuilder:
                                       (BuildContext context, int index) {
@@ -117,7 +116,8 @@ class _BloodSugarDistribuitonTableControllerState
                                             children: [
                                               Container(
                                                 width: width + width / 4,
-                                                child: Text('Thời gian',
+                                                child: Text(
+                                                    R.string.thoi_gian.tr(),
                                                     style: TextStyle(
                                                         color: R.color.black,
                                                         fontSize: 14,
@@ -126,7 +126,8 @@ class _BloodSugarDistribuitonTableControllerState
                                               ),
                                               Container(
                                                 width: width,
-                                                child: Text('Khung giờ',
+                                                child: Text(
+                                                    R.string.khung_gio.tr(),
                                                     style: TextStyle(
                                                         color: R.color.black,
                                                         fontSize: 14,
@@ -136,7 +137,8 @@ class _BloodSugarDistribuitonTableControllerState
                                               Container(
                                                 width: width - width / 4,
                                                 child: Center(
-                                                  child: Text('Chỉ số',
+                                                  child: Text(
+                                                      R.string.chi_so.tr(),
                                                       style: TextStyle(
                                                           color: R.color.black,
                                                           fontSize: 14,

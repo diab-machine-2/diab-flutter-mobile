@@ -4,15 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
-import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
-import 'package:medical/src/widget/tabbar/guidline_panel.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeHeader extends StatefulWidget {
   @override
@@ -131,7 +129,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700)),
                                 SizedBox(height: 4),
-                                Text('Thành viên cơ bản',
+                                Text(R.string.thanh_vien_co_ban.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 14,
@@ -193,7 +191,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                             Padding(
                               padding: EdgeInsets.only(top: 16),
                               child: Text(
-                                  'Điều gì tạo động lực sống khỏe hơn mỗi ngày cho bạn? Hãy chia sẻ cùng diaB nhé!',
+                                  R.string.share_with_diab.tr(),
                                   style: TextStyle(
                                       color: R.color.white,
                                       fontSize: 14,
@@ -216,7 +214,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                                     child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text('Viết động lực',
+                                          Text(R.string.viet_dong_luc.tr(),
                                               style: TextStyle(
                                                   color: R.color.mainColor,
                                                   fontSize: 15,

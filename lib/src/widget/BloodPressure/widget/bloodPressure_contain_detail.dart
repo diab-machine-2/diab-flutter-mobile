@@ -4,10 +4,9 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_heart_rate.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodPressureDetail extends StatefulWidget {
   BloodPressureDetail({Key key}) : super(key: key);
@@ -88,7 +87,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                         alignment: Alignment.centerLeft,
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text('Huyết áp',
+                          child: Text(R.string.huyet_ap.tr(),
                               style: TextStyle(
                                   color: R.color.black,
                                   fontSize: 20,
@@ -149,7 +148,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text('Thấp nhất',
+                                      Text(R.string.thap_nhat.tr(),
                                           style: TextStyle(
                                             color: R.color.textDark,
                                             fontSize: 15,
@@ -203,7 +202,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                       ],
                                     ),
                                     SizedBox(height: 8),
-                                    Text('Trung bình',
+                                    Text(R.string.trung_binh.tr(),
                                         style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 15,
@@ -265,7 +264,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text('Cao nhất',
+                                      Text(R.string.cao_nhat.tr(),
                                           style: TextStyle(
                                             color: R.color.textDark,
                                             fontSize: 15,
@@ -282,7 +281,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                         alignment: Alignment.centerLeft,
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text('Nhịp tim',
+                          child: Text(R.string.nhip_tim.tr(),
                               style: TextStyle(
                                   color: R.color.black,
                                   fontSize: 20,
@@ -340,7 +339,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                           ],
                                         ),
                                         SizedBox(height: 8),
-                                        Text('Thấp nhất',
+                                        Text(R.string.thap_nhat.tr(),
                                             style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 15,
@@ -392,7 +391,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text('Trung bình',
+                                      Text(R.string.trung_binh.tr(),
                                           style: TextStyle(
                                             color: R.color.textDark,
                                             fontSize: 15,
@@ -451,7 +450,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text('Cao nhất',
+                                      Text(R.string.cao_nhat.tr(),
                                           style: TextStyle(
                                             color: R.color.textDark,
                                             fontSize: 15,
@@ -470,7 +469,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Gần nhất',
+                              Text(R.string.gan_nhat.tr(),
                                   style: TextStyle(
                                       color: R.color.textDark,
                                       fontSize: 20,
@@ -480,7 +479,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                               ),
                               Row(
                                 children: [
-                                  Text('Nhập vào ',
+                                  Text('${R.string.nhap_vao.tr()} ',
                                       style: TextStyle(
                                         color: R.color.captionColorGray,
                                         fontSize: 12,
@@ -530,7 +529,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Huyết áp',
+                              Text(R.string.huyet_ap.tr(),
                                   style: TextStyle(
                                     color: R.color.textDark,
                                     fontSize: 18,
@@ -561,7 +560,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 12.0),
-                                    child: Text('mmHg',
+                                    child: Text(R.string.mm_hg.tr(),
                                         style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 18,
@@ -574,7 +573,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Nhịp tim',
+                              Text(R.string.nhip_tim.tr(),
                                   style: TextStyle(
                                     color: R.color.textDark,
                                     fontSize: 16,
@@ -600,7 +599,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 14.0),
-                                    child: Text('lần/phút',
+                                    child: Text(R.string.lan_tren_phut.tr(),
                                         style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,

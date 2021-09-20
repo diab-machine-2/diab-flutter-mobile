@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef TimeCallback = Function(String, int);
 
@@ -15,10 +15,10 @@ class ActionListCompare extends StatefulWidget {
 class _ActionListCompareState extends State<ActionListCompare> {
   var data = [
     {
-      'name': 'Trước & sau ăn',
+      'name': R.string.truoc_va_sau_an.tr(),
     },
     {
-      'name': 'Trước & sau tập luyện',
+      'name': R.string.truoc_va_sau_tap_luyen.tr(),
     },
   ];
 
@@ -54,7 +54,7 @@ class _ActionListCompareState extends State<ActionListCompare> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Chọn thời điểm so sánh',
+              Text(R.string.chon_thoi_diem_so_sanh.tr(),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               GestureDetector(
                 onTap: () {
@@ -97,7 +97,7 @@ class _ActionListCompareState extends State<ActionListCompare> {
                         colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                     borderRadius: BorderRadius.circular(200)),
                 child: Center(
-                  child: Text('Lưu',
+                  child: Text(R.string.save.tr(),
                       style: TextStyle(
                           color: R.color.white,
                           fontSize: 16,

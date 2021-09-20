@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/horizontal_picker/horizontal_numberpicker_wrapper.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GoalSettingController extends StatefulWidget {
   @override
@@ -138,23 +138,23 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w700)),
                                           SizedBox(width: 4),
-                                          Text('Mục tiêu')
+                                          Text(R.string.muc_tieu.tr())
                                         ])
                                       ])
                                 ]),
                               )
                             ]),
-                        buildItem('Số phút đi bộ mỗi ngày', 'phút',
+                        buildItem(R.string.so_phut_di_bo_moi_ngay.tr(), R.string.minute.tr(),
                             dailyWalkTargetDuration),
-                        buildItem('Số phút vận động mỗi ngày', 'phút',
+                        buildItem(R.string.so_phut_van_dong_moi_ngay.tr(), R.string.minute.tr(),
                             dailyTargetDuration),
-                        buildItem('Số phút vận động hằng tuần', 'phút',
+                        buildItem('Số phút vận động hằng tuần', R.string.minute.tr(),
                             weeklyTargetDuration),
-                        buildItem('Năng lượng đốt cháy / ngày', 'kcal',
+                        buildItem(R.string.nang_luong_dot_chay_tren_ngay.tr(), R.string.kcal.tr(),
                             dailyTargetBurnedCalorie),
-                        buildItem('Năng lượng thu nạp / ngày', 'kcal',
+                        buildItem('Năng lượng thu nạp / ngày', R.string.kcal.tr(),
                             weeklyTargetBurnedCalorie),
-                        buildItem('Mục tiêu cân nặng', 'kg', goalWeight),
+                        buildItem(R.string.muc_tieu_can_nang.tr(), R.string.kg.tr(), goalWeight),
                         Padding(
                           padding: EdgeInsets.only(
                               top: 32, left: 16, right: 16, bottom: 16),
@@ -171,7 +171,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                                 minValue: 0,
                                 maxValue: 200,
                                 step: 1,
-                                unit: 'cm',
+                                unit: R.string.cm.tr(),
                                 widgetWidth:
                                     MediaQuery.of(context).size.width.round(),
                                 subGridCountPerGrid: 10,
@@ -206,7 +206,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                                   R.color.greenGradientBottom
                                 ])),
                         child: Center(
-                            child: Text('Lưu',
+                            child: Text(R.string.save.tr(),
                                 style: TextStyle(
                                     color: R.color.white,
                                     fontWeight: FontWeight.w600,

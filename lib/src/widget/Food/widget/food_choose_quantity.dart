@@ -7,10 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef FoodQuantityCallback = Function(FoodModel);
 
@@ -53,19 +52,19 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
   Widget build(BuildContext context) {
     List<Widget> items = [];
     if (widget.model.calorie != null) {
-      items.add(buildItem('Calo', widget.model.calorie, 'kcal'));
+      items.add(buildItem(R.string.calo.tr(), widget.model.calorie, R.string.kcal.tr()));
     }
     if (widget.model.lipid != null) {
-      items.add(buildItem('Béo', widget.model.lipid, 'g'));
+      items.add(buildItem(R.string.beo.tr(), widget.model.lipid, 'g'));
     }
     if (widget.model.glucose != null) {
-      items.add(buildItem('Đường', widget.model.glucose, 'g'));
+      items.add(buildItem(R.string.duong.tr(), widget.model.glucose, 'g'));
     }
     if (widget.model.protein != null) {
-      items.add(buildItem('Đạm', widget.model.protein, 'g'));
+      items.add(buildItem(R.string.dam.tr(), widget.model.protein, 'g'));
     }
     if (widget.model.fibre != null) {
-      items.add(buildItem('Xơ', widget.model.fibre, 'g'));
+      items.add(buildItem(R.string.xo.tr(), widget.model.fibre, 'g'));
     }
 
     return GestureDetector(
@@ -154,7 +153,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                       fontWeight: FontWeight.w400)),
                               SizedBox(height: 12),
                               Text(
-                                  'Khẩu phần ${widget.model.portion.round()} ${widget.model.unit} bao gồm:',
+                                  '${R.string.khau_phan.tr()} ${widget.model.portion.round()} ${widget.model.unit} ${R.string.bao_gom.tr()}:',
                                   style: TextStyle(
                                       color: R.color.black,
                                       fontSize: 14,
@@ -171,7 +170,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                       SizedBox(height: 16),
                       Padding(
                         padding: EdgeInsets.only(left: 16),
-                        child: Text('Khẩu phần của bạn',
+                        child: Text(R.string.khau_phan_cua_ban.tr(),
                             style: TextStyle(
                                 color: R.color.black,
                                 fontSize: 16,
@@ -254,7 +253,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                     color: R.color.grayBorder,
                                     borderRadius: BorderRadius.circular(21.5)),
                                 child: Center(
-                                    child: Text('Huỷ',
+                                    child: Text(R.string.cancel.tr(),
                                         style: TextStyle(
                                             color: R.color.black,
                                             fontSize: 16,
@@ -269,7 +268,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                   selectedQuantity + (selectedPercent / 10);
                               if (quantity == 0) {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập dữ liệu');
+                                    context, R.string.ban_chua_nhap_du_lieu.tr());
                                 return;
                               }
                               DartNotificationCenter.post(
@@ -306,7 +305,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                           R.color.greenGradientBottom
                                         ])),
                                 child: Center(
-                                    child: Text('Đồng ý',
+                                    child: Text(R.string.yes.tr(),
                                         style: TextStyle(
                                             color: R.color.white,
                                             fontSize: 16,

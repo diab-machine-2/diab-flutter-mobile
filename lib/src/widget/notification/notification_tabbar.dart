@@ -1,16 +1,12 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/widget/Food/food_description.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/notification/notification.dart';
-import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class NotificationTabbarController extends StatefulWidget {
   @override
@@ -80,7 +76,7 @@ class _NotificationTabbarControllerState
                   TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
               labelPadding: EdgeInsets.all(0),
               tabs: [
-                SizedBox(width: width / 3, child: Tab(text: 'Tất cả')),
+                SizedBox(width: width / 3, child: Tab(text: R.string.all.tr())),
                 SizedBox(width: width / 3, child: Tab(text: 'Chưa đọc')),
                 SizedBox(width: width / 3, child: Tab(text: 'Đã đọc')),
               ],

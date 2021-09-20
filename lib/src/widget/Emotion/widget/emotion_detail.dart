@@ -1,24 +1,19 @@
-import 'dart:convert';
 
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
-import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/emotion/input_emotion_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:grouped_list/grouped_list.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EmotionDetailController extends StatefulWidget {
   EmotionDetailController({Key key}) : super(key: key);
@@ -260,7 +255,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                            'Triệu chứng',
+                                                            R.string.trieu_chung.tr(),
                                                             style: TextStyle(
                                                                 color: R.color
                                                                     .black,
@@ -355,7 +350,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                             .spaceBetween,
                                                                     children: [
                                                                       Text(
-                                                                        'Triệu chứng khác:',
+                                                                        '${R.string.trieu_chung_khac.tr()}:',
                                                                         style: TextStyle(
                                                                             color: R.color
                                                                                 .black,
@@ -395,7 +390,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                     top: 16,
                                                                     bottom: 8),
                                                             child: Text(
-                                                              'Hoạt động',
+                                                              R.string.hoat_dong.tr(),
                                                               style: TextStyle(
                                                                   color: R.color
                                                                       .black,
@@ -488,7 +483,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                             .start,
                                                                     children: [
                                                                       Text(
-                                                                        'Hoạt động khác:',
+                                                                        '${R.string.hoat_dong_khac.tr()}:',
                                                                         style: TextStyle(
                                                                             color: R.color
                                                                                 .black,

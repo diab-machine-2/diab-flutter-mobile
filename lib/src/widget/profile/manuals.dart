@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ManualController extends StatefulWidget {
   @override
@@ -99,7 +99,7 @@ class _ManualControllerState extends State<ManualController> {
                                         border: InputBorder.none,
                                         contentPadding:
                                             EdgeInsets.only(top: -20),
-                                        hintText: 'Tìm kiếm hoạt động',
+                                        hintText: R.string.tim_kiem_hoat_dong.tr(),
                                         fillColor: R.color.textDark),
                                   )),
                             ),

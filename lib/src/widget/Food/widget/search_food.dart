@@ -6,11 +6,11 @@ import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Food/widget/food_item.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SearchFood extends StatefulWidget {
   final List<FoodModel> foods;
@@ -98,7 +98,7 @@ class _SearchFoodState extends State<SearchFood> {
             child: Column(children: [
               CustomAppBar(
                   title: Text(
-                    'Nhập món ăn',
+                    R.string.nhap_mon_an.tr(),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -132,7 +132,7 @@ class _SearchFoodState extends State<SearchFood> {
                                 child: CupertinoTextField(
                                     autofocus: true,
                                     controller: controller,
-                                    placeholder: 'Tìm kiếm món ăn',
+                                    placeholder: R.string.tim_kiem_mon_an.tr(),
                                     decoration: BoxDecoration(border: null),
                                     onChanged: (value) {
                                       refresh();

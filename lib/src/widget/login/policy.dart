@@ -8,7 +8,7 @@ class PolicyController extends StatelessWidget {
         // appBar: AppBar(
         //     backgroundColor: R.color.white,
         //     title: Text(
-        //       'Điều khoản & điều kiện',
+        //       R.string.dieu_khoan_va_dieu_kien.tr(),
         //       style: TextStyle(fontSize: 20, color: R.color.black),
         //     ),
         //     centerTitle: false,

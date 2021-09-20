@@ -1,12 +1,11 @@
-import 'package:bot_toast/bot_toast.dart';
+import 'dart:core';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'dart:core';
 import 'package:url_launcher/url_launcher.dart';
 
 class NotificationDetailController extends StatefulWidget {

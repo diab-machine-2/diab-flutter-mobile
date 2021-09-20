@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/Food/widget/food_choose_quantity.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef FoodItemCallback = Function(FoodModel, int);
 
@@ -69,7 +69,7 @@ class FoodItem extends StatelessWidget {
                       : Padding(
                           padding: EdgeInsets.only(top: 4),
                           child: Text(
-                              'Đã ăn ${roundAsFixed(selectedModel.portion * selectedModel.quantity)} ${selectedModel.unit}, ${formatNumber(selectedModel.quantity * selectedModel.calorie)} kcal',
+                              '${R.string.da_an.tr()} ${roundAsFixed(selectedModel.portion * selectedModel.quantity)} ${selectedModel.unit}, ${formatNumber(selectedModel.quantity * selectedModel.calorie)} ${R.string.kcal.tr()}',
                               style: TextStyle(
                                   color: R.color.black,
                                   fontWeight: FontWeight.w400)),

@@ -4,13 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
-import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarDetail extends StatefulWidget {
   BloodSugarDetail({Key key}) : super(key: key);
@@ -130,7 +129,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                           ),
                                           SizedBox(height: 5),
                                           Text(
-                                            'Thấp nhất',
+                                            R.string.thap_nhat.tr(),
                                             style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 15,
@@ -186,7 +185,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                         ),
                                         SizedBox(height: 5),
                                         Text(
-                                          'Trung bình',
+                                          R.string.trung_binh.tr(),
                                           style: TextStyle(
                                             color: R.color.textDark,
                                             fontSize: 15,
@@ -248,7 +247,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                           ),
                                           SizedBox(height: 5),
                                           Text(
-                                            'Cao nhất',
+                                            R.string.cao_nhat.tr(),
                                             style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 15,
@@ -276,7 +275,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                       Padding(
                                         padding:
                                             const EdgeInsets.only(left: 8.0),
-                                        child: Text('Tần suất phân bổ',
+                                        child: Text(R.string.tan_suat_phan_bo.tr(),
                                             style: TextStyle(
                                                 color: R.color.black,
                                                 fontSize: 20,
@@ -398,7 +397,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                 Padding(
                   padding: EdgeInsets.only(top: 16, bottom: 8),
                   child: Text(
-                    'Chú thích',
+                    R.string.chu_thich.tr(),
                     style: TextStyle(fontSize: 14, color: R.color.textDark),
                   ),
                 ),
@@ -411,7 +410,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         Navigator.pushNamed(
                             context, NavigatorName.blood_sugar_distribution_table,
                             arguments: {
-                              'title': 'Rất cao',
+                              'title': R.string.very_high.tr(),
                               'glucoseDistributionType': 5,
                               'periodFilterType': periodFilterType
                             });
@@ -422,7 +421,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                 .round()
                                 .toString() +
                             '%',
-                        text: 'Rất cao',
+                        text: R.string.very_high.tr(),
                         textColor:
                             toColor(model.veryHighAttributesColor.fontColor),
                         isSquare: true,
@@ -436,7 +435,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         Navigator.pushNamed(
                             context, NavigatorName.blood_sugar_distribution_table,
                             arguments: {
-                              'title': 'Cao',
+                              'title': R.string.high.tr(),
                               'glucoseDistributionType': 4,
                               'periodFilterType': periodFilterType
                             });
@@ -446,7 +445,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         number:
                             (model.highCount / total * 100).round().toString() +
                                 '%',
-                        text: 'Cao',
+                        text: R.string.high.tr(),
                         textColor: toColor(model.highAttributesColor.fontColor),
                         isSquare: true,
                       ),
@@ -459,7 +458,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         Navigator.pushNamed(
                             context, NavigatorName.blood_sugar_distribution_table,
                             arguments: {
-                              'title': 'Tốt',
+                              'title': R.string.good.tr(),
                               'glucoseDistributionType': 3,
                               'periodFilterType': periodFilterType
                             });
@@ -469,7 +468,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         number:
                             (model.goodCount / total * 100).round().toString() +
                                 '%',
-                        text: 'Tốt',
+                        text: R.string.good.tr(),
                         textColor: toColor(model.goodAttributesColor.fontColor),
                         isSquare: true,
                       ),
@@ -482,7 +481,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         Navigator.pushNamed(
                             context, NavigatorName.blood_sugar_distribution_table,
                             arguments: {
-                              'title': 'Thấp',
+                              'title': R.string.low.tr(),
                               'glucoseDistributionType': 2,
                               'periodFilterType': periodFilterType
                             });
@@ -492,7 +491,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         number:
                             (model.lowCount / total * 100).round().toString() +
                                 '%',
-                        text: 'Thấp',
+                        text: R.string.low.tr(),
                         textColor: toColor(model.lowAttributesColor.fontColor),
                         isSquare: true,
                       ),
@@ -505,7 +504,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         Navigator.pushNamed(
                             context, NavigatorName.blood_sugar_distribution_table,
                             arguments: {
-                              'title': 'Rất thấp',
+                              'title': R.string.very_low.tr(),
                               'glucoseDistributionType': 1,
                               'periodFilterType': periodFilterType
                             });
@@ -516,7 +515,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                 .round()
                                 .toString() +
                             '%',
-                        text: 'Rất thấp',
+                        text: R.string.very_low.tr(),
                         textColor:
                             toColor(model.veryLowAttributesColor.fontColor),
                         isSquare: true,

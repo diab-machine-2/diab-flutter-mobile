@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FilterAction extends StatelessWidget {
   @override
@@ -8,7 +8,7 @@ class FilterAction extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(16),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        ItemFilter(R.drawable.ic_filter, 'Xem nguỡng HbA1C',
+        ItemFilter(R.drawable.ic_filter, R.string.xem_nguong_hba1c.tr(),
             size: 3),
         SizedBox(width: 16),
         buildContainer()
@@ -29,7 +29,7 @@ class FilterAction extends StatelessWidget {
           children: [
             Image.asset(R.drawable.ic_filter, width: 24, height: 24),
             SizedBox(width: 8),
-            Text('Bộ lọc', style: TextStyle(color: R.color.primaryColor)),
+            Text(R.string.bo_loc.tr(), style: TextStyle(color: R.color.primaryColor)),
           ],
         ));
   }

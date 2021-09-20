@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercrises_active.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef TimeCallback = Function(ExercriseActiveModel);
 
@@ -63,7 +63,7 @@ class ActionListActiveState extends State<ActionListActive> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text('Chọn hình thức ${widget.title}',
+                    child: Text('${R.string.chon_hinh_thuc.tr()} ${widget.title}',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w700)),
                   ),
@@ -100,7 +100,7 @@ class ActionListActiveState extends State<ActionListActive> {
                                             BorderRadius.circular(200),
                                         color: R.color.grayBorder),
                                     child: Center(
-                                      child: Text('Huỷ',
+                                      child: Text(R.string.cancel.tr(),
                                           style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 16,
@@ -126,7 +126,7 @@ class ActionListActiveState extends State<ActionListActive> {
                                     borderRadius: BorderRadius.circular(200),
                                   ),
                                   child: Center(
-                                    child: Text('Tiếp tục',
+                                    child: Text(R.string.tiep_tuc.tr(),
                                         style: TextStyle(
                                             color: R.color.white,
                                             fontSize: 16,

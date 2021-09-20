@@ -14,7 +14,6 @@ import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -27,6 +26,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddBmiController extends StatefulWidget {
   final String type;
@@ -58,6 +58,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
 
   ShortGuiModel des;
 
+  @override
   void initState() {
     print(AppSettings.userInfo);
     if (AppSettings.userInfo.height != 0 &&
@@ -74,6 +75,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     TrackingManager.analytics.setCurrentScreen(screenName: 'BMI Input');
   }
 
+  @override
   void dispose() {
     super.dispose();
   }
@@ -132,8 +134,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                   backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? 'Cập nhật chỉ số cân nặng'
-                          : 'Nhập chỉ số cân nặng',
+                          ? R.string.cap_nhat_chi_so_can_nang.tr()
+                          : R.string.nhap_chi_so_can_nang.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -179,7 +181,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                     input: true,
                                     data: des,
                                     titleDetail:
-                                        'Kiểm soát cân nặng bệnh tiểu đường')
+                                        R.string.kiem_soat_can_nang_benh_tieu_duong.tr())
                                 : SizedBox()),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -203,7 +205,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('Chỉ số BMI của bạn:',
+                                      Text('${R.string.chi_so_bmi_cua_ban.tr()}: ',
                                           style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 14,
@@ -220,7 +222,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                             padding: const EdgeInsets.only(
                                                 top: 2.0, left: 4),
                                             child: Text(
-                                              'kg/m²',
+                                              R.string.kg_m_2.tr(),
                                               style: TextStyle(
                                                   color: R.color.textDark,
                                                   fontWeight: FontWeight.w400,
@@ -256,7 +258,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         Image.asset(R.drawable.ic_scale,
                                             width: 22, height: 22),
                                         SizedBox(width: 8),
-                                        Text('Cân nặng & chiều cao',
+                                        Text(R.string.can_nang_va_chieu_cao.tr(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
@@ -290,14 +292,14 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                     handleBMI();
                                                                   },
                                                                   title:
-                                                                      'Nhập cân nặng',
+                                                                      R.string.nhap_can_nang.tr(),
                                                                   max: 180,
                                                                   numberDefault:
                                                                       selectedWeight ==
                                                                               0
                                                                           ? 50
                                                                           : selectedWeight,
-                                                                  unit: 'kg'),
+                                                                  unit: R.string.kg.tr()),
                                                         );
                                                       },
                                                       child: Container(
@@ -328,7 +330,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                             R.color.color0xffE5E5E5)
                                                   ],
                                                 ),
-                                                Text('kg',
+                                                Text(R.string.kg.tr(),
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                     )),
@@ -376,10 +378,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                             });
                                                                             handleBMI();
                                                                           },
-                                                                          title: 'Nhập chiều cao',
+                                                                          title: R.string.nhap_chieu_cao.tr(),
                                                                           max: 250,
                                                                           numberDefault: selectedHeight == 0 ? 150 : selectedHeight,
-                                                                          unit: 'cm'),
+                                                                          unit: R.string.cm.tr()),
                                                                     );
                                                                   },
                                                                   child:
@@ -404,7 +406,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                   color: R.color.color0xffE5E5E5)
                                                             ],
                                                           ),
-                                                          Text('cm',
+                                                          Text(R.string.cm.tr(),
                                                               style: TextStyle(
                                                                 fontSize: 16,
                                                               )),
@@ -442,7 +444,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         Image.asset(R.drawable.ic_ruler,
                                             width: 22, height: 22),
                                         SizedBox(width: 8),
-                                        Text('Vòng eo',
+                                        Text(R.string.vong_eo.tr(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
@@ -476,14 +478,14 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                     });
                                                                   },
                                                                   title:
-                                                                      'Nhập vòng eo',
+                                                                      R.string.nhap_vong_eo.tr(),
                                                                   max: 180,
                                                                   numberDefault:
                                                                       selectedHip ==
                                                                               0
                                                                           ? 60
                                                                           : selectedHip,
-                                                                  unit: 'cm'),
+                                                                  unit: R.string.cm.tr()),
                                                         );
                                                       },
                                                       child: Container(
@@ -513,7 +515,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                             R.color.color0xffE5E5E5)
                                                   ],
                                                 ),
-                                                Text('cm',
+                                                Text(R.string.cm.tr(),
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                     )),
@@ -646,7 +648,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                           SizedBox(width: 8),
                                           Text(
                                               selectedTimeFrame == null
-                                                  ? 'Chọn khung giờ'
+                                                  ? R.string.chon_khung_gio.tr()
                                                   : selectedTimeFrame.name,
                                               style: TextStyle(
                                                   fontSize: 16,
@@ -679,7 +681,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                     Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Ghi chú',
+                                    Text(R.string.ghi_chu.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -692,7 +694,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: 'Nhập ghi chú của bạn',
+                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
@@ -793,7 +795,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text('Lưu',
+                                  child: Text(R.string.save.tr(),
                                       style: TextStyle(
                                           color: R.color.white,
                                           fontWeight: FontWeight.w600,
@@ -821,7 +823,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                             border: Border.all(
                                                 color:R.color.red, width: 2)),
                                         child: Center(
-                                          child: Text('Xoá dữ liệu',
+                                          child: Text(R.string.xoa_du_lieu.tr(),
                                               style: TextStyle(
                                                   color: R.color.red,
                                                   fontSize: 16,
@@ -847,7 +849,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                 R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Lưu',
+                                        child: Text(R.string.save.tr(),
                                             style: TextStyle(
                                                 color: R.color.white,
                                                 fontSize: 16,
@@ -870,7 +872,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       BotToast.showLoading();
       final result = await WeightClient().deleteIndexBmi(widget.id);
       if (result == true) {
-        Message.showToastMessage(context, 'Xoá thành công');
+        Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         DartNotificationCenter.post(channel: 'Weight_change_data');
         Navigator.pop(context);
       }
@@ -892,11 +894,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     final note = _controllerNote.text ?? '';
 
     // if (weight.isEmpty) {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập chỉ số cân nặng');
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_can_nang.tr());
     //   return;
     // }
     // if (height.isEmpty) {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập chỉ số chiều cao');
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_chieu_cao.tr());
     //   return;
     // }
     // if (hip.isEmpty) {
@@ -904,15 +906,15 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     //   return;
     // }
     // if (selectedDate == null) {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
     //   return;
     // }
     // if (selectedTimeFrame == null) {
-    //   Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+    //   Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
     //   return;
     // }
     // if (note == null) {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập lý do');
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
     //   return;
     // }
     BotToast.showLoading();
@@ -936,7 +938,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           paths);
       if (result == true) {
         updateHeightProfile();
-        Message.showToastMessage(context, 'Lưu thành công');
+        Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
         DartNotificationCenter.post(channel: 'Weight_change_data');
         Navigator.pop(context);
       }
@@ -956,11 +958,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     final note = _controllerNote.text ?? '';
 
     if (selectedWeight == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số cân nặng');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_can_nang.tr());
       return;
     }
     if (selectedHeight == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số chiều cao');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_chieu_cao.tr());
       return;
     }
     // if (selectedHip == 0) {
@@ -968,15 +970,15 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     //   return;
     // }
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
     if (note == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập ghi chú');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu.tr());
       return;
     }
     BotToast.showLoading();
@@ -1075,7 +1077,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn xoá dữ liệu?',
+                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1085,7 +1087,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
+                            R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1109,7 +1111,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Quay lại',
+                                        child: Text(R.string.back.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -1131,7 +1133,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text('Xoá',
+                                      child: Text(R.string.delete.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,
@@ -1199,7 +1201,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1209,7 +1211,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                            R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1232,7 +1234,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -1260,7 +1262,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                               R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,
@@ -1317,7 +1319,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                   Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chọn trong thư viện",
+                  Text(R.string.chon_trong_thu_vien.tr(),
                       style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
@@ -1335,7 +1337,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                   Image.asset(R.drawable.ic_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chụp ảnh",
+                  Text(R.string.chup_anh.tr(),
                       style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
@@ -1347,7 +1349,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text("Huỷ",
+          child: Text(R.string.cancel.tr(),
               style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
@@ -1356,7 +1358,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      Message.showToastMessage(context, 'Chỉ đuợc chọn tối đa 5 ảnh');
+      Message.showToastMessage(context, R.string.max_image_select.tr());
     }
   }
 
@@ -1395,13 +1397,13 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = FlatButton(
-      child: Text("Huỷ"),
+      child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Cấp quyền"),
+      child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -1409,8 +1411,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Thông báo"),
-      content: Text("Bạn cần cấp quyền truy cập để sử dụng tính năng này"),
+      title: Text(R.string.notification.tr()),
+      content: Text(R.string.ask_for_permission.tr()),
       actions: [
         cancelButton,
         continueButton,
@@ -1488,7 +1490,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Chọn ngày',
+                            Text(R.string.pick_date.tr(),
                                 style: TextStyle(
                                     color: R.color.black,
                                     fontSize: 16,
@@ -1515,7 +1517,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         SizedBox(
                           width: 16,
                         ),
-                        Text('Chọn thời gian',
+                        Text(R.string.pick_time.tr(),
                             style: TextStyle(
                                 color: R.color.black,
                                 fontSize: 16,
@@ -1544,7 +1546,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                   color: R.color.grayBorder,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.black,
                                           fontSize: 16,
@@ -1572,7 +1574,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                   color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Đồng ý',
+                                  child: Text(R.string.yes.tr(),
                                       style: TextStyle(
                                           color: R.color.white,
                                           fontSize: 16,
@@ -1822,7 +1824,7 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -1848,7 +1850,7 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                                 borderRadius: BorderRadius.circular(200),
                               ),
                               child: Center(
-                                child: Text('Tiếp tục',
+                                child: Text(R.string.tiep_tuc.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,

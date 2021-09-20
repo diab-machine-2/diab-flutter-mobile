@@ -1,13 +1,12 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:medical/main.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ForgotPasswordController extends StatefulWidget {
   @override
@@ -37,7 +36,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
               padding: EdgeInsets.only(top: 120.0, left: 16, right: 16),
               child: Column(children: [
                 Text(
-                    'Nhập số điện thoại bạn đã đăng ký trước đó để chúng tôi gửi mã xác nhận đổi mật khẩu',
+                    R.string.phone_number_for_otp.tr(),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                     textAlign: TextAlign.center),
                 Padding(
@@ -47,8 +46,8 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                 ),
                 TextFieldCustom(
                   key: phoneKey,
-                  title: 'Số điện thoại',
-                  placeholder: 'Nhập số điện thoại',
+                  title: R.string.so_dien_thoai.tr(),
+                  placeholder: R.string.nhap_so_dien_thoai.tr(),
                   onChanged: (value) {
                     phone = value;
                   },
@@ -69,7 +68,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                             end: Alignment.centerRight,
                             colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                     child: Center(
-                        child: Text('Tiếp tục',
+                        child: Text(R.string.tiep_tuc.tr(),
                             style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
@@ -93,7 +92,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                 title: Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    'Quên mật khẩu',
+                    R.string.quyen_mat_khau.tr(),
                     style: TextStyle(fontSize: 20, color: R.color.textDark),
                   ),
                 ),
@@ -108,7 +107,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
   verify(BuildContext context) async {
     FocusScope.of(context).unfocus();
     if (phone.isEmpty) {
-      phoneKey.currentState.validate('Bạn chưa nhập số điện thoại');
+      phoneKey.currentState.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
     BotToast.showLoading();
@@ -131,7 +130,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
       if (e is Error) {
         if (e.code == 'USER001') {
           phoneKey.currentState.validate(
-              'Số điện thoại không tồn tại. Vui lòng đăng nhập hoặc dùng số điện thoại khác để đăng ký!');
+              R.string.so_dien_thoai_khong_ton_tai.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }
@@ -157,7 +156,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: 'Đã gửi OTP 5 lần cho số điện thoại ',
+                  text: R.string.da_gui_otp_5_lan_cho_so_dien_thoai.tr(),
                   style: TextStyle(color: R.color.color0xff172823, fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(
@@ -166,7 +165,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
                         text:
-                            '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
+                            R.string.dang_ky_lai_hom_sau.tr(),
                         style:
                             TextStyle(color: R.color.color0xff172823, fontSize: 16)),
                   ],

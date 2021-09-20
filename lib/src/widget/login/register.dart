@@ -64,8 +64,8 @@ class _RegisterControllerState extends State<RegisterController> {
                             Column(children: [
                               TextFieldCustom(
                                   key: phoneKey,
-                                  title: 'Số điện thoại',
-                                  placeholder: 'Nhập số điện thoại',
+                                  title: R.string.so_dien_thoai.tr(),
+                                  placeholder: R.string.nhap_so_dien_thoai.tr(),
                                   autoFocus: true,
                                   onChanged: (value) {
                                     phone = value;
@@ -73,8 +73,8 @@ class _RegisterControllerState extends State<RegisterController> {
                               SizedBox(height: 20),
                               TextFieldCustom(
                                   key: passwordKey,
-                                  title: 'Mật khẩu',
-                                  placeholder: 'Mật khẩu ít nhất 6 ký tự',
+                                  title: R.string.password.tr(),
+                                  placeholder: R.string.password_least_character.tr(),
                                   isPassword: true,
                                   onChanged: (value) {
                                     password = value;
@@ -82,8 +82,8 @@ class _RegisterControllerState extends State<RegisterController> {
                               SizedBox(height: 20),
                               TextFieldCustom(
                                   key: confirmPasswordKey,
-                                  title: 'Xác nhận mật khẩu',
-                                  placeholder: 'Nhập lại mật khẩu',
+                                  title: R.string.xac_nhan_mat_khau.tr(),
+                                  placeholder: R.string.nhap_lai_mat_khau.tr(),
                                   isPassword: true,
                                   onChanged: (value) {
                                     confirmPassword = value;
@@ -112,7 +112,7 @@ class _RegisterControllerState extends State<RegisterController> {
                                                 R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Tiếp tục',
+                                        child: Text(R.string.tiep_tuc.tr(),
                                             style: TextStyle(
                                                 color: R.color.white,
                                                 fontSize: 16,
@@ -129,7 +129,7 @@ class _RegisterControllerState extends State<RegisterController> {
                     SafeArea(
                       child: Column(
                         children: [
-                          Text('Hoặc đăng nhập bằng',
+                          Text(R.string.hoac_dang_nhap_bang.tr(),
                               style: TextStyle(
                                   color: R.color.textDark,
                                   fontSize: 16,
@@ -231,7 +231,7 @@ class _RegisterControllerState extends State<RegisterController> {
                   title: Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      "Tạo tài khoản",
+                      R.string.tao_tai_khoan.tr(),
                       style: TextStyle(
                           color: R.color.textDark,
                           fontSize: 24,
@@ -247,15 +247,15 @@ class _RegisterControllerState extends State<RegisterController> {
 
   verify() async {
     if (phone.isEmpty) {
-      phoneKey.currentState.validate('Bạn chưa nhập số điện thoại');
+      phoneKey.currentState.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
     if (password.isEmpty) {
-      passwordKey.currentState.validate('Bạn chưa nhập mật khẩu');
+      passwordKey.currentState.validate(R.string.ban_chua_nhap_mat_khau.tr());
       return;
     }
     if (password.contains(' ')) {
-      passwordKey.currentState.validate('Mật khẩu không chứa khoảng trắng');
+      passwordKey.currentState.validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
       return;
     }
     if (password.length < 6) {
@@ -263,12 +263,12 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
     if (confirmPassword.isEmpty) {
-      confirmPasswordKey.currentState.validate('Bạn chưa nhập lại mật khẩu');
+      confirmPasswordKey.currentState.validate(R.string.ban_chua_nhap_lai_mat_khau.tr());
       return;
     }
     if (confirmPassword != password) {
       confirmPasswordKey.currentState
-          .validate('Nhập lại mật khẩu không chính xác');
+          .validate(R.string.nhap_lai_mat_khau_khong_chinh_xac.tr());
       return;
     }
 
@@ -302,7 +302,7 @@ class _RegisterControllerState extends State<RegisterController> {
       if (e is Error) {
         if (e.code == 'USER002') {
           phoneKey.currentState.validate(
-              'Số điện thoại đã tồn tại. Vui lòng đăng nhập hoặc dùng số điện thoại khác để đăng ký!');
+              R.string.so_dien_thoai_da_ton_tai.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }
@@ -328,7 +328,7 @@ class _RegisterControllerState extends State<RegisterController> {
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: 'Đã gửi OTP 5 lần cho số điện thoại ',
+                  text: R.string.da_gui_otp_5_lan_cho_so_dien_thoai.tr(),
                   style: TextStyle(color: R.color.color0xff172823, fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(
@@ -337,7 +337,7 @@ class _RegisterControllerState extends State<RegisterController> {
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
                         text:
-                            '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
+                            R.string.dang_ky_lai_hom_sau.tr(),
                         style:
                             TextStyle(color: R.color.color0xff172823, fontSize: 16)),
                   ],
@@ -373,7 +373,7 @@ class _RegisterControllerState extends State<RegisterController> {
           BotToast.closeAllLoading();
           if (user == null) {
             registerAccount(result.accessToken.userId, result.accessToken.token,
-                'Facebook', profile['name'] ?? 'Tài khoản nguời dùng', true);
+                'Facebook', profile['name'] ?? R.string.user_name_default.tr(), true);
             // Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
             //   'type': 'facebook',
             //   'facebookAccount': result,
@@ -391,7 +391,7 @@ class _RegisterControllerState extends State<RegisterController> {
                   result.accessToken.userId,
                   result.accessToken.token,
                   'Facebook',
-                  profile['name'] ?? 'Tài khoản nguời dùng',
+                  profile['name'] ?? R.string.user_name_default.tr(),
                   false);
               // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
               //     arguments: {
@@ -440,7 +440,7 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.closeAllLoading();
       if (user == null) {
         registerAccount(account.id, authen.accessToken, 'Google',
-            account.displayName ?? 'Tài khoản nguời dùng', true);
+            account.displayName ?? R.string.user_name_default.tr(), true);
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
@@ -454,7 +454,7 @@ class _RegisterControllerState extends State<RegisterController> {
           //     arguments: {'type': 'google', 'googleAccount': account});
 
           registerAccount(account.id, authen.accessToken, 'Google',
-              account.displayName ?? 'Tài khoản nguời dùng', false);
+              account.displayName ?? R.string.user_name_default.tr(), false);
         }
       } else {
         BotToast.closeAllLoading();
@@ -496,7 +496,7 @@ class _RegisterControllerState extends State<RegisterController> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'apple', 'appleAccount': credential});
         registerAccount(credential.userIdentifier, credential.identityToken,
-            'Apple', credential.givenName ?? 'Tài khoản nguời dùng', true);
+            'Apple', credential.givenName ?? R.string.user_name_default.tr(), true);
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
@@ -508,7 +508,7 @@ class _RegisterControllerState extends State<RegisterController> {
           // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
           //     arguments: {'type': 'apple', 'appleAccount': credential});
           registerAccount(credential.userIdentifier, credential.identityToken,
-              'Apple', credential.givenName ?? 'Tài khoản nguời dùng', false);
+              'Apple', credential.givenName ?? R.string.user_name_default.tr(), false);
         }
       } else {
         Message.showToastMessage(context, error.toString());

@@ -1,11 +1,9 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
@@ -13,6 +11,7 @@ import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BmiDetailController extends StatefulWidget {
   BmiDetailController({Key key}) : super(key: key);
@@ -107,14 +106,13 @@ class BmiDetailControllerState extends State<BmiDetailController>
           return RefreshIndicator(
               onRefresh: _refresh,
               child: Scaffold(
-                backgroundColor:  R.color.backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
-                          image:
-                              AssetImage(R.drawable.bg_detail),
+                          image: AssetImage(R.drawable.bg_detail),
                           fit: BoxFit.cover,
                         )),
                         child: LoadMore(
@@ -139,7 +137,8 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                             previousElement.date));
                                 return GestureDetector(
                                     onTap: () {
-                                      Navigator.pushNamed(context, NavigatorName.add_bmi,
+                                      Navigator.pushNamed(
+                                          context, NavigatorName.add_bmi,
                                           arguments: {
                                             'type': 'update',
                                             'id': element.id,
@@ -199,10 +198,11 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                         top:
                                                                             6.0),
                                                                 child: Text(
-                                                                    'BMI: ',
+                                                                    '${R.string.bmi.tr()}: ',
                                                                     style: TextStyle(
-                                                                        color:
-                                                                            R.color.textDark,
+                                                                        color: R
+                                                                            .color
+                                                                            .textDark,
                                                                         fontSize:
                                                                             16,
                                                                         fontWeight:
@@ -263,7 +263,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                       SizedBox(height: 8),
                                                       Row(
                                                         children: [
-                                                          Text('Cân nặng:',
+                                                          Text('${R.string.can_nang.tr()}:',
                                                               style: TextStyle(
                                                                   color: R.color
                                                                       .black,
@@ -284,7 +284,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                       FontWeight
                                                                           .w400)),
                                                           SizedBox(width: 4),
-                                                          Text('kg',
+                                                          Text(R.string.kg.tr(),
                                                               style: TextStyle(
                                                                   color: R.color
                                                                       .black,
@@ -301,7 +301,8 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                         10.0),
                                                             child: Text('.',
                                                                 style: TextStyle(
-                                                                    color: R.color
+                                                                    color: R
+                                                                        .color
                                                                         .black,
                                                                     fontSize:
                                                                         30,
@@ -310,7 +311,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                             .w700)),
                                                           ),
                                                           SizedBox(width: 8),
-                                                          Text('Vòng eo:',
+                                                          Text('${R.string.vong_eo.tr()}:',
                                                               style: TextStyle(
                                                                   color: R.color
                                                                       .black,
@@ -332,7 +333,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                       FontWeight
                                                                           .w400)),
                                                           SizedBox(width: 4),
-                                                          Text('cm',
+                                                          Text(R.string.cm.tr(),
                                                               style: TextStyle(
                                                                   color: R.color
                                                                       .black,
@@ -353,7 +354,8 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                 'HH:mm') +
                                                             ',',
                                                         style: TextStyle(
-                                                            color: R.color.black,
+                                                            color:
+                                                                R.color.black,
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight
@@ -382,15 +384,17 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                 height: 16),
                                                             Container(
                                                                 height: 1,
-                                                                color: R.color.color0xffEEEFF3),
+                                                                color: R.color
+                                                                    .color0xffEEEFF3),
                                                             SizedBox(
                                                                 height: 16),
                                                             Row(
                                                               children: [
                                                                 Text(
-                                                                    'Ghi chú: ',
+                                                                    '${R.string.ghi_chu.tr()}: ',
                                                                     style: TextStyle(
-                                                                        color: R.color
+                                                                        color: R
+                                                                            .color
                                                                             .black,
                                                                         fontSize:
                                                                             16,
@@ -400,7 +404,8 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                     element
                                                                         .note,
                                                                     style: TextStyle(
-                                                                        color: R.color
+                                                                        color: R
+                                                                            .color
                                                                             .black,
                                                                         fontSize:
                                                                             16,

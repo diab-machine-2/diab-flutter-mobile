@@ -1,20 +1,17 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:grouped_list/grouped_list.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
-import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodPressureDetailController extends StatefulWidget {
   BloodPressureDetailController({Key key}) : super(key: key);
@@ -185,8 +182,7 @@ class BloodPressureDetailControllerState
                     : Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
-                          image:
-                              AssetImage(R.drawable.bg_detail),
+                          image: AssetImage(R.drawable.bg_detail),
                           fit: BoxFit.cover,
                         )),
                         child: ScrollablePositionedList.builder(
@@ -332,7 +328,7 @@ class BloodPressureDetailControllerState
                                                                   FontWeight
                                                                       .w400)),
                                                       SizedBox(width: 4),
-                                                      Text('mmHg',
+                                                      Text(R.string.mm_hg.tr(),
                                                           style: TextStyle(
                                                               color:
                                                                   R.color.black,
@@ -371,7 +367,9 @@ class BloodPressureDetailControllerState
                                                                   FontWeight
                                                                       .w400)),
                                                       SizedBox(width: 4),
-                                                      Text('lần/phút',
+                                                      Text(
+                                                          R.string.lan_tren_phut
+                                                              .tr(),
                                                           style: TextStyle(
                                                               color:
                                                                   R.color.black,
@@ -413,7 +411,8 @@ class BloodPressureDetailControllerState
                                                         SizedBox(height: 16),
                                                         Container(
                                                             height: 1,
-                                                            color: R.color.color0xffEEEFF3),
+                                                            color: R.color
+                                                                .color0xffEEEFF3),
                                                         SizedBox(height: 16),
                                                         Row(
                                                           crossAxisAlignment:
@@ -421,7 +420,7 @@ class BloodPressureDetailControllerState
                                                                   .start,
                                                           children: [
                                                             Text(
-                                                              'Lý do: ',
+                                                              '${R.string.ly_do.tr()}: ',
                                                               style: TextStyle(
                                                                   color: R.color
                                                                       .black,
@@ -434,7 +433,8 @@ class BloodPressureDetailControllerState
                                                               child: Text(
                                                                 element.reason,
                                                                 style: TextStyle(
-                                                                    color: R.color
+                                                                    color: R
+                                                                        .color
                                                                         .black,
                                                                     fontSize:
                                                                         16,

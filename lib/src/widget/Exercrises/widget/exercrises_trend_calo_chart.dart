@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,6 @@ import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_trend_calo.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
@@ -22,6 +20,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ExercrisesTrendCaloChart extends StatefulWidget {
   ExercrisesTrendCaloChart({Key key}) : super(key: key);
@@ -98,7 +97,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Xu hướng đốt calo',
+                            Text(R.string.xu_huong_dot_calo.tr(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w700)),
                             GestureDetector(
@@ -110,8 +109,8 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                     builder: (_) => InputCalo(
                                         title: periodFilterType == 1 ||
                                                 periodFilterType == 2
-                                            ? 'Năng lượng đốt cháy / ngày'
-                                            : 'Năng lượng đốt cháy / tuần',
+                                            ? R.string.nang_luong_dot_chay_tren_ngay.tr()
+                                            : R.string.nang_luong_dot_chay_tren_tuan.tr(),
                                         callback: (number) {
                                           submitTarget(double.parse(number));
                                         }));
@@ -126,7 +125,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                       height: 24,
                                     ),
                                     SizedBox(width: 4),
-                                    Text('Mục tiêu mới',
+                                    Text(R.string.muc_tieu_moi.tr(),
                                         style: TextStyle(
                                             color: R.color.mainColor,
                                             fontSize: 14,
@@ -156,7 +155,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text('Tổng cộng',
+                                            Text(R.string.tong_cong.tr(),
                                                 style: TextStyle(
                                                     color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
@@ -175,7 +174,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                                       const EdgeInsets.only(
                                                           top: 6.0, left: 2),
                                                   child: Text(
-                                                    'kcal',
+                                                    R.string.kcal.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark,
                                                         fontWeight:
@@ -328,7 +327,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
           time,
           null);
       await UserClient().fetchUser();
-      Message.showToastMessage(context, 'Thêm mục tiêu thành công');
+      Message.showToastMessage(context, R.string.them_muc_tieu_thanh_cong.tr());
       _refresh();
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -473,7 +472,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                         .burnedCalories
                                         .round()
                                         .toString() +
-                                    ' kcal',
+                                    ' ${R.string.kcal.tr()}',
                                 TextStyle(
                                     color: R.color.textDark,
                                     fontWeight: FontWeight.w400,
@@ -703,7 +702,7 @@ class _InputCaloState extends State<InputCalo> {
                       Container(height: 1, width: 72, color: R.color.grayComponentBorder)
                     ]),
                     SizedBox(width: 8),
-                    Text('kcal')
+                    Text(R.string.kcal.tr())
                   ]),
                   Container(
                     margin: EdgeInsets.only(top: 32, bottom: 16),
@@ -721,7 +720,7 @@ class _InputCaloState extends State<InputCalo> {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -734,7 +733,7 @@ class _InputCaloState extends State<InputCalo> {
                                   textEditingController.text ?? '0');
                               if (calo <= 0) {
                                 Message.showToastMessage(context,
-                                    'Bạn chưa nhập thời gian vận động');
+                                    R.string.ban_chua_nhap_thoi_gian_van_dong.tr());
                                 return;
                               }
                               widget.callback(textEditingController.text ?? '');
@@ -754,7 +753,7 @@ class _InputCaloState extends State<InputCalo> {
                                 borderRadius: BorderRadius.circular(200),
                               ),
                               child: Center(
-                                child: Text('Đồng ý',
+                                child: Text(R.string.yes.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,

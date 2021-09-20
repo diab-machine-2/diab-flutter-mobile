@@ -6,11 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/bmi_trend.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BmiScaleChart extends StatefulWidget {
   BmiScaleChart({Key key}) : super(key: key);
@@ -27,7 +27,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
   int periodFilterType = 1;
   int trendTypeIndex = 1;
   int touchIndex = -1;
-  String trendType = 'Tất cả';
+  String trendType = R.string.all.tr();
 
   @override
   void initState() {
@@ -92,7 +92,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('BMI',
+                        Text(R.string.bmi.tr(),
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w700)),
                         SizedBox(height: 10),
@@ -170,7 +170,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                                       SizedBox(height: 16),
                                       Padding(
                                         padding: EdgeInsets.all(16),
-                                        child: Text('Chú thích:'),
+                                        child: Text('${R.string.chu_thich.tr()}:'),
                                       ),
                                       model.legends.length == 0
                                           ? SizedBox()

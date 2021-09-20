@@ -2,11 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/Food/widget/calculator_TDEE.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef NumCallback = Function(int);
 
@@ -51,7 +49,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Năng lượng nạp / ngày',
+                                Text(R.string.nang_luong_nap_tren_ngay.tr(),
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700)),
@@ -109,7 +107,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                           width: 72,
                                           color: R.color.grayComponentBorder)
                                     ]),
-                                    Text('kcal',
+                                    Text(R.string.kcal.tr(),
                                         style: TextStyle(
                                           fontSize: 16,
                                         )),
@@ -140,7 +138,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                                 BorderRadius.circular(200),
                                             color: R.color.grayBorder),
                                         child: Center(
-                                          child: Text('Huỷ',
+                                          child: Text(R.string.cancel.tr(),
                                               style: TextStyle(
                                                   color: R.color.textDark,
                                                   fontSize: 16,
@@ -152,7 +150,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                       FocusScope.of(context).unfocus();
                                       if (selectedCalo == 0) {
                                         Message.showToastMessage(
-                                            context, 'Bạn chưa nhập giá trị');
+                                            context, R.string.ban_chua_nhap_gia_tri.tr());
                                         return;
                                       }
                                       widget.callback(selectedCalo.toInt());
@@ -173,7 +171,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                             BorderRadius.circular(200),
                                       ),
                                       child: Center(
-                                        child: Text('Tiếp tục',
+                                        child: Text(R.string.tiep_tuc.tr(),
                                             style: TextStyle(
                                                 color: R.color.white,
                                                 fontSize: 16,
@@ -191,7 +189,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                     width: 88,
                                     color: R.color.color0xffE5E5E5),
                                 SizedBox(width: 16),
-                                Text('Hoặc'),
+                                Text(R.string.or.tr()),
                                 SizedBox(width: 16),
                                 Container(
                                     height: 1,
@@ -218,7 +216,7 @@ class AddTargetFoodState extends State<AddTargetFood> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text('Tính lại theo công thức TDEE',
+                                  Text(R.string.tinh_lai_theo_cong_thuc_tdee.tr(),
                                       style: TextStyle(
                                           color: R.color.mainColor,
                                           fontWeight: FontWeight.w600,

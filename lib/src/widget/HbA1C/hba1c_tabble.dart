@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HbA1CTable extends StatelessWidget {
   @override
@@ -18,7 +19,7 @@ class HbA1CTable extends StatelessWidget {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(top: 20, bottom: 20),
-                    child: Text('Bảng chỉ số HbA1C & đường huyết',
+                    child: Text(R.string.bang_chi_so_hba1c_va_duong_huyet.tr(),
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w700)),
                   ),

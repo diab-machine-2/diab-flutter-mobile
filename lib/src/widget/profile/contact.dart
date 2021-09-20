@@ -1,15 +1,12 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/secure.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ContactController extends StatefulWidget {
   final SecureModel model;
@@ -144,7 +141,7 @@ class _ContactControllerState extends State<ContactController> {
                                             BorderRadius.circular(200),
                                         color: R.color.grayBorder),
                                     child: Center(
-                                      child: Text('Huỷ',
+                                      child: Text(R.string.cancel.tr(),
                                           style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 16,

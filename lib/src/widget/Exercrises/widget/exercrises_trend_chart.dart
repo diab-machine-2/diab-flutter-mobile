@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +11,6 @@ import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_trend_time.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
@@ -20,6 +18,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ExercrisesTrendChart extends StatefulWidget {
   ExercrisesTrendChart({Key key}) : super(key: key);
@@ -97,7 +96,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Xu hướng thời gian',
+                            Text(R.string.xu_huong_thoi_gian.tr(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w700)),
                             GestureDetector(
@@ -109,8 +108,8 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                     builder: (_) => CustomInputTimePicker(
                                         title: periodFilterType == 1 ||
                                                 periodFilterType == 2
-                                            ? 'Số phút vận động mỗi ngày'
-                                            : 'Số phút vận động mỗi tuần',
+                                            ? R.string.so_phut_van_dong_moi_ngay.tr()
+                                            : R.string.so_phut_van_dong_moi_tuan.tr(),
                                         time: 60,
                                         callback: (hour, minute) {
                                           submitTarget(
@@ -127,7 +126,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                       height: 24,
                                     ),
                                     SizedBox(width: 4),
-                                    Text('Mục tiêu mới',
+                                    Text(R.string.muc_tieu_moi.tr(),
                                         style: TextStyle(
                                             color: R.color.mainColor,
                                             fontSize: 14,
@@ -158,7 +157,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text('Tổng cộng',
+                                            Text(R.string.tong_cong.tr(),
                                                 style: TextStyle(
                                                     color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
@@ -180,7 +179,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                           left: 2,
                                                           right: 2),
                                                   child: Text(
-                                                    'giờ',
+                                                    R.string.hour.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark,
                                                         fontWeight:
@@ -202,7 +201,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                       const EdgeInsets.only(
                                                           top: 6.0, left: 2),
                                                   child: Text(
-                                                    'phút',
+                                                    R.string.minute.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark,
                                                         fontWeight:
@@ -483,7 +482,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                           .burnedCalories
                                           .round()
                                           .toString() +
-                                      'kcal',
+                                      R.string.kcal.tr(),
                                   TextStyle(
                                       color: R.color.textDark,
                                       fontWeight: FontWeight.w400,
@@ -645,7 +644,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
           time,
           exerciseCategoryId);
       UserClient().fetchUser();
-      Message.showToastMessage(context, 'Thêm mục tiêu thành công');
+      Message.showToastMessage(context, R.string.them_muc_tieu_thanh_cong.tr());
       _refresh();
       BotToast.closeAllLoading();
     } catch (e, _) {

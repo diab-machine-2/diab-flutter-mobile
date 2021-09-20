@@ -3,20 +3,14 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
-import 'package:medical/src/modal/user/patient_time_frame.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
-import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/components/horizontal_picker/horizontal_numberpicker.dart';
-import 'package:medical/src/widget/components/horizontal_picker/horizontal_numberpicker_wrapper.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SettingScheduleGlucoseController extends StatefulWidget {
   @override
@@ -103,15 +97,15 @@ class _SettingScheduleGlucoseControllerState
                         child: ListView(padding: EdgeInsets.all(0), children: [
                           Padding(
                             padding: EdgeInsets.all(16),
-                            child: Text('Thời gian',
+                            child: Text(R.string.thoi_gian.tr(),
                                 style: TextStyle(
                                     color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                           ),
-                          buildItem('Trước ăn', 'phút', 0),
-                          buildItem('Sau ăn', 'phút', 1),
-                          buildItem('Trước khi ngủ', 'phút', 2),
+                          buildItem(R.string.truoc_an.tr(), R.string.minute.tr(), 0),
+                          buildItem(R.string.sau_an.tr(), R.string.minute.tr(), 1),
+                          buildItem('Trước khi ngủ', R.string.minute.tr(), 2),
                           Padding(
                             padding: EdgeInsets.all(16),
                             child: Column(
@@ -134,7 +128,7 @@ class _SettingScheduleGlucoseControllerState
                                         0: SizedBox(
                                             height: 46,
                                             child: Center(
-                                                child: Text('mmol/L',
+                                                child: Text(R.string.mmol_l.tr(),
                                                     style: TextStyle(
                                                         color: timeModel
                                                                     .glucoseUnit ==
@@ -150,7 +144,7 @@ class _SettingScheduleGlucoseControllerState
                                         1: SizedBox(
                                             height: 46,
                                             child: Center(
-                                                child: Text('mg/dL',
+                                                child: Text(R.string.mg_dl.tr(),
                                                     style: TextStyle(
                                                         color: timeModel
                                                                     .glucoseUnit ==
@@ -201,7 +195,7 @@ class _SettingScheduleGlucoseControllerState
                                   R.color.greenGradientBottom
                                 ])),
                         child: Center(
-                            child: Text('Lưu',
+                            child: Text(R.string.save.tr(),
                                 style: TextStyle(
                                     color: R.color.white,
                                     fontWeight: FontWeight.w600,
@@ -259,14 +253,14 @@ class _SettingScheduleGlucoseControllerState
 
                         setState(() {});
                       },
-                      title: 'Nhập thời gian',
+                      title: R.string.nhap_thoi_gian.tr(),
                       max: 60,
                       numberDefault: index == 0
                           ? timeModel.beforeEat
                           : index == 1
                               ? timeModel.afterEat
                               : timeModel.beforeSleeping,
-                      unit: 'phút'),
+                      unit: R.string.minute.tr()),
                 );
               },
               child: Container(

@@ -1,14 +1,12 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_lastestSumary.dart';
-import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HbA1CDetail extends StatefulWidget {
   HbA1CDetail({Key key}) : super(key: key);
@@ -74,7 +72,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Gần nhất',
+                                  Text(R.string.gan_nhat.tr(),
                                       style: TextStyle(
                                           color: R.color.black,
                                           fontSize: 20,
@@ -188,7 +186,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                                     // mainAxisAlignment:
                                                     //     MainAxisAlignment.spaceBetween,
                                                     children: [
-                                                      Text('Chi tiết',
+                                                      Text(R.string.chi_tiet.tr(),
                                                           style: TextStyle(
                                                               color:
                                                                   R.color.black,

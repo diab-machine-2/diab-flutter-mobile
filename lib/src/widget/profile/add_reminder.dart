@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -13,6 +12,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddReminderController extends StatefulWidget {
   final String type;
@@ -196,7 +196,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                   .start,
                                                           children: [
                                                             Text(
-                                                                'Nhập thời gian',
+                                                                R.string.nhap_thoi_gian.tr(),
                                                                 style: TextStyle(
                                                                     fontSize:
                                                                         16,
@@ -235,7 +235,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                               21.5)),
                                                                       child: Center(
                                                                           child: Text(
-                                                                              'Huỷ',
+                                                                              R.string.cancel.tr(),
                                                                               style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)))),
                                                                 ),
                                                               ),
@@ -251,7 +251,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                             0) {
                                                                       Message.showToastMessage(
                                                                           context,
-                                                                          'Bạn chưa chọn thời gian');
+                                                                          R.string.ban_chua_chon_thoi_gian.tr());
                                                                       return;
                                                                     }
                                                                     selectedHour =
@@ -280,7 +280,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                               ])),
                                                                       child: Center(
                                                                           child: Text(
-                                                                              'Đồng ý',
+                                                                              R.string.yes.tr(),
                                                                               style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w700)))),
                                                                 ),
                                                               ),
@@ -325,7 +325,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                           ),
                                         ),
                                       ),
-                                      Text('Giờ'),
+                                      Text(R.string.hour_upper_case_first.tr()),
                                       Expanded(
                                         child: Container(
                                           padding: EdgeInsets.only(
@@ -348,7 +348,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                           ),
                                         ),
                                       ),
-                                      Text('Phút'),
+                                      Text(R.string.minute_upper_case_first.tr()),
                                       SizedBox(width: 32)
                                     ]),
                               ),
@@ -473,7 +473,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                   R.color.greenGradientBottom
                                 ])),
                         child: Center(
-                            child: Text('Lưu',
+                            child: Text(R.string.save.tr(),
                                 style: TextStyle(
                                     color: R.color.white,
                                     fontWeight: FontWeight.w600,
@@ -528,7 +528,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -538,7 +538,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                            R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -561,7 +561,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -589,7 +589,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                               R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,

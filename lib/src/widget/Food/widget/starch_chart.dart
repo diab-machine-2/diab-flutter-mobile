@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -10,6 +8,7 @@ import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class StarchChart extends StatefulWidget {
   StarchChart({Key key}) : super(key: key);
@@ -124,7 +123,7 @@ class StarchChartState extends State<StarchChart>
                       Image.asset(R.drawable.bg_apple_green),
                       Padding(
                         padding: EdgeInsets.only(top: 16, left: 16),
-                        child: Text('Tinh bột',
+                        child: Text(R.string.tinh_bot.tr(),
                             style: TextStyle(
                                 color: R.color.black,
                                 fontSize: 20,

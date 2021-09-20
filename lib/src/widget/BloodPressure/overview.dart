@@ -50,6 +50,8 @@ class BloodPressureOverviewControllerState
 
   @override
   bool get wantKeepAlive => true;
+  
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(

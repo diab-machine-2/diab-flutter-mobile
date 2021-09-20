@@ -4,22 +4,16 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
-import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/emotion/emotion_model.dart';
 import 'package:medical/src/modal/emotion/symptom_model.dart';
-import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/emotion/emotion_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef SympoCallback = Function(List<SymptomModel>, String);
 
@@ -48,6 +42,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
 
   ShortGuiModel des;
 
+  @override
   void initState() {
     super.initState();
     if (widget.type == 'update') {
@@ -58,6 +53,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
     loadDescription();
   }
 
+  @override
   void dispose() {
     super.dispose();
   }
@@ -94,8 +90,8 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                 backgroundColor: R.color.transparent,
                 title: Text(
                     widget.type == 'update'
-                        ? 'Chỉnh sửa cảm xúc'
-                        : 'Nhập cảm xúc',
+                        ? R.string.chinh_sua_cam_xuc.tr()
+                        : R.string.nhap_cam_xuc.tr(),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -135,7 +131,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                                 input: true,
                                 data: des,
                                 titleDetail:
-                                    'Kiểm soát cảm xúc bệnh tiểu đường'),
+                                    R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr()),
                           )
                         : SizedBox(),
                     Expanded(
@@ -144,7 +140,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                       children: [
                         Center(
                           child: Text(
-                            'Bạn có triệu chứng gì\nđặc biệt?',
+                            R.string.ban_co_trieu_chung_gi_dac_biet.tr(),
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 24,
@@ -155,7 +151,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                         SizedBox(height: 16),
                         Center(
                           child: Text(
-                              'Nhấn \'Tiếp tục\' nếu bạn không có triệu chứng nào',
+                              R.string.nhan_tiep_tuc_neu_ban_khong_co_trieu_chung_nao.tr(),
                               style: TextStyle(
                                   color: R.color.textDark,
                                   fontSize: 14,
@@ -210,7 +206,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                               colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
                           child: Text(
-                              widget.type == 'input' ? 'Tiếp tục' : 'Cập nhật',
+                              widget.type == 'input' ? R.string.tiep_tuc.tr() : R.string.cap_nhat.tr(),
                               style: TextStyle(
                                   color: R.color.white,
                                   fontWeight: FontWeight.w600,
@@ -276,7 +272,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
           padding: EdgeInsets.all(8),
           child: symptomModel == null
               ? Center(
-                  child: Text('Khác',
+                  child: Text(R.string.khac.tr(),
                       style:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                 )
@@ -309,7 +305,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Nhập triệu chứng khác',
+                Text(R.string.nhap_trieu_chung_khac.tr(),
                     style: TextStyle(
                         color: R.color.textDark,
                         fontSize: 16,
@@ -342,7 +338,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         contentPadding: EdgeInsets.all(16),
-                        hintText: 'Nhập triệu chứng của bạn',
+                        hintText: R.string.nhap_trieu_chung_cua_ban.tr(),
                       ),
                       onChanged: (value) {})),
               Container(
@@ -361,7 +357,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                                   borderRadius: BorderRadius.circular(200),
                                   color: R.color.grayBorder),
                               child: Center(
-                                child: Text('Huỷ',
+                                child: Text(R.string.cancel.tr(),
                                     style: TextStyle(
                                         color: R.color.textDark,
                                         fontSize: 16,
@@ -393,7 +389,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                                       R.color.greenGradientBottom
                                     ])),
                             child: Center(
-                              child: Text('Lưu',
+                              child: Text(R.string.save.tr(),
                                   style: TextStyle(
                                       color: R.color.white,
                                       fontSize: 16,

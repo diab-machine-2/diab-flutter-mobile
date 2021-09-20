@@ -6,8 +6,8 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Food/widget/food_item.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef FoodCallback = Function(String);
 
@@ -73,7 +73,7 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                   padding: EdgeInsets.only(
                                       left: 16, right: 16, bottom: 8),
                                   child: Text(
-                                      'Chọn món ${widget.category.name}',
+                                      '${R.string.chon_mon.tr()} ${widget.category.name}',
                                       style: TextStyle(
                                           color: R.color.black,
                                           fontSize: 16,
@@ -128,7 +128,7 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                         borderRadius:
                                             BorderRadius.circular(21.5)),
                                     child: Center(
-                                        child: Text('Huỷ',
+                                        child: Text(R.string.cancel.tr(),
                                             style: TextStyle(
                                                 color: R.color.black,
                                                 fontSize: 16,
@@ -155,7 +155,7 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                               R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                        child: Text('Tiếp tục',
+                                        child: Text(R.string.tiep_tuc.tr(),
                                             style: TextStyle(
                                                 color: R.color.white,
                                                 fontSize: 16,

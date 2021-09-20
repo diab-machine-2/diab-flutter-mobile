@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodPressureTableController extends StatefulWidget {
   final String title;
@@ -84,8 +84,8 @@ class _BloodPressureTableControllerState
                             widget.isPulseRate == null
                                 ? widget.title
                                 : widget.isPulseRate
-                                    ? 'Nhịp tim'
-                                    : 'Huyết áp',
+                                    ? R.string.nhip_tim.tr()
+                                    : R.string.huyet_ap.tr(),
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -100,14 +100,14 @@ class _BloodPressureTableControllerState
                             children: [
                               Container(
                                   width: width + width / 4,
-                                  child: Text('Thời gian',
+                                  child: Text(R.string.thoi_gian.tr(),
                                       style: TextStyle(
                                           color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
                                   width: width,
-                                  child: Text('Khung giờ',
+                                  child: Text(R.string.khung_gio.tr(),
                                       style: TextStyle(
                                           color: R.color.black,
                                           fontSize: 14,
@@ -115,7 +115,7 @@ class _BloodPressureTableControllerState
                               Container(
                                   width: width - width / 4,
                                   child: Center(
-                                      child: Text('Chỉ số',
+                                      child: Text(R.string.chi_so.tr(),
                                           style: TextStyle(
                                               color: R.color.black,
                                               fontSize: 14,

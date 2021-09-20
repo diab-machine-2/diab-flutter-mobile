@@ -3,14 +3,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/modal/user/motivation_model.dart';
-import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/helper/version.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 // ignore: must_be_immutable
 class StepListController extends StatefulWidget {
@@ -27,22 +23,22 @@ class _StepListControllerState extends State<StepListController> {
 
   var data = [
     {
-      'name': 'Đồng hành & sẻ chia',
+      'name': R.string.dong_hanh_va_se_chia.tr(),
       'image': R.drawable.im_step1,
       'text':
-          'Hướng đến những thay đổi lành mạnh cùng đội ngũ huấn luyện sức khỏe (Health Coach)',
+          R.string.dong_hanh_va_se_chia_description.tr(),
     },
     {
-      'name': 'Hiểu để yêu bản thân hơn',
+      'name': R.string.hieu_de_yeu_ban_than_hon.tr(),
       'image': R.drawable.im_step2,
       'text':
-          'Theo dõi sức khỏe dễ dàng, học cách yêu thương bản thân hơn chỉ trên một ứng dụng ',
+          R.string.hieu_de_yeu_ban_than_hon_description.tr(),
     },
     {
-      'name': 'Và không chỉ có bạn...',
+      'name': R.string.va_khong_chi_co_ban.tr(),
       'image': R.drawable.im_step3,
       'text':
-          'Kết nối bạn với gia đình, cộng đồng người mắc Đái tháo đường suốt hành trình dài phía trước',
+          R.string.va_khong_chi_co_ban_description.tr(),
     }
   ];
 
@@ -153,7 +149,7 @@ class _StepListControllerState extends State<StepListController> {
                                                 R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Tạo tài khoản',
+                                        child: Text(R.string.tao_tai_khoan.tr(),
                                             style: TextStyle(
                                                 color: R.color.white,
                                                 fontSize: 16,
@@ -173,7 +169,7 @@ class _StepListControllerState extends State<StepListController> {
                                         border: Border.all(
                                             color: R.color.mainColor, width: 2)),
                                     child: Center(
-                                      child: Text('Đã có tài khoản',
+                                      child: Text(R.string.da_co_tai_khoan.tr(),
                                           style: TextStyle(
                                               color: R.color.mainColor,
                                               fontSize: 16,
@@ -184,7 +180,7 @@ class _StepListControllerState extends State<StepListController> {
                               ]),
                         ),
                       ),
-                      Text('Version $version ($buildNumber)',
+                      Text('${R.string.version.tr()} $version ($buildNumber)',
                           style: TextStyle(color: R.color.grey)),
                       SizedBox(height: 16)
                     ],

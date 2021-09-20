@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu_item.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FunkyOverlay extends StatefulWidget {
   @override
@@ -51,20 +51,20 @@ class FunkyOverlayState extends State<FunkyOverlay>
               endingAngleInRadian: 6,
               toggleButtonColor: R.color.mainColor,
               titles: [
-                // Text('HbA1C', style: TextStyle(color: R.color.white)),
-                // Text('Huyết áp', style: TextStyle(color: R.color.white)),
-                // Text('Cảm xúc', style: TextStyle(color: R.color.white)),
-                // Text('Cân nặng', style: TextStyle(color: R.color.white)),
-                // Text('Dinh dưỡng', style: TextStyle(color: R.color.white)),
-                // Text('Vận động', style: TextStyle(color: R.color.white)),
-                // Text('Đường huyết', style: TextStyle(color: R.color.white))
+                // Text(R.string.hba1c.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.huyet_ap.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.cam_xuc.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.can_nang.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.dinh_duong.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.van_dong.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.duong_huyet.tr(), style: TextStyle(color: R.color.white))
               ],
               items: [
                 CircularMenuItem(
                     bottom: bottom,
                     icon: Image.asset(R.drawable.ic_a1c,
                         width: 40, height: 40),
-                    title: Text('HbA1C', style: TextStyle(color: R.color.white)),
+                    title: Text(R.string.hba1c.tr(), style: TextStyle(color: R.color.white)),
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
@@ -76,7 +76,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     icon: Image.asset(R.drawable.ic_huyet_ap,
                         width: 40, height: 40),
                     title:
-                        Text('Huyết áp', style: TextStyle(color: R.color.white)),
+                        Text(R.string.huyet_ap.tr(), style: TextStyle(color: R.color.white)),
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
@@ -88,7 +88,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     icon: Image.asset(R.drawable.ic_cam_xuc,
                         width: 40, height: 40),
                     title:
-                        Text('Cảm xúc', style: TextStyle(color: R.color.white)),
+                        Text(R.string.cam_xuc.tr(), style: TextStyle(color: R.color.white)),
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
@@ -100,7 +100,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     icon: Image.asset(R.drawable.ic_can_nang,
                         width: 40, height: 40),
                     title:
-                        Text('Cân nặng', style: TextStyle(color: R.color.white)),
+                        Text(R.string.can_nang.tr(), style: TextStyle(color: R.color.white)),
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
@@ -111,7 +111,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     bottom: bottom,
                     icon: Image.asset(R.drawable.ic_dinh_duong,
                         width: 40, height: 40),
-                    title: Text('Dinh dưỡng',
+                    title: Text(R.string.dinh_duong.tr(),
                         style: TextStyle(color: R.color.white)),
                     color: R.color.white,
                     onTap: () async {
@@ -124,7 +124,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     icon: Image.asset(R.drawable.ic_van_dong,
                         width: 40, height: 40),
                     title:
-                        Text('Vận động', style: TextStyle(color: R.color.white)),
+                        Text(R.string.van_dong.tr(), style: TextStyle(color: R.color.white)),
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
@@ -140,7 +140,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     bottom: bottom,
                     icon: Image.asset(R.drawable.ic_duong_huyet,
                         width: 40, height: 40),
-                    title: Text('Đường huyết',
+                    title: Text(R.string.duong_huyet.tr(),
                         style: TextStyle(color: R.color.white)),
                     color: R.color.white,
                     onTap: () async {

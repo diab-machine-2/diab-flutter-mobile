@@ -3,18 +3,15 @@ import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/modal/user/schedule_glucose_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/components/horizontal_picker/horizontal_numberpicker_wrapper.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ScheduleGlucoseController extends StatefulWidget {
   @override
@@ -314,7 +311,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                             Row(children: [
                               buildItem(
                                   scheduleDay.isBeforeBreakfast,
-                                  'Trước ăn',
+                                  R.string.truoc_an.tr(),
                                   scheduleDay.isBeforeBreakfast
                                       ? R.drawable.ic_before_eat_selected
                                       : R.drawable.ic_before_eat,
@@ -322,7 +319,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                               SizedBox(width: 16),
                               buildItem(
                                   scheduleDay.isAfterBreakfast,
-                                  'Sau ăn',
+                                  R.string.sau_an.tr(),
                                   scheduleDay.isAfterBreakfast
                                       ? R.drawable.ic_after_eat_selected
                                       : R.drawable.ic_after_eat,
@@ -348,7 +345,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                             Row(children: [
                               buildItem(
                                   scheduleDay.isBeforeLunch,
-                                  'Trước ăn',
+                                  R.string.truoc_an.tr(),
                                   scheduleDay.isBeforeLunch
                                       ? R.drawable.ic_before_eat_selected
                                       : R.drawable.ic_before_eat,
@@ -356,7 +353,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                               SizedBox(width: 16),
                               buildItem(
                                   scheduleDay.isAfterLunch,
-                                  'Sau ăn',
+                                  R.string.sau_an.tr(),
                                   scheduleDay.isAfterLunch
                                       ? R.drawable.ic_after_eat_selected
                                       : R.drawable.ic_after_eat,
@@ -382,7 +379,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                             Row(children: [
                               buildItem(
                                   scheduleDay.isBeforeDinner,
-                                  'Trước ăn',
+                                  R.string.truoc_an.tr(),
                                   scheduleDay.isBeforeDinner
                                       ? R.drawable.ic_before_eat_selected
                                       : R.drawable.ic_before_eat,
@@ -390,7 +387,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                               SizedBox(width: 16),
                               buildItem(
                                   scheduleDay.isAfterDinner,
-                                  'Sau ăn',
+                                  R.string.sau_an.tr(),
                                   scheduleDay.isAfterDinner
                                       ? R.drawable.ic_after_eat_selected
                                       : R.drawable.ic_after_eat,
@@ -462,7 +459,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                             end: Alignment.centerRight,
                             colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                     child: Center(
-                        child: Text('Lưu',
+                        child: Text(R.string.save.tr(),
                             style: TextStyle(
                                 color: R.color.white,
                                 fontWeight: FontWeight.w600,
@@ -651,7 +648,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -661,7 +658,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                            R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -684,7 +681,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -712,7 +709,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                               R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,

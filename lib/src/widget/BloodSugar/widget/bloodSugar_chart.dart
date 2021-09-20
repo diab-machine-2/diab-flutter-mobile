@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_filter_trend.dart';
@@ -15,6 +14,7 @@ import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/glucose/glucose_trend.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarChart extends StatefulWidget {
   BloodSugarChart({Key key}) : super(key: key);
@@ -29,10 +29,11 @@ class BloodSugarChartState extends State<BloodSugarChart>
   BuildContext currentContext;
   int value = 0;
   int touchIndex = -1;
-  String trendType = 'Tất cả';
+  String trendType = R.string.all.tr();
   int trendTypeIndex = 1;
   int periodFilterType = 1;
 
+  @override
   void initState() {
     periodFilterType =
         BloodSugarDetailTabbarController.of(context).periodFilterType;
@@ -79,7 +80,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                         children: [
                           Row(
                             children: [
-                              Text('Xu hướng đường huyết',
+                              Text(R.string.xu_huong_duong_huyet.tr(),
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600)),
@@ -107,7 +108,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                         children: [
                                           Text(trendType != null
                                               ? trendType
-                                              : 'Tất cả'),
+                                              : R.string.all.tr()),
                                           SizedBox(width: 4),
                                           Image.asset(
                                               R.drawable.ic_chevron_down,
@@ -165,7 +166,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Text('Xem chi tiết',
+                                          Text(R.string.xem_chi_tiet.tr(),
                                               style:
                                                   TextStyle(color: R.color.mainColor)),
                                           Image.asset(

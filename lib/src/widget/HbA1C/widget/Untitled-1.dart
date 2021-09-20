@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HbA1CDetailItem extends StatelessWidget {
   final bool hasNote;
@@ -35,7 +36,7 @@ class HbA1CDetailItem extends StatelessWidget {
                             topRight: Radius.circular(13),
                             bottomLeft: Radius.circular(13))),
                     child: Center(
-                      child: Text(hasNote ? 'Rất cao' : 'Tuyệt vời',
+                      child: Text(hasNote ? R.string.very_high.tr() : R.string.great.tr(),
                           style: TextStyle(
                               color: R.color.white,
                               fontSize: 14,
@@ -47,7 +48,7 @@ class HbA1CDetailItem extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('HbA1C',
+                Text(R.string.hba1c.tr(),
                     style: TextStyle(
                         color: R.color.black,
                         fontSize: 16,
@@ -63,7 +64,7 @@ class HbA1CDetailItem extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Đuờng huyết',
+                Text(R.string.duong_huyet.tr(),
                     style: TextStyle(
                         color: R.color.black,
                         fontSize: 16,

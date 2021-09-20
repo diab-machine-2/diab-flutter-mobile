@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
 
 String convertToUTC(int timeStamp, String fotmat) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);

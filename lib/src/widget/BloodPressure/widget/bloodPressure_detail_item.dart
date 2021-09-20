@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 class BloodPressureDetailItem extends StatelessWidget {
-  List _elements = [
+  final List _elements = [
     {
-      'title': 'Tăng huyết áp độ 2',
+      'title': R.string.tang_huyet_ap_do_2.tr(),
       'name': 'Sau ăn trưa',
       'group': '14 tháng 12 năm 2020',
       'number': '165/100',
@@ -17,7 +16,7 @@ class BloodPressureDetailItem extends StatelessWidget {
       'note': 'Tôi vận động cường độ cao liên tục trong nhiều giờ'
     },
     {
-      'title': 'Bình thường',
+      'title': R.string.binh_thuong.tr(),
       'name': 'Trước ăn trưa',
       'group': '12 tháng 12 năm 2020',
       'number': '125/83',
@@ -91,7 +90,7 @@ class BloodPressureDetailItem extends StatelessWidget {
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                               SizedBox(width: 4),
-                              Text('mmHg',
+                              Text(R.string.mm_hg.tr(),
                                   style: TextStyle(
                                       color: R.color.black,
                                       fontSize: 20,
@@ -112,7 +111,7 @@ class BloodPressureDetailItem extends StatelessWidget {
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                               SizedBox(width: 4),
-                              Text('lần/phút',
+                              Text(R.string.lan_tren_phut.tr(),
                                   style: TextStyle(
                                       color: R.color.black,
                                       fontSize: 20,
@@ -168,19 +167,19 @@ handleStatus(status) {
   switch (status) {
     case 'high':
       {
-        return 'Cao';
+        return R.string.high.tr();
       }
       break;
 
     case 'low':
       {
-        return 'Thấp';
+        return R.string.low.tr();
       }
       break;
 
     default:
       {
-        return 'Tốt';
+        return R.string.good.tr();
       }
       break;
   }

@@ -1,8 +1,6 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
@@ -12,6 +10,7 @@ import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HbA1CDetailController extends StatefulWidget {
   HbA1CDetailController({Key key}) : super(key: key);
@@ -198,7 +197,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                Text('HbA1C',
+                                                Text(R.string.hba1c.tr(),
                                                     style: TextStyle(
                                                         color: R.color.black,
                                                         fontSize: 16,
@@ -240,7 +239,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                Text('Đuờng huyết',
+                                                Text(R.string.duong_huyet.tr(),
                                                     style: TextStyle(
                                                         color: R.color.black,
                                                         fontSize: 16,
@@ -301,7 +300,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                             CrossAxisAlignment
                                                                 .start,
                                                         children: [
-                                                          Text('Ghi chú: ',
+                                                          Text('${R.string.ghi_chu.tr()}: ',
                                                               style: TextStyle(
                                                                   color:
                                                                       R.color.textDark,

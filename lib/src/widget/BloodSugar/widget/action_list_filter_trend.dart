@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef TimeCallback = Function(String, int);
 
@@ -14,12 +14,12 @@ class ActionListFilterTrend extends StatefulWidget {
 
 class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
   var data = [
-    'Tất cả',
-    'Trước ăn',
-    'Sau ăn',
-    'Trước tập',
-    'Sau tập',
-    'Nửa đêm'
+    R.string.all.tr(),
+    R.string.truoc_an.tr(),
+    R.string.sau_an.tr(),
+    R.string.truoc_tap.tr(),
+    R.string.sau_tap.tr(),
+    R.string.nua_dem.tr()
   ];
 
   int selectedIndex = 0;
@@ -53,7 +53,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Chọn khung giờ',
+              Text(R.string.chon_khung_gio.tr(),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               GestureDetector(
                 onTap: () {
@@ -96,7 +96,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
                           colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                       borderRadius: BorderRadius.circular(200)),
                   child: Center(
-                    child: Text('Lưu',
+                    child: Text(R.string.save.tr(),
                         style: TextStyle(
                             color: R.color.white,
                             fontSize: 16,

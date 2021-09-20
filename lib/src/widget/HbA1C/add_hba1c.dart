@@ -5,12 +5,10 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:medical/main.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -22,6 +20,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddHBA1CController extends StatefulWidget {
   final String type;
@@ -105,8 +104,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? 'Cập nhật chỉ số HbA1C'
-                          : 'Nhập chỉ số HbA1C',
+                          ? R.string.cap_nhat_chi_so_hba1c.tr()
+                          : R.string.nhap_chi_so_hba1c.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -154,7 +153,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                     input: true,
                                     data: des,
                                     titleDetail:
-                                        'Chỉ số HbA1C đối với bệnh tiểu đường')
+                                        R.string.chi_so_hba1c_doi_voi_benh_tieu_duong.tr())
                                 : SizedBox()),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -307,7 +306,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                     Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Ghi chú',
+                                    Text(R.string.ghi_chu.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -322,7 +321,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: 'Nhập ghi chú của bạn',
+                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
@@ -423,7 +422,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text('Lưu',
+                                  child: Text(R.string.save.tr(),
                                       style: TextStyle(
                                           color: R.color.white,
                                           fontWeight: FontWeight.w600,
@@ -452,7 +451,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                             border: Border.all(
                                                 color: R.color.red, width: 2)),
                                         child: Center(
-                                          child: Text('Xoá dữ liệu',
+                                          child: Text(R.string.xoa_du_lieu.tr(),
                                               style: TextStyle(
                                                   color: R.color.red,
                                                   fontSize: 16,
@@ -478,7 +477,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                                 R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Lưu',
+                                        child: Text(R.string.save.tr(),
                                             style: TextStyle(
                                                 color: R.color.white,
                                                 fontSize: 16,
@@ -515,7 +514,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn xoá dữ liệu?',
+                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -525,7 +524,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
+                            R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -549,7 +548,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Quay lại',
+                                        child: Text(R.string.back.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -571,7 +570,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text('Xoá',
+                                      child: Text(R.string.delete.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,
@@ -635,7 +634,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -645,7 +644,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                            R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -668,7 +667,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -696,7 +695,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                               R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,
@@ -728,7 +727,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       BotToast.showLoading();
       final result = await HbA1CClient().deleteIndexHbA1C(model.id);
       if (result == true) {
-        Message.showToastMessage(context, 'Xoá thành công');
+        Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         DartNotificationCenter.post(channel: 'hba1c_change_data');
         Navigator.pop(context);
       }
@@ -750,20 +749,20 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     numberInput = numberInput.split(',').join('.');
 
     if (numberInput == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số HbA1C');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_hba1c.tr());
       return;
     }
     if (double.parse(numberInput) > 30) {
       Message.showToastMessage(context,
-          'Chúng tôi xin lỗi, số liệu mà bạn nhập không trong phạm vi cho phép. Giá trị kỳ vọng nằm trong ngưỡng 1 - 30');
+          R.string.invalid_hba1c.tr());
       return;
     }
     if (time == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     // if (note == '') {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập ghi chú');
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu.tr());
     //   return;
     // }
     BotToast.showLoading();
@@ -783,7 +782,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
           removeIDs,
           paths);
       if (result == true) {
-        Message.showToastMessage(context, 'Lưu thành công');
+        Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
         DartNotificationCenter.post(channel: 'hba1c_change_data');
         Navigator.pop(context);
       }
@@ -806,20 +805,20 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     numberInput = numberInput.split(',').join('.');
 
     if (numberInput.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số HbA1C');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_hba1c.tr());
       return;
     }
     if (double.parse(numberInput) > 30) {
       Message.showToastMessage(context,
-          'Chúng tôi xin lỗi, số liệu mà bạn nhập không trong phạm vi cho phép. Giá trị kỳ vọng nằm trong ngưỡng 1 - 30');
+          R.string.invalid_hba1c.tr());
       return;
     }
     if (time == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     // if (note == '') {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập ghi chú');
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu.tr());
     //   return;
     // }
     BotToast.showLoading();
@@ -863,7 +862,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   Image.asset(R.drawable.ic_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chọn trong thư viện",
+                  Text(R.string.chon_trong_thu_vien.tr(),
                       style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
@@ -881,7 +880,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chụp ảnh",
+                  Text(R.string.chup_anh.tr(),
                       style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
@@ -893,7 +892,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text("Huỷ",
+          child: Text(R.string.cancel.tr(),
               style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
@@ -902,7 +901,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      //Message.showToastMessage(context, 'Chỉ đuợc chọn tối đa 5 ảnh');
+      //Message.showToastMessage(context, R.string.max_image_select.tr());
     }
   }
 
@@ -941,13 +940,13 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = FlatButton(
-      child: Text("Huỷ"),
+      child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Cấp quyền"),
+      child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -955,8 +954,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Thông báo"),
-      content: Text("Bạn cần cấp quyền truy cập để sử dụng tính năng này"),
+      title: Text(R.string.notification.tr()),
+      content: Text(R.string.ask_for_permission.tr()),
       actions: [
         cancelButton,
         continueButton,
@@ -1018,7 +1017,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Chọn ngày',
+                            Text(R.string.pick_date.tr(),
                                 style: TextStyle(
                                     color: R.color.black,
                                     fontSize: 16,
@@ -1057,7 +1056,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                   color: R.color.grayBorder,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.black,
                                           fontSize: 16,
@@ -1077,7 +1076,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                   color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Đồng ý',
+                                  child: Text(R.string.yes.tr(),
                                       style: TextStyle(
                                           color: R.color.white,
                                           fontSize: 16,

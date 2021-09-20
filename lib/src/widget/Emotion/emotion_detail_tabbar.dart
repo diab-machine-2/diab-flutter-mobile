@@ -3,18 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/Emotion/emo_description.dart';
 import 'package:medical/src/widget/Emotion/overview.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_detail.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EmotionDetailTabbarController extends StatefulWidget {
   @override
@@ -91,7 +89,7 @@ class _EmotionDetailTabbarControllerState
           resizeToAvoidBottomInset: false,
           appBar: CustomAppBar(
               backgroundColor: R.color.white,
-              title: Text('Cảm xúc',
+              title: Text(R.string.cam_xuc.tr(),
                   style: TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 24,
@@ -199,7 +197,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                   child: Description(
                       input: false,
                       data: widget.data,
-                      titleDetail: 'Kiểm soát cảm xúc bệnh tiểu đường'),
+                      titleDetail: R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr()),
                 )
               : SizedBox(),
           Row(
@@ -217,8 +215,8 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                     unselectedLabelStyle:
                         TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
-                      Tab(text: 'Biểu đồ'),
-                      Tab(text: 'Chi tiết'),
+                      Tab(text: R.string.bieu_do.tr()),
+                      Tab(text: R.string.chi_tiet.tr()),
                     ],
                     controller: widget.tabController,
                     indicatorColor: R.color.mainColor,
@@ -245,7 +243,7 @@ class ActionFilter extends StatefulWidget {
 }
 
 class _ActionFilterState extends State<ActionFilter> {
-  String name = '7 ngày';
+  String name = R.string.seven_days.tr();
   int selectedIndex = 0;
 
   @override

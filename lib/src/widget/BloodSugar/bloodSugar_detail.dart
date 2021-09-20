@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:grouped_list/grouped_list.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
@@ -12,6 +10,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarDetailController extends StatefulWidget {
   BloodSugarDetailController({Key key}) : super(key: key);
@@ -154,14 +153,13 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
           return RefreshIndicator(
               onRefresh: _refresh,
               child: Scaffold(
-                backgroundColor:  R.color.backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
-                          image:
-                              AssetImage(R.drawable.bg_detail),
+                          image: AssetImage(R.drawable.bg_detail),
                           fit: BoxFit.cover,
                         )),
                         child: ScrollablePositionedList.builder(
@@ -184,10 +182,11 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                               return GestureDetector(
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, NavigatorName.add_blood_sugar, arguments: {
-                                      'type': 'update',
-                                      'id': element.id
-                                    });
+                                        context, NavigatorName.add_blood_sugar,
+                                        arguments: {
+                                          'type': 'update',
+                                          'id': element.id
+                                        });
                                   },
                                   child: Padding(
                                     padding: EdgeInsets.only(
@@ -264,7 +263,8 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                             SizedBox(width: 8),
                                                             Text(element.unit,
                                                                 style: TextStyle(
-                                                                    color: R.color
+                                                                    color: R
+                                                                        .color
                                                                         .black,
                                                                     fontSize:
                                                                         16,
@@ -275,15 +275,13 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                         ),
                                                         Container(
                                                             height: 32,
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    left: 18,
-                                                                    right: 18,
-                                                                    top: 8,
-                                                                    bottom: 8),
+                                                            padding: EdgeInsets.only(
+                                                                left: 18,
+                                                                right: 18,
+                                                                top: 8,
+                                                                bottom: 8),
                                                             decoration: BoxDecoration(
-                                                                color: element.backgroundColor ==
-                                                                        'None'
+                                                                color: element.backgroundColor == 'None'
                                                                     ? R.color
                                                                         .white
                                                                     : toColor(element
@@ -298,8 +296,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                         ? 0
                                                                         : 1),
                                                                 borderRadius: BorderRadius.only(
-                                                                    topLeft:
-                                                                        Radius.circular(13),
+                                                                    topLeft: Radius.circular(13),
                                                                     topRight: Radius.circular(13),
                                                                     bottomLeft: Radius.circular(13))),
                                                             child: Center(
@@ -358,7 +355,8 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                   height: 16),
                                                               Container(
                                                                   height: 1,
-                                                                  color: R.color.color0xffEEEFF3),
+                                                                  color: R.color
+                                                                      .color0xffEEEFF3),
                                                               SizedBox(
                                                                   height: 16),
                                                               Row(
@@ -366,10 +364,10 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  Text(
-                                                                      'Lý do: ',
+                                                                  Text('${R.string.ly_do.tr()}: ',
                                                                       style: TextStyle(
-                                                                          color: R.color
+                                                                          color: R
+                                                                              .color
                                                                               .black,
                                                                           fontSize:
                                                                               16,
@@ -380,8 +378,8 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                         element
                                                                             .reason,
                                                                         style: TextStyle(
-                                                                            color: R.color
-                                                                                .black,
+                                                                            color: R
+                                                                                .color.black,
                                                                             fontSize:
                                                                                 16,
                                                                             fontWeight: FontWeight

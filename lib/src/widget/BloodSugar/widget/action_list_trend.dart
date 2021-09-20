@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef TimeCallback = Function(TimeFrameModel);
 
@@ -64,7 +64,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Chọn khung giờ',
+                Text(R.string.chon_khung_gio.tr(),
                     style:
                         TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                 GestureDetector(
@@ -102,7 +102,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
                 onTap: () {
                   if (selected == null) {
                     Message.showToastMessage(
-                        context, 'Vui lòng chọn khung giờ');
+                        context, R.string.vui_long_chon_khung_gio.tr());
                     return;
                   }
                   widget.callback(selected);
@@ -118,7 +118,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
                             colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                         borderRadius: BorderRadius.circular(200)),
                     child: Center(
-                      child: Text('Lưu',
+                      child: Text(R.string.save.tr(),
                           style: TextStyle(
                               color: R.color.white,
                               fontSize: 16,

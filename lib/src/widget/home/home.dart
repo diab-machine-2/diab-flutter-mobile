@@ -4,17 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
-import 'package:medical/main.dart';
 import 'package:medical/src/modal/home/home_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
-import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeController extends StatefulWidget {
   @override
@@ -24,31 +21,31 @@ class HomeController extends StatefulWidget {
 class _HomeControllerState extends State<HomeController> {
   var data = [
     {
-      'name': 'Đường huyết',
+      'name': R.string.duong_huyet.tr(),
       'image': '',
       'icon': R.drawable.ic_blood_sugar,
       'dataDetail': []
     },
     {
-      'name': 'Huyết áp',
+      'name': R.string.huyet_ap.tr(),
       'image': R.drawable.bg_blood_presser,
       'icon': R.drawable.ic_heart_presse,
       'dataDetail': []
     },
     {
-      'name': 'Cân nặng',
+      'name': R.string.can_nang.tr(),
       'image': R.drawable.bg_weight,
       'icon': R.drawable.ic_weight_plus,
       'dataDetail': []
     },
     {
-      'name': 'Cảm xúc',
+      'name': R.string.cam_xuc.tr(),
       'image': R.drawable.bg_emotion,
       'icon': R.drawable.ic_emotion_plus,
       'dataDetail': [
-        {'name': 'Vui vẻ', 'image': R.drawable.ic_laughing},
-        {'name': 'Buồn ngủ', 'image': R.drawable.ic_sleeping},
-        {'name': 'Ốm', 'image': R.drawable.ic_sick}
+        {'name': R.string.vui_ve.tr(), 'image': R.drawable.ic_laughing},
+        {'name': R.string.buon_ngu.tr(), 'image': R.drawable.ic_sleeping},
+        {'name': R.string.om.tr(), 'image': R.drawable.ic_sick}
       ]
     },
   ];
@@ -292,7 +289,7 @@ class _HomeControllerState extends State<HomeController> {
                                                         BorderRadius.circular(
                                                             10)),
                                                 child: Text(
-                                                    'Dinh dưỡng & Vận động',
+                                                    R.string.dinh_duong_va_van_dong.tr(),
                                                     style: TextStyle(
                                                         fontSize: 16,
                                                         fontWeight:
@@ -362,7 +359,7 @@ class _HomeControllerState extends State<HomeController> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               10)),
-                                                  child: Text('HbA1C',
+                                                  child: Text(R.string.hba1c.tr(),
                                                       style: TextStyle(
                                                           fontSize: 16,
                                                           fontWeight:
@@ -563,7 +560,7 @@ class _HomeControllerState extends State<HomeController> {
                     SizedBox(width: 4),
                     Padding(
                       padding: EdgeInsets.only(top: 8),
-                      child: Text('mmHg',
+                      child: Text(R.string.mm_hg.tr(),
                           style: TextStyle(
                               color: R.color.captionColorGray,
                               fontSize: 12,
@@ -736,7 +733,7 @@ class _HomeControllerState extends State<HomeController> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('HbA1C',
+                    Text(R.string.hba1c.tr(),
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600)),
                     SizedBox(height: 4),
@@ -788,7 +785,7 @@ class _HomeControllerState extends State<HomeController> {
                                   child: Text(
                                       (model.indexChange > 0 ? '+' : '') +
                                           roundNumber(model.indexChange) +
-                                          '% so với lần trước!',
+                                          R.string.ti_le_so_voi_lan_truoc.tr(),
                                       style: TextStyle(
                                           color: R.color.captionColorGray,
                                           fontSize: 12,
@@ -869,7 +866,7 @@ class _HomeControllerState extends State<HomeController> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Dinh dưỡng',
+                        Text(R.string.dinh_duong.tr(),
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600)),
                         SizedBox(height: 4),
@@ -897,7 +894,7 @@ class _HomeControllerState extends State<HomeController> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('Vận động',
+                        Text(R.string.van_dong.tr(),
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600)),
                         SizedBox(height: 4),
@@ -932,7 +929,7 @@ class _HomeControllerState extends State<HomeController> {
                             Image.asset(R.drawable.ic_home_energy,
                                 width: 20, height: 20),
                             SizedBox(width: 4),
-                            Text('Đã nạp',
+                            Text(R.string.da_nap.tr(),
                                 style: TextStyle(
                                     fontSize: 12, fontWeight: FontWeight.w500)),
                           ],
@@ -954,7 +951,7 @@ class _HomeControllerState extends State<HomeController> {
                             SizedBox(width: 4),
                             Padding(
                               padding: EdgeInsets.only(top: 8),
-                              child: Text('kcal',
+                              child: Text(R.string.kcal.tr(),
                                   style: TextStyle(
                                       color: R.color.captionColorGray,
                                       fontSize: 12,
@@ -973,7 +970,7 @@ class _HomeControllerState extends State<HomeController> {
                             Image.asset(R.drawable.ic_home_excercise,
                                 width: 20, height: 20),
                             SizedBox(width: 4),
-                            Text('Tiêu hao',
+                            Text(R.string.tieu_hao.tr(),
                                 style: TextStyle(
                                     fontSize: 12, fontWeight: FontWeight.w500)),
                           ],
@@ -991,7 +988,7 @@ class _HomeControllerState extends State<HomeController> {
                             SizedBox(width: 4),
                             Padding(
                               padding: EdgeInsets.only(top: 8),
-                              child: Text('kcal',
+                              child: Text(R.string.kcal.tr(),
                                   style: TextStyle(
                                       color: R.color.captionColorGray,
                                       fontSize: 12,

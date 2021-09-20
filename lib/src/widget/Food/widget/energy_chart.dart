@@ -1,21 +1,20 @@
+import 'dart:math' as math;
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'dart:math' as math;
-
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Food/widget/add_target_food.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EnergyChart extends StatefulWidget {
   EnergyChart({Key key}) : super(key: key);
@@ -132,7 +131,7 @@ class EnergyChartState extends State<EnergyChart>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Năng lượng',
+                            Text(R.string.nang_luong.tr(),
                                 style: TextStyle(
                                     color: R.color.black,
                                     fontSize: 20,
@@ -160,7 +159,7 @@ class EnergyChartState extends State<EnergyChart>
                                       height: 24,
                                     ),
                                     SizedBox(width: 4),
-                                    Text('Mục tiêu mới',
+                                    Text(R.string.muc_tieu_moi.tr(),
                                         style: TextStyle(
                                             color: R.color.mainColor,
                                             fontSize: 14,
@@ -247,8 +246,8 @@ class EnergyChartState extends State<EnergyChart>
                               SizedBox(height: 4),
                               Text(
                                   model.goal == null
-                                      ? '0 kcal'
-                                      : '/${formatNumber(model.goal)} kcal',
+                                      ? '0 ${R.string.kcal.tr()}'
+                                      : '/${formatNumber(model.goal)} ${R.string.kcal.tr()}',
                                   style: TextStyle(color: R.color.primaryGreyColor))
                             ],
                           ),

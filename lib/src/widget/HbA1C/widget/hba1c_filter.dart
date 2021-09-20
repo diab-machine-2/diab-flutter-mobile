@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef TimeCallback = Function(String, int);
 
@@ -17,7 +17,7 @@ class FillterHbA1C extends StatefulWidget {
 }
 
 class _FillterHbA1CState extends State<FillterHbA1C> {
-  var data = ['6 tháng', '1 năm', '2 năm'];
+  var data = [R.string.sau_thang.tr(), R.string.mot_nam.tr(), R.string.hai_nam.tr()];
 
   int selectedIndex = 0;
   String time = '';
@@ -49,7 +49,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Lọc theo thời gian',
+              Text(R.string.loc_theo_thoi_gian.tr(),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               GestureDetector(
                 onTap: () {
@@ -92,7 +92,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
                         colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                     borderRadius: BorderRadius.circular(200)),
                 child: Center(
-                  child: Text('Lưu',
+                  child: Text(R.string.save.tr(),
                       style: TextStyle(
                           color: R.color.white,
                           fontSize: 16,

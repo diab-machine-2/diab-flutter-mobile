@@ -7,11 +7,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HeartChart extends StatefulWidget {
   HeartChart({Key key}) : super(key: key);
@@ -88,7 +88,7 @@ class HeartChartState extends State<HeartChart>
                           children: [
                             Row(
                               children: [
-                                Text('Xu hướng nhịp tim',
+                                Text(R.string.xu_huong_nhip_tim.tr(),
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700)),
@@ -234,7 +234,7 @@ class HeartChartState extends State<HeartChart>
                                     return lineBarsSpot.map((lineBarSpot) {
                                       return LineTooltipItem(
                                         lineBarSpot.y.round().toString() +
-                                            ' lần/phút',
+                                            ' ${R.string.lan_tren_phut.tr()}',
                                         TextStyle(
                                             color: R.color.black,
                                             fontWeight: FontWeight.normal),
@@ -317,7 +317,7 @@ class HeartChartState extends State<HeartChart>
               color: R.color.transparent,
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text('Xem chi tiết',
+                Text(R.string.xem_chi_tiet.tr(),
                     style: TextStyle(color: R.color.mainColor)),
                 Image.asset(R.drawable.ic_arrow_right, width: 20, height: 20)
               ]),

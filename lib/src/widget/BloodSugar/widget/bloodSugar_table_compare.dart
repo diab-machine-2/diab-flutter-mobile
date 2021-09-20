@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarTableCompareController extends StatefulWidget {
   final List<ComparerModel> model;
@@ -78,14 +78,14 @@ class _BloodSugarTableCompareControllerState
                             children: [
                               Container(
                                   width: width - 10,
-                                  child: Text('Thời gian',
+                                  child: Text(R.string.thoi_gian.tr(),
                                       style: TextStyle(
                                           color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
                                   width: width + 10,
-                                  child: Text('Khung giờ',
+                                  child: Text(R.string.khung_gio.tr(),
                                       style: TextStyle(
                                           color: R.color.black,
                                           fontSize: 14,
@@ -94,7 +94,7 @@ class _BloodSugarTableCompareControllerState
                                   width: width - 45,
                                   //alignment: Alignment.center,
                                   child: Center(
-                                    child: Text('Trước/Sau',
+                                    child: Text(R.string.truoc_sau.tr(),
                                         style: TextStyle(
                                             color: R.color.black,
                                             fontSize: 14,

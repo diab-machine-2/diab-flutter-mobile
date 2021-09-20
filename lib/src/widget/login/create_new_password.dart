@@ -42,7 +42,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
               child: Column(children: [
                 Row(
                   children: [
-                    Text('Mật khẩu mới ít nhất 6 ký tự',
+                    Text(R.string.mat_khau_moi_it_nhat_6_ky_tu.tr(),
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w400)),
                   ],
@@ -50,8 +50,8 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
                 SizedBox(height: 24),
                 TextFieldCustom(
                   key: passwordKey,
-                  title: 'Mật khẩu mới',
-                  placeholder: 'Nhập mật khẩu mới',
+                  title: R.string.mat_khau_moi.tr(),
+                  placeholder: R.string.nhap_mat_khau_moi.tr(),
                   isPassword: true,
                   onChanged: (value) {
                     password = value;
@@ -60,8 +60,8 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
                 SizedBox(height: 16),
                 TextFieldCustom(
                   key: confirmPasswordKey,
-                  title: 'Xác nhận mật khẩu mới',
-                  placeholder: 'Nhập lại mật khẩu mới',
+                  title: R.string.xac_nhan_mat_khau_moi.tr(),
+                  placeholder: R.string.nhap_lai_mat_khau_moi.tr(),
                   isPassword: true,
                   onChanged: (value) {
                     newPassword = value;
@@ -83,7 +83,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
                             end: Alignment.centerRight,
                             colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                     child: Center(
-                        child: Text('Lưu mật khẩu',
+                        child: Text(R.string.luu_mat_khau.tr(),
                             style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
@@ -107,7 +107,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
                 title: Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    'Tạo mật khẩu mới',
+                    R.string.tao_mat_khau_moi.tr(),
                     style: TextStyle(fontSize: 20, color: R.color.textDark),
                   ),
                 ),
@@ -126,11 +126,11 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
       return;
     }
     if (password.contains(' ')) {
-      passwordKey.currentState.validate('Mật khẩu không chứa khoảng trắng');
+      passwordKey.currentState.validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
       return;
     }
     if (password != newPassword) {
-      confirmPasswordKey.currentState.validate('Mật khẩu không trùng khớp');
+      confirmPasswordKey.currentState.validate(R.string.mat_khau_khong_trung_khop.tr());
       return;
     }
 
@@ -138,7 +138,7 @@ class _NewPasswordControllerState extends State<NewPasswordController> {
     try {
       await LoginClient().resetPassword(widget.phone, password, widget.token);
       Message.showToastMessage(context,
-          'Reset mật khẩu thành công, bạn có thể đăng nhập lại với mật khẩu mới');
+          R.string.reset_mat_khau_thanh_cong.tr());
       BotToast.closeAllLoading();
       Navigator.pop(context);
       Navigator.pop(context);

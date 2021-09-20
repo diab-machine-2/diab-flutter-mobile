@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/modal/exercrises/exercrises_active.dart';
-import 'package:medical/src/modal/exercrises/exercrises_categogy_request.dart';
 import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Exercrises/widget/action_list_active.dart';
 import 'package:medical/src/widget/Exercrises/widget/action_list_intensity.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -14,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef DataCallback = Function(ExercrisesCategoryModel);
 
@@ -151,7 +150,7 @@ class _InputDetailExercrisesControllerState
                                       padding: const EdgeInsets.only(
                                           top: 2.0, left: 2),
                                       child: Text(
-                                        'kcal',
+                                        R.string.kcal.tr(),
                                         style: TextStyle(
                                             color: R.color.textDark,
                                             fontWeight: FontWeight.w400,
@@ -201,7 +200,7 @@ class _InputDetailExercrisesControllerState
                                         SizedBox(width: 8),
                                         Text(
                                             selectedintensity == null
-                                                ? 'Chọn cường độ hoạt động'
+                                                ? R.string.chon_cuong_do_hoat_dong.tr()
                                                 : selectedintensity.name,
                                             style: TextStyle(
                                                 fontSize: 16,
@@ -254,7 +253,7 @@ class _InputDetailExercrisesControllerState
                                             selected: selectedActive,
                                             title: widget.model.category))
                                     : Message.showToastMessage(
-                                        context, 'Bạn chưa chọn cường độ');
+                                        context, R.string.ban_chua_chon_cuong_do.tr());
                               },
                               child: Container(
                                 color: R.color.transparent,
@@ -271,7 +270,7 @@ class _InputDetailExercrisesControllerState
                                             height: 24),
                                         SizedBox(width: 8),
                                         selectedActive == null
-                                            ? Text('Chọn hình thức hoạt động',
+                                            ? Text(R.string.chon_hinh_thuc_hoat_dong.tr(),
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight:
@@ -339,7 +338,7 @@ class _InputDetailExercrisesControllerState
                                     Image.asset(R.drawable.ic_stopwatch,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Thời gian vận động',
+                                    Text(R.string.thoi_gian_van_dong.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600)),
@@ -377,7 +376,7 @@ class _InputDetailExercrisesControllerState
                                           Padding(
                                             padding:
                                                 const EdgeInsets.only(top: 8),
-                                            child: Text('giờ',
+                                            child: Text(R.string.hour.tr(),
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                 )),
@@ -408,7 +407,7 @@ class _InputDetailExercrisesControllerState
                                           Padding(
                                             padding:
                                                 const EdgeInsets.only(top: 8),
-                                            child: Text('phút',
+                                            child: Text(R.string.minute.tr(),
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                 )),
@@ -453,7 +452,7 @@ class _InputDetailExercrisesControllerState
                             end: Alignment.centerRight,
                             colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                     child: Center(
-                        child: Text('Lưu',
+                        child: Text(R.string.save.tr(),
                             style: TextStyle(
                                 color: R.color.white,
                                 fontWeight: FontWeight.w600,
@@ -468,7 +467,7 @@ class _InputDetailExercrisesControllerState
 
   handleIntensity(String intensityId) {
     if (selectedActive.id == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn hình thức');
+      Message.showToastMessage(context, R.string.ban_chua_chon_hinh_thuc.tr());
       return;
     }
     handleCaculate(widget.model.categoryId, intensityId, selectedActive.id,
@@ -478,11 +477,11 @@ class _InputDetailExercrisesControllerState
   handleCaculate(String categoryId, String intensityId, String activeId,
       int selectedMinute, int selectedHour) async {
     if (intensityId == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn hình thức');
+      Message.showToastMessage(context, R.string.ban_chua_chon_hinh_thuc.tr());
       return;
     }
     if (activeId == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn hình thức');
+      Message.showToastMessage(context, R.string.ban_chua_chon_hinh_thuc.tr());
       return;
     }
     if (categoryId.isNotEmpty &&
@@ -505,13 +504,13 @@ class _InputDetailExercrisesControllerState
 
   submit() {
     if (selectedintensity == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn cường độ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_cuong_do.tr());
       return;
     } else if (selectedActive == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn hình thức');
+      Message.showToastMessage(context, R.string.ban_chua_chon_hinh_thuc.tr());
       return;
     } else if (selectedHour == 0 && selectedMinute == 0) {
-      Message.showToastMessage(context, 'Bạn chưa chọn thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_chon_thoi_gian.tr());
       return;
       // }
       // else if (calorisesNumber == 0) {
@@ -540,14 +539,14 @@ class _InputDetailExercrisesControllerState
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Chúc mừng!',
+                          Text(R.string.chuc_mung.tr(),
                               style: TextStyle(
                                   color: R.color.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500)),
                           SizedBox(height: 16),
                           Text(
-                              'Tuyệt vời! Bạn đã phá kỷ lục thời gian tập luyện. Kỷ lục hiện tại của bạn với bộ môn này là:',
+                              '${R.string.ky_luc.tr()}:',
                               textAlign: TextAlign.center),
                           SizedBox(height: 8),
                           Text(
@@ -555,7 +554,7 @@ class _InputDetailExercrisesControllerState
                                       .toDouble()
                                       .round()
                                       .toString() +
-                                  ' phút',
+                                  ' ${R.string.minute.tr()}',
                               style: TextStyle(
                                   color: R.color.mainColor,
                                   fontSize: 18,
@@ -646,7 +645,7 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                       children: [
                         Text(
                             widget.title == null
-                                ? 'Nhập thời gian'
+                                ? R.string.nhap_thoi_gian.tr()
                                 : widget.title,
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w700)),
@@ -691,7 +690,7 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                                         FontWeight.bold)),
                                           ))
                                       .toList())),
-                      Text('Giờ',
+                      Text(R.string.hour_upper_case_first.tr(),
                           style: TextStyle(fontWeight: FontWeight.w500)),
                       SizedBox(width: 24),
                       Container(
@@ -722,7 +721,7 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                                 fontWeight: FontWeight.bold)),
                                       ))
                                   .toList())),
-                      Text('Phút',
+                      Text(R.string.minute_upper_case_first.tr(),
                           style: TextStyle(fontWeight: FontWeight.w500)),
                     ],
                   ),
@@ -742,7 +741,7 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                     borderRadius: BorderRadius.circular(200),
                                     color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,
@@ -753,7 +752,7 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                             onTap: () {
                               if (selectedHour == 0 && selectedMinute == 0) {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập thời gian');
+                                    context, R.string.ban_chua_nhap_thoi_gian.tr());
                                 return;
                               }
                               widget.callback(selectedHour, selectedMinute * 5);
@@ -775,8 +774,8 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                               child: Center(
                                 child: Text(
                                     widget.title == null
-                                        ? 'Tiếp tục'
-                                        : 'Đồng ý',
+                                        ? R.string.tiep_tuc.tr()
+                                        : R.string.yes.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
                                         fontSize: 16,

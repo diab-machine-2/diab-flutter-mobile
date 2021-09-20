@@ -5,11 +5,11 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/Food/widget/intensity_food.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef NumCallback = Function(double);
 
@@ -68,7 +68,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Tính theo TDEE',
+                                Text(R.string.tinh_theo_tdee.tr(),
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700)),
@@ -87,7 +87,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                             children: [
                               Padding(
                                 padding: EdgeInsets.only(left: 16, right: 16),
-                                child: Text('Cân nặng',
+                                child: Text(R.string.can_nang.tr(),
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontWeight: FontWeight.w600)),
@@ -117,14 +117,14 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                             });
                                                           },
                                                           title:
-                                                              'Nhập cân nặng',
+                                                              R.string.nhap_can_nang.tr(),
                                                           max: 200,
                                                           numberDefault:
                                                               selectedWeight ==
                                                                       0
                                                                   ? 50
                                                                   : selectedWeight,
-                                                          unit: 'kg'),
+                                                          unit: R.string.kg.tr()),
                                                 );
                                               },
                                               child: Container(
@@ -152,7 +152,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                 color: R.color.color0xffE5E5E5)
                                           ],
                                         ),
-                                        Text('kg',
+                                        Text(R.string.kg.tr(),
                                             style: TextStyle(
                                               fontSize: 16,
                                             )),
@@ -172,7 +172,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                             children: [
                               Padding(
                                 padding: EdgeInsets.only(left: 16, right: 16),
-                                child: Text('Chiều cao',
+                                child: Text(R.string.chieu_cao.tr(),
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontWeight: FontWeight.w600)),
@@ -202,14 +202,14 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                             });
                                                           },
                                                           title:
-                                                              'Nhập chiều cao',
+                                                              R.string.nhap_chieu_cao.tr(),
                                                           max: 300,
                                                           numberDefault:
                                                               selectedHeight ==
                                                                       0
                                                                   ? 160
                                                                   : selectedHeight,
-                                                          unit: 'cm'),
+                                                          unit: R.string.cm.tr()),
                                                 );
                                               },
                                               child: Container(
@@ -237,7 +237,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                 color: R.color.color0xffE5E5E5)
                                           ],
                                         ),
-                                        Text('cm',
+                                        Text(R.string.cm.tr(),
                                             style: TextStyle(
                                               fontSize: 16,
                                             )),
@@ -257,7 +257,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                             children: [
                               Padding(
                                 padding: EdgeInsets.only(left: 16, right: 16),
-                                child: Text('Năm sinh',
+                                child: Text(R.string.nam_sinh.tr(),
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontWeight: FontWeight.w600)),
@@ -287,14 +287,14 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                             });
                                                           },
                                                           title:
-                                                              'Nhập năm sinh',
+                                                              R.string.nhap_nam_sinh.tr(),
                                                           max: DateTime.now()
                                                               .year,
                                                           numberDefault:
                                                               selectedYear == 0
                                                                   ? 1970
                                                                   : selectedYear,
-                                                          unit: 'năm'),
+                                                          unit: R.string.year.tr()),
                                                 );
                                               },
                                               child: Container(
@@ -338,7 +338,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Cường độ tập luyện',
+                                  Text(R.string.cuong_do_tap_luyen.tr(),
                                       style: TextStyle(
                                           color: R.color.black,
                                           fontWeight: FontWeight.w600,
@@ -367,7 +367,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(intensity == null
-                                                ? 'Chọn cường độ tập luyện'
+                                                ? R.string.chon_cuong_do_tap_luyen.tr()
                                                 : intensity.note),
                                             Icon(
                                               Icons.arrow_forward_ios_outlined,
@@ -402,7 +402,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                 BorderRadius.circular(200),
                                             color: R.color.grayBorder),
                                         child: Center(
-                                          child: Text('Huỷ',
+                                          child: Text(R.string.cancel.tr(),
                                               style: TextStyle(
                                                   color: R.color.textDark,
                                                   fontSize: 16,
@@ -428,7 +428,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                             BorderRadius.circular(200),
                                       ),
                                       child: Center(
-                                        child: Text('Tiếp tục',
+                                        child: Text(R.string.tiep_tuc.tr(),
                                             style: TextStyle(
                                                 color: R.color.white,
                                                 fontSize: 16,
@@ -445,19 +445,19 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
 
   getCalo() async {
     if (selectedWeight == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập cân nặng');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_can_nang.tr());
       return;
     }
     if (selectedHeight == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập cân nặng');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_can_nang.tr());
       return;
     }
     if (selectedYear == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập cân nặng');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_can_nang.tr());
       return;
     }
     if (intensity == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn cường độ tập luyện');
+      Message.showToastMessage(context, R.string.ban_chua_chon_cuong_do_tap_luyen.tr());
       return;
     }
     BotToast.showLoading();

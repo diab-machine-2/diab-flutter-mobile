@@ -1,11 +1,8 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_input.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
@@ -13,6 +10,7 @@ import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ExercrisesDetailController extends StatefulWidget {
   ExercrisesDetailController({Key key}) : super(key: key);
@@ -213,7 +211,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                               24,
                                                                           fontWeight:
                                                                               FontWeight.w400)),
-                                                                  Text(' kcal',
+                                                                  Text(' ${R.string.kcal.tr()}',
                                                                       style: TextStyle(
                                                                           color: R.color
                                                                               .black,
@@ -341,7 +339,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                           //   width: 2,
                                                                           // ),
                                                                           Text(
-                                                                            '${itemInputExercrise.duration.toInt().toString()} phút',
+                                                                            '${itemInputExercrise.duration.toInt().toString()} ${R.string.minute.tr()}',
                                                                             style: TextStyle(
                                                                                 color: R.color.primaryGreyColor,
                                                                                 fontWeight: FontWeight.w400,

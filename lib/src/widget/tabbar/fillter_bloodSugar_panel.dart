@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef TimeCallback = Function(String, int);
 
@@ -19,7 +19,7 @@ class FillterBloodPanel extends StatefulWidget {
 }
 
 class _FillterBloodPanelState extends State<FillterBloodPanel> {
-  var data = ['7 ngày', '14 ngày', '30 ngày', '90 ngày'];
+  var data = [R.string.seven_days.tr(), '14 ngày', '30 ngày', '90 ngày'];
 
   int selectedIndex = 0;
   String time = '';
@@ -54,7 +54,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Chọn khung giờ',
+              Text(R.string.chon_khung_gio.tr(),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               GestureDetector(
                 onTap: () {
@@ -97,7 +97,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
                         colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                     borderRadius: BorderRadius.circular(200)),
                 child: Center(
-                  child: Text('Lưu',
+                  child: Text(R.string.save.tr(),
                       style: TextStyle(
                           color: R.color.white,
                           fontSize: 16,

@@ -3,13 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Food/widget/category_food.dart';
 import 'package:medical/src/widget/Food/widget/favorite_food.dart';
 import 'package:medical/src/widget/Food/widget/food_choosen.dart';
 import 'package:medical/src/widget/Food/widget/near_food.dart';
 import 'package:medical/src/widget/Food/widget/search_food.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef SearchFoodCallback = Function(List<FoodModel>);
 
@@ -86,7 +86,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                 child: Column(children: [
                   CustomAppBar(
                       title: Text(
-                        'Nhập món ăn',
+                        R.string.nhap_mon_an.tr(),
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -126,7 +126,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Tìm kiếm món ăn',
+                                Text(R.string.tim_kiem_mon_an.tr(),
                                     style: TextStyle(color: R.color.primaryGreyColor)),
                                 Image.asset(R.drawable.ic_search,
                                     width: 24, height: 24)
@@ -203,7 +203,7 @@ class CustomSegmentState extends State<CustomSegment> {
           0: Container(
               width: width,
               child: Center(
-                child: Text('Món ăn gần đây',
+                child: Text(R.string.mon_an_gan_day.tr(),
                     style: TextStyle(
                         fontWeight: segmentedControlValue == 0
                             ? FontWeight.w600
@@ -215,7 +215,7 @@ class CustomSegmentState extends State<CustomSegment> {
           1: Container(
               width: width,
               child: Center(
-                child: Text('Món yêu thích',
+                child: Text(R.string.mon_yeu_thich.tr(),
                     style: TextStyle(
                         fontWeight: segmentedControlValue == 1
                             ? FontWeight.w600
@@ -227,7 +227,7 @@ class CustomSegmentState extends State<CustomSegment> {
           2: Container(
               width: width,
               child: Center(
-                  child: Text('Danh mục',
+                  child: Text(R.string.danh_muc.tr(),
                       style: TextStyle(
                           fontWeight: segmentedControlValue == 2
                               ? FontWeight.w600

@@ -1,5 +1,7 @@
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:meta/meta.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ComparerModel {
   final int date;
@@ -19,7 +21,7 @@ class ComparerModel {
   });
   @override
   factory ComparerModel.fromJson(Map<String, dynamic> json) {
-    final unit = AppSettings.userInfo.glucoseUnit == 1 ? 'mg/dL' : 'mmol/L';
+    final unit = AppSettings.userInfo.glucoseUnit == 1 ? R.string.mg_dl.tr() : R.string.mmol_l.tr();
     return ComparerModel(
       date: json['date'],
       preGlucose: AppSettings.userInfo.glucoseUnit == 1

@@ -12,7 +12,6 @@ import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -25,6 +24,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddBloodPressureController extends StatefulWidget {
   final String type;
@@ -129,8 +129,8 @@ class _AddBloodPressureControllerState
                   backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? 'Cập nhật chỉ số huyết áp'
-                          : 'Nhập chỉ số huyết áp',
+                          ? R.string.cap_nhat_chi_so_huyet_ap.tr()
+                          : R.string.nhap_chi_so_huyet_ap.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -176,7 +176,7 @@ class _AddBloodPressureControllerState
                                     input: true,
                                     data: des,
                                     titleDetail:
-                                        'Chỉ số huyết áp đối với bệnh tiểu đường')
+                                        R.string.chi_so_huyet_ap_doi_voi_benh_tieu_duong.tr())
                                 : SizedBox()),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -194,7 +194,7 @@ class _AddBloodPressureControllerState
                                     Image.asset(R.drawable.ic_heart_rate,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Tâm thu / tâm trương',
+                                    Text(R.string.tam_thu_tam_truong.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600)),
@@ -309,7 +309,7 @@ class _AddBloodPressureControllerState
                                                   color: R.color.color0xffE5E5E5)
                                             ],
                                           ),
-                                          Text('mmHg',
+                                          Text(R.string.mm_hg.tr(),
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w400))
@@ -355,7 +355,7 @@ class _AddBloodPressureControllerState
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
-                                          Text('Lý do',
+                                          Text(R.string.ly_do.tr(),
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600))
@@ -368,7 +368,7 @@ class _AddBloodPressureControllerState
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w400),
                                             decoration: InputDecoration(
-                                                hintText: 'Nhập lý do',
+                                                hintText: R.string.nhap_ly_do.tr(),
                                                 contentPadding:
                                                     EdgeInsets.only(bottom: 8),
                                                 border: InputBorder.none,
@@ -399,7 +399,7 @@ class _AddBloodPressureControllerState
                                     Image.asset(R.drawable.ic_heart,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Nhịp tim',
+                                    Text(R.string.nhip_tim.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -448,7 +448,7 @@ class _AddBloodPressureControllerState
                                                   color: R.color.color0xffE5E5E5)
                                             ],
                                           ),
-                                          Text('lần/phút',
+                                          Text(R.string.lan_tren_phut.tr(),
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w400))
@@ -561,7 +561,7 @@ class _AddBloodPressureControllerState
                                           SizedBox(width: 8),
                                           Text(
                                               selectedTimeFrame == null
-                                                  ? 'Chọn khung giờ'
+                                                  ? R.string.chon_khung_gio.tr()
                                                   : selectedTimeFrame.name,
                                               style: TextStyle(
                                                   fontSize: 16,
@@ -593,7 +593,7 @@ class _AddBloodPressureControllerState
                                     Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Ghi chú',
+                                    Text(R.string.ghi_chu.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -606,7 +606,7 @@ class _AddBloodPressureControllerState
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: 'Nhập ghi chú của bạn',
+                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
@@ -707,7 +707,7 @@ class _AddBloodPressureControllerState
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text('Lưu',
+                                  child: Text(R.string.save.tr(),
                                       style: TextStyle(
                                           color: R.color.white,
                                           fontWeight: FontWeight.w600,
@@ -735,7 +735,7 @@ class _AddBloodPressureControllerState
                                             border: Border.all(
                                                 color: R.color.red, width: 2)),
                                         child: Center(
-                                          child: Text('Xoá dữ liệu',
+                                          child: Text(R.string.xoa_du_lieu.tr(),
                                               style: TextStyle(
                                                   color: R.color.red,
                                                   fontSize: 16,
@@ -761,7 +761,7 @@ class _AddBloodPressureControllerState
                                                 R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Lưu',
+                                        child: Text(R.string.save.tr(),
                                             style: TextStyle(
                                                 color: R.color.white,
                                                 fontSize: 16,
@@ -810,7 +810,7 @@ class _AddBloodPressureControllerState
       final result =
           await BloodPressureClient().deleteBloodPressureInput(widget.id);
       if (result == true) {
-        Message.showToastMessage(context, 'Xoá thành công');
+        Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         DartNotificationCenter.post(channel: 'BloodPressure_change_data');
         Navigator.pop(context);
       }
@@ -834,31 +834,31 @@ class _AddBloodPressureControllerState
     final reason = _controllerReason.text ?? '';
 
     if (systolic.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số tâm thu');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_tam_thu.tr());
       return;
     }
     if (textValidate.isNotEmpty && reason.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập lý do');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
       return;
     }
     if (diastolic.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số tâm trương');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_tam_truong.tr());
       return;
     }
     if (pulseRate.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số nhịp tim');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_nhip_tim.tr());
       return;
     }
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
     if (note == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập lý do');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
       return;
     }
     BotToast.showLoading();
@@ -906,36 +906,36 @@ class _AddBloodPressureControllerState
     final reason = _controllerReason.text ?? '';
 
     if (systolic.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số tâm thu');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_tam_thu.tr());
       return;
     }
     if (textValidate.isNotEmpty && reason.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập lý do');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
       return;
     }
     if (diastolic.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số tâm trương');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_tam_truong.tr());
       return;
     }
     if (pulseRate.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số nhịp tim');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_nhip_tim.tr());
       return;
     }
     if (int.parse(pulseRate.splitMapJoin(',')) > 200) {
       Message.showToastMessage(context,
-          'Chúng tôi xin lỗi, số liệu nhịp tim mà bạn nhập không trong phạm vi cho phép. Giá trị kỳ vọng nằm dưới 200');
+          R.string.nhip_tim_invalid.tr());
       return;
     }
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
     if (note == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập lý do');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
       return;
     }
     BotToast.showLoading();
@@ -987,7 +987,7 @@ class _AddBloodPressureControllerState
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn xoá dữ liệu?',
+                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -997,7 +997,7 @@ class _AddBloodPressureControllerState
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
+                            R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1021,7 +1021,7 @@ class _AddBloodPressureControllerState
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Quay lại',
+                                        child: Text(R.string.back.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -1043,7 +1043,7 @@ class _AddBloodPressureControllerState
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text('Xoá',
+                                      child: Text(R.string.delete.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,
@@ -1119,7 +1119,7 @@ class _AddBloodPressureControllerState
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1129,7 +1129,7 @@ class _AddBloodPressureControllerState
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                            R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1152,7 +1152,7 @@ class _AddBloodPressureControllerState
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -1180,7 +1180,7 @@ class _AddBloodPressureControllerState
                                               R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,
@@ -1237,7 +1237,7 @@ class _AddBloodPressureControllerState
                   Image.asset(R.drawable.ic_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chọn trong thư viện",
+                  Text(R.string.chon_trong_thu_vien.tr(),
                       style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
@@ -1255,7 +1255,7 @@ class _AddBloodPressureControllerState
                   Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chụp ảnh",
+                  Text(R.string.chup_anh.tr(),
                       style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
@@ -1267,7 +1267,7 @@ class _AddBloodPressureControllerState
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text("Huỷ",
+          child: Text(R.string.cancel.tr(),
               style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
@@ -1276,7 +1276,7 @@ class _AddBloodPressureControllerState
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      Message.showToastMessage(context, 'Chỉ đuợc chọn tối đa 5 ảnh');
+      Message.showToastMessage(context, R.string.max_image_select.tr());
     }
   }
 
@@ -1315,13 +1315,13 @@ class _AddBloodPressureControllerState
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = FlatButton(
-      child: Text("Huỷ"),
+      child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Cấp quyền"),
+      child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -1329,8 +1329,8 @@ class _AddBloodPressureControllerState
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Thông báo"),
-      content: Text("Bạn cần cấp quyền truy cập để sử dụng tính năng này"),
+      title: Text(R.string.notification.tr()),
+      content: Text(R.string.ask_for_permission.tr()),
       actions: [
         cancelButton,
         continueButton,
@@ -1396,7 +1396,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Chọn ngày',
+                            Text(R.string.pick_date.tr(),
                                 style: TextStyle(
                                     color: R.color.black,
                                     fontSize: 16,
@@ -1423,7 +1423,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         SizedBox(
                           width: 16,
                         ),
-                        Text('Chọn thời gian',
+                        Text(R.string.pick_time.tr(),
                             style: TextStyle(
                                 color: R.color.black,
                                 fontSize: 16,
@@ -1452,7 +1452,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                   color: R.color.grayBorder,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
                                           color: R.color.black,
                                           fontSize: 16,
@@ -1480,7 +1480,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                   color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Đồng ý',
+                                  child: Text(R.string.yes.tr(),
                                       style: TextStyle(
                                           color: R.color.white,
                                           fontSize: 16,

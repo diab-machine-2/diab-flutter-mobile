@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'indicator.dart';
 
@@ -66,7 +66,7 @@ class PieChart2State extends State {
                   Padding(
                     padding: const EdgeInsets.only(top: 2.0, bottom: 8),
                     child: Text(
-                      'Chú thích',
+                      R.string.chu_thich.tr(),
                       style: TextStyle(fontSize: 14, color: R.color.textDark),
                     ),
                   ),
@@ -77,7 +77,7 @@ class PieChart2State extends State {
                       Indicator(
                         color: Color(0xffE53935),
                         number: '10%',
-                        text: 'Rất cao',
+                        text: R.string.very_high.tr(),
                         isSquare: true,
                       ),
                       SizedBox(
@@ -85,7 +85,7 @@ class PieChart2State extends State {
                       ),
                       Indicator(
                         color: Color(0xfffFF8E8E),
-                        text: 'Cao',
+                        text: R.string.high.tr(),
                         number: '10%',
                         isSquare: true,
                       ),
@@ -94,7 +94,7 @@ class PieChart2State extends State {
                       ),
                       Indicator(
                         color: R.color.green,
-                        text: 'Tốt',
+                        text: R.string.good.tr(),
                         number: '10%',
                         isSquare: true,
                       ),
@@ -104,7 +104,7 @@ class PieChart2State extends State {
                       Indicator(
                         color: Color(0xffFCB276),
                         number: '10%',
-                        text: 'Thấp',
+                        text: R.string.low.tr(),
                         isSquare: true,
                       ),
                       SizedBox(
@@ -113,7 +113,7 @@ class PieChart2State extends State {
                       Indicator(
                         color: R.color.color0xffF58220,
                         number: '10%',
-                        text: 'Rất thấp',
+                        text: R.string.very_low.tr(),
                         isSquare: true,
                       ),
                       SizedBox(

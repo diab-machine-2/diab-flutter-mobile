@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/user_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/address_list.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef AddresCallback = Function(String address, ProvinceModel province,
     ProvinceModel district, ProvinceModel ward);
@@ -293,7 +293,7 @@ class _AddressControllerState extends State<AddressController> {
                       borderRadius: BorderRadius.circular(200),
                       color: R.color.grayBorder),
                   child: Center(
-                    child: Text('Huỷ',
+                    child: Text(R.string.cancel.tr(),
                         style: TextStyle(
                             color: R.color.textDark,
                             fontSize: 16,
@@ -335,7 +335,7 @@ class _AddressControllerState extends State<AddressController> {
                         end: Alignment.centerRight,
                         colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                 child: Center(
-                  child: Text('Lưu',
+                  child: Text(R.string.save.tr(),
                       style: TextStyle(
                           color: R.color.white,
                           fontSize: 16,

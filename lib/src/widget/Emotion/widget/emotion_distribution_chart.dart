@@ -4,12 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 class EmotionDistributionChart extends StatefulWidget {
   EmotionDistributionChart({Key key}) : super(key: key);
   @override
@@ -98,7 +97,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                               Padding(
                                 padding: EdgeInsets.only(left: 16),
                                 child: Text(
-                                    'Cảm xúc của bạn ${periodFilterType == 1 ? '7' : periodFilterType == 2 ? '14' : periodFilterType == 3 ? '30' : '90'} ngày qua',
+                                    '${R.string.cam_xuc_cua_ban.tr()} ${periodFilterType == 1 ? '7' : periodFilterType == 2 ? '14' : periodFilterType == 3 ? '30' : '90'} ${R.string.ngay_qua.tr()}',
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontSize: 20,
@@ -234,7 +233,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Chú thích:',
+                '${R.string.chu_thich.tr()}:',
                 style: TextStyle(fontSize: 14, color: R.color.textDark),
               ),
               SizedBox(height: 8),

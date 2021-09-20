@@ -2,23 +2,20 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BmiHipTrendChart extends StatefulWidget {
   BmiHipTrendChart({Key key}) : super(key: key);
@@ -35,7 +32,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
   int periodFilterType = 1;
   int trendTypeIndex = 1;
   int touchIndex = -1;
-  String trendType = 'Tất cả';
+  String trendType = R.string.all.tr();
 
   @override
   void initState() {
@@ -89,7 +86,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Xu hướng vòng eo',
+                            Text(R.string.xu_huong_vong_eo.tr(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w700)),
                             GestureDetector(
@@ -102,10 +99,10 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                       callback: (number) {
                                         submitTarget(number);
                                       },
-                                      title: 'Mục tiêu vòng eo',
+                                      title: R.string.muc_tieu_vong_eo.tr(),
                                       max: 180,
                                       numberDefault: (model.goal ?? 60).toInt(),
-                                      unit: 'cm'),
+                                      unit: R.string.cm.tr()),
                                 );
                               },
                               child: Container(
@@ -118,7 +115,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                       height: 24,
                                     ),
                                     SizedBox(width: 4),
-                                    Text('Mục tiêu mới',
+                                    Text(R.string.muc_tieu_moi.tr(),
                                         style: TextStyle(
                                             color: R.color.mainColor,
                                             fontSize: 14,
@@ -158,7 +155,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text('Hiện tại',
+                                            Text(R.string.hien_tai.tr(),
                                                 style: TextStyle(
                                                     color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
@@ -193,7 +190,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                                           left: 2,
                                                           right: 2),
                                                   child: Text(
-                                                    'cm',
+                                                    R.string.cm.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark,
                                                         fontWeight:
@@ -212,7 +209,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text('Mục tiêu',
+                                            Text(R.string.muc_tieu.tr(),
                                                 style: TextStyle(
                                                     color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
@@ -243,7 +240,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                                       const EdgeInsets.only(
                                                           top: 6.0, left: 2),
                                                   child: Text(
-                                                    'cm',
+                                                    R.string.cm.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark,
                                                         fontWeight:
@@ -324,7 +321,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
               children: [
                 Row(
                   children: [
-                    Text('Nhỏ nhất:',
+                    Text('${R.string.nho_nhat.tr()}:',
                         style: TextStyle(
                             fontSize: 14,
                             color: R.color.black,
@@ -340,7 +337,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                     SizedBox(
                       width: 4,
                     ),
-                    Text('cm',
+                    Text(R.string.cm.tr(),
                         style: TextStyle(
                             fontSize: 14,
                             color: R.color.black,
@@ -349,7 +346,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                 ),
                 Row(
                   children: [
-                    Text('Lớn nhất:',
+                    Text('${R.string.lon_nhat.tr()}:',
                         style: TextStyle(
                             fontSize: 14,
                             color: R.color.black,
@@ -365,7 +362,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                     SizedBox(
                       width: 4,
                     ),
-                    Text('cm',
+                    Text(R.string.cm.tr(),
                         style: TextStyle(
                             fontSize: 14,
                             color: R.color.black,
@@ -489,8 +486,8 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                       return LineTooltipItem(
                                         lineBarSpot.y.round() == lineBarSpot.y
                                             ? lineBarSpot.y.round().toString() +
-                                                ' cm'
-                                            : lineBarSpot.y.toString() + ' cm',
+                                                ' ${R.string.cm.tr()}'
+                                            : lineBarSpot.y.toString() + ' ${R.string.cm.tr()}',
                                         TextStyle(
                                             color: R.color.white,
                                             fontWeight: FontWeight.bold),

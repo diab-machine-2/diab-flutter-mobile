@@ -5,14 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
-import 'package:medical/src/modal/exercrises/exercrises_categogy_request.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef ExercrisesCategorycallback = Function(
     List<ExercrisesCategoryModel>, int);
@@ -110,8 +109,8 @@ class _SearchExercrisesControllerState
                       backgroundColor: R.color.transparent,
                       title: Text(
                           widget.type == 'update'
-                              ? 'Chỉnh sửa vận động'
-                              : 'Chọn loại vận động',
+                              ? R.string.chinh_sua_van_dong.tr()
+                              : R.string.chon_loai_van_dong.tr(),
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -174,7 +173,7 @@ class _SearchExercrisesControllerState
                                               border: InputBorder.none,
                                               contentPadding:
                                                   EdgeInsets.only(top: -20),
-                                              hintText: 'Tìm kiếm hoạt động',
+                                              hintText: R.string.tim_kiem_hoat_dong.tr(),
                                               fillColor: R.color.textDark),
                                         )),
                                   ),
@@ -216,7 +215,7 @@ class _SearchExercrisesControllerState
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('$selectedItem hoạt động'),
+                                  Text('$selectedItem ${R.string.hoat_dong.tr()}'),
                                   Row(
                                     children: [
                                       Text(formatNumber(sumCalories.toDouble()),
@@ -228,7 +227,7 @@ class _SearchExercrisesControllerState
                                         padding: const EdgeInsets.only(
                                             top: 2.0, left: 2),
                                         child: Text(
-                                          'kcal',
+                                          R.string.kcal.tr(),
                                           style: TextStyle(
                                               color: R.color.textDark,
                                               fontWeight: FontWeight.w400,
@@ -266,7 +265,7 @@ class _SearchExercrisesControllerState
                                                   R.color.greenGradientBottom
                                                 ])),
                                         child: Center(
-                                            child: Text('Lưu',
+                                            child: Text(R.string.save.tr(),
                                                 style: TextStyle(
                                                     color: R.color.white,
                                                     fontWeight: FontWeight.w600,
@@ -298,7 +297,7 @@ class _SearchExercrisesControllerState
                                                             color: R.color.red,
                                                             width: 2)),
                                                     child: Center(
-                                                      child: Text('Xoá dữ liệu',
+                                                      child: Text(R.string.xoa_du_lieu.tr(),
                                                           style: TextStyle(
                                                               color: R.color.red,
                                                               fontSize: 16,
@@ -332,7 +331,7 @@ class _SearchExercrisesControllerState
                                                             R.color.greenGradientBottom
                                                           ])),
                                                   child: Center(
-                                                    child: Text('Lưu',
+                                                    child: Text(R.string.save.tr(),
                                                         style: TextStyle(
                                                             color: R.color.white,
                                                             fontSize: 16,
@@ -361,10 +360,10 @@ class _SearchExercrisesControllerState
   Widget buildActivities(ExercrisesListCategoryModel data,
       List<ExercrisesCategoryModel> selectedCategories, int type) {
     final title = type == 0
-        ? 'Hoạt động phổ biến'
+        ? R.string.hoat_dong_pho_bien.tr()
         : type == 1
-            ? 'Hoạt động thường xuyên'
-            : 'Các hoạt động khác';
+            ? R.string.hoat_dong_thuong_xuyen.tr()
+            : R.string.cac_hoat_dong_khac.tr();
     final model = type == 0
         ? data.exerciseCategoryCommons
         : type == 1
@@ -481,7 +480,7 @@ class _SearchExercrisesControllerState
                                               ),
                                               selectedModel == null
                                                   ? SizedBox()
-                                                  : Text('phút,',
+                                                  : Text('${R.string.minute.tr()},',
                                                       style: TextStyle(
                                                           color: R.color.textDark,
                                                           fontSize: 14,

@@ -8,12 +8,12 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class VerifyPhoneController extends StatefulWidget {
   final String type;
@@ -102,7 +102,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                           Image.asset(R.drawable.im_check_phone,
                               width: 90, height: 74),
                           SizedBox(height: 20),
-                          Text('Nhập 4 số trong tin nhắn văn bản đã gửi đến',
+                          Text(R.string.nhap_otp.tr(),
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w400),
                               textAlign: TextAlign.center),
@@ -168,7 +168,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                               ? Padding(
                                   padding: EdgeInsets.only(left: 32, right: 32),
                                   child: Text(
-                                    'Mã xác nhận không chính xác. Vui lòng kiểm tra lại',
+                                    R.string.otp_khong_chinh_xac.tr(),
                                     style: TextStyle(color: R.color.red),
                                     textAlign: TextAlign.center,
                                   ),
@@ -206,7 +206,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                           ])),
                                   child: Center(
                                       child: Text(
-                                          'Gửi lại mã (Còn ${timeCount}s)',
+                                          '${R.string.gui_lai_ma.tr()} (Còn ${timeCount}s)',
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
@@ -222,7 +222,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                         width: 36,
                                         color: R.color.color0xffD6D8E0),
                                     SizedBox(width: 8),
-                                    Text('Hoặc',
+                                    Text(R.string.or.tr(),
                                         style: TextStyle(
                                             color: R.color.color0xff232527)),
                                     SizedBox(width: 8),
@@ -244,7 +244,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                       border: Border.all(
                                           color: R.color.mainColor, width: 1)),
                                   child: Center(
-                                      child: Text('Thay đổi số điện thoại',
+                                      child: Text(R.string.thay_doi_so_dien_thoai.tr(),
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
@@ -288,7 +288,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                   title: Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      "Xác nhận số điện thoại",
+                      R.string.xac_nhan_so_dien_thoai.tr(),
                       style: TextStyle(fontSize: 20, color: R.color.textDark),
                     ),
                   ),
@@ -484,7 +484,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
             children: [
               Image.asset(R.drawable.ic_check_success,
                   width: 64, height: 64),
-              Text('Đã gửi lại mã OTP.\nVui lòng kiểm tra tin nhắn',
+              Text(R.string.da_gui_lai_otp.tr(),
                   textAlign: TextAlign.center)
             ],
           ),
@@ -509,7 +509,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: 'Đã gửi OTP 5 lần cho số điện thoại ',
+                  text: R.string.da_gui_otp_5_lan_cho_so_dien_thoai.tr(),
                   style: TextStyle(color: R.color.color0xff172823, fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(
@@ -518,7 +518,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
                         text:
-                            '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
+                            R.string.dang_ky_lai_hom_sau.tr(),
                         style:
                             TextStyle(color: R.color.color0xff172823, fontSize: 16)),
                   ],

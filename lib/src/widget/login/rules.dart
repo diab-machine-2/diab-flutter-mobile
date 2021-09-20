@@ -4,10 +4,9 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class RulesController extends StatefulWidget {
   @override
@@ -49,7 +48,7 @@ class _RulesControllerState extends State<RulesController> {
               children: [
                 Padding(
                   padding: EdgeInsets.only(left: 16, top: 16),
-                  child: Text('Điều khoản & điều kiện',
+                  child: Text(R.string.dieu_khoan_va_dieu_kien.tr(),
                       style: TextStyle(
                           color: R.color.black,
                           fontWeight: FontWeight.bold,
@@ -108,7 +107,7 @@ class _RulesControllerState extends State<RulesController> {
                             borderRadius: BorderRadius.circular(200),
                           ),
                           child: Center(
-                              child: Text('Tôi đồng ý',
+                              child: Text(R.string.toi_dong_y.tr(),
                                   style: TextStyle(
                                       color: R.color.white,
                                       fontSize: 16,

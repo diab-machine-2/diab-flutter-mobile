@@ -2,28 +2,20 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
-import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
-import 'package:medical/src/modal/bmi/weight_trend_item.dart';
-import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
-import 'package:medical/src/modal/glucose/glucose_trend.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 
 class BmiTrendChart extends StatefulWidget {
@@ -41,7 +33,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
   int periodFilterType = 1;
   int trendTypeIndex = 1;
   int touchIndex = -1;
-  String trendType = 'Tất cả';
+  String trendType = R.string.all.tr();
 
   @override
   void initState() {
@@ -95,7 +87,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Xu hướng cân nặng',
+                            Text(R.string.xu_huong_can_nang.tr(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w700)),
                             GestureDetector(
@@ -108,14 +100,14 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                       callback: (number) {
                                         submitTarget(number);
                                       },
-                                      title: 'Mục tiêu cân nặng',
+                                      title: R.string.muc_tieu_can_nang.tr(),
                                       max: 180,
                                       numberDefault:
                                           (model.goal == null || model.goal == 0
                                                   ? 50
                                                   : model.goal)
                                               .toInt(),
-                                      unit: 'kg'),
+                                      unit: R.string.kg.tr()),
                                 );
                               },
                               child: Container(
@@ -128,7 +120,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                       height: 24,
                                     ),
                                     SizedBox(width: 4),
-                                    Text('Mục tiêu mới',
+                                    Text(R.string.muc_tieu_moi.tr(),
                                         style: TextStyle(
                                             color: R.color.mainColor,
                                             fontSize: 14,
@@ -168,7 +160,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text('Hiện tại',
+                                            Text(R.string.hien_tai.tr(),
                                                 style: TextStyle(
                                                     color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
@@ -203,7 +195,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                                           left: 2,
                                                           right: 2),
                                                   child: Text(
-                                                    'kg',
+                                                    R.string.kg.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark,
                                                         fontWeight:
@@ -222,7 +214,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text('Mục tiêu',
+                                            Text(R.string.muc_tieu.tr(),
                                                 style: TextStyle(
                                                     color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
@@ -253,7 +245,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                                       const EdgeInsets.only(
                                                           top: 6.0, left: 2),
                                                   child: Text(
-                                                    'kg',
+                                                    R.string.kg.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark,
                                                         fontWeight:
@@ -336,7 +328,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
               children: [
                 Row(
                   children: [
-                    Text('Nhẹ nhất:',
+                    Text('${R.string.nhe_nhat.tr()}:',
                         style: TextStyle(
                             fontSize: 14,
                             color: R.color.black,
@@ -352,7 +344,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                     SizedBox(
                       width: 4,
                     ),
-                    Text('kg',
+                    Text(R.string.kg.tr(),
                         style: TextStyle(
                             fontSize: 14,
                             color: R.color.black,
@@ -361,7 +353,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                 ),
                 Row(
                   children: [
-                    Text('Nặng nhất:',
+                    Text('${R.string.nang_nhat.tr()}:',
                         style: TextStyle(
                             fontSize: 14,
                             color: R.color.black,
@@ -377,7 +369,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                     SizedBox(
                       width: 4,
                     ),
-                    Text('kg',
+                    Text(R.string.kg.tr(),
                         style: TextStyle(
                             fontSize: 14,
                             color: R.color.black,
@@ -529,8 +521,8 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                       return LineTooltipItem(
                                         lineBarSpot.y.round() == lineBarSpot.y
                                             ? lineBarSpot.y.round().toString() +
-                                                ' kg'
-                                            : lineBarSpot.y.toString() + ' kg',
+                                                ' ${R.string.kg.tr()}'
+                                            : lineBarSpot.y.toString() + ' ${R.string.kg.tr()}',
                                         TextStyle(
                                             color: toColor(
                                                 trends[touchIndex].colorCode),

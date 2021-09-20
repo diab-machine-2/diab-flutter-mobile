@@ -11,6 +11,7 @@ import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/Food/widget/food_of_category.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CategoryFood extends StatefulWidget {
   final List<FoodModel> foods;
@@ -183,7 +184,7 @@ class _CategoryFoodState extends State<CategoryFood>
                                                             EdgeInsets.only(
                                                                 top: 4),
                                                         child: Text(
-                                                            'Đã chọn $number món, ${formatNumber(totalCalo)} kcal',
+                                                            '${R.string.da_chon.tr()} $number ${R.string.mon.tr()}, ${formatNumber(totalCalo)} ${R.string.kcal.tr()}',
                                                             style: TextStyle(
                                                                 color: R.color
                                                                     .black,

@@ -5,7 +5,6 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker2.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_year_picker.dart';
@@ -15,6 +14,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class UpdateInfoController extends StatefulWidget {
   final String type;
@@ -99,8 +99,8 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                 alignment: Alignment.topLeft,
                                 child: Text(
                                     widget.type == 'phone'
-                                        ? 'Hãy để DiaB \nthấu hiểu bạn hơn!'
-                                        : 'Chào mừng ${widget.type == 'google' ? widget.googleAccount.displayName.split(' ').last : widget.type == 'facebook' ? widget.userInfo['name'].split(' ').last : widget.appleAccount.givenName ?? 'Bạn'},\nHãy để DiaB thấu hiểu bạn hơn!',
+                                        ? R.string.hay_de_diab_thau_hieu_ban_hon.tr()
+                                        : '${R.string.chao_mung.tr()} ${widget.type == 'google' ? widget.googleAccount.displayName.split(' ').last : widget.type == 'facebook' ? widget.userInfo['name'].split(' ').last : widget.appleAccount.givenName ?? R.string.ban.tr()},\n${R.string.hay_de_diab_thau_hieu_ban_hon_single_line.tr()}',
                                     style: TextStyle(
                                         height: 1.5,
                                         color: R.color.mainColor,
@@ -122,9 +122,9 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                     EdgeInsets.only(bottom: 24),
                                                 child: TextFieldCustom(
                                                     key: phoneKey,
-                                                    title: 'Số điện thoại',
+                                                    title: R.string.so_dien_thoai.tr(),
                                                     placeholder:
-                                                        'Nhập số điện thoại',
+                                                        R.string.nhap_so_dien_thoai.tr(),
                                                     autoFocus: false,
                                                     showStar: true,
                                                     onChanged: (value) {
@@ -135,7 +135,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             alignment: Alignment.topLeft,
                                             child: Row(
                                               children: [
-                                                Text('Họ & tên',
+                                                Text(R.string.ho_va_ten.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark)),
                                                 Text(" *",
@@ -182,7 +182,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                                 EdgeInsets.only(
                                                                     top: -16),
                                                             hintText:
-                                                                'Nhập họ tên',
+                                                                R.string.nhap_ho_ten.tr(),
                                                             counterText: '',
                                                             hintStyle: TextStyle(
                                                                 color: R.color.color0xff232527)),
@@ -205,7 +205,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             alignment: Alignment.topLeft,
                                             child: Row(
                                               children: [
-                                                Text('Ngày sinh',
+                                                Text(R.string.ngay_sinh.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark)),
                                                 Text(" *",
@@ -241,7 +241,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                                         .millisecondsSinceEpoch ~/
                                                                     1000,
                                                                 'dd/MM/yyyy')
-                                                            : 'Chọn ngày sinh',
+                                                            : R.string.chon_ngay_sinh.tr(),
                                                         style: TextStyle(
                                                             color: R.color.textDark,
                                                             fontSize: 16,
@@ -265,7 +265,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             alignment: Alignment.topLeft,
                                             child: Row(
                                               children: [
-                                                Text('Giới tính',
+                                                Text(R.string.gioi_tinh.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark)),
                                                 Text(" *",
@@ -295,10 +295,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                 children: [
                                                   Text(
                                                       _choosenGender == null
-                                                          ? 'Chọn giới tính'
+                                                          ? R.string.chon_gioi_tinh.tr()
                                                           : _choosenGender == 1
-                                                              ? 'Nam'
-                                                              : 'Nữ',
+                                                              ? R.string.nam.tr()
+                                                              : R.string.nu.tr(),
                                                       style: TextStyle(
                                                           color: R.color.textDark,
                                                           fontSize: 16,
@@ -323,7 +323,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             child: Row(
                                               children: [
                                                 Text(
-                                                    'Tình trạng bệnh tiểu đường',
+                                                    R.string.tinh_trang_benh_tieu_duong.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark)),
                                                 Text(" *",
@@ -353,7 +353,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                 children: [
                                                   Text(
                                                       diabetesStatus == null
-                                                          ? 'Chọn tình trạng bệnh'
+                                                          ? R.string.chon_tinh_trang_benh.tr()
                                                           : diabetesStatus[
                                                               'value'],
                                                       style: TextStyle(
@@ -379,7 +379,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             alignment: Alignment.topLeft,
                                             child: Row(
                                               children: [
-                                                Text('Năm phát hiện bệnh',
+                                                Text(R.string.nam_phat_hien_benh.tr(),
                                                     style: TextStyle(
                                                         color: R.color.textDark)),
                                                 Text(" *",
@@ -414,7 +414,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                                       .millisecondsSinceEpoch ~/
                                                                   1000,
                                                               'yyyy')
-                                                          : 'Chọn năm',
+                                                          : R.string.chon_nam.tr(),
                                                       style: TextStyle(
                                                           color: R.color.textDark,
                                                           fontSize: 16,
@@ -454,7 +454,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                         borderRadius:
                                             BorderRadius.circular(200)),
                                     child: Center(
-                                        child: Text('Lưu thông tin',
+                                        child: Text(R.string.luu_thong_tin.tr(),
                                             style: TextStyle(
                                                 color: R.color.white,
                                                 fontSize: 16,
@@ -484,7 +484,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Loại bệnh',
+                Text(R.string.loai_benh.tr(),
                     style: TextStyle(
                         color: R.color.textDark,
                         fontSize: 16,
@@ -521,7 +521,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                 borderRadius: BorderRadius.circular(200),
                                 color: R.color.grayBorder),
                             child: Center(
-                              child: Text('Huỷ',
+                              child: Text(R.string.cancel.tr(),
                                   style: TextStyle(
                                       color: R.color.textDark,
                                       fontSize: 16,
@@ -549,7 +549,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                     R.color.greenGradientBottom
                                   ])),
                           child: Center(
-                            child: Text('Đồng ý',
+                            child: Text(R.string.yes.tr(),
                                 style: TextStyle(
                                     color: R.color.white,
                                     fontSize: 16,
@@ -584,7 +584,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Giới tính',
+                Text(R.string.gioi_tinh.tr(),
                     style: TextStyle(
                         color: R.color.textDark,
                         fontSize: 16,
@@ -616,7 +616,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                 borderRadius: BorderRadius.circular(200),
                                 color: R.color.grayBorder),
                             child: Center(
-                              child: Text('Huỷ',
+                              child: Text(R.string.cancel.tr(),
                                   style: TextStyle(
                                       color: R.color.textDark,
                                       fontSize: 16,
@@ -645,7 +645,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                     R.color.greenGradientBottom
                                   ])),
                           child: Center(
-                            child: Text('Đồng ý',
+                            child: Text(R.string.yes.tr(),
                                 style: TextStyle(
                                     color: R.color.white,
                                     fontSize: 16,
@@ -694,31 +694,31 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
   _submitData() async {
     final name = nameController.text ?? '';
     if (phone.isEmpty && widget.type != 'phone') {
-      phoneKey.currentState.validate('Bạn chưa nhập số điện thoại');
+      phoneKey.currentState.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
     if (name.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập họ tên');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_ho_ten.tr());
       return;
     }
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn ngày sinh');
+      Message.showToastMessage(context, R.string.ban_chua_chon_ngay_sinh.tr());
       return;
     }
 
     if (_choosenGender == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn giới tính');
+      Message.showToastMessage(context, R.string.ban_chua_chon_gioi_tinh.tr());
       return;
     }
 
     if (diabetesStatus == null) {
       Message.showToastMessage(
-          context, 'Bạn chưa chọn tình trạng bệnh tiểu đường');
+          context, R.string.ban_chua_chon_tinh_trang_benh_tieu_duong.tr());
       return;
     }
 
     if (selectedYear == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn năm phát hiện bệnh');
+      Message.showToastMessage(context, R.string.ban_chua_chon_nam_phat_hien_benh.tr());
       return;
     }
 
@@ -795,7 +795,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       if (e is Error) {
         if (e.code == 'USER004') {
           phoneKey.currentState.validate(
-              'Số điện thoại này đã tồn tại trong hệ thống, vui lòng kiểm tra lại');
+              R.string.so_dien_thoai_da_ton_tai_trong_he_thong.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }
