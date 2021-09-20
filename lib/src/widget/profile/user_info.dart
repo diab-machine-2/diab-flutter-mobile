@@ -428,7 +428,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  R.drawable.ic_ruler,
+                                  R.drawable.ic_ruler_fill,
                                   user.height == null
                                       ? 'Chưa cập nhật'
                                       : '${user.height.round()} cm',

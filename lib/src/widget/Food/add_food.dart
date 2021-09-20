@@ -453,7 +453,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                     });
                                                   },
                                                   child: Image.asset(
-                                                    R.drawable.trash,
+                                                    R.drawable.ic_trash_red,
                                                     width: 20,
                                                     height: 20,
                                                   ),

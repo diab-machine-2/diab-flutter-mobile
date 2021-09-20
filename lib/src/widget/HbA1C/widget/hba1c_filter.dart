@@ -58,7 +58,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
                 child: Container(
                   height: 24,
                   width: 24,
-                  child: Image.asset(R.drawable.x_icon),
+                  child: Image.asset(R.drawable.ic_close),
                 ),
               ),
             ],

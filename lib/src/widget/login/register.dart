@@ -183,7 +183,7 @@ class _RegisterControllerState extends State<RegisterController> {
                                                 MainAxisAlignment.center,
                                             children: [
                                               Image.asset(
-                                                  R.drawable.ic_gg,
+                                                  R.drawable.ic_google,
                                                   width: 26,
                                                   height: 26),
                                             ])),

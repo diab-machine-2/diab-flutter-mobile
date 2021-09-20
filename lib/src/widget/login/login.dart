@@ -180,7 +180,7 @@ class _LoginControllerState extends State<LoginController> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Image.asset(
-                                                R.drawable.ic_gg,
+                                                R.drawable.ic_google,
                                                 width: 26,
                                                 height: 26),
                                           ])),

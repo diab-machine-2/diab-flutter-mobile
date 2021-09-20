@@ -38,13 +38,13 @@ class _HomeControllerState extends State<HomeController> {
     {
       'name': 'Cân nặng',
       'image': R.drawable.bg_weight,
-      'icon': R.drawable.icon_weight,
+      'icon': R.drawable.ic_weight_plus,
       'dataDetail': []
     },
     {
       'name': 'Cảm xúc',
       'image': R.drawable.bg_emotion,
-      'icon': R.drawable.icon_emotion,
+      'icon': R.drawable.ic_emotion_plus,
       'dataDetail': [
         {'name': 'Vui vẻ', 'image': R.drawable.ic_laughing},
         {'name': 'Buồn ngủ', 'image': R.drawable.ic_sleeping},

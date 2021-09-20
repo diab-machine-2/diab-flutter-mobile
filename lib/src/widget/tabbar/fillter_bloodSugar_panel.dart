@@ -63,7 +63,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
                 child: Container(
                   height: 24,
                   width: 24,
-                  child: Image.asset(R.drawable.x_icon),
+                  child: Image.asset(R.drawable.ic_close),
                 ),
               ),
             ],

@@ -439,7 +439,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Row(children: [
-                                        Image.asset(R.drawable.ruler,
+                                        Image.asset(R.drawable.ic_ruler,
                                             width: 22, height: 22),
                                         SizedBox(width: 8),
                                         Text('Vòng eo',

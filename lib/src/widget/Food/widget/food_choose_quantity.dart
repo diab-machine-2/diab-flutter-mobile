@@ -140,7 +140,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                                 width: 24,
                                                 height: 24)
                                             : Image.asset(
-                                                R.drawable.icon_heart,
+                                                R.drawable.ic_heart_fill,
                                                 width: 24,
                                                 height: 24)),
                                   )

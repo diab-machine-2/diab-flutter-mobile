@@ -37,7 +37,7 @@ class GuidlinePanel extends StatelessWidget {
                     child: Container(
                       height: 24,
                       width: 24,
-                      child: Image.asset(R.drawable.x_icon),
+                      child: Image.asset(R.drawable.ic_close),
                     ),
                   ),
                 ],
