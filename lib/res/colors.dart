@@ -9,7 +9,7 @@ class AppColors {
   static const primaryLightGreyColor = Color(0xFFEEEEEE);
   static const white = Color(0xffffffff);
   static const black = Color(0xff000000);
-  static const textDark = Color(0xff0A2836);
+  static const textDark = Color(0xff172823);
   static const captionColorGray = Color(0xff9C9C9C);
   static const statusGood = Color(0xff7CB5FF);
   static const statusAverage = Color(0xffFC9E54);

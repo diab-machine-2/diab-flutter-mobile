@@ -134,4 +134,9 @@ class Strings {
 	String get course => 'course';
 	String get individual => 'individual';
 	String get upgrade_account => 'upgrade_account';
+	String get list_service => 'list_service';
+	String get text_list_service => 'text_list_service';
+	String get service_basic => 'service_basic';
+	String get service_premium => 'service_premium';
+	String get text_continue => 'text_continue';
 }

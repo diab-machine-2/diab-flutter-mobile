@@ -9,7 +9,7 @@ class Colors {
 	Color get primaryLightGreyColor => Color(0xFFEEEEEE);
 	Color get white => Color(0xffffffff);
 	Color get black => Color(0xff000000);
-	Color get textDark => Color(0xff0A2836);
+	Color get textDark => Color(0xff172823);
 	Color get captionColorGray => Color(0xff9C9C9C);
 	Color get statusGood => Color(0xff7CB5FF);
 	Color get statusAverage => Color(0xffFC9E54);

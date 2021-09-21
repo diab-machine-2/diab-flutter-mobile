@@ -131,4 +131,9 @@ yes,Đồng ý,
 plan,Kế hoạch,
 course,Khoá học,
 individual,Cá nhân,
-upgrade_account,Nâng cấp tài khoản
+upgrade_account,Nâng cấp tài khoản,
+list_service,Các gói dịch vụ của diaB,
+text_list_service,Mong muốn mang đến những giá trị thiết thực cho những khách hàng của DiaB, chúng tôi đã kiến tạo 2 gói dịch vụ gồm:,
+service_basic,Gói cơ bản,
+service_premium,Gói diaB Pro,
+text_continue,Tiếp tục

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -115,11 +114,6 @@ double roundAsFixed(double number) {
   return double.parse(data);
 }
 
-String formatNumber(double number, {String separator = '.', String unit = ''}) {
-  final lowPrice = MoneyMaskedTextController(
-      rightSymbol: unit, precision: 0, thousandSeparator: separator);
-  lowPrice.updateValue(number);
-  final text = lowPrice.text.substring(lowPrice.text.length - 1);
-
-  return text == ',' ? lowPrice.text.split(',').join() : lowPrice.text;
+String formatNumber(double number) {
+  return NumberFormat.decimalPattern().format(number);
 }

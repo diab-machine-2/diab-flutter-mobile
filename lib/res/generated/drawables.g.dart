@@ -26,11 +26,13 @@ class Drawables {
 	String get before_sleep_selected => "lib/res/drawables/before_sleep_selected.png";
 	String get bell => "lib/res/drawables/bell.png";
 	String get bell_dot => "lib/res/drawables/bell_dot.png";
+	String get bg_basic => "lib/res/drawables/bg_basic.png";
 	String get bg_congrat => "lib/res/drawables/bg_congrat.png";
 	String get bg_des => "lib/res/drawables/bg_des.png";
 	String get bg_dongluc => "lib/res/drawables/bg_dongluc.png";
 	String get bg_emotion_1 => "lib/res/drawables/bg_emotion_1.png";
 	String get bg_home => "lib/res/drawables/bg_home.jpg";
+	String get bg_premium => "lib/res/drawables/bg_premium.png";
 	String get bg_sub_exe => "lib/res/drawables/bg_sub_exe.png";
 	String get blood_pressure_distribution_empty => "lib/res/drawables/blood_pressure_distribution_empty.png";
 	String get blood_pressure_trend_empty => "lib/res/drawables/blood_pressure_trend_empty.png";
@@ -242,6 +244,7 @@ class Drawables {
 	String get imb_home => "lib/res/drawables/imb_home.png";
 	String get imb_topbar_home => "lib/res/drawables/imb_topbar_home.png";
 	String get img_HbA1C => "lib/res/drawables/img_HbA1C.png";
+	String get img_list_service => "lib/res/drawables/img_list_service.png";
 	String get input_des => "lib/res/drawables/input_des.png";
 	String get input_header_bg => "lib/res/drawables/input_header_bg.png";
 	String get joystick_emo => "lib/res/drawables/joystick_emo.png";

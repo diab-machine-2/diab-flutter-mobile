@@ -29,10 +29,10 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light));
+  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  //     statusBarColor: Colors.transparent,
+  //     statusBarIconBrightness: Brightness.dark,
+  //     statusBarBrightness: Brightness.light));
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);

@@ -63,6 +63,8 @@ import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 
+import 'widget/list_service/list_service_page.dart';
+
 class App extends StatefulWidget {
   @override
   _AppState createState() => _AppState();
@@ -94,7 +96,8 @@ class _AppState extends State<App> {
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,
-            home: FlashScreenController(),
+            // home: FlashScreenController(),
+            home: ListServicePage(),
             debugShowCheckedModeBanner: false,
             onGenerateRoute: (settings) {
               switch (settings.name) {
