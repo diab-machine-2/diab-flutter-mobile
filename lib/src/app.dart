@@ -1,11 +1,9 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/add_bloodPressure.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_table.dart';
@@ -61,12 +59,14 @@ import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 
+import 'utils/navigator_name.dart';
+
 class App extends StatefulWidget {
   @override
   _AppState createState() => _AppState();
 }
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 class _AppState extends State<App> {
 
   @override
@@ -80,7 +80,7 @@ class _AppState extends State<App> {
         designSize: Size(375, 812),
         builder: () => MaterialApp(
             title: 'diaB',
-            color: R.color.white,
+            color: Colors.white,
             theme: AppTheme.theme,
             builder: BotToastInit(),
             navigatorKey: navigatorKey,
@@ -89,14 +89,12 @@ class _AppState extends State<App> {
               routeObserver,
               TrackingManager.observerFirebase
             ],
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: [Locale('vi')],
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
             home: FlashScreenController(),
             debugShowCheckedModeBanner: false,
+
             onGenerateRoute: (settings) {
               switch (settings.name) {
                 case NavigatorName.tabbar:

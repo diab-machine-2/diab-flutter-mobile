@@ -19,8 +19,7 @@ part 'exercrises_bloc_event.dart';
 part 'exercrises_bloc_state.dart';
 
 class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
-  @override
-  ExercrisesState get initialState => ExercrisesInitial();
+  ExercrisesBloc() : super(ExercrisesInitial());
 
   @override
   Stream<ExercrisesState> mapEventToState(ExercrisesEvent event) async* {

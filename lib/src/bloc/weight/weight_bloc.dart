@@ -13,8 +13,8 @@ part 'weight_bloc_event.dart';
 part 'weight_bloc_state.dart';
 
 class WeightBloc extends Bloc<WeightEvent, WeightState> {
-  @override
-  WeightState get initialState => WeightInitial();
+
+  WeightBloc() : super(WeightInitial());
 
   @override
   Stream<WeightState> mapEventToState(WeightEvent event) async* {

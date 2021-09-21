@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
@@ -11,7 +12,7 @@ import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeController extends StatefulWidget {
   @override
@@ -380,7 +381,7 @@ class _HomeControllerState extends State<HomeController> {
                                             ]),
                                           )),
                               ),
-                              SizedBox(height: 16),
+                              buildServiceButton(),
                               CourseSuggest(position: 1),
                             ]),
                       ),
@@ -1051,6 +1052,33 @@ class _HomeControllerState extends State<HomeController> {
           ))
         ])
       ]),
+    );
+  }
+
+  Widget buildServiceButton() {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.all(16.h),
+      height: 64.h,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.h),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF4BB2AB), Color(0xFF01857A), Color(0xFF008479)],
+        ),
+      ),
+      child: MaterialButton(
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        shape: StadiumBorder(),
+        child: Text(
+          R.string.upgrade_account.tr(),
+          style: TextStyle(color: R.color.white, fontSize: 16.sp, fontWeight: FontWeight.bold),
+        ),
+        onPressed: () {
+
+        },
+      ),
     );
   }
 }

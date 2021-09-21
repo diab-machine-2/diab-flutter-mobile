@@ -12,8 +12,7 @@ part 'emotion_bloc_event.dart';
 part 'emotion_bloc_state.dart';
 
 class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
-  @override
-  EmotionState get initialState => EmotionInitial();
+  EmotionBloc() : super(EmotionInitial());
 
   @override
   Stream<EmotionState> mapEventToState(EmotionEvent event) async* {

@@ -46,6 +46,8 @@ class Colors {
 	Color get redLight => Color(0xffFFCDD2);
 	Color get red => Color(0xffE53935);
 	Color get greenbg => Color(0xffE6F6ED);
+	Color get gray => Color(0xffA1A3A6);
+	Color get grayCaption => Color(0xff9C9C9C);
 	Color get greenGradientTop => Color(0xff4BB2AB);
 	Color get greenGradientBottom => Color(0xff008479);
 	Color get color0xffFF5756 => Color(0xffFF5756);

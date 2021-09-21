@@ -18,8 +18,7 @@ part 'food_bloc_event.dart';
 part 'food_bloc_state.dart';
 
 class FoodBloc extends Bloc<FoodEvent, FoodState> {
-  @override
-  FoodState get initialState => FoodInitial();
+  FoodBloc() : super(FoodInitial());
 
   @override
   Stream<FoodState> mapEventToState(FoodEvent event) async* {

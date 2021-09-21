@@ -46,6 +46,8 @@ class AppColors {
   static const redLight = Color(0xffFFCDD2);
   static const red = Color(0xffE53935);
   static const greenbg = Color(0xffE6F6ED);
+  static const gray = Color(0xffA1A3A6);
+  static const grayCaption = Color(0xff9C9C9C);
   static const greenGradientTop = Color(0xff4BB2AB);
   static const greenGradientBottom = Color(0xff008479);
   static const color0xffFF5756 = Color(0xffFF5756);

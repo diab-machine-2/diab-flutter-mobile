@@ -130,6 +130,7 @@ class Strings {
 	String get confirm_logout_description => 'confirm_logout_description';
 	String get close => 'close';
 	String get yes => 'yes';
+	String get head => '<<<<<<< HEAD';
 	String get show => 'show';
 	String get hide => 'hide';
 	String get camera_permission_required => 'camera_permission_required';
@@ -611,4 +612,8 @@ class Strings {
 	String get gan_nhat => 'gan_nhat';
 	String get luu_thanh_cong => 'luu_thanh_cong';
 	String get number_of_days => 'number_of_days';
+	String get plan => 'plan';
+	String get course => 'course';
+	String get individual => 'individual';
+	String get upgrade_account => 'upgrade_account';
 }

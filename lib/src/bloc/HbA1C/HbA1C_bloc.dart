@@ -13,8 +13,7 @@ part 'HbA1C_bloc_event.dart';
 part 'HbA1C_bloc_state.dart';
 
 class HbA1CBloc extends Bloc<HbA1CEvent, HbA1CState> {
-  @override
-  HbA1CState get initialState => HbA1CInitial();
+  HbA1CBloc() : super(HbA1CInitial());
 
   @override
   Stream<HbA1CState> mapEventToState(HbA1CEvent event) async* {

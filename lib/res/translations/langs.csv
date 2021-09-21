@@ -128,6 +128,7 @@ confirm_logout,Bạn muốn đăng xuất?
 confirm_logout_description,Bạn sẽ không thể theo dõi sức khoẻ của mình sau khi thoát. Bạn vẫn muốn đăng xuất khỏi DiaB?,
 close,Đóng
 yes,Đồng ý,
+<<<<<<< HEAD
 show,Hiện,
 hide,Ẩn,
 camera_permission_required,Bạn cần cấp quyền truy cập camera để sử dụng tính năng này,
@@ -609,3 +610,7 @@ total,Tổng,
 gan_nhat,Gần nhất,
 luu_thanh_cong,Lưu thành công,
 number_of_days,{} ngày,
+plan,Kế hoạch,
+course,Khoá học,
+individual,Cá nhân,
+upgrade_account,Nâng cấp tài khoản
