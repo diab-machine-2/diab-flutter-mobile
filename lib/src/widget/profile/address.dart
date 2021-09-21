@@ -43,7 +43,7 @@ class _AddressControllerState extends State<AddressController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('Địa chỉ',
+          Text(R.string.address.tr(),
               style: TextStyle(
                   color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
           GestureDetector(
@@ -53,7 +53,7 @@ class _AddressControllerState extends State<AddressController> {
               })
         ]),
         SizedBox(height: 26),
-        Text('Địa chỉ cụ thể',
+        Text(R.string.specific_address.tr(),
             style: TextStyle(
                 color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
         SizedBox(height: 8),
@@ -77,11 +77,11 @@ class _AddressControllerState extends State<AddressController> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   contentPadding: EdgeInsets.only(top: 0, left: 16, right: 16),
-                  hintText: 'Nhập địa chỉ của bạn',
+                  hintText: R.string.enter_your_address.tr(),
                 ),
                 onChanged: (value) {})),
         SizedBox(height: 8),
-        Text('Tỉnh thành',
+        Text(R.string.province.tr(),
             style: TextStyle(
                 color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
         SizedBox(height: 8),
@@ -120,7 +120,7 @@ class _AddressControllerState extends State<AddressController> {
                   Expanded(
                     child: Text(
                         selectedProvince == null
-                            ? 'Chọn'
+                            ? R.string.choose.tr()
                             : selectedProvince.name,
                         style: TextStyle(
                             color: selectedProvince == null
@@ -138,7 +138,7 @@ class _AddressControllerState extends State<AddressController> {
             child: GestureDetector(
               onTap: () {
                 if (selectedProvince == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn tỉnh thành');
+                  Message.showToastMessage(context, R.string.mes_province_empty.tr());
                   return;
                 }
                 showDialog(
@@ -167,7 +167,7 @@ class _AddressControllerState extends State<AddressController> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Quận/Huyện',
+                      Text(R.string.district.tr(),
                           style: TextStyle(
                               color: R.color.textDark,
                               fontSize: 16,
@@ -188,7 +188,7 @@ class _AddressControllerState extends State<AddressController> {
                               Expanded(
                                 child: Text(
                                     selectedDistrict == null
-                                        ? 'Chọn'
+                                        ? R.string.choose.tr()
                                         : selectedDistrict.name,
                                     style: TextStyle(
                                         color: selectedDistrict == null
@@ -208,11 +208,11 @@ class _AddressControllerState extends State<AddressController> {
             child: GestureDetector(
               onTap: () {
                 if (selectedProvince == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn tỉnh thành');
+                  Message.showToastMessage(context, R.string.mes_province_empty.tr());
                   return;
                 }
                 if (selectedDistrict == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn quận/huyện');
+                  Message.showToastMessage(context, R.string.mes_district_empty.tr());
                   return;
                 }
                 showDialog(
@@ -241,7 +241,7 @@ class _AddressControllerState extends State<AddressController> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Phường/Xã',
+                      Text(R.string.wards.tr(),
                           style: TextStyle(
                               color: R.color.textDark,
                               fontSize: 16,
@@ -262,7 +262,7 @@ class _AddressControllerState extends State<AddressController> {
                               Expanded(
                                 child: Text(
                                     selectedWard == null
-                                        ? 'Chọn'
+                                        ? R.string.choose.tr()
                                         : selectedWard.name,
                                     style: TextStyle(
                                         color: selectedWard == null
@@ -304,19 +304,19 @@ class _AddressControllerState extends State<AddressController> {
               onTap: () {
                 final addess = _textEditingController.text ?? '';
                 if (addess.isEmpty) {
-                  Message.showToastMessage(context, 'Bạn chưa nhập địa chỉ');
+                  Message.showToastMessage(context, R.string.mes_address_empty.tr());
                   return;
                 }
                 if (selectedProvince == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn tỉnh thành');
+                  Message.showToastMessage(context, R.string.mes_province_empty.tr());
                   return;
                 }
                 if (selectedDistrict == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn quận/huyện');
+                  Message.showToastMessage(context, R.string.mes_district_empty.tr());
                   return;
                 }
                 if (selectedWard == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn phuờng/xã');
+                  Message.showToastMessage(context, R.string.mes_wards_empty.tr());
                   return;
                 }
 

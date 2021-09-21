@@ -140,7 +140,7 @@ class NotificationControllerState extends State<NotificationController>
                                                 width: 235,
                                                 height: 172),
                                             SizedBox(height: 24),
-                                            Text('Không có thông báo nào')
+                                            Text(R.string.no_notification.tr())
                                           ]),
                                     ),
                                   );
@@ -216,7 +216,7 @@ class NotificationControllerState extends State<NotificationController>
                                                             width: 24,
                                                             height: 24),
                                                         SizedBox(height: 4),
-                                                        Text('Xoá\nthông báo',
+                                                        Text(R.string.detele_notificaiton.tr(),
                                                             style: TextStyle(
                                                                 color: R.color
                                                                     .white,
@@ -343,7 +343,7 @@ class NotificationControllerState extends State<NotificationController>
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Xoá thông báo?',
+                        child: Text(R.string.mes_detele_notificaiton.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -352,7 +352,7 @@ class NotificationControllerState extends State<NotificationController>
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn chắc chắn muốn xoá thông báo này?',
+                        child: Text(R.string.mes_detele_notificaiton.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -376,7 +376,7 @@ class NotificationControllerState extends State<NotificationController>
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Để sau',
+                                        child: Text(R.string.later.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,

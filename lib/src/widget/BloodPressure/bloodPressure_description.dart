@@ -32,7 +32,7 @@ class BloodPressureDescription extends StatelessWidget {
                             SizedBox(width: 16),
                             Expanded(
                               child: Text(
-                                  R.string.chi_so_huyet_ap_doi_voi_benh_tieu_duong.tr(),
+                                  R.string.blood_pressure_for_diabetes.tr(),
                                   style: TextStyle(
                                       color: R.color.black,
                                       fontSize: 20,

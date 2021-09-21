@@ -245,7 +245,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                   child: Description(
                       input: false,
                       data: widget.data,
-                      titleDetail: R.string.chi_so_duong_huyet_voi_benh_tieu_duong.tr()),
+                      titleDetail: R.string.blood_sugar_for_diabetes.tr()),
                 )
               : SizedBox(),
           Row(
@@ -291,7 +291,7 @@ class ActionFilter extends StatefulWidget {
 }
 
 class _ActionFilterState extends State<ActionFilter> {
-  String name = R.string.seven_days.tr();
+  String name = R.string.number_of_days.tr(args: ['7']);
   int selectedIndex = 0;
 
   @override

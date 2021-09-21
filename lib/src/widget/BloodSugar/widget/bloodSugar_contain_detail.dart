@@ -129,7 +129,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                           ),
                                           SizedBox(height: 5),
                                           Text(
-                                            R.string.thap_nhat.tr(),
+                                            R.string.lowest.tr(),
                                             style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 15,
@@ -185,7 +185,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                         ),
                                         SizedBox(height: 5),
                                         Text(
-                                          R.string.trung_binh.tr(),
+                                          R.string.medium.tr(),
                                           style: TextStyle(
                                             color: R.color.textDark,
                                             fontSize: 15,
@@ -247,7 +247,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                           ),
                                           SizedBox(height: 5),
                                           Text(
-                                            R.string.cao_nhat.tr(),
+                                            R.string.highest.tr(),
                                             style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 15,
@@ -275,7 +275,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                       Padding(
                                         padding:
                                             const EdgeInsets.only(left: 8.0),
-                                        child: Text(R.string.tan_suat_phan_bo.tr(),
+                                        child: Text(R.string.distribution_frequency.tr(),
                                             style: TextStyle(
                                                 color: R.color.black,
                                                 fontSize: 20,

@@ -311,7 +311,7 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                             .w700)),
                                                           ),
                                                           SizedBox(width: 8),
-                                                          Text('${R.string.vong_eo.tr()}:',
+                                                          Text('${R.string.waist.tr()}:',
                                                               style: TextStyle(
                                                                   color: R.color
                                                                       .black,

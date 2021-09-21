@@ -80,7 +80,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                         children: [
                           Row(
                             children: [
-                              Text(R.string.xu_huong_duong_huyet.tr(),
+                              Text(R.string.blood_sugar_trend.tr(),
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600)),

@@ -243,7 +243,7 @@ class ActionFilter extends StatefulWidget {
 }
 
 class _ActionFilterState extends State<ActionFilter> {
-  String name = R.string.seven_days.tr();
+  String name = R.string.number_of_days.tr(args: ['7']);
   int selectedIndex = 0;
 
   @override

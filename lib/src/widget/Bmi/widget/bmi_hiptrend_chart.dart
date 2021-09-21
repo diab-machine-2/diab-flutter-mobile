@@ -86,7 +86,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(R.string.xu_huong_vong_eo.tr(),
+                            Text(R.string.waist_trend.tr(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w700)),
                             GestureDetector(

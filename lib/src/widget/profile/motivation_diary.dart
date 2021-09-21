@@ -7,6 +7,7 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class MotivationController extends StatefulWidget {
   @override
@@ -75,7 +76,7 @@ class _MotivationControllerState extends State<MotivationController> {
               child: Column(children: [
                 CustomAppBar(
                   backgroundColor: R.color.transparent,
-                  title: Text('Nhật ký động lực',
+                  title: Text(R.string.motivational_diary.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,

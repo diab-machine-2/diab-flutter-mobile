@@ -136,8 +136,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? R.string.cap_nhat_chi_so_duong_huyet.tr()
-                          : R.string.nhap_chi_so_duong_huyet.tr(),
+                          ? R.string.update_blood_sugar.tr()
+                          : R.string.enter_blood_sugar.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -183,7 +183,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                     input: true,
                                     data: des,
                                     titleDetail:
-                                        R.string.chi_so_duong_huyet_voi_benh_tieu_duong.tr())
+                                        R.string.blood_sugar_for_diabetes.tr())
                                 : SizedBox()),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -274,7 +274,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                   width: 22,
                                                   height: 22),
                                               SizedBox(width: 8),
-                                              Text(R.string.tuong_ung_voi.tr(),
+                                              Text(R.string.corresponding_to.tr(),
                                                   style:
                                                       TextStyle(fontSize: 16))
                                             ]),
@@ -300,7 +300,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                               !showReason
                                   ? SizedBox()
                                   : Text(
-                                      R.string.unsafe_blood_sugar.tr(),
+                                      R.string.mes_unsafe_blood_sugar.tr(),
                                       style: TextStyle(color: R.color.red),
                                       textAlign: TextAlign.center)
                             ]),
@@ -700,11 +700,11 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     final numberInput = _controller.text ?? '';
 
     if (numberInput.isEmpty) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_duong_huyet.tr());
+      Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
       return;
     }
     if (reason.isEmpty && showReason) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_li_do.tr());
+      Message.showToastMessage(context, R.string.mes_reason_empty.tr());
       return;
     }
     if (selectedDate == null) {
@@ -759,11 +759,11 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     final note = _controllerNote.text ?? '';
 
     if (number == 0) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_duong_huyet.tr());
+      Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
       return;
     }
     if (reason.isEmpty && showReason) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_li_do.tr());
+      Message.showToastMessage(context, R.string.mes_reason_empty.tr());
       return;
     }
     if (selectedDate == null) {

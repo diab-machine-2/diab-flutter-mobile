@@ -102,7 +102,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
                 onTap: () {
                   if (selected == null) {
                     Message.showToastMessage(
-                        context, R.string.vui_long_chon_khung_gio.tr());
+                        context, R.string.choose_time_frame.tr());
                     return;
                   }
                   widget.callback(selected);

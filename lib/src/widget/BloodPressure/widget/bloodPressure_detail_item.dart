@@ -6,7 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 class BloodPressureDetailItem extends StatelessWidget {
   final List _elements = [
     {
-      'title': R.string.tang_huyet_ap_do_2.tr(),
+      'title': R.string.grade_2_hypertension.tr(),
       'name': 'Sau ăn trưa',
       'group': '14 tháng 12 năm 2020',
       'number': '165/100',
@@ -16,7 +16,7 @@ class BloodPressureDetailItem extends StatelessWidget {
       'note': 'Tôi vận động cường độ cao liên tục trong nhiều giờ'
     },
     {
-      'title': R.string.binh_thuong.tr(),
+      'title': R.string.normal.tr(),
       'name': 'Trước ăn trưa',
       'group': '12 tháng 12 năm 2020',
       'number': '125/83',
@@ -111,7 +111,7 @@ class BloodPressureDetailItem extends StatelessWidget {
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                               SizedBox(width: 4),
-                              Text(R.string.lan_tren_phut.tr(),
+                              Text(R.string.time_per_minute.tr(),
                                   style: TextStyle(
                                       color: R.color.black,
                                       fontSize: 20,

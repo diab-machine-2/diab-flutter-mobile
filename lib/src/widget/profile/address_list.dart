@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef AddressItemCallback = Function(ProvinceModel);
 
@@ -55,7 +56,7 @@ class _AddressListControllerState extends State<AddressListController> {
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Địa chỉ',
+                  Text(R.string.address.tr(),
                       style: TextStyle(
                           color: R.color.textDark,
                           fontSize: 16,

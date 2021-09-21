@@ -66,7 +66,7 @@ class ActionListPanel extends StatelessWidget {
                           child: Row(children: [
                             Icon(Icons.close, color: R.color.black),
                             SizedBox(width: 16),
-                            Text('Chọn chỉ số khác',
+                            Text(R.string.choose_other_info.tr(),
                                 style: TextStyle(
                                     fontSize: 16,
                                     color: R.color.black,

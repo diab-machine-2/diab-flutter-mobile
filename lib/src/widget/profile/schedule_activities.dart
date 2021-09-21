@@ -66,7 +66,7 @@ class _ScheduleActivityControllerState
               child: Column(children: [
                 CustomAppBar(
                   backgroundColor: R.color.transparent,
-                  title: Text('Lịch sinh hoạt cá nhân',
+                  title: Text(R.string.personal_schedule_single_line.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -83,14 +83,14 @@ class _ScheduleActivityControllerState
                   padding:
                       EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
                   child: Text(
-                      'Thiết lập lại thời gian cho phù hợp với lịch sinh hoạt cá nhân trong ngày của bạn'),
+                      R.string.setup_personal_schedule.tr()),
                 ),
                 Expanded(
                   child: ListView.builder(
                     padding: EdgeInsets.all(0),
                     itemCount: model.length,
                     itemBuilder: (context, index) {
-                      return buildItem('Thức giấc', 'sáng', index);
+                      return buildItem(R.string.wake_up.tr(), R.string.morning.tr(), index);
                     },
                   ),
                 ),
@@ -150,7 +150,7 @@ class _ScheduleActivityControllerState
                     barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                     context: context,
                     builder: (_) => CustomInputTimePicker(
-                        title: 'Thời gian ' +
+                        title: '${R.string.thoi_gian.tr()} ' +
                             model[index].timeFrameName.toLowerCase(),
                         time: (model[index].time == null ||
                                 model[index].time == 0)
@@ -323,7 +323,7 @@ class _ScheduleActivityControllerState
     });
     if (total != model.length) {
       Message.showToastMessage(
-          context, 'Bạn phải thiết lập thời gian tất cả khung giờ');
+          context, R.string.mes_set_all_time_frame.tr());
       return;
     }
     try {

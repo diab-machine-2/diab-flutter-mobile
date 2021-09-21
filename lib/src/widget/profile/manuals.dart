@@ -52,7 +52,7 @@ class _ManualControllerState extends State<ManualController> {
                 children: [
                   CustomAppBar(
                     backgroundColor: R.color.transparent,
-                    title: Text('Hướng dẫn sử dụng',
+                    title: Text(R.string.user_manual.tr(),
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,

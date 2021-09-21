@@ -352,7 +352,7 @@ class _RegisterControllerState extends State<RegisterController> {
 
   loginFB() async {
     final facebookLogin = FacebookLogin();
-    final result = await facebookLogin.logIn(['email']);
+    final result = await facebookLogin.logIn([R.string.email.tr()]);
     dynamic profile;
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
@@ -417,7 +417,7 @@ class _RegisterControllerState extends State<RegisterController> {
   loginGG() async {
     GoogleSignIn _googleSignIn = GoogleSignIn(
       scopes: [
-        'email',
+        R.string.email.tr(),
         'profile',
       ],
     );

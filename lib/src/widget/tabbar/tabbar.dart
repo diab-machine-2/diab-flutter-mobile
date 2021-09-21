@@ -130,7 +130,7 @@ class _TabbarControllerState extends State<TabbarController>
             builder: (BuildContext context) => CupertinoAlertDialog(
                   title: Text(R.string.cap_nhat.tr()),
                   content: Text(
-                      'Phiên bản mới ${status.storeVersion}.\nBấm cập nhật để trải nghiệm những tính năng mới',
+                    R.string.mes_new_version_available.tr(args: ['${status.storeVersion}']),
                       textAlign: TextAlign.center),
                   actions: <Widget>[
                     CupertinoDialogAction(
@@ -214,9 +214,9 @@ showPopupWeight() {
             }
           }
         },
-        title: 'Cập nhật cân nặng',
+        title: R.string.update_weight.tr(),
         subTitle:
-            'Vui lòng cho chúng tôi biết số cân nặng của bạn trước khi nhập dữ liệu để ghi nhận chính xác hơn',
+            R.string.update_weight_description.tr(),
         max: 200,
         numberDefault: 50,
         unit: R.string.kg.tr()),

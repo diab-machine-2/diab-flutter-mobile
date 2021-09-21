@@ -82,7 +82,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
             Column(children: [
               CustomAppBar(
                 backgroundColor: R.color.transparent,
-                title: Text('Thông tin cá nhân',
+                title: Text(R.string.personal_info.tr(),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -160,7 +160,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Text('Động lực của tôi',
+                                                  Text(R.string.my_motivation.tr(),
                                                       style: TextStyle(
                                                           color: R.color.black,
                                                           fontWeight:
@@ -212,7 +212,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                               child: Container(
                                                 color: R.color.transparent,
                                                 child: Center(
-                                                  child: Text('Xem nhật ký',
+                                                  child: Text(R.string.view_log.tr(),
                                                       style: TextStyle(
                                                           color: R.color.mainColor,
                                                           fontSize: 16)),
@@ -233,7 +233,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                               child: Container(
                                                 color: R.color.transparent,
                                                 child: Center(
-                                                  child: Text('Động lực mới',
+                                                  child: Text(R.string.new_motivation.tr(),
                                                       style: TextStyle(
                                                           color: R.color.mainColor,
                                                           fontSize: 16)),
@@ -261,14 +261,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text('Động lực của tôi',
+                                        Text(R.string.my_motivation.tr(),
                                             style: TextStyle(
                                                 color: R.color.white,
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 16)),
                                         SizedBox(height: 8),
                                         Text(
-                                            'Điều gì tạo động lực sống khoẻ cho bạn?',
+                                            R.string.new_motivaiton_suggest.tr(),
                                             style: TextStyle(
                                                 color: R.color.white,
                                                 fontWeight: FontWeight.w400,
@@ -297,7 +297,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                           color: R.color.white,
                                                           size: 28),
                                                       SizedBox(width: 8),
-                                                      Text('Viết động lực  ',
+                                                      Text('${R.string.enter_motivation.tr()}  ',
                                                           style: TextStyle(
                                                               color:
                                                                   R.color.white,
@@ -322,7 +322,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Thông tin chung',
+                                Text(R.string.general_info.tr(),
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontWeight: FontWeight.w600)),
@@ -330,7 +330,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 buildItem(
                                   R.drawable.ic_person,
                                   user.fullName,
-                                  'Họ và tên',
+                                  R.string.last_name_and_first_name.tr(),
                                   Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   0,
@@ -352,7 +352,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 buildItem(
                                   R.drawable.ic_gender,
                                   user.gender == null || user.gender.isEmpty
-                                      ? 'Đang cập nhật'
+                                      ? R.string.updating.tr()
                                       : user.gender,
                                   R.string.gioi_tinh.tr(),
                                   Image.asset(R.drawable.ic_right,
@@ -373,14 +373,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Thông tin bệnh lý',
+                                Text(R.string.pathological_info.tr(),
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
                                   R.drawable.ic_folder,
-                                  user.diabetesName ?? 'Đang cập nhật',
+                                  user.diabetesName ?? R.string.updating.tr(),
                                   R.string.loai_benh.tr(),
                                   null,
                                   3,
@@ -391,7 +391,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 buildItem(
                                   R.drawable.ic_year,
                                   convertToUTC(user.diabetesDate, 'yyyy'),
-                                  'Năm phát bệnh',
+                                  R.string.year_illness_start.tr(),
                                   null,
                                   4,
                                   callback: () {
@@ -409,7 +409,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Chỉ số cơ thể',
+                                Text(R.string.body_info.tr(),
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontWeight: FontWeight.w600)),
@@ -417,7 +417,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 buildItem(
                                   R.drawable.ic_kg,
                                   user.weight == null
-                                      ? 'Chưa cập nhật'
+                                      ? R.string.not_updated_yet.tr()
                                       : '${user.weight.round()} kg',
                                   R.string.can_nang.tr(),
                                   null,
@@ -429,7 +429,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 buildItem(
                                   R.drawable.ic_ruler_fill,
                                   user.height == null
-                                      ? 'Chưa cập nhật'
+                                      ? R.string.not_updated_yet.tr()
                                       : '${user.height.round()} cm',
                                   R.string.chieu_cao.tr(),
                                   null,
@@ -449,7 +449,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Thông liên lạc',
+                                Text(R.string.contact_info.tr(),
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontWeight: FontWeight.w600)),
@@ -457,7 +457,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 buildItem(
                                     R.drawable.ic_phone_info,
                                     user.phoneNumber,
-                                    'Số điện thoại 1',
+                                    R.string.phone_number_1.tr(),
                                     Image.asset(R.drawable.ic_ok,
                                         width: 24, height: 24),
                                     7),
@@ -465,9 +465,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   R.drawable.ic_phone_info,
                                   user.secondPhoneNumber == null ||
                                           user.secondPhoneNumber.isEmpty
-                                      ? 'Chưa cập nhật'
+                                      ? R.string.not_updated_yet.tr()
                                       : user.secondPhoneNumber,
-                                  'Số điện thoại 2',
+                                  R.string.phone_number_2.tr(),
                                   null,
                                   8,
                                   callback: () {
@@ -477,9 +477,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 buildItem(
                                   R.drawable.ic_email,
                                   user.email == null || user.email.isEmpty
-                                      ? 'Chưa cập nhật'
+                                      ? R.string.not_updated_yet.tr()
                                       : user.email,
-                                  'Email',
+                                  R.string.email.tr(),
                                   null,
                                   9,
                                   callback: () {
@@ -523,7 +523,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                     ? ''
                                                     : user.province.name))
                                             .isEmpty
-                                        ? 'Chưa cập nhật'
+                                        ? R.string.not_updated_yet.tr()
                                         : ((user
                                                     .address ??
                                                 '') +
@@ -548,7 +548,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                             (user.province == null
                                                 ? ''
                                                 : user.province.name)),
-                                    'Địa chỉ',
+                                    R.string.address.tr(),
                                     null,
                                     10, callback: () {
                                   _showDialogUpdateAddress();
@@ -557,7 +557,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                     R.drawable.ic_google,
                                     user.isLinkedGoogle == null ||
                                             !user.isLinkedGoogle
-                                        ? 'Chưa kết nối'
+                                        ? R.string.not_connected_yet.tr()
                                         : user.fullName,
                                     'Google',
                                     CupertinoSwitch(
@@ -585,7 +585,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 Image.asset(R.drawable.ic_logout,
                                     width: 33, height: 33),
                                 SizedBox(width: 12),
-                                Text('Đăng xuất',
+                                Text(R.string.logout.tr(),
                                     style: TextStyle(color: R.color.black))
                               ])),
                         )
@@ -843,7 +843,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
       BotToast.showLoading();
       GoogleSignIn _googleSignIn = GoogleSignIn(
         scopes: [
-          'email',
+          R.string.email.tr(),
           'profile',
         ],
       );
@@ -867,7 +867,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
       if (e is Error) {
         if (e.code == 'USER002') {
           Message.showToastMessage(context,
-              'Tài khoản này đã được liên kết, vui lòng sử dụng tài khoản khác');
+              R.string.account_already_used.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }
@@ -886,7 +886,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
     }
     final facebookLogin = FacebookLogin();
     await facebookLogin.logOut();
-    final resultFacebook = await facebookLogin.logIn(['email']);
+    final resultFacebook = await facebookLogin.logIn([R.string.email.tr()]);
     switch (resultFacebook.status) {
       case FacebookLoginStatus.loggedIn:
         try {
@@ -910,7 +910,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
           if (e is Error) {
             if (e.code == 'USER002') {
               Message.showToastMessage(context,
-                  'Tài khoản này đã được liên kết, vui lòng sử dụng tài khoản khác');
+                  R.string.account_already_used.tr());
             } else {
               Message.showToastMessage(context, e.message);
             }
@@ -938,7 +938,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
       });
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
-      Message.showToastMessage(context, 'Đã huỷ liên kết');
+      Message.showToastMessage(context, R.string.unlinked.tr());
     } catch (e, _) {
       BotToast.closeAllLoading();
       if (e is Error) {
@@ -962,7 +962,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
       });
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
-      Message.showToastMessage(context, 'Đã huỷ liên kết');
+      Message.showToastMessage(context, R.string.unlinked.tr());
     } catch (e, _) {
       BotToast.closeAllLoading();
       if (e is Error) {
@@ -1007,7 +1007,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               width: 64, height: 64),
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
-                            child: Text('Bạn muốn đăng xuất?',
+                            child: Text(R.string.confirm_logout.tr(),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     color: R.color.textDark,
@@ -1017,7 +1017,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
                             child: Text(
-                                'Bạn sẽ không thể theo dõi sức khoẻ của mình sau khi thoát. Bạn vẫn muốn đăng xuất khỏi DiaB?',
+                                R.string.confirm_logout_description.tr(),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     color: R.color.textDark,
@@ -1071,7 +1071,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                   R.color.greenGradientBottom
                                                 ])),
                                         child: Center(
-                                          child: Text('Đăng xuất',
+                                          child: Text(R.string.logout.tr(),
                                               style: TextStyle(
                                                   color: R.color.white,
                                                   fontSize: 16,
@@ -1104,7 +1104,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Họ và tên',
+                        Text(R.string.last_name_and_first_name.tr(),
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
@@ -1142,7 +1142,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               ),
                               contentPadding:
                                   EdgeInsets.only(top: 0, left: 16, right: 16),
-                              hintText: 'Nhập họ và tên'),
+                              hintText: R.string.enter_first_name_and_last_name.tr()),
                           onChanged: (value) {})),
                   Container(
                     margin: EdgeInsets.only(top: 16),
@@ -1172,7 +1172,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               final name = textEditingController.text ?? '';
                               if (name.isEmpty) {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập tên');
+                                    context, R.string.mes_name_empty.tr());
                                 return;
                               } else {
                                 UserModel userInfo = AppSettings.userInfo;
@@ -1753,7 +1753,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
       builder: (_) => CustomNumPicker(
           callback: (number) {
             if (number <= 0) {
-              Message.showToastMessage(context, 'Cân nặng phải lớn hơn 0');
+              Message.showToastMessage(context, R.string.mes_weight_must_greater_than_zero.tr());
               return;
             }
             UserModel userInfo = AppSettings.userInfo;
@@ -1790,7 +1790,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                 glucoseUnit: userInfo.glucoseUnit);
             updateUserInfo(userInfo);
           },
-          title: R.string.nhap_can_nang.tr(),
+          title: R.string.enter_weight.tr(),
           max: 180,
           numberDefault: (AppSettings.userInfo.weight == null ||
                       AppSettings.userInfo.weight == 0
@@ -1808,7 +1808,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
       builder: (_) => CustomNumPicker(
           callback: (data) {
             if (data <= 0) {
-              Message.showToastMessage(context, 'Chiều cao phải lớn hơn 0');
+              Message.showToastMessage(context, R.string.mes_height_must_greater_than_zero.tr());
               return;
             }
             UserModel userInfo = AppSettings.userInfo;
@@ -1845,7 +1845,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                 glucoseUnit: userInfo.glucoseUnit);
             updateUserInfo(userInfo);
           },
-          title: R.string.nhap_chieu_cao.tr(),
+          title: R.string.enter_height.tr(),
           max: 250,
           numberDefault: (AppSettings.userInfo.height == null ||
                       AppSettings.userInfo.height == 0
@@ -1871,7 +1871,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Số điện thoại 2',
+                        Text(R.string.phone_number_2.tr(),
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
@@ -1906,7 +1906,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                             ),
                             contentPadding:
                                 EdgeInsets.only(top: 0, left: 16, right: 16),
-                            hintText: 'Nhập số điện thoại 2',
+                            hintText: R.string.enter_phone_number_2.tr(),
                           ),
                           onChanged: (value) {})),
                   Container(
@@ -2127,7 +2127,7 @@ class _EmailValidateState extends State<EmailValidate> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('Email',
+            Text(R.string.email.tr(),
                 style: TextStyle(
                     color: R.color.textDark,
                     fontSize: 16,
@@ -2161,7 +2161,7 @@ class _EmailValidateState extends State<EmailValidate> {
                     ),
                     contentPadding:
                         EdgeInsets.only(top: 0, left: 16, right: 16),
-                    hintText: 'Nhập email của bạn',
+                    hintText: R.string.enter_your_email.tr(),
                   ),
                   onChanged: (email) {
                     String pattern =
@@ -2182,7 +2182,7 @@ class _EmailValidateState extends State<EmailValidate> {
           showValidate
               ? Padding(
                   padding: EdgeInsets.only(top: 4),
-                  child: Text('Email không hợp lệ',
+                  child: Text(R.string.mes_invalid_email.tr(),
                       style: TextStyle(
                           color: R.color.color0xffFF5756,
                           fontSize: 14,
@@ -2227,7 +2227,7 @@ class _EmailValidateState extends State<EmailValidate> {
                       RegExp regExp = new RegExp(pattern);
                       final isCorrect = regExp.hasMatch(email);
                       if (!isCorrect) {
-                        Message.showToastMessage(context, 'Email không hợp lệ');
+                        Message.showToastMessage(context, R.string.mes_invalid_email.tr());
                         return;
                       }
 
@@ -2482,14 +2482,14 @@ class _MotivationPopupState extends State<MotivationPopup> {
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(
                     widget.model == null
-                        ? 'Động lực mới'
-                        : 'Chỉnh sửa động lực',
+                        ? R.string.new_motivation.tr()
+                        : R.string.edit_motivation.tr(),
                     style: TextStyle(
                         color: R.color.textDark,
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 SizedBox(height: 8),
-                Text('Còn ${100 - textEditingController.text.length} ký tự',
+                Text(R.string.letters_left_count.tr(args: ['${100 - textEditingController.text.length}']),
                     style: TextStyle(
                         color: R.color.primaryGreyColor,
                         fontSize: 16,
@@ -2524,7 +2524,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
                       borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    hintText: 'Nhập động lực mới',
+                    hintText: R.string.add_new_motivation.tr(),
                     counterText: '',
                     contentPadding: EdgeInsets.all(16)),
                 onChanged: (value) {
@@ -2557,7 +2557,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
                 FocusScope.of(context).unfocus();
                 final content = textEditingController.text ?? '';
                 if (content.isEmpty) {
-                  Message.showToastMessage(context, 'Bạn chưa nhập nội dung');
+                  Message.showToastMessage(context, R.string.mes_motivation_content_empty.tr());
                   return;
                 } else {
                   widget.callback(widget.model == null

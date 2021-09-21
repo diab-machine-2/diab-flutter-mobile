@@ -97,7 +97,7 @@ class _ReminderControllerState extends State<ReminderController> {
               child: Column(children: [
                 CustomAppBar(
                   backgroundColor: R.color.transparent,
-                  title: Text('Lịch nhắc nhở',
+                  title: Text(R.string.reminder_calendar.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -142,7 +142,7 @@ class _ReminderControllerState extends State<ReminderController> {
                                                   top: 32,
                                                   bottom: 32),
                                               child: Text(
-                                                  'Để DiaB giúp bạn ghi nhớ và nhắc nhở những việc cần làm nhé!',
+                                                  R.string.let_diab_remind_you.tr(),
                                                   style:
                                                       TextStyle(fontSize: 16),
                                                   textAlign: TextAlign.center),
@@ -199,7 +199,7 @@ class _ReminderControllerState extends State<ReminderController> {
               Image.asset(R.drawable.ic_trash2,
                   width: 24, height: 24),
               SizedBox(height: 4),
-              Text('Xoá\nthông báo',
+              Text(R.string.detele_notificaiton.tr(),
                   style: TextStyle(
                       color: R.color.white, fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center),
@@ -301,7 +301,7 @@ class _ReminderControllerState extends State<ReminderController> {
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Xoá thông báo?',
+                        child: Text(R.string.mes_detele_notificaiton.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -310,7 +310,7 @@ class _ReminderControllerState extends State<ReminderController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn chắc chắn muốn xoá thông báo này?',
+                        child: Text(R.string.mes_detele_notificaiton.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -334,7 +334,7 @@ class _ReminderControllerState extends State<ReminderController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Để sau',
+                                        child: Text(R.string.later.tr(),
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,

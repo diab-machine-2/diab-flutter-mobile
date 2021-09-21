@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GuidlinePanel extends StatelessWidget {
   @override
@@ -26,7 +27,7 @@ class GuidlinePanel extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Trạng thái chỉ số của bạn',
+                  Text(R.string.your_status_info.tr(),
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                   // Container(
@@ -43,11 +44,11 @@ class GuidlinePanel extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 30),
-              Text('Các chỉ số ở mức cảnh báo:',
+              Text(R.string.warning_info.tr(),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               SizedBox(height: 30),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Có xu hướng trở nên tiêu cực',
+                Text(R.string.tends_to_negative.tr(),
                     style: TextStyle(fontSize: 14)),
                 Image.asset(R.drawable.ic_angry, width: 24, height: 24)
               ]),
@@ -56,19 +57,19 @@ class GuidlinePanel extends StatelessWidget {
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Không thay đổi', style: TextStyle(fontSize: 14)),
+                      Text(R.string.not_changeed.tr(), style: TextStyle(fontSize: 14)),
                       Image.asset(R.drawable.ic_sad,
                           width: 24, height: 24)
                     ]),
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Có xu hướng trở nên tích cực',
+                Text(R.string.tends_to_posiitive.tr(),
                     style: TextStyle(fontSize: 14)),
                 Image.asset(R.drawable.ic_happy, width: 24, height: 24)
               ]),
               SizedBox(height: 27),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Tốt / đạt mục tiêu',
+                Text(R.string.good_successed.tr(),
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 Image.asset(R.drawable.ic_coin, width: 24, height: 24)

@@ -72,7 +72,7 @@ class _SettingScheduleGlucoseControllerState
               child: Column(children: [
                 CustomAppBar(
                   backgroundColor: R.color.transparent,
-                  title: Text('Thiết lập',
+                  title: Text(R.string.setup.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -89,7 +89,7 @@ class _SettingScheduleGlucoseControllerState
                   padding:
                       EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
                   child: Text(
-                      'Đặt lại thời gian nhắc nhở cho mỗi khung giờ và đơn vị đo phù hợp với nhu cầu của bạn'),
+                      R.string.setup_reminder_time_and_unit.tr()),
                 ),
                 timeModel == null
                     ? SizedBox()
@@ -105,13 +105,13 @@ class _SettingScheduleGlucoseControllerState
                           ),
                           buildItem(R.string.truoc_an.tr(), R.string.minute.tr(), 0),
                           buildItem(R.string.sau_an.tr(), R.string.minute.tr(), 1),
-                          buildItem('Trước khi ngủ', R.string.minute.tr(), 2),
+                          buildItem(R.string.before_sleep.tr(), R.string.minute.tr(), 2),
                           Padding(
                             padding: EdgeInsets.all(16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Đơn vị đo dường huyết',
+                                Text(R.string.setup_reminder_time_and_unit.tr(),
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontSize: 16,

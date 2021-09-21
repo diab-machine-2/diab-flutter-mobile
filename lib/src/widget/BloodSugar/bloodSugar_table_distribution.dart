@@ -80,7 +80,7 @@ class _BloodSugarDistribuitonTableControllerState
                               Navigator.pop(context);
                             }),
                         backgroundColor: R.color.transparent, //No more green
-                        title: Text('${R.string.nhom_duong_huyet.tr()} ' + widget.title.toLowerCase(),
+                        title: Text('${R.string.blood_sugar_group.tr()} ' + widget.title.toLowerCase(),
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,

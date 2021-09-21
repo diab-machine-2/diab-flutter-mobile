@@ -91,7 +91,7 @@ class BloodPressureDistributionChartState
                           children: [
                             Padding(
                               padding: EdgeInsets.only(left: 16.0),
-                              child: Text(R.string.tan_suat_phan_bo.tr(),
+                              child: Text(R.string.distribution_frequency.tr(),
                                   style: TextStyle(
                                       color: R.color.black,
                                       fontSize: 20,
@@ -228,7 +228,7 @@ class BloodPressureDistributionChartState
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
-                              'title': R.string.tang_huyet_ap_do_3.tr(),
+                              'title': R.string.grade_3_hypertension.tr(),
                               'bloodPressureType': 6,
                               'periodFilterType': periodFilterType
                             });
@@ -239,7 +239,7 @@ class BloodPressureDistributionChartState
                                 .round()
                                 .toString() +
                             '%',
-                        text: R.string.tang_huyet_ap_do_3.tr(),
+                        text: R.string.grade_3_hypertension.tr(),
                         textColor: toColor(model.increaseLevelThreeFontColor),
                         isSquare: true,
                       ),
@@ -251,7 +251,7 @@ class BloodPressureDistributionChartState
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
-                              'title': R.string.tang_huyet_ap_do_2.tr(),
+                              'title': R.string.grade_2_hypertension.tr(),
                               'bloodPressureType': 5,
                               'periodFilterType': periodFilterType
                             });
@@ -262,7 +262,7 @@ class BloodPressureDistributionChartState
                                 .round()
                                 .toString() +
                             '%',
-                        text: R.string.tang_huyet_ap_do_2.tr(),
+                        text: R.string.grade_2_hypertension.tr(),
                         textColor: toColor(model.increaseLevelTwoFontColor),
                         isSquare: true,
                       ),
@@ -274,7 +274,7 @@ class BloodPressureDistributionChartState
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
-                              'title': R.string.tang_huyet_ap_do_1.tr(),
+                              'title': R.string.grade_1_hypertension.tr(),
                               'bloodPressureType': 4,
                               'periodFilterType': periodFilterType
                             });
@@ -285,7 +285,7 @@ class BloodPressureDistributionChartState
                                 .round()
                                 .toString() +
                             '%',
-                        text: R.string.tang_huyet_ap_do_1.tr(),
+                        text: R.string.grade_1_hypertension.tr(),
                         textColor: toColor(model.increaseLevelOneFontColor),
                         isSquare: true,
                       ),
@@ -297,7 +297,7 @@ class BloodPressureDistributionChartState
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
-                              'title': R.string.binh_thuong_cao.tr(),
+                              'title': R.string.normal_high.tr(),
                               'bloodPressureType': 3,
                               'periodFilterType': periodFilterType
                             });
@@ -308,7 +308,7 @@ class BloodPressureDistributionChartState
                                 .round()
                                 .toString() +
                             '%',
-                        text: R.string.binh_thuong_cao.tr(),
+                        text: R.string.normal_high.tr(),
                         textColor: toColor(model.preIncreaseFontColor),
                         isSquare: true,
                       ),
@@ -320,7 +320,7 @@ class BloodPressureDistributionChartState
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                             arguments: {
-                              'title': R.string.binh_thuong.tr(),
+                              'title': R.string.normal.tr(),
                               'bloodPressureType': 2,
                               'periodFilterType': periodFilterType
                             });
@@ -330,7 +330,7 @@ class BloodPressureDistributionChartState
                         number:
                             (model.normal / total * 100).round().toString() +
                                 '%',
-                        text: R.string.binh_thuong.tr(),
+                        text: R.string.normal.tr(),
                         //textColor: toColor(model.normalFontColor),
                         isSquare: true,
                       ),

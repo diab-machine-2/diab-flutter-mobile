@@ -33,7 +33,7 @@ class _ContactControllerState extends State<ContactController> {
             child: Column(children: [
               CustomAppBar(
                 backgroundColor: R.color.transparent,
-                title: Text('Liên hệ với diaB',
+                title: Text(R.string.contact_diab.tr(),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -103,11 +103,11 @@ class _ContactControllerState extends State<ContactController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_hotline,
-                          width: 64, height: 64),
+                      Image.asset(R.drawable.ic_hotline, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Hotline: ${widget.model.hotline}',
+                        child: Text(
+                            R.string.hotline.tr(args: [widget.model.hotline]),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -117,7 +117,7 @@ class _ContactControllerState extends State<ContactController> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Bạn muốn gọi đến Hotline của diaB để được trợ giúp?',
+                            R.string.mes_call_diab.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -169,7 +169,7 @@ class _ContactControllerState extends State<ContactController> {
                                             R.color.greenGradientBottom
                                           ])),
                                   child: Center(
-                                    child: Text('Gọi',
+                                    child: Text(R.string.call.tr(),
                                         style: TextStyle(
                                             color: R.color.white,
                                             fontSize: 16,

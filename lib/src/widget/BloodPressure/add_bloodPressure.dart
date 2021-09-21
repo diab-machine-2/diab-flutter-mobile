@@ -129,8 +129,8 @@ class _AddBloodPressureControllerState
                   backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? R.string.cap_nhat_chi_so_huyet_ap.tr()
-                          : R.string.nhap_chi_so_huyet_ap.tr(),
+                          ? R.string.update_blood_pressure.tr()
+                          : R.string.enter_blood_pressure.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -176,7 +176,7 @@ class _AddBloodPressureControllerState
                                     input: true,
                                     data: des,
                                     titleDetail:
-                                        R.string.chi_so_huyet_ap_doi_voi_benh_tieu_duong.tr())
+                                        R.string.blood_pressure_for_diabetes.tr())
                                 : SizedBox()),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -194,7 +194,7 @@ class _AddBloodPressureControllerState
                                     Image.asset(R.drawable.ic_heart_rate,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text(R.string.tam_thu_tam_truong.tr(),
+                                    Text(R.string.systolic_diastolic.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600)),
@@ -399,7 +399,7 @@ class _AddBloodPressureControllerState
                                     Image.asset(R.drawable.ic_heart,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text(R.string.nhip_tim.tr(),
+                                    Text(R.string.heart_rate.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -448,7 +448,7 @@ class _AddBloodPressureControllerState
                                                   color: R.color.color0xffE5E5E5)
                                             ],
                                           ),
-                                          Text(R.string.lan_tren_phut.tr(),
+                                          Text(R.string.time_per_minute.tr(),
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w400))
@@ -834,7 +834,7 @@ class _AddBloodPressureControllerState
     final reason = _controllerReason.text ?? '';
 
     if (systolic.isEmpty) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_tam_thu.tr());
+      Message.showToastMessage(context, R.string.mes_systolic_empty.tr());
       return;
     }
     if (textValidate.isNotEmpty && reason.isEmpty) {
@@ -842,11 +842,11 @@ class _AddBloodPressureControllerState
       return;
     }
     if (diastolic.isEmpty) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_tam_truong.tr());
+      Message.showToastMessage(context, R.string.mes_diastolic_empty.tr());
       return;
     }
     if (pulseRate.isEmpty) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_nhip_tim.tr());
+      Message.showToastMessage(context, R.string.mes_heart_rate_empty.tr());
       return;
     }
     if (selectedDate == null) {
@@ -906,7 +906,7 @@ class _AddBloodPressureControllerState
     final reason = _controllerReason.text ?? '';
 
     if (systolic.isEmpty) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_tam_thu.tr());
+      Message.showToastMessage(context, R.string.mes_systolic_empty.tr());
       return;
     }
     if (textValidate.isNotEmpty && reason.isEmpty) {
@@ -914,16 +914,16 @@ class _AddBloodPressureControllerState
       return;
     }
     if (diastolic.isEmpty) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_tam_truong.tr());
+      Message.showToastMessage(context, R.string.mes_diastolic_empty.tr());
       return;
     }
     if (pulseRate.isEmpty) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_nhip_tim.tr());
+      Message.showToastMessage(context, R.string.mes_heart_rate_empty.tr());
       return;
     }
     if (int.parse(pulseRate.splitMapJoin(',')) > 200) {
       Message.showToastMessage(context,
-          R.string.nhip_tim_invalid.tr());
+          R.string.mes_heart_rate_invalid.tr());
       return;
     }
     if (selectedDate == null) {

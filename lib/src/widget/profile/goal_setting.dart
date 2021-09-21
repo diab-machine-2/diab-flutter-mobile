@@ -96,7 +96,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
               child: Column(children: [
                 CustomAppBar(
                   backgroundColor: R.color.transparent,
-                  title: Text('Thiết lập mục tiêu',
+                  title: Text(R.string.goal_setting.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -129,7 +129,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text('Đã thiết lập'),
+                                        Text(R.string.goal_setting_done.tr()),
                                         SizedBox(height: 4),
                                         Row(children: [
                                           Text('$total/7',
@@ -148,17 +148,17 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                             dailyWalkTargetDuration),
                         buildItem(R.string.so_phut_van_dong_moi_ngay.tr(), R.string.minute.tr(),
                             dailyTargetDuration),
-                        buildItem('Số phút vận động hằng tuần', R.string.minute.tr(),
+                        buildItem(R.string.minutes_exercise_per_week.tr(), R.string.minute.tr(),
                             weeklyTargetDuration),
                         buildItem(R.string.nang_luong_dot_chay_tren_ngay.tr(), R.string.kcal.tr(),
                             dailyTargetBurnedCalorie),
-                        buildItem('Năng lượng thu nạp / ngày', R.string.kcal.tr(),
+                        buildItem(R.string.energy_take_per_day.tr(), R.string.kcal.tr(),
                             weeklyTargetBurnedCalorie),
                         buildItem(R.string.muc_tieu_can_nang.tr(), R.string.kg.tr(), goalWeight),
                         Padding(
                           padding: EdgeInsets.only(
                               top: 32, left: 16, right: 16, bottom: 16),
-                          child: Text('Mục tiêu Vòng eo',
+                          child: Text(R.string.muc_tieu_vong_eo.tr(),
                               style: TextStyle(
                                   color: R.color.black,
                                   fontSize: 14,

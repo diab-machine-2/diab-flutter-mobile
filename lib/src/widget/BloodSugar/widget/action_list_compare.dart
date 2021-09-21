@@ -15,10 +15,10 @@ class ActionListCompare extends StatefulWidget {
 class _ActionListCompareState extends State<ActionListCompare> {
   var data = [
     {
-      'name': R.string.truoc_va_sau_an.tr(),
+      'name': R.string.before_and_after_eating.tr(),
     },
     {
-      'name': R.string.truoc_va_sau_tap_luyen.tr(),
+      'name': R.string.before_and_after_exercise.tr(),
     },
   ];
 
@@ -54,7 +54,7 @@ class _ActionListCompareState extends State<ActionListCompare> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(R.string.chon_thoi_diem_so_sanh.tr(),
+              Text(R.string.choose_time_to_compare.tr(),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               GestureDetector(
                 onTap: () {

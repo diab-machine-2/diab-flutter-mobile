@@ -148,7 +148,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text(R.string.thap_nhat.tr(),
+                                      Text(R.string.lowest.tr(),
                                           style: TextStyle(
                                             color: R.color.textDark,
                                             fontSize: 15,
@@ -202,7 +202,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                       ],
                                     ),
                                     SizedBox(height: 8),
-                                    Text(R.string.trung_binh.tr(),
+                                    Text(R.string.medium.tr(),
                                         style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 15,
@@ -264,7 +264,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text(R.string.cao_nhat.tr(),
+                                      Text(R.string.highest.tr(),
                                           style: TextStyle(
                                             color: R.color.textDark,
                                             fontSize: 15,
@@ -281,7 +281,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                         alignment: Alignment.centerLeft,
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text(R.string.nhip_tim.tr(),
+                          child: Text(R.string.heart_rate.tr(),
                               style: TextStyle(
                                   color: R.color.black,
                                   fontSize: 20,
@@ -339,7 +339,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                           ],
                                         ),
                                         SizedBox(height: 8),
-                                        Text(R.string.thap_nhat.tr(),
+                                        Text(R.string.lowest.tr(),
                                             style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 15,
@@ -391,7 +391,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text(R.string.trung_binh.tr(),
+                                      Text(R.string.medium.tr(),
                                           style: TextStyle(
                                             color: R.color.textDark,
                                             fontSize: 15,
@@ -450,7 +450,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text(R.string.cao_nhat.tr(),
+                                      Text(R.string.highest.tr(),
                                           style: TextStyle(
                                             color: R.color.textDark,
                                             fontSize: 15,
@@ -479,7 +479,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                               ),
                               Row(
                                 children: [
-                                  Text('${R.string.nhap_vao.tr()} ',
+                                  Text('${R.string.enter_data.tr()} ',
                                       style: TextStyle(
                                         color: R.color.captionColorGray,
                                         fontSize: 12,
@@ -573,7 +573,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(R.string.nhip_tim.tr(),
+                              Text(R.string.heart_rate.tr(),
                                   style: TextStyle(
                                     color: R.color.textDark,
                                     fontSize: 16,
@@ -599,7 +599,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 14.0),
-                                    child: Text(R.string.lan_tren_phut.tr(),
+                                    child: Text(R.string.time_per_minute.tr(),
                                         style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16,

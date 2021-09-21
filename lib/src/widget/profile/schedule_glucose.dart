@@ -187,14 +187,14 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                       RichText(
                                         text: TextSpan(
                                           text:
-                                              'Thời điểm đo đường huyết mặc định là ',
+                                              '${R.string.default_time_to_measure_blood_sugar.tr()} ',
                                           style: TextStyle(
                                               color: R.color.primaryGreyColor),
                                           children: <TextSpan>[
                                             TextSpan(
                                                 text: timeModel == null
-                                                    ? '30p trước ăn, 60p sau ăn và 30p trước khi đi ngủ'
-                                                    : '${timeModel.beforeEat}p trước ăn, ${timeModel.afterEat}p sau ăn và ${timeModel.beforeSleeping}p trước khi đi ngủ',
+                                                    ? R.string.suggest_time_to_measure_blood_sugar.tr()
+                                                    : R.string.time_to_measure_blood_sugar.tr(args: ['${timeModel.beforeEat}', '${timeModel.afterEat}', '${timeModel.beforeSleeping}']),
                                                 style: TextStyle(
                                                     color: R.color.black,
                                                     fontWeight: FontWeight.bold,
@@ -226,7 +226,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                                         width: 24,
                                                         height: 24),
                                                     SizedBox(width: 8),
-                                                    Text('Thiết lập',
+                                                    Text(R.string.setup.tr(),
                                                         style: TextStyle(
                                                             color: R.color.mainColor,
                                                             fontSize: 14,
@@ -280,7 +280,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                       borderRadius: BorderRadius.circular(18)),
                                   child: Center(
                                       child: Text(
-                                          index == 6 ? 'CN' : 'T${index + 2}',
+                                          index == 6 ? R.string.sunday.tr() : R.string.day_in_week.tr(args: ['${index + 2}']),
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: selected == index
@@ -302,7 +302,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Buổi sáng',
+                            Text(R.string.the_morning.tr(),
                                 style: TextStyle(
                                     color: R.color.black,
                                     fontSize: 16,
@@ -336,7 +336,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Buổi trưa',
+                            Text(R.string.the_noon.tr(),
                                 style: TextStyle(
                                     color: R.color.black,
                                     fontSize: 16,
@@ -370,7 +370,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Buổi tối',
+                            Text(R.string.the_evening.tr(),
                                 style: TextStyle(
                                     color: R.color.black,
                                     fontSize: 16,
@@ -404,7 +404,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Giờ ngủ',
+                            Text(R.string.sleep_time.tr(),
                                 style: TextStyle(
                                     color: R.color.black,
                                     fontSize: 16,
@@ -414,7 +414,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                               children: [
                                 buildItem(
                                     scheduleDay.isBeforeSleeping,
-                                    'Trước khi ngủ',
+                                    R.string.before_sleep.tr(),
                                     scheduleDay.isBeforeSleeping
                                         ? R.drawable.ic_before_sleep_selected
                                         : R.drawable.ic_before_sleep,
@@ -428,7 +428,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
           Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             CustomAppBar(
               backgroundColor: R.color.transparent,
-              title: Text('Lịch đo đường huyết',
+              title: Text(R.string.blood_sugar_schedule_single_line.tr(),
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,

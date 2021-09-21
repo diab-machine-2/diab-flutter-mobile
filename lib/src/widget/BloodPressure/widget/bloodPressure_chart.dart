@@ -89,7 +89,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           children: [
                             Row(
                               children: [
-                                Text(R.string.xu_huong_huyet_ap.tr(),
+                                Text(R.string.blood_pressure_trend.tr(),
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700)),

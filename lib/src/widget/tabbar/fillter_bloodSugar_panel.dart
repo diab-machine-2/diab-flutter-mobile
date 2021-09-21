@@ -19,7 +19,12 @@ class FillterBloodPanel extends StatefulWidget {
 }
 
 class _FillterBloodPanelState extends State<FillterBloodPanel> {
-  var data = [R.string.seven_days.tr(), '14 ngày', '30 ngày', '90 ngày'];
+  var data = [
+    R.string.number_of_days.tr(args: ['7']),
+    R.string.number_of_days.tr(args: ['14']),
+    R.string.number_of_days.tr(args: ['30']),
+    R.string.number_of_days.tr(args: ['90']),
+  ];
 
   int selectedIndex = 0;
   String time = '';

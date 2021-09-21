@@ -368,7 +368,7 @@ class BloodPressureDetailControllerState
                                                                       .w400)),
                                                       SizedBox(width: 4),
                                                       Text(
-                                                          R.string.lan_tren_phut
+                                                          R.string.time_per_minute
                                                               .tr(),
                                                           style: TextStyle(
                                                               color:

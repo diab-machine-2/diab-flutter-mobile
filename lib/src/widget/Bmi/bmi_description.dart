@@ -31,7 +31,7 @@ class BmiDescription extends StatelessWidget {
                             ),
                             SizedBox(width: 16),
                             Expanded(
-                              child: Text(R.string.kiem_soat_can_nang_benh_tieu_duong.tr(),
+                              child: Text(R.string.diabetes_weight_control.tr(),
                                   style: TextStyle(
                                       color: R.color.black,
                                       fontSize: 20,

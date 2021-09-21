@@ -30,7 +30,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
   int selectedHour = 0;
 
   int selectedTimeFrame = 0;
-  String name = 'Hàng ngày';
+  String name = R.string.every_day.tr();
 
   bool status = true;
   bool tempStatus = true;
@@ -63,12 +63,12 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
 
   getTimeName() {
     name = selectedTimeFrame == 0
-        ? 'Hàng ngày'
+        ? R.string.every_day.tr()
         : selectedTimeFrame == 1
-            ? 'Hàng tuần'
+            ? R.string.every_week.tr()
             : selectedTimeFrame == 2
-                ? 'Hàng ngày trừ Chủ Nhật'
-                : 'Mỗi 30 phút';
+                ? R.string.every_day_except_sunday.tr()
+                : R.string.every_30_minutes.tr();
   }
 
   @override
@@ -94,8 +94,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                   backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? 'Chỉnh sửa lịch nhắc nhở'
-                          : 'Thêm lịch nhắc nhở',
+                          ? R.string.edit_reminder_calendar.tr()
+                          : R.string.add_reminder_calendar.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -125,7 +125,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                 Image.asset(R.drawable.ic_clock,
                                     width: 24, height: 24),
                                 SizedBox(width: 8),
-                                Text('Trạng thái',
+                                Text(R.string.status.tr(),
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500))
@@ -154,7 +154,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                               Image.asset(R.drawable.ic_stopwatch,
                                   width: 24, height: 24),
                               SizedBox(width: 8),
-                              Text('Thời gian nhắc nhở',
+                              Text(R.string.time_reminder.tr(),
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500))
@@ -380,7 +380,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                             width: 24,
                                             height: 24),
                                         SizedBox(width: 8),
-                                        Text('Lặp lại',
+                                        Text(R.string.repeat.tr(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w500))
@@ -412,7 +412,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                 Image.asset(R.drawable.ic_comment_checked,
                                     width: 24, height: 24),
                                 SizedBox(width: 8),
-                                Text('Tên nhắc nhở',
+                                Text(R.string.reminder_name.tr(),
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500))
@@ -423,7 +423,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                 child: CupertinoTextField(
                                     controller: titleController,
                                     decoration: BoxDecoration(),
-                                    placeholder: 'Nhập tên nhắc nhở'),
+                                    placeholder: R.string.enter_reminder_name.tr()),
                               ),
                               Container(height: 1, color: R.color.color0xffE5E5E5),
                               SizedBox(height: 32),
@@ -431,7 +431,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                 Image.asset(R.drawable.ic_note_text,
                                     width: 24, height: 24),
                                 SizedBox(width: 8),
-                                Text('Nội dung nhắc nhở',
+                                Text(R.string.content_reminder.tr(),
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500))
@@ -440,7 +440,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                               CupertinoTextField(
                                   controller: descriptionController,
                                   decoration: BoxDecoration(),
-                                  placeholder: 'Nhập nội dung nhắc nhở',
+                                  placeholder: R.string.enter_content_reminder.tr(),
                                   maxLines: null,
                                   maxLength: 1000),
                               Container(height: 1, color: R.color.color0xffE5E5E5),
@@ -626,10 +626,10 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
         builder: (context) => FillterBloodPanel(
             selectedIndex: selectedTimeFrame,
             data: [
-              'Hàng ngày',
-              'Hàng tuần',
-              'Hàng ngày trừ Chủ Nhật',
-              'Mỗi 30 phút'
+              R.string.every_day.tr(),
+              R.string.every_week.tr(),
+              R.string.every_day_except_sunday.tr(),
+              R.string.every_30_minutes.tr()
             ],
             callback: (value, index) {
               setState(() {
@@ -643,12 +643,12 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     final title = titleController.text ?? '';
     final des = descriptionController.text ?? '';
     if (title.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập tên nhắc nhở');
+      Message.showToastMessage(context, R.string.mes_reminder_name_empty.tr());
       return;
     }
 
     if (selectedHour == 0 && selectedMinute == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian nhắc nhở');
+      Message.showToastMessage(context, R.string.mes_time_reminder_empty.tr());
       return;
     }
 
@@ -679,12 +679,12 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     final title = titleController.text ?? '';
     final des = descriptionController.text ?? '';
     if (title.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập tên nhắc nhở');
+      Message.showToastMessage(context, R.string.mes_reminder_name_empty.tr());
       return;
     }
 
     if (selectedHour == 0 && selectedMinute == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian nhắc nhở');
+      Message.showToastMessage(context, R.string.mes_time_reminder_empty.tr());
       return;
     }
     try {

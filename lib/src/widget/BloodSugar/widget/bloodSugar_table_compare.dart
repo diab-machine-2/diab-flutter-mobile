@@ -94,7 +94,7 @@ class _BloodSugarTableCompareControllerState
                                   width: width - 45,
                                   //alignment: Alignment.center,
                                   child: Center(
-                                    child: Text(R.string.truoc_sau.tr(),
+                                    child: Text(R.string.before_after.tr(),
                                         style: TextStyle(
                                             color: R.color.black,
                                             fontSize: 14,

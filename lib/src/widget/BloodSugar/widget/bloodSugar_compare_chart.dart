@@ -27,7 +27,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   bool get wantKeepAlive => true;
   BuildContext currentContext;
   int periodFilterType = 1;
-  String name = R.string.truoc_va_sau_an.tr();
+  String name = R.string.before_and_after_eating.tr();
   int comparerType = 1;
   @override
   void initState() {
@@ -75,7 +75,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                           children: [
                             Row(
                               children: [
-                                Text(R.string.so_sanh.tr(),
+                                Text(R.string.compare.tr(),
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700)),

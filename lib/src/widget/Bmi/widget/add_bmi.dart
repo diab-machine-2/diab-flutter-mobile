@@ -134,8 +134,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                   backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? R.string.cap_nhat_chi_so_can_nang.tr()
-                          : R.string.nhap_chi_so_can_nang.tr(),
+                          ? R.string.update_weight_info.tr()
+                          : R.string.enter_weight_info.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -181,7 +181,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                     input: true,
                                     data: des,
                                     titleDetail:
-                                        R.string.kiem_soat_can_nang_benh_tieu_duong.tr())
+                                        R.string.diabetes_weight_control.tr())
                                 : SizedBox()),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -205,7 +205,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('${R.string.chi_so_bmi_cua_ban.tr()}: ',
+                                      Text('${R.string.your_bmi.tr()}: ',
                                           style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 14,
@@ -258,7 +258,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         Image.asset(R.drawable.ic_scale,
                                             width: 22, height: 22),
                                         SizedBox(width: 8),
-                                        Text(R.string.can_nang_va_chieu_cao.tr(),
+                                        Text(R.string.weight_and_height.tr(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
@@ -292,7 +292,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                     handleBMI();
                                                                   },
                                                                   title:
-                                                                      R.string.nhap_can_nang.tr(),
+                                                                      R.string.enter_weight.tr(),
                                                                   max: 180,
                                                                   numberDefault:
                                                                       selectedWeight ==
@@ -378,7 +378,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                             });
                                                                             handleBMI();
                                                                           },
-                                                                          title: R.string.nhap_chieu_cao.tr(),
+                                                                          title: R.string.enter_height.tr(),
                                                                           max: 250,
                                                                           numberDefault: selectedHeight == 0 ? 150 : selectedHeight,
                                                                           unit: R.string.cm.tr()),
@@ -444,7 +444,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         Image.asset(R.drawable.ic_ruler,
                                             width: 22, height: 22),
                                         SizedBox(width: 8),
-                                        Text(R.string.vong_eo.tr(),
+                                        Text(R.string.waist.tr(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
@@ -478,7 +478,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                     });
                                                                   },
                                                                   title:
-                                                                      R.string.nhap_vong_eo.tr(),
+                                                                      R.string.enter_waist.tr(),
                                                                   max: 180,
                                                                   numberDefault:
                                                                       selectedHip ==
@@ -894,11 +894,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     final note = _controllerNote.text ?? '';
 
     // if (weight.isEmpty) {
-    //   Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_can_nang.tr());
+    //   Message.showToastMessage(context, R.string.mes_weight_empty.tr());
     //   return;
     // }
     // if (height.isEmpty) {
-    //   Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_chieu_cao.tr());
+    //   Message.showToastMessage(context, R.string.mes_height_empty.tr());
     //   return;
     // }
     // if (hip.isEmpty) {
@@ -958,11 +958,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     final note = _controllerNote.text ?? '';
 
     if (selectedWeight == 0) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_can_nang.tr());
+      Message.showToastMessage(context, R.string.mes_weight_empty.tr());
       return;
     }
     if (selectedHeight == 0) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_chieu_cao.tr());
+      Message.showToastMessage(context, R.string.mes_height_empty.tr());
       return;
     }
     // if (selectedHip == 0) {

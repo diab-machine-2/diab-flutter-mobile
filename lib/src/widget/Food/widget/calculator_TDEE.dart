@@ -117,7 +117,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                             });
                                                           },
                                                           title:
-                                                              R.string.nhap_can_nang.tr(),
+                                                              R.string.enter_weight.tr(),
                                                           max: 200,
                                                           numberDefault:
                                                               selectedWeight ==
@@ -202,7 +202,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                             });
                                                           },
                                                           title:
-                                                              R.string.nhap_chieu_cao.tr(),
+                                                              R.string.enter_height.tr(),
                                                           max: 300,
                                                           numberDefault:
                                                               selectedHeight ==

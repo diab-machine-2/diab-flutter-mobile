@@ -58,7 +58,7 @@ class _ProfileControllerState extends State<ProfileController> {
     return Scaffold(
         appBar: CustomAppBar(
           backgroundColor: R.color.color0xffB1DDDB.withOpacity(0.2),
-          title: Text('Hồ sơ',
+          title: Text(R.string.profile_file.tr(),
               style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
           leadingIcon: IconButton(
@@ -101,7 +101,7 @@ class _ProfileControllerState extends State<ProfileController> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             SizedBox(height: 8),
-                            Text('Mã người dùng: ${user.code ?? '0'}',
+                            Text(R.string.user_id.tr(args: [user.code ?? '0']),
                                 style: TextStyle(
                                     color: R.color.primaryGreyColor,
                                     fontSize: 14,
@@ -122,7 +122,7 @@ class _ProfileControllerState extends State<ProfileController> {
                                           width: 20,
                                           height: 20),
                                       SizedBox(width: 8),
-                                      Text('Gói Coaching',
+                                      Text(R.string.coaching_package.tr(),
                                           style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 14,
@@ -137,29 +137,29 @@ class _ProfileControllerState extends State<ProfileController> {
                   ]),
                   SizedBox(height: 16),
                   Row(children: [
-                    buildItem(R.color.color0xffD3EFEE, 'Thiết lập mục tiêu',
+                    buildItem(R.color.color0xffD3EFEE, R.string.goal_setting.tr(),
                         R.drawable.ic_muc_tieu, 0),
                     SizedBox(width: 16),
-                    buildItem(R.color.color0xffFEEDDC, 'Nhắc nhở',
+                    buildItem(R.color.color0xffFEEDDC, R.string.remind.tr(),
                         R.drawable.ic_nhac_nho, 1)
                   ]),
                   SizedBox(height: 16),
                   Row(children: [
-                    buildItem(R.color.color0xffFCF8DA, 'Lịch sinh hoạt\ncá nhân',
+                    buildItem(R.color.color0xffFCF8DA, R.string.personal_schedule.tr(),
                         R.drawable.ic_lich, 2),
                     SizedBox(width: 16),
-                    buildItem(R.color.color0xffFDE9E9, 'Lịch đo\nđường huyết',
+                    buildItem(R.color.color0xffFDE9E9, R.string.blood_sugar_schedule.tr(),
                         R.drawable.ic_lich_do_duong_huyet, 3)
                   ]),
                   SizedBox(height: 16),
                   buildAction(
-                      'Thông tin cá nhân', R.drawable.ic_user, 0),
+                      R.string.personal_info.tr(), R.drawable.ic_user, 0),
                   buildAction(
-                      'Hướng dẫn sử dụng', R.drawable.ic_question, 1),
-                  buildAction('Bảo mật thông tin',
+                      R.string.user_manual.tr(), R.drawable.ic_question, 1),
+                  buildAction(R.string.information_security.tr(),
                       R.drawable.ic_security, 2),
                   buildAction(
-                      'Liên hệ với DiaB', R.drawable.ic_contact, 3),
+                      R.string.contact_diab.tr(), R.drawable.ic_contact, 3),
                   buildAction(R.string.password.tr(), R.drawable.ic_password, 4),
                 ],
               ),
@@ -221,7 +221,7 @@ class _ProfileControllerState extends State<ProfileController> {
           Navigator.pushNamed(context, NavigatorName.manual_detail, arguments: {
             'manual': ManualModel(
                 id: '',
-                question: 'Bảo mật thông tin',
+                question: R.string.information_security.tr(),
                 answer: secureModel.security)
           });
         } else if (index == 3) {
@@ -267,7 +267,7 @@ class _ProfileControllerState extends State<ProfileController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Cập nhật số điện thoại',
+                        Text(R.string.update_phone_number.tr(),
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,

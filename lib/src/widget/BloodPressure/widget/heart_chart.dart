@@ -88,7 +88,7 @@ class HeartChartState extends State<HeartChart>
                           children: [
                             Row(
                               children: [
-                                Text(R.string.xu_huong_nhip_tim.tr(),
+                                Text(R.string.heart_rate_trend.tr(),
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700)),
@@ -234,7 +234,7 @@ class HeartChartState extends State<HeartChart>
                                     return lineBarsSpot.map((lineBarSpot) {
                                       return LineTooltipItem(
                                         lineBarSpot.y.round().toString() +
-                                            ' ${R.string.lan_tren_phut.tr()}',
+                                            ' ${R.string.time_per_minute.tr()}',
                                         TextStyle(
                                             color: R.color.black,
                                             fontWeight: FontWeight.normal),

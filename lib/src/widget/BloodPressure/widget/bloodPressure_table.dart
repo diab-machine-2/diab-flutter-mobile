@@ -84,7 +84,7 @@ class _BloodPressureTableControllerState
                             widget.isPulseRate == null
                                 ? widget.title
                                 : widget.isPulseRate
-                                    ? R.string.nhip_tim.tr()
+                                    ? R.string.heart_rate.tr()
                                     : R.string.huyet_ap.tr(),
                             style: TextStyle(
                                 fontSize: 18,

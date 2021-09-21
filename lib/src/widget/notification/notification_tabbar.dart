@@ -77,8 +77,8 @@ class _NotificationTabbarControllerState
               labelPadding: EdgeInsets.all(0),
               tabs: [
                 SizedBox(width: width / 3, child: Tab(text: R.string.all.tr())),
-                SizedBox(width: width / 3, child: Tab(text: 'Chưa đọc')),
-                SizedBox(width: width / 3, child: Tab(text: 'Đã đọc')),
+                SizedBox(width: width / 3, child: Tab(text: R.string.not_read_yet.tr())),
+                SizedBox(width: width / 3, child: Tab(text: R.string.read.tr())),
               ],
               controller: _tabController,
               indicatorColor: R.color.mainColor,
