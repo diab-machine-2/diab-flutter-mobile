@@ -4,7 +4,7 @@ class FoodTrendModel {
   final EnergyTrendModel energyChart;
   final EnergyTrendModel carbChart;
 
-  FoodTrendModel({@required this.carbChart, @required this.energyChart});
+  FoodTrendModel({required this.carbChart, required this.energyChart});
   @override
   factory FoodTrendModel.fromJson(Map<String, dynamic> json) {
     return FoodTrendModel(
@@ -18,10 +18,10 @@ class FoodTrendModel {
 }
 
 class EnergyTrendModel {
-  final double avgValue;
+  final double? avgValue;
   final List<EnergyTrendItemModel> items;
 
-  EnergyTrendModel({@required this.avgValue, @required this.items});
+  EnergyTrendModel({required this.avgValue, required this.items});
   @override
   factory EnergyTrendModel.fromJson(Map<String, dynamic> json) {
     return EnergyTrendModel(
@@ -35,12 +35,12 @@ class EnergyTrendModel {
 }
 
 class EnergyTrendItemModel {
-  final int date;
-  final double value;
-  final String colorCode;
+  final int? date;
+  final double? value;
+  final String? colorCode;
 
   EnergyTrendItemModel(
-      {@required this.date, @required this.value, @required this.colorCode});
+      {required this.date, required this.value, required this.colorCode});
   @override
   factory EnergyTrendItemModel.fromJson(Map<String, dynamic> json) {
     return EnergyTrendItemModel(

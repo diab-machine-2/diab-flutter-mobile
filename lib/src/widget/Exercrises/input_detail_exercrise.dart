@@ -1,11 +1,10 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/modal/exercrises/exercrises_active.dart';
-import 'package:medical/src/modal/exercrises/exercrises_categogy_request.dart';
 import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Exercrises/widget/action_list_active.dart';
 import 'package:medical/src/widget/Exercrises/widget/action_list_intensity.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -13,12 +12,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef DataCallback = Function(ExercrisesCategoryModel);
 
 class InputDetailExercrisesController extends StatefulWidget {
-  final ExercrisesCategoryModel model;
-  final DataCallback datacallback;
+  final ExercrisesCategoryModel? model;
+  final DataCallback? datacallback;
   InputDetailExercrisesController({this.model, this.datacallback});
 
   @override
@@ -28,14 +28,14 @@ class InputDetailExercrisesController extends StatefulWidget {
 
 class _InputDetailExercrisesControllerState
     extends BaseState<InputDetailExercrisesController> {
-  ExercriseIntensityModel selectedintensity;
-  ExercriseActiveModel selectedActive;
+  ExercriseIntensityModel? selectedintensity;
+  ExercriseActiveModel? selectedActive;
   int selectedHour = 0;
   int selectedMinute = 0;
   String textValidate = '';
-  double calorisesNumber = 0.0;
-  String unit = '';
-  String description = '';
+  double? calorisesNumber = 0.0;
+  String? unit = '';
+  String? description = '';
 
   void initState() {
     super.initState();
@@ -49,13 +49,13 @@ class _InputDetailExercrisesControllerState
   loadData() async {
     BotToast.showLoading();
     final intensity =
-        await ExercrisesClient().fetchIntensity(widget.model.categoryId);
+        await ExercrisesClient().fetchIntensity(widget.model!.categoryId);
     BotToast.closeAllLoading();
-    if (widget.model.exerciseIntensityId == null) {
+    if (widget.model!.exerciseIntensityId == null) {
       selectedintensity = intensity.length > 0 ? intensity.first : null;
     } else {
       selectedintensity = intensity.lastWhere(
-          (element) => element.id == widget.model.exerciseIntensityId,
+          (element) => element.id == widget.model!.exerciseIntensityId,
           orElse: () => intensity.first);
     }
 
@@ -65,22 +65,22 @@ class _InputDetailExercrisesControllerState
   loadActive() async {
     BotToast.showLoading();
     final active = await ExercrisesClient()
-        .fetchActive(widget.model.categoryId, selectedintensity.id);
+        .fetchActive(widget.model!.categoryId, selectedintensity!.id);
     BotToast.closeAllLoading();
 
-    if (widget.model.exerciseId == null) {
+    if (widget.model!.exerciseId == null) {
       selectedActive = active.length > 0 ? active.first : null;
     } else {
       selectedActive = active.lastWhere(
-          (element) => element.id == widget.model.exerciseId,
+          (element) => element.id == widget.model!.exerciseId,
           orElse: () => active.first);
-      selectedHour = (widget.model.duration / 60).floor();
-      selectedMinute = widget.model.duration.toInt() - (selectedHour * 60);
+      selectedHour = (widget.model!.duration! / 60).floor();
+      selectedMinute = widget.model!.duration!.toInt() - (selectedHour * 60);
     }
 
     if (selectedHour != 0 || selectedMinute != 0) {
-      handleCaculate(widget.model.categoryId, selectedintensity.id,
-          selectedActive.id, selectedMinute, selectedHour);
+      handleCaculate(widget.model!.categoryId, selectedintensity!.id,
+          selectedActive!.id, selectedMinute, selectedHour);
     }
 
     setState(() {});
@@ -96,21 +96,21 @@ class _InputDetailExercrisesControllerState
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/images/background_splash.png'),
+                  image: AssetImage(R.drawable.bg_splash),
                   fit: BoxFit.cover)),
           child: Column(
             children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
-                title: Text(widget.model.category,
+                backgroundColor: R.color.transparent,
+                title: Text(widget.model!.category!,
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark)),
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    icon: Icon(Icons.arrow_back, color: textDark),
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -128,14 +128,14 @@ class _InputDetailExercrisesControllerState
                               borderRadius: BorderRadius.circular(16),
                               image: DecorationImage(
                                 image:
-                                    AssetImage('assets/images/bg_sub_exe.png'),
+                                    AssetImage(R.drawable.bg_sub_exe),
                                 fit: BoxFit.cover,
                               )),
                           child: Padding(
                             padding: const EdgeInsets.only(top: 16, bottom: 16),
                             child: Column(
                               children: [
-                                Image.network(widget.model.cover.url ?? '',
+                                Image.network(widget.model!.cover!.url ?? '',
                                     width: 50, height: 50),
                                 SizedBox(height: 6),
                                 Row(
@@ -143,16 +143,16 @@ class _InputDetailExercrisesControllerState
                                   children: [
                                     Text(formatNumber(calorisesNumber),
                                         style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 24,
                                             fontWeight: FontWeight.w700)),
                                     Padding(
                                       padding: const EdgeInsets.only(
                                           top: 2.0, left: 2),
                                       child: Text(
-                                        'kcal',
+                                        R.string.kcal.tr(),
                                         style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontWeight: FontWeight.w400,
                                             fontSize: 16.0),
                                       ),
@@ -169,7 +169,7 @@ class _InputDetailExercrisesControllerState
                             bottom: 16, left: 16, right: 16),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: R.color.white,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           padding: EdgeInsets.all(16),
@@ -179,7 +179,7 @@ class _InputDetailExercrisesControllerState
                                 showDialog(
                                     context: context,
                                     builder: (_) => ActionListIntensity(
-                                        exercrisesID: widget.model.categoryId,
+                                        exercrisesID: widget.model!.categoryId,
                                         selected: selectedintensity,
                                         callback: (value) {
                                           selectedintensity = value;
@@ -187,28 +187,28 @@ class _InputDetailExercrisesControllerState
                                         }));
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Column(children: [
                                   Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Image.asset(
-                                            'assets/images/icon_bar_chart.png',
+                                            R.drawable.ic_bar_chart,
                                             width: 24,
                                             height: 24),
                                         SizedBox(width: 8),
                                         Text(
                                             selectedintensity == null
-                                                ? 'Chọn cường độ hoạt động'
-                                                : selectedintensity.name,
+                                                ? R.string.chon_cuong_do_hoat_dong.tr()
+                                                : selectedintensity!.name!,
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w400))
                                       ]),
                                   SizedBox(height: 16),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                 ]),
                               ),
@@ -221,7 +221,7 @@ class _InputDetailExercrisesControllerState
                             bottom: 16, left: 16, right: 16),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: R.color.white,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           padding: EdgeInsets.all(16),
@@ -239,24 +239,24 @@ class _InputDetailExercrisesControllerState
 
                                               if (selectedHour != 0) {
                                                 handleCaculate(
-                                                    widget.model.categoryId,
-                                                    selectedintensity.id,
-                                                    selectedActive.id,
+                                                    widget.model!.categoryId,
+                                                    selectedintensity!.id,
+                                                    selectedActive!.id,
                                                     selectedMinute,
                                                     selectedHour);
                                               }
                                             },
                                             exerciseCategoryId:
-                                                widget.model.categoryId,
+                                                widget.model!.categoryId,
                                             exerciseIntensityId:
-                                                selectedintensity.id,
+                                                selectedintensity!.id,
                                             selected: selectedActive,
-                                            title: widget.model.category))
+                                            title: widget.model!.category))
                                     : Message.showToastMessage(
-                                        context, 'Bạn chưa chọn cường độ');
+                                        context, R.string.ban_chua_chon_cuong_do.tr());
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Column(children: [
                                   Row(
                                       mainAxisAlignment:
@@ -265,12 +265,12 @@ class _InputDetailExercrisesControllerState
                                           CrossAxisAlignment.start,
                                       children: [
                                         Image.asset(
-                                            'assets/images/icon_clock.png',
+                                            R.drawable.ic_clock,
                                             width: 24,
                                             height: 24),
                                         SizedBox(width: 8),
                                         selectedActive == null
-                                            ? Text('Chọn hình thức hoạt động',
+                                            ? Text(R.string.chon_hinh_thuc_hoat_dong.tr(),
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight:
@@ -280,7 +280,7 @@ class _InputDetailExercrisesControllerState
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.end,
                                                   children: [
-                                                    Text(selectedActive.name,
+                                                    Text(selectedActive!.name!,
                                                         style: TextStyle(
                                                             fontSize: 16,
                                                             fontWeight:
@@ -292,7 +292,7 @@ class _InputDetailExercrisesControllerState
                                       ]),
                                   SizedBox(height: 16),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                 ]),
                               ),
@@ -307,7 +307,7 @@ class _InputDetailExercrisesControllerState
                           onTap: () {
                             showDialog(
                                 barrierColor:
-                                    Color(0xff003F38).withOpacity(0.5),
+                                    R.color.color0xff003F38.withOpacity(0.5),
                                 context: context,
                                 builder: (_) => CustomInputTimePicker(
                                     time: selectedMinute + selectedHour * 60.0,
@@ -318,16 +318,16 @@ class _InputDetailExercrisesControllerState
                                       selectedHour = hour.toInt();
                                       // selectedHour != 0 ??
                                       handleCaculate(
-                                          widget.model.categoryId,
-                                          selectedintensity.id,
-                                          selectedActive.id,
+                                          widget.model!.categoryId,
+                                          selectedintensity!.id,
+                                          selectedActive!.id,
                                           selectedMinute,
                                           selectedHour);
                                     }));
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -335,10 +335,10 @@ class _InputDetailExercrisesControllerState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset('assets/images/stopwatch.png',
+                                    Image.asset(R.drawable.ic_stopwatch,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Thời gian vận động',
+                                    Text(R.string.thoi_gian_van_dong.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600)),
@@ -354,12 +354,11 @@ class _InputDetailExercrisesControllerState
                                             children: [
                                               Container(
                                                 width: 80,
-                                                //color: Colors.red,
                                                 child: Center(
                                                   child: Text(
                                                       selectedHour.toString(),
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 30,
                                                           fontWeight:
                                                               FontWeight.w500)),
@@ -371,13 +370,13 @@ class _InputDetailExercrisesControllerState
                                               Container(
                                                   height: 1,
                                                   width: 54,
-                                                  color: Color(0xffE5E5E5))
+                                                  color: R.color.color0xffE5E5E5)
                                             ],
                                           ),
                                           Padding(
                                             padding:
                                                 const EdgeInsets.only(top: 8),
-                                            child: Text('giờ',
+                                            child: Text(R.string.hour.tr(),
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                 )),
@@ -386,12 +385,11 @@ class _InputDetailExercrisesControllerState
                                             children: [
                                               Container(
                                                 width: 80,
-                                                //color: Colors.red,
                                                 child: Center(
                                                   child: Text(
                                                       selectedMinute.toString(),
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 30,
                                                           fontWeight:
                                                               FontWeight.w500)),
@@ -403,13 +401,13 @@ class _InputDetailExercrisesControllerState
                                               Container(
                                                   height: 1,
                                                   width: 54,
-                                                  color: Color(0xffE5E5E5))
+                                                  color: R.color.color0xffE5E5E5)
                                             ],
                                           ),
                                           Padding(
                                             padding:
                                                 const EdgeInsets.only(top: 8),
-                                            child: Text('phút',
+                                            child: Text(R.string.minute.tr(),
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                 )),
@@ -426,7 +424,7 @@ class _InputDetailExercrisesControllerState
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     fontSize: 14,
-                                                    color: red,
+                                                    color: R.color.red,
                                                     fontWeight:
                                                         FontWeight.w400)),
                                           ],
@@ -447,16 +445,16 @@ class _InputDetailExercrisesControllerState
                     height: 48,
                     width: 195,
                     decoration: BoxDecoration(
-                        color: mainColor,
+                        color: R.color.mainColor,
                         borderRadius: BorderRadius.circular(200),
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [greenGradientTop, greenGradientBottom])),
+                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                     child: Center(
-                        child: Text('Lưu',
+                        child: Text(R.string.save.tr(),
                             style: TextStyle(
-                                color: Colors.white,
+                                color: R.color.white,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16)))),
               )
@@ -468,25 +466,25 @@ class _InputDetailExercrisesControllerState
   }
 
   handleIntensity(String intensityId) {
-    if (selectedActive.id == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn hình thức');
+    if (selectedActive!.id == null) {
+      Message.showToastMessage(context, R.string.ban_chua_chon_hinh_thuc.tr());
       return;
     }
-    handleCaculate(widget.model.categoryId, intensityId, selectedActive.id,
+    handleCaculate(widget.model!.categoryId, intensityId, selectedActive!.id,
         selectedMinute, selectedHour);
   }
 
-  handleCaculate(String categoryId, String intensityId, String activeId,
+  handleCaculate(String? categoryId, String? intensityId, String? activeId,
       int selectedMinute, int selectedHour) async {
     if (intensityId == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn hình thức');
+      Message.showToastMessage(context, R.string.ban_chua_chon_hinh_thuc.tr());
       return;
     }
     if (activeId == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn hình thức');
+      Message.showToastMessage(context, R.string.ban_chua_chon_hinh_thuc.tr());
       return;
     }
-    if (categoryId.isNotEmpty &&
+    if (categoryId!.isNotEmpty &&
         activeId.isNotEmpty &&
         selectedHour != null &&
         selectedMinute != null) {
@@ -506,22 +504,22 @@ class _InputDetailExercrisesControllerState
 
   submit() {
     if (selectedintensity == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn cường độ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_cuong_do.tr());
       return;
     } else if (selectedActive == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn hình thức');
+      Message.showToastMessage(context, R.string.ban_chua_chon_hinh_thuc.tr());
       return;
     } else if (selectedHour == 0 && selectedMinute == 0) {
-      Message.showToastMessage(context, 'Bạn chưa chọn thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_chon_thoi_gian.tr());
       return;
       // }
       // else if (calorisesNumber == 0) {
       //   Message.showToastMessage(context, 'Tính lượng calories chưa hoàn tất!');
       //   return;
     }
-    if (description.isNotEmpty) {
+    if (description!.isNotEmpty) {
       showDialog(
-          barrierColor: Color(0xff003F38).withOpacity(0.5),
+          barrierColor: R.color.color0xff003F38.withOpacity(0.5),
           context: context,
           builder: (_) {
             Future.delayed(const Duration(seconds: 5), () {
@@ -529,26 +527,26 @@ class _InputDetailExercrisesControllerState
               callbackData();
             });
             return Scaffold(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 body: Center(
                     child: Padding(
                   padding: EdgeInsets.all(16),
                   child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(10)),
                       padding: EdgeInsets.only(top: 32, left: 32, right: 32),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Chúc mừng!',
+                          Text(R.string.chuc_mung.tr(),
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500)),
                           SizedBox(height: 16),
                           Text(
-                              'Tuyệt vời! Bạn đã phá kỷ lục thời gian tập luyện. Kỷ lục hiện tại của bạn với bộ môn này là:',
+                              '${R.string.ky_luc.tr()}:',
                               textAlign: TextAlign.center),
                           SizedBox(height: 8),
                           Text(
@@ -556,12 +554,12 @@ class _InputDetailExercrisesControllerState
                                       .toDouble()
                                       .round()
                                       .toString() +
-                                  ' phút',
+                                  ' ${R.string.minute.tr()}',
                               style: TextStyle(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600)),
-                          Image.asset('assets/images/bg_congrat.png'),
+                          Image.asset(R.drawable.im_congrat),
                         ],
                       )),
                 )));
@@ -573,18 +571,18 @@ class _InputDetailExercrisesControllerState
 
   callbackData() {
     final modelCallback = ExercrisesCategoryModel(
-        categoryId: widget.model.categoryId,
-        category: widget.model.category,
-        exerciseId: selectedActive.id,
-        code: widget.model.code,
+        categoryId: widget.model!.categoryId,
+        category: widget.model!.category,
+        exerciseId: selectedActive!.id,
+        code: widget.model!.code,
         duration: (selectedHour * 60 + selectedMinute).toDouble(),
         burnedCalorie: calorisesNumber,
-        exerciseIntensityId: selectedintensity.id,
+        exerciseIntensityId: selectedintensity!.id,
         unit: unit,
-        description: selectedActive.intensityName,
-        order: widget.model.order,
-        cover: widget.model.cover);
-    widget.datacallback(modelCallback);
+        description: selectedActive!.intensityName,
+        order: widget.model!.order,
+        cover: widget.model!.cover);
+    widget.datacallback!(modelCallback);
     Navigator.pop(context);
   }
 }
@@ -592,10 +590,10 @@ class _InputDetailExercrisesControllerState
 typedef TimeHourCallback = Function(int, int);
 
 class CustomInputTimePicker extends StatefulWidget {
-  final String title;
-  final double time;
+  final String? title;
+  final double? time;
   final int maxHour;
-  final TimeHourCallback callback;
+  final TimeHourCallback? callback;
   CustomInputTimePicker(
       {this.maxHour = 10, this.title, this.time, this.callback});
   @override
@@ -603,8 +601,8 @@ class CustomInputTimePicker extends StatefulWidget {
 }
 
 class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
-  FixedExtentScrollController hourController;
-  FixedExtentScrollController minuteController;
+  FixedExtentScrollController? hourController;
+  FixedExtentScrollController? minuteController;
   int selectedHour = 0;
   int selectedMinute = 0;
 
@@ -612,8 +610,8 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
   void initState() {
     super.initState();
     if (widget.time != null) {
-      selectedHour = (widget.time / 60).floor();
-      selectedMinute = widget.time.toInt() - (selectedHour * 60);
+      selectedHour = (widget.time! / 60).floor();
+      selectedMinute = widget.time!.toInt() - (selectedHour * 60);
       selectedMinute =
           (((selectedMinute / 10 * 2).ceil() / 2) * 10 ~/ 5).toInt();
       hourController = FixedExtentScrollController(initialItem: selectedHour);
@@ -625,14 +623,14 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: R.color.transparent,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 16.0, right: 16),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
+              color: R.color.white,
             ),
             child: Padding(
               padding: const EdgeInsets.only(top: 8, bottom: 16),
@@ -647,13 +645,13 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                       children: [
                         Text(
                             widget.title == null
-                                ? 'Nhập thời gian'
-                                : widget.title,
+                                ? R.string.nhap_thoi_gian.tr()
+                                : widget.title!,
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w700)),
                         IconButton(
                             // padding: EdgeInsets.only(right: 30),
-                            icon: Icon(Icons.close, color: Colors.grey),
+                            icon: Icon(Icons.close, color: R.color.grey),
                             onPressed: () {
                               Navigator.pop(context);
                             })
@@ -685,14 +683,14 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                                 '$e',
                                                 style: TextStyle(
                                                     color: selectedHour == e
-                                                        ? Color(0xff01645A)
-                                                        : Color(0xffC0C2C5),
+                                                        ? R.color.mainColor
+                                                        : R.color.color0xffC0C2C5,
                                                     fontSize: 24,
                                                     fontWeight:
                                                         FontWeight.bold)),
                                           ))
                                       .toList())),
-                      Text('Giờ',
+                      Text(R.string.hour_upper_case_first.tr(),
                           style: TextStyle(fontWeight: FontWeight.w500)),
                       SizedBox(width: 24),
                       Container(
@@ -717,13 +715,13 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                             '${e * 5}',
                                             style: TextStyle(
                                                 color: selectedMinute == e
-                                                    ? Color(0xff01645A)
-                                                    : Color(0xffC0C2C5),
+                                                    ? R.color.mainColor
+                                                    : R.color.color0xffC0C2C5,
                                                 fontSize: 24,
                                                 fontWeight: FontWeight.bold)),
                                       ))
                                   .toList())),
-                      Text('Phút',
+                      Text(R.string.minute_upper_case_first.tr(),
                           style: TextStyle(fontWeight: FontWeight.w500)),
                     ],
                   ),
@@ -741,11 +739,11 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                 width: 150,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -754,10 +752,10 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                             onTap: () {
                               if (selectedHour == 0 && selectedMinute == 0) {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập thời gian');
+                                    context, R.string.ban_chua_nhap_thoi_gian.tr());
                                 return;
                               }
-                              widget.callback(selectedHour, selectedMinute * 5);
+                              widget.callback!(selectedHour, selectedMinute * 5);
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -768,18 +766,18 @@ class _CustomInputTimePickerState extends State<CustomInputTimePicker> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.centerRight,
                                     colors: [
-                                      greenGradientTop,
-                                      greenGradientBottom
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
                                     ]),
                                 borderRadius: BorderRadius.circular(200),
                               ),
                               child: Center(
                                 child: Text(
                                     widget.title == null
-                                        ? 'Tiếp tục'
-                                        : 'Đồng ý',
+                                        ? R.string.tiep_tuc.tr()
+                                        : R.string.yes.tr(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),

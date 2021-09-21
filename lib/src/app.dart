@@ -2,10 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/BloodPressure/add_bloodPressure.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
@@ -29,7 +26,6 @@ import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Exercrises/search_exercrises.dart';
 import 'package:medical/src/widget/Food/add_food.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
-import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -64,6 +60,7 @@ import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 
 import 'widget/list_service/list_service_page.dart';
+import 'utils/navigator_name.dart';
 
 class App extends StatefulWidget {
   @override
@@ -99,21 +96,22 @@ class _AppState extends State<App> {
             // home: FlashScreenController(),
             home: ListServicePage(),
             debugShowCheckedModeBanner: false,
+
             onGenerateRoute: (settings) {
               switch (settings.name) {
-                case '/tabbar':
+                case NavigatorName.tabbar:
                   return _buildRoute(settings, TabbarController());
-                case '/login':
+                case NavigatorName.login:
                   return _buildRoute(settings, LoginController(), isPresent: true);
-                case '/register':
+                case NavigatorName.register:
                   return _buildRoute(settings, RegisterController(), isPresent: true);
-                case '/register_success':
+                case NavigatorName.register_success:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
                       RegisterSuccess(
                           phone: data['phone'], password: data['password']));
-                case '/update_info':
+                case NavigatorName.update_info:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -123,16 +121,16 @@ class _AppState extends State<App> {
                           facebookAccount: data['facebookAccount'],
                           appleAccount: data['appleAccount'],
                           userInfo: data['userInfo']));
-                case '/forgot_password':
+                case NavigatorName.forgot_password:
                   return _buildRoute(settings, ForgotPasswordController());
-                case '/new_password':
+                case NavigatorName.new_password:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
                       NewPasswordController(
                           phone: data['phone'], token: data['token']),
                       isPresent: true);
-                case '/verify':
+                case NavigatorName.verify:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -147,15 +145,15 @@ class _AppState extends State<App> {
                           appleAccount: data['appleAccount'],
                           userInfo: data['userInfo']));
 
-                case '/change_password':
+                case NavigatorName.change_password:
                   return _buildRoute(settings, ChangePasswordController());
-                case '/policy':
+                case NavigatorName.policy:
                   return _buildRoute(settings, PolicyController(), isPresent: true);
-                case '/step_list':
+                case NavigatorName.step_list:
                   return _buildRoute(settings, StepListController(), isPresent: true);
-                case '/rules':
+                case NavigatorName.rules:
                   return _buildRoute(settings, RulesController());
-                case '/add_hba1c':
+                case NavigatorName.add_hba1c:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -163,18 +161,18 @@ class _AppState extends State<App> {
                         type: data['type'],
                         id: data['id'],
                       ));
-                case '/detail_hba1c':
+                case NavigatorName.detail_hba1c:
                   return _buildRoute(settings, Hba1cDetailTabbarController(),
                       isPresent: true);
-                case '/detail_exercrises':
+                case NavigatorName.detail_exercrises:
                   return _buildRoute(settings, ExercrisesDetailTabbarController(),
                       isPresent: true);
-                case '/detail_bloodSugar':
+                case NavigatorName.detail_blood_sugar:
                   return _buildRoute(settings, BloodSugarDetailTabbarController(),
                       isPresent: true);
-                case '/hba1c_tabble':
+                case NavigatorName.hba1c_tabble:
                   return _buildRoute(settings, HbA1CTable(), isPresent: true);
-                case '/add_bloodSugar':
+                case NavigatorName.add_blood_sugar:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -182,7 +180,7 @@ class _AppState extends State<App> {
                         type: data['type'],
                         id: data['id'],
                       ));
-                case '/add_exercrises':
+                case NavigatorName.add_exercrises:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -190,7 +188,7 @@ class _AppState extends State<App> {
                         type: data['type'],
                         id: data['id'],
                       ));
-                case '/search_exercrises':
+                case NavigatorName.search_exercrises:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -199,7 +197,7 @@ class _AppState extends State<App> {
                         id: data['id'],
                         model: data['model'],
                       ));
-                case '/add_bloodPressure':
+                case NavigatorName.add_blood_pressure:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -207,14 +205,14 @@ class _AppState extends State<App> {
                         type: data['type'],
                         id: data['id'],
                       ));
-                case '/input_detail_exercrise':
+                case NavigatorName.input_detail_exercrise:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
                       InputDetailExercrisesController(
                         model: data['model'],
                       ));
-                case '/bloodPressureTable':
+                case NavigatorName.blood_pressure_table:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -224,7 +222,7 @@ class _AppState extends State<App> {
                           periodFilterType: data['periodFilterType'],
                           isPulseRate: data['isPulseRate']),
                       isPresent: true);
-                case '/bloodSugarTable':
+                case NavigatorName.blood_sugar_table:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -234,7 +232,7 @@ class _AppState extends State<App> {
                           periodFilterType: data['periodFilterType'],
                           glucoseDistributionType: data['glucoseDistributionType']),
                       isPresent: true);
-                case '/bloodSugarDistributionTable':
+                case NavigatorName.blood_sugar_distribution_table:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -244,23 +242,23 @@ class _AppState extends State<App> {
                           periodFilterType: data['periodFilterType'],
                           glucoseDistributionType: data['glucoseDistributionType']),
                       isPresent: true);
-                case '/bloodSugarCompareTable':
+                case NavigatorName.blood_sugar_compare_table:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
                       BloodSugarTableCompareController(
                           model: data['model'], title: data['title']),
                       isPresent: true);
-                case '/detail_bloodPressure':
+                case NavigatorName.detail_blood_pressure:
                   return _buildRoute(settings, BloodPressureDetailTabbarController(),
                       isPresent: true);
-                case '/detail_bmi':
+                case NavigatorName.detail_bmi:
                   return _buildRoute(settings, BmiDetailTabbarController(),
                       isPresent: true);
-                case '/bmi':
+                case NavigatorName.bmi:
                   return _buildRoute(settings, FoodDetailTabbarController(),
                       isPresent: true);
-                case '/add_bmi':
+                case NavigatorName.add_bmi:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -268,7 +266,7 @@ class _AppState extends State<App> {
                         type: data['type'],
                         id: data['id'],
                       ));
-                case '/add_emo':
+                case NavigatorName.add_emo:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -276,7 +274,7 @@ class _AppState extends State<App> {
                         type: data['type'],
                         emotion: data['emotion'],
                       ));
-                case '/add_symbo':
+                case NavigatorName.add_symbo:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -286,7 +284,7 @@ class _AppState extends State<App> {
                         symptoms: data['symptoms'],
                         otherSymptom: data['otherSymptom'],
                       ));
-                case '/add_work':
+                case NavigatorName.add_work:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -298,7 +296,7 @@ class _AppState extends State<App> {
                           otherSymptom: data['otherSymptom'],
                           otherActivity: data['otherActivity']));
 
-                case '/add_insight':
+                case NavigatorName.add_insight:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -310,13 +308,13 @@ class _AppState extends State<App> {
                           activities: data['activities'],
                           otherSymptom: data['otherSymptom'],
                           otherActivity: data['otherActivity']));
-                case '/detail_food':
+                case NavigatorName.detail_food:
                   return _buildRoute(settings, FoodDetailTabbarController(),
                       isPresent: true);
-                case '/detail_emotion':
+                case NavigatorName.detail_emotion:
                   return _buildRoute(settings, EmotionDetailTabbarController(),
                       isPresent: true);
-                case '/add_food':
+                case NavigatorName.add_food:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -324,7 +322,7 @@ class _AppState extends State<App> {
                         type: data['type'],
                         id: data['id'],
                       ));
-                case '/emotionTable':
+                case NavigatorName.emotion_table:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings,
@@ -333,41 +331,41 @@ class _AppState extends State<App> {
                           emotionId: data['emotionId'],
                           periodFilterType: data['periodFilterType']),
                       isPresent: true);
-                case '/profile':
+                case NavigatorName.profile:
                   return _buildRoute(settings, ProfileController());
-                case '/goal_setting':
+                case NavigatorName.goal_setting:
                   return _buildRoute(settings, GoalSettingController());
-                case '/profile_info':
+                case NavigatorName.profile_info:
                   return _buildRoute(settings, ProfileInfoController());
-                case '/notification':
+                case NavigatorName.notification:
                   return _buildRoute(settings, NotificationTabbarController());
-                case '/notification_detail':
+                case NavigatorName.notification_detail:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings, NotificationDetailController(id: data['id']));
-                case '/schedule_activity':
+                case NavigatorName.schedule_activity:
                   return _buildRoute(settings, ScheduleActivityController());
-                case '/manual':
+                case NavigatorName.manual:
                   return _buildRoute(settings, ManualController());
-                case '/manual_detail':
+                case NavigatorName.manual_detail:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings, ManualDetailController(model: data['manual']));
-                case '/contact':
+                case NavigatorName.contact:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(
                       settings, ContactController(model: data['contact']));
-                case '/motivation':
+                case NavigatorName.motivation:
                   return _buildRoute(settings, MotivationController());
-                case '/reminder':
+                case NavigatorName.reminder:
                   return _buildRoute(settings, ReminderController());
-                case '/add_reminder':
+                case NavigatorName.add_reminder:
                   final data = settings.arguments as Map<String, dynamic>;
                   return _buildRoute(settings,
                       AddReminderController(type: data['type'], id: data['id']));
-                case '/schedule_glucose':
+                case NavigatorName.schedule_glucose:
                   return _buildRoute(settings, ScheduleGlucoseController());
-                case '/setting_schedule_glucose':
+                case NavigatorName.setting_schedule_glucose:
                   return _buildRoute(settings, SettingScheduleGlucoseController());
                 default:
                   return null;

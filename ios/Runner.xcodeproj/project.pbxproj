@@ -382,7 +382,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 13;
-				DEVELOPMENT_TEAM = 94T6H355HB;
+				DEVELOPMENT_TEAM = 9A58CRXCSY;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -391,7 +391,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0.6;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab.test;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -518,7 +518,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 13;
-				DEVELOPMENT_TEAM = 94T6H355HB;
+				DEVELOPMENT_TEAM = 9A58CRXCSY;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -527,7 +527,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0.6;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab.test;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -548,7 +548,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 13;
-				DEVELOPMENT_TEAM = 94T6H355HB;
+				DEVELOPMENT_TEAM = 9A58CRXCSY;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -557,7 +557,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0.6;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab.test;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";

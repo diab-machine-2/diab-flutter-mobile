@@ -4,13 +4,13 @@ import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -24,10 +24,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddBloodSugarController extends StatefulWidget {
-  final String type;
-  final String id;
+  final String? type;
+  final String? id;
   AddBloodSugarController({this.type, this.id});
 
   @override
@@ -43,15 +44,15 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
   List<dynamic> files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
-  TimeFrameModel selectedTimeFrame;
+  TimeFrameModel? selectedTimeFrame;
 
   bool showReason = false;
-  double number = 0;
+  double? number = 0;
 
-  InputGlucoseModel model;
-  List<String> removeIDs = [];
+  InputGlucoseModel? model;
+  List<String?> removeIDs = [];
 
-  ShortGuiModel des;
+  ShortGuiModel? des;
 
   double mmollToMgdlFactor = 18.018;
 
@@ -77,20 +78,20 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       BotToast.showLoading();
       model = await GlucoseClient().fetchDetail(widget.id);
       BotToast.closeAllLoading();
-      _controller.text = model.glucose.round() == model.glucose
-          ? model.glucose.round().toString()
-          : model.glucose.toString();
-      number = model.glucose.round() == model.glucose
-          ? model.glucose.round().toDouble()
-          : model.glucose;
-      _controllerReason.text = model.reason ?? '';
+      _controller.text = model!.glucose!.round() == model!.glucose
+          ? model!.glucose!.round().toString()
+          : model!.glucose.toString();
+      number = model!.glucose!.round() == model!.glucose
+          ? model!.glucose!.round().toDouble()
+          : model!.glucose;
+      _controllerReason.text = model!.reason ?? '';
       showReason = _controllerReason.text.isNotEmpty;
-      _controllerNote.text = model.note;
-      files.addAll(model.images);
+      _controllerNote.text = model!.note!;
+      files.addAll(model!.images);
       selectedDate =
-          DateTime.fromMillisecondsSinceEpoch(model.createDate * 1000);
+          DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
       selectedTimeFrame = TimeFrameModel(
-          id: model.timeFrameId, code: '', name: model.timeFrame);
+          id: model!.timeFrameId, code: '', name: model!.timeFrame);
       setState(() {});
     } catch (e) {
       print(e);
@@ -123,28 +124,28 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           return false;
         },
         child: Scaffold(
-          backgroundColor: backgroundColor,
+          backgroundColor: R.color.backgroundColor,
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.bg_splash),
                     fit: BoxFit.cover)),
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? 'Cập nhật chỉ số đường huyết'
-                          : 'Nhập chỉ số đường huyết',
+                          ? R.string.update_blood_sugar.tr()
+                          : R.string.enter_blood_sugar.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
                       }),
@@ -159,10 +160,10 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
                             ? Image.asset(
-                                'assets/images/help_circle_active.png',
+                                R.drawable.ic_help_circle_active,
                                 width: 24,
                                 height: 24)
-                            : Image.asset('assets/images/help_circle.png',
+                            : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
                     ),
@@ -182,17 +183,16 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                     input: true,
                                     data: des,
                                     titleDetail:
-                                        'Chỉ số đường huyết với bệnh tiểu đường')
+                                        R.string.blood_sugar_for_diabetes.tr())
                                 : SizedBox()),
                         Padding(
                           padding: const EdgeInsets.only(
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
                             padding: EdgeInsets.all(20),
                             child: Column(children: [
                               Center(
@@ -209,7 +209,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                 TextInputType.numberWithOptions(
                                                     decimal: true),
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: R.color.black,
                                                 fontSize: 34,
                                                 fontWeight: FontWeight.w500),
                                             decoration: InputDecoration(
@@ -219,7 +219,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                     EdgeInsets.only(bottom: 8),
                                                 border: InputBorder.none,
                                                 hintStyle: TextStyle(
-                                                    color: Color(0xff9C9C9C),
+                                                    color: R.color.captionColorGray,
                                                     fontSize: 34,
                                                     fontWeight:
                                                         FontWeight.w500)),
@@ -233,25 +233,25 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
 
                                               setState(() {
                                                 showReason = (AppSettings
-                                                                .userInfo
+                                                                .userInfo!
                                                                 .glucoseUnit ==
                                                             1
-                                                        ? (number < 55 ||
-                                                            number > 250)
-                                                        : (number <
+                                                        ? (number! < 55 ||
+                                                            number! > 250)
+                                                        : (number! <
                                                                 55 /
                                                                     mmollToMgdlFactor ||
-                                                            number >
+                                                            number! >
                                                                 250 /
                                                                     mmollToMgdlFactor)) &&
-                                                    number > 0;
+                                                    number! > 0;
                                               });
                                             }),
                                       ),
                                       Text(
-                                          AppSettings.userInfo.glucoseUnit == 1
-                                              ? 'mg/dL'
-                                              : 'mmol/L',
+                                          AppSettings.userInfo!.glucoseUnit == 1
+                                              ? R.string.mg_dl.tr()
+                                              : R.string.mmol_l.tr(),
                                           style: TextStyle(fontSize: 16))
                                     ]),
                               ),
@@ -259,7 +259,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   child: Container(
                                       height: 1,
                                       width: 74,
-                                      color: Color(0xffE5E5E5))),
+                                      color: R.color.color0xffE5E5E5)),
                               _controller.text.isEmpty
                                   ? SizedBox()
                                   : Padding(
@@ -270,29 +270,29 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                           children: [
                                             Row(children: [
                                               Image.asset(
-                                                  'assets/images/repeat.png',
+                                                  R.drawable.ic_repeat,
                                                   width: 22,
                                                   height: 22),
                                               SizedBox(width: 8),
-                                              Text('Tương ứng với',
+                                              Text(R.string.corresponding_to.tr(),
                                                   style:
                                                       TextStyle(fontSize: 16))
                                             ]),
                                             Text(
                                                 roundNumber(roundAsFixed(AppSettings
-                                                                    .userInfo
+                                                                    .userInfo!
                                                                     .glucoseUnit ==
                                                                 1
-                                                            ? number /
+                                                            ? number! /
                                                                 mmollToMgdlFactor
-                                                            : number *
+                                                            : number! *
                                                                 mmollToMgdlFactor))
                                                         .toString() +
-                                                    (AppSettings.userInfo
+                                                    (AppSettings.userInfo!
                                                                 .glucoseUnit ==
                                                             2
-                                                        ? ' mg/dL'
-                                                        : ' mmol/L'),
+                                                        ? ' ${R.string.mg_dl.tr()}'
+                                                        : ' ${R.string.mmol_l.tr()}'),
                                                 style: TextStyle(fontSize: 16)),
                                           ]),
                                     ),
@@ -300,8 +300,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                               !showReason
                                   ? SizedBox()
                                   : Text(
-                                      'Đường huyết của bạn đang trong ngưỡng không an toàn. Vui lòng kiểm tra lại hoặc cho biết lý do',
-                                      style: TextStyle(color: Colors.red),
+                                      R.string.mes_unsafe_blood_sugar.tr(),
+                                      style: TextStyle(color: R.color.red),
                                       textAlign: TextAlign.center)
                             ]),
                           ),
@@ -313,10 +313,9 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                     bottom: 16, left: 16, right: 16),
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
-                                  // color: Colors.white,
                                   padding: EdgeInsets.all(16),
                                   child: Column(
                                       crossAxisAlignment:
@@ -324,11 +323,11 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                       children: [
                                         Row(children: [
                                           Image.asset(
-                                              'assets/images/note_text.png',
+                                              R.drawable.ic_note_text,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
-                                          Text('Lý do',
+                                          Text(R.string.ly_do.tr(),
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600))
@@ -337,21 +336,21 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                         TextField(
                                             controller: _controllerReason,
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: R.color.black,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w400),
                                             decoration: InputDecoration(
-                                                hintText: 'Nhập lý do',
+                                                hintText: R.string.nhap_ly_do.tr(),
                                                 contentPadding:
                                                     EdgeInsets.only(bottom: 8),
                                                 border: InputBorder.none,
                                                 hintStyle: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w400,
-                                                    color: Color(0xff666666)))),
+                                                    color: R.color.primaryGreyColor))),
                                         Container(
                                             height: 1,
-                                            color: Color(0xffE5E5E5)),
+                                            color: R.color.color0xffE5E5E5),
                                         SizedBox(height: 8),
                                       ]),
                                 ),
@@ -361,7 +360,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -370,13 +369,13 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                 onTap: () {
                                   showDialog(
                                     barrierColor:
-                                        Color(0xff003F38).withOpacity(0.5),
+                                        R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                       initDate: selectedDate,
                                       callback: (date) {
                                         setState(() {
-                                          selectedDate = date;
+                                          selectedDate = date ?? DateTime.now();
                                         });
                                         loadTimeFrame();
                                       },
@@ -394,14 +393,14 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   );
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              'assets/images/icon_calendar.png',
+                                              R.drawable.ic_calendar,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
@@ -417,7 +416,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -430,7 +429,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -440,28 +439,28 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   showActionFilter(context);
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              'assets/images/icon_clock.png',
+                                              R.drawable.ic_clock,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
                                           Text(
                                               selectedTimeFrame == null
-                                                  ? 'Chọn khung giờ'
-                                                  : selectedTimeFrame.name,
+                                                  ? R.string.chon_khung_gio.tr()
+                                                  : selectedTimeFrame!.name!,
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w400))
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -474,19 +473,18 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset('assets/images/note_text.png',
+                                    Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Ghi chú',
+                                    Text(R.string.ghi_chu.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -495,20 +493,20 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   TextField(
                                       controller: _controllerNote,
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: 'Nhập ghi chú của bạn',
+                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: Color(0xff666666)))),
+                                              color: R.color.primaryGreyColor))),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -531,7 +529,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                             child: index == files.length
                                                 ? Container(
                                                     child: Image.asset(
-                                                        'assets/images/icon_add_photo.png'))
+                                                        R.drawable.ic_add_photo))
                                                 : Stack(
                                                     alignment:
                                                         AlignmentDirectional
@@ -555,7 +553,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                         ),
                                                         IconButton(
                                                             icon: Image.asset(
-                                                                'assets/images/icon_trash.png'),
+                                                                R.drawable.ic_trash),
                                                             onPressed: () {
                                                               setState(() {
                                                                 if (files[index]
@@ -591,19 +589,19 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                               height: 48,
                               width: 195,
                               decoration: BoxDecoration(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text('Lưu',
+                                  child: Text(R.string.save.tr(),
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)))),
                         ),
@@ -627,11 +625,11 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             border: Border.all(
-                                                color: red, width: 2)),
+                                                color:R.color.red, width: 2)),
                                         child: Center(
-                                          child: Text('Xoá dữ liệu',
+                                          child: Text(R.string.xoa_du_lieu.tr(),
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: R.color.red,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         )),
@@ -644,20 +642,20 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           gradient: LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.centerRight,
                                               colors: [
-                                                greenGradientTop,
-                                                greenGradientBottom
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Lưu',
+                                        child: Text(R.string.save.tr(),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ),
@@ -678,7 +676,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       BotToast.showLoading();
       final result = await GlucoseClient().deleteIndexGlucose(widget.id);
       if (result == true) {
-        Message.showToastMessage(context, 'Xoá thành công');
+        Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         DartNotificationCenter.post(channel: 'glucose_change_data');
         Navigator.pop(context);
       }
@@ -702,23 +700,23 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     final numberInput = _controller.text ?? '';
 
     if (numberInput.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số Đường Huyết');
+      Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
       return;
     }
     if (reason.isEmpty && showReason) {
-      Message.showToastMessage(context, 'Bạn chưa nhập lí do');
+      Message.showToastMessage(context, R.string.mes_reason_empty.tr());
       return;
     }
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
     // if (note.isEmpty) {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập ghi chú');
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu.tr());
     //   return;
     // }
     BotToast.showLoading();
@@ -732,7 +730,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       }
       final result = await GlucoseClient().putIndexGlucose(
           widget.id,
-          selectedTimeFrame.id,
+          selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           numberInput,
           showReason ? reason : null,
@@ -761,19 +759,19 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     final note = _controllerNote.text ?? '';
 
     if (number == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số Đường Huyết');
+      Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
       return;
     }
     if (reason.isEmpty && showReason) {
-      Message.showToastMessage(context, 'Bạn chưa nhập lí do');
+      Message.showToastMessage(context, R.string.mes_reason_empty.tr());
       return;
     }
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
     BotToast.showLoading();
@@ -784,7 +782,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
         paths.add(file.path);
       }
       final result = await GlucoseClient().postIndexGlucose(
-          selectedTimeFrame.id,
+          selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           number.toString(),
           showReason ? reason : null,
@@ -819,24 +817,24 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/earseIcon.png',
+                      Image.asset(R.drawable.ic_earse,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn xoá dữ liệu?',
+                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
+                            R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -855,11 +853,11 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Quay lại',
+                                        child: Text(R.string.back.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -875,13 +873,13 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color: red,
+                                      color:R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text('Xoá',
+                                      child: Text(R.string.delete.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -897,7 +895,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -914,13 +912,13 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     final numberInput = _controller.text ?? '';
 
     if (model != null) {
-      final noteText = model.note ?? '';
-      final reasonText = model.reason ?? '';
-      final date = DateTime.fromMillisecondsSinceEpoch(model.createDate * 1000);
+      final noteText = model!.note ?? '';
+      final reasonText = model!.reason ?? '';
+      final date = DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
       if (note == noteText &&
-          numberInput == model.glucose.round().toString() &&
+          numberInput == model!.glucose!.round().toString() &&
           reason == reasonText &&
-          files.length == model.images.length &&
+          files.length == model!.images.length &&
           removeIDs.length == 0 &&
           date.millisecondsSinceEpoch == selectedDate.millisecondsSinceEpoch) {
         Navigator.pop(context);
@@ -946,24 +944,24 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/backIcon.png',
+                      Image.asset(R.drawable.ic_back_icon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                            R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -981,11 +979,11 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -1000,20 +998,20 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color:R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1027,7 +1025,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1042,7 +1040,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => ActionListTrend(
@@ -1065,11 +1063,11 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_photo.png',
+                  Image.asset(R.drawable.ic_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chọn trong thư viện",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text(R.string.chon_trong_thu_vien.tr(),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1083,11 +1081,11 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_camera_black.png',
+                  Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chụp ảnh",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text(R.string.chup_anh.tr(),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1098,8 +1096,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text("Huỷ",
-              style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+          child: Text(R.string.cancel.tr(),
+              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -1107,7 +1105,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      //Message.showToastMessage(context, 'Chỉ đuợc chọn tối đa 5 ảnh');
+      //Message.showToastMessage(context, R.string.max_image_select.tr());
     }
   }
 
@@ -1146,13 +1144,13 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = FlatButton(
-      child: Text("Huỷ"),
+      child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Cấp quyền"),
+      child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -1160,8 +1158,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Thông báo"),
-      content: Text("Bạn cần cấp quyền truy cập để sử dụng tính năng này"),
+      title: Text(R.string.notification.tr()),
+      content: Text(R.string.ask_for_permission.tr()),
       actions: [
         cancelButton,
         continueButton,
@@ -1176,18 +1174,18 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
   }
 }
 
-typedef TimeCallback = Function(DateTime);
+typedef TimeCallback = Function(DateTime?);
 
 class DateMultiPicker extends StatefulWidget {
-  final DateTime initDate;
-  final TimeCallback callback;
+  final DateTime? initDate;
+  final TimeCallback? callback;
   DateMultiPicker({this.initDate, this.callback});
   @override
   _DateMultiPickerState createState() => _DateMultiPickerState();
 }
 
 class _DateMultiPickerState extends State<DateMultiPicker> {
-  DateTime selectedDate = DateTime.now();
+  DateTime? selectedDate = DateTime.now();
   int selectedHour = DateTime.now().hour;
   int selectedMinute = DateTime.now().minute;
 
@@ -1195,8 +1193,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   void initState() {
     if (widget.initDate != null) {
       selectedDate = widget.initDate;
-      selectedHour = widget.initDate.hour;
-      selectedMinute = widget.initDate.minute;
+      selectedHour = widget.initDate!.hour;
+      selectedMinute = widget.initDate!.minute;
     }
     super.initState();
   }
@@ -1208,7 +1206,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -1217,7 +1215,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1227,14 +1225,14 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Chọn ngày',
+                            Text(R.string.pick_date.tr(),
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
                                 icon:
-                                    Icon(Icons.close, color: Color(0xffBEC0C8)),
+                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
@@ -1243,20 +1241,20 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                     CustomCalendarDatePicker(
                         initialDate: widget.initDate == null
                             ? DateTime.now()
-                            : widget.initDate,
+                            : widget.initDate!,
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
-                        onDateChanged: (DateTime datetime) {
-                          selectedDate = datetime;
+                        onDateChanged: (datetime) {
+                          selectedDate = datetime ?? DateTime.now();
                         }),
                     Row(
                       children: [
                         SizedBox(
                           width: 16,
                         ),
-                        Text('Chọn thời gian',
+                        Text(R.string.pick_time.tr(),
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700)),
                       ],
@@ -1266,8 +1264,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
                         callback: (hour, minute) {
-                          selectedHour = hour;
-                          selectedMinute = minute;
+                          selectedHour = DateTime.now().hour;
+                          selectedMinute = DateTime.now().minute;
                         }),
                     SizedBox(height: 20),
                     Row(children: [
@@ -1280,12 +1278,12 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xffE2E4E7),
+                                  color: R.color.grayBorder,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1295,25 +1293,25 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         child: GestureDetector(
                           onTap: () {
                             selectedDate = DateTime(
-                                selectedDate.year,
-                                selectedDate.month,
-                                selectedDate.day,
+                                selectedDate!.year,
+                                selectedDate!.month,
+                                selectedDate!.day,
                                 selectedHour,
                                 selectedMinute);
 
-                            widget.callback(selectedDate);
+                            widget.callback!(selectedDate);
 
                             Navigator.pop(context);
                           },
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xff01645A),
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Đồng ý',
+                                  child: Text(R.string.yes.tr(),
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1332,22 +1330,22 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   }
 }
 
-typedef TimeHourCallback = Function(int, int);
+typedef TimeHourCallback = Function(int?, int?);
 
 class CustomTimePicker extends StatefulWidget {
-  final int selectedHour;
-  final int selectedMinute;
-  final TimeHourCallback callback;
+  final int? selectedHour;
+  final int? selectedMinute;
+  final TimeHourCallback? callback;
   CustomTimePicker({this.selectedHour, this.selectedMinute, this.callback});
   @override
   _CustomTimePickerState createState() => _CustomTimePickerState();
 }
 
 class _CustomTimePickerState extends State<CustomTimePicker> {
-  FixedExtentScrollController hourController;
-  FixedExtentScrollController minuteController;
-  int selectedHour = 1;
-  int selectedMinute = 1;
+  FixedExtentScrollController? hourController;
+  FixedExtentScrollController? minuteController;
+  int? selectedHour = 1;
+  int? selectedMinute = 1;
 
   @override
   void initState() {
@@ -1361,8 +1359,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     if (widget.selectedMinute != null) {
       selectedMinute = widget.selectedMinute;
     }
-    hourController = FixedExtentScrollController(initialItem: selectedHour);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute);
+    hourController = FixedExtentScrollController(initialItem: selectedHour!);
+    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   @override
@@ -1379,7 +1377,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 onSelectedItemChanged: (value) {
                   setState(() {
                     selectedHour = value;
-                    widget.callback(selectedHour, selectedMinute);
+                    widget.callback!(selectedHour, selectedMinute);
                   });
                 },
                 itemExtent: 47.0,
@@ -1388,8 +1386,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedHour == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))
@@ -1404,7 +1402,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 onSelectedItemChanged: (value) {
                   setState(() {
                     selectedMinute = value;
-                    widget.callback(selectedHour, selectedMinute);
+                    widget.callback!(selectedHour, selectedMinute);
                   });
                 },
                 itemExtent: 47.0,
@@ -1413,8 +1411,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedMinute == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))

@@ -4,15 +4,17 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodPressureChart extends StatefulWidget {
-  BloodPressureChart({Key key}) : super(key: key);
+  BloodPressureChart({Key? key}) : super(key: key);
   @override
   BloodPressureChartState createState() => BloodPressureChartState();
 }
@@ -25,12 +27,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
   int touchIndex = -1;
 
   int periodFilterType = 1;
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   @override
   void initState() {
     periodFilterType =
-        BloodPressureDetailTabbarController.of(context).periodFilterType;
+        BloodPressureDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -56,7 +58,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
         child: BlocBuilder<BloodPressureBloc, BloodPressureState>(
             builder: (BuildContext context, BloodPressureState state) {
           currentContext = context;
-          BloodPressureTrendModel model;
+          BloodPressureTrendModel? model;
 
           if (state is BloodPressureInitial) {
             BlocProvider.of<BloodPressureBloc>(context)
@@ -77,7 +79,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   height: 240,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.only(left: 18, right: 18),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +89,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           children: [
                             Row(
                               children: [
-                                Text('Xu hướng huyết áp',
+                                Text(R.string.blood_pressure_trend.tr(),
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700)),
@@ -100,19 +102,19 @@ class BloodPressureChartState extends State<BloodPressureChart>
                             ? GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, '/add_bloodPressure',
+                                      context, NavigatorName.add_blood_pressure,
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                    'assets/images/blood_pressure_trend_empty.png'),
+                                    R.drawable.im_blood_pressure_trend_empty),
                               )
                             : Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
+                                      color: R.color.grey.withOpacity(0.5),
                                       spreadRadius: 1,
                                       blurRadius: 7,
                                       offset: Offset(0, 2),
@@ -131,7 +133,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
   buildChart(BloodPressureTrendModel model) {
     final width = (MediaQuery.of(context).size.width - 200) / 5;
 
-    List<int> dates = [];
+    List<int?> dates = [];
     List<SubTrendItemModel> trends = [];
     model.trendItems.items.forEach((element) {
       dates.add(element.date);
@@ -142,12 +144,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
     double minY = trends
         .map<double>(
-            (e) => (e.diastolic < e.systolic ? e.diastolic : e.systolic))
+            (e) => (e.diastolic! < e.systolic! ? e.diastolic! : e.systolic!))
         .reduce(min);
     minY = (minY * (trends.length == 1 ? 0.5 : 0.8)).roundToDouble();
     double maxY = trends
         .map<double>(
-            (e) => (e.diastolic > e.systolic ? e.diastolic : e.systolic))
+            (e) => (e.diastolic! > e.systolic! ? e.diastolic! : e.systolic!))
         .reduce(max);
     maxY = (maxY * (trends.length == 1 ? 1.5 : 1.2)).roundToDouble();
     final jumpValue = (maxY - minY) / 4;
@@ -171,7 +173,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                     return Text(number[index].toString(),
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.normal));
                   })),
             ),
@@ -197,7 +199,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                                     (width + 20))
                                                 .toDouble() -
                                             36,
-                                        color: Color(0xffDDDDDD),
+                                        color: R.color.grayComponentBorder,
                                       ),
                                     )))),
                     Container(
@@ -217,7 +219,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                   return spotIndexes.map((index) {
                                     return TouchedSpotIndicatorData(
                                       FlLine(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           strokeWidth: 0.5),
                                       FlDotData(
                                         show: false,
@@ -229,7 +231,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                   showOnTopOfTheChartBoxArea: true,
                                   fitInsideVertically: true,
                                   fitInsideHorizontally: true,
-                                  tooltipBgColor: toColor(model.colors.first)
+                                  tooltipBgColor: toColor(model.colors!.first)
                                       .withOpacity(0.2),
                                   tooltipRoundedRadius: 8,
                                   getTooltipItems:
@@ -245,17 +247,17 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                                   .toString(),
                                           TextStyle(
                                               color:
-                                                  toColor(model.colors.first),
+                                                  toColor(model.colors!.first),
                                               fontWeight: FontWeight.bold),
                                         );
                                       }
                                     }).toList();
                                   },
                                 ),
-                                touchCallback: (FlTouchEvent event, LineTouchResponse lineTouch) {
+                                touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
                                   if (event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
-                                    final value = lineTouch.lineBarSpots[0].x;
+                                    final value = lineTouch!.lineBarSpots![0].x;
                                     setState(() {
                                       touchIndex = value.toInt();
                                     });
@@ -272,8 +274,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 getTextStyles: (context, value) {
                                   return TextStyle(
                                       color: touchIndex == value.toInt()
-                                          ? Colors.black
-                                          : Color(0xffC0C2C5),
+                                          ? R.color.black
+                                          : R.color.color0xffC0C2C5,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
                                 },
@@ -313,21 +315,21 @@ class BloodPressureChartState extends State<BloodPressureChart>
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             Row(children: [
               Container(
-                  width: 14, height: 14, color: toColor(model.colors.first)),
+                  width: 14, height: 14, color: toColor(model.colors!.first)),
               SizedBox(width: 8),
-              Text(model.legends.first)
+              Text(model.legends!.first)
             ]),
             Row(children: [
               Container(
-                  width: 14, height: 14, color: toColor(model.colors.last)),
+                  width: 14, height: 14, color: toColor(model.colors!.last)),
               SizedBox(width: 8),
-              Text(model.legends.last)
+              Text(model.legends!.last)
             ])
           ]),
           SizedBox(height: 16),
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/bloodPressureTable', arguments: {
+              Navigator.pushNamed(context, NavigatorName.blood_pressure_table, arguments: {
                 'title': '',
                 'bloodPressureType': null,
                 'periodFilterType': periodFilterType,
@@ -335,11 +337,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
               });
             },
             child: Container(
-              color: Colors.transparent,
+              color: R.color.transparent,
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text('Xem chi tiết', style: TextStyle(color: mainColor)),
-                Image.asset('assets/images/icon_arrow_right.png',
+                Text(R.string.xem_chi_tiet.tr(), style: TextStyle(color: R.color.mainColor)),
+                Image.asset(R.drawable.ic_arrow_right,
                     width: 20, height: 20)
               ]),
             ),
@@ -360,10 +362,10 @@ class BloodPressureChartState extends State<BloodPressureChart>
         : [
             LineChartBarData(
               spots: List.generate(trends.length, (index) {
-                return FlSpot((index).toDouble(), trends[index].systolic);
+                return FlSpot((index).toDouble(), trends[index].systolic!);
               }),
               isCurved: false,
-              colors: [toColor(model.colors.first)],
+              colors: [toColor(model.colors!.first)],
               barWidth: 1,
               isStrokeCapRound: true,
               dotData: FlDotData(
@@ -374,9 +376,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   getDotPainter: (spot, percent, barData, index) {
                     return FlDotCirclePainter(
                       radius: trends.length - 1 == index ? 6.5 : 4,
-                      color: toColor(model.colors.first),
+                      color: toColor(model.colors!.first),
                       strokeWidth: trends.length - 1 == index ? 18 : 0,
-                      strokeColor: toColor(model.colors.first).withOpacity(0.2),
+                      strokeColor: toColor(model.colors!.first).withOpacity(0.2),
                     );
                   }),
               belowBarData: BarAreaData(
@@ -385,10 +387,10 @@ class BloodPressureChartState extends State<BloodPressureChart>
             ),
             LineChartBarData(
               spots: List.generate(trends.length, (index) {
-                return FlSpot((index).toDouble(), trends[index].diastolic);
+                return FlSpot((index).toDouble(), trends[index].diastolic!);
               }),
               isCurved: false,
-              colors: [toColor(model.colors.last)],
+              colors: [toColor(model.colors!.last)],
               barWidth: 1,
               isStrokeCapRound: true,
               dotData: FlDotData(
@@ -399,9 +401,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   getDotPainter: (spot, percent, barData, index) {
                     return FlDotCirclePainter(
                       radius: trends.length - 1 == index ? 6.5 : 4,
-                      color: toColor(model.colors.last),
+                      color: toColor(model.colors!.last),
                       strokeWidth: trends.length - 1 == index ? 18 : 0,
-                      strokeColor: toColor(model.colors.last).withOpacity(0.2),
+                      strokeColor: toColor(model.colors!.last).withOpacity(0.2),
                     );
                   }),
               belowBarData: BarAreaData(

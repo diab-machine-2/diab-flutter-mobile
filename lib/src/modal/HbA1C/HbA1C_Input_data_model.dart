@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 class InputHbA1CDataModel {
   final List<InputHbA1CModel> inputs;
-  final bool hasMore;
+  final bool? hasMore;
 
-  InputHbA1CDataModel({@required this.inputs, @required this.hasMore});
+  InputHbA1CDataModel({required this.inputs, required this.hasMore});
 }

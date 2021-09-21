@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:grouped_list/grouped_list.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarDetailController extends StatefulWidget {
-  BloodSugarDetailController({Key key}) : super(key: key);
+  BloodSugarDetailController({Key? key}) : super(key: key);
   @override
   BloodSugarDetailControllerState createState() =>
       BloodSugarDetailControllerState();
@@ -23,7 +24,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
   @override
   bool get wantKeepAlive => true;
 
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   //ScrollController _scrollController = ScrollController();
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -31,23 +32,23 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
       ItemPositionsListener.create();
 
   int page = 1;
-  bool hasMore = false;
+  bool? hasMore = false;
   bool isLoading = false;
   int periodFilterType = 1;
 
-  String glucoseID;
+  String? glucoseID;
 
   @override
   void initState() {
     super.initState();
     periodFilterType =
-        BloodSugarDetailTabbarController.of(context).periodFilterType;
-    glucoseID = BloodSugarDetailTabbarController.of(context).glucoseID;
+        BloodSugarDetailTabbarController.of(context)!.periodFilterType;
+    glucoseID = BloodSugarDetailTabbarController.of(context)!.glucoseID;
     initializeDateFormatting();
 
     itemPositionsListener.itemPositions.addListener(() {
       final lastIndex = itemPositionsListener.itemPositions.value.last.index;
-      final state = BlocProvider.of<GlucoseBloc>(currentContext).state;
+      final GlucoseState state = BlocProvider.of<GlucoseBloc>(currentContext).state;
       if (state is GlucoseAlllLoaded) {
         final model = state.inputGlucoseModel;
         if (model.length - 2 == lastIndex) {
@@ -67,15 +68,15 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
 
   loadDataToID(int periodFilter) {
     periodFilterType = periodFilter;
-    if (BloodSugarDetailTabbarController.of(context).glucoseID != null) {
+    if (BloodSugarDetailTabbarController.of(context)!.glucoseID != null) {
       setState(() {});
       _loadMore();
     }
-    glucoseID = BloodSugarDetailTabbarController.of(context).glucoseID;
+    glucoseID = BloodSugarDetailTabbarController.of(context)!.glucoseID;
   }
 
   Future<bool> _loadMore() async {
-    if (isLoading || !hasMore) {
+    if (isLoading || !hasMore!) {
       return true;
     } else {
       isLoading = true;
@@ -108,7 +109,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
         child: BlocBuilder<GlucoseBloc, GlucoseState>(
             builder: (BuildContext context, GlucoseState state) {
           currentContext = context;
-          List<InputGlucoseModel> model;
+          List<InputGlucoseModel>? model;
           if (state is GlucoseInitial) {
             BlocProvider.of<GlucoseBloc>(context).add(FetchInputGlucose(
                 currentDateTime:
@@ -125,7 +126,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
           if (state is GlucoseAlllLoaded) {
             model = state.inputGlucoseModel;
             hasMore = state.hasMore;
-            if (hasMore) {
+            if (hasMore!) {
               page += 1;
             }
             isLoading = false;
@@ -134,7 +135,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
               final model = state.inputGlucoseModel;
               for (int i = 0; i < model.length; i++) {
                 if (model[i].id == glucoseID) {
-                  BloodSugarDetailTabbarController.of(context).glucoseID = null;
+                  BloodSugarDetailTabbarController.of(context)!.glucoseID = null;
                   itemScrollController.jumpTo(index: i);
                   Future.delayed(const Duration(seconds: 3), () {
                     setState(() {
@@ -143,7 +144,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                   });
                 }
               }
-              if (BloodSugarDetailTabbarController.of(context).glucoseID !=
+              if (BloodSugarDetailTabbarController.of(context)!.glucoseID !=
                   null) {
                 _loadMore();
               }
@@ -152,14 +153,13 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
           return RefreshIndicator(
               onRefresh: _refresh,
               child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
-                          image:
-                              AssetImage('assets/images/detail_Background.png'),
+                          image: AssetImage(R.drawable.bg_detail),
                           fit: BoxFit.cover,
                         )),
                         child: ScrollablePositionedList.builder(
@@ -169,23 +169,24 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                             padding: EdgeInsets.only(top: 16, bottom: 100),
                             itemCount: model.length,
                             itemBuilder: (context, index) {
-                              final element = model[index];
+                              final element = model![index];
                               final previousElement =
                                   index == 0 ? null : model[index - 1];
 
                               final showDate = previousElement == null
                                   ? true
-                                  : (convertCustomDate(element.createDate) !=
+                                  : (convertCustomDate(element.createDate!) !=
                                       convertCustomDate(
-                                          previousElement.createDate));
+                                          previousElement.createDate!));
 
                               return GestureDetector(
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, '/add_bloodSugar', arguments: {
-                                      'type': 'update',
-                                      'id': element.id
-                                    });
+                                        context, NavigatorName.add_blood_sugar,
+                                        arguments: {
+                                          'type': 'update',
+                                          'id': element.id
+                                        });
                                   },
                                   child: Padding(
                                     padding: EdgeInsets.only(
@@ -200,7 +201,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                     top: 8, bottom: 10),
                                                 child: Text(
                                                   convertCustomDate(
-                                                      element.createDate),
+                                                      element.createDate!),
                                                   textAlign: TextAlign.left,
                                                   style: TextStyle(
                                                       fontSize: 18,
@@ -213,15 +214,15 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                             decoration: BoxDecoration(
                                                 border: Border.all(
                                                     color: glucoseID == null
-                                                        ? Colors.white
+                                                        ? R.color.white
                                                         : (glucoseID ==
                                                                 element.id
-                                                            ? Colors.red
-                                                            : Colors.white),
+                                                            ? R.color.red
+                                                            : R.color.white),
                                                     width: 2),
                                                 borderRadius:
                                                     BorderRadius.circular(16),
-                                                color: Colors.white),
+                                                color: R.color.white),
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.all(16.0),
@@ -237,12 +238,12 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                         Row(
                                                           children: [
                                                             Text(
-                                                                element.glucose
+                                                                element.glucose!
                                                                             .round() ==
                                                                         element
                                                                             .glucose
                                                                     ? element
-                                                                        .glucose
+                                                                        .glucose!
                                                                         .round()
                                                                         .toString()
                                                                     : element
@@ -262,7 +263,8 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                             SizedBox(width: 8),
                                                             Text(element.unit,
                                                                 style: TextStyle(
-                                                                    color: Colors
+                                                                    color: R
+                                                                        .color
                                                                         .black,
                                                                     fontSize:
                                                                         16,
@@ -273,22 +275,20 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                         ),
                                                         Container(
                                                             height: 32,
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    left: 18,
-                                                                    right: 18,
-                                                                    top: 8,
-                                                                    bottom: 8),
+                                                            padding: EdgeInsets.only(
+                                                                left: 18,
+                                                                right: 18,
+                                                                top: 8,
+                                                                bottom: 8),
                                                             decoration: BoxDecoration(
-                                                                color: element.backgroundColor ==
-                                                                        'None'
-                                                                    ? Colors
+                                                                color: element.backgroundColor == 'None'
+                                                                    ? R.color
                                                                         .white
                                                                     : toColor(element
                                                                         .backgroundColor),
                                                                 border: Border.all(
                                                                     color: element.borderColor == 'None'
-                                                                        ? Colors
+                                                                        ? R.color
                                                                             .transparent
                                                                         : toColor(element
                                                                             .borderColor),
@@ -296,18 +296,17 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                         ? 0
                                                                         : 1),
                                                                 borderRadius: BorderRadius.only(
-                                                                    topLeft:
-                                                                        Radius.circular(13),
+                                                                    topLeft: Radius.circular(13),
                                                                     topRight: Radius.circular(13),
                                                                     bottomLeft: Radius.circular(13))),
                                                             child: Center(
                                                               child: Text(
-                                                                  element.type,
+                                                                  element.type!,
                                                                   style: TextStyle(
                                                                       color: element
                                                                                   .fontColor ==
                                                                               'None'
-                                                                          ? Colors
+                                                                          ? R.color
                                                                               .white
                                                                           : toColor(element
                                                                               .fontColor),
@@ -325,11 +324,11 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                         Text(
                                                           convertToUTC(
                                                               element
-                                                                  .createDate,
+                                                                  .createDate!,
                                                               'HH:mm'),
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.black,
+                                                                  R.color.black,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -338,7 +337,7 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                         Text(
                                                             ', ${element.timeFrame}',
                                                             style: TextStyle(
-                                                                color: Colors
+                                                                color: R.color
                                                                     .black,
                                                                 fontSize: 16,
                                                                 fontWeight:
@@ -356,8 +355,8 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                   height: 16),
                                                               Container(
                                                                   height: 1,
-                                                                  color: Color(
-                                                                      0xffEEEFF3)),
+                                                                  color: R.color
+                                                                      .color0xffEEEFF3),
                                                               SizedBox(
                                                                   height: 16),
                                                               Row(
@@ -365,10 +364,10 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  Text(
-                                                                      'Lý do: ',
+                                                                  Text('${R.string.ly_do.tr()}: ',
                                                                       style: TextStyle(
-                                                                          color: Colors
+                                                                          color: R
+                                                                              .color
                                                                               .black,
                                                                           fontSize:
                                                                               16,
@@ -377,10 +376,10 @@ class BloodSugarDetailControllerState extends State<BloodSugarDetailController>
                                                                   Expanded(
                                                                     child: Text(
                                                                         element
-                                                                            .reason,
+                                                                            .reason!,
                                                                         style: TextStyle(
-                                                                            color: Colors
-                                                                                .black,
+                                                                            color: R
+                                                                                .color.black,
                                                                             fontSize:
                                                                                 16,
                                                                             fontWeight: FontWeight

@@ -1,17 +1,18 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/modal/user/secure.dart';
-import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ProfileController extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class ProfileController extends StatefulWidget {
 }
 
 class _ProfileControllerState extends State<ProfileController> {
-  SecureModel secureModel;
+  SecureModel? secureModel;
 
   void initState() {
     super.initState();
@@ -53,23 +54,23 @@ class _ProfileControllerState extends State<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    final user = AppSettings.userInfo;
+    final user = AppSettings.userInfo!;
     return Scaffold(
         appBar: CustomAppBar(
-          backgroundColor: Color(0xffB1DDDB).withOpacity(0.2),
-          title: Text('Hồ sơ',
+          backgroundColor: R.color.color0xffB1DDDB.withOpacity(0.2),
+          title: Text(R.string.profile_file.tr(),
               style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.w600, color: textDark)),
+                  fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
           leadingIcon: IconButton(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              icon: Icon(Icons.arrow_back, color: textDark),
+              splashColor: R.color.transparent,
+              highlightColor: R.color.transparent,
+              icon: Icon(Icons.arrow_back, color: R.color.textDark),
               onPressed: () {
                 Navigator.pop(context);
               }),
         ),
         body: Container(
-            color: Color(0xffB1DDDB).withOpacity(0.2),
+            color: R.color.color0xffB1DDDB.withOpacity(0.2),
             padding: EdgeInsets.all(16),
             child: Center(
               child: ListView(
@@ -79,11 +80,11 @@ class _ProfileControllerState extends State<ProfileController> {
                     Container(
                         clipBehavior: Clip.hardEdge,
                         decoration: BoxDecoration(
-                            color: mainColor,
+                            color: R.color.mainColor,
                             borderRadius: BorderRadius.circular(52)),
-                        child: user.imageUrl.url == null
-                            ? Icon(Icons.person, size: 104, color: Colors.white)
-                            : Image.network(user.imageUrl.url,
+                        child: user.imageUrl!.url == null
+                            ? Icon(Icons.person, size: 104, color: R.color.white)
+                            : Image.network(user.imageUrl!.url!,
                                 width: 104, height: 104)),
                     SizedBox(width: 16),
                     Expanded(
@@ -91,18 +92,18 @@ class _ProfileControllerState extends State<ProfileController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              user.fullName,
+                              user.fullName!,
                               style: TextStyle(
-                                  color: textDark,
+                                  color: R.color.textDark,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             SizedBox(height: 8),
-                            Text('Mã người dùng: ${user.code ?? '0'}',
+                            Text(R.string.user_id.tr(args: [user.code ?? '0']),
                                 style: TextStyle(
-                                    color: Color(0xff666666),
+                                    color: R.color.primaryGreyColor,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
                             SizedBox(height: 8),
@@ -111,19 +112,19 @@ class _ProfileControllerState extends State<ProfileController> {
                                 Container(
                                   height: 32,
                                   decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: R.color.white,
                                       borderRadius: BorderRadius.circular(16)),
                                   padding: EdgeInsets.only(left: 16, right: 16),
                                   child: Row(
                                     children: [
                                       Image.asset(
-                                          'assets/images/icon_crown.png',
+                                          R.drawable.ic_crown,
                                           width: 20,
                                           height: 20),
                                       SizedBox(width: 8),
-                                      Text('Gói Coaching',
+                                      Text(R.string.coaching_package.tr(),
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w700))
                                     ],
@@ -136,30 +137,30 @@ class _ProfileControllerState extends State<ProfileController> {
                   ]),
                   SizedBox(height: 16),
                   Row(children: [
-                    buildItem(Color(0xffD3EFEE), 'Thiết lập mục tiêu',
-                        'assets/images/icon_muc_tieu.png', 0),
+                    buildItem(R.color.color0xffD3EFEE, R.string.goal_setting.tr(),
+                        R.drawable.ic_muc_tieu, 0),
                     SizedBox(width: 16),
-                    buildItem(Color(0xffFEEDDC), 'Nhắc nhở',
-                        'assets/images/icon_nhac_nho.png', 1)
+                    buildItem(R.color.color0xffFEEDDC, R.string.remind.tr(),
+                        R.drawable.ic_nhac_nho, 1)
                   ]),
                   SizedBox(height: 16),
                   Row(children: [
-                    buildItem(Color(0xffFCF8DA), 'Lịch sinh hoạt\ncá nhân',
-                        'assets/images/icon_lich.png', 2),
+                    buildItem(R.color.color0xffFCF8DA, R.string.personal_schedule.tr(),
+                        R.drawable.ic_lich, 2),
                     SizedBox(width: 16),
-                    buildItem(Color(0xffFDE9E9), 'Lịch đo\nđường huyết',
-                        'assets/images/icon_lich_do_duong_huyet.png', 3)
+                    buildItem(R.color.color0xffFDE9E9, R.string.blood_sugar_schedule.tr(),
+                        R.drawable.ic_lich_do_duong_huyet, 3)
                   ]),
                   SizedBox(height: 16),
                   buildAction(
-                      'Thông tin cá nhân', 'assets/images/icon_user.png', 0),
+                      R.string.personal_info.tr(), R.drawable.ic_user, 0),
                   buildAction(
-                      'Hướng dẫn sử dụng', 'assets/images/question.png', 1),
-                  buildAction('Bảo mật thông tin',
-                      'assets/images/icon_security.png', 2),
+                      R.string.user_manual.tr(), R.drawable.ic_question, 1),
+                  buildAction(R.string.information_security.tr(),
+                      R.drawable.ic_security, 2),
                   buildAction(
-                      'Liên hệ với DiaB', 'assets/images/icon_contact.png', 3),
-                  buildAction('Mật khẩu', 'assets/images/icon_password.png', 4),
+                      R.string.contact_diab.tr(), R.drawable.ic_contact, 3),
+                  buildAction(R.string.password.tr(), R.drawable.ic_password, 4),
                 ],
               ),
             )));
@@ -170,16 +171,16 @@ class _ProfileControllerState extends State<ProfileController> {
       child: GestureDetector(
         onTap: () {
           if (index == 0) {
-            Navigator.pushNamed(context, '/goal_setting');
+            Navigator.pushNamed(context, NavigatorName.goal_setting);
           }
           if (index == 2) {
-            Navigator.pushNamed(context, '/schedule_activity');
+            Navigator.pushNamed(context, NavigatorName.schedule_activity);
           }
           if (index == 1) {
-            Navigator.pushNamed(context, '/reminder');
+            Navigator.pushNamed(context, NavigatorName.reminder);
           }
           if (index == 3) {
-            Navigator.pushNamed(context, '/schedule_glucose');
+            Navigator.pushNamed(context, NavigatorName.schedule_glucose);
           }
           // if (index == 1 || index == 3) {
           //   Message.showToastMessage(context,
@@ -197,7 +198,7 @@ class _ProfileControllerState extends State<ProfileController> {
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: textDark),
+                      color: R.color.textDark),
                   textAlign: TextAlign.center)
             ])),
       ),
@@ -208,30 +209,30 @@ class _ProfileControllerState extends State<ProfileController> {
     return GestureDetector(
       onTap: () {
         if (index == 0) {
-          if (AppSettings.userInfo.phoneNumber.contains('User') ||
-              AppSettings.userInfo.phoneNumber.isEmpty) {
+          if (AppSettings.userInfo!.phoneNumber!.contains('User') ||
+              AppSettings.userInfo!.phoneNumber!.isEmpty) {
             showPopupUpdatePhone();
           } else {
-            Navigator.pushNamed(context, '/profile_info');
+            Navigator.pushNamed(context, NavigatorName.profile_info);
           }
         } else if (index == 1) {
-          Navigator.pushNamed(context, '/manual');
+          Navigator.pushNamed(context, NavigatorName.manual);
         } else if (index == 2) {
-          Navigator.pushNamed(context, '/manual_detail', arguments: {
+          Navigator.pushNamed(context, NavigatorName.manual_detail, arguments: {
             'manual': ManualModel(
                 id: '',
-                question: 'Bảo mật thông tin',
-                answer: secureModel.security)
+                question: R.string.information_security.tr(),
+                answer: secureModel!.security)
           });
         } else if (index == 3) {
-          Navigator.pushNamed(context, '/contact',
+          Navigator.pushNamed(context, NavigatorName.contact,
               arguments: {'contact': secureModel});
         } else if (index == 4) {
-          Navigator.pushNamed(context, '/change_password');
+          Navigator.pushNamed(context, NavigatorName.change_password);
         }
       },
       child: Container(
-          color: Colors.transparent,
+          color: R.color.transparent,
           padding: EdgeInsets.only(left: 16, right: 16, top: 20),
           child: Column(
             children: [
@@ -241,10 +242,10 @@ class _ProfileControllerState extends State<ProfileController> {
                   SizedBox(width: 16),
                   Text(title, style: TextStyle(fontSize: 16))
                 ]),
-                Icon(Icons.arrow_forward_ios, color: mainColor, size: 16)
+                Icon(Icons.arrow_forward_ios, color: R.color.mainColor, size: 16)
               ]),
               SizedBox(height: 20),
-              Container(height: 1, color: Colors.grey.withOpacity(0.2))
+              Container(height: 1, color: R.color.grey.withOpacity(0.2))
             ],
           )),
     );
@@ -254,7 +255,7 @@ class _ProfileControllerState extends State<ProfileController> {
     FocusScope.of(context).unfocus();
     final width = MediaQuery.of(context).size.width;
     TextEditingController textEditingController = TextEditingController();
-    textEditingController.text = AppSettings.userInfo.secondPhoneNumber;
+    textEditingController.text = AppSettings.userInfo!.secondPhoneNumber!;
     showDialog(
         context: context,
         builder: (context) => Container(
@@ -266,13 +267,13 @@ class _ProfileControllerState extends State<ProfileController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Cập nhật số điện thoại',
+                        Text(R.string.update_phone_number.tr(),
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -288,20 +289,20 @@ class _ProfileControllerState extends State<ProfileController> {
                           maxLines: 1,
                           obscureText: false,
                           decoration: InputDecoration(
-                            fillColor: textDark,
+                            fillColor: R.color.textDark,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Color(0xffDDDDDD), width: 1.0),
+                                  color: R.color.grayComponentBorder, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide:
-                                  BorderSide(color: mainColor, width: 1.0),
+                                  BorderSide(color: R.color.mainColor, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             contentPadding:
                                 EdgeInsets.only(top: 0, left: 16, right: 16),
-                            hintText: 'Nhập số điện thoại',
+                            hintText: R.string.nhap_so_dien_thoai.tr(),
                           ),
                           onChanged: (value) {})),
                   Container(
@@ -312,18 +313,18 @@ class _ProfileControllerState extends State<ProfileController> {
                           GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
-                              Navigator.pushNamed(context, '/profile_info');
+                              Navigator.pushNamed(context, NavigatorName.profile_info);
                             },
                             child: Container(
                                 height: 48,
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
@@ -333,7 +334,7 @@ class _ProfileControllerState extends State<ProfileController> {
                               final phone = textEditingController.text ?? '';
                               if (phone.isEmpty) {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập số điện thoại');
+                                    context, R.string.ban_chua_nhap_so_dien_thoai.tr());
                                 return;
                               } else {
                                 updatePhone(phone);
@@ -343,19 +344,19 @@ class _ProfileControllerState extends State<ProfileController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Lưu',
+                                child: Text(R.string.save.tr(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -374,7 +375,7 @@ class _ProfileControllerState extends State<ProfileController> {
       await LoginClient().changePhoneNumber(phone);
       await UserClient().fetchUser();
       Navigator.pop(context);
-      Navigator.pushNamed(context, '/profile_info');
+      Navigator.pushNamed(context, NavigatorName.profile_info);
       BotToast.closeAllLoading();
     } catch (error) {
       BotToast.closeAllLoading();

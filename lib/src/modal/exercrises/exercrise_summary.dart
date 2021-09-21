@@ -1,28 +1,28 @@
 import 'package:meta/meta.dart';
 
 class ExercriseSummaryModel {
-  final double targetDuration;
-  final double factDuration;
-  final double durationRatio;
-  final double burnedCalories;
-  final ImagesUrlModel mainExerciseIconUrl;
-  final String mainExerciseName;
-  final double mainExerciseDuration;
-  final ImagesUrlModel otherExerciseIconUrl;
-  final String otherExerciseName;
-  final double otherExerciseDuration;
+  final double? targetDuration;
+  final double? factDuration;
+  final double? durationRatio;
+  final double? burnedCalories;
+  final ImagesUrlModel? mainExerciseIconUrl;
+  final String? mainExerciseName;
+  final double? mainExerciseDuration;
+  final ImagesUrlModel? otherExerciseIconUrl;
+  final String? otherExerciseName;
+  final double? otherExerciseDuration;
 
   ExercriseSummaryModel({
-    @required this.targetDuration,
-    @required this.factDuration,
-    @required this.durationRatio,
-    @required this.burnedCalories,
-    @required this.mainExerciseIconUrl,
-    @required this.mainExerciseName,
-    @required this.mainExerciseDuration,
-    @required this.otherExerciseIconUrl,
-    @required this.otherExerciseName,
-    @required this.otherExerciseDuration,
+    required this.targetDuration,
+    required this.factDuration,
+    required this.durationRatio,
+    required this.burnedCalories,
+    required this.mainExerciseIconUrl,
+    required this.mainExerciseName,
+    required this.mainExerciseDuration,
+    required this.otherExerciseIconUrl,
+    required this.otherExerciseName,
+    required this.otherExerciseDuration,
   });
   @override
   factory ExercriseSummaryModel.fromJson(Map<String, dynamic> json) {
@@ -49,10 +49,10 @@ class ExercriseSummaryModel {
 }
 
 class ImagesUrlModel {
-  final String id;
-  final String url;
+  final String? id;
+  final String? url;
 
-  ImagesUrlModel({@required this.id, @required this.url});
+  ImagesUrlModel({required this.id, required this.url});
   @override
   factory ImagesUrlModel.fromJson(Map<String, dynamic> json) {
     return ImagesUrlModel(

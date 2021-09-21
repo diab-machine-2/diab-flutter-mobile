@@ -4,5 +4,5 @@ import 'package:meta/meta.dart';
 class ExercrisesDataModel {
   final ExercrisesListCategoryModel inputs;
 
-  ExercrisesDataModel({@required this.inputs});
+  ExercrisesDataModel({required this.inputs});
 }

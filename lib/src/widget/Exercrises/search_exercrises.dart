@@ -2,25 +2,25 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
-import 'package:medical/src/modal/exercrises/exercrises_categogy_request.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef ExercrisesCategorycallback = Function(
-    List<ExercrisesCategoryModel>, int);
+    List<ExercrisesCategoryModel>?, int?);
 
 class SearchExercrisesController extends StatefulWidget {
-  final List<ExercrisesCategoryModel> model;
-  final ExercrisesCategorycallback callback;
-  final String type;
-  final String id;
+  final List<ExercrisesCategoryModel>? model;
+  final ExercrisesCategorycallback? callback;
+  final String? type;
+  final String? id;
   SearchExercrisesController({this.type, this.id, this.callback, this.model});
 
   @override
@@ -32,9 +32,9 @@ class _SearchExercrisesControllerState
     extends BaseState<SearchExercrisesController> {
   ScrollController _scrollController = ScrollController();
   bool isClicked = false;
-  BuildContext currentContext;
-  int selectedItem;
-  int sumCalories = 0;
+  late BuildContext currentContext;
+  int? selectedItem;
+  int? sumCalories = 0;
   int page = 1;
   bool hasMore = false;
   bool isLoading = false;
@@ -65,8 +65,8 @@ class _SearchExercrisesControllerState
         child: BlocBuilder<ExercrisesBloc, ExercrisesState>(
             builder: (BuildContext context, ExercrisesState state) {
           currentContext = context;
-          ExercrisesListCategoryModel model;
-          List<ExercrisesCategoryModel> selectedCategories = [];
+          ExercrisesListCategoryModel? model;
+          List<ExercrisesCategoryModel>? selectedCategories = [];
 
           if (state is ExercrisesInitial) {
             BlocProvider.of<ExercrisesBloc>(context)
@@ -85,40 +85,40 @@ class _SearchExercrisesControllerState
           selectedItem = selectedCategories != [] && selectedCategories != null
               ? selectedCategories.length
               : 0;
-          sumCalories = selectedCategories
+          sumCalories = selectedCategories!
               .fold(
                   0,
-                  (previousValue, element) =>
-                      previousValue + element.burnedCalorie)
+                  (dynamic previousValue, element) =>
+                      previousValue + element!.burnedCalorie)
               .round();
           return GestureDetector(
             onTap: () {
               FocusScope.of(context).unfocus();
             },
             child: Scaffold(
-              backgroundColor: backgroundColor,
+              backgroundColor: R.color.backgroundColor,
               body: Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         image:
-                            AssetImage('assets/images/background_splash.png'),
+                            AssetImage(R.drawable.bg_splash),
                         fit: BoxFit.cover)),
                 child: Column(
                   children: [
                     CustomAppBar(
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: R.color.transparent,
                       title: Text(
                           widget.type == 'update'
-                              ? 'Chỉnh sửa vận động'
-                              : 'Chọn loại vận động',
+                              ? R.string.chinh_sua_van_dong.tr()
+                              : R.string.chon_loai_van_dong.tr(),
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: textDark)),
+                              color: R.color.textDark)),
                       leadingIcon: IconButton(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          icon: Icon(Icons.arrow_back, color: textDark),
+                          splashColor: R.color.transparent,
+                          highlightColor: R.color.transparent,
+                          icon: Icon(Icons.arrow_back, color: R.color.textDark),
                           onPressed: () {
                             Navigator.pop(context);
 
@@ -135,10 +135,10 @@ class _SearchExercrisesControllerState
                       //       padding: const EdgeInsets.only(left: 16, right: 16),
                       //       child: isClicked
                       //           ? Image.asset(
-                      //               'assets/images/help_circle_active.png',
+                      //               R.drawable.ic_help_circle_active,
                       //               width: 24,
                       //               height: 24)
-                      //           : Image.asset('assets/images/help_circle.png',
+                      //           : Image.asset(R.drawable.ic_help_circle,
                       //               width: 24, height: 24),
                       //     ),
                       //   ),
@@ -150,16 +150,16 @@ class _SearchExercrisesControllerState
                             padding: const EdgeInsets.only(
                                 left: 16, right: 16, bottom: 16),
                             child: isClicked
-                                ? Image.asset('assets/images/Bg_add_HbA1c.png')
+                                ? Image.asset(R.drawable.im_add_hba1c)
                                 : SizedBox()),
                         Container(
                             height: 54,
                             margin: EdgeInsets.only(left: 16, right: 16),
                             padding: EdgeInsets.only(left: 16, right: 16),
                             decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: R.color.white,
                                 borderRadius: BorderRadius.circular(30),
-                                border: Border.all(color: grayComponentBorder)),
+                                border: Border.all(color: R.color.grayComponentBorder)),
                             child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -173,12 +173,12 @@ class _SearchExercrisesControllerState
                                               border: InputBorder.none,
                                               contentPadding:
                                                   EdgeInsets.only(top: -20),
-                                              hintText: 'Tìm kiếm hoạt động',
-                                              fillColor: textDark),
+                                              hintText: R.string.tim_kiem_hoat_dong.tr(),
+                                              fillColor: R.color.textDark),
                                         )),
                                   ),
-                                  Image.asset('assets/images/search.png',
-                                      width: 24, height: 24, color: mainColor),
+                                  Image.asset(R.drawable.ic_search,
+                                      width: 24, height: 24, color: R.color.mainColor),
                                 ])),
                         model == null
                             ? Center(child: CircularProgressIndicator())
@@ -205,7 +205,7 @@ class _SearchExercrisesControllerState
                         // _submitData();
                       },
                       child: Container(
-                        color: Colors.white,
+                        color: R.color.white,
                         child: Column(
                           children: [
                             Padding(
@@ -215,21 +215,21 @@ class _SearchExercrisesControllerState
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('$selectedItem hoạt động'),
+                                  Text('$selectedItem ${R.string.hoat_dong_lower_case.tr()}'),
                                   Row(
                                     children: [
-                                      Text(formatNumber(sumCalories.toDouble()),
+                                      Text(formatNumber(sumCalories!.toDouble()),
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 20,
                                               fontWeight: FontWeight.w700)),
                                       Padding(
                                         padding: const EdgeInsets.only(
                                             top: 2.0, left: 2),
                                         child: Text(
-                                          'kcal',
+                                          R.string.kcal.tr(),
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontWeight: FontWeight.w400,
                                               fontSize: 14.0),
                                         ),
@@ -244,7 +244,7 @@ class _SearchExercrisesControllerState
                               child: widget.type == 'input'
                                   ? GestureDetector(
                                       onTap: () {
-                                        widget.callback(
+                                        widget.callback!(
                                             selectedCategories, sumCalories);
                                         Navigator.pop(context);
                                       },
@@ -254,20 +254,20 @@ class _SearchExercrisesControllerState
                                         height: 48,
                                         width: 195,
                                         decoration: BoxDecoration(
-                                            color: mainColor,
+                                            color: R.color.mainColor,
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             gradient: LinearGradient(
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.centerRight,
                                                 colors: [
-                                                  greenGradientTop,
-                                                  greenGradientBottom
+                                                  R.color.greenGradientTop,
+                                                  R.color.greenGradientBottom
                                                 ])),
                                         child: Center(
-                                            child: Text('Lưu',
+                                            child: Text(R.string.save.tr(),
                                                 style: TextStyle(
-                                                    color: Colors.white,
+                                                    color: R.color.white,
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 16))),
                                       ))
@@ -283,7 +283,7 @@ class _SearchExercrisesControllerState
                                             children: [
                                               GestureDetector(
                                                 onTap: () {
-                                                  widget.callback([], 0);
+                                                  widget.callback!([], 0);
                                                   Navigator.pop(context);
                                                 },
                                                 child: Container(
@@ -294,12 +294,12 @@ class _SearchExercrisesControllerState
                                                             BorderRadius
                                                                 .circular(200),
                                                         border: Border.all(
-                                                            color: red,
+                                                            color: R.color.red,
                                                             width: 2)),
                                                     child: Center(
-                                                      child: Text('Xoá dữ liệu',
+                                                      child: Text(R.string.xoa_du_lieu.tr(),
                                                           style: TextStyle(
-                                                              color: Colors.red,
+                                                              color: R.color.red,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -308,7 +308,7 @@ class _SearchExercrisesControllerState
                                               ),
                                               GestureDetector(
                                                 onTap: () {
-                                                  widget.callback(
+                                                  widget.callback!(
                                                       selectedCategories,
                                                       sumCalories);
                                                   Navigator.pop(context);
@@ -317,7 +317,7 @@ class _SearchExercrisesControllerState
                                                   height: 48,
                                                   width: 164,
                                                   decoration: BoxDecoration(
-                                                      color: mainColor,
+                                                      color: R.color.mainColor,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               200),
@@ -327,13 +327,13 @@ class _SearchExercrisesControllerState
                                                           end: Alignment
                                                               .centerRight,
                                                           colors: [
-                                                            greenGradientTop,
-                                                            greenGradientBottom
+                                                            R.color.greenGradientTop,
+                                                            R.color.greenGradientBottom
                                                           ])),
                                                   child: Center(
-                                                    child: Text('Lưu',
+                                                    child: Text(R.string.save.tr(),
                                                         style: TextStyle(
-                                                            color: Colors.white,
+                                                            color: R.color.white,
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight
@@ -358,12 +358,12 @@ class _SearchExercrisesControllerState
   }
 
   Widget buildActivities(ExercrisesListCategoryModel data,
-      List<ExercrisesCategoryModel> selectedCategories, int type) {
+      List<ExercrisesCategoryModel?>? selectedCategories, int type) {
     final title = type == 0
-        ? 'Hoạt động phổ biến'
+        ? R.string.hoat_dong_pho_bien.tr()
         : type == 1
-            ? 'Hoạt động thường xuyên'
-            : 'Các hoạt động khác';
+            ? R.string.hoat_dong_thuong_xuyen.tr()
+            : R.string.cac_hoat_dong_khac.tr();
     final model = type == 0
         ? data.exerciseCategoryCommons
         : type == 1
@@ -379,7 +379,7 @@ class _SearchExercrisesControllerState
                 padding: const EdgeInsets.all(16),
                 child: Text(title,
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 18,
                         fontWeight: FontWeight.w600)),
               ),
@@ -392,11 +392,11 @@ class _SearchExercrisesControllerState
                     padding: EdgeInsets.all(0),
                     itemCount: model.length,
                     separatorBuilder: (context, index) {
-                      return Container(height: 1, color: Color(0xffD6D8E0));
+                      return Container(height: 1, color: R.color.color0xffD6D8E0);
                     },
                     itemBuilder: (BuildContext context, int index) {
-                      final filterResult = selectedCategories.where((element) =>
-                          model[index].categoryId == element.categoryId);
+                      final filterResult = selectedCategories!.where((element) =>
+                          model[index].categoryId == element!.categoryId);
                       final selectedModel =
                           filterResult.length > 0 ? filterResult.first : null;
                       return GestureDetector(
@@ -420,23 +420,23 @@ class _SearchExercrisesControllerState
                                 left: 16, right: 16, top: 8, bottom: 8),
                             decoration: BoxDecoration(
                                 color: selectedModel == null
-                                    ? Colors.transparent
-                                    : Color(0xffC3E8D3).withOpacity(0.5),
+                                    ? R.color.transparent
+                                    : R.color.color0xFFC3E8D3.withOpacity(0.5),
                                 border: Border.all(
                                     color: selectedModel == null
-                                        ? Colors.transparent
-                                        : Color(0xff72CB9C))),
+                                        ? R.color.transparent
+                                        : R.color.color0xff72CB9C)),
                             child: Row(
                               children: [
                                 Stack(
                                     alignment: AlignmentDirectional.center,
                                     children: [
                                       Image.asset(
-                                          'assets/images/activity_empty.png',
+                                          R.drawable.bg_activity_empty,
                                           width: 50,
                                           height: 50),
                                       Image.network(
-                                          model[index].cover.url ?? '',
+                                          model[index].cover!.url ?? '',
                                           width: 35,
                                           height: 35)
                                     ]),
@@ -444,9 +444,9 @@ class _SearchExercrisesControllerState
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(model[index].category,
+                                    Text(model[index].category!,
                                         style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 15,
                                             fontWeight: FontWeight.w600)),
                                     SizedBox(
@@ -459,19 +459,19 @@ class _SearchExercrisesControllerState
                                               Text(
                                                   selectedModel == null
                                                       ? ''
-                                                      : selectedModel.duration
+                                                      : selectedModel.duration!
                                                                   .round() ==
                                                               selectedModel
                                                                   .duration
                                                           ? selectedModel
-                                                              .duration
+                                                              .duration!
                                                               .round()
                                                               .toString()
                                                           : selectedModel
                                                               .duration
                                                               .toString(),
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w400)),
@@ -480,9 +480,9 @@ class _SearchExercrisesControllerState
                                               ),
                                               selectedModel == null
                                                   ? SizedBox()
-                                                  : Text('phút,',
+                                                  : Text('${R.string.minute.tr()},',
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 14,
                                                           fontWeight:
                                                               FontWeight.w400)),
@@ -496,7 +496,7 @@ class _SearchExercrisesControllerState
                                                           selectedModel
                                                               .burnedCalorie),
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w400)),
@@ -509,7 +509,7 @@ class _SearchExercrisesControllerState
                                                       : selectedModel.unit
                                                           .toString(),
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.w400)),

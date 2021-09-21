@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 class MotivationDataModel {
   final List<MotivationModel> models;
-  final bool hasMore;
+  final bool? hasMore;
 
-  MotivationDataModel({@required this.models, @required this.hasMore});
+  MotivationDataModel({required this.models, required this.hasMore});
 }

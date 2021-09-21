@@ -1,7 +1,6 @@
-import 'dart:collection';
-
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:dio/dio.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/modal/user/manual.dart';
@@ -16,9 +15,10 @@ import 'package:medical/src/modal/user/secure.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class UserClient extends FetchClient {
-  Future<UserModel> fetchUser() async {
+  Future<UserModel?> fetchUser() async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Patient/CurrentToken');
@@ -39,7 +39,7 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -60,11 +60,11 @@ class UserClient extends FetchClient {
   //       throw error;
   //     }
   //   } catch (e) {
-  //     throw 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+  //     throw R.string.error_can_not_connect_to_server.tr();
   //   }
   // }
 
-  Future<List<ManualModel>> fetchManuals() async {
+  Future<List<ManualModel>?> fetchManuals() async {
     try {
       final Response response = await super.fetchData(
           url: '/App/Profile/Instruction', params: {'takeAll': 'true'});
@@ -81,11 +81,11 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<SecureModel> fetchInfoSecure() async {
+  Future<SecureModel?> fetchInfoSecure() async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Profile/Information');
@@ -102,11 +102,11 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<GoalInfoModel> fetchGoalInfo() async {
+  Future<GoalInfoModel?> fetchGoalInfo() async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Patient/Target');
@@ -123,7 +123,7 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -148,16 +148,16 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   Future<bool> updateAvatar(
-    String patientId,
+    String? patientId,
     String path,
   ) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'patientId': patientId,
       };
       final response = await super.putHttp(
@@ -174,22 +174,22 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> updateUserInfo(String patientId, UserModel userInfo) async {
+  Future<bool> updateUserInfo(String? patientId, UserModel userInfo) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'patientId': patientId,
         'fullName': userInfo.fullName,
         'dateOfBirth': userInfo.dateOfBirth.toString(),
         'gender': userInfo.genderType == null || userInfo.genderType == 0
             ? '1'
             : userInfo.genderType.toString(),
-        'provinceId': userInfo.province == null ? '' : userInfo.province.id,
-        'districtId': userInfo.district == null ? '' : userInfo.district.id,
-        'wardId': userInfo.ward == null ? '' : userInfo.ward.id,
+        'provinceId': userInfo.province == null ? '' : userInfo.province!.id,
+        'districtId': userInfo.district == null ? '' : userInfo.district!.id,
+        'wardId': userInfo.ward == null ? '' : userInfo.ward!.id,
         'address': userInfo.address ?? '',
         'diabetesStatus': userInfo.diabetesStatus == null
             ? ''
@@ -213,16 +213,16 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<List<dynamic>> fetchDiabeteStates() async {
+  Future<List<dynamic>?> fetchDiabeteStates() async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Patient/DiabeteStates');
       if (response.statusCode == 200) {
-        final List<dynamic> result = response.data['data'];
+        final List<dynamic>? result = response.data['data'];
         return result;
       } else {
         final error = Error.fromJson(response);
@@ -231,11 +231,11 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<List<ProvinceModel>> fetchProvinces() async {
+  Future<List<ProvinceModel>?> fetchProvinces() async {
     try {
       final Response response = await super.fetchData(
           url: '/App/Division/Provinces',
@@ -253,11 +253,11 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<List<ProvinceModel>> fetchDictricts(String provinceId) async {
+  Future<List<ProvinceModel>?> fetchDictricts(String provinceId) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/Division/Dictricts',
@@ -275,11 +275,11 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<List<ProvinceModel>> fetchWards(String districtId) async {
+  Future<List<ProvinceModel>?> fetchWards(String districtId) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/Division/Wards',
@@ -297,11 +297,11 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<List<PatientTimeFrameModel>> fetchPatientTimeFrame() async {
+  Future<List<PatientTimeFrameModel>?> fetchPatientTimeFrame() async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Patient/PatientTimeFrame');
@@ -318,7 +318,7 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -343,7 +343,7 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -363,11 +363,11 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> inputMotivationDiary(String content) async {
+  Future<bool> inputMotivationDiary(String? content) async {
     try {
       final Response response = await super.postUri(
           baseOption: true,
@@ -382,11 +382,11 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> editMotivationDiary(String id, String content) async {
+  Future<bool> editMotivationDiary(String? id, String? content) async {
     try {
       final Response response = await super.putData(
           url: '/App/Profile/MotivationDiary/Input',
@@ -400,7 +400,7 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -420,11 +420,11 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<ScheduleReminderModel> fetchScheduleReminderDetail(String id) async {
+  Future<ScheduleReminderModel> fetchScheduleReminderDetail(String? id) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Patient/PatientRemind/$id');
@@ -438,12 +438,12 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   Future<bool> inputScheduleReminder(String name, int remindType, int time,
-      String content, bool isActive) async {
+      String content, bool? isActive) async {
     try {
       final Response response = await super.postUri(
           baseOption: true,
@@ -464,12 +464,12 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> editScheduleReminder(String id, String name, int remindType,
-      int time, String content, bool isActive) async {
+  Future<bool> editScheduleReminder(String? id, String? name, int? remindType,
+      int? time, String? content, bool? isActive) async {
     try {
       final Response response =
           await super.putData(url: '/App/Patient/PatientRemind/Input', params: {
@@ -489,11 +489,11 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> deleteScheduleReminder(String id) async {
+  Future<bool> deleteScheduleReminder(String? id) async {
     try {
       final Response response =
           await super.delete(url: '/App/Patient/PatientRemind/Input/$id');
@@ -508,7 +508,7 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -525,7 +525,7 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -542,7 +542,7 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -567,7 +567,7 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -586,7 +586,7 @@ class UserClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

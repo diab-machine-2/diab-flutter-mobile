@@ -1,21 +1,22 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-typedef TimeCallback = Function(TimeFrameModel);
+typedef TimeCallback = Function(TimeFrameModel?);
 
 class FoodTimeFrame extends StatefulWidget {
-  final TimeFrameModel selected;
-  final TimeCallback callback;
-  FoodTimeFrame({@required this.selected, this.callback});
+  final TimeFrameModel? selected;
+  final TimeCallback? callback;
+  FoodTimeFrame({required this.selected, this.callback});
   @override
   _FoodTimeFrameState createState() => _FoodTimeFrameState();
 }
 
 class _FoodTimeFrameState extends State<FoodTimeFrame> {
-  TimeFrameModel selected;
+  TimeFrameModel? selected;
 
   List<TimeFrameModel> times = [];
 
@@ -53,7 +54,7 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
             child: Container(
               height: 3.86,
               width: 60,
-              decoration: BoxDecoration(color: Color(0xffE5E5E5)),
+              decoration: BoxDecoration(color: R.color.color0xffE5E5E5),
             ),
           ),
           SizedBox(height: 27),
@@ -62,7 +63,7 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Chọn khung giờ',
+                Text(R.string.chon_khung_gio.tr(),
                     style:
                         TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                 GestureDetector(
@@ -72,7 +73,7 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
                   child: Container(
                     height: 24,
                     width: 24,
-                    child: Image.asset('assets/images/x_icon.png'),
+                    child: Image.asset(R.drawable.ic_close),
                   ),
                 ),
               ],
@@ -98,7 +99,7 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
             child: Center(
               child: GestureDetector(
                 onTap: () {
-                  widget.callback(selected);
+                  widget.callback!(selected);
                   Navigator.pop(context);
                 },
                 child: Container(
@@ -108,12 +109,12 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [greenGradientTop, greenGradientBottom]),
+                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                         borderRadius: BorderRadius.circular(200)),
                     child: Center(
-                      child: Text('Lưu',
+                      child: Text(R.string.save.tr(),
                           style: TextStyle(
-                              color: Colors.white,
+                              color: R.color.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w600)),
                     )),
@@ -136,9 +137,9 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
               });
             },
             child: Container(
-              color: (selected != null && selected.id == model.id)
-                  ? greenbg
-                  : Colors.white,
+              color: (selected != null && selected!.id == model.id)
+                  ? R.color.greenbg
+                  : R.color.white,
               child: Column(
                 children: [
                   Padding(
@@ -149,18 +150,18 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          selected != null && selected.id == model.id
-                              ? Text(model.name,
+                          selected != null && selected!.id == model.id
+                              ? Text(model.name!,
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: mainColor))
-                              : Text(model.name,
+                                      color: R.color.mainColor))
+                              : Text(model.name!,
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400)),
-                          selected != null && selected.id == model.id
-                              ? Image.asset('assets/images/check_mark.png',
+                          selected != null && selected!.id == model.id
+                              ? Image.asset(R.drawable.ic_check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],
@@ -173,9 +174,9 @@ class _FoodTimeFrameState extends State<FoodTimeFrame> {
                       ? Container(
                           height: 1,
                           width: 373,
-                          color: selected != null && selected.id == model.id
-                              ? greenbg
-                              : Color(0xffD6D8E0))
+                          color: selected != null && selected!.id == model.id
+                              ? R.color.greenbg
+                              : R.color.color0xffD6D8E0)
                       : SizedBox(),
                 ],
               ),

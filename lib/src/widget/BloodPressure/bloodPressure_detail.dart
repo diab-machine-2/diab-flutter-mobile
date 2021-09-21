@@ -1,21 +1,20 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:grouped_list/grouped_list.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
-import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodPressureDetailController extends StatefulWidget {
-  BloodPressureDetailController({Key key}) : super(key: key);
+  BloodPressureDetailController({Key? key}) : super(key: key);
   @override
   BloodPressureDetailControllerState createState() =>
       BloodPressureDetailControllerState();
@@ -27,24 +26,24 @@ class BloodPressureDetailControllerState
   @override
   bool get wantKeepAlive => true;
 
-  BuildContext currentContext;
+  late BuildContext currentContext;
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
 
   int page = 1;
-  bool hasMore = false;
+  bool? hasMore = false;
   bool isLoading = false;
   int periodFilterType = 1;
 
-  String bloodPressureID;
+  String? bloodPressureID;
 
   @override
   void initState() {
     periodFilterType =
-        BloodPressureDetailTabbarController.of(context).periodFilterType;
+        BloodPressureDetailTabbarController.of(context)!.periodFilterType;
     bloodPressureID =
-        BloodPressureDetailTabbarController.of(context).bloodPressureID;
+        BloodPressureDetailTabbarController.of(context)!.bloodPressureID;
     super.initState();
     initializeDateFormatting();
     DartNotificationCenter.subscribe(
@@ -56,7 +55,7 @@ class BloodPressureDetailControllerState
 
     itemPositionsListener.itemPositions.addListener(() {
       final lastIndex = itemPositionsListener.itemPositions.value.last.index;
-      final state = BlocProvider.of<BloodPressureBloc>(currentContext).state;
+      final BloodPressureState state = BlocProvider.of<BloodPressureBloc>(currentContext).state;
       if (state is BloodPressureDataLoaded) {
         final model = state.bloodPressureModel;
         if (model.length - 2 == lastIndex) {
@@ -84,17 +83,17 @@ class BloodPressureDetailControllerState
 
   loadDataToID(int periodFilter) {
     periodFilterType = periodFilter;
-    if (BloodPressureDetailTabbarController.of(context).bloodPressureID !=
+    if (BloodPressureDetailTabbarController.of(context)!.bloodPressureID !=
         null) {
       setState(() {});
       _loadMorePage();
     }
     bloodPressureID =
-        BloodPressureDetailTabbarController.of(context).bloodPressureID;
+        BloodPressureDetailTabbarController.of(context)!.bloodPressureID;
   }
 
   Future<bool> _loadMorePage() async {
-    if (isLoading || !hasMore) {
+    if (isLoading || !hasMore!) {
       return true;
     } else {
       isLoading = true;
@@ -129,7 +128,7 @@ class BloodPressureDetailControllerState
         child: BlocBuilder<BloodPressureBloc, BloodPressureState>(
             builder: (BuildContext context, BloodPressureState state) {
           currentContext = context;
-          List<BloodPressureModel> model;
+          List<BloodPressureModel>? model;
           if (state is BloodPressureInitial) {
             BlocProvider.of<BloodPressureBloc>(context).add(
                 FetchInputBloodPressure(
@@ -148,7 +147,7 @@ class BloodPressureDetailControllerState
           if (state is BloodPressureDataLoaded) {
             model = state.bloodPressureModel;
             hasMore = state.hasMore;
-            if (hasMore) {
+            if (hasMore!) {
               page += 1;
             }
             isLoading = false;
@@ -157,7 +156,7 @@ class BloodPressureDetailControllerState
               final model = state.bloodPressureModel;
               for (int i = 0; i < model.length; i++) {
                 if (model[i].id == bloodPressureID) {
-                  BloodPressureDetailTabbarController.of(context)
+                  BloodPressureDetailTabbarController.of(context)!
                       .bloodPressureID = null;
                   itemScrollController.jumpTo(index: i);
                   Future.delayed(const Duration(seconds: 3), () {
@@ -167,7 +166,7 @@ class BloodPressureDetailControllerState
                   });
                 }
               }
-              if (BloodPressureDetailTabbarController.of(context)
+              if (BloodPressureDetailTabbarController.of(context)!
                       .bloodPressureID !=
                   null) {
                 _loadMorePage();
@@ -177,14 +176,13 @@ class BloodPressureDetailControllerState
           return RefreshIndicator(
             onRefresh: _refresh,
             child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
-                          image:
-                              AssetImage('assets/images/detail_Background.png'),
+                          image: AssetImage(R.drawable.bg_detail),
                           fit: BoxFit.cover,
                         )),
                         child: ScrollablePositionedList.builder(
@@ -194,19 +192,19 @@ class BloodPressureDetailControllerState
                           padding: EdgeInsets.only(top: 16, bottom: 100),
                           itemCount: model.length,
                           itemBuilder: (context, index) {
-                            final element = model[index];
+                            final element = model![index];
                             final previousElement =
                                 index == 0 ? null : model[index - 1];
 
                             final showDate = previousElement == null
                                 ? true
-                                : (convertCustomDate(element.date) !=
-                                    convertCustomDate(previousElement.date));
+                                : (convertCustomDate(element.date!) !=
+                                    convertCustomDate(previousElement.date!));
 
                             return GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, '/add_bloodPressure',
+                                      context, NavigatorName.add_blood_pressure,
                                       arguments: {
                                         'type': 'update',
                                         'id': element.id
@@ -224,7 +222,7 @@ class BloodPressureDetailControllerState
                                               padding: EdgeInsets.only(
                                                   top: 8, bottom: 10),
                                               child: Text(
-                                                convertCustomDate(element.date),
+                                                convertCustomDate(element.date!),
                                                 textAlign: TextAlign.left,
                                                 style: TextStyle(
                                                     fontSize: 18,
@@ -237,15 +235,15 @@ class BloodPressureDetailControllerState
                                           decoration: BoxDecoration(
                                               border: Border.all(
                                                   color: bloodPressureID == null
-                                                      ? Colors.white
+                                                      ? R.color.white
                                                       : (bloodPressureID ==
                                                               element.id
-                                                          ? Colors.red
-                                                          : Colors.white),
+                                                          ? R.color.red
+                                                          : R.color.white),
                                                   width: 2),
                                               borderRadius:
                                                   BorderRadius.circular(16),
-                                              color: Colors.white),
+                                              color: R.color.white),
                                           child: Padding(
                                             padding: const EdgeInsets.all(16.0),
                                             child: Column(children: [
@@ -277,7 +275,7 @@ class BloodPressureDetailControllerState
                                                                         13))),
                                                     child: Text(
                                                         element
-                                                            .bloodPressureType,
+                                                            .bloodPressureType!,
                                                         style: TextStyle(
                                                             color: toColor(
                                                                 element
@@ -291,7 +289,7 @@ class BloodPressureDetailControllerState
                                                   Row(
                                                     children: [
                                                       Text(
-                                                          element.systolic
+                                                          element.systolic!
                                                               .toInt()
                                                               .toString(),
                                                           style: TextStyle(
@@ -316,7 +314,7 @@ class BloodPressureDetailControllerState
                                                                   FontWeight
                                                                       .w400)),
                                                       Text(
-                                                          element.diastolic
+                                                          element.diastolic!
                                                               .toInt()
                                                               .toString(),
                                                           style: TextStyle(
@@ -330,10 +328,10 @@ class BloodPressureDetailControllerState
                                                                   FontWeight
                                                                       .w400)),
                                                       SizedBox(width: 4),
-                                                      Text('mmHg',
+                                                      Text(R.string.mm_hg.tr(),
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.black,
+                                                                  R.color.black,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -346,7 +344,7 @@ class BloodPressureDetailControllerState
                                                                 bottom: 10.0),
                                                         child: Text('.',
                                                             style: TextStyle(
-                                                                color: Colors
+                                                                color: R.color
                                                                     .black,
                                                                 fontSize: 30,
                                                                 fontWeight:
@@ -355,7 +353,7 @@ class BloodPressureDetailControllerState
                                                       ),
                                                       SizedBox(width: 8),
                                                       Text(
-                                                          element.pulseRate
+                                                          element.pulseRate!
                                                               .toInt()
                                                               .toString(),
                                                           style: TextStyle(
@@ -369,10 +367,12 @@ class BloodPressureDetailControllerState
                                                                   FontWeight
                                                                       .w400)),
                                                       SizedBox(width: 4),
-                                                      Text('lần/phút',
+                                                      Text(
+                                                          R.string.time_per_minute
+                                                              .tr(),
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.black,
+                                                                  R.color.black,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -386,16 +386,16 @@ class BloodPressureDetailControllerState
                                                 children: [
                                                   Text(
                                                     convertToUTC(
-                                                        element.date, 'HH:mm'),
+                                                        element.date!, 'HH:mm'),
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.w400),
                                                   ),
-                                                  Text(', ' + element.timeFrame,
+                                                  Text(', ' + element.timeFrame!,
                                                       style: TextStyle(
-                                                          color: Colors.black,
+                                                          color: R.color.black,
                                                           fontSize: 16,
                                                           fontWeight:
                                                               FontWeight.w400)),
@@ -411,8 +411,8 @@ class BloodPressureDetailControllerState
                                                         SizedBox(height: 16),
                                                         Container(
                                                             height: 1,
-                                                            color: Color(
-                                                                0xffEEEFF3)),
+                                                            color: R.color
+                                                                .color0xffEEEFF3),
                                                         SizedBox(height: 16),
                                                         Row(
                                                           crossAxisAlignment:
@@ -420,9 +420,9 @@ class BloodPressureDetailControllerState
                                                                   .start,
                                                           children: [
                                                             Text(
-                                                              'Lý do: ',
+                                                              '${R.string.ly_do.tr()}: ',
                                                               style: TextStyle(
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .black,
                                                                   fontSize: 16,
                                                                   fontWeight:
@@ -431,9 +431,10 @@ class BloodPressureDetailControllerState
                                                             ),
                                                             Expanded(
                                                               child: Text(
-                                                                element.reason,
+                                                                element.reason!,
                                                                 style: TextStyle(
-                                                                    color: Colors
+                                                                    color: R
+                                                                        .color
                                                                         .black,
                                                                     fontSize:
                                                                         16,

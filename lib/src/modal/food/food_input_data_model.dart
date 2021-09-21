@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 class FoodInputDataModel {
   final List<MealDayItemModel> inputs;
-  final bool hasMore;
+  final bool? hasMore;
 
-  FoodInputDataModel({@required this.inputs, @required this.hasMore});
+  FoodInputDataModel({required this.inputs, required this.hasMore});
 }

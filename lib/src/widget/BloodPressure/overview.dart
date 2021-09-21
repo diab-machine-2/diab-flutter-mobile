@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_chart.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_distribution_chart.dart';
 import 'package:medical/src/widget/BloodPressure/widget/heart_chart.dart';
@@ -7,7 +8,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'widget/bloodPressure_contain_detail.dart';
 
 class BloodPressureOverviewController extends StatefulWidget {
-  BloodPressureOverviewController({Key key}) : super(key: key);
+  BloodPressureOverviewController({Key? key}) : super(key: key);
   @override
   BloodPressureOverviewControllerState createState() =>
       BloodPressureOverviewControllerState();
@@ -34,28 +35,30 @@ class BloodPressureOverviewControllerState
   reloadData(int periodFilterType) {
     _scrollController.jumpTo(0);
     if (bloodPressureDetailKey.currentState != null) {
-      bloodPressureDetailKey.currentState.reloadData(periodFilterType);
+      bloodPressureDetailKey.currentState!.reloadData(periodFilterType);
     }
     if (bloodPressureDistributionChart.currentState != null) {
-      bloodPressureDistributionChart.currentState.reloadData(periodFilterType);
+      bloodPressureDistributionChart.currentState!.reloadData(periodFilterType);
     }
     if (bloodPressureTrendKey.currentState != null) {
-      bloodPressureTrendKey.currentState.reloadData(periodFilterType);
+      bloodPressureTrendKey.currentState!.reloadData(periodFilterType);
     }
     if (bloodPressureHeartKey.currentState != null) {
-      bloodPressureHeartKey.currentState.reloadData(periodFilterType);
+      bloodPressureHeartKey.currentState!.reloadData(periodFilterType);
     }
   }
 
   @override
   bool get wantKeepAlive => true;
+  
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
         body: Container(
       decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/images/HbA1c_high.png'),
+              image: AssetImage(R.drawable.bg_hba1c_high),
               fit: BoxFit.cover)),
       child: ListView(
           controller: _scrollController,

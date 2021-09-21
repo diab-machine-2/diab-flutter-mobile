@@ -3,35 +3,30 @@ import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
-import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/emotion/activity_model.dart';
 import 'package:medical/src/modal/emotion/emotion_model.dart';
 import 'package:medical/src/modal/emotion/symptom_model.dart';
-import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/emotion/emotion_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/widget/Emotion/widget/tags/item_tags_custom.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-typedef ActivityCallback = Function(List<ActivityModel>, String);
+typedef ActivityCallback = Function(List<ActivityModel>?, String?);
 
 class AddWorkController extends StatefulWidget {
-  final String type;
-  final EmotionModel emotion;
-  final List<SymptomModel> symptoms;
-  final List<ActivityModel> activities;
-  final String otherSymptom;
-  final String otherActivity;
-  final ActivityCallback callback;
+  final String? type;
+  final EmotionModel? emotion;
+  final List<SymptomModel>? symptoms;
+  final List<ActivityModel>? activities;
+  final String? otherSymptom;
+  final String? otherActivity;
+  final ActivityCallback? callback;
 
   AddWorkController(
       {this.type,
@@ -48,10 +43,10 @@ class AddWorkController extends StatefulWidget {
 class _AddWorkControllerState extends BaseState<AddWorkController> {
   bool isClicked = false;
   List<ActivityModel> model = [];
-  List<ActivityModel> selectedModel = [];
-  String otherActivity;
+  List<ActivityModel>? selectedModel = [];
+  String? otherActivity;
 
-  ShortGuiModel des;
+  ShortGuiModel? des;
 
   void initState() {
     super.initState();
@@ -87,28 +82,28 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: backgroundColor,
+        backgroundColor: R.color.backgroundColor,
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/images/background_splash.png'),
+                  image: AssetImage(R.drawable.bg_splash),
                   fit: BoxFit.cover)),
           child: Column(
             children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 title: Text(
                     widget.type == 'update'
-                        ? 'Chỉnh sửa cảm xúc'
-                        : 'Nhập cảm xúc',
+                        ? R.string.chinh_sua_cam_xuc.tr()
+                        : R.string.nhap_cam_xuc.tr(),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark)),
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    icon: Icon(Icons.arrow_back, color: textDark),
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -122,9 +117,9 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 16, right: 16),
                       child: isClicked
-                          ? Image.asset('assets/images/help_circle_active.png',
+                          ? Image.asset(R.drawable.ic_help_circle_active,
                               width: 24, height: 24)
-                          : Image.asset('assets/images/help_circle.png',
+                          : Image.asset(R.drawable.ic_help_circle,
                               width: 24, height: 24),
                     ),
                   ),
@@ -140,7 +135,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                                 input: true,
                                 data: des,
                                 titleDetail:
-                                    'Kiểm soát cảm xúc bệnh tiểu đường'),
+                                    R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr()),
                           )
                         : SizedBox(),
                     Expanded(
@@ -149,9 +144,9 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       children: [
                         Center(
                           child: Text(
-                            'Bạn đã làm gì\ntrong ngày?',
+                            R.string.ban_da_lam_gi_trong_ngay.tr(),
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700),
                             textAlign: TextAlign.center,
@@ -160,9 +155,9 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                         SizedBox(height: 16),
                         Center(
                           child: Text(
-                              'Nhấn \'Tiếp tục\' nếu bạn không có hoạt động nào',
+                              R.string.nhan_tiep_tuc_neu_ban_khong_co_hoat_dong_nao.tr(),
                               style: TextStyle(
-                                  color: textDark,
+                                  color: R.color.textDark,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400)),
                         ),
@@ -192,7 +187,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                     Navigator.pop(context);
                     Navigator.pop(context);
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/add_insight', arguments: {
+                    Navigator.pushNamed(context, NavigatorName.add_insight, arguments: {
                       'type': 'input',
                       'emotion': widget.emotion,
                       'symptoms': widget.symptoms,
@@ -201,7 +196,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       'otherActivity': otherActivity,
                     });
                   } else {
-                    widget.callback(selectedModel, otherActivity);
+                    widget.callback!(selectedModel, otherActivity);
                     Navigator.pop(context);
                   }
                 },
@@ -212,16 +207,16 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       height: 48,
                       width: 195,
                       decoration: BoxDecoration(
-                          color: mainColor,
+                          color: R.color.mainColor,
                           borderRadius: BorderRadius.circular(200),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [greenGradientTop, greenGradientBottom])),
+                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
-                          child: Text('Tiếp tục',
+                          child: Text(R.string.tiep_tuc.tr(),
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16)))),
                 ),
@@ -236,11 +231,11 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
   Widget _buildItem(int index) {
     final widthItem1 = (MediaQuery.of(context).size.width - 64) / 3;
     final widthItem2 = (MediaQuery.of(context).size.width - 48) / 2;
-    final ActivityModel activityModel =
+    final ActivityModel? activityModel =
         model.length == index ? null : model[index];
     final selectedIndex = activityModel == null
         ? -1
-        : selectedModel
+        : selectedModel!
             .lastIndexWhere((element) => element.id == activityModel.id);
     return GestureDetector(
       onTap: () {
@@ -249,16 +244,16 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
         } else {
           setState(() {
             if (selectedIndex == -1) {
-              selectedModel.add(activityModel);
+              selectedModel!.add(activityModel);
             } else {
-              selectedModel.removeAt(selectedIndex);
+              selectedModel!.removeAt(selectedIndex);
             }
           });
         }
       },
       child: Container(
           width:
-              activityModel == null || activityModel.name.split(' ').length < 3
+              activityModel == null || activityModel.name!.split(' ').length < 3
                   ? widthItem1
                   : widthItem2,
           height: 92,
@@ -266,20 +261,20 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
           decoration: BoxDecoration(
             color: selectedIndex != -1 ||
                     (activityModel == null && otherActivity != null)
-                ? Color(0xffF4DBBD).withOpacity(0.7)
-                : Colors.white,
+                ? R.color.color0xffF4DBBD.withOpacity(0.7)
+                : R.color.white,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: selectedIndex != -1 ||
                       (activityModel == null && otherActivity != null)
-                  ? Color(0xffE5B440)
-                  : Color(0xffB1DDDB),
+                  ? R.color.color0xffE5B440
+                  : R.color.color0xffB1DDDB,
               width: 1.0,
             ),
           ),
           child: activityModel == null
               ? Center(
-                  child: Text('Khác',
+                  child: Text(R.string.khac.tr(),
                       style:
                           TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                 )
@@ -289,7 +284,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                     Image.network(activityModel.icon.url ?? '',
                         width: 40, height: 40),
                     SizedBox(height: 8),
-                    Text(activityModel.name,
+                    Text(activityModel.name!,
                         style: TextStyle(
                             fontSize: 14, fontWeight: FontWeight.w400),
                         maxLines: 1,
@@ -320,13 +315,13 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Nhập hoạt động khác',
+                Text(R.string.nhap_hoat_dong_khac.tr(),
                     style: TextStyle(
-                        color: textDark,
+                        color: R.color.textDark,
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 GestureDetector(
-                    child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                    child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                     onTap: () {
                       Navigator.pop(context);
                     })
@@ -336,7 +331,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                   width: width - 137,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(width: 0.5, color: Color(0xff008479))),
+                      border: Border.all(width: 0.5, color: R.color.greenGradientBottom)),
                   child: TextField(
                       controller: textEditingController,
                       keyboardType: TextInputType.multiline,
@@ -344,18 +339,18 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       maxLines: 5,
                       obscureText: false,
                       decoration: InputDecoration(
-                        fillColor: textDark,
+                        fillColor: R.color.textDark,
                         enabledBorder: OutlineInputBorder(
                           borderSide:
-                              BorderSide(color: Color(0xffDDDDDD), width: 1.0),
+                              BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: mainColor, width: 1.0),
+                          borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         contentPadding: EdgeInsets.all(16),
-                        hintText: 'Nhập hoạt động của bạn',
+                        hintText: R.string.nhap_hoat_dong_cua_ban.tr(),
                       ),
                       onChanged: (value) {})),
               Container(
@@ -372,11 +367,11 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                               height: 48,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(200),
-                                  color: grayBorder),
+                                  color: R.color.grayBorder),
                               child: Center(
-                                child: Text('Huỷ',
+                                child: Text(R.string.cancel.tr(),
                                     style: TextStyle(
-                                        color: textDark,
+                                        color: R.color.textDark,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               )),
@@ -396,19 +391,19 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                           child: Container(
                             height: 48,
                             decoration: BoxDecoration(
-                                color: red,
+                                color: R.color.red,
                                 borderRadius: BorderRadius.circular(200),
                                 gradient: LinearGradient(
                                     begin: Alignment.topLeft,
                                     end: Alignment.centerRight,
                                     colors: [
-                                      greenGradientTop,
-                                      greenGradientBottom
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
                                     ])),
                             child: Center(
-                              child: Text('Lưu',
+                              child: Text(R.string.save.tr(),
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: R.color.white,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                             ),

@@ -2,16 +2,16 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 class LearningPostModel {
-  final String id;
-  final String title;
-  final String link;
+  final String? id;
+  final String? title;
+  final String? link;
   final ImagesModel imageUrl;
 
   LearningPostModel(
-      {@required this.id,
-      @required this.title,
-      @required this.link,
-      @required this.imageUrl});
+      {required this.id,
+      required this.title,
+      required this.link,
+      required this.imageUrl});
   @override
   factory LearningPostModel.fromJson(Map<String, dynamic> json) {
     return LearningPostModel(

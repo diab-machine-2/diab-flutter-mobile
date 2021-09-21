@@ -16,25 +16,25 @@ abstract class WeightEvent {}
 // }
 
 class FetchTrendWeight extends WeightEvent {
-  final String currentDateTime;
-  final String periodFilterType;
-  final String page;
+  final String? currentDateTime;
+  final String? periodFilterType;
+  final String? page;
 
   FetchTrendWeight({this.currentDateTime, this.periodFilterType, this.page});
 }
 
 class FetchTrendHip extends WeightEvent {
-  final String currentDateTime;
-  final String periodFilterType;
-  final String page;
+  final String? currentDateTime;
+  final String? periodFilterType;
+  final String? page;
 
   FetchTrendHip({this.currentDateTime, this.periodFilterType, this.page});
 }
 
 class FetchInputWeight extends WeightEvent {
-  final String currentDateTime;
-  final String periodFilterType;
-  final int page;
+  final String? currentDateTime;
+  final String? periodFilterType;
+  final int? page;
 
   FetchInputWeight({
     this.currentDateTime,
@@ -44,8 +44,8 @@ class FetchInputWeight extends WeightEvent {
 }
 
 class FetchTrendBMI extends WeightEvent {
-  final String currentDateTime;
-  final String periodFilterType;
+  final String? currentDateTime;
+  final String? periodFilterType;
 
   FetchTrendBMI({this.currentDateTime, this.periodFilterType});
 }

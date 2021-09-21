@@ -6,10 +6,10 @@ abstract class WeightState {}
 class WeightInitial extends WeightState {}
 
 class WeightError extends WeightState {
-  final String message;
+  final String? message;
 
   WeightError({
-    @required this.message,
+    required this.message,
   });
 }
 
@@ -23,16 +23,16 @@ class WeightLoading extends WeightState {}
 
 class WeightTrendLoaded extends WeightState {
   final TrendWeightModel trend;
-  WeightTrendLoaded({@required this.trend});
+  WeightTrendLoaded({required this.trend});
 }
 
 class WeightTrendBMILoaded extends WeightState {
   final TrendBmiModel trendBMI;
-  WeightTrendBMILoaded({@required this.trendBMI});
+  WeightTrendBMILoaded({required this.trendBMI});
 }
 
 class WeightAllLoaded extends WeightState {
   final List<InputWeightModel> inputWeightModel;
-  final bool hasMore;
-  WeightAllLoaded({@required this.inputWeightModel, @required this.hasMore});
+  final bool? hasMore;
+  WeightAllLoaded({required this.inputWeightModel, required this.hasMore});
 }

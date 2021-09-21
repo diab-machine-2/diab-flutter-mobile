@@ -2,22 +2,22 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 class FoodCaloModel {
-  final double percent;
-  final double total;
-  final double goal;
-  final String note;
-  final String colorCode;
-  final ImagesModel image;
+  final double? percent;
+  final double? total;
+  final double? goal;
+  final String? note;
+  final String? colorCode;
+  final ImagesModel? image;
   final List<MealModel> mealDetails;
 
   FoodCaloModel({
-    @required this.percent,
-    @required this.total,
-    @required this.goal,
-    @required this.note,
-    @required this.colorCode,
-    @required this.image,
-    @required this.mealDetails,
+    required this.percent,
+    required this.total,
+    required this.goal,
+    required this.note,
+    required this.colorCode,
+    required this.image,
+    required this.mealDetails,
   });
   @override
   factory FoodCaloModel.fromJson(Map<String, dynamic> json) {
@@ -38,11 +38,11 @@ class FoodCaloModel {
 }
 
 class MealModel {
-  final String text;
-  final double value;
+  final String? text;
+  final double? value;
   final ImagesModel icon;
 
-  MealModel({@required this.text, @required this.value, @required this.icon});
+  MealModel({required this.text, required this.value, required this.icon});
   @override
   factory MealModel.fromJson(Map<String, dynamic> json) {
     return MealModel(

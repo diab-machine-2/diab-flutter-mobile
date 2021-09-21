@@ -2,25 +2,26 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_trend_time.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ExercrisesTrendChart extends StatefulWidget {
-  ExercrisesTrendChart({Key key}) : super(key: key);
+  ExercrisesTrendChart({Key? key}) : super(key: key);
 
   @override
   ExercrisesTrendChartState createState() => ExercrisesTrendChartState();
@@ -30,15 +31,15 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
     with AutomaticKeepAliveClientMixin<ExercrisesTrendChart> {
   @override
   bool get wantKeepAlive => true;
-  BuildContext currentContext;
+  late BuildContext currentContext;
   int periodFilterType = 1;
 
-  int touchIndex;
+  int? touchIndex;
 
   @override
   void initState() {
     periodFilterType =
-        ExercrisesDetailTabbarController.of(context).periodFilterType;
+        ExercrisesDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -66,7 +67,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
         child: BlocBuilder<ExercrisesBloc, ExercrisesState>(
             builder: (BuildContext context, ExercrisesState state) {
           currentContext = context;
-          ExercriseTrendTimeModel model;
+          ExercriseTrendTimeModel? model;
           if (state is ExercrisesInitial) {
             BlocProvider.of<ExercrisesBloc>(context).add(FetchTimeTrend(
               currentDateTime:
@@ -86,7 +87,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding:
                       EdgeInsets.only(top: 30, bottom: 16, left: 16, right: 16),
                   child: Column(
@@ -95,20 +96,20 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Xu hướng thời gian',
+                            Text(R.string.xu_huong_thoi_gian.tr(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w700)),
                             GestureDetector(
                               onTap: () {
                                 showDialog(
                                     barrierColor:
-                                        Color(0xff003F38).withOpacity(0.5),
+                                        R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,
                                     builder: (_) => CustomInputTimePicker(
                                         title: periodFilterType == 1 ||
                                                 periodFilterType == 2
-                                            ? 'Số phút vận động mỗi ngày'
-                                            : 'Số phút vận động mỗi tuần',
+                                            ? R.string.so_phut_van_dong_moi_ngay.tr()
+                                            : R.string.so_phut_van_dong_moi_tuan.tr(),
                                         time: 60,
                                         callback: (hour, minute) {
                                           submitTarget(
@@ -116,18 +117,18 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                         }));
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Row(
                                   children: [
                                     Image.asset(
-                                      'assets/images/circle_plus_exe.png',
+                                      R.drawable.ic_circle_plus_exe,
                                       width: 24,
                                       height: 24,
                                     ),
                                     SizedBox(width: 4),
-                                    Text('Mục tiêu mới',
+                                    Text(R.string.muc_tieu_moi.tr(),
                                         style: TextStyle(
-                                            color: mainColor,
+                                            color: R.color.mainColor,
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700)),
                                   ],
@@ -141,7 +142,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                         Container(
                             width: width,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Column(
@@ -156,18 +157,18 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text('Tổng cộng',
+                                            Text(R.string.tong_cong.tr(),
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14.0)),
                                             Row(
                                               children: [
                                                 Text(
-                                                    '${(model.total / 60).floor()}',
+                                                    '${(model.total! / 60).floor()}',
                                                     style: TextStyle(
                                                         fontFamily: 'Viga',
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontSize: 24,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -178,9 +179,9 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                           left: 2,
                                                           right: 2),
                                                   child: Text(
-                                                    'giờ',
+                                                    R.string.hour.tr(),
                                                     style: TextStyle(
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         fontSize: 14.0),
@@ -188,10 +189,10 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                 ),
                                                 Text(
                                                     // 'abc',
-                                                    '${(model.total - ((model.total / 60).floor() * 60)).round()}',
+                                                    '${(model.total! - ((model.total! / 60).floor() * 60)).round()}',
                                                     style: TextStyle(
                                                         fontFamily: 'Viga',
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontSize: 24,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -200,9 +201,9 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                       const EdgeInsets.only(
                                                           top: 6.0, left: 2),
                                                   child: Text(
-                                                    'phút',
+                                                    R.string.minute.tr(),
                                                     style: TextStyle(
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         fontSize: 14.0),
@@ -221,18 +222,18 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                           children: [
                                             Text(model.targetTitle ?? '',
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14.0)),
                                             Row(
                                               children: [
                                                 Text(
-                                                    model.target
+                                                    model.target!
                                                         .toInt()
                                                         .toString(),
                                                     style: TextStyle(
                                                         fontFamily: 'Viga',
-                                                        color: green,
+                                                        color: R.color.green,
                                                         fontSize: 24,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -243,7 +244,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                   child: Text(
                                                     model.targetUnit ?? '',
                                                     style: TextStyle(
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         fontSize: 14.0),
@@ -258,21 +259,21 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                 model.trendItems.items.length == 0
                                     ? GestureDetector(
                                         onTap: () {
-                                          if (AppSettings.userInfo.weight ==
+                                          if (AppSettings.userInfo!.weight ==
                                                   null ||
-                                              AppSettings.userInfo.weight ==
+                                              AppSettings.userInfo!.weight ==
                                                   0) {
                                             showPopupWeight();
                                           } else {
                                             Navigator.pushNamed(
-                                                context, '/add_exercrises',
+                                                context, NavigatorName.add_exercrises,
                                                 arguments: {
                                                   'type': 'input',
                                                 });
                                           }
                                         },
                                         child: Image.asset(
-                                          'assets/images/excerise_trend_empty.png',
+                                          R.drawable.im_excerise_trend_empty,
                                         ),
                                       )
                                     : Column(children: [
@@ -297,13 +298,13 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                                     .items
                                                                     .length -
                                                                 1]
-                                                            .targetIconUrl
+                                                            .targetIconUrl!
                                                             .url ??
                                                         ''
                                                     : model
                                                             .trendItems
-                                                            .items[touchIndex]
-                                                            .targetIconUrl
+                                                            .items[touchIndex!]
+                                                            .targetIconUrl!
                                                             .url ??
                                                         '',
                                                 width: 24,
@@ -321,13 +322,13 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                                   .items
                                                                   .length -
                                                               1]
-                                                          .targetDescription
+                                                          .targetDescription!
                                                       : model
                                                           .trendItems
-                                                          .items[touchIndex]
-                                                          .targetDescription,
+                                                          .items[touchIndex!]
+                                                          .targetDescription!,
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 14.0)),
@@ -363,7 +364,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
   }
 
   // showDialog(BuildContext context) {
-  //   //Navigator.pushNamed(context, '/hba1c_tabble');
+  //   //Navigator.pushNamed(context, NavigatorName.hba1c_tabble);
   //   Navigator.of(context).push(PageRouteBuilder(
   //       opaque: false,
   //       pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
@@ -373,12 +374,12 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
     final width = (MediaQuery.of(context).size.width - 200) / 5;
 
     double minY =
-        model.trendItems.items.map<double>((e) => e.duration).reduce(min);
+        model.trendItems.items.map<double>((e) => e.duration ?? 0).reduce(min);
     minY = ((minY * (model.trendItems.items.length == 1 ? 0.5 : 0.8))
             .roundToDouble() /
         60);
     double maxY =
-        model.trendItems.items.map<double>((e) => e.duration).reduce(max);
+        model.trendItems.items.map<double>((e) => e.duration ?? 0).reduce(max);
     maxY = ((maxY * (model.trendItems.items.length == 1 ? 1.5 : 1.2))
             .roundToDouble() /
         60);
@@ -399,7 +400,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
               return Text(number[index].toString() + 'h',
                   style: TextStyle(
                       fontSize: 14,
-                      color: Colors.black,
+                      color: R.color.black,
                       fontWeight: FontWeight.normal));
             })),
       ),
@@ -426,7 +427,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                             (width + 20))
                                         .toDouble() -
                                     15,
-                                color: Color(0xffDDDDDD),
+                                color: R.color.grayComponentBorder,
                               ),
                             )))),
             Container(
@@ -452,7 +453,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                       .trendItems
                                       .items[model.trendItems.items.length - 1]
                                       .targetColor)
-                                  : toColor(model.trendItems.items[touchIndex]
+                                  : toColor(model.trendItems.items[touchIndex!]
                                       .targetColor),
                               maxContentWidth: 180,
                               tooltipPadding: const EdgeInsets.only(
@@ -473,25 +474,25 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                   return null;
                                 }
                                 return BarTooltipItem(
-                                  model.trendItems.items[groupIndex].duration
+                                  model.trendItems.items[groupIndex].duration!
                                           .round()
                                           .toString() +
                                       'p • ' +
                                       model.trendItems.items[groupIndex]
-                                          .burnedCalories
+                                          .burnedCalories!
                                           .round()
                                           .toString() +
-                                      'kcal',
+                                      R.string.kcal.tr(),
                                   TextStyle(
-                                      color: textDark,
+                                      color: R.color.textDark,
                                       fontWeight: FontWeight.w400,
                                       fontSize: 14),
                                 );
                               }),
-                          touchCallback: (FlTouchEvent event, BarTouchResponse barTouch) {
+                          touchCallback: (FlTouchEvent event, BarTouchResponse? barTouch) {
                             if (event is! FlLongPressEnd &&
                                 event is! FlPanEndEvent) {
-                              final value = barTouch.spot.touchedBarGroupIndex;
+                              final value = barTouch!.spot!.touchedBarGroupIndex;
                               touchIndex = value.toInt();
                             }
                             setState(() {});
@@ -502,8 +503,8 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                           showTitles: true,
                           reservedSize: -16,
                           margin: 16,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Colors.black,
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.black,
                               fontSize: 12,
                               fontWeight: FontWeight.w400),
                           getTitles: (double value) {
@@ -515,22 +516,22 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                     null) {
                               return convertToUTC(
                                       model.trendItems.items[value.toInt()]
-                                          .firstDateOfWeek,
+                                          .firstDateOfWeek!,
                                       'dd' + '-') +
                                   convertToUTC(
                                       model.trendItems.items[value.toInt()]
-                                          .lastDateOfWeek,
+                                          .lastDateOfWeek!,
                                       'dd/MM');
                             }
                             return convertToUTC(
-                                model.trendItems.items[value.toInt()].date,
+                                model.trendItems.items[value.toInt()].date!,
                                 'dd/MM');
                           },
                         ),
                         leftTitles: SideTitles(
                             showTitles: false,
-                            getTextStyles: (context, value) => const TextStyle(
-                                color: Colors.black,
+                            getTextStyles: (context, value) => TextStyle(
+                                color: R.color.black,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -543,8 +544,8 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                       })),
                 )),
             maxY == 0 ||
-                    (model.target / 60) > maxY ||
-                    (model.target / 60) < minY
+                    (model.target! / 60) > maxY ||
+                    (model.target! / 60) < minY
                 ? SizedBox()
                 : Container(
                     height: 200,
@@ -554,12 +555,12 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                         SizedBox(
                             height: (184 -
                                 (184 *
-                                    (model.target / 60 - minY) /
+                                    (model.target! / 60 - minY) /
                                     (maxY - minY)))),
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Container(
-                            color: Color(0xff72CB9C),
+                            color: R.color.color0xff72CB9C,
                             width: ((model.trendItems.items.length < 5
                                             ? 5
                                             : model.trendItems.items.length) *
@@ -593,7 +594,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
         BarChartRodData(
             width: 20,
             borderRadius: BorderRadius.circular(0),
-            y: (model.trendItems.items[index].duration / 60),
+            y: (model.trendItems.items[index].duration! / 60),
             colors: [toColor(model.trendItems.items[index].targetColor)]),
       ],
     );
@@ -614,7 +615,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
   //             }),
   //             isCurved: false,
   //             colors:
-  //                 trendTypeIndex == 1 ? [Colors.transparent] : [Colors.black],
+  //                 trendTypeIndex == 1 ? [R.color.transparent] : [R.color.black],
   //             barWidth: 0.75,
   //             isStrokeCapRound: true,
   //             dotData: FlDotData(
@@ -634,7 +635,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
   //         ];
   // }
 
-  submitTarget(double time, String exerciseCategoryId) async {
+  submitTarget(double time, String? exerciseCategoryId) async {
     try {
       BotToast.showLoading();
       await ExercrisesClient().addExercriseTarget(
@@ -643,7 +644,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
           time,
           exerciseCategoryId);
       UserClient().fetchUser();
-      Message.showToastMessage(context, 'Thêm mục tiêu thành công');
+      Message.showToastMessage(context, R.string.them_muc_tieu_thanh_cong.tr());
       _refresh();
       BotToast.closeAllLoading();
     } catch (e, _) {

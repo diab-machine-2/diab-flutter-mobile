@@ -3,16 +3,17 @@ import 'dart:ui';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/weight/weight_bloc.dart';
 import 'package:medical/src/modal/bmi/bmi_trend.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BmiScaleChart extends StatefulWidget {
-  BmiScaleChart({Key key}) : super(key: key);
+  BmiScaleChart({Key? key}) : super(key: key);
 
   @override
   BmiScaleChartState createState() => BmiScaleChartState();
@@ -22,15 +23,15 @@ class BmiScaleChartState extends State<BmiScaleChart>
     with AutomaticKeepAliveClientMixin<BmiScaleChart> {
   @override
   bool get wantKeepAlive => true;
-  BuildContext currentContext;
+  late BuildContext currentContext;
   int periodFilterType = 1;
   int trendTypeIndex = 1;
   int touchIndex = -1;
-  String trendType = 'Tất cả';
+  String trendType = R.string.all.tr();
 
   @override
   void initState() {
-    periodFilterType = BmiDetailTabbarController.of(context).periodFilterType;
+    periodFilterType = BmiDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -65,7 +66,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
         child: BlocBuilder<WeightBloc, WeightState>(
             builder: (BuildContext context, WeightState state) {
           currentContext = context;
-          TrendBmiModel model;
+          TrendBmiModel? model;
 
           if (state is WeightInitial) {
             print(periodFilterType);
@@ -86,12 +87,12 @@ class BmiScaleChartState extends State<BmiScaleChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.all(16),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('BMI',
+                        Text(R.string.bmi.tr(),
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w700)),
                         SizedBox(height: 10),
@@ -101,16 +102,16 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             Text(
                                 model.value == null || model.value == 0
                                     ? '--'
-                                    : roundNumber(model.value),
+                                    : roundNumber(model.value!),
                                 style: TextStyle(
                                     fontFamily: 'Viga',
                                     fontSize: 40,
                                     fontWeight: FontWeight.w400,
                                     color: model.value == null ||
                                             model.value == 0
-                                        ? Colors.black
+                                        ? R.color.black
                                         : toColor(
-                                            model.currentLedend.colorCode))),
+                                            model.currentLedend!.colorCode))),
                             model.currentLedend == null
                                 ? SizedBox()
                                 : Container(
@@ -118,15 +119,15 @@ class BmiScaleChartState extends State<BmiScaleChart>
                                         left: 16, right: 16, top: 8, bottom: 8),
                                     decoration: BoxDecoration(
                                         color: toColor(model
-                                            .currentLedend.backgroundColorCode),
+                                            .currentLedend!.backgroundColorCode),
                                         borderRadius: BorderRadius.only(
                                             topLeft: Radius.circular(13),
                                             topRight: Radius.circular(13),
                                             bottomLeft: Radius.circular(13))),
-                                    child: Text('${model.currentLedend.text}',
+                                    child: Text('${model.currentLedend!.text}',
                                         style: TextStyle(
                                             color: toColor(model
-                                                .currentLedend.textcolorCode),
+                                                .currentLedend!.textcolorCode),
                                             fontSize: 15,
                                             fontWeight: FontWeight.w700)),
                                   ),
@@ -138,10 +139,10 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             width: width,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
-                              color: Colors.white,
+                              color: R.color.white,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
+                                  color: R.color.grey.withOpacity(0.5),
                                   spreadRadius: 1,
                                   blurRadius: 7,
                                   offset: Offset(
@@ -151,40 +152,10 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             ),
                             child: Column(
                               children: [
-                                // Padding(
-                                //   padding: EdgeInsets.only(top: 18, bottom: 16),
-                                //   child: Row(
-                                //       mainAxisAlignment:
-                                //           MainAxisAlignment.spaceAround,
-                                //       children: []),
-                                // ),
-                                // model.trendItems.items.length != 0
-                                //     ? GestureDetector(
-                                //         onTap: () {
-                                //           Navigator.pushNamed(
-                                //               context, '/add_bmi',
-                                //               arguments: {
-                                //                 'type': 'input',
-                                //               });
-                                //         },
-                                //         child: Image.asset(
-                                //             'assets/images/nothing_chart_weight.png'),
-                                //       )
-                                //     :
                                 Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16),
-                                    color: Colors.white,
-                                    // boxShadow: [
-                                    //   BoxShadow(
-                                    //     color:
-                                    //         Colors.grey.withOpacity(0.5),
-                                    //     spreadRadius: 1,
-                                    //     blurRadius: 7,
-                                    //     offset: Offset(0,
-                                    //         2), // changes position of shadow
-                                    //   ),
-                                    // ],
+                                    color: R.color.white,
                                   ),
                                   padding: EdgeInsets.only(
                                       top: 32, left: 16, right: 16, bottom: 16),
@@ -194,12 +165,12 @@ class BmiScaleChartState extends State<BmiScaleChart>
                                     children: [
                                       model.value == null || model.value == 0
                                           ? Image.asset(
-                                              'assets/images/bmi_empty.png')
+                                              R.drawable.im_bmi_empty)
                                           : buildChart(model),
                                       SizedBox(height: 16),
                                       Padding(
                                         padding: EdgeInsets.all(16),
-                                        child: Text('Chú thích:'),
+                                        child: Text('${R.string.chu_thich.tr()}:'),
                                       ),
                                       model.legends.length == 0
                                           ? SizedBox()
@@ -235,8 +206,8 @@ class BmiScaleChartState extends State<BmiScaleChart>
 
   Widget buildDescriptionItem(LegendsModel model) {
     print(model);
-    final String color = model.colorCode;
-    final String title = model.text;
+    final String color = model.colorCode!;
+    final String title = model.text!;
     return Row(children: [
       Container(
           width: 14,
@@ -248,7 +219,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
   }
 
   Widget buildChart(TrendBmiModel model) {
-    final bmi = model.value;
+    final bmi = model.value!;
     List<double> numbers = [0, 18.5, 23, 25, 30, 40];
     List<double> percents = [0, 20, 40, 60, 80, 100];
     int index = 0;
@@ -294,14 +265,14 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             needleStartWidth: 0,
                             needleEndWidth: 0,
                             knobStyle: KnobStyle(
-                                knobRadius: 0.07, color: Color(0xffEFEFEF)),
+                                knobRadius: 0.07, color: R.color.color0xffEFEFEF),
                           ),
                           NeedlePointer(
                             needleStartWidth: 0.1,
                             lengthUnit: GaugeSizeUnit.factor,
                             needleEndWidth: 5,
                             needleLength: 0.65,
-                            needleColor: mainColor,
+                            needleColor: R.color.mainColor,
                             value: bmiNumber,
                             knobStyle: KnobStyle(knobRadius: 0),
                           ),
@@ -309,13 +280,13 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             needleStartWidth: 0,
                             needleEndWidth: 0,
                             knobStyle:
-                                KnobStyle(knobRadius: 0.0275, color: mainColor),
+                                KnobStyle(knobRadius: 0.0275, color: R.color.mainColor),
                           ),
                           NeedlePointer(
                             needleStartWidth: 0,
                             needleEndWidth: 0,
                             knobStyle: KnobStyle(
-                                knobRadius: 0.005, color: Colors.white),
+                                knobRadius: 0.005, color: R.color.white),
                           )
                         ],
                         ranges: <GaugeRange>[
@@ -325,43 +296,43 @@ class BmiScaleChartState extends State<BmiScaleChart>
                               startWidth: 0.2,
                               endWidth: 0.2,
                               sizeUnit: GaugeSizeUnit.factor,
-                              color: const Color(0xffF58220)),
+                              color: R.color.color0xffF58220),
                           GaugeRange(
                               startValue: 8.2,
                               endValue: 15.8,
                               startWidth: 0.2,
                               sizeUnit: GaugeSizeUnit.factor,
                               endWidth: 0.2,
-                              color: const Color(0xff50C087)),
+                              color: R.color.color0xff50C087),
                           GaugeRange(
                               startValue: 16.2,
                               endValue: 23.8,
                               startWidth: 0.2,
                               sizeUnit: GaugeSizeUnit.factor,
                               endWidth: 0.2,
-                              color: const Color(0xffFFE3E3)),
+                              color: R.color.color0xffFFE3E3),
                           GaugeRange(
                               startValue: 24.2,
                               endValue: 31.8,
                               startWidth: 0.2,
                               sizeUnit: GaugeSizeUnit.factor,
                               endWidth: 0.2,
-                              color: const Color(0xffFF8E8E)),
+                              color: R.color.color0xffFF8E8E),
                           GaugeRange(
                               startValue: 32.2,
                               endValue: 39.8,
                               sizeUnit: GaugeSizeUnit.factor,
                               startWidth: 0.2,
                               endWidth: 0.2,
-                              color: const Color(0xffE53935)),
+                              color: R.color.red),
                         ]),
                     RadialAxis(
                       minorTicksPerInterval: 8,
                       tickOffset: 0,
                       minorTickStyle:
-                          MinorTickStyle(color: Color(0xffDDDDDD), length: 2),
+                          MinorTickStyle(color: R.color.grayComponentBorder, length: 2),
                       majorTickStyle:
-                          MajorTickStyle(color: Color(0xffDDDDDD), length: 2),
+                          MajorTickStyle(color: R.color.grayComponentBorder, length: 2),
                       showAxisLine: false,
                       showLabels: false,
                       showTicks: true,
@@ -378,7 +349,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             textStyle: GaugeTextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
-                                color: Color(0xff666666)),
+                                color: R.color.primaryGreyColor),
                             offsetUnit: GaugeSizeUnit.factor,
                             markerOffset: -0.5),
                         MarkerPointer(
@@ -388,7 +359,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             textStyle: GaugeTextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
-                                color: Color(0xff666666)),
+                                color: R.color.primaryGreyColor),
                             offsetUnit: GaugeSizeUnit.factor,
                             markerOffset: -0.5),
                         MarkerPointer(
@@ -398,7 +369,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             textStyle: GaugeTextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
-                                color: Color(0xff666666)),
+                                color: R.color.primaryGreyColor),
                             offsetUnit: GaugeSizeUnit.factor,
                             markerOffset: -0.5),
                         MarkerPointer(
@@ -408,7 +379,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             textStyle: GaugeTextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
-                                color: Color(0xff666666)),
+                                color: R.color.primaryGreyColor),
                             offsetUnit: GaugeSizeUnit.factor,
                             markerOffset: -0.5),
                         MarkerPointer(
@@ -418,7 +389,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                             textStyle: GaugeTextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
-                                color: Color(0xff666666)),
+                                color: R.color.primaryGreyColor),
                             offsetUnit: GaugeSizeUnit.factor,
                             markerOffset: -0.5)
                       ],

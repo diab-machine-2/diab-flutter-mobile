@@ -3,13 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 
 class ButtonWidget extends StatelessWidget {
-  final double height;
-  final Color backgroundColor;
-  final Color textColor;
-  final Color borderColor;
+  final double? height;
+  final Color? backgroundColor;
+  final Color? textColor;
+  final Color? borderColor;
   final String title;
   final VoidCallback onPressed;
-  final double radius;
+  final double? radius;
   final bool modeFlatButton;
 
   ButtonWidget({
@@ -17,8 +17,8 @@ class ButtonWidget extends StatelessWidget {
     this.textColor,
     this.borderColor,
     this.height,
-    @required this.title,
-    @required this.onPressed,
+    required this.title,
+    required this.onPressed,
     this.radius,
     this.modeFlatButton: false,
   });

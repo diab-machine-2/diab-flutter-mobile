@@ -1,14 +1,15 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef FoodCallback = Function(List<FoodModel>);
 
 class FoodChoosen extends StatefulWidget {
-  final List<FoodModel> foods;
-  final FoodCallback callback;
+  final List<FoodModel>? foods;
+  final FoodCallback? callback;
   FoodChoosen({this.foods, this.callback});
   @override
   _FoodChoosenState createState() => _FoodChoosenState();
@@ -22,7 +23,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
   @override
   void initState() {
     super.initState();
-    foods = [...widget.foods];
+    foods = [...widget.foods!];
     calculatorCalo();
     DartNotificationCenter.subscribe(
         channel: 'add_food_to_cart',
@@ -30,7 +31,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
         onNotification: (data) {
           if (data is FoodModel) {
             setState(() {
-              this.foods.removeWhere((element) => data.id == element.id);
+              this.foods.removeWhere((element) => data.id == element!.id);
               this.foods.add(data);
               calculatorCalo();
             });
@@ -48,7 +49,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
   calculatorCalo() {
     totalKcal = 0;
     foods.forEach((element) {
-      totalKcal += element.calorie * element.quantity;
+      totalKcal += element!.calorie! * element.quantity;
     });
   }
 
@@ -77,12 +78,12 @@ class _FoodChoosenState extends State<FoodChoosen> {
                   });
                 });
               },
-              child: Container(color: Colors.black.withOpacity(0.5))),
+              child: Container(color: R.color.black.withOpacity(0.5))),
       Container(
           // height: height,
           decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: Color(0xffE5E5E5), width: 2),
+              color: R.color.white,
+              border: Border.all(color: R.color.color0xffE5E5E5, width: 2),
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(16), topRight: Radius.circular(16))),
           padding: EdgeInsets.only(bottom: 16),
@@ -101,27 +102,27 @@ class _FoodChoosenState extends State<FoodChoosen> {
                     });
                   },
                   child: Container(
-                    color: Colors.transparent,
+                    color: R.color.transparent,
                     margin: EdgeInsets.only(
                         top: 16, left: 16, right: 16, bottom: 16),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${foods.length} món ăn',
+                          Text('${foods.length} ${R.string.mon_an.tr()}',
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16)),
                           Row(
                             children: [
                               Text('${totalKcal.round()} ',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 16)),
-                              Text('kcal',
+                              Text(R.string.kcal.tr(),
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontWeight: FontWeight.w400)),
                               Icon(showAll
                                   ? Icons.keyboard_arrow_down
@@ -142,14 +143,14 @@ class _FoodChoosenState extends State<FoodChoosen> {
                           itemCount: foods.length,
                           separatorBuilder: (BuildContext context, int index) {
                             return Container(
-                                height: 1, color: Color(0xfff5f5f5));
+                                height: 1, color: R.color.color0xfff5f5f5);
                           },
                           itemBuilder: (BuildContext context, int index) {
                             return Container(
                                 padding: EdgeInsets.only(
                                     left: 16, right: 16, top: 11, bottom: 11),
                                 child: Row(children: [
-                                  Image.network(foods[index].image.url ?? '',
+                                  Image.network(foods[index]!.image!.url ?? '',
                                       width: 50, height: 50),
                                   SizedBox(width: 16),
                                   Expanded(
@@ -157,14 +158,14 @@ class _FoodChoosenState extends State<FoodChoosen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(foods[index].name,
+                                        Text(foods[index]!.name!,
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: R.color.black,
                                                 fontWeight: FontWeight.w500)),
                                         Text(
-                                            'Đã ăn ${roundAsFixed(foods[index].portion * foods[index].quantity)} ${foods[index].unit}, ${formatNumber(foods[index].quantity * foods[index].calorie)} kcal',
+                                            '${R.string.da_an.tr()} ${roundAsFixed(foods[index]!.portion * foods[index]!.quantity)} ${foods[index]!.unit}, ${formatNumber(foods[index]!.quantity * foods[index]!.calorie!)} ${R.string.kcal.tr()}',
                                             style: TextStyle(
-                                                color: Color(0xff172823),
+                                                color: R.color.color0xff172823,
                                                 fontWeight: FontWeight.w400))
                                       ],
                                     ),
@@ -182,7 +183,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                                       });
                                     },
                                     child: Image.asset(
-                                      'assets/images/trash.png',
+                                      R.drawable.ic_trash_red,
                                       width: 20,
                                       height: 20,
                                     ),
@@ -193,22 +194,22 @@ class _FoodChoosenState extends State<FoodChoosen> {
                       ),
                 GestureDetector(
                   onTap: () {
-                    widget.callback(foods);
+                    widget.callback!(foods);
                   },
                   child: Container(
                       height: 48,
                       width: 195,
                       decoration: BoxDecoration(
-                          color: mainColor,
+                          color: R.color.mainColor,
                           borderRadius: BorderRadius.circular(200),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [greenGradientTop, greenGradientBottom])),
+                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
-                          child: Text('Lưu',
+                          child: Text(R.string.save.tr(),
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16)))),
                 ),

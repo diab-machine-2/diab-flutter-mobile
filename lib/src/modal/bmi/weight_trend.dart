@@ -1,26 +1,26 @@
 import 'package:meta/meta.dart';
 
 class TrendWeightModel {
-  final double safeWeightFrom;
-  final double safeWeightTo;
-  final double current;
-  final double lowest;
-  final double highest;
-  final double goal;
-  final String message;
-  final String iconUrl;
-  final List<TrendItemWeightModel> trendItems;
+  final double? safeWeightFrom;
+  final double? safeWeightTo;
+  final double? current;
+  final double? lowest;
+  final double? highest;
+  final double? goal;
+  final String? message;
+  final String? iconUrl;
+  final List<TrendItemWeightModel>? trendItems;
 
   TrendWeightModel({
-    @required this.safeWeightFrom,
-    @required this.safeWeightTo,
-    @required this.current,
-    @required this.lowest,
-    @required this.highest,
-    @required this.goal,
-    @required this.message,
-    @required this.iconUrl,
-    @required this.trendItems,
+    required this.safeWeightFrom,
+    required this.safeWeightTo,
+    required this.current,
+    required this.lowest,
+    required this.highest,
+    required this.goal,
+    required this.message,
+    required this.iconUrl,
+    required this.trendItems,
   });
   @override
   factory TrendWeightModel.fromJson(Map<String, dynamic> json) {
@@ -46,14 +46,14 @@ class TrendWeightModel {
 }
 
 class TrendItemWeightModel {
-  final double value;
-  final int date;
-  final String colorCode;
+  final double? value;
+  final int? date;
+  final String? colorCode;
 
   TrendItemWeightModel({
-    @required this.value,
-    @required this.date,
-    @required this.colorCode,
+    required this.value,
+    required this.date,
+    required this.colorCode,
   });
   @override
   factory TrendItemWeightModel.fromJson(Map<String, dynamic> json) {

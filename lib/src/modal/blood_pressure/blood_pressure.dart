@@ -2,38 +2,38 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 class BloodPressureModel {
-  final String id;
-  final double systolic;
-  final double diastolic;
-  final double pulseRate;
-  final String bloodPressureType;
-  final int date;
-  final String timeFrame;
-  final String timeFrameId;
-  final String note;
-  final String reason;
-  final String color;
-  final String fontColor;
-  final String backgroundColor;
-  final String borderColor;
+  final String? id;
+  final double? systolic;
+  final double? diastolic;
+  final double? pulseRate;
+  final String? bloodPressureType;
+  final int? date;
+  final String? timeFrame;
+  final String? timeFrameId;
+  final String? note;
+  final String? reason;
+  final String? color;
+  final String? fontColor;
+  final String? backgroundColor;
+  final String? borderColor;
   final List<ImagesModel> images;
 
   BloodPressureModel({
-    @required this.id,
-    @required this.systolic,
-    @required this.diastolic,
-    @required this.pulseRate,
-    @required this.bloodPressureType,
-    @required this.date,
-    @required this.timeFrame,
-    @required this.timeFrameId,
-    @required this.note,
-    @required this.reason,
-    @required this.color,
-    @required this.fontColor,
-    @required this.backgroundColor,
-    @required this.borderColor,
-    @required this.images,
+    required this.id,
+    required this.systolic,
+    required this.diastolic,
+    required this.pulseRate,
+    required this.bloodPressureType,
+    required this.date,
+    required this.timeFrame,
+    required this.timeFrameId,
+    required this.note,
+    required this.reason,
+    required this.color,
+    required this.fontColor,
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.images,
   });
   @override
   factory BloodPressureModel.fromJson(Map<String, dynamic> json) {

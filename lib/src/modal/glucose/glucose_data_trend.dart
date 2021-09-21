@@ -5,7 +5,7 @@ class TrendDataModel {
   final TrendItemsModel trendItems;
   final GoodRangeModel goodRange;
 
-  TrendDataModel({@required this.trendItems, @required this.goodRange});
+  TrendDataModel({required this.trendItems, required this.goodRange});
   @override
   factory TrendDataModel.fromJson(Map<String, dynamic> json) {
     return TrendDataModel(
@@ -18,16 +18,16 @@ class TrendDataModel {
 }
 
 class TrendItemsModel {
-  final int total;
-  final int page;
-  final int size;
+  final int? total;
+  final int? page;
+  final int? size;
   final List<TrendItemModel> items;
 
   TrendItemsModel(
-      {@required this.total,
-      @required this.page,
-      @required this.size,
-      @required this.items});
+      {required this.total,
+      required this.page,
+      required this.size,
+      required this.items});
   @override
   factory TrendItemsModel.fromJson(Map<String, dynamic> json) {
     return TrendItemsModel(
@@ -39,10 +39,10 @@ class TrendItemsModel {
 }
 
 class GoodRangeModel {
-  final double key;
-  final double value;
+  final double? key;
+  final double? value;
 
-  GoodRangeModel({@required this.key, @required this.value});
+  GoodRangeModel({required this.key, required this.value});
   @override
   factory GoodRangeModel.fromJson(Map<String, dynamic> json) {
     return GoodRangeModel(

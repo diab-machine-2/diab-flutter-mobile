@@ -1,15 +1,15 @@
 import 'package:meta/meta.dart';
 
 class TrendBmiModel {
-  final double value;
-  final CurrentLedendModel currentLedend;
+  final double? value;
+  final CurrentLedendModel? currentLedend;
 
   final List<LegendsModel> legends;
 
   TrendBmiModel({
-    @required this.value,
-    @required this.currentLedend,
-    @required this.legends,
+    required this.value,
+    required this.currentLedend,
+    required this.legends,
   });
   @override
   factory TrendBmiModel.fromJson(Map<String, dynamic> json) {
@@ -29,12 +29,12 @@ class TrendBmiModel {
 }
 
 class LegendsModel {
-  final String text;
-  final String colorCode;
+  final String? text;
+  final String? colorCode;
 
   LegendsModel({
-    @required this.text,
-    @required this.colorCode,
+    required this.text,
+    required this.colorCode,
   });
   @override
   factory LegendsModel.fromJson(Map<String, dynamic> json) {
@@ -50,16 +50,16 @@ class LegendsModel {
 }
 
 class CurrentLedendModel {
-  final String text;
-  final String colorCode;
-  final String textcolorCode;
-  final String backgroundColorCode;
+  final String? text;
+  final String? colorCode;
+  final String? textcolorCode;
+  final String? backgroundColorCode;
 
   CurrentLedendModel({
-    @required this.text,
-    @required this.colorCode,
-    @required this.textcolorCode,
-    @required this.backgroundColorCode,
+    required this.text,
+    required this.colorCode,
+    required this.textcolorCode,
+    required this.backgroundColorCode,
   });
   @override
   factory CurrentLedendModel.fromJson(Map<String, dynamic> json) {

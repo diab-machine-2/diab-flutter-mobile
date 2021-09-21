@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 class InputExercrisesDataModel {
   final List<InputDataExercriseModel> inputs;
-  final bool hasMore;
+  final bool? hasMore;
 
-  InputExercrisesDataModel({@required this.inputs, @required this.hasMore});
+  InputExercrisesDataModel({required this.inputs, required this.hasMore});
 }

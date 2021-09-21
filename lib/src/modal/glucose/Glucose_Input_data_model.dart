@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 class InputGlucoseDataModel {
   final List<InputGlucoseModel> inputs;
-  final bool hasMore;
+  final bool? hasMore;
 
-  InputGlucoseDataModel({@required this.inputs, @required this.hasMore});
+  InputGlucoseDataModel({required this.inputs, required this.hasMore});
 }

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
-import 'package:medical/src/theme/app_theme.dart';
-
+import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:easy_localization/easy_localization.dart';
 class BloodPressureDetailItem extends StatelessWidget {
-  List _elements = [
+  final List _elements = [
     {
-      'title': 'Tăng huyết áp độ 2',
+      'title': R.string.grade_2_hypertension.tr(),
       'name': 'Sau ăn trưa',
       'group': '14 tháng 12 năm 2020',
       'number': '165/100',
@@ -15,7 +16,7 @@ class BloodPressureDetailItem extends StatelessWidget {
       'note': 'Tôi vận động cường độ cao liên tục trong nhiều giờ'
     },
     {
-      'title': 'Bình thường',
+      'title': R.string.normal.tr(),
       'name': 'Trước ăn trưa',
       'group': '12 tháng 12 năm 2020',
       'number': '125/83',
@@ -35,7 +36,7 @@ class BloodPressureDetailItem extends StatelessWidget {
         groupBy: (element) => element['group'],
         order: GroupedListOrder.DESC,
         useStickyGroupSeparators: true,
-        stickyHeaderBackgroundColor: Colors.transparent,
+        stickyHeaderBackgroundColor: R.color.transparent,
         groupSeparatorBuilder: (dynamic value) => Padding(
           padding:
               const EdgeInsets.only(left: 16, right: 16, top: 24, bottom: 8),
@@ -49,7 +50,7 @@ class BloodPressureDetailItem extends StatelessWidget {
           return GestureDetector(
             onTap: () {
               print(element['title']);
-              Navigator.pushNamed(context, '/bloodPressureTable',
+              Navigator.pushNamed(context, NavigatorName.blood_pressure_table,
                   arguments: element['title']);
             },
             child: Padding(
@@ -57,7 +58,7 @@ class BloodPressureDetailItem extends StatelessWidget {
               child: Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      color: Colors.white),
+                      color: R.color.white),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(children: [
@@ -76,7 +77,7 @@ class BloodPressureDetailItem extends StatelessWidget {
                                     bottomRight: Radius.circular(13))),
                             child: Text(element['title'],
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700)),
                           ),
@@ -89,9 +90,9 @@ class BloodPressureDetailItem extends StatelessWidget {
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                               SizedBox(width: 4),
-                              Text('mmHg',
+                              Text(R.string.mm_hg.tr(),
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400)),
                               SizedBox(width: 8),
@@ -99,7 +100,7 @@ class BloodPressureDetailItem extends StatelessWidget {
                                 padding: const EdgeInsets.only(bottom: 10.0),
                                 child: Text('.',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 30,
                                         fontWeight: FontWeight.w700)),
                               ),
@@ -110,9 +111,9 @@ class BloodPressureDetailItem extends StatelessWidget {
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                               SizedBox(width: 4),
-                              Text('lần/phút',
+                              Text(R.string.time_per_minute.tr(),
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w400)),
                             ],
@@ -125,14 +126,14 @@ class BloodPressureDetailItem extends StatelessWidget {
                           Text(
                             element['hour'],
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400),
                           ),
                           SizedBox(width: 4),
                           Text(element['name'],
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400)),
                         ],
@@ -142,11 +143,11 @@ class BloodPressureDetailItem extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(height: 16),
-                                Container(height: 1, color: Color(0xffEEEFF3)),
+                                Container(height: 1, color: R.color.color0xffEEEFF3),
                                 SizedBox(height: 16),
                                 Text(element['note'],
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400)),
                               ],
@@ -166,19 +167,19 @@ handleStatus(status) {
   switch (status) {
     case 'high':
       {
-        return 'Cao';
+        return R.string.high.tr();
       }
       break;
 
     case 'low':
       {
-        return 'Thấp';
+        return R.string.low.tr();
       }
       break;
 
     default:
       {
-        return 'Tốt';
+        return R.string.good.tr();
       }
       break;
   }
@@ -188,19 +189,19 @@ chooseColor(status) {
   switch (status) {
     case 'high':
       {
-        return red;
+        return R.color.red;
       }
       break;
 
     case 'low':
       {
-        return green;
+        return R.color.green;
       }
       break;
 
     default:
       {
-        return statusAverage;
+        return R.color.statusAverage;
       }
       break;
   }

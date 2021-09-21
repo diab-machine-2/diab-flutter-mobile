@@ -4,15 +4,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ReminderController extends StatefulWidget {
   @override
@@ -20,7 +22,7 @@ class ReminderController extends StatefulWidget {
 }
 
 class _ReminderControllerState extends State<ReminderController> {
-  List<ScheduleReminderModel> models;
+  List<ScheduleReminderModel>? models;
 
   int page = 1;
   bool hasMore = false;
@@ -57,7 +59,7 @@ class _ReminderControllerState extends State<ReminderController> {
     } else {
       isLoading = true;
       final result = await UserClient().fetchScheduleReminders(page);
-      models.addAll(result.models);
+      models!.addAll(result.models);
       hasMore = result.hasMore;
       if (hasMore) {
         page += 1;
@@ -86,24 +88,24 @@ class _ReminderControllerState extends State<ReminderController> {
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                       colors: [
-                        Color(0xFFFDC798).withOpacity(0.3),
-                        Color(0xFFE6F6ED).withOpacity(0.9),
+                        R.color.color0xFFFDC798.withOpacity(0.3),
+                        R.color.greenbg.withOpacity(0.9),
                       ],
                       begin: FractionalOffset(1, 1),
                       end: FractionalOffset(0.9, 0.5),
                       stops: [0.0, 1.0])),
               child: Column(children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
-                  title: Text('Lịch nhắc nhở',
+                  backgroundColor: R.color.transparent,
+                  title: Text(R.string.reminder_calendar.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -131,7 +133,7 @@ class _ReminderControllerState extends State<ReminderController> {
                                         Column(
                                           children: [
                                             Image.asset(
-                                                'assets/images/icon_reminder.png',
+                                                R.drawable.im_reminder,
                                                 height: 113),
                                             Padding(
                                               padding: EdgeInsets.only(
@@ -140,7 +142,7 @@ class _ReminderControllerState extends State<ReminderController> {
                                                   top: 32,
                                                   bottom: 32),
                                               child: Text(
-                                                  'Để DiaB giúp bạn ghi nhớ và nhắc nhở những việc cần làm nhé!',
+                                                  R.string.let_diab_remind_you.tr(),
                                                   style:
                                                       TextStyle(fontSize: 16),
                                                   textAlign: TextAlign.center),
@@ -152,13 +154,13 @@ class _ReminderControllerState extends State<ReminderController> {
                                           physics:
                                               NeverScrollableScrollPhysics(),
                                           shrinkWrap: true,
-                                          itemCount: models.length,
+                                          itemCount: models!.length,
                                           separatorBuilder:
                                               (BuildContext context,
                                                   int index) {
                                             return Container(
                                                 height: 1,
-                                                color: Color(0xffE5E5E5));
+                                                color: R.color.color0xffE5E5E5);
                                           },
                                           itemBuilder: (BuildContext context,
                                               int index) {
@@ -172,10 +174,10 @@ class _ReminderControllerState extends State<ReminderController> {
               ])),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/add_reminder',
+              Navigator.pushNamed(context, NavigatorName.add_reminder,
                   arguments: {'type': 'input'});
             },
-            child: Image.asset('assets/images/button_plus.png',
+            child: Image.asset(R.drawable.ic_button_plus,
                 width: 80, height: 80),
           )),
     );
@@ -184,61 +186,61 @@ class _ReminderControllerState extends State<ReminderController> {
   Widget buildItem(int index) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/add_reminder',
-            arguments: {'type': 'update', 'id': models[index].id});
+        Navigator.pushNamed(context, NavigatorName.add_reminder,
+            arguments: {'type': 'update', 'id': models![index].id});
       },
       child: Slidable(
         actionPane: SlidableDrawerActionPane(),
         secondaryActions: [
           IconSlideAction(
-            color: Color(0xffFF5552),
+            color: R.color.color0xffFF5552,
             iconWidget:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Image.asset('assets/images/icon_trash2.png',
+              Image.asset(R.drawable.ic_trash2,
                   width: 24, height: 24),
               SizedBox(height: 4),
-              Text('Xoá\nthông báo',
+              Text(R.string.detele_notificaiton.tr(),
                   style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w500),
+                      color: R.color.white, fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center),
             ]),
             onTap: () {
-              _showDialogDelete(context, models[index]);
+              _showDialogDelete(context, models![index]);
             },
           ),
         ],
         child: Padding(
           padding: EdgeInsets.only(left: 16, right: 16),
           child: Container(
-            color: Colors.transparent,
+            color: R.color.transparent,
             padding: EdgeInsets.only(top: 16, bottom: 24),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(convertToUTC(models[index].time, 'HH:mm'),
+                Text(convertToUTC(models![index].time!, 'HH:mm'),
                     style: TextStyle(
-                        color: Colors.black, fontFamily: 'Viga', fontSize: 24)),
+                        color: R.color.black, fontFamily: 'Viga', fontSize: 24)),
                 CupertinoSwitch(
-                  activeColor: Color(0xff008479),
-                  value: models[index].isActive,
+                  activeColor: R.color.greenGradientBottom,
+                  value: models![index].isActive!,
                   onChanged: (value) {
-                    edit(models[index]);
+                    edit(models![index]);
                   },
                 )
               ]),
               SizedBox(height: 8),
-              Text(models[index].name,
+              Text(models![index].name!,
                   style: TextStyle(
-                      color: Colors.black,
+                      color: R.color.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w600)),
-              models[index].content == null || models[index].content.isEmpty
+              models![index].content == null || models![index].content!.isEmpty
                   ? SizedBox()
                   : Padding(
                       padding: EdgeInsets.only(top: 8),
-                      child: Text(models[index].content,
+                      child: Text(models![index].content!,
                           style: TextStyle(
-                              color: Color(0xff666666),
+                              color: R.color.primaryGreyColor,
                               fontSize: 16,
                               fontWeight: FontWeight.w400)),
                     )
@@ -253,7 +255,7 @@ class _ReminderControllerState extends State<ReminderController> {
     try {
       BotToast.showLoading();
       await UserClient().editScheduleReminder(model.id, model.name,
-          model.remindType, model.time, model.content, !model.isActive);
+          model.remindType, model.time, model.content, !model.isActive!);
       loadData();
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -295,23 +297,23 @@ class _ReminderControllerState extends State<ReminderController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/earseIcon.png',
+                      Image.asset(R.drawable.ic_earse,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Xoá thông báo?',
+                        child: Text(R.string.mes_detele_notificaiton.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn chắc chắn muốn xoá thông báo này?',
+                        child: Text(R.string.mes_detele_notificaiton.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -330,11 +332,11 @@ class _ReminderControllerState extends State<ReminderController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Để sau',
+                                        child: Text(R.string.later.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -350,13 +352,13 @@ class _ReminderControllerState extends State<ReminderController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color: red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text('Xoá',
+                                      child: Text(R.string.delete.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -372,7 +374,7 @@ class _ReminderControllerState extends State<ReminderController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),

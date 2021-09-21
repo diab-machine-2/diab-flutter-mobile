@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/blood_pressure/bloodPressure_Input_data_model.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_distribution.dart';
@@ -7,11 +8,12 @@ import 'package:medical/src/modal/blood_pressure/blood_pressure_statistic.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodPressureClient extends FetchClient {
 // lấy nhịp yim và huyết áp
   Future<BloodPressureHeartRateModel> fetchBloodPressureHeartRate(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/BloodPressure/Statistic/Period',
@@ -28,13 +30,13 @@ class BloodPressureClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy danh sách huyết áp
-  Future<BloodPressureDataModel> fetchBloodPressureInput(String currentDateTime,
-      String periodFilterType, String bloodPressureType, int page) async {
+  Future<BloodPressureDataModel> fetchBloodPressureInput(String? currentDateTime,
+      String? periodFilterType, String? bloodPressureType, int? page) async {
     try {
       Map<String, String> params = {
         'currentDateTime': '$currentDateTime',
@@ -61,7 +63,7 @@ class BloodPressureClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -79,7 +81,7 @@ class BloodPressureClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -102,13 +104,13 @@ class BloodPressureClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy xu huớng huyết áp
   Future<BloodPressureTrendModel> fetchBloodPressureTrend(
-      int currentDateTime, int periodFilterType) async {
+      int? currentDateTime, int? periodFilterType) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/BloodPressure/Trend',
@@ -125,13 +127,13 @@ class BloodPressureClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy xu huớng nhịp tim
   Future<BloodPressureTrendModel> fetchPulseRateTrend(
-      int currentDateTime, int periodFilterType) async {
+      int? currentDateTime, int? periodFilterType) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/BloodPressure/Trend/PulseRate',
@@ -148,7 +150,7 @@ class BloodPressureClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -158,7 +160,7 @@ class BloodPressureClient extends FetchClient {
       String diastolic,
       String pulseRate,
       int date,
-      String timeFrameId,
+      String? timeFrameId,
       String note,
       String reason,
       List<String> files) async {
@@ -178,26 +180,26 @@ class BloodPressureClient extends FetchClient {
       if (response.statusCode == 200) {
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   /// cập nhỉ chỉ số huyết áp
   Future<bool> updateBloodPressureInput(
-      String id,
+      String? id,
       String systolic,
       String diastolic,
       String pulseRate,
       int date,
-      String timeFrameId,
+      String? timeFrameId,
       String note,
       String reason,
-      List<String> removalImageIds,
+      List<String?> removalImageIds,
       List<String> files) async {
     try {
       final response = await super.putHttp(
@@ -219,17 +221,17 @@ class BloodPressureClient extends FetchClient {
         print(await response.stream.bytesToString());
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy chi tiết huyết áp
-  Future fetchBloodPressureDetail(String id) async {
+  Future fetchBloodPressureDetail(String? id) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/BloodPressure/Input/$id');
@@ -243,12 +245,12 @@ class BloodPressureClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // xoá chỉ số huyết áp
-  Future<bool> deleteBloodPressureInput(String id) async {
+  Future<bool> deleteBloodPressureInput(String? id) async {
     try {
       final Response response =
           await super.delete(url: '/App/BloodPressure/Input/$id');
@@ -261,11 +263,11 @@ class BloodPressureClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<String> checkBloodPressureInput(
+  Future<String?> checkBloodPressureInput(
       String systolic, String diastolic) async {
     try {
       final Response response = await super.fetchData(
@@ -280,13 +282,13 @@ class BloodPressureClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy tần suất phân bổ huyết ap
   Future<BloodPressureDistributionModel> fetchBloodDistribution(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/BloodPressure/Distribution',
@@ -303,7 +305,7 @@ class BloodPressureClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

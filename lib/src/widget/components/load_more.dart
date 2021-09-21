@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/res/R.dart';
 
 class CustomLoadMoreDelegate extends LoadMoreDelegate {
   const CustomLoadMoreDelegate();
@@ -10,9 +10,9 @@ class CustomLoadMoreDelegate extends LoadMoreDelegate {
   Widget buildChild(LoadMoreStatus status,
       {LoadMoreTextBuilder builder = DefaultLoadMoreTextBuilder.chinese}) {
     if (status == LoadMoreStatus.idle || status == LoadMoreStatus.loading) {
-      return SpinKitThreeBounce(color: mainColor, size: 20);
+      return SpinKitThreeBounce(color: R.color.mainColor, size: 20);
     } else {
-      return Container(color: Colors.red);
+      return Container(color: R.color.red);
     }
   }
 

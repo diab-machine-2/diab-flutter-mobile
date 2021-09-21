@@ -1,22 +1,22 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
-import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-typedef TimeCallback = Function(ExercriseIntensityModel);
+typedef TimeCallback = Function(ExercriseIntensityModel?);
 
 class ActionListIntensityFood extends StatefulWidget {
-  final ExercriseIntensityModel selected;
-  final TimeCallback callback;
+  final ExercriseIntensityModel? selected;
+  final TimeCallback? callback;
   ActionListIntensityFood({this.selected, this.callback});
   @override
   ActionListIntensityFoodState createState() => ActionListIntensityFoodState();
 }
 
 class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
-  ExercriseIntensityModel selected;
+  ExercriseIntensityModel? selected;
 
   List<ExercriseIntensityModel> intensity = [];
 
@@ -37,14 +37,14 @@ class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: R.color.transparent,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 16.0, right: 16),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
+              color: R.color.white,
             ),
             child: Padding(
               padding: const EdgeInsets.only(top: 16, bottom: 16),
@@ -54,7 +54,7 @@ class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text('Chọn cường độ tập luyện',
+                    child: Text(R.string.chon_cuong_do_tap_luyen.tr(),
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w700)),
                   ),
@@ -72,7 +72,7 @@ class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        widget.callback(selected);
+                        widget.callback!(selected);
                         Navigator.pop(context);
                       },
                       child: Container(
@@ -90,18 +90,18 @@ class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
                                     decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(200),
-                                        color: grayBorder),
+                                        color: R.color.grayBorder),
                                     child: Center(
-                                      child: Text('Huỷ',
+                                      child: Text(R.string.cancel.tr(),
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     )),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  widget.callback(selected);
+                                  widget.callback!(selected);
                                   Navigator.pop(context);
                                 },
                                 child: Container(
@@ -112,15 +112,15 @@ class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
                                         begin: Alignment.topLeft,
                                         end: Alignment.centerRight,
                                         colors: [
-                                          greenGradientTop,
-                                          greenGradientBottom
+                                          R.color.greenGradientTop,
+                                          R.color.greenGradientBottom
                                         ]),
                                     borderRadius: BorderRadius.circular(200),
                                   ),
                                   child: Center(
-                                    child: Text('Tiếp tục',
+                                    child: Text(R.string.tiep_tuc.tr(),
                                         style: TextStyle(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600)),
                                   ),
@@ -150,7 +150,7 @@ class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
               });
             },
             child: Container(
-              color: selected.id == model.id ? greenbg : Colors.white,
+              color: selected!.id == model.id ? R.color.greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(
@@ -161,18 +161,18 @@ class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          selected.id != model.id
-                              ? Text(model.note,
+                          selected!.id != model.id
+                              ? Text(model.note!,
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400))
-                              : Text(model.note,
+                              : Text(model.note!,
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: mainColor)),
-                          selected.id == model.id
-                              ? Image.asset('assets/images/check_mark.png',
+                                      color: R.color.mainColor)),
+                          selected!.id == model.id
+                              ? Image.asset(R.drawable.ic_check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],
@@ -186,9 +186,9 @@ class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
                           child: Container(
                               height: 1,
                               width: 373,
-                              color: selected.id == model.id
-                                  ? greenbg
-                                  : Color(0xffD6D8E0)),
+                              color: selected!.id == model.id
+                                  ? R.color.greenbg
+                                  : R.color.color0xffD6D8E0),
                         )
                       : SizedBox(),
                 ],

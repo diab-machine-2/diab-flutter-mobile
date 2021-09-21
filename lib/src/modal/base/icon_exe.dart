@@ -1,12 +1,12 @@
 import 'package:meta/meta.dart';
 
 class IconModel {
-  final String id;
-  final String url;
+  final String? id;
+  final String? url;
 
   IconModel({
-    @required this.id,
-    @required this.url,
+    required this.id,
+    required this.url,
   });
   @override
   factory IconModel.fromJson(Map<String, dynamic> json) {

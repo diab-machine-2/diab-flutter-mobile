@@ -6,9 +6,9 @@ class FoodDietModel {
   final List<EnergyModel> carbChart;
 
   FoodDietModel(
-      {@required this.legends,
-      @required this.energyChart,
-      @required this.carbChart});
+      {required this.legends,
+      required this.energyChart,
+      required this.carbChart});
   @override
   factory FoodDietModel.fromJson(Map<String, dynamic> json) {
     return FoodDietModel(
@@ -25,10 +25,10 @@ class FoodDietModel {
 }
 
 class LegendModel {
-  final String text;
-  final String colorCode;
+  final String? text;
+  final String? colorCode;
 
-  LegendModel({@required this.text, @required this.colorCode});
+  LegendModel({required this.text, required this.colorCode});
   @override
   factory LegendModel.fromJson(Map<String, dynamic> json) {
     return LegendModel(text: json['text'], colorCode: json['colorCode']);
@@ -41,15 +41,15 @@ class LegendModel {
 
 class EnergyModel {
   final List<EnergyItemModel> details;
-  final int date;
-  final double value;
-  final String colorCode;
+  final int? date;
+  final double? value;
+  final String? colorCode;
 
   EnergyModel(
-      {@required this.details,
-      @required this.date,
-      @required this.value,
-      @required this.colorCode});
+      {required this.details,
+      required this.date,
+      required this.value,
+      required this.colorCode});
   @override
   factory EnergyModel.fromJson(Map<String, dynamic> json) {
     return EnergyModel(
@@ -65,14 +65,14 @@ class EnergyModel {
 }
 
 class EnergyItemModel {
-  final double value;
-  final double percentValue;
-  final String colorCode;
+  final double? value;
+  final double? percentValue;
+  final String? colorCode;
 
   EnergyItemModel(
-      {@required this.value,
-      @required this.percentValue,
-      @required this.colorCode});
+      {required this.value,
+      required this.percentValue,
+      required this.colorCode});
   @override
   factory EnergyItemModel.fromJson(Map<String, dynamic> json) {
     return EnergyItemModel(

@@ -2,14 +2,14 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 class ActivityModel {
-  final String id;
-  final String name;
+  final String? id;
+  final String? name;
   final ImagesModel icon;
 
   ActivityModel({
-    @required this.id,
-    @required this.name,
-    @required this.icon,
+    required this.id,
+    required this.name,
+    required this.icon,
   });
   @override
   factory ActivityModel.fromJson(Map<String, dynamic> json) {

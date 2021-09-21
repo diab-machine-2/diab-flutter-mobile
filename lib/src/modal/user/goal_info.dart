@@ -1,22 +1,22 @@
 import 'package:meta/meta.dart';
 
 class GoalInfoModel {
-  final double dailyWalkTargetDuration;
-  final double dailyTargetDuration;
-  final double weeklyTargetDuration;
-  final double dailyTargetBurnedCalorie;
-  final double dailyEnergyGoal;
-  final double goalWaist;
-  final double goalWeight;
+  final double? dailyWalkTargetDuration;
+  final double? dailyTargetDuration;
+  final double? weeklyTargetDuration;
+  final double? dailyTargetBurnedCalorie;
+  final double? dailyEnergyGoal;
+  final double? goalWaist;
+  final double? goalWeight;
 
   GoalInfoModel(
-      {@required this.dailyWalkTargetDuration,
-      @required this.dailyTargetDuration,
-      @required this.weeklyTargetDuration,
-      @required this.dailyTargetBurnedCalorie,
-      @required this.dailyEnergyGoal,
-      @required this.goalWaist,
-      @required this.goalWeight});
+      {required this.dailyWalkTargetDuration,
+      required this.dailyTargetDuration,
+      required this.weeklyTargetDuration,
+      required this.dailyTargetBurnedCalorie,
+      required this.dailyEnergyGoal,
+      required this.goalWaist,
+      required this.goalWeight});
 
   factory GoalInfoModel.fromJson(Map<String, dynamic> json) {
     return GoalInfoModel(

@@ -4,14 +4,13 @@ import 'package:medical/res/R.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 
 typedef TabbarSelected = Function(int);
 
 class BottomTabbar extends StatefulWidget {
   final TabbarSelected callback;
 
-  BottomTabbar({@required this.callback});
+  BottomTabbar({required this.callback});
 
   final _BottomTabbar state = _BottomTabbar();
 
@@ -21,7 +20,7 @@ class BottomTabbar extends StatefulWidget {
 
 class _BottomTabbar extends State<BottomTabbar> {
   int index = 0;
-  int ticketCount;
+  int? ticketCount;
 
   @override
   void initState() {

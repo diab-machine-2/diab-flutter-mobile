@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GuidlinePanel extends StatelessWidget {
   @override
@@ -18,14 +20,14 @@ class GuidlinePanel extends StatelessWidget {
                 child: Container(
                   height: 3.86,
                   width: 60,
-                  decoration: BoxDecoration(color: Color(0xffE5E5E5)),
+                  decoration: BoxDecoration(color: R.color.color0xffE5E5E5),
                 ),
               ),
               SizedBox(height: 27),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Trạng thái chỉ số của bạn',
+                  Text(R.string.your_status_info.tr(),
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                   // Container(
@@ -36,41 +38,41 @@ class GuidlinePanel extends StatelessWidget {
                     child: Container(
                       height: 24,
                       width: 24,
-                      child: Image.asset('assets/images/x_icon.png'),
+                      child: Image.asset(R.drawable.ic_close),
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 30),
-              Text('Các chỉ số ở mức cảnh báo:',
+              Text(R.string.warning_info.tr(),
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               SizedBox(height: 30),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Có xu hướng trở nên tiêu cực',
+                Text(R.string.tends_to_negative.tr(),
                     style: TextStyle(fontSize: 14)),
-                Image.asset('assets/images/angry.png', width: 24, height: 24)
+                Image.asset(R.drawable.ic_angry, width: 24, height: 24)
               ]),
               Padding(
                 padding: const EdgeInsets.only(top: 16, bottom: 16),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Không thay đổi', style: TextStyle(fontSize: 14)),
-                      Image.asset('assets/images/sad.png',
+                      Text(R.string.not_changeed.tr(), style: TextStyle(fontSize: 14)),
+                      Image.asset(R.drawable.ic_sad,
                           width: 24, height: 24)
                     ]),
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Có xu hướng trở nên tích cực',
+                Text(R.string.tends_to_posiitive.tr(),
                     style: TextStyle(fontSize: 14)),
-                Image.asset('assets/images/happy.png', width: 24, height: 24)
+                Image.asset(R.drawable.ic_happy, width: 24, height: 24)
               ]),
               SizedBox(height: 27),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Tốt / đạt mục tiêu',
+                Text(R.string.good_successed.tr(),
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                Image.asset('assets/images/coin.png', width: 24, height: 24)
+                Image.asset(R.drawable.ic_coin, width: 24, height: 24)
               ]),
               SizedBox(height: 27),
             ]),

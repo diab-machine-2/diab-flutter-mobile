@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 import 'logger.dart';
 
 class DateUtil {
-  static DateTime parseStringToDate(String dateStr, String format) {
-    DateTime date;
+  static DateTime? parseStringToDate(String dateStr, String format) {
+    DateTime? date;
     if (dateStr != null)
       try {
         date = DateFormat(format).parse(dateStr);

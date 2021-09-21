@@ -5,11 +5,10 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:medical/main.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -21,10 +20,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddHBA1CController extends StatefulWidget {
-  final String type;
-  final String id;
+  final String? type;
+  final String? id;
 
   AddHBA1CController({this.type, this.id});
   @override
@@ -42,10 +42,10 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   DateTime today = DateTime.now();
   bool btnAction = true;
 
-  InputHbA1CModel model;
-  List<String> removeIDs = [];
+  InputHbA1CModel? model;
+  List<String?> removeIDs = [];
 
-  ShortGuiModel des;
+  ShortGuiModel? des;
 
   void initState() {
     super.initState();
@@ -67,12 +67,12 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     BotToast.showLoading();
     model = await HbA1CClient().fetchDetail(widget.id);
     BotToast.closeAllLoading();
-    _controller.text = model.hbA1C.round() == model.hbA1C
-        ? model.hbA1C.round().toString()
-        : model.hbA1C.toString();
-    _controllerNote.text = model.description;
-    time = DateTime.fromMillisecondsSinceEpoch(model.date * 1000);
-    files.addAll(model.images);
+    _controller.text = model!.hbA1C!.round() == model!.hbA1C
+        ? model!.hbA1C!.round().toString()
+        : model!.hbA1C.toString();
+    _controllerNote.text = model!.description!;
+    time = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+    files.addAll(model!.images);
     setState(() {});
   }
 
@@ -96,24 +96,24 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.bg_splash),
                     fit: BoxFit.cover)),
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? 'Cập nhật chỉ số HbA1C'
-                          : 'Nhập chỉ số HbA1C',
+                          ? R.string.cap_nhat_chi_so_hba1c.tr()
+                          : R.string.nhap_chi_so_hba1c.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
                       }),
@@ -128,10 +128,10 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
                             ? Image.asset(
-                                'assets/images/help_circle_active.png',
+                                R.drawable.ic_help_circle_active,
                                 width: 24,
                                 height: 24)
-                            : Image.asset('assets/images/help_circle.png',
+                            : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
                     ),
@@ -153,14 +153,14 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                     input: true,
                                     data: des,
                                     titleDetail:
-                                        'Chỉ số HbA1C đối với bệnh tiểu đường')
+                                        R.string.chi_so_hba1c_doi_voi_benh_tieu_duong.tr())
                                 : SizedBox()),
                         Padding(
                           padding: const EdgeInsets.only(
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -183,7 +183,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                                     .numberWithOptions(
                                                         decimal: true),
                                                 style: TextStyle(
-                                                    color: Colors.black,
+                                                    color: R.color.black,
                                                     fontSize: 34,
                                                     fontWeight:
                                                         FontWeight.w500),
@@ -196,7 +196,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                                     border: InputBorder.none,
                                                     hintStyle: TextStyle(
                                                         color:
-                                                            Color(0xff9C9C9C),
+                                                            R.color.captionColorGray,
                                                         fontSize: 34,
                                                         fontWeight:
                                                             FontWeight.w500))),
@@ -208,7 +208,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                       child: Container(
                                           height: 1,
                                           width: 74,
-                                          color: Color(0xffE5E5E5))),
+                                          color: R.color.color0xffE5E5E5)),
                                   SizedBox(height: 8),
                                 ]),
                           ),
@@ -218,7 +218,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -227,11 +227,12 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                 onTap: () {
                                   showDialog(
                                     barrierColor:
-                                        Color(0xff003F38).withOpacity(0.5),
+                                        R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                         initDate: time,
                                         callback: (value) {
+                                          if (value != null)
                                           setState(() {
                                             time = value;
                                           });
@@ -239,14 +240,14 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                   );
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              'assets/images/icon_calendar.png',
+                                              R.drawable.ic_calendar,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
@@ -282,7 +283,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -295,7 +296,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -303,10 +304,10 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset('assets/images/note_text.png',
+                                    Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Ghi chú',
+                                    Text(R.string.ghi_chu.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -317,20 +318,20 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                       maxLines: 3,
                                       keyboardType: TextInputType.multiline,
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: 'Nhập ghi chú của bạn',
+                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: Color(0xff666666)))),
+                                              color: R.color.primaryGreyColor))),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 16),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -353,7 +354,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                             child: index == files.length
                                                 ? Container(
                                                     child: Image.asset(
-                                                        'assets/images/icon_add_photo.png'))
+                                                        R.drawable.ic_add_photo))
                                                 : Stack(
                                                     alignment:
                                                         AlignmentDirectional
@@ -377,7 +378,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                                         ),
                                                         IconButton(
                                                             icon: Image.asset(
-                                                                'assets/images/icon_trash.png'),
+                                                                R.drawable.ic_trash),
                                                             onPressed: () {
                                                               setState(() {
                                                                 if (files[index]
@@ -412,19 +413,19 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                               height: 48,
                               width: 195,
                               decoration: BoxDecoration(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text('Lưu',
+                                  child: Text(R.string.save.tr(),
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)))),
                         ),
@@ -449,11 +450,11 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             border: Border.all(
-                                                color: red, width: 2)),
+                                                color: R.color.red, width: 2)),
                                         child: Center(
-                                          child: Text('Xoá dữ liệu',
+                                          child: Text(R.string.xoa_du_lieu.tr(),
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: R.color.red,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         )),
@@ -466,20 +467,20 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           gradient: LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.centerRight,
                                               colors: [
-                                                greenGradientTop,
-                                                greenGradientBottom
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Lưu',
+                                        child: Text(R.string.save.tr(),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ),
@@ -510,24 +511,24 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/earseIcon.png',
+                      Image.asset(R.drawable.ic_earse,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn xoá dữ liệu?',
+                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
+                            R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -546,11 +547,11 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Quay lại',
+                                        child: Text(R.string.back.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -566,13 +567,13 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color: red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text('Xoá',
+                                      child: Text(R.string.delete.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -588,7 +589,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -603,13 +604,13 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     final note = _controllerNote.text ?? '';
     final numberInput = _controller.text ?? '';
     if (model != null) {
-      final des = model.description ?? '';
-      final parseTime = DateTime.fromMillisecondsSinceEpoch(model.date * 1000);
+      final des = model!.description ?? '';
+      final parseTime = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
       if (note == des &&
-          double.parse(numberInput) == model.hbA1C &&
+          double.parse(numberInput) == model!.hbA1C &&
           parseTime.millisecondsSinceEpoch == time.millisecondsSinceEpoch &&
           removeIDs.length == 0 &&
-          files.length == model.images.length) {
+          files.length == model!.images.length) {
         Navigator.pop(context);
         return;
       }
@@ -630,24 +631,24 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/backIcon.png',
+                      Image.asset(R.drawable.ic_back_icon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                            R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -665,11 +666,11 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -684,20 +685,20 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color: R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -711,7 +712,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -725,9 +726,9 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   deleteData() async {
     try {
       BotToast.showLoading();
-      final result = await HbA1CClient().deleteIndexHbA1C(model.id);
+      final result = await HbA1CClient().deleteIndexHbA1C(model!.id);
       if (result == true) {
-        Message.showToastMessage(context, 'Xoá thành công');
+        Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         DartNotificationCenter.post(channel: 'hba1c_change_data');
         Navigator.pop(context);
       }
@@ -749,20 +750,20 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     numberInput = numberInput.split(',').join('.');
 
     if (numberInput == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số HbA1C');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_hba1c.tr());
       return;
     }
     if (double.parse(numberInput) > 30) {
       Message.showToastMessage(context,
-          'Chúng tôi xin lỗi, số liệu mà bạn nhập không trong phạm vi cho phép. Giá trị kỳ vọng nằm trong ngưỡng 1 - 30');
+          R.string.invalid_hba1c.tr());
       return;
     }
     if (time == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     // if (note == '') {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập ghi chú');
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu.tr());
     //   return;
     // }
     BotToast.showLoading();
@@ -775,14 +776,14 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
         }
       }
       final result = await HbA1CClient().putIndexHbA1C(
-          model.id,
+          model!.id,
           (time.millisecondsSinceEpoch ~/ 1000).toInt(),
           numberInput,
           note,
           removeIDs,
           paths);
       if (result == true) {
-        Message.showToastMessage(context, 'Lưu thành công');
+        Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
         DartNotificationCenter.post(channel: 'hba1c_change_data');
         Navigator.pop(context);
       }
@@ -805,20 +806,20 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     numberInput = numberInput.split(',').join('.');
 
     if (numberInput.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số HbA1C');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_chi_so_hba1c.tr());
       return;
     }
     if (double.parse(numberInput) > 30) {
       Message.showToastMessage(context,
-          'Chúng tôi xin lỗi, số liệu mà bạn nhập không trong phạm vi cho phép. Giá trị kỳ vọng nằm trong ngưỡng 1 - 30');
+          R.string.invalid_hba1c.tr());
       return;
     }
     if (time == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     // if (note == '') {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập ghi chú');
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu.tr());
     //   return;
     // }
     BotToast.showLoading();
@@ -859,11 +860,11 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_photo.png',
+                  Image.asset(R.drawable.ic_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chọn trong thư viện",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text(R.string.chon_trong_thu_vien.tr(),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -877,11 +878,11 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_camera_black.png',
+                  Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chụp ảnh",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text(R.string.chup_anh.tr(),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -892,8 +893,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text("Huỷ",
-              style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+          child: Text(R.string.cancel.tr(),
+              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -901,7 +902,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      //Message.showToastMessage(context, 'Chỉ đuợc chọn tối đa 5 ảnh');
+      //Message.showToastMessage(context, R.string.max_image_select.tr());
     }
   }
 
@@ -940,13 +941,13 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = FlatButton(
-      child: Text("Huỷ"),
+      child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Cấp quyền"),
+      child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -954,8 +955,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Thông báo"),
-      content: Text("Bạn cần cấp quyền truy cập để sử dụng tính năng này"),
+      title: Text(R.string.notification.tr()),
+      content: Text(R.string.ask_for_permission.tr()),
       actions: [
         cancelButton,
         continueButton,
@@ -970,18 +971,18 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   }
 }
 
-typedef TimeCallback = Function(DateTime);
+typedef TimeCallback = Function(DateTime?);
 
 class DateMultiPicker extends StatefulWidget {
-  final DateTime initDate;
-  final TimeCallback callback;
+  final DateTime? initDate;
+  final TimeCallback? callback;
   DateMultiPicker({this.initDate, this.callback});
   @override
   _DateMultiPickerState createState() => _DateMultiPickerState();
 }
 
 class _DateMultiPickerState extends State<DateMultiPicker> {
-  DateTime selectedDate = DateTime.now();
+  DateTime? selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -998,7 +999,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -1007,7 +1008,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1017,14 +1018,14 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Chọn ngày',
+                            Text(R.string.pick_date.tr(),
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
                                 icon:
-                                    Icon(Icons.close, color: Color(0xffBEC0C8)),
+                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
@@ -1033,11 +1034,10 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                     CustomCalendarDatePicker(
                         initialDate: widget.initDate == null
                             ? DateTime.now()
-                            : widget.initDate,
+                            : widget.initDate!,
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
-                        onDateChanged: (DateTime datetime) {
-                          print(datetime);
+                        onDateChanged: (datetime) {
                           // setState(() {
                           selectedDate = datetime;
                           // });
@@ -1053,12 +1053,12 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xffE2E4E7),
+                                  color: R.color.grayBorder,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1067,18 +1067,18 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            widget.callback(selectedDate);
+                            widget.callback!(selectedDate);
                             Navigator.pop(context);
                           },
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xff01645A),
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Đồng ý',
+                                  child: Text(R.string.yes.tr(),
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),

@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FoodDetailController extends StatefulWidget {
-  FoodDetailController({Key key}) : super(key: key);
+  FoodDetailController({Key? key}) : super(key: key);
   @override
   FoodDetailControllerState createState() => FoodDetailControllerState();
 }
@@ -21,7 +23,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
   @override
   bool get wantKeepAlive => true;
 
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   ScrollController scrollController = ScrollController();
 
@@ -33,7 +35,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
 
   @override
   void initState() {
-    periodFilterType = FoodDetailTabbarController.of(context).periodFilterType;
+    periodFilterType = FoodDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Diet Detail');
   }
@@ -76,7 +78,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
         child: BlocBuilder<FoodBloc, FoodState>(
             builder: (BuildContext context, FoodState state) {
           currentContext = context;
-          List<MealDayItemModel> model;
+          List<MealDayItemModel>? model;
           if (state is FoodInitial) {
             BlocProvider.of<FoodBloc>(context).add(FetchInputFood(
                 currentDateTime:
@@ -98,14 +100,14 @@ class FoodDetailControllerState extends State<FoodDetailController>
           return RefreshIndicator(
               onRefresh: refresh,
               child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
                           image:
-                              AssetImage('assets/images/detail_Background.png'),
+                              AssetImage(R.drawable.bg_detail),
                           fit: BoxFit.cover,
                         )),
                         child: LoadMore(
@@ -120,7 +122,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                               physics: AlwaysScrollableScrollPhysics(),
                               padding: EdgeInsets.only(bottom: 100),
                               itemBuilder: (BuildContext context, int index) {
-                                final element = model[index];
+                                final element = model![index];
 
                                 return Column(
                                     crossAxisAlignment:
@@ -133,7 +135,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                             right: 16,
                                             bottom: 0),
                                         child: Text(
-                                          convertCustomDate(element.date),
+                                          convertCustomDate(element.date!),
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
                                               fontSize: 18,
@@ -158,7 +160,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               16),
-                                                      color: Colors.white),
+                                                      color: R.color.white),
                                                   padding: EdgeInsets.only(
                                                       bottom: 8),
                                                   child: Column(
@@ -179,9 +181,9 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                     .spaceBetween,
                                                             children: [
                                                               Text(
-                                                                  mealItem.text,
+                                                                  mealItem.text!,
                                                                   style: TextStyle(
-                                                                      color: Colors
+                                                                      color: R.color
                                                                           .black,
                                                                       fontSize:
                                                                           16,
@@ -192,23 +194,22 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                 children: [
                                                                   Text(
                                                                       mealItem
-                                                                          .caloValue
+                                                                          .caloValue!
                                                                           .round()
                                                                           .toString(),
                                                                       style: TextStyle(
                                                                           fontFamily:
                                                                               'Viga',
-                                                                          color: Color(
-                                                                              0xff21A567),
+                                                                          color: R.color.green,
                                                                           fontSize:
                                                                               24,
                                                                           fontWeight:
                                                                               FontWeight.w400)),
                                                                   SizedBox(
                                                                       width: 4),
-                                                                  Text('kcal',
+                                                                  Text(R.string.kcal.tr(),
                                                                       style: TextStyle(
-                                                                          color: Colors
+                                                                          color: R.color
                                                                               .black,
                                                                           fontSize:
                                                                               14,
@@ -239,7 +240,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                 onTap: () {
                                                                   Navigator.pushNamed(
                                                                       context,
-                                                                      '/add_food',
+                                                                      NavigatorName.add_food,
                                                                       arguments: {
                                                                         'type':
                                                                             'update',
@@ -249,7 +250,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                 },
                                                                 child:
                                                                     Container(
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .transparent,
                                                                   child: Column(
                                                                     crossAxisAlignment:
@@ -265,9 +266,9 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                             left:
                                                                                 16),
                                                                         child: Text(
-                                                                            'Lúc ' +
-                                                                                convertToUTC(inputModel.date, 'HH:mm'),
-                                                                            style: TextStyle(color: textDark, fontSize: 16, fontWeight: FontWeight.normal)),
+                                                                            '${R.string.when.tr()} ' +
+                                                                                convertToUTC(inputModel.date!, 'HH:mm'),
+                                                                            style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal)),
                                                                       ),
                                                                       ListView.separated(
                                                                           physics: NeverScrollableScrollPhysics(),
@@ -277,7 +278,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                           separatorBuilder: (BuildContext context, int index) {
                                                                             return Container(
                                                                               height: 1,
-                                                                              color: Color(0xffE2E4E7),
+                                                                              color: R.color.grayBorder,
                                                                             );
                                                                           },
                                                                           itemBuilder: (BuildContext context, int index) {
@@ -293,23 +294,23 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                                         width: 50,
                                                                                         height: 50,
                                                                                         decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
-                                                                                        child: Image.network(food.image.url ?? ''),
+                                                                                        child: Image.network(food.image!.url ?? ''),
                                                                                       ),
                                                                                       SizedBox(width: 12),
                                                                                       Column(
                                                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                                                         children: [
-                                                                                          Text(food.name, style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500)),
+                                                                                          Text(food.name!, style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w500)),
                                                                                           SizedBox(height: 4),
-                                                                                          Text(food.text, style: TextStyle(color: textDark, fontSize: 16, fontWeight: FontWeight.normal))
+                                                                                          Text(food.text!, style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal))
                                                                                         ],
                                                                                       )
                                                                                     ]),
                                                                                     Row(
                                                                                       children: [
-                                                                                        Text(food.calorie.round().toString(), style: TextStyle(fontFamily: 'Viga', color: Colors.black, fontSize: 20, fontWeight: FontWeight.w400)),
+                                                                                        Text(food.calorie!.round().toString(), style: TextStyle(fontFamily: 'Viga', color: R.color.black, fontSize: 20, fontWeight: FontWeight.w400)),
                                                                                         SizedBox(width: 4),
-                                                                                        Text('kcal', style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w400))
+                                                                                        Text(R.string.kcal.tr(), style: TextStyle(color: R.color.black, fontSize: 14, fontWeight: FontWeight.w400))
                                                                                       ],
                                                                                     )
                                                                                   ],

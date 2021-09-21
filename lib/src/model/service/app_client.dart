@@ -11,7 +11,7 @@ const _defaultConnectTimeout = Duration.millisecondsPerMinute;
 const _defaultReceiveTimeout = Duration.millisecondsPerMinute;
 
 class AppClient {
-  AppApi appClient;
+  AppApi? appClient;
 
   AppClient._privateConstructor() {
     _setupClient();
@@ -42,7 +42,7 @@ class AppClient {
 
       _dio.interceptors
           .add(InterceptorsWrapper(onRequest: (options, handler) async {
-        String accessToken = appPreference.getData(Const.TOKEN);
+        String? accessToken = appPreference.getData(Const.TOKEN);
         if (!Utils.isEmpty(accessToken)) {
           options.headers["Authorization"] = "Bearer $accessToken";
         }
@@ -53,4 +53,4 @@ class AppClient {
   }
 }
 
-AppApi appClient = AppClient().appClient;
+AppApi? appClient = AppClient().appClient;

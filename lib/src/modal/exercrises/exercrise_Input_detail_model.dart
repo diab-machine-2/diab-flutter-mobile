@@ -3,26 +3,26 @@ import 'package:medical/src/modal/exercrises/exercrises_categogy_request.dart';
 import 'package:meta/meta.dart';
 
 class InputDetailExercriseModel {
-  final String id;
-  final int date;
-  final double burnedCalorie;
-  final String unit;
-  final String note;
-  final String timeFrameId;
-  final String timeFrame;
+  final String? id;
+  final int? date;
+  final double? burnedCalorie;
+  final String? unit;
+  final String? note;
+  final String? timeFrameId;
+  final String? timeFrame;
   final List<ExercrisesCategoryModel> exercise;
   final List<ImagesUrlModel> imageUrls;
 
   InputDetailExercriseModel({
-    @required this.id,
-    @required this.date,
-    @required this.burnedCalorie,
-    @required this.unit,
-    @required this.note,
-    @required this.timeFrameId,
-    @required this.timeFrame,
-    @required this.exercise,
-    @required this.imageUrls,
+    required this.id,
+    required this.date,
+    required this.burnedCalorie,
+    required this.unit,
+    required this.note,
+    required this.timeFrameId,
+    required this.timeFrame,
+    required this.exercise,
+    required this.imageUrls,
   });
   @override
   factory InputDetailExercriseModel.fromJson(Map<String, dynamic> json) {
@@ -48,26 +48,26 @@ class InputDetailExercriseModel {
 }
 
 class ListExercriseModel {
-  final String id;
-  final String category;
-  final String name;
-  final double duration;
-  final double burnedCalorie;
-  final String exerciseIntensityId;
-  final String exerciseIntensityName;
-  final String unit;
+  final String? id;
+  final String? category;
+  final String? name;
+  final double? duration;
+  final double? burnedCalorie;
+  final String? exerciseIntensityId;
+  final String? exerciseIntensityName;
+  final String? unit;
   final ImagesUrlModel imageUrl;
 
   ListExercriseModel({
-    @required this.id,
-    @required this.category,
-    @required this.name,
-    @required this.duration,
-    @required this.burnedCalorie,
-    @required this.exerciseIntensityId,
-    @required this.exerciseIntensityName,
-    @required this.unit,
-    @required this.imageUrl,
+    required this.id,
+    required this.category,
+    required this.name,
+    required this.duration,
+    required this.burnedCalorie,
+    required this.exerciseIntensityId,
+    required this.exerciseIntensityName,
+    required this.unit,
+    required this.imageUrl,
   });
   @override
   factory ListExercriseModel.fromJson(Map<String, dynamic> json) {
@@ -90,10 +90,10 @@ class ListExercriseModel {
 }
 
 class ImagesUrlModel {
-  final String id;
-  final String url;
+  final String? id;
+  final String? url;
 
-  ImagesUrlModel({@required this.id, @required this.url});
+  ImagesUrlModel({required this.id, required this.url});
   @override
   factory ImagesUrlModel.fromJson(Map<String, dynamic> json) {
     return ImagesUrlModel(

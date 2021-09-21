@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_contain_detail.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_ranking_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_calo_chart.dart';
@@ -7,7 +8,7 @@ import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class ExercrisesOverviewController extends StatefulWidget {
-  ExercrisesOverviewController({Key key}) : super(key: key);
+  ExercrisesOverviewController({Key? key}) : super(key: key);
   @override
   ExercrisesOverviewControllerState createState() =>
       ExercrisesOverviewControllerState();
@@ -33,16 +34,16 @@ class ExercrisesOverviewControllerState
   reloadData(int periodFilterType) {
     scrollController.jumpTo(0);
     if (excersireKey.currentState != null) {
-      excersireKey.currentState.reloadData(periodFilterType);
+      excersireKey.currentState!.reloadData(periodFilterType);
     }
     if (exercrisesTrendChartKey.currentState != null) {
-      exercrisesTrendChartKey.currentState.reloadData(periodFilterType);
+      exercrisesTrendChartKey.currentState!.reloadData(periodFilterType);
     }
     if (exercrisesTrendCaloChartKey.currentState != null) {
-      exercrisesTrendCaloChartKey.currentState.reloadData(periodFilterType);
+      exercrisesTrendCaloChartKey.currentState!.reloadData(periodFilterType);
     }
     if (exercrisesRankKey.currentState != null) {
-      exercrisesRankKey.currentState.reloadData(periodFilterType);
+      exercrisesRankKey.currentState!.reloadData(periodFilterType);
     }
   }
 
@@ -55,10 +56,10 @@ class ExercrisesOverviewControllerState
       decoration: BoxDecoration(
           gradient: LinearGradient(
               colors: [
-                Color(0xFFFDC798).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFFDC798).withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
               ],
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,

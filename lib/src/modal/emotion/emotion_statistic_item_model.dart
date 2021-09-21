@@ -2,18 +2,18 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 class EmotionStatisticItemModel {
-  final String colorCode;
-  final String id;
-  final int count;
-  final String text;
+  final String? colorCode;
+  final String? id;
+  final int? count;
+  final String? text;
   final ImagesModel icon;
 
   EmotionStatisticItemModel({
-    @required this.colorCode,
-    @required this.id,
-    @required this.count,
-    @required this.text,
-    @required this.icon,
+    required this.colorCode,
+    required this.id,
+    required this.count,
+    required this.text,
+    required this.icon,
   });
   @override
   factory EmotionStatisticItemModel.fromJson(Map<String, dynamic> json) {

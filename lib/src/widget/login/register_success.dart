@@ -1,11 +1,13 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 
 class RegisterSuccess extends StatefulWidget {
-  final String phone;
-  final String password;
+  final String? phone;
+  final String? password;
   RegisterSuccess({this.phone, this.password});
   @override
   _RegisterSuccessState createState() => _RegisterSuccessState();
@@ -18,7 +20,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
       body: Container(
         decoration: BoxDecoration(
             image: DecorationImage(
-          image: AssetImage('assets/images/background_splash.png'),
+          image: AssetImage(R.drawable.bg_splash),
           fit: BoxFit.cover,
         )),
         child: Column(
@@ -27,12 +29,12 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
             Expanded(
               child: ListView(children: [
                 Stack(alignment: AlignmentDirectional.center, children: [
-                  Image.asset('assets/images/RegisterSuccess.png'),
+                  Image.asset(R.drawable.im_register_success),
                   Column(children: [
                     SizedBox(height: 180),
                     Text('Đăng ký thành công!',
                         style: TextStyle(
-                            color: mainColor,
+                            color: R.color.mainColor,
                             fontSize: 20,
                             fontWeight: FontWeight.w600)),
                     SizedBox(height: 20),
@@ -41,7 +43,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                       child: Text(
                           'Vui lòng cập nhật hồ sơ để\nDiaB có thể hỗ trợ bạn tốt hơn!',
                           style: TextStyle(
-                              color: Color(0xff333333),
+                              color: R.color.color0xff333333,
                               fontSize: 16,
                               fontWeight: FontWeight.w400),
                           textAlign: TextAlign.center),
@@ -62,16 +64,16 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
                       width: 195,
                       margin: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                          color: mainColor,
+                          color: R.color.mainColor,
                           borderRadius: BorderRadius.circular(200),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [greenGradientTop, greenGradientBottom])),
+                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
                           child: Text('Cập nhật hồ sơ',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600)))),
                 ),
@@ -95,7 +97,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
     BotToast.closeAllLoading();
     print(result);
     // if (result.access_token != null) {
-    Navigator.pushReplacementNamed(context, '/update_info',
+    Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         arguments: {'type': 'phone'});
     // }
   }

@@ -13,16 +13,14 @@ class AppPreference {
     return _instance;
   }
 
-  SharedPreferences _preference;
-
-  static const String key_app_language = "AppLanguage";
+  SharedPreferences? _preference;
 
   String get appLanguage {
-    return _preference?.getString(key_app_language) ?? Const.VI;
+    return _preference?.getString(Const.key_app_language) ?? Const.VI;
   }
 
   void saveAppLanguage(String language) {
-    _preference?.setString(key_app_language, language);
+    _preference?.setString(Const.key_app_language, language);
   }
 
   // void saveData(UserData user) {
@@ -44,15 +42,15 @@ class AppPreference {
   //   removeData(Const.FULL_NAME);
   // }
 
-  String getData(String key) {
+  String? getData(String key) {
     return _preference?.getString(key);
   }
 
-  int getIntData(String key) {
+  int? getIntData(String key) {
     return _preference?.getInt(key);
   }
 
-  void setData(String key, Object data) {
+  void setData(String key, Object? data) {
     if (data == null) return;
     if (data is int) {
       _preference?.setInt(key, data);

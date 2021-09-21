@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/res/R.dart';
 
 class CustomDropDown extends StatelessWidget {
   final name;
   final value;
   final List<String> itemsList;
-  final Color dropdownColor;
+  final Color? dropdownColor;
   final Function(dynamic value) onChanged;
   const CustomDropDown({
-    @required this.name,
-    @required this.value,
-    @required this.itemsList,
+    required this.name,
+    required this.value,
+    required this.itemsList,
     this.dropdownColor,
-    @required this.onChanged,
-    Key key,
+    required this.onChanged,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -24,8 +24,8 @@ class CustomDropDown extends StatelessWidget {
             alignment: Alignment.topLeft,
             child: Row(
               children: [
-                Text(name, style: TextStyle(color: textDark)),
-                Text(" *", style: TextStyle(color: Colors.red))
+                Text(name, style: TextStyle(color: R.color.textDark)),
+                Text(" *", style: TextStyle(color: R.color.red))
               ],
             )),
         Padding(
@@ -33,7 +33,7 @@ class CustomDropDown extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
+              color: R.color.white,
             ),
             child: DropdownButtonHideUnderline(
               child: Padding(
@@ -49,7 +49,7 @@ class CustomDropDown extends StatelessWidget {
                             child: Text(item),
                           ))
                       .toList(),
-                  onChanged: (value) => onChanged(value),
+                  onChanged: (dynamic value) => onChanged(value),
                 ),
               ),
             ),

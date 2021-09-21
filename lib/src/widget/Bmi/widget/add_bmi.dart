@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
@@ -13,7 +14,6 @@ import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -26,10 +26,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddBmiController extends StatefulWidget {
-  final String type;
-  final String id;
+  final String? type;
+  final String? id;
 
   AddBmiController({this.type, this.id});
   @override
@@ -46,22 +47,23 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
   DateTime time = DateTime.now();
-  InputWeightModel model;
-  TimeFrameModel selectedTimeFrame;
-  List<String> removeIDs = [];
+  InputWeightModel? model;
+  TimeFrameModel? selectedTimeFrame;
+  List<String?> removeIDs = [];
   String textValidate = '';
   int selectedWeight = 0;
   int selectedHeight = 0;
   int selectedHip = 0;
-  double bmiNumber = 0;
+  double? bmiNumber = 0;
 
-  ShortGuiModel des;
+  ShortGuiModel? des;
 
+  @override
   void initState() {
     print(AppSettings.userInfo);
-    if (AppSettings.userInfo.height != 0 &&
-        AppSettings.userInfo.height != null) {
-      selectedHeight = AppSettings.userInfo.height.toInt();
+    if (AppSettings.userInfo!.height != 0 &&
+        AppSettings.userInfo!.height != null) {
+      selectedHeight = AppSettings.userInfo!.height!.toInt();
     }
     super.initState();
     if (widget.type == 'update' && widget.id != null) {
@@ -73,6 +75,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     TrackingManager.analytics.setCurrentScreen(screenName: 'BMI Input');
   }
 
+  @override
   void dispose() {
     super.dispose();
   }
@@ -81,15 +84,15 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     BotToast.showLoading();
     model = await WeightClient().fetchDetail(widget.id);
     BotToast.closeAllLoading();
-    bmiNumber = model.bmi;
-    selectedWeight = model.weight == null ? 0 : model.weight.toInt();
-    selectedHeight = model.height == null ? 0 : model.height.toInt();
-    _controllerNote.text = model.note;
-    selectedHip = model.waist == null ? 0 : model.waist.toInt();
-    files.addAll(model.images);
-    selectedDate = DateTime.fromMillisecondsSinceEpoch(model.date * 1000);
+    bmiNumber = model!.bmi;
+    selectedWeight = model!.weight == null ? 0 : model!.weight!.toInt();
+    selectedHeight = model!.height == null ? 0 : model!.height!.toInt();
+    _controllerNote.text = model!.note!;
+    selectedHip = model!.waist == null ? 0 : model!.waist!.toInt();
+    files.addAll(model!.images);
+    selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
     selectedTimeFrame = TimeFrameModel(
-        id: model.timeFrameId, code: '', name: model.timeFrameText);
+        id: model!.timeFrameId, code: '', name: model!.timeFrameText);
     setState(() {});
   }
 
@@ -119,28 +122,28 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           return false;
         },
         child: Scaffold(
-          backgroundColor: backgroundColor,
+          backgroundColor:  R.color.backgroundColor,
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.bg_splash),
                     fit: BoxFit.cover)),
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? 'Cập nhật chỉ số cân nặng'
-                          : 'Nhập chỉ số cân nặng',
+                          ? R.string.update_weight_info.tr()
+                          : R.string.enter_weight_info.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
                       }),
@@ -155,10 +158,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
                             ? Image.asset(
-                                'assets/images/help_circle_active.png',
+                                R.drawable.ic_help_circle_active,
                                 width: 24,
                                 height: 24)
-                            : Image.asset('assets/images/help_circle.png',
+                            : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
                     ),
@@ -178,7 +181,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                     input: true,
                                     data: des,
                                     titleDetail:
-                                        'Kiểm soát cân nặng bệnh tiểu đường')
+                                        R.string.diabetes_weight_control.tr())
                                 : SizedBox()),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -186,7 +189,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(16),
-                                color: Color(0xffB1DDDB)),
+                                color: R.color.color0xffB1DDDB),
                             padding: EdgeInsets.only(right: 20),
                             child: Row(
                               children: [
@@ -194,7 +197,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   margin: const EdgeInsets.only(
                                       left: 16, right: 32, top: 9),
                                   child: Image.asset(
-                                      'assets/images/male_weight.png',
+                                      R.drawable.im_male_weight,
                                       height: 131),
                                 ),
                                 Expanded(
@@ -202,26 +205,26 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('Chỉ số BMI của bạn:',
+                                      Text('${R.string.your_bmi.tr()}: ',
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w500)),
                                       SizedBox(height: 6),
                                       Row(
                                         children: [
-                                          Text(roundNumber(bmiNumber),
+                                          Text(roundNumber(bmiNumber!),
                                               style: TextStyle(
-                                                  color: textDark,
+                                                  color: R.color.textDark,
                                                   fontSize: 24,
                                                   fontWeight: FontWeight.w700)),
                                           Padding(
                                             padding: const EdgeInsets.only(
                                                 top: 2.0, left: 4),
                                             child: Text(
-                                              'kg/m²',
+                                              R.string.kg_m_2.tr(),
                                               style: TextStyle(
-                                                  color: textDark,
+                                                  color: R.color.textDark,
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 16.0),
                                             ),
@@ -240,10 +243,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
+                            // color: R.color.white,
                             padding: EdgeInsets.all(20),
                             child: Column(
                               children: [
@@ -252,10 +255,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Row(children: [
-                                        Image.asset('assets/images/scale.png',
+                                        Image.asset(R.drawable.ic_scale,
                                             width: 22, height: 22),
                                         SizedBox(width: 8),
-                                        Text('Cân nặng & chiều cao',
+                                        Text(R.string.weight_and_height.tr(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
@@ -274,8 +277,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     GestureDetector(
                                                       onTap: () {
                                                         showDialog(
-                                                          barrierColor: Color(
-                                                                  0xff003F38)
+                                                          barrierColor: R.color.color0xff003F38
                                                               .withOpacity(0.5),
                                                           context: context,
                                                           builder: (_) =>
@@ -284,20 +286,21 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                       (number) {
                                                                     setState(
                                                                         () {
+                                                                          if (number != null)
                                                                       selectedWeight =
                                                                           number;
                                                                     });
                                                                     handleBMI();
                                                                   },
                                                                   title:
-                                                                      'Nhập cân nặng',
+                                                                      R.string.enter_weight.tr(),
                                                                   max: 180,
                                                                   numberDefault:
                                                                       selectedWeight ==
                                                                               0
                                                                           ? 50
                                                                           : selectedWeight,
-                                                                  unit: 'kg'),
+                                                                  unit: R.string.kg.tr()),
                                                         );
                                                       },
                                                       child: Container(
@@ -312,9 +315,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                 style: TextStyle(
                                                                     color: selectedWeight ==
                                                                             0
-                                                                        ? Color(
-                                                                            0xff9C9C9C)
-                                                                        : textDark,
+                                                                        ? R.color.captionColorGray
+                                                                        : R.color.textDark,
                                                                     fontSize:
                                                                         34,
                                                                     fontWeight:
@@ -326,10 +328,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                         height: 1,
                                                         width: 54,
                                                         color:
-                                                            Color(0xffE5E5E5))
+                                                            R.color.color0xffE5E5E5)
                                                   ],
                                                 ),
-                                                Text('kg',
+                                                Text(R.string.kg.tr(),
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                     )),
@@ -338,9 +340,9 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                 )
                                               ],
                                             ),
-                                            (AppSettings.userInfo.height == 0 ||
+                                            (AppSettings.userInfo!.height == 0 ||
                                                     AppSettings
-                                                            .userInfo.height ==
+                                                            .userInfo!.height ==
                                                         null)
                                                 ? Row(
                                                     children: [
@@ -364,24 +366,25 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                               GestureDetector(
                                                                   onTap: () {
                                                                     showDialog(
-                                                                      barrierColor: Color(
-                                                                              0xff003F38)
+                                                                      barrierColor: R.color.color0xff003F38
                                                                           .withOpacity(
                                                                               0.5),
                                                                       context:
                                                                           context,
                                                                       builder: (_) => CustomNumPicker(
                                                                           callback: (num) {
-                                                                            print(num);
-                                                                            setState(() {
-                                                                              selectedHeight = num;
-                                                                            });
-                                                                            handleBMI();
+                                                                            if (num != null) {
+                                                                              setState(() {
+                                                                                selectedHeight =
+                                                                                    num;
+                                                                              });
+                                                                              handleBMI();
+                                                                            }
                                                                           },
-                                                                          title: 'Nhập chiều cao',
+                                                                          title: R.string.enter_height.tr(),
                                                                           max: 250,
                                                                           numberDefault: selectedHeight == 0 ? 150 : selectedHeight,
-                                                                          unit: 'cm'),
+                                                                          unit: R.string.cm.tr()),
                                                                     );
                                                                   },
                                                                   child:
@@ -395,7 +398,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                               : selectedHeight
                                                                                   .toString(),
                                                                           style: TextStyle(
-                                                                              color: selectedHeight == 0 ? Color(0xff9C9C9C) : textDark,
+                                                                              color: selectedHeight == 0 ? R.color.captionColorGray : R.color.textDark,
                                                                               fontSize: 34,
                                                                               fontWeight: FontWeight.w500)),
                                                                     ),
@@ -403,11 +406,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                               Container(
                                                                   height: 1,
                                                                   width: 54,
-                                                                  color: Color(
-                                                                      0xffE5E5E5))
+                                                                  color: R.color.color0xffE5E5E5)
                                                             ],
                                                           ),
-                                                          Text('cm',
+                                                          Text(R.string.cm.tr(),
                                                               style: TextStyle(
                                                                 fontSize: 16,
                                                               )),
@@ -429,7 +431,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         fontSize: 14,
-                                                        color: red,
+                                                        color:R.color.red,
                                                         fontWeight:
                                                             FontWeight.w400)),
                                               ],
@@ -442,10 +444,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Row(children: [
-                                        Image.asset('assets/images/ruler.png',
+                                        Image.asset(R.drawable.ic_ruler,
                                             width: 22, height: 22),
                                         SizedBox(width: 8),
-                                        Text('Vòng eo',
+                                        Text(R.string.waist.tr(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
@@ -464,30 +466,30 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     GestureDetector(
                                                       onTap: () {
                                                         showDialog(
-                                                          barrierColor: Color(
-                                                                  0xff003F38)
+                                                          barrierColor: R.color.color0xff003F38
                                                               .withOpacity(0.5),
                                                           context: context,
                                                           builder: (_) =>
                                                               CustomNumPicker(
                                                                   callback:
                                                                       (num) {
-                                                                    print(num);
-                                                                    setState(
-                                                                        () {
-                                                                      selectedHip =
-                                                                          num;
-                                                                    });
+                                                                        if (num != null) {
+                                                                          setState(
+                                                                                  () {
+                                                                                selectedHip =
+                                                                                    num;
+                                                                              });
+                                                                        }
                                                                   },
                                                                   title:
-                                                                      'Nhập vòng eo',
+                                                                      R.string.enter_waist.tr(),
                                                                   max: 180,
                                                                   numberDefault:
                                                                       selectedHip ==
                                                                               0
                                                                           ? 60
                                                                           : selectedHip,
-                                                                  unit: 'cm'),
+                                                                  unit: R.string.cm.tr()),
                                                         );
                                                       },
                                                       child: Container(
@@ -501,9 +503,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                               style: TextStyle(
                                                                   color: selectedHip ==
                                                                           0
-                                                                      ? Color(
-                                                                          0xff9C9C9C)
-                                                                      : textDark,
+                                                                      ? R.color.captionColorGray
+                                                                      : R.color.textDark,
                                                                   fontSize: 34,
                                                                   fontWeight:
                                                                       FontWeight
@@ -515,10 +516,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                         height: 1,
                                                         width: 54,
                                                         color:
-                                                            Color(0xffE5E5E5))
+                                                            R.color.color0xffE5E5E5)
                                                   ],
                                                 ),
-                                                Text('cm',
+                                                Text(R.string.cm.tr(),
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                     )),
@@ -537,7 +538,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         fontSize: 14,
-                                                        color: red,
+                                                        color:R.color.red,
                                                         fontWeight:
                                                             FontWeight.w400)),
                                               ],
@@ -553,7 +554,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -562,15 +563,17 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                 onTap: () {
                                   showDialog(
                                     barrierColor:
-                                        Color(0xff003F38).withOpacity(0.5),
+                                        R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                       initDate: selectedDate,
                                       callback: (date) {
-                                        setState(() {
-                                          selectedDate = date;
-                                        });
-                                        loadTimeFrame();
+                          if (date != null) {
+                            setState(() {
+                              selectedDate = date;
+                            });
+                            loadTimeFrame();
+                          }
                                       },
                                       // selectedHour: (hour) {
                                       //   setState(() {
@@ -586,14 +589,14 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   );
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              'assets/images/icon_calendar.png',
+                                              R.drawable.ic_calendar,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
@@ -606,7 +609,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                           1000,
                                                       'HH:mm - dd/MM/yyyy'),
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w400)),
@@ -615,7 +618,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -628,7 +631,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -638,28 +641,28 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   showActionFilter(context);
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              'assets/images/icon_clock.png',
+                                              R.drawable.ic_clock,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
                                           Text(
                                               selectedTimeFrame == null
-                                                  ? 'Chọn khung giờ'
-                                                  : selectedTimeFrame.name,
+                                                  ? R.string.chon_khung_gio.tr()
+                                                  : selectedTimeFrame!.name!,
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w400))
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -672,19 +675,19 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
+                            // color: R.color.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset('assets/images/note_text.png',
+                                    Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Ghi chú',
+                                    Text(R.string.ghi_chu.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -693,20 +696,20 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   TextField(
                                       controller: _controllerNote,
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: 'Nhập ghi chú của bạn',
+                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: Color(0xff666666)))),
+                                              color: R.color.primaryGreyColor))),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -729,7 +732,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                             child: index == files.length
                                                 ? Container(
                                                     child: Image.asset(
-                                                        'assets/images/icon_add_photo.png'))
+                                                        R.drawable.ic_add_photo))
                                                 : Stack(
                                                     alignment:
                                                         AlignmentDirectional
@@ -753,7 +756,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                         ),
                                                         IconButton(
                                                             icon: Image.asset(
-                                                                'assets/images/icon_trash.png'),
+                                                                R.drawable.ic_trash),
                                                             onPressed: () {
                                                               setState(() {
                                                                 if (files[index]
@@ -788,19 +791,19 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                               height: 48,
                               width: 195,
                               decoration: BoxDecoration(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text('Lưu',
+                                  child: Text(R.string.save.tr(),
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)))),
                         ),
@@ -824,11 +827,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             border: Border.all(
-                                                color: red, width: 2)),
+                                                color:R.color.red, width: 2)),
                                         child: Center(
-                                          child: Text('Xoá dữ liệu',
+                                          child: Text(R.string.xoa_du_lieu.tr(),
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: R.color.red,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         )),
@@ -841,20 +844,20 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           gradient: LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.centerRight,
                                               colors: [
-                                                greenGradientTop,
-                                                greenGradientBottom
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Lưu',
+                                        child: Text(R.string.save.tr(),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ),
@@ -875,7 +878,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       BotToast.showLoading();
       final result = await WeightClient().deleteIndexBmi(widget.id);
       if (result == true) {
-        Message.showToastMessage(context, 'Xoá thành công');
+        Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         DartNotificationCenter.post(channel: 'Weight_change_data');
         Navigator.pop(context);
       }
@@ -897,11 +900,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     final note = _controllerNote.text ?? '';
 
     // if (weight.isEmpty) {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập chỉ số cân nặng');
+    //   Message.showToastMessage(context, R.string.mes_weight_empty.tr());
     //   return;
     // }
     // if (height.isEmpty) {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập chỉ số chiều cao');
+    //   Message.showToastMessage(context, R.string.mes_height_empty.tr());
     //   return;
     // }
     // if (hip.isEmpty) {
@@ -909,15 +912,15 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     //   return;
     // }
     // if (selectedDate == null) {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
     //   return;
     // }
     // if (selectedTimeFrame == null) {
-    //   Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+    //   Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
     //   return;
     // }
     // if (note == null) {
-    //   Message.showToastMessage(context, 'Bạn chưa nhập lý do');
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
     //   return;
     // }
     BotToast.showLoading();
@@ -936,12 +939,12 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           selectedHip.toString(),
           selectedHeight.toString(),
           note,
-          selectedTimeFrame.id,
+          selectedTimeFrame!.id,
           removeIDs,
           paths);
       if (result == true) {
         updateHeightProfile();
-        Message.showToastMessage(context, 'Lưu thành công');
+        Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
         DartNotificationCenter.post(channel: 'Weight_change_data');
         Navigator.pop(context);
       }
@@ -961,11 +964,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     final note = _controllerNote.text ?? '';
 
     if (selectedWeight == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số cân nặng');
+      Message.showToastMessage(context, R.string.mes_weight_empty.tr());
       return;
     }
     if (selectedHeight == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập chỉ số chiều cao');
+      Message.showToastMessage(context, R.string.mes_height_empty.tr());
       return;
     }
     // if (selectedHip == 0) {
@@ -973,15 +976,15 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     //   return;
     // }
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
     if (note == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập ghi chú');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu.tr());
       return;
     }
     BotToast.showLoading();
@@ -998,7 +1001,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           selectedHip == 0 ? null : selectedHip.toString(),
           selectedHeight.toString(),
           note,
-          selectedTimeFrame.id);
+          selectedTimeFrame!.id);
       BotToast.closeAllLoading();
       if (result == true) {
         updateHeightProfile();
@@ -1016,7 +1019,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   }
 
   updateHeightProfile() async {
-    UserModel userInfo = AppSettings.userInfo;
+    UserModel userInfo = AppSettings.userInfo!;
     userInfo = UserModel(
         id: userInfo.id,
         username: userInfo.username,
@@ -1050,7 +1053,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
         firstLinkedAccount: userInfo.firstLinkedAccount);
     try {
       BotToast.showLoading();
-      await UserClient().updateUserInfo(AppSettings.userInfo.id, userInfo);
+      await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -1076,24 +1079,24 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/earseIcon.png',
+                      Image.asset(R.drawable.ic_earse,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn xoá dữ liệu?',
+                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
+                            R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1112,11 +1115,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Quay lại',
+                                        child: Text(R.string.back.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -1132,13 +1135,13 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color: red,
+                                      color:R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text('Xoá',
+                                      child: Text(R.string.delete.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1154,7 +1157,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1168,12 +1171,12 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   _showDialogSave() {
     final note = _controllerNote.text ?? '';
     if (model != null) {
-      final date = DateTime.fromMillisecondsSinceEpoch(model.date * 1000);
+      final date = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
       if (selectedWeight == 0 &&
           selectedHeight == 0 &&
           selectedHip == 0 &&
           note.isEmpty &&
-          files.length == model.images.length &&
+          files.length == model!.images.length &&
           removeIDs.length == 0 &&
           date.millisecondsSinceEpoch == selectedDate.millisecondsSinceEpoch) {
         Navigator.pop(context);
@@ -1200,24 +1203,24 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/backIcon.png',
+                      Image.asset(R.drawable.ic_back_icon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                            R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1235,11 +1238,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -1254,20 +1257,20 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color:R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1281,7 +1284,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1296,7 +1299,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => ActionListTrend(
@@ -1319,11 +1322,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_camera_black.png',
+                  Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chọn trong thư viện",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text(R.string.chon_trong_thu_vien.tr(),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1337,11 +1340,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_photo.png',
+                  Image.asset(R.drawable.ic_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chụp ảnh",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text(R.string.chup_anh.tr(),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1352,8 +1355,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text("Huỷ",
-              style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+          child: Text(R.string.cancel.tr(),
+              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -1361,7 +1364,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      Message.showToastMessage(context, 'Chỉ đuợc chọn tối đa 5 ảnh');
+      Message.showToastMessage(context, R.string.max_image_select.tr());
     }
   }
 
@@ -1400,13 +1403,13 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = FlatButton(
-      child: Text("Huỷ"),
+      child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Cấp quyền"),
+      child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -1414,8 +1417,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Thông báo"),
-      content: Text("Bạn cần cấp quyền truy cập để sử dụng tính năng này"),
+      title: Text(R.string.notification.tr()),
+      content: Text(R.string.ask_for_permission.tr()),
       actions: [
         cancelButton,
         continueButton,
@@ -1442,18 +1445,18 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   }
 }
 
-typedef TimeCallback = Function(DateTime);
+typedef TimeCallback = Function(DateTime?);
 
 class DateMultiPicker extends StatefulWidget {
-  final DateTime initDate;
-  final TimeCallback callback;
+  final DateTime? initDate;
+  final TimeCallback? callback;
   DateMultiPicker({this.initDate, this.callback});
   @override
   _DateMultiPickerState createState() => _DateMultiPickerState();
 }
 
 class _DateMultiPickerState extends State<DateMultiPicker> {
-  DateTime selectedDate = DateTime.now();
+  DateTime? selectedDate = DateTime.now();
   int selectedHour = DateTime.now().hour;
   int selectedMinute = DateTime.now().minute;
 
@@ -1461,8 +1464,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   void initState() {
     if (widget.initDate != null) {
       selectedDate = widget.initDate;
-      selectedHour = widget.initDate.hour;
-      selectedMinute = widget.initDate.minute;
+      selectedHour = widget.initDate!.hour;
+      selectedMinute = widget.initDate!.minute;
     }
     super.initState();
   }
@@ -1474,7 +1477,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -1483,7 +1486,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1493,14 +1496,14 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Chọn ngày',
+                            Text(R.string.pick_date.tr(),
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
                                 icon:
-                                    Icon(Icons.close, color: Color(0xffBEC0C8)),
+                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
@@ -1509,10 +1512,10 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                     CustomCalendarDatePicker(
                         initialDate: widget.initDate == null
                             ? DateTime.now()
-                            : widget.initDate,
+                            : widget.initDate!,
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
-                        onDateChanged: (DateTime datetime) {
+                        onDateChanged: (datetime) {
                           selectedDate = datetime;
                         }),
                     Row(
@@ -1520,9 +1523,9 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         SizedBox(
                           width: 16,
                         ),
-                        Text('Chọn thời gian',
+                        Text(R.string.pick_time.tr(),
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700)),
                       ],
@@ -1532,8 +1535,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
                         callback: (hour, minute) {
-                          selectedHour = hour;
-                          selectedMinute = minute;
+                          selectedHour = hour ?? DateTime.now().hour;
+                          selectedMinute = minute ?? DateTime.now().minute;
                         }),
                     SizedBox(height: 20),
                     Row(children: [
@@ -1546,12 +1549,12 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xffE2E4E7),
+                                  color: R.color.grayBorder,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1561,25 +1564,25 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         child: GestureDetector(
                           onTap: () {
                             selectedDate = DateTime(
-                                selectedDate.year,
-                                selectedDate.month,
-                                selectedDate.day,
+                                selectedDate!.year,
+                                selectedDate!.month,
+                                selectedDate!.day,
                                 selectedHour,
                                 selectedMinute);
 
-                            widget.callback(selectedDate);
+                            widget.callback!(selectedDate);
 
                             Navigator.pop(context);
                           },
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xff01645A),
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Đồng ý',
+                                  child: Text(R.string.yes.tr(),
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1598,22 +1601,22 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   }
 }
 
-typedef TimeHourCallback = Function(int, int);
+typedef TimeHourCallback = Function(int?, int?);
 
 class CustomTimePicker extends StatefulWidget {
-  final int selectedHour;
-  final int selectedMinute;
-  final TimeHourCallback callback;
+  final int? selectedHour;
+  final int? selectedMinute;
+  final TimeHourCallback? callback;
   CustomTimePicker({this.selectedHour, this.selectedMinute, this.callback});
   @override
   _CustomTimePickerState createState() => _CustomTimePickerState();
 }
 
 class _CustomTimePickerState extends State<CustomTimePicker> {
-  FixedExtentScrollController hourController;
-  FixedExtentScrollController minuteController;
-  int selectedHour = 1;
-  int selectedMinute = 1;
+  FixedExtentScrollController? hourController;
+  FixedExtentScrollController? minuteController;
+  int? selectedHour = 1;
+  int? selectedMinute = 1;
 
   @override
   void initState() {
@@ -1627,8 +1630,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     if (widget.selectedMinute != null) {
       selectedMinute = widget.selectedMinute;
     }
-    hourController = FixedExtentScrollController(initialItem: selectedHour);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute);
+    hourController = FixedExtentScrollController(initialItem: selectedHour!);
+    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   @override
@@ -1645,7 +1648,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 onSelectedItemChanged: (value) {
                   setState(() {
                     selectedHour = value;
-                    widget.callback(selectedHour, selectedMinute);
+                    widget.callback!(selectedHour, selectedMinute);
                   });
                 },
                 itemExtent: 47.0,
@@ -1654,8 +1657,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedHour == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))
@@ -1670,7 +1673,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 onSelectedItemChanged: (value) {
                   setState(() {
                     selectedMinute = value;
-                    widget.callback(selectedHour, selectedMinute);
+                    widget.callback!(selectedHour, selectedMinute);
                   });
                 },
                 itemExtent: 47.0,
@@ -1679,8 +1682,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedMinute == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))
@@ -1696,15 +1699,15 @@ String formatDate(int timeStamp) {
   return 'Tháng ${date.month}, ${date.year}';
 }
 
-typedef NumCallback = Function(int);
+typedef NumCallback = Function(int?);
 
 class CustomNumPicker extends StatefulWidget {
-  final NumCallback callback;
-  final String title;
-  final String subTitle;
-  final int max;
-  final int numberDefault;
-  final String unit;
+  final NumCallback? callback;
+  final String? title;
+  final String? subTitle;
+  final int? max;
+  final int? numberDefault;
+  final String? unit;
   CustomNumPicker(
       {this.callback,
       this.title,
@@ -1717,26 +1720,26 @@ class CustomNumPicker extends StatefulWidget {
 }
 
 class CustomNumPickerState extends State<CustomNumPicker> {
-  FixedExtentScrollController numController;
-  int selectedNum;
+  FixedExtentScrollController? numController;
+  int? selectedNum;
   @override
   void initState() {
     selectedNum = widget.numberDefault;
     super.initState();
-    numController = FixedExtentScrollController(initialItem: selectedNum);
+    numController = FixedExtentScrollController(initialItem: selectedNum!);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: R.color.transparent,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 16.0, right: 16),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
+              color: R.color.white,
             ),
             child: Padding(
               padding: const EdgeInsets.only(top: 8, bottom: 16),
@@ -1763,7 +1766,7 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                                     : Padding(
                                         padding:
                                             EdgeInsets.only(top: 8, right: 8),
-                                        child: Text(widget.subTitle,
+                                        child: Text(widget.subTitle!,
                                             style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w400)),
@@ -1772,7 +1775,7 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                         ),
                         IconButton(
                             // padding: EdgeInsets.only(right: 30),
-                            icon: Icon(Icons.close, color: Colors.grey),
+                            icon: Icon(Icons.close, color: R.color.grey),
                             onPressed: () {
                               Navigator.pop(context);
                             })
@@ -1795,20 +1798,20 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                               },
                               itemExtent: 47.0,
                               children:
-                                  List<int>.generate(widget.max + 1, (i) => i)
+                                  List<int>.generate(widget.max! + 1, (i) => i)
                                       .map((e) => Center(
                                             child: Text('$e',
                                                 style: TextStyle(
                                                     color: selectedNum == e
-                                                        ? Color(0xff01645A)
-                                                        : Color(0xffC0C2C5),
+                                                        ? R.color.mainColor
+                                                        : R.color.color0xffC0C2C5,
                                                     fontSize: 24,
                                                     fontWeight:
                                                         FontWeight.bold)),
                                           ))
                                       .toList())),
                       SizedBox(width: 8),
-                      Text(widget.unit)
+                      Text(widget.unit!)
                     ],
                   ),
                   Container(
@@ -1825,18 +1828,18 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                                 width: 150,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
                           ),
                           GestureDetector(
                             onTap: () {
-                              widget.callback(selectedNum);
+                              widget.callback!(selectedNum);
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -1847,15 +1850,15 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                                     begin: Alignment.topLeft,
                                     end: Alignment.centerRight,
                                     colors: [
-                                      greenGradientTop,
-                                      greenGradientBottom
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
                                     ]),
                                 borderRadius: BorderRadius.circular(200),
                               ),
                               child: Center(
-                                child: Text('Tiếp tục',
+                                child: Text(R.string.tiep_tuc.tr(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HbA1CTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white.withOpacity(0.90),
+        backgroundColor: R.color.white.withOpacity(0.90),
         body: GestureDetector(
           onTap: () {
             Navigator.pop(context);
@@ -17,14 +19,14 @@ class HbA1CTable extends StatelessWidget {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(top: 20, bottom: 20),
-                    child: Text('Bảng chỉ số HbA1C & đường huyết',
+                    child: Text(R.string.bang_chi_so_hba1c_va_duong_huyet.tr(),
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.w700)),
                   ),
                   Expanded(
                       child: Center(
                           child:
-                              Image.asset('assets/images/tabble_hba1c.png'))),
+                              Image.asset(R.drawable.im_tabble_hba1c))),
                   SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
@@ -33,7 +35,7 @@ class HbA1CTable extends StatelessWidget {
                     child: Container(
                       height: 50,
                       width: 50,
-                      child: Image.asset('assets/images/icon_close_border.png'),
+                      child: Image.asset(R.drawable.ic_close_border),
                     ),
                   )
                 ],

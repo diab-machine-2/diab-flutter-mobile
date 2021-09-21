@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/res/R.dart';
 
 String convertToUTC(int timeStamp, String fotmat) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
@@ -77,14 +76,14 @@ String toWeek(int timeStamp) {
   }
 }
 
-Color toColor(String hex) {
+Color toColor(String? hex) {
   if (hex == null) {
-    return mainColor;
+    return R.color.mainColor;
   } else {
     if (hex.length == 7) {
       return Color(int.parse('0xff${hex.split('#').join()}'));
     } else {
-      return mainColor;
+      return R.color.mainColor;
     }
   }
 }
@@ -114,6 +113,6 @@ double roundAsFixed(double number) {
   return double.parse(data);
 }
 
-String formatNumber(double number) {
+String formatNumber(double? number) {
   return NumberFormat.decimalPattern().format(number);
 }

@@ -1,19 +1,19 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_input.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ExercrisesDetailController extends StatefulWidget {
-  ExercrisesDetailController({Key key}) : super(key: key);
+  ExercrisesDetailController({Key? key}) : super(key: key);
   @override
   ExercrisesDetailControllerState createState() =>
       ExercrisesDetailControllerState();
@@ -24,18 +24,18 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
   @override
   bool get wantKeepAlive => true;
 
-  BuildContext currentContext;
+  late BuildContext currentContext;
   ScrollController scrollController = ScrollController();
 
   int page = 1;
-  bool hasMore = false;
+  bool? hasMore = false;
   bool isLoading = false;
   int periodFilterType = 1;
 
   @override
   void initState() {
     periodFilterType =
-        ExercrisesDetailTabbarController.of(context).periodFilterType;
+        ExercrisesDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
 
     TrackingManager.analytics.setCurrentScreen(screenName: 'Exercise Detail');
@@ -48,7 +48,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
   }
 
   Future<bool> _loadMore() async {
-    if (isLoading || !hasMore) {
+    if (isLoading || !hasMore!) {
       return true;
     } else {
       isLoading = true;
@@ -81,7 +81,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
         child: BlocBuilder<ExercrisesBloc, ExercrisesState>(
             builder: (BuildContext context, ExercrisesState state) {
           currentContext = context;
-          List<InputDataExercriseModel> model;
+          List<InputDataExercriseModel>? model;
           if (state is ExercrisesInitial) {
             BlocProvider.of<ExercrisesBloc>(context).add(FetchInputExercrises(
                 currentDateTime:
@@ -98,7 +98,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
           if (state is ExercrisesDataLoaded) {
             model = state.inputExercrisesModel;
             hasMore = state.hasMore;
-            if (hasMore) {
+            if (hasMore!) {
               page += 1;
             }
             isLoading = false;
@@ -107,19 +107,19 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
           return RefreshIndicator(
               onRefresh: _refresh,
               child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
                           image:
-                              AssetImage('assets/images/detail_Background.png'),
+                              AssetImage(R.drawable.bg_detail),
                           fit: BoxFit.cover,
                         )),
                         child: LoadMore(
                             onLoadMore: _loadMore,
-                            isFinish: !hasMore,
+                            isFinish: !hasMore!,
                             whenEmptyLoad: false,
                             delegate: CustomLoadMoreDelegate(),
                             textBuilder: DefaultLoadMoreTextBuilder.english,
@@ -129,7 +129,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                               padding: EdgeInsets.only(bottom: 80, top: 10),
                               itemCount: model.length,
                               itemBuilder: (BuildContext context, int index) {
-                                final item = model[index];
+                                final item = model![index];
                                 return Padding(
                                   padding: EdgeInsets.only(
                                       top: 16, left: 16, right: 16),
@@ -137,9 +137,9 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(convertCustomDate(item.date),
+                                      Text(convertCustomDate(item.date!),
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 20,
                                               fontWeight: FontWeight.w700)),
                                       SizedBox(height: 16),
@@ -159,7 +159,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                               child: GestureDetector(
                                                 onTap: () {
                                                   Navigator.pushNamed(context,
-                                                      '/add_exercrises',
+                                                      NavigatorName.add_exercrises,
                                                       arguments: {
                                                         'type': 'update',
                                                         'id': itemInput.id
@@ -170,7 +170,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               16),
-                                                      color: Colors.white),
+                                                      color: R.color.white),
                                                   child: Column(
                                                     children: [
                                                       Padding(
@@ -185,14 +185,14 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                               Text(
                                                                   convertToUTC(
                                                                           itemInput
-                                                                              .date,
+                                                                              .date!,
                                                                           'HH:mm') +
                                                                       ', ' +
                                                                       itemInput
-                                                                          .timeFrame,
+                                                                          .timeFrame!,
                                                                   style: TextStyle(
                                                                       color:
-                                                                          textDark,
+                                                                          R.color.textDark,
                                                                       fontSize:
                                                                           16,
                                                                       fontWeight:
@@ -206,14 +206,14 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                           fontFamily:
                                                                               'Viga',
                                                                           color:
-                                                                              green,
+                                                                              R.color.green,
                                                                           fontSize:
                                                                               24,
                                                                           fontWeight:
                                                                               FontWeight.w400)),
-                                                                  Text(' kcal',
+                                                                  Text(' ${R.string.kcal.tr()}',
                                                                       style: TextStyle(
-                                                                          color: Colors
+                                                                          color: R.color
                                                                               .black,
                                                                           fontSize:
                                                                               16,
@@ -243,8 +243,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                   int index) {
                                                             return Container(
                                                                 height: 1,
-                                                                color: Color(
-                                                                    0xffE2E4E7));
+                                                                color: R.color.grayBorder);
                                                           },
                                                           itemBuilder:
                                                               (BuildContext
@@ -271,7 +270,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                       BorderRadius
                                                                           .circular(
                                                                               0),
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .white),
                                                               child: Row(
                                                                 children: [
@@ -281,7 +280,7 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                               .center,
                                                                       children: [
                                                                         Image.asset(
-                                                                            'assets/images/activity_empty.png',
+                                                                            R.drawable.bg_activity_empty,
                                                                             width:
                                                                                 50,
                                                                             height:
@@ -309,16 +308,16 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                             MainAxisAlignment.spaceBetween,
                                                                         children: [
                                                                           Text(
-                                                                              itemInputExercrise.category,
-                                                                              style: TextStyle(color: textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                                                              itemInputExercrise.category!,
+                                                                              style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
                                                                           Row(
                                                                             children: [
-                                                                              Text(formatNumber(itemInputExercrise.burnedCalorie), style: TextStyle(fontFamily: 'Viga', color: textDark, fontSize: 20, fontWeight: FontWeight.w400)),
+                                                                              Text(formatNumber(itemInputExercrise.burnedCalorie), style: TextStyle(fontFamily: 'Viga', color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w400)),
                                                                               Padding(
                                                                                 padding: EdgeInsets.only(top: 0, left: 4),
                                                                                 child: Text(
-                                                                                  itemInputExercrise.unit,
-                                                                                  style: TextStyle(color: textDark, fontWeight: FontWeight.w400, fontSize: 16.0),
+                                                                                  itemInputExercrise.unit!,
+                                                                                  style: TextStyle(color: R.color.textDark, fontWeight: FontWeight.w400, fontSize: 16.0),
                                                                                 ),
                                                                               ),
                                                                             ],
@@ -334,15 +333,15 @@ class ExercrisesDetailControllerState extends State<ExercrisesDetailController>
                                                                         children: [
                                                                           Expanded(
                                                                             child:
-                                                                                Text(itemInputExercrise.name, style: TextStyle(color: primaryGreyColor, fontSize: 12, fontWeight: FontWeight.w400)),
+                                                                                Text(itemInputExercrise.name!, style: TextStyle(color: R.color.primaryGreyColor, fontSize: 12, fontWeight: FontWeight.w400)),
                                                                           ),
                                                                           // SizedBox(
                                                                           //   width: 2,
                                                                           // ),
                                                                           Text(
-                                                                            '${itemInputExercrise.duration.toInt().toString()} phút',
+                                                                            '${itemInputExercrise.duration!.toInt().toString()} ${R.string.minute.tr()}',
                                                                             style: TextStyle(
-                                                                                color: primaryGreyColor,
+                                                                                color: R.color.primaryGreyColor,
                                                                                 fontWeight: FontWeight.w400,
                                                                                 fontSize: 12.0),
                                                                           ),

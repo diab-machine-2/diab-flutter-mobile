@@ -1,22 +1,21 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
-import 'package:medical/src/modal/HbA1C/HbA1C_lastestSumary.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
-import 'package:medical/src/widget/components/samples/line_chart/samples/line_chart_sample2.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HbA1CChart extends StatefulWidget {
-  HbA1CChart({Key key}) : super(key: key);
+  HbA1CChart({Key? key}) : super(key: key);
   @override
   HbA1CChartState createState() => HbA1CChartState();
 }
@@ -25,13 +24,13 @@ class HbA1CChartState extends State<HbA1CChart>
     with AutomaticKeepAliveClientMixin<HbA1CChart> {
   @override
   bool get wantKeepAlive => true;
-  BuildContext currentContext;
+  late BuildContext currentContext;
   int periodFilterType = 1;
   int touchIndex = -1;
 
   @override
   void initState() {
-    periodFilterType = Hba1cDetailTabbarController.of(context).periodFilterType;
+    periodFilterType = Hba1cDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -50,7 +49,7 @@ class HbA1CChartState extends State<HbA1CChart>
         child: BlocBuilder<HbA1CBloc, HbA1CState>(
             builder: (BuildContext context, HbA1CState state) {
           currentContext = context;
-          TrendModel model;
+          TrendModel? model;
           if (state is HbA1CInitial) {
             BlocProvider.of<HbA1CBloc>(context)
                 .add(FetchHbA1CTrend(type: periodFilterType));
@@ -66,29 +65,29 @@ class HbA1CChartState extends State<HbA1CChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.all(18),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Xu hướng HbA1C',
+                        Text(R.string.xu_huong_hba1c.tr(),
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w700)),
                         SizedBox(height: 20),
                         model.trendItems == null
                             ? GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/add_hba1c',
+                                  Navigator.pushNamed(context, NavigatorName.add_hba1c,
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                  'assets/images/nothing.png',
+                                  R.drawable.im_nothing,
                                 ),
                               )
                             : Container(
                                 width: width,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Column(
@@ -111,7 +110,7 @@ class HbA1CChartState extends State<HbA1CChart>
 
   Widget buildDescription(TrendModel model) {
     List<Widget> items = [];
-    model.legends.forEach((element) {
+    model.legends!.forEach((element) {
       items.add(buildDescriptionItem(element));
     });
     return Padding(
@@ -142,12 +141,12 @@ class HbA1CChartState extends State<HbA1CChart>
 
   buildChart(TrendModel model) {
     double minY =
-        model.trendItems.items.map<double>((e) => e.hbA1C).reduce(min);
-    minY = (minY * (model.trendItems.items.length == 1 ? 0.5 : 0.8))
+        model.trendItems!.items.map<double>((e) => e.hbA1C ?? 0).reduce(min)!;
+    minY = (minY * (model.trendItems!.items.length == 1 ? 0.5 : 0.8))
         .roundToDouble();
     double maxY =
-        model.trendItems.items.map<double>((e) => e.hbA1C).reduce(max);
-    maxY = (maxY * (model.trendItems.items.length == 1 ? 1.5 : 1.2))
+        model.trendItems!.items.map<double>((e) => e.hbA1C ?? 0).reduce(max)!;
+    maxY = (maxY * (model.trendItems!.items.length == 1 ? 1.5 : 1.2))
         .roundToDouble();
     final jumpValue = (maxY - minY) / 4;
     List<double> number =
@@ -167,7 +166,7 @@ class HbA1CChartState extends State<HbA1CChart>
               return Text(number[index].toString().split('.').join(','),
                   style: TextStyle(
                       fontSize: 14,
-                      color: Colors.black,
+                      color: R.color.black,
                       fontWeight: FontWeight.normal));
             })),
       ),
@@ -187,21 +186,21 @@ class HbA1CChartState extends State<HbA1CChart>
                                   EdgeInsets.only(left: 8, top: 8, bottom: 8),
                               child: Container(
                                 height: 1,
-                                width: ((model.trendItems.items.length < 5
+                                width: ((model.trendItems!.items.length < 5
                                                 ? 5
                                                 : model
-                                                    .trendItems.items.length) *
+                                                    .trendItems!.items.length) *
                                             (width + 20))
                                         .toDouble() -
                                     36,
-                                color: Color(0xffDDDDDD),
+                                color: R.color.grayComponentBorder,
                               ),
                             )))),
             Container(
                 decoration: BoxDecoration(),
-                width: ((model.trendItems.items.length < 5
+                width: ((model.trendItems!.items.length < 5
                             ? 5
-                            : model.trendItems.items.length) *
+                            : model.trendItems!.items.length) *
                         (width + 20))
                     .toDouble(),
                 padding: EdgeInsets.only(top: 8, bottom: 8),
@@ -213,10 +212,10 @@ class HbA1CChartState extends State<HbA1CChart>
                       minY: minY.toDouble(),
                       barTouchData: BarTouchData(
                         enabled: true,
-                        touchCallback: (FlTouchEvent event, BarTouchResponse barTouch) {
+                        touchCallback: (FlTouchEvent event, BarTouchResponse? barTouch) {
                           if (event is! FlLongPressEnd &&
                               event is! FlPanEndEvent) {
-                            final value = barTouch.spot.touchedBarGroupIndex;
+                            final value = barTouch!.spot!.touchedBarGroupIndex;
                             setState(() {
                               touchIndex = value.toInt();
                             });
@@ -227,8 +226,8 @@ class HbA1CChartState extends State<HbA1CChart>
                         touchTooltipData: BarTouchTooltipData(
                           fitInsideVertically: true,
                           tooltipBgColor: touchIndex == -1
-                              ? Colors.transparent
-                              : toColor(model.trendItems.items[touchIndex]
+                              ? R.color.transparent
+                              : toColor(model.trendItems!.items[touchIndex]
                                   .backgroundColor),
                           tooltipPadding: const EdgeInsets.only(
                               left: 8, right: 8, top: 4, bottom: 0),
@@ -243,8 +242,8 @@ class HbA1CChartState extends State<HbA1CChart>
                               rod.y.toString().split('.').join(',') + '%',
                               TextStyle(
                                 color: touchIndex == -1
-                                    ? Colors.white
-                                    : toColor(model.trendItems.items[touchIndex]
+                                    ? R.color.white
+                                    : toColor(model.trendItems!.items[touchIndex]
                                         .fontColor),
                                 fontWeight: FontWeight.bold,
                               ),
@@ -256,38 +255,38 @@ class HbA1CChartState extends State<HbA1CChart>
                         show: true,
                         bottomTitles: SideTitles(
                           showTitles: true,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Colors.black,
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.black,
                               fontSize: 14,
                               fontWeight: FontWeight.normal),
                           margin: 16,
                           reservedSize: -16,
                           getTitles: (double value) {
                             return convertToUTC(
-                                model.trendItems.items[value.toInt()].date,
+                                model.trendItems!.items[value.toInt()].date!,
                                 'dd/MM');
                           },
                         ),
                         leftTitles: SideTitles(
                           showTitles: false,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Colors.black, fontSize: 14),
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.black, fontSize: 14),
                         ),
                       ),
                       borderData: FlBorderData(
                         show: false,
                       ),
                       barGroups:
-                          List.generate(model.trendItems.items.length, (index) {
+                          List.generate(model.trendItems!.items.length, (index) {
                         return buildBarChartGroupData(model, index);
                       })),
                 )),
             IgnorePointer(
               child: Container(
                   decoration: BoxDecoration(),
-                  width: ((model.trendItems.items.length < 5
+                  width: ((model.trendItems!.items.length < 5
                               ? 5
-                              : model.trendItems.items.length) *
+                              : model.trendItems!.items.length) *
                           (width + 20))
                       .toDouble(),
                   padding: EdgeInsets.only(top: 8, bottom: 8),
@@ -299,11 +298,11 @@ class HbA1CChartState extends State<HbA1CChart>
                         ShowingTooltipIndicators([
                           LineBarSpot(
                               LineChartBarData(show: true),
-                              model.trendItems.items.length - 1,
+                              model.trendItems!.items.length - 1,
                               FlSpot(
-                                  (model.trendItems.items.length - 1 + 0.5)
+                                  (model.trendItems!.items.length - 1 + 0.5)
                                       .toDouble(),
-                                  model.trendItems.items.last.hbA1C)),
+                                  model.trendItems!.items.last.hbA1C!)),
                         ])
                       ],
                       lineTouchData: LineTouchData(
@@ -312,21 +311,21 @@ class HbA1CChartState extends State<HbA1CChart>
                             // showOnTopOfTheChartBoxArea: true,
                             fitInsideVertically: true,
                             tooltipBgColor:
-                                toColor(model.trendItems.items.last.color),
+                                toColor(model.trendItems!.items.last.color),
                             tooltipPadding: const EdgeInsets.only(
                                 left: 8, right: 8, top: 4, bottom: 4),
                             tooltipMargin: 22,
                             getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
                               return lineBarsSpot.map((lineBarSpot) {
                                 return LineTooltipItem(
-                                  model.trendItems.items.last.hbA1C
+                                  model.trendItems!.items.last.hbA1C
                                           .toString()
                                           .split('.')
                                           .join(',') +
                                       '%',
                                   TextStyle(
                                       color: toColor(model
-                                          .trendItems.items.last.fontColor),
+                                          .trendItems!.items.last.fontColor),
                                       fontWeight: FontWeight.bold),
                                 );
                               }).toList();
@@ -352,7 +351,7 @@ class HbA1CChartState extends State<HbA1CChart>
                         show: false,
                       ),
                       minX: 0,
-                      maxX: model.trendItems.items.length.toDouble(),
+                      maxX: model.trendItems!.items.length.toDouble(),
                       maxY: maxY.toDouble(),
                       minY: minY.toDouble(),
                       lineBarsData: linesBarData(model),
@@ -368,14 +367,14 @@ class HbA1CChartState extends State<HbA1CChart>
   }
 
   BarChartGroupData buildBarChartGroupData(TrendModel model, int index) {
-    final color = toColor(model.trendItems.items[index].color);
+    final color = toColor(model.trendItems!.items[index].color);
     return BarChartGroupData(
       x: index,
       barRods: [
         BarChartRodData(
             width: 20,
             borderRadius: BorderRadius.circular(0),
-            y: model.trendItems.items[index].hbA1C,
+            y: model.trendItems!.items[index].hbA1C!,
             colors: [color.withOpacity(0.5), color]),
       ],
     );
@@ -383,25 +382,25 @@ class HbA1CChartState extends State<HbA1CChart>
 
   List<LineChartBarData> linesBarData(TrendModel model) {
     final LineChartBarData lineChartBarData1 = LineChartBarData(
-      spots: List.generate(model.trendItems.items.length, (index) {
+      spots: List.generate(model.trendItems!.items.length, (index) {
         return FlSpot(
-            (index + 0.5).toDouble(), model.trendItems.items[index].hbA1C);
+            (index + 0.5).toDouble(), model.trendItems!.items[index].hbA1C!);
       }),
       isCurved: false,
-      colors: [Colors.black],
+      colors: [R.color.black],
       barWidth: 1,
       isStrokeCapRound: true,
       dotData: FlDotData(
           show: true,
           checkToShowDot: (spot, barData) {
-            return spot.x == model.trendItems.items.length - 0.5;
+            return spot.x == model.trendItems!.items.length - 0.5;
           },
           getDotPainter: (spot, percent, barData, index) {
             return FlDotCirclePainter(
               radius: 6,
-              color: toColor(model.trendItems.items.last.backgroundColor),
+              color: toColor(model.trendItems!.items.last.backgroundColor),
               strokeWidth: 12,
-              strokeColor: toColor(model.trendItems.items.last.backgroundColor)
+              strokeColor: toColor(model.trendItems!.items.last.backgroundColor)
                   .withOpacity(0.2),
             );
           }),

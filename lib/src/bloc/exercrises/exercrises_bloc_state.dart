@@ -6,10 +6,10 @@ abstract class ExercrisesState {}
 class ExercrisesInitial extends ExercrisesState {}
 
 class ExercrisesError extends ExercrisesState {
-  final String message;
+  final String? message;
 
   ExercrisesError({
-    @required this.message,
+    required this.message,
   });
 }
 
@@ -20,41 +20,41 @@ class ExercrisesLoaded extends ExercrisesState {
 }
 
 class ExercrisesCategoryModelLoaded extends ExercrisesState {
-  final ExercrisesListCategoryModel category;
-  final ExercrisesListCategoryModel categorySearch;
-  final List<ExercrisesCategoryModel> selectedModel;
+  final ExercrisesListCategoryModel? category;
+  final ExercrisesListCategoryModel? categorySearch;
+  final List<ExercrisesCategoryModel>? selectedModel;
 
   ExercrisesCategoryModelLoaded(
-      {@required this.category, this.selectedModel, this.categorySearch});
+      {required this.category, this.selectedModel, this.categorySearch});
 }
 
 class ExercrisesDataLoaded extends ExercrisesState {
   final List<InputDataExercriseModel> inputExercrisesModel;
-  final bool hasMore;
+  final bool? hasMore;
   ExercrisesDataLoaded(
-      {@required this.inputExercrisesModel, @required this.hasMore});
+      {required this.inputExercrisesModel, required this.hasMore});
 }
 
 class ExercriseDataDailyLoaded extends ExercrisesState {
   final ExercriseSummaryModel exercriseSummaryModel;
-  final ExercriseWalkSummaryModel exercriseWalkSummaryModel;
+  final ExercriseWalkSummaryModel? exercriseWalkSummaryModel;
 
   ExercriseDataDailyLoaded(
-      {@required this.exercriseSummaryModel,
-      @required this.exercriseWalkSummaryModel});
+      {required this.exercriseSummaryModel,
+      required this.exercriseWalkSummaryModel});
 }
 
 class TimeTrendTrendLoaded extends ExercrisesState {
   final ExercriseTrendTimeModel model;
-  TimeTrendTrendLoaded({@required this.model});
+  TimeTrendTrendLoaded({required this.model});
 }
 
 class CaloTrendLoaded extends ExercrisesState {
   final ExercriseTrendCaloModel model;
-  CaloTrendLoaded({@required this.model});
+  CaloTrendLoaded({required this.model});
 }
 
 class RankLoaded extends ExercrisesState {
   final ExerciseRankModel model;
-  RankLoaded({@required this.model});
+  RankLoaded({required this.model});
 }

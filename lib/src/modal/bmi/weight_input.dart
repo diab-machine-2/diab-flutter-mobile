@@ -2,42 +2,42 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 class InputWeightModel {
-  final String id;
-  final double weight;
-  final double waist;
-  final int date;
-  final double height;
-  final double bmi;
-  final String note;
-  final String timeFrameId;
-  final String timeFrameText;
-  final String bmiId;
-  final String bmiText;
-  final String waistId;
-  final String bmiColorCode;
-  final String bmiTextColorCode;
-  final String bmiBackgroundColorCode;
-  final String waistColorCode;
+  final String? id;
+  final double? weight;
+  final double? waist;
+  final int? date;
+  final double? height;
+  final double? bmi;
+  final String? note;
+  final String? timeFrameId;
+  final String? timeFrameText;
+  final String? bmiId;
+  final String? bmiText;
+  final String? waistId;
+  final String? bmiColorCode;
+  final String? bmiTextColorCode;
+  final String? bmiBackgroundColorCode;
+  final String? waistColorCode;
   final List<ImagesModel> images;
 
   InputWeightModel({
-    @required this.id,
-    @required this.weight,
-    @required this.waist,
-    @required this.height,
-    @required this.date,
-    @required this.bmi,
-    @required this.note,
-    @required this.timeFrameId,
-    @required this.timeFrameText,
-    @required this.bmiId,
-    @required this.bmiText,
-    @required this.waistId,
-    @required this.bmiColorCode,
-    @required this.bmiTextColorCode,
-    @required this.bmiBackgroundColorCode,
-    @required this.waistColorCode,
-    @required this.images,
+    required this.id,
+    required this.weight,
+    required this.waist,
+    required this.height,
+    required this.date,
+    required this.bmi,
+    required this.note,
+    required this.timeFrameId,
+    required this.timeFrameText,
+    required this.bmiId,
+    required this.bmiText,
+    required this.waistId,
+    required this.bmiColorCode,
+    required this.bmiTextColorCode,
+    required this.bmiBackgroundColorCode,
+    required this.waistColorCode,
+    required this.images,
   });
   @override
   factory InputWeightModel.fromJson(Map<String, dynamic> json) {

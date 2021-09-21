@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class LineChartSample5 extends StatelessWidget {
   final List<int> showIndexes = const [1, 3, 5];
@@ -21,9 +22,9 @@ class LineChartSample5 extends StatelessWidget {
           spots: allSpots,
           isCurved: true,
           barWidth: 4,
-          shadow: const Shadow(
+          shadow: Shadow(
             blurRadius: 8,
-            color: Colors.black,
+            color: R.color.black,
           ),
           belowBarData: BarAreaData(
             show: true,
@@ -66,7 +67,7 @@ class LineChartSample5 extends StatelessWidget {
               return spotIndexes.map((index) {
                 return TouchedSpotIndicatorData(
                   FlLine(
-                    color: Colors.pink,
+                    color: R.color.pink,
                   ),
                   FlDotData(
                     show: true,
@@ -76,21 +77,21 @@ class LineChartSample5 extends StatelessWidget {
                       color: lerpGradient(
                           barData.colors, barData.colorStops, percent / 100),
                       strokeWidth: 2,
-                      strokeColor: Colors.black,
+                      strokeColor: R.color.black,
                     ),
                   ),
                 );
               }).toList();
             },
             touchTooltipData: LineTouchTooltipData(
-              tooltipBgColor: Colors.pink,
+              tooltipBgColor: R.color.pink,
               tooltipRoundedRadius: 8,
               getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
                 return lineBarsSpot.map((lineBarSpot) {
                   return LineTooltipItem(
                     lineBarSpot.y.toString(),
-                    const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                    TextStyle(
+                        color: R.color.white, fontWeight: FontWeight.bold),
                   );
                 }).toList();
               },
@@ -123,9 +124,9 @@ class LineChartSample5 extends StatelessWidget {
                   }
                   return '';
                 },
-                getTextStyles: (context, value) => const TextStyle(
+                getTextStyles: (context, value) => TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.blueGrey,
+                      color: R.color.blueGrey,
                       fontFamily: 'Digital',
                       fontSize: 18,
                     )),
@@ -149,14 +150,14 @@ class LineChartSample5 extends StatelessWidget {
 }
 
 /// Lerps between a [LinearGradient] colors, based on [t]
-Color lerpGradient(List<Color> colors, List<double> stops, double t) {
+Color? lerpGradient(List<Color> colors, List<double>? stops, double t) {
   if (stops == null || stops.length != colors.length) {
     stops = [];
 
     /// provided gradientColorStops is invalid and we calculate it here
     colors.asMap().forEach((index, color) {
       final percent = 1.0 / colors.length;
-      stops.add(percent * index);
+      stops!.add(percent * index);
     });
   }
 

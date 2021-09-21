@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/res/R.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-typedef TimeCallback = Function(String, int);
+typedef TimeCallback = Function(String?, int);
 
 class ActionListCompare extends StatefulWidget {
-  final int selectedIndex;
-  final TimeCallback callback;
+  final int? selectedIndex;
+  final TimeCallback? callback;
   ActionListCompare({this.selectedIndex, this.callback});
   @override
   _ActionListCompareState createState() => _ActionListCompareState();
@@ -14,10 +15,10 @@ class ActionListCompare extends StatefulWidget {
 class _ActionListCompareState extends State<ActionListCompare> {
   var data = [
     {
-      'name': 'Trước & sau ăn',
+      'name': R.string.before_and_after_eating.tr(),
     },
     {
-      'name': 'Trước & sau tập luyện',
+      'name': R.string.before_and_after_exercise.tr(),
     },
   ];
 
@@ -28,7 +29,7 @@ class _ActionListCompareState extends State<ActionListCompare> {
   void initState() {
     super.initState();
     if (widget.selectedIndex != null) {
-      selectedIndex = widget.selectedIndex - 1;
+      selectedIndex = widget.selectedIndex! - 1;
     }
   }
 
@@ -44,7 +45,7 @@ class _ActionListCompareState extends State<ActionListCompare> {
           child: Container(
             height: 3.86,
             width: 60,
-            decoration: BoxDecoration(color: Color(0xffE5E5E5)),
+            decoration: BoxDecoration(color: R.color.color0xffE5E5E5),
           ),
         ),
         SizedBox(height: 27),
@@ -53,7 +54,7 @@ class _ActionListCompareState extends State<ActionListCompare> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Chọn thời điểm so sánh',
+              Text(R.string.choose_time_to_compare.tr(),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               GestureDetector(
                 onTap: () {
@@ -62,7 +63,7 @@ class _ActionListCompareState extends State<ActionListCompare> {
                 child: Container(
                   height: 24,
                   width: 24,
-                  child: Image.asset('assets/images/x_icon.png'),
+                  child: Image.asset(R.drawable.ic_close),
                 ),
               ),
             ],
@@ -82,7 +83,7 @@ class _ActionListCompareState extends State<ActionListCompare> {
         Center(
           child: GestureDetector(
             onTap: () {
-              widget.callback(data[selectedIndex]['name'], selectedIndex);
+              widget.callback!(data[selectedIndex]['name'], selectedIndex);
               Navigator.pop(context);
             },
             child: Container(
@@ -93,12 +94,12 @@ class _ActionListCompareState extends State<ActionListCompare> {
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.centerRight,
-                        colors: [greenGradientTop, greenGradientBottom]),
+                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                     borderRadius: BorderRadius.circular(200)),
                 child: Center(
-                  child: Text('Lưu',
+                  child: Text(R.string.save.tr(),
                       style: TextStyle(
-                          color: Colors.white,
+                          color: R.color.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600)),
                 )),
@@ -108,7 +109,7 @@ class _ActionListCompareState extends State<ActionListCompare> {
     ));
   }
 
-  Widget _buildItem(BuildContext context, int index, String name) {
+  Widget _buildItem(BuildContext context, int index, String? name) {
     return Container(
       child: Column(
         children: [
@@ -119,7 +120,7 @@ class _ActionListCompareState extends State<ActionListCompare> {
               });
             },
             child: Container(
-              color: selectedIndex == index ? greenbg : Colors.white,
+              color: selectedIndex == index ? R.color.greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(
@@ -131,17 +132,17 @@ class _ActionListCompareState extends State<ActionListCompare> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           selectedIndex != index
-                              ? Text(name,
+                              ? Text(name!,
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400))
-                              : Text(name,
+                              : Text(name!,
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: mainColor)),
+                                      color: R.color.mainColor)),
                           selectedIndex == index
-                              ? Image.asset('assets/images/check_mark.png',
+                              ? Image.asset(R.drawable.ic_check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],
@@ -154,8 +155,8 @@ class _ActionListCompareState extends State<ActionListCompare> {
                           height: 1,
                           width: 373,
                           color: selectedIndex == index
-                              ? greenbg
-                              : Color(0xffD6D8E0))
+                              ? R.color.greenbg
+                              : R.color.color0xffD6D8E0)
                       : SizedBox(),
                 ],
               ),

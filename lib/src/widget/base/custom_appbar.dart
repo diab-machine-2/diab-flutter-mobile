@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:medical/main.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Widget title;
-  final Widget leadingIcon;
-  final List<Widget> actions;
-  final Widget bottom;
+  final Widget? leadingIcon;
+  final List<Widget>? actions;
+  final Widget? bottom;
   final double bottomHeight;
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   CustomAppBar(
-      {Key key,
-      @required this.title,
+      {Key? key,
+      required this.title,
       this.leadingIcon,
       this.actions,
       this.bottom,
@@ -43,15 +43,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
       leading: widget.leadingIcon != null
           ? widget.leadingIcon
           : IconButton(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
+              splashColor: R.color.transparent,
+              highlightColor: R.color.transparent,
               icon: widget.leadingIcon == null
-                  ? Icon(Icons.arrow_back, color: Colors.white)
-                  : widget.leadingIcon,
+                  ? Icon(Icons.arrow_back, color: R.color.white)
+                  : widget.leadingIcon!,
               onPressed: () {
-                navigatorKey.currentState.pop();
+                navigatorKey.currentState!.pop();
               }),
-      bottom: widget.bottom,
+      bottom: widget.bottom as PreferredSizeWidget?,
     );
   }
 }

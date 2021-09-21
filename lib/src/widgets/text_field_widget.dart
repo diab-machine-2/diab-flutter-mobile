@@ -7,7 +7,7 @@ import 'package:medical/src/utils/utils.dart';
 
 class TextFieldWidget extends StatefulWidget {
   const TextFieldWidget(
-      {@required this.controller,
+      {required this.controller,
 //      this.key,
       this.textInputAction: TextInputAction.next,
       this.isEnable = true,
@@ -37,32 +37,32 @@ class TextFieldWidget extends StatefulWidget {
   final bool isEnable;
   final bool autoFocus;
   final EdgeInsets padding;
-  final List<TextInputFormatter> inputFormatters;
+  final List<TextInputFormatter>? inputFormatters;
   final TextInputAction textInputAction;
-  final FormFieldSetter<String> onChanged;
+  final FormFieldSetter<String>? onChanged;
   final bool isPassword;
   final bool isRequired;
-  final String errorText;
-  final String labelText;
-  final String hintText;
-  final int minLines;
-  final int maxLines;
+  final String? errorText;
+  final String? labelText;
+  final String? hintText;
+  final int? minLines;
+  final int? maxLines;
   final double border;
   final TextInputType keyboardType;
-  final FocusNode focusNode;
-  final FormFieldSetter<String> onSubmitted;
+  final FocusNode? focusNode;
+  final FormFieldSetter<String>? onSubmitted;
   final dynamic icon;
   final bool readOnly;
-  final Function onTap;
-  final Widget suffixIcon;
-  final Function onTapRightIcon;
+  final Function? onTap;
+  final Widget? suffixIcon;
+  final Function? onTapRightIcon;
 
   @override
   _TextFieldWidgetState createState() => _TextFieldWidgetState();
 }
 
 class _TextFieldWidgetState extends State<TextFieldWidget> {
-  bool _obscureText;
+  late bool _obscureText;
 
   @override
   void initState() {
@@ -132,7 +132,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
               ? GestureDetector(
                   onTap: () => widget.onTapRightIcon == null
                       ? null
-                      : widget.onTapRightIcon(),
+                      : widget.onTapRightIcon!(),
                   child: Padding(
                       padding: EdgeInsets.only(right: 15),
                       child: widget.suffixIcon),

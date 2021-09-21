@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 
 class DetailDescription extends StatelessWidget {
   final bool input;
-  final ShortGuiModel data;
+  final ShortGuiModel? data;
   final String title;
   DetailDescription(
-      {@required this.input, @required this.data, @required this.title});
+      {required this.input, required this.data, required this.title});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: R.color.transparent,
       body: SafeArea(
           child: Padding(
               padding: EdgeInsets.all(16),
@@ -22,7 +23,7 @@ class DetailDescription extends StatelessWidget {
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('assets/images/bg_des.png'),
+                          image: AssetImage(R.drawable.bg_des),
                           fit: BoxFit.fill,
                         ),
                       ),
@@ -31,7 +32,7 @@ class DetailDescription extends StatelessWidget {
                           SizedBox(height: 8),
                           Row(children: [
                             Image.asset(
-                              'assets/images/icon_des.png',
+                              R.drawable.im_des,
                               width: 99,
                               height: 85,
                             ),
@@ -39,7 +40,7 @@ class DetailDescription extends StatelessWidget {
                             Expanded(
                               child: Text(title,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600)),
                             )
@@ -50,7 +51,7 @@ class DetailDescription extends StatelessWidget {
                               padding: EdgeInsets.only(bottom: 16),
                               child: ListView(children: [
                                 Html(
-                                    data: input ? data.content2 : data.content4)
+                                    data: input ? data!.content2 : data!.content4)
                               ]),
                             ),
                           ),
@@ -66,10 +67,10 @@ class DetailDescription extends StatelessWidget {
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Color(0xff4BB2AB),
+                            color: R.color.greenGradientTop,
                             borderRadius: BorderRadius.circular(30)),
                         child: IconButton(
-                            icon: Icon(Icons.close, color: Colors.white),
+                            icon: Icon(Icons.close, color: R.color.white),
                             onPressed: () {
                               Navigator.pop(context);
                             }),

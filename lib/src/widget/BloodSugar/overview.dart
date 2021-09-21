@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_chart.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_compare_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
@@ -6,7 +7,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'widget/bloodSugar_contain_detail.dart';
 
 class BloodSugarOverviewController extends StatefulWidget {
-  BloodSugarOverviewController({Key key}) : super(key: key);
+  BloodSugarOverviewController({Key? key}) : super(key: key);
   @override
   BloodSugarOverviewControllerState createState() =>
       BloodSugarOverviewControllerState();
@@ -29,13 +30,13 @@ class BloodSugarOverviewControllerState
   reloadData(int periodFilterType) {
     _scrollController.jumpTo(0);
     if (sugarDetailKey.currentState != null) {
-      sugarDetailKey.currentState.reloadData(periodFilterType);
+      sugarDetailKey.currentState!.reloadData(periodFilterType);
     }
     if (sugarChartKey.currentState != null) {
-      sugarChartKey.currentState.reloadData(periodFilterType);
+      sugarChartKey.currentState!.reloadData(periodFilterType);
     }
     if (sugarCompareKey.currentState != null) {
-      sugarCompareKey.currentState.reloadData(periodFilterType);
+      sugarCompareKey.currentState!.reloadData(periodFilterType);
     }
   }
 
@@ -47,7 +48,7 @@ class BloodSugarOverviewControllerState
         body: Container(
       decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/images/HbA1c_high.png'),
+              image: AssetImage(R.drawable.bg_hba1c_high),
               fit: BoxFit.cover)),
       child: ListView(
           controller: _scrollController,

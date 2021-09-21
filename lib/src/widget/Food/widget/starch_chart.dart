@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
@@ -9,9 +8,10 @@ import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class StarchChart extends StatefulWidget {
-  StarchChart({Key key}) : super(key: key);
+  StarchChart({Key? key}) : super(key: key);
   @override
   StarchChartState createState() => StarchChartState();
 }
@@ -21,14 +21,14 @@ class StarchChartState extends State<StarchChart>
   @override
   bool get wantKeepAlive => true;
 
-  BuildContext currentContext;
+  late BuildContext currentContext;
   int periodFilterType = 1;
 
-  int touchIndex;
+  int? touchIndex;
 
   @override
   void initState() {
-    periodFilterType = FoodDetailTabbarController.of(context).periodFilterType;
+    periodFilterType = FoodDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -56,7 +56,7 @@ class StarchChartState extends State<StarchChart>
         child: BlocBuilder<FoodBloc, FoodState>(
             builder: (BuildContext context, FoodState state) {
           currentContext = context;
-          FoodCaloModel model;
+          FoodCaloModel? model;
           if (state is FoodInitial) {
             BlocProvider.of<FoodBloc>(context).add(FetchStatisticCarb());
           }
@@ -90,8 +90,8 @@ class StarchChartState extends State<StarchChart>
                                   child: CustomPaint(
                                       painter: GradientArcPainter(
                                     progress: 1,
-                                    startColor: Colors.white,
-                                    endColor: Colors.white,
+                                    startColor: R.color.white,
+                                    endColor: R.color.white,
                                     width: 56,
                                   ))),
                               SizedBox(
@@ -102,7 +102,7 @@ class StarchChartState extends State<StarchChart>
                                     progress:
                                         model.goal == null || model.goal == 0
                                             ? 0
-                                            : model.total / model.goal,
+                                            : model.total! / model.goal!,
                                     startColor: toColor(model.colorCode)
                                         .withOpacity(0.3),
                                     endColor: toColor(model.colorCode),
@@ -120,12 +120,12 @@ class StarchChartState extends State<StarchChart>
                               color: toColor(model.colorCode)),
                         ),
                       ),
-                      Image.asset('assets/images/apple_green.png'),
+                      Image.asset(R.drawable.bg_apple_green),
                       Padding(
                         padding: EdgeInsets.only(top: 16, left: 16),
-                        child: Text('Tinh bột',
+                        child: Text(R.string.tinh_bot.tr(),
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700)),
                       ),
@@ -141,13 +141,13 @@ class StarchChartState extends State<StarchChart>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.asset('assets/images/icon_bat.png',
+                                    Image.asset(R.drawable.ic_bat,
                                         width: 24, height: 24),
                                     SizedBox(width: 4),
-                                    Text(model.total.round().toString(),
+                                    Text(model.total!.round().toString(),
                                         style: TextStyle(
                                             fontFamily: 'Viga',
-                                            color: Colors.black,
+                                            color: R.color.black,
                                             fontSize: 30,
                                             fontWeight: FontWeight.w400)),
                                   ],
@@ -157,7 +157,7 @@ class StarchChartState extends State<StarchChart>
                                     model.goal == null
                                         ? '0 g'
                                         : '/${formatNumber(model.goal)} g',
-                                    style: TextStyle(color: Color(0xff666666)))
+                                    style: TextStyle(color: R.color.primaryGreyColor))
                               ],
                             ),
                           )),
@@ -177,13 +177,13 @@ class StarchChartState extends State<StarchChart>
                                     model.mealDetails.length,
                                     (index) => Row(children: [
                                           Image.network(
-                                              model.mealDetails[index].icon
+                                              model!.mealDetails[index].icon
                                                       .url ??
                                                   '',
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 4),
-                                          Text(model.mealDetails[index].text),
+                                          Text(model.mealDetails[index].text!),
                                         ])),
                               ),
                               SizedBox(width: 20),
@@ -196,12 +196,12 @@ class StarchChartState extends State<StarchChart>
                                     (index) => SizedBox(
                                           height: 24,
                                           child: Text(
-                                              model.mealDetails[index].value
+                                              model!.mealDetails[index].value!
                                                   .round()
                                                   .toString(),
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
-                                                  color: Colors.black,
+                                                  color: R.color.black,
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 18)),
                                         )),
@@ -216,7 +216,7 @@ class StarchChartState extends State<StarchChart>
                         right: 16,
                         child: Row(
                           children: [
-                            Image.network(model.image.url ?? '',
+                            Image.network(model.image!.url ?? '',
                                 width: 77, height: 102),
                             SizedBox(width: 25),
                             Expanded(
@@ -229,9 +229,9 @@ class StarchChartState extends State<StarchChart>
                                           children: [
                                             Row(
                                               children: [
-                                                Text(roundNumber(model.percent),
+                                                Text(roundNumber(model.percent!),
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 20,
                                                         fontWeight:
                                                             FontWeight.bold)),
@@ -241,17 +241,17 @@ class StarchChartState extends State<StarchChart>
                                             LinearPercentIndicator(
                                               width: 140.0,
                                               lineHeight: 10.0,
-                                              percent: model.percent > 100
+                                              percent: model.percent! > 100
                                                   ? 1
-                                                  : (model.percent / 100),
-                                              backgroundColor: Color(0xff21A567)
+                                                  : (model.percent! / 100),
+                                              backgroundColor: R.color.green
                                                   .withOpacity(0.2),
-                                              progressColor: Color(0xff21A567),
+                                              progressColor: R.color.green,
                                             ),
                                           ],
                                         ),
                                   SizedBox(height: 12),
-                                  Text(model.note),
+                                  Text(model.note!),
                                 ],
                               ),
                             )

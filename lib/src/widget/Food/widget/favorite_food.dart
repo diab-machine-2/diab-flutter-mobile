@@ -1,16 +1,15 @@
-import 'dart:ui';
-
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/widget/Food/widget/food_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 class FavoriteFood extends StatefulWidget {
-  final List<FoodModel> foods;
-  FavoriteFood({@required this.foods});
+  final List<FoodModel?> foods;
+  FavoriteFood({required this.foods});
   @override
   FavoriteFoodState createState() => FavoriteFoodState();
 }
@@ -19,9 +18,9 @@ class FavoriteFoodState extends State<FavoriteFood>
     with AutomaticKeepAliveClientMixin<FavoriteFood> {
   @override
   bool get wantKeepAlive => true;
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
-  List<FoodModel> selectedFoods = [];
+  List<FoodModel?> selectedFoods = [];
 
   @override
   void initState() {
@@ -33,7 +32,7 @@ class FavoriteFoodState extends State<FavoriteFood>
         observer: this,
         onNotification: (food) {
           setState(() {
-            this.selectedFoods.removeWhere((element) => food.id == element.id);
+            this.selectedFoods.removeWhere((element) => food.id == element!.id);
             this.selectedFoods.add(food);
           });
         });
@@ -44,7 +43,7 @@ class FavoriteFoodState extends State<FavoriteFood>
         onNotification: (food) {
           if (food is FoodModel) {
             setState(() {
-              selectedFoods.removeWhere((element) => element.id == food.id);
+              selectedFoods.removeWhere((element) => element!.id == food.id);
             });
           }
         });
@@ -77,7 +76,7 @@ class FavoriteFoodState extends State<FavoriteFood>
         child: BlocBuilder<FoodBloc, FoodState>(
             builder: (BuildContext context, FoodState state) {
           currentContext = context;
-          List<FoodModel> model;
+          List<FoodModel>? model;
           if (state is FoodInitial) {
             BlocProvider.of<FoodBloc>(context).add(FetchFoodFavorite(page: 1));
           }
@@ -95,19 +94,19 @@ class FavoriteFoodState extends State<FavoriteFood>
                       padding: EdgeInsets.all(0),
                       itemCount: model.length == 0 ? 1 : model.length,
                       separatorBuilder: (BuildContext context, int index) {
-                        return Container(height: 1, color: Color(0xffE5E5E5));
+                        return Container(height: 1, color: R.color.color0xffE5E5E5);
                       },
                       itemBuilder: (BuildContext context, int index) {
-                        if (model.length == 0) {
+                        if (model!.length == 0) {
                           return Padding(
                             padding:
                                 EdgeInsets.only(left: 64, right: 64, top: 100),
                             child: Image.asset(
-                                'assets/images/favorite_food_empty.png'),
+                                R.drawable.im_favorite_food_empty),
                           );
                         } else {
                           final selectedIndex = selectedFoods.lastIndexWhere(
-                              (element) => element.id == model[index].id);
+                              (element) => element!.id == model![index].id);
                           return FoodItem(
                               model: model[index],
                               selectedModel: selectedIndex != -1

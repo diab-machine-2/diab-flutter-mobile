@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -29,10 +30,10 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-  //     statusBarColor: Colors.transparent,
-  //     statusBarIconBrightness: Brightness.dark,
-  //     statusBarBrightness: Brightness.light));
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: R.color.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light));
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);

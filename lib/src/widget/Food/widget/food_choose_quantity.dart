@@ -4,20 +4,20 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef FoodQuantityCallback = Function(FoodModel);
 
 class FoodChooseQuantity extends StatefulWidget {
-  final FoodModel model;
-  final FoodModel selectedModel;
-  final String categoryId;
-  final FoodQuantityCallback callback;
+  final FoodModel? model;
+  final FoodModel? selectedModel;
+  final String? categoryId;
+  final FoodQuantityCallback? callback;
   FoodChooseQuantity(
       {this.model, this.selectedModel, this.categoryId, this.callback});
   @override
@@ -27,20 +27,20 @@ class FoodChooseQuantity extends StatefulWidget {
 class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
   DateTime selectedDate = DateTime.now();
 
-  FixedExtentScrollController hourController;
-  FixedExtentScrollController minuteController;
+  FixedExtentScrollController? hourController;
+  FixedExtentScrollController? minuteController;
   int selectedQuantity = 1;
   int selectedPercent = 0;
-  bool isLike = false;
+  bool? isLike = false;
 
   @override
   void initState() {
     super.initState();
-    isLike = widget.model.liked;
+    isLike = widget.model!.liked;
     if (widget.selectedModel != null) {
-      selectedQuantity = widget.selectedModel.quantity.floor();
+      selectedQuantity = widget.selectedModel!.quantity.floor();
       selectedPercent =
-          ((widget.selectedModel.quantity - selectedQuantity) * 10).round();
+          ((widget.selectedModel!.quantity - selectedQuantity) * 10).round();
       //selectedPercent = selectedPercent == 0 ? 0 : (selectedPercent + 1);
     }
     hourController = FixedExtentScrollController(initialItem: selectedQuantity);
@@ -51,20 +51,20 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
   @override
   Widget build(BuildContext context) {
     List<Widget> items = [];
-    if (widget.model.calorie != null) {
-      items.add(buildItem('Calo', widget.model.calorie, 'kcal'));
+    if (widget.model!.calorie != null) {
+      items.add(buildItem(R.string.calo.tr(), widget.model!.calorie, R.string.kcal.tr()));
     }
-    if (widget.model.lipid != null) {
-      items.add(buildItem('Béo', widget.model.lipid, 'g'));
+    if (widget.model!.lipid != null) {
+      items.add(buildItem(R.string.beo.tr(), widget.model!.lipid, 'g'));
     }
-    if (widget.model.glucose != null) {
-      items.add(buildItem('Đường', widget.model.glucose, 'g'));
+    if (widget.model!.glucose != null) {
+      items.add(buildItem(R.string.duong.tr(), widget.model!.glucose, 'g'));
     }
-    if (widget.model.protein != null) {
-      items.add(buildItem('Đạm', widget.model.protein, 'g'));
+    if (widget.model!.protein != null) {
+      items.add(buildItem(R.string.dam.tr(), widget.model!.protein, 'g'));
     }
-    if (widget.model.fibre != null) {
-      items.add(buildItem('Xơ', widget.model.fibre, 'g'));
+    if (widget.model!.fibre != null) {
+      items.add(buildItem(R.string.xo.tr(), widget.model!.fibre, 'g'));
     }
 
     return GestureDetector(
@@ -72,7 +72,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -81,7 +81,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Padding(
                   padding: EdgeInsets.only(bottom: 16),
@@ -93,8 +93,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                         decoration: BoxDecoration(
                             gradient: LinearGradient(
                                 colors: [
-                                  Color(0xFFB1DDDB).withAlpha(90),
-                                  Color(0xFFFED31B).withAlpha(90),
+                                  R.color.color0xffB1DDDB.withAlpha(90),
+                                  R.color.color0xFFFED31B.withAlpha(90),
                                 ],
                                 begin: FractionalOffset(0.3, -0.5),
                                 end: FractionalOffset(0, 1),
@@ -116,9 +116,9 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                           },
                                           child: Icon(Icons.arrow_back)),
                                       SizedBox(width: 12),
-                                      Text(widget.model.name,
+                                      Text(widget.model!.name!,
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500)),
                                     ],
@@ -127,35 +127,35 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                   GestureDetector(
                                     onTap: () {
                                       setState(() {
-                                        isLike = !isLike;
+                                        isLike = !isLike!;
                                       });
                                       likeFood();
                                     },
                                     child: Container(
-                                        color: Colors.transparent,
-                                        child: !isLike
+                                        color: R.color.transparent,
+                                        child: !isLike!
                                             ? Image.asset(
-                                                'assets/images/icon_heart_line.png',
+                                                R.drawable.ic_heart_line,
                                                 width: 24,
                                                 height: 24)
                                             : Image.asset(
-                                                'assets/images/icon_heart.png',
+                                                R.drawable.ic_heart_fill,
                                                 width: 24,
                                                 height: 24)),
                                   )
                                 ],
                               ),
                               SizedBox(height: 12),
-                              Text(widget.model.description ?? '',
+                              Text(widget.model!.description ?? '',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400)),
                               SizedBox(height: 12),
                               Text(
-                                  'Khẩu phần ${widget.model.portion.round()} ${widget.model.unit} bao gồm:',
+                                  '${R.string.khau_phan.tr()} ${widget.model!.portion.round()} ${widget.model!.unit} ${R.string.bao_gom.tr()}:',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400)),
                               SizedBox(height: 12),
@@ -170,9 +170,9 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                       SizedBox(height: 16),
                       Padding(
                         padding: EdgeInsets.only(left: 16),
-                        child: Text('Khẩu phần của bạn',
+                        child: Text(R.string.khau_phan_cua_ban.tr(),
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500)),
                       ),
@@ -198,8 +198,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                             child: Text((e).toString(),
                                                 style: TextStyle(
                                                     color: selectedQuantity == e
-                                                        ? Color(0xff01645A)
-                                                        : Color(0xffC0C2C5),
+                                                        ? R.color.mainColor
+                                                        : R.color.color0xffC0C2C5,
                                                     fontSize: 24,
                                                     fontWeight:
                                                         FontWeight.bold)),
@@ -208,7 +208,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                           SizedBox(width: 8),
                           Text(',',
                               style: TextStyle(
-                                  color: Color(0xff01645A),
+                                  color: R.color.mainColor,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                           SizedBox(width: 8),
@@ -230,8 +230,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                             child: Text('$e',
                                                 style: TextStyle(
                                                     color: selectedPercent == e
-                                                        ? Color(0xff01645A)
-                                                        : Color(0xffC0C2C5),
+                                                        ? R.color.mainColor
+                                                        : R.color.color0xffC0C2C5,
                                                     fontSize: 24,
                                                     fontWeight:
                                                         FontWeight.bold)),
@@ -250,12 +250,12 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                             child: Container(
                                 height: 43,
                                 decoration: BoxDecoration(
-                                    color: Color(0xffE2E4E7),
+                                    color: R.color.grayBorder,
                                     borderRadius: BorderRadius.circular(21.5)),
                                 child: Center(
-                                    child: Text('Huỷ',
+                                    child: Text(R.string.cancel.tr(),
                                         style: TextStyle(
-                                            color: Colors.black,
+                                            color: R.color.black,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700)))),
                           ),
@@ -268,46 +268,46 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                   selectedQuantity + (selectedPercent / 10);
                               if (quantity == 0) {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập dữ liệu');
+                                    context, R.string.ban_chua_nhap_du_lieu.tr());
                                 return;
                               }
                               DartNotificationCenter.post(
                                   channel: 'add_food_to_cart',
                                   options: FoodModel(
-                                      id: widget.model.id,
-                                      name: widget.model.name,
-                                      portion: widget.model.portion,
-                                      unit: widget.model.unit,
-                                      calorie: widget.model.calorie,
-                                      glucose: widget.model.glucose,
-                                      lipid: widget.model.lipid,
-                                      protein: widget.model.protein,
-                                      fibre: widget.model.fibre,
-                                      image: widget.model.image,
-                                      liked: widget.model.liked,
-                                      text: widget.model.text,
-                                      description: widget.model.description,
+                                      id: widget.model!.id,
+                                      name: widget.model!.name,
+                                      portion: widget.model!.portion,
+                                      unit: widget.model!.unit,
+                                      calorie: widget.model!.calorie,
+                                      glucose: widget.model!.glucose,
+                                      lipid: widget.model!.lipid,
+                                      protein: widget.model!.protein,
+                                      fibre: widget.model!.fibre,
+                                      image: widget.model!.image,
+                                      liked: widget.model!.liked,
+                                      text: widget.model!.text,
+                                      description: widget.model!.description,
                                       foodCategoryId:
-                                          widget.model.foodCategoryId,
+                                          widget.model!.foodCategoryId,
                                       quantity: quantity));
                               Navigator.pop(context);
                             },
                             child: Container(
                                 height: 43,
                                 decoration: BoxDecoration(
-                                    color: Color(0xff01645A),
+                                    color: R.color.mainColor,
                                     borderRadius: BorderRadius.circular(21.5),
                                     gradient: LinearGradient(
                                         begin: Alignment.topLeft,
                                         end: Alignment.centerRight,
                                         colors: [
-                                          greenGradientTop,
-                                          greenGradientBottom
+                                          R.color.greenGradientTop,
+                                          R.color.greenGradientBottom
                                         ])),
                                 child: Center(
-                                    child: Text('Đồng ý',
+                                    child: Text(R.string.yes.tr(),
                                         style: TextStyle(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700)))),
                           ),
@@ -325,14 +325,14 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     );
   }
 
-  Widget buildItem(String title, double number, String unit) {
+  Widget buildItem(String title, double? number, String unit) {
     return Container(
         child: Column(
       children: [
-        Text(title, style: TextStyle(color: Color(0xff666666))),
+        Text(title, style: TextStyle(color: R.color.primaryGreyColor)),
         SizedBox(height: 4),
         Text('$number $unit',
-            style: TextStyle(color: mainColor, fontWeight: FontWeight.w600))
+            style: TextStyle(color: R.color.mainColor, fontWeight: FontWeight.w600))
       ],
     ));
   }
@@ -340,11 +340,11 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
   likeFood() async {
     BotToast.showLoading();
     try {
-      if (isLike) {
-        await FoodClient().addFoodToFavorite(widget.model.id);
+      if (isLike!) {
+        await FoodClient().addFoodToFavorite(widget.model!.id);
         DartNotificationCenter.post(channel: 'add_food_to_favorite');
       } else {
-        await FoodClient().romoveFoodFromFavorite(widget.model.id);
+        await FoodClient().romoveFoodFromFavorite(widget.model!.id);
         DartNotificationCenter.post(channel: 'add_food_to_favorite');
       }
 

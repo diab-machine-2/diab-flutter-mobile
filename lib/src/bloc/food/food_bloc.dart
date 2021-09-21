@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
-import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_data_model.dart';
@@ -13,6 +12,8 @@ import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 part 'food_bloc_event.dart';
 part 'food_bloc_state.dart';
 
@@ -73,7 +74,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -89,7 +90,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -105,7 +106,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -121,7 +122,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -132,12 +133,12 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
         yield FoodLoading();
       }
       final client = FoodClient();
-      final currenState = state;
+      final FoodState currenState = state;
       var model = await client.fetchFoodCategory(null, keyword, page);
 
       if (currenState is FoodSearchLoaded) {
         if (currenState.searchModel != null && page != 1) {
-          model.foods.insertAll(0, currenState.searchModel.foods);
+          model.foods.insertAll(0, currenState.searchModel!.foods);
         }
       }
       yield FoodSearchLoaded(searchModel: model);
@@ -147,7 +148,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -156,7 +157,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       String currentDateTime, String periodFilterType, int page) async* {
     try {
       final client = FoodClient();
-      final currenState = state;
+      final FoodState currenState = state;
       var model =
           await client.fetchInput(currentDateTime, periodFilterType, page);
 
@@ -172,14 +173,14 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<FoodState> likeFood(FoodModel food, int index) async* {
     try {
-      final currenState = state;
+      final FoodState currenState = state;
 
       if (currenState is FoodLoaded) {
         FoodDataModel model;
@@ -187,9 +188,9 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
         model.foods[index] = food;
         yield FoodLoaded(model: model);
       } else if (currenState is FoodSearchLoaded) {
-        FoodCategoryDataModel model;
+        FoodCategoryDataModel? model;
         model = currenState.searchModel;
-        model.foods[index] = food;
+        model!.foods[index] = food;
         yield FoodSearchLoaded(searchModel: model);
       }
     } catch (e, _) {
@@ -198,7 +199,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -214,7 +215,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -230,13 +231,13 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<FoodState> fetchStatisticDetail(
-      String currentDateTime, String periodFilterType) async* {
+      String? currentDateTime, String? periodFilterType) async* {
     try {
       final client = FoodClient();
       yield FoodLoading();
@@ -249,13 +250,13 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<FoodState> fetchStatisticTrend(
-      String currentDateTime, String periodFilterType) async* {
+      String? currentDateTime, String? periodFilterType) async* {
     try {
       final client = FoodClient();
       yield FoodLoading();
@@ -268,13 +269,13 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<FoodState> fetchStatisticDistribute(
-      String currentDateTime, String periodFilterType) async* {
+      String? currentDateTime, String? periodFilterType) async* {
     try {
       final client = FoodClient();
       yield FoodLoading();
@@ -287,7 +288,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       } else {
         yield FoodError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

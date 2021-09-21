@@ -2,14 +2,14 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 class FoodCategoryModel {
-  final String id;
-  final String name;
+  final String? id;
+  final String? name;
   final List<FoodSubCategoryModel> subCategories;
 
   FoodCategoryModel({
-    @required this.id,
-    @required this.name,
-    @required this.subCategories,
+    required this.id,
+    required this.name,
+    required this.subCategories,
   });
   @override
   factory FoodCategoryModel.fromJson(Map<String, dynamic> json) {
@@ -25,14 +25,14 @@ class FoodCategoryModel {
 }
 
 class FoodSubCategoryModel {
-  final String id;
-  final String name;
+  final String? id;
+  final String? name;
   final ImagesModel image;
 
   FoodSubCategoryModel({
-    @required this.id,
-    @required this.name,
-    @required this.image,
+    required this.id,
+    required this.name,
+    required this.image,
   });
   @override
   factory FoodSubCategoryModel.fromJson(Map<String, dynamic> json) {

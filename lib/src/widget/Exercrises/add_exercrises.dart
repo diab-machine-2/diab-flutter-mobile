@@ -4,15 +4,14 @@ import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/exercrises/exercrise_Input_detail_model.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
-import 'package:medical/src/modal/exercrises/exercrises_categogy_request.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Exercrises/search_exercrises.dart';
@@ -27,10 +26,11 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddExercrisesController extends StatefulWidget {
-  final String type;
-  final String id;
+  final String? type;
+  final String? id;
   AddExercrisesController({this.type, this.id});
 
   @override
@@ -45,16 +45,16 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
   List<dynamic> files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
-  TimeFrameModel selectedTimeFrame;
+  TimeFrameModel? selectedTimeFrame;
   int sumCalories = 0;
   List<ExercrisesCategoryModel> selectedCategory = [];
-  List<ListExercriseModel> updatedCategory;
+  List<ListExercriseModel>? updatedCategory;
   List<ExercrisesCategoryModel> exercriseRegularly = [];
 
-  InputDetailExercriseModel model;
-  List<String> removeIDs = [];
+  InputDetailExercriseModel? model;
+  List<String?> removeIDs = [];
 
-  ShortGuiModel des;
+  ShortGuiModel? des;
 
   void initState() {
     super.initState();
@@ -76,13 +76,13 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
   loadDetail() async {
     BotToast.showLoading();
     model = await ExercrisesClient().fetchDetail(widget.id);
-    selectedDate = DateTime.fromMillisecondsSinceEpoch(model.date * 1000);
-    sumCalories = model != null ? model.burnedCalorie.toInt() : 0;
-    selectedCategory = model != null ? [...model.exercise] : [];
-    _controllerNote.text = model != null ? model.note : '';
+    selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+    sumCalories = model != null ? model!.burnedCalorie!.toInt() : 0;
+    selectedCategory = model != null ? [...model!.exercise] : [];
+    _controllerNote.text = model != null ? model!.note! : '';
     selectedTimeFrame =
-        TimeFrameModel(id: model.timeFrameId, code: '', name: model.timeFrame);
-    files.addAll(model.imageUrls);
+        TimeFrameModel(id: model!.timeFrameId, code: '', name: model!.timeFrame);
+    files.addAll(model!.imageUrls);
 
     if (widget.type == 'update') {
       BotToast.closeAllLoading();
@@ -123,28 +123,28 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           return false;
         },
         child: Scaffold(
-          backgroundColor: backgroundColor,
+          backgroundColor: R.color.backgroundColor,
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.bg_splash),
                     fit: BoxFit.cover)),
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? 'Chỉnh sửa vận động'
-                          : 'Nhập chỉ số vận động',
+                          ? R.string.chinh_sua_van_dong.tr()
+                          : R.string.nhap_chi_so_van_dong.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
                       }),
@@ -158,648 +158,702 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
-                            ? Image.asset(
-                                'assets/images/help_circle_active.png',
-                                width: 24,
-                                height: 24)
-                            : Image.asset('assets/images/help_circle.png',
+                            ? Image.asset(R.drawable.ic_help_circle_active,
+                                width: 24, height: 24)
+                            : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
                     ),
                   ],
                 ),
                 Expanded(
-                  child: ListView(keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,padding: EdgeInsets.all(0), children: [
-                    Padding(
-                        padding: const EdgeInsets.only(
-                            left: 16, right: 16, bottom: 16),
-                        child: isClicked
-                            ? Description(
-                                input: false,
-                                data: des,
-                                titleDetail:
-                                    'Chế độ tập luyện đối với bệnh tiểu đường')
-                            : SizedBox()),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 16, left: 16, right: 16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: Color(0xffB1DDDB)
-                            // image: DecorationImage(
-                            //   image: AssetImage('assets/images/bg_sub_exe.png'),
-                            //   fit: BoxFit.cover,
-                            // )
-                            ),
-                        padding: EdgeInsets.only(right: 20),
-                        child: Row(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(right: 16),
-                              child: Image.asset(
-                                  'assets/images/runner_left.png',
-                                  height: 130),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Lượng calo bạn đã tiêu hao:',
-                                      style: TextStyle(
-                                          color: textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400)),
-                                  SizedBox(height: 6),
-                                  Row(
-                                    children: [
-                                      Text(formatNumber(sumCalories.toDouble()),
-                                          style: TextStyle(
-                                              color: textDark,
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.w700)),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 2.0, left: 2),
-                                        child: Text(
-                                          'kcal',
-                                          style: TextStyle(
-                                              color: textDark,
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 16.0),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 16, left: 16, right: 16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        padding: EdgeInsets.all(16),
-                        child: Column(children: [
-                          GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                barrierColor:
-                                    Color(0xff003F38).withOpacity(0.5),
-                                context: context,
-                                builder: (_) => DateMultiPicker(
-                                  initDate: selectedDate,
-                                  callback: (date) {
-                                    setState(() {
-                                      selectedDate = date;
-                                    });
-                                    loadTimeFrame();
-                                  },
+                  child: ListView(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: EdgeInsets.all(0),
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.only(
+                                left: 16, right: 16, bottom: 16),
+                            child: isClicked
+                                ? Description(
+                                    input: false,
+                                    data: des,
+                                    titleDetail: R.string
+                                        .che_do_tap_luyen_doi_voi_benh_tieu_duong
+                                        .tr())
+                                : SizedBox()),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 16, left: 16, right: 16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: R.color.color0xffB1DDDB),
+                            padding: EdgeInsets.only(right: 20),
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 16),
+                                  child: Image.asset(R.drawable.im_runner_left,
+                                      height: 130),
                                 ),
-                              );
-                            },
-                            child: Container(
-                              color: Colors.transparent,
-                              child: Column(children: [
-                                Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Image.asset(
-                                          'assets/images/icon_calendar.png',
-                                          width: 24,
-                                          height: 24),
-                                      SizedBox(width: 8),
                                       Text(
-                                          convertToUTC(
-                                              selectedDate
-                                                      .millisecondsSinceEpoch ~/
-                                                  1000,
-                                              'HH:mm - dd/MM/yyyy'),
+                                          '${R.string.luong_calo_ban_da_tieu_hao.tr()}:',
                                           style: TextStyle(
+                                              color: R.color.textDark,
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w400))
-                                    ]),
-                                SizedBox(height: 16),
-                                Container(height: 1, color: Color(0xffE5E5E5)),
-                                SizedBox(height: 8),
-                              ]),
-                            ),
-                          )
-                        ]),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 16, left: 16, right: 16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        padding: EdgeInsets.all(16),
-                        child: Column(children: [
-                          GestureDetector(
-                            onTap: () {
-                              showActionFilter(context);
-                            },
-                            child: Container(
-                              color: Colors.transparent,
-                              child: Column(children: [
-                                Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Image.asset(
-                                          'assets/images/icon_clock.png',
-                                          width: 24,
-                                          height: 24),
-                                      SizedBox(width: 8),
-                                      Text(
-                                          selectedTimeFrame == null
-                                              ? 'Chọn khung giờ'
-                                              : selectedTimeFrame.name,
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400))
-                                    ]),
-                                SizedBox(height: 16),
-                                Container(height: 1, color: Color(0xffE5E5E5)),
-                                SizedBox(height: 8),
-                              ]),
-                            ),
-                          )
-                        ]),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 16, left: 16, right: 16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        padding: EdgeInsets.all(16),
-                        child: Column(children: [
-                          Container(
-                            color: Colors.transparent,
-                            child: Column(children: [
-                              Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Image.asset('assets/images/pulse.png',
-                                            width: 24, height: 24),
-                                        SizedBox(width: 8),
-                                        Text('Vận động',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w500))
-                                      ],
-                                    ),
-                                    selectedCategory.length == 0
-                                        ? GestureDetector(
-                                            onTap: () {
-                                              addActivity();
-                                            },
-                                            child: Container(
-                                              color: Colors.transparent,
-                                              child: Row(
-                                                children: [
-                                                  Image.asset(
-                                                    'assets/images/circle_plus_exe.png',
-                                                    width: 24,
-                                                    height: 24,
-                                                  ),
-                                                  SizedBox(width: 4),
-                                                  Text('Thêm hoạt động',
-                                                      style: TextStyle(
-                                                          color: mainColor,
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w400)),
-                                                ],
-                                              ),
-                                            ),
-                                          )
-                                        : SizedBox(),
-                                  ]),
-                              SizedBox(height: 16),
-                              selectedCategory.length == 0
-                                  ? SizedBox()
-                                  : Container(
-                                      height: 1, color: Color(0xffD6D8E0)),
-                              ListView.separated(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.all(0),
-                                  itemCount: selectedCategory.length,
-                                  separatorBuilder: (context, index) {
-                                    return Container(
-                                        height: 1, color: Color(0xffD6D8E0));
-                                  },
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        showDialog(
-                                            barrierColor: Color(0xff003F38)
-                                                .withOpacity(0.5),
-                                            context: context,
-                                            builder: (_) =>
-                                                CustomInputTimePicker(
-                                                    title:
-                                                        'Chỉnh sửa thời gian',
-                                                    time:
-                                                        selectedCategory[index]
-                                                            .duration,
-                                                    callback: (hour, minute) {
-                                                      calculatorCalo(
-                                                          index, minute, hour);
-                                                    }));
-                                      },
-                                      child: Container(
-                                        color: Colors.transparent,
-                                        padding: EdgeInsets.only(
-                                            bottom: 12, top: 12),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Stack(
-                                                    alignment:
-                                                        AlignmentDirectional
-                                                            .center,
-                                                    children: [
-                                                      Image.asset(
-                                                          'assets/images/activity_empty.png',
-                                                          width: 50,
-                                                          height: 50),
-                                                      Image.network(
-                                                        selectedCategory[index]
-                                                                .cover
-                                                                .url ??
-                                                            '',
-                                                        width: 30,
-                                                        height: 30,
-                                                      )
-                                                    ]),
-                                                SizedBox(
-                                                  width: 8,
-                                                ),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                        selectedCategory[index]
-                                                            .category,
-                                                        style: TextStyle(
-                                                            color: textDark,
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700)),
-                                                    SizedBox(
-                                                      height: 4,
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                            '${selectedCategory[index].duration.toInt().toString()} phút,',
-                                                            style: TextStyle(
-                                                                color: textDark,
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400)),
-                                                        SizedBox(
-                                                          width: 4,
-                                                        ),
-                                                        Text(
-                                                            '${formatNumber(selectedCategory[index].burnedCalorie)} ${selectedCategory[index].unit}',
-                                                            style: TextStyle(
-                                                                color: textDark,
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400)),
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              width: 8,
-                                            ),
-                                            GestureDetector(
-                                              onTap: () {
-                                                final category =
-                                                    selectedCategory[index];
-                                                if (category.categoryId ==
-                                                    null) {
-                                                  exercriseRegularly
-                                                      .add(category);
-                                                }
-                                                setState(() {
-                                                  selectedCategory
-                                                      .removeAt(index);
-                                                });
-                                                sumCalo();
-                                              },
-                                              child: Image.asset(
-                                                'assets/images/icon_remove_excersire.png',
-                                                width: 20,
-                                                height: 20,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                              exercriseRegularly.length == 0
-                                  ? SizedBox()
-                                  : Container(
-                                      height: 1, color: Color(0xffD6D8E0)),
-                              ListView.separated(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.all(0),
-                                  itemCount: exercriseRegularly.length,
-                                  separatorBuilder: (context, index) {
-                                    return Container(
-                                        height: 1, color: Color(0xffD6D8E0));
-                                  },
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return Stack(children: [
-                                      Container(
-                                        color: Colors.transparent,
-                                        padding: EdgeInsets.only(
-                                            bottom: 12, top: 12),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Stack(
-                                                    alignment:
-                                                        AlignmentDirectional
-                                                            .center,
-                                                    children: [
-                                                      Image.asset(
-                                                          'assets/images/activity_empty.png',
-                                                          width: 50,
-                                                          height: 50),
-                                                      Image.network(
-                                                        exercriseRegularly[
-                                                                    index]
-                                                                .cover
-                                                                .url ??
-                                                            '',
-                                                        width: 30,
-                                                        height: 30,
-                                                      )
-                                                    ]),
-                                                SizedBox(
-                                                  width: 8,
-                                                ),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                        exercriseRegularly[
-                                                                index]
-                                                            .category,
-                                                        style: TextStyle(
-                                                            color: textDark,
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700)),
-                                                    SizedBox(
-                                                      height: 4,
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                            '${exercriseRegularly[index].duration.toInt().toString()} phút,',
-                                                            style: TextStyle(
-                                                                color: textDark,
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400)),
-                                                        SizedBox(
-                                                          width: 4,
-                                                        ),
-                                                        Text(
-                                                            '${exercriseRegularly[index].burnedCalorie.round()} ${exercriseRegularly[index].unit}',
-                                                            style: TextStyle(
-                                                                color: textDark,
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400)),
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              width: 8,
-                                            ),
-                                            GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  selectedCategory.add(
-                                                      exercriseRegularly[
-                                                          index]);
-
-                                                  exercriseRegularly
-                                                      .removeAt(index);
-                                                });
-                                                sumCalo();
-                                              },
-                                              child: Image.asset(
-                                                'assets/images/icon_add_excersire.png',
-                                                width: 20,
-                                                height: 20,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Positioned.fill(
-                                        right: 20,
-                                        child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.white
-                                                    .withOpacity(0.6))),
-                                      )
-                                    ]);
-                                  }),
-                              selectedCategory.length != 0
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        addActivity();
-                                      },
-                                      child: Column(
+                                              fontWeight: FontWeight.w400)),
+                                      SizedBox(height: 6),
+                                      Row(
                                         children: [
-                                          Container(
-                                              height: 1,
-                                              color: Color(0xffD6D8E0)),
-                                          Container(
-                                            color: Colors.transparent,
-                                            padding: EdgeInsets.only(top: 16),
-                                            child: Row(
-                                              children: [
-                                                Image.asset(
-                                                  'assets/images/circle_plus_exe.png',
-                                                  width: 24,
-                                                  height: 24,
-                                                ),
-                                                SizedBox(width: 4),
-                                                Text('Thêm hoạt động',
-                                                    style: TextStyle(
-                                                        color: mainColor,
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w400)),
-                                              ],
+                                          Text(
+                                              formatNumber(
+                                                  sumCalories.toDouble()),
+                                              style: TextStyle(
+                                                  color: R.color.textDark,
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.w700)),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 2.0, left: 2),
+                                            child: Text(
+                                              R.string.kcal.tr(),
+                                              style: TextStyle(
+                                                  color: R.color.textDark,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 16.0),
                                             ),
                                           ),
                                         ],
-                                      ),
-                                    )
-                                  : SizedBox()
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 16, left: 16, right: 16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: R.color.white,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            padding: EdgeInsets.all(16),
+                            child: Column(children: [
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    barrierColor: R.color.color0xff003F38
+                                        .withOpacity(0.5),
+                                    context: context,
+                                    builder: (_) => DateMultiPicker(
+                                      initDate: selectedDate,
+                                      callback: (date) {
+                                        setState(() {
+                                          selectedDate = date ?? DateTime.now();
+                                        });
+                                        loadTimeFrame();
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  color: R.color.transparent,
+                                  child: Column(children: [
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Image.asset(R.drawable.ic_calendar,
+                                              width: 24, height: 24),
+                                          SizedBox(width: 8),
+                                          Text(
+                                              convertToUTC(
+                                                  selectedDate
+                                                          .millisecondsSinceEpoch ~/
+                                                      1000,
+                                                  'HH:mm - dd/MM/yyyy'),
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w400))
+                                        ]),
+                                    SizedBox(height: 16),
+                                    Container(
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
+                                    SizedBox(height: 8),
+                                  ]),
+                                ),
+                              )
                             ]),
                           ),
-                        ]),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 16, left: 16, right: 16),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
                         ),
-                        // color: Colors.white,
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(children: [
-                                Image.asset('assets/images/note_text.png',
-                                    width: 24, height: 24),
-                                SizedBox(width: 8),
-                                Text('Ghi chú',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600))
-                              ]),
-                              SizedBox(height: 24),
-                              TextField(
-                                  controller: _controllerNote,
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                  decoration: InputDecoration(
-                                      hintText: 'Nhập ghi chú của bạn',
-                                      contentPadding:
-                                          EdgeInsets.only(bottom: 8),
-                                      border: InputBorder.none,
-                                      hintStyle: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                          color: Color(0xff666666)))),
-                              Container(height: 1, color: Color(0xffE5E5E5)),
-                              SizedBox(height: 8),
-                              GridView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: files.length + 1,
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 3,
-                                          childAspectRatio: 1,
-                                          crossAxisSpacing: 16,
-                                          mainAxisSpacing: 16),
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return GestureDetector(
-                                        onTap: () {
-                                          if (index == files.length) {
-                                            showActionSheet(context);
-                                          }
-                                        },
-                                        child: index == files.length
-                                            ? Container(
-                                                child: Image.asset(
-                                                    'assets/images/icon_add_photo.png'))
-                                            : Stack(
-                                                alignment:
-                                                    AlignmentDirectional.topEnd,
-                                                children: [
-                                                    Positioned.fill(
-                                                      child: files[index]
-                                                              is PickedFile
-                                                          ? Image.file(
-                                                              File(files[index]
-                                                                  .path),
-                                                              fit: BoxFit.cover,
-                                                            )
-                                                          : Image.network(
-                                                              files[index].url,
-                                                              fit:
-                                                                  BoxFit.cover),
-                                                    ),
-                                                    IconButton(
-                                                        icon: Image.asset(
-                                                            'assets/images/icon_trash.png'),
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            if (files[index]
-                                                                is PickedFile) {
-                                                              files.removeAt(
-                                                                  index);
-                                                            } else {
-                                                              removeIDs.add(
-                                                                  files[index]
-                                                                      .id);
-                                                              files.removeAt(
-                                                                  index);
-                                                            }
-                                                          });
-                                                        })
-                                                  ]));
-                                  })
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 16, left: 16, right: 16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: R.color.white,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            padding: EdgeInsets.all(16),
+                            child: Column(children: [
+                              GestureDetector(
+                                onTap: () {
+                                  showActionFilter(context);
+                                },
+                                child: Container(
+                                  color: R.color.transparent,
+                                  child: Column(children: [
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Image.asset(R.drawable.ic_clock,
+                                              width: 24, height: 24),
+                                          SizedBox(width: 8),
+                                          Text(
+                                              selectedTimeFrame == null
+                                                  ? R.string.chon_khung_gio.tr()
+                                                  : selectedTimeFrame!.name!,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w400))
+                                        ]),
+                                    SizedBox(height: 16),
+                                    Container(
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
+                                    SizedBox(height: 8),
+                                  ]),
+                                ),
+                              )
                             ]),
-                      ),
-                    ),
-                  ]),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 16, left: 16, right: 16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: R.color.white,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            padding: EdgeInsets.all(16),
+                            child: Column(children: [
+                              Container(
+                                color: R.color.transparent,
+                                child: Column(children: [
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Image.asset(R.drawable.ic_pulse,
+                                                width: 24, height: 24),
+                                            SizedBox(width: 8),
+                                            Text(R.string.van_dong.tr(),
+                                                style: TextStyle(
+                                                    color: R.color.black,
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.w500))
+                                          ],
+                                        ),
+                                        selectedCategory.length == 0
+                                            ? GestureDetector(
+                                                onTap: () {
+                                                  addActivity();
+                                                },
+                                                child: Container(
+                                                  color: R.color.transparent,
+                                                  child: Row(
+                                                    children: [
+                                                      Image.asset(
+                                                        R.drawable
+                                                            .ic_circle_plus_exe,
+                                                        width: 24,
+                                                        height: 24,
+                                                      ),
+                                                      SizedBox(width: 4),
+                                                      Text(
+                                                          R.string
+                                                              .them_hoat_dong
+                                                              .tr(),
+                                                          style: TextStyle(
+                                                              color: R.color
+                                                                  .mainColor,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400)),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
+                                            : SizedBox(),
+                                      ]),
+                                  SizedBox(height: 16),
+                                  selectedCategory.length == 0
+                                      ? SizedBox()
+                                      : Container(
+                                          height: 1,
+                                          color: R.color.color0xffD6D8E0),
+                                  ListView.separated(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      padding: EdgeInsets.all(0),
+                                      itemCount: selectedCategory.length,
+                                      separatorBuilder: (context, index) {
+                                        return Container(
+                                            height: 1,
+                                            color: R.color.color0xffD6D8E0);
+                                      },
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                                barrierColor: R
+                                                    .color.color0xff003F38
+                                                    .withOpacity(0.5),
+                                                context: context,
+                                                builder: (_) =>
+                                                    CustomInputTimePicker(
+                                                        title: R.string
+                                                            .chinh_sua_thoi_gian
+                                                            .tr(),
+                                                        time: selectedCategory[
+                                                                index]
+                                                            .duration,
+                                                        callback:
+                                                            (hour, minute) {
+                                                          calculatorCalo(index,
+                                                              minute, hour);
+                                                        }));
+                                          },
+                                          child: Container(
+                                            color: R.color.transparent,
+                                            padding: EdgeInsets.only(
+                                                bottom: 12, top: 12),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Stack(
+                                                        alignment:
+                                                            AlignmentDirectional
+                                                                .center,
+                                                        children: [
+                                                          Image.asset(
+                                                              R.drawable
+                                                                  .bg_activity_empty,
+                                                              width: 50,
+                                                              height: 50),
+                                                          Image.network(
+                                                            selectedCategory[
+                                                                        index]
+                                                                    .cover!
+                                                                    .url ??
+                                                                '',
+                                                            width: 30,
+                                                            height: 30,
+                                                          )
+                                                        ]),
+                                                    SizedBox(
+                                                      width: 8,
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                            selectedCategory[
+                                                                    index]
+                                                                .category!,
+                                                            style: TextStyle(
+                                                                color: R.color
+                                                                    .textDark,
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700)),
+                                                        SizedBox(
+                                                          height: 4,
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                                '${selectedCategory[index].duration!.toInt().toString()} ${R.string.minute.tr()},',
+                                                                style: TextStyle(
+                                                                    color: R
+                                                                        .color
+                                                                        .textDark,
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400)),
+                                                            SizedBox(
+                                                              width: 4,
+                                                            ),
+                                                            Text(
+                                                                '${formatNumber(selectedCategory[index].burnedCalorie)} ${selectedCategory[index].unit}',
+                                                                style: TextStyle(
+                                                                    color: R
+                                                                        .color
+                                                                        .textDark,
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400)),
+                                                          ],
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  width: 8,
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    final category =
+                                                        selectedCategory[index];
+                                                    if (category.categoryId ==
+                                                        null) {
+                                                      exercriseRegularly
+                                                          .add(category);
+                                                    }
+                                                    setState(() {
+                                                      selectedCategory
+                                                          .removeAt(index);
+                                                    });
+                                                    sumCalo();
+                                                  },
+                                                  child: Image.asset(
+                                                    R.drawable
+                                                        .ic_remove_excersire,
+                                                    width: 20,
+                                                    height: 20,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                  exercriseRegularly.length == 0
+                                      ? SizedBox()
+                                      : Container(
+                                          height: 1,
+                                          color: R.color.color0xffD6D8E0),
+                                  ListView.separated(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      padding: EdgeInsets.all(0),
+                                      itemCount: exercriseRegularly.length,
+                                      separatorBuilder: (context, index) {
+                                        return Container(
+                                            height: 1,
+                                            color: R.color.color0xffD6D8E0);
+                                      },
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return Stack(children: [
+                                          Container(
+                                            color: R.color.transparent,
+                                            padding: EdgeInsets.only(
+                                                bottom: 12, top: 12),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Stack(
+                                                        alignment:
+                                                            AlignmentDirectional
+                                                                .center,
+                                                        children: [
+                                                          Image.asset(
+                                                              R.drawable
+                                                                  .bg_activity_empty,
+                                                              width: 50,
+                                                              height: 50),
+                                                          Image.network(
+                                                            exercriseRegularly[
+                                                                        index]
+                                                                    .cover!
+                                                                    .url ??
+                                                                '',
+                                                            width: 30,
+                                                            height: 30,
+                                                          )
+                                                        ]),
+                                                    SizedBox(
+                                                      width: 8,
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                            exercriseRegularly[
+                                                                    index]
+                                                                .category!,
+                                                            style: TextStyle(
+                                                                color: R.color
+                                                                    .textDark,
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700)),
+                                                        SizedBox(
+                                                          height: 4,
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                                '${exercriseRegularly[index].duration!.toInt().toString()} ${R.string.minute.tr()},',
+                                                                style: TextStyle(
+                                                                    color: R
+                                                                        .color
+                                                                        .textDark,
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400)),
+                                                            SizedBox(
+                                                              width: 4,
+                                                            ),
+                                                            Text(
+                                                                '${exercriseRegularly[index].burnedCalorie!.round()} ${exercriseRegularly[index].unit}',
+                                                                style: TextStyle(
+                                                                    color: R
+                                                                        .color
+                                                                        .textDark,
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400)),
+                                                          ],
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  width: 8,
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      selectedCategory.add(
+                                                          exercriseRegularly[
+                                                              index]);
+
+                                                      exercriseRegularly
+                                                          .removeAt(index);
+                                                    });
+                                                    sumCalo();
+                                                  },
+                                                  child: Image.asset(
+                                                    R.drawable.ic_add_excersire,
+                                                    width: 20,
+                                                    height: 20,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Positioned.fill(
+                                            right: 20,
+                                            child: Container(
+                                                decoration: BoxDecoration(
+                                                    color: R.color.white
+                                                        .withOpacity(0.6))),
+                                          )
+                                        ]);
+                                      }),
+                                  selectedCategory.length != 0
+                                      ? GestureDetector(
+                                          onTap: () {
+                                            addActivity();
+                                          },
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                  height: 1,
+                                                  color:
+                                                      R.color.color0xffD6D8E0),
+                                              Container(
+                                                color: R.color.transparent,
+                                                padding:
+                                                    EdgeInsets.only(top: 16),
+                                                child: Row(
+                                                  children: [
+                                                    Image.asset(
+                                                      R.drawable
+                                                          .ic_circle_plus_exe,
+                                                      width: 24,
+                                                      height: 24,
+                                                    ),
+                                                    SizedBox(width: 4),
+                                                    Text(
+                                                        R.string.them_hoat_dong
+                                                            .tr(),
+                                                        style: TextStyle(
+                                                            color: R.color
+                                                                .mainColor,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400)),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : SizedBox()
+                                ]),
+                              ),
+                            ]),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 16, left: 16, right: 16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: R.color.white,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            // color: R.color.white,
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(children: [
+                                    Image.asset(R.drawable.ic_note_text,
+                                        width: 24, height: 24),
+                                    SizedBox(width: 8),
+                                    Text(R.string.ghi_chu.tr(),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600))
+                                  ]),
+                                  SizedBox(height: 24),
+                                  TextField(
+                                      controller: _controllerNote,
+                                      style: TextStyle(
+                                          color: R.color.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400),
+                                      decoration: InputDecoration(
+                                          hintText: R
+                                              .string.nhap_ghi_chu_cua_ban
+                                              .tr(),
+                                          contentPadding:
+                                              EdgeInsets.only(bottom: 8),
+                                          border: InputBorder.none,
+                                          hintStyle: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              color:
+                                                  R.color.primaryGreyColor))),
+                                  Container(
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5),
+                                  SizedBox(height: 8),
+                                  GridView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: files.length + 1,
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 3,
+                                              childAspectRatio: 1,
+                                              crossAxisSpacing: 16,
+                                              mainAxisSpacing: 16),
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return GestureDetector(
+                                            onTap: () {
+                                              if (index == files.length) {
+                                                showActionSheet(context);
+                                              }
+                                            },
+                                            child: index == files.length
+                                                ? Container(
+                                                    child: Image.asset(R
+                                                        .drawable.ic_add_photo))
+                                                : Stack(
+                                                    alignment:
+                                                        AlignmentDirectional
+                                                            .topEnd,
+                                                    children: [
+                                                        Positioned.fill(
+                                                          child: files[index]
+                                                                  is PickedFile
+                                                              ? Image.file(
+                                                                  File(files[
+                                                                          index]
+                                                                      .path),
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                )
+                                                              : Image.network(
+                                                                  files[index]
+                                                                      .url,
+                                                                  fit: BoxFit
+                                                                      .cover),
+                                                        ),
+                                                        IconButton(
+                                                            icon: Image.asset(R
+                                                                .drawable
+                                                                .ic_trash),
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                if (files[index]
+                                                                    is PickedFile) {
+                                                                  files.removeAt(
+                                                                      index);
+                                                                } else {
+                                                                  removeIDs.add(
+                                                                      files[index]
+                                                                          .id);
+                                                                  files.removeAt(
+                                                                      index);
+                                                                }
+                                                              });
+                                                            })
+                                                      ]));
+                                      })
+                                ]),
+                          ),
+                        ),
+                      ]),
                 ),
                 widget.type == 'input'
                     ? GestureDetector(
@@ -813,19 +867,19 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                               height: 48,
                               width: 195,
                               decoration: BoxDecoration(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text('Lưu',
+                                  child: Text(R.string.save.tr(),
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)))),
                         ),
@@ -848,12 +902,12 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          border:
-                                              Border.all(color: red, width: 2)),
+                                          border: Border.all(
+                                              color: R.color.red, width: 2)),
                                       child: Center(
-                                        child: Text('Xoá dữ liệu',
+                                        child: Text(R.string.xoa_du_lieu.tr(),
                                             style: TextStyle(
-                                                color: Colors.red,
+                                                color: R.color.red,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -866,20 +920,20 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                     height: 48,
                                     width: 164,
                                     decoration: BoxDecoration(
-                                        color: mainColor,
+                                        color: R.color.mainColor,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Lưu',
+                                      child: Text(R.string.save.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -928,33 +982,33 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
 
     if (description.isNotEmpty) {
       showDialog(
-          barrierColor: Color(0xff003F38).withOpacity(0.5),
+          barrierColor: R.color.color0xff003F38.withOpacity(0.5),
           context: context,
           builder: (_) {
             Future.delayed(const Duration(seconds: 5), () {
               Navigator.pop(context);
             });
             return Scaffold(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 body: Center(
                     child: Padding(
                   padding: EdgeInsets.all(16),
                   child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(10)),
                       padding: EdgeInsets.only(top: 32, left: 32, right: 32),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Chúc mừng!',
+                          Text(R.string.chuc_mung.tr(),
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500)),
                           SizedBox(height: 16),
                           Text(
-                              'Tuyệt vời! Bạn đã phá kỷ lục thời gian tập luyện. Kỷ lục hiện tại của bạn với bộ môn này là:',
+                              '${R.string.ky_luc.tr()}:',
                               textAlign: TextAlign.center),
                           SizedBox(height: 8),
                           Text(
@@ -962,12 +1016,12 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                       .toDouble()
                                       .round()
                                       .toString() +
-                                  ' phút',
+                                  ' ${R.string.minute.tr()}',
                               style: TextStyle(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600)),
-                          Image.asset('assets/images/bg_congrat.png'),
+                          Image.asset(R.drawable.im_congrat),
                         ],
                       )),
                 )));
@@ -983,12 +1037,12 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
             type: widget.type,
             model: selectedCategory,
             callback: (callback, sum) {
-              print(sum);
-              setState(() {
-                selectedCategory.addAll(callback);
-                //sumCalories = sum;
-                sumCalo();
-              });
+                print(sum);
+                setState(() {
+                  selectedCategory.addAll(callback ?? []);
+                  //sumCalories = sum;
+                  sumCalo();
+                });
             },
           ),
         ));
@@ -997,7 +1051,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
   sumCalo() {
     sumCalories = 0;
     selectedCategory.forEach((element) {
-      sumCalories += element.burnedCalorie.toInt();
+      sumCalories += element.burnedCalorie!.toInt();
     });
     setState(() {});
   }
@@ -1028,15 +1082,15 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
     FocusScope.of(context).unfocus();
 
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
     if (selectedCategory.length == 0) {
-      Message.showToastMessage(context, 'Bạn chưa chọn hoạt động');
+      Message.showToastMessage(context, R.string.ban_chua_chon_hoat_dong.tr());
       return;
     }
 
@@ -1052,7 +1106,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
       final result = await ExercrisesClient().updateExercrises(
           widget.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          selectedTimeFrame.id,
+          selectedTimeFrame!.id,
           note,
           selectedCategory,
           removeIDs,
@@ -1078,15 +1132,15 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
     final note = _controllerNote.text ?? '';
 
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
     if (selectedCategory.length == 0) {
-      Message.showToastMessage(context, 'Bạn chưa chọn hoạt động');
+      Message.showToastMessage(context, R.string.ban_chua_chon_hoat_dong.tr());
       return;
     }
     BotToast.showLoading();
@@ -1098,7 +1152,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
       }
       final result = await ExercrisesClient().postIndexExercrises(
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          selectedTimeFrame.id,
+          selectedTimeFrame!.id,
           note,
           selectedCategory,
           paths);
@@ -1131,24 +1185,22 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/earseIcon.png',
-                          width: 64, height: 64),
+                      Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn xoá dữ liệu?',
+                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
+                        child: Text(R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1167,11 +1219,11 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Quay lại',
+                                        child: Text(R.string.back.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -1187,13 +1239,13 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color: red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text('Xoá',
+                                      child: Text(R.string.delete.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1209,7 +1261,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1223,12 +1275,12 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
   _showDialogSave() {
     FocusScope.of(context).unfocus();
     final note = _controllerNote.text ?? '';
-    if (model != null && model.exercise.length == selectedCategory.length) {
-      final noteText = model.note ?? '';
-      final date = DateTime.fromMillisecondsSinceEpoch(model.date * 1000);
+    if (model != null && model!.exercise.length == selectedCategory.length) {
+      final noteText = model!.note ?? '';
+      final date = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
       if (noteText == note &&
-          selectedCategory.length == model.exercise.length &&
-          files.length == model.imageUrls.length &&
+          selectedCategory.length == model!.exercise.length &&
+          files.length == model!.imageUrls.length &&
           removeIDs.length == 0 &&
           selectedDate.millisecondsSinceEpoch == date.millisecondsSinceEpoch) {
         Navigator.pop(context);
@@ -1251,24 +1303,23 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/backIcon.png',
+                      Image.asset(R.drawable.ic_back_icon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                        child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1286,11 +1337,11 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -1305,20 +1356,20 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color: R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1332,7 +1383,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1347,7 +1398,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => ActionListTrend(
@@ -1370,11 +1421,11 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_photo.png',
-                      width: 24, height: 24),
+                  Image.asset(R.drawable.ic_photo, width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chọn trong thư viện",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text(R.string.chon_trong_thu_vien.tr(),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1388,11 +1439,12 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_camera_black.png',
+                  Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chụp ảnh",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text(R.string.chup_anh.tr(),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1403,8 +1455,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text("Huỷ",
-              style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+          child: Text(R.string.cancel.tr(),
+              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -1412,7 +1464,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      //Message.showToastMessage(context, 'Chỉ đuợc chọn tối đa 5 ảnh');
+      //Message.showToastMessage(context, R.string.max_image_select.tr());
     }
   }
 
@@ -1451,13 +1503,13 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = FlatButton(
-      child: Text("Huỷ"),
+      child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Cấp quyền"),
+      child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -1465,8 +1517,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Thông báo"),
-      content: Text("Bạn cần cấp quyền truy cập để sử dụng tính năng này"),
+      title: Text(R.string.notification.tr()),
+      content: Text(R.string.ask_for_permission.tr()),
       actions: [
         cancelButton,
         continueButton,
@@ -1481,18 +1533,18 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
   }
 }
 
-typedef TimeCallback = Function(DateTime);
+typedef TimeCallback = Function(DateTime?);
 
 class DateMultiPicker extends StatefulWidget {
-  final DateTime initDate;
-  final TimeCallback callback;
+  final DateTime? initDate;
+  final TimeCallback? callback;
   DateMultiPicker({this.initDate, this.callback});
   @override
   _DateMultiPickerState createState() => _DateMultiPickerState();
 }
 
 class _DateMultiPickerState extends State<DateMultiPicker> {
-  DateTime selectedDate = DateTime.now();
+  DateTime? selectedDate = DateTime.now();
   int selectedHour = DateTime.now().hour;
   int selectedMinute = DateTime.now().minute;
 
@@ -1500,8 +1552,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   void initState() {
     if (widget.initDate != null) {
       selectedDate = widget.initDate;
-      selectedHour = widget.initDate.hour;
-      selectedMinute = widget.initDate.minute;
+      selectedHour = widget.initDate!.hour;
+      selectedMinute = widget.initDate!.minute;
     }
     super.initState();
   }
@@ -1513,7 +1565,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -1522,7 +1574,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1532,14 +1584,14 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Chọn ngày',
+                            Text(R.string.pick_date.tr(),
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
-                                icon:
-                                    Icon(Icons.close, color: Color(0xffBEC0C8)),
+                                icon: Icon(Icons.close,
+                                    color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
@@ -1548,10 +1600,10 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                     CustomCalendarDatePicker(
                         initialDate: widget.initDate == null
                             ? DateTime.now()
-                            : widget.initDate,
+                            : widget.initDate!,
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
-                        onDateChanged: (DateTime datetime) {
+                        onDateChanged: (datetime) {
                           selectedDate = datetime;
                         }),
                     Row(
@@ -1559,9 +1611,9 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         SizedBox(
                           width: 16,
                         ),
-                        Text('Chọn thời gian',
+                        Text(R.string.pick_time.tr(),
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700)),
                       ],
@@ -1571,8 +1623,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
                         callback: (hour, minute) {
-                          selectedHour = hour;
-                          selectedMinute = minute;
+                          selectedHour = hour ?? DateTime.now().hour;
+                          selectedMinute = minute ?? DateTime.now().minute;
                         }),
                     SizedBox(height: 20),
                     Row(children: [
@@ -1585,12 +1637,12 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xffE2E4E7),
+                                  color: R.color.grayBorder,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1600,25 +1652,25 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         child: GestureDetector(
                           onTap: () {
                             selectedDate = DateTime(
-                                selectedDate.year,
-                                selectedDate.month,
-                                selectedDate.day,
+                                selectedDate!.year,
+                                selectedDate!.month,
+                                selectedDate!.day,
                                 selectedHour,
                                 selectedMinute);
 
-                            widget.callback(selectedDate);
+                            widget.callback!(selectedDate);
 
                             Navigator.pop(context);
                           },
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xff01645A),
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Đồng ý',
+                                  child: Text(R.string.yes.tr(),
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1637,22 +1689,22 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   }
 }
 
-typedef TimeHourCallback = Function(int, int);
+typedef TimeHourCallback = Function(int?, int?);
 
 class CustomTimePicker extends StatefulWidget {
-  final int selectedHour;
-  final int selectedMinute;
-  final TimeHourCallback callback;
+  final int? selectedHour;
+  final int? selectedMinute;
+  final TimeHourCallback? callback;
   CustomTimePicker({this.selectedHour, this.selectedMinute, this.callback});
   @override
   _CustomTimePickerState createState() => _CustomTimePickerState();
 }
 
 class _CustomTimePickerState extends State<CustomTimePicker> {
-  FixedExtentScrollController hourController;
-  FixedExtentScrollController minuteController;
-  int selectedHour = 1;
-  int selectedMinute = 1;
+  FixedExtentScrollController? hourController;
+  FixedExtentScrollController? minuteController;
+  int? selectedHour = 1;
+  int? selectedMinute = 1;
 
   @override
   void initState() {
@@ -1666,8 +1718,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     if (widget.selectedMinute != null) {
       selectedMinute = widget.selectedMinute;
     }
-    hourController = FixedExtentScrollController(initialItem: selectedHour);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute);
+    hourController = FixedExtentScrollController(initialItem: selectedHour!);
+    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   @override
@@ -1684,7 +1736,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 onSelectedItemChanged: (value) {
                   setState(() {
                     selectedHour = value;
-                    widget.callback(selectedHour, selectedMinute);
+                    widget.callback!(selectedHour, selectedMinute);
                   });
                 },
                 itemExtent: 47.0,
@@ -1693,8 +1745,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedHour == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))
@@ -1709,7 +1761,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 onSelectedItemChanged: (value) {
                   setState(() {
                     selectedMinute = value;
-                    widget.callback(selectedHour, selectedMinute);
+                    widget.callback!(selectedHour, selectedMinute);
                   });
                 },
                 itemExtent: 47.0,
@@ -1718,8 +1770,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedMinute == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))

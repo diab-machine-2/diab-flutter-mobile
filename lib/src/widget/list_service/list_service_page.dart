@@ -10,14 +10,14 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'list_service.dart';
 
 class ListServicePage extends StatefulWidget {
-  const ListServicePage({Key key}) : super(key: key);
+  const ListServicePage({Key? key}) : super(key: key);
 
   @override
   _ListServicePageState createState() => _ListServicePageState();
 }
 
 class _ListServicePageState extends State<ListServicePage> {
-  ListServiceCubit _cubit;
+  late ListServiceCubit _cubit;
 
   @override
   void initState() {
@@ -58,7 +58,7 @@ class _ListServicePageState extends State<ListServicePage> {
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(
-                R.drawable.background_splash
+                R.drawable.bg_home
             ),
             fit: BoxFit.fill
           )

@@ -1,17 +1,17 @@
+import 'dart:async';
+
 import 'package:bot_toast/bot_toast.dart';
-import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/secure.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ContactController extends StatefulWidget {
-  final SecureModel model;
+  final SecureModel? model;
   ContactController({this.model});
 
   @override
@@ -26,24 +26,24 @@ class _ContactControllerState extends State<ContactController> {
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                     colors: [
-                      Color(0xFFFDC798).withOpacity(0.3),
-                      Color(0xFFE6F6ED).withOpacity(0.9),
+                      R.color.color0xFFFDC798.withOpacity(0.3),
+                      R.color.greenbg.withOpacity(0.9),
                     ],
                     begin: FractionalOffset(1, 1),
                     end: FractionalOffset(0.9, 0.5),
                     stops: [0.0, 1.0])),
             child: Column(children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
-                title: Text('Liên hệ với diaB',
+                backgroundColor: R.color.transparent,
+                title: Text(R.string.contact_diab.tr(),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark)),
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    icon: Icon(Icons.arrow_back, color: textDark),
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -54,20 +54,13 @@ class _ContactControllerState extends State<ContactController> {
                       onTap: () {
                         showDialogCall();
                       },
-                      child: Image.asset('assets/images/hotline.png')),
-                  // SizedBox(height: 16),
-                  // GestureDetector(
-                  //     onTap: () {
-                  //       Message.showToastMessage(context,
-                  //           'Tính năng này sẽ được ra mắt trong bản nâng cấp tiếp theo');
-                  //     },
-                  //     child: Image.asset('assets/images/sms.png')),
+                      child: Image.asset(R.drawable.im_hotline)),
                   SizedBox(height: 16),
                   GestureDetector(
                       onTap: () async {
                         BotToast.showLoading();
-                        final deviceInfor = await NotificationManager.instance
-                            .getDeviceInformation();
+                        final deviceInfor = await (NotificationManager.instance
+                            .getDeviceInformation() as FutureOr<Map<String, dynamic>>);
                         PackageInfo packageInfo =
                             await PackageInfo.fromPlatform();
                         BotToast.closeAllLoading();
@@ -81,7 +74,7 @@ class _ContactControllerState extends State<ContactController> {
 
                         final Uri _emailLaunchUri = Uri(
                           scheme: 'mailto',
-                          path: widget.model.email,
+                          path: widget.model!.email,
                           query:
                               'subject=Hỗ trợ diaB&body=Version app: $appVersion\nModel: $model\nVersion OS: ${systemVersion}\n',
                           // queryParameters: {
@@ -93,7 +86,7 @@ class _ContactControllerState extends State<ContactController> {
 
                         launch(_emailLaunchUri.toString());
                       },
-                      child: Image.asset('assets/images/email_support.png'))
+                      child: Image.asset(R.drawable.im_email_support))
                 ]),
               )
             ])));
@@ -112,24 +105,24 @@ class _ContactControllerState extends State<ContactController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/icon_hotline.png',
-                          width: 64, height: 64),
+                      Image.asset(R.drawable.ic_hotline, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Hotline: ${widget.model.hotline}',
+                        child: Text(
+                            R.string.hotline.tr(args: [widget.model!.hotline!]),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Bạn muốn gọi đến Hotline của diaB để được trợ giúp?',
+                            R.string.mes_call_diab.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -148,11 +141,11 @@ class _ContactControllerState extends State<ContactController> {
                                     decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(200),
-                                        color: grayBorder),
+                                        color: R.color.grayBorder),
                                     child: Center(
-                                      child: Text('Huỷ',
+                                      child: Text(R.string.cancel.tr(),
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     )),
@@ -161,26 +154,26 @@ class _ContactControllerState extends State<ContactController> {
                                 onTap: () {
                                   Navigator.pop(context);
                                   final phone =
-                                      widget.model.hotline.split(' ').join();
+                                      widget.model!.hotline!.split(' ').join();
                                   launch('tel://$phone');
                                 },
                                 child: Container(
                                   height: 48,
                                   width: 119,
                                   decoration: BoxDecoration(
-                                      color: red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                       gradient: LinearGradient(
                                           begin: Alignment.topLeft,
                                           end: Alignment.centerRight,
                                           colors: [
-                                            greenGradientTop,
-                                            greenGradientBottom
+                                            R.color.greenGradientTop,
+                                            R.color.greenGradientBottom
                                           ])),
                                   child: Center(
-                                    child: Text('Gọi',
+                                    child: Text(R.string.call.tr(),
                                         style: TextStyle(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600)),
                                   ),
@@ -195,7 +188,7 @@ class _ContactControllerState extends State<ContactController> {
                 //   top: 0,
                 //   right: 0,
                 //   child: IconButton(
-                //       icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                //       icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                 //       onPressed: () {
                 //         Navigator.pop(context);
                 //       }),

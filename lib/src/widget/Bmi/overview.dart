@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Bmi/widget/bmi_hiptrend_chart.dart';
 import 'package:medical/src/widget/Bmi/widget/bmi_scale_chart.dart';
 import 'package:medical/src/widget/Bmi/widget/bmi_trend_chart.dart';
@@ -6,7 +7,7 @@ import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class BmiOverviewController extends StatefulWidget {
-  BmiOverviewController({Key key}) : super(key: key);
+  BmiOverviewController({Key? key}) : super(key: key);
   @override
   BmiOverviewControllerState createState() => BmiOverviewControllerState();
 }
@@ -27,13 +28,13 @@ class BmiOverviewControllerState extends State<BmiOverviewController>
   reloadData(int periodFilterType) {
     _scrollController.jumpTo(0);
     if (bmiTrendChartKey.currentState != null) {
-      bmiTrendChartKey.currentState.reloadData(periodFilterType);
+      bmiTrendChartKey.currentState!.reloadData(periodFilterType);
     }
     if (bmiTrendHipChartKey.currentState != null) {
-      bmiTrendHipChartKey.currentState.reloadData(periodFilterType);
+      bmiTrendHipChartKey.currentState!.reloadData(periodFilterType);
     }
     if (bmiChartKey.currentState != null) {
-      bmiChartKey.currentState.reloadData(periodFilterType);
+      bmiChartKey.currentState!.reloadData(periodFilterType);
     }
   }
 
@@ -46,10 +47,10 @@ class BmiOverviewControllerState extends State<BmiOverviewController>
       decoration: BoxDecoration(
           gradient: LinearGradient(
               colors: [
-                Color(0xFFFDC798).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFFDC798).withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
               ],
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,

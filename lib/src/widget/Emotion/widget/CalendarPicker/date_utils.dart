@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.8
+
 
 // Common date utility functions used by the date picker implementation
 
@@ -25,7 +25,7 @@ DateTimeRange datesOnly(DateTimeRange range) {
 
 /// Returns true if the two [DateTime] objects have the same day, month, and
 /// year, or are both null.
-bool isSameDay(DateTime dateA, DateTime dateB) {
+bool isSameDay(DateTime? dateA, DateTime? dateB) {
   return dateA?.year == dateB?.year &&
       dateA?.month == dateB?.month &&
       dateA?.day == dateB?.day;
@@ -33,7 +33,7 @@ bool isSameDay(DateTime dateA, DateTime dateB) {
 
 /// Returns true if the two [DateTime] objects have the same month, and
 /// year, or are both null.
-bool isSameMonth(DateTime dateA, DateTime dateB) {
+bool isSameMonth(DateTime? dateA, DateTime? dateB) {
   return dateA?.year == dateB?.year && dateA?.month == dateB?.month;
 }
 

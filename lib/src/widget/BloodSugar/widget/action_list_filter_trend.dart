@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/res/R.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef TimeCallback = Function(String, int);
 
 class ActionListFilterTrend extends StatefulWidget {
-  final int selectedIndex;
-  final TimeCallback callback;
+  final int? selectedIndex;
+  final TimeCallback? callback;
   ActionListFilterTrend({this.selectedIndex, this.callback});
   @override
   _ActionListFilterTrendState createState() => _ActionListFilterTrendState();
@@ -13,12 +14,12 @@ class ActionListFilterTrend extends StatefulWidget {
 
 class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
   var data = [
-    'Tất cả',
-    'Trước ăn',
-    'Sau ăn',
-    'Trước tập',
-    'Sau tập',
-    'Nửa đêm'
+    R.string.all.tr(),
+    R.string.truoc_an.tr(),
+    R.string.sau_an.tr(),
+    R.string.truoc_tap.tr(),
+    R.string.sau_tap.tr(),
+    R.string.nua_dem.tr()
   ];
 
   int selectedIndex = 0;
@@ -27,7 +28,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
   void initState() {
     super.initState();
     if (widget.selectedIndex != null) {
-      selectedIndex = widget.selectedIndex - 1;
+      selectedIndex = widget.selectedIndex! - 1;
     }
   }
 
@@ -43,7 +44,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
           child: Container(
             height: 3.86,
             width: 60,
-            decoration: BoxDecoration(color: Color(0xffE5E5E5)),
+            decoration: BoxDecoration(color: R.color.color0xffE5E5E5),
           ),
         ),
         SizedBox(height: 27),
@@ -52,7 +53,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Chọn khung giờ',
+              Text(R.string.chon_khung_gio.tr(),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               GestureDetector(
                 onTap: () {
@@ -61,7 +62,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
                 child: Container(
                   height: 24,
                   width: 24,
-                  child: Image.asset('assets/images/x_icon.png'),
+                  child: Image.asset(R.drawable.ic_close),
                 ),
               ),
             ],
@@ -80,7 +81,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
         Center(
           child: GestureDetector(
             onTap: () {
-              widget.callback(data[selectedIndex], selectedIndex);
+              widget.callback!(data[selectedIndex], selectedIndex);
               Navigator.pop(context);
             },
             child: SafeArea(
@@ -92,12 +93,12 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
                       gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.centerRight,
-                          colors: [greenGradientTop, greenGradientBottom]),
+                          colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                       borderRadius: BorderRadius.circular(200)),
                   child: Center(
-                    child: Text('Lưu',
+                    child: Text(R.string.save.tr(),
                         style: TextStyle(
-                            color: Colors.white,
+                            color: R.color.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600)),
                   )),
@@ -119,7 +120,7 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
               });
             },
             child: Container(
-              color: selectedIndex == index ? greenbg : Colors.white,
+              color: selectedIndex == index ? R.color.greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(
@@ -139,9 +140,9 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: mainColor)),
+                                      color: R.color.mainColor)),
                           selectedIndex == index
-                              ? Image.asset('assets/images/check_mark.png',
+                              ? Image.asset(R.drawable.ic_check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],
@@ -155,8 +156,8 @@ class _ActionListFilterTrendState extends State<ActionListFilterTrend> {
                           height: 1,
                           width: 373,
                           color: selectedIndex == index
-                              ? greenbg
-                              : Color(0xffD6D8E0))
+                              ? R.color.greenbg
+                              : R.color.color0xffD6D8E0)
                       : SizedBox(),
                 ],
               ),

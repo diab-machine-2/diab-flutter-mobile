@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu_item.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FunkyOverlay extends StatefulWidget {
   @override
@@ -20,7 +22,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
   }
 
   onClose() async {
-    await menuKey.currentState.animationController.reverse();
+    await menuKey.currentState!.animationController.reverse();
     Navigator.pop(context);
   }
 
@@ -39,7 +41,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
     return GestureDetector(
       onTap: onClose,
       child: Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: R.color.transparent,
           body: SafeArea(
             child: CircularMenu(
               key: menuKey,
@@ -47,103 +49,103 @@ class FunkyOverlayState extends State<FunkyOverlay>
               alignment: Alignment.bottomCenter,
               startingAngleInRadian: 3.45,
               endingAngleInRadian: 6,
-              toggleButtonColor: mainColor,
+              toggleButtonColor: R.color.mainColor,
               titles: [
-                // Text('HbA1C', style: TextStyle(color: Colors.white)),
-                // Text('Huyết áp', style: TextStyle(color: Colors.white)),
-                // Text('Cảm xúc', style: TextStyle(color: Colors.white)),
-                // Text('Cân nặng', style: TextStyle(color: Colors.white)),
-                // Text('Dinh dưỡng', style: TextStyle(color: Colors.white)),
-                // Text('Vận động', style: TextStyle(color: Colors.white)),
-                // Text('Đường huyết', style: TextStyle(color: Colors.white))
+                // Text(R.string.hba1c.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.huyet_ap.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.cam_xuc.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.can_nang.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.dinh_duong.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.van_dong.tr(), style: TextStyle(color: R.color.white)),
+                // Text(R.string.duong_huyet.tr(), style: TextStyle(color: R.color.white))
               ],
               items: [
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_a1c.png',
+                    icon: Image.asset(R.drawable.ic_a1c,
                         width: 40, height: 40),
-                    title: Text('HbA1C', style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                    title: Text(R.string.hba1c.tr(), style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_hba1c',
+                      Navigator.pushNamed(context, NavigatorName.add_hba1c,
                           arguments: {'type': 'input', 'id': null});
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_huyet_ap.png',
+                    icon: Image.asset(R.drawable.ic_huyet_ap,
                         width: 40, height: 40),
                     title:
-                        Text('Huyết áp', style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                        Text(R.string.huyet_ap.tr(), style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_bloodPressure',
+                      Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
                           arguments: {'type': 'input', 'id': null});
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_cam_xuc.png',
+                    icon: Image.asset(R.drawable.ic_cam_xuc,
                         width: 40, height: 40),
                     title:
-                        Text('Cảm xúc', style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                        Text(R.string.cam_xuc.tr(), style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_emo',
+                      Navigator.pushNamed(context, NavigatorName.add_emo,
                           arguments: {'type': 'input', 'id': null});
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_can_nang.png',
+                    icon: Image.asset(R.drawable.ic_can_nang,
                         width: 40, height: 40),
                     title:
-                        Text('Cân nặng', style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                        Text(R.string.can_nang.tr(), style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_bmi',
+                      Navigator.pushNamed(context, NavigatorName.add_bmi,
                           arguments: {'type': 'input', 'id': null});
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_dinh_duong.png',
+                    icon: Image.asset(R.drawable.ic_dinh_duong,
                         width: 40, height: 40),
-                    title: Text('Dinh dưỡng',
-                        style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                    title: Text(R.string.dinh_duong.tr(),
+                        style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_food',
+                      Navigator.pushNamed(context, NavigatorName.add_food,
                           arguments: {'type': 'input', 'id': null});
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_van_dong.png',
+                    icon: Image.asset(R.drawable.ic_van_dong,
                         width: 40, height: 40),
                     title:
-                        Text('Vận động', style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                        Text(R.string.van_dong.tr(), style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      if (AppSettings.userInfo.weight == null ||
-                          AppSettings.userInfo.weight == 0) {
+                      if (AppSettings.userInfo!.weight == null ||
+                          AppSettings.userInfo!.weight == 0) {
                         showPopupWeight();
                       } else {
-                        Navigator.pushNamed(context, '/add_exercrises',
+                        Navigator.pushNamed(context, NavigatorName.add_exercrises,
                             arguments: {'type': 'input'});
                       }
                     }),
                 CircularMenuItem(
                     bottom: bottom,
-                    icon: Image.asset('assets/images/icon_duong_huyet.png',
+                    icon: Image.asset(R.drawable.ic_duong_huyet,
                         width: 40, height: 40),
-                    title: Text('Đường huyết',
-                        style: TextStyle(color: Colors.white)),
-                    color: Colors.white,
+                    title: Text(R.string.duong_huyet.tr(),
+                        style: TextStyle(color: R.color.white)),
+                    color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, '/add_bloodSugar',
+                      Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
                           arguments: {'type': 'input'});
                     }),
               ],

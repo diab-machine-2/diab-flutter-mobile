@@ -1,25 +1,22 @@
-import 'dart:convert';
 
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:loadmore/loadmore.dart';
-import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
-import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/emotion/input_emotion_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:grouped_list/grouped_list.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EmotionDetailController extends StatefulWidget {
-  EmotionDetailController({Key key}) : super(key: key);
+  EmotionDetailController({Key? key}) : super(key: key);
   @override
   EmotionDetailControllerState createState() => EmotionDetailControllerState();
 }
@@ -29,18 +26,18 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
   @override
   bool get wantKeepAlive => true;
 
-  BuildContext currentContext;
+  late BuildContext currentContext;
   ScrollController _scrollController = ScrollController();
 
   int page = 1;
-  bool hasMore = false;
+  bool? hasMore = false;
   bool isLoading = false;
   int periodFilterType = 1;
 
   @override
   void initState() {
     periodFilterType =
-        EmotionDetailTabbarController.of(context).periodFilterType;
+        EmotionDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
     initializeDateFormatting();
 
@@ -54,7 +51,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
   }
 
   Future<bool> _loadMorePage() async {
-    if (isLoading || !hasMore) {
+    if (isLoading || !hasMore!) {
       return true;
     } else {
       isLoading = true;
@@ -87,7 +84,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
         child: BlocBuilder<EmotionBloc, EmotionState>(
             builder: (BuildContext context, EmotionState state) {
           currentContext = context;
-          List<InputEmotionModel> model;
+          List<InputEmotionModel>? model;
           if (state is EmotionInitial) {
             BlocProvider.of<EmotionBloc>(context).add(FetchInputEmotion(
                 currentDateTime:
@@ -104,7 +101,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
           if (state is EmotionLoaded) {
             model = state.inputModel.inputs;
             hasMore = state.inputModel.hasMore;
-            if (hasMore) {
+            if (hasMore!) {
               page += 1;
             }
             isLoading = false;
@@ -113,19 +110,19 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
           return RefreshIndicator(
               onRefresh: _refresh,
               child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
                           image:
-                              AssetImage('assets/images/detail_Background.png'),
+                              AssetImage(R.drawable.bg_detail),
                           fit: BoxFit.cover,
                         )),
                         child: LoadMore(
                             onLoadMore: _loadMorePage,
-                            isFinish: !hasMore,
+                            isFinish: !hasMore!,
                             whenEmptyLoad: false,
                             delegate: CustomLoadMoreDelegate(),
                             textBuilder: DefaultLoadMoreTextBuilder.english,
@@ -134,21 +131,21 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                               physics: AlwaysScrollableScrollPhysics(),
                               itemCount: model.length,
                               itemBuilder: (BuildContext context, int index) {
-                                final element = model[index];
+                                final element = model![index];
                                 final previousElement =
                                     index == 0 ? null : model[index - 1];
 
                                 final showDate = previousElement == null
                                     ? true
-                                    : (convertCustomDate(element.date) !=
+                                    : (convertCustomDate(element.date!) !=
                                         convertCustomDate(
-                                            previousElement.date));
+                                            previousElement.date!));
                                 return GestureDetector(
                                     onTap: () {
                                       Navigator.pushNamed(
-                                          context, '/add_insight', arguments: {
+                                          context, NavigatorName.add_insight, arguments: {
                                         'type': 'update',
-                                        'id': model[index].id
+                                        'id': model![index].id
                                       });
                                     },
                                     child: Column(
@@ -160,7 +157,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                 padding: EdgeInsets.all(16),
                                                 child: Text(
                                                   convertCustomDate(
-                                                      model[index].date),
+                                                      model[index].date!),
                                                   textAlign: TextAlign.left,
                                                   style: TextStyle(
                                                       fontSize: 18,
@@ -176,7 +173,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                               decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(16),
-                                                  color: Colors.white),
+                                                  color: R.color.white),
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
@@ -184,7 +181,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                   Container(
                                                       height: 58,
 
-                                                      // color: Color(0xff50C087),
+                                                      // color: R.color.color0xff50C087,
                                                       child: Padding(
                                                         padding:
                                                             const EdgeInsets
@@ -201,11 +198,11 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                 Text(
                                                                   convertToUTC(
                                                                           element
-                                                                              .date,
+                                                                              .date!,
                                                                           'HH:mm') +
                                                                       ',',
                                                                   style: TextStyle(
-                                                                      color: Colors
+                                                                      color: R.color
                                                                           .black,
                                                                       fontSize:
                                                                           16,
@@ -217,9 +214,9 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                     width: 4),
                                                                 Text(
                                                                     element
-                                                                        .timeFrameText,
+                                                                        .timeFrameText!,
                                                                     style: TextStyle(
-                                                                        color: Colors
+                                                                        color: R.color
                                                                             .black,
                                                                         fontSize:
                                                                             16,
@@ -258,9 +255,9 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                            'Triệu chứng',
+                                                            R.string.trieu_chung.tr(),
                                                             style: TextStyle(
-                                                                color: Colors
+                                                                color: R.color
                                                                     .black,
                                                                 fontSize: 14,
                                                                 fontWeight:
@@ -309,7 +306,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                   title: item.name ??
                                                                       '',
                                                                   activeColor:
-                                                                      Colors
+                                                                      R.color
                                                                           .white,
                                                                   textOverflow:
                                                                       TextOverflow
@@ -321,7 +318,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                       ItemTagsCombine
                                                                           .withTextAfter,
                                                                   textActiveColor:
-                                                                      textDark,
+                                                                      R.color.textDark,
                                                                   textStyle:
                                                                       TextStyle(
                                                                           fontSize:
@@ -335,7 +332,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                           model[index].otherSymptom ==
                                                                       null ||
                                                                   model[index]
-                                                                      .otherSymptom
+                                                                      .otherSymptom!
                                                                       .isEmpty
                                                               ? SizedBox()
                                                               : Padding(
@@ -353,9 +350,9 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                             .spaceBetween,
                                                                     children: [
                                                                       Text(
-                                                                        'Triệu chứng khác:',
+                                                                        '${R.string.trieu_chung_khac.tr()}:',
                                                                         style: TextStyle(
-                                                                            color: Colors
+                                                                            color: R.color
                                                                                 .black,
                                                                             fontSize:
                                                                                 14,
@@ -370,9 +367,9 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                         child:
                                                                             Text(
                                                                           model[index]
-                                                                              .otherSymptom,
+                                                                              .otherSymptom!,
                                                                           style: TextStyle(
-                                                                              color: Colors.black,
+                                                                              color: R.color.black,
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w400),
                                                                         ),
@@ -385,8 +382,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                           ),
                                                           Container(
                                                               height: 1,
-                                                              color: Color(
-                                                                  0xffE5E5E5)),
+                                                              color: R.color.color0xffE5E5E5),
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
@@ -394,9 +390,9 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                     top: 16,
                                                                     bottom: 8),
                                                             child: Text(
-                                                              'Hoạt động',
+                                                              R.string.hoat_dong.tr(),
                                                               style: TextStyle(
-                                                                  color: Colors
+                                                                  color: R.color
                                                                       .black,
                                                                   fontSize: 14,
                                                                   fontWeight:
@@ -443,7 +439,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                   title: item.name ??
                                                                       '',
                                                                   activeColor:
-                                                                      Colors
+                                                                      R.color
                                                                           .white,
                                                                   textOverflow:
                                                                       TextOverflow
@@ -455,7 +451,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                       ItemTagsCombine
                                                                           .withTextAfter,
                                                                   textActiveColor:
-                                                                      textDark,
+                                                                      R.color.textDark,
                                                                   textStyle:
                                                                       TextStyle(
                                                                           fontSize:
@@ -469,7 +465,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                           model[index].otherActivity ==
                                                                       null ||
                                                                   model[index]
-                                                                      .otherActivity
+                                                                      .otherActivity!
                                                                       .isEmpty
                                                               ? SizedBox()
                                                               : Padding(
@@ -487,9 +483,9 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                             .start,
                                                                     children: [
                                                                       Text(
-                                                                        'Hoạt động khác:',
+                                                                        '${R.string.hoat_dong_khac.tr()}:',
                                                                         style: TextStyle(
-                                                                            color: Colors
+                                                                            color: R.color
                                                                                 .black,
                                                                             fontSize:
                                                                                 14,
@@ -504,9 +500,9 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                         child:
                                                                             Text(
                                                                           model[index]
-                                                                              .otherActivity,
+                                                                              .otherActivity!,
                                                                           style: TextStyle(
-                                                                              color: Colors.black,
+                                                                              color: R.color.black,
                                                                               fontSize: 14,
                                                                               fontWeight: FontWeight.w400),
                                                                         ),

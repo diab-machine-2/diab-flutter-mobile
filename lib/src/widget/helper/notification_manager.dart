@@ -9,6 +9,7 @@ import 'package:medical/main.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 class NotificationManager {
@@ -39,8 +40,8 @@ class NotificationManager {
   static Future<dynamic> myBackgroundMessageHandler(
       RemoteMessage message) async {
     final model = NotificationModel(
-        title: message.notification.title,
-        body: message.notification.body ?? '',
+        title: message.notification!.title,
+        body: message.notification!.body ?? '',
         data: NotificationData.fromJson(message.data));
     DartNotificationCenter.post(channel: 'reload_notification');
     NotificationManager.instance.navigateNotification(model);
@@ -50,21 +51,21 @@ class NotificationManager {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print(message);
       final model = NotificationModel(
-          title: message.notification.title,
-          body: message.notification.body ?? '',
+          title: message.notification!.title,
+          body: message.notification!.body ?? '',
           data: NotificationData.fromJson(message.data));
       DartNotificationCenter.post(channel: 'reload_notification');
       Message.showNotificationMessage(
           model: model,
           callback: (model) {
-            navigateNotification(model);
+            navigateNotification(model!);
           });
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       final model = NotificationModel(
-          title: message.notification.title,
-          body: message.notification.body ?? '',
+          title: message.notification!.title,
+          body: message.notification!.body ?? '',
           data: NotificationData.fromJson(message.data));
       DartNotificationCenter.post(channel: 'reload_notification');
       navigateNotification(model);
@@ -86,25 +87,25 @@ class NotificationManager {
 
   navigateNotification(NotificationModel model) {
     NotificationClient().readNotification(
-        model.id == null ? model.data.communicationId : model.id,
-        AppSettings.userInfo.id,
-        model.data.notificationType,
+        model.id == null ? model.data!.communicationId : model.id,
+        AppSettings.userInfo!.id,
+        model.data!.notificationType,
         true);
-    if (model.data.notificationType == 1) {
+    if (model.data!.notificationType == 1) {
       Navigator.pushNamed(
-          navigatorKey.currentState.context, '/notification_detail',
-          arguments: {'id': model.data.communicationId});
-    } else if (model.data.notificationType == 2) {
-      Navigator.pushNamed(navigatorKey.currentState.context, '/add_reminder',
-          arguments: {'type': 'update', 'id': model.data.remindId});
-    } else if (model.data.notificationType == 3) {
-      Navigator.pushNamed(navigatorKey.currentState.context, '/add_bloodSugar',
+          navigatorKey.currentState!.context, NavigatorName.notification_detail,
+          arguments: {'id': model.data!.communicationId});
+    } else if (model.data!.notificationType == 2) {
+      Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_reminder,
+          arguments: {'type': 'update', 'id': model.data!.remindId});
+    } else if (model.data!.notificationType == 3) {
+      Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
           arguments: {'type': 'input', 'id': null});
     }
   }
 
-  Future<Map<String, dynamic>> getDeviceInformation() async {
-    Map<String, dynamic> deviceInformation;
+  Future<Map<String, dynamic>?> getDeviceInformation() async {
+    Map<String, dynamic>? deviceInformation;
     DeviceInfoPlugin infor = DeviceInfoPlugin();
     try {
       if (Platform.isIOS) {

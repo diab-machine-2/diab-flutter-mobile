@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 class NotificationDataModel {
   final List<NotificationModel> models;
-  final bool hasMore;
+  final bool? hasMore;
 
-  NotificationDataModel({@required this.models, @required this.hasMore});
+  NotificationDataModel({required this.models, required this.hasMore});
 }

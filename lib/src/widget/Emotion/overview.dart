@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_activity_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_symptom_chart.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_distribution_chart.dart';
@@ -6,7 +7,7 @@ import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class EmotionOverviewController extends StatefulWidget {
-  EmotionOverviewController({Key key}) : super(key: key);
+  EmotionOverviewController({Key? key}) : super(key: key);
   @override
   EmotionOverviewControllerState createState() =>
       EmotionOverviewControllerState();
@@ -28,13 +29,13 @@ class EmotionOverviewControllerState extends State<EmotionOverviewController>
   reloadData(int periodFilterType) {
     scrollController.jumpTo(0);
     if (emotionChartKey.currentState != null) {
-      emotionChartKey.currentState.reloadData(periodFilterType);
+      emotionChartKey.currentState!.reloadData(periodFilterType);
     }
     if (symptomChartKey.currentState != null) {
-      symptomChartKey.currentState.reloadData(periodFilterType);
+      symptomChartKey.currentState!.reloadData(periodFilterType);
     }
     if (activityChartKey.currentState != null) {
-      activityChartKey.currentState.reloadData(periodFilterType);
+      activityChartKey.currentState!.reloadData(periodFilterType);
     }
   }
 
@@ -47,10 +48,10 @@ class EmotionOverviewControllerState extends State<EmotionOverviewController>
       decoration: BoxDecoration(
           gradient: LinearGradient(
               colors: [
-                Color(0xFFFDC798).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFFDC798).withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
               ],
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,

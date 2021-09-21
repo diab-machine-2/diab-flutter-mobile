@@ -1,17 +1,18 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
-import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FoodDistributionChart extends StatefulWidget {
-  FoodDistributionChart({Key key}) : super(key: key);
+  FoodDistributionChart({Key? key}) : super(key: key);
   @override
   FoodDistributionChartState createState() => FoodDistributionChartState();
 }
@@ -20,14 +21,14 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
     with AutomaticKeepAliveClientMixin<FoodDistributionChart> {
   @override
   bool get wantKeepAlive => true;
-  BuildContext currentContext;
+  late BuildContext currentContext;
   int periodFilterType = 1;
   bool isEnergyTab = true;
-  int touchIndex;
+  int? touchIndex;
 
   @override
   void initState() {
-    periodFilterType = FoodDetailTabbarController.of(context).periodFilterType;
+    periodFilterType = FoodDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -54,7 +55,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
         child: BlocBuilder<FoodBloc, FoodState>(
             builder: (BuildContext context, FoodState state) {
           currentContext = context;
-          FoodDistributeModel model;
+          FoodDistributeModel? model;
           double total = 0;
           if (state is FoodInitial) {
             BlocProvider.of<FoodBloc>(context).add(FetchStatisticDistribute(
@@ -69,9 +70,9 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
 
           if (state is FoodStatisticDistributeLoaded) {
             model = state.model;
-            final data = isEnergyTab ? model.energyChart : model.carbChart;
+            final data = isEnergyTab ? model!.energyChart : model!.carbChart;
             data.forEach((element) {
-              total += element.percentValue;
+              total += element.percentValue!;
             });
           }
           return model == null
@@ -84,34 +85,34 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Năng lượng phân bổ',
+                      Text(R.string.nang_luong_phan_bo.tr(),
                           style: TextStyle(
-                              color: Colors.black,
+                              color: R.color.black,
                               fontSize: 20,
                               fontWeight: FontWeight.w600)),
                       SizedBox(height: 16),
                       total == 0
                           ? GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, '/add_food',
+                                Navigator.pushNamed(context, NavigatorName.add_food,
                                     arguments: {'type': 'input', 'id': null});
                               },
                               child: Image.asset(
-                                'assets/images/food_empty.png',
+                                R.drawable.im_food_empty,
                               ),
                             )
                           : Container(
                               decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
+                                      color: R.color.grey.withOpacity(0.5),
                                       spreadRadius: 1,
                                       blurRadius: 4,
                                       offset: Offset(0, 2),
                                     ),
                                   ],
                                   borderRadius: BorderRadius.circular(14),
-                                  color: Colors.white),
+                                  color: R.color.white),
                               child: Column(
                                 children: [
                                   SizedBox(
@@ -134,22 +135,22 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                   left: 18, right: 18),
                                               decoration: BoxDecoration(
                                                   color: isEnergyTab
-                                                      ? Color(0xff01645A)
-                                                      : Colors.transparent,
+                                                      ? R.color.mainColor
+                                                      : R.color.transparent,
                                                   border: Border.all(
                                                       color: isEnergyTab
-                                                          ? Color(0xff01645A)
-                                                          : Color(0xff666666),
+                                                          ? R.color.mainColor
+                                                          : R.color.primaryGreyColor,
                                                       width: 0.5),
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           16)),
                                               child: Center(
-                                                child: Text('Năng lượng',
+                                                child: Text(R.string.nang_luong.tr(),
                                                     style: TextStyle(
                                                         color: isEnergyTab
-                                                            ? Colors.white
-                                                            : Color(0xff666666),
+                                                            ? R.color.white
+                                                            : R.color.primaryGreyColor,
                                                         fontSize: 14,
                                                         fontWeight: isEnergyTab
                                                             ? FontWeight.w700
@@ -168,22 +169,22 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                               width: 135,
                                               decoration: BoxDecoration(
                                                   color: isEnergyTab
-                                                      ? Colors.transparent
-                                                      : Color(0xff01645A),
+                                                      ? R.color.transparent
+                                                      : R.color.mainColor,
                                                   border: Border.all(
                                                       color: isEnergyTab
-                                                          ? Color(0xff666666)
-                                                          : Colors.white,
+                                                          ? R.color.primaryGreyColor
+                                                          : R.color.white,
                                                       width: 0.5),
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           16)),
                                               child: Center(
-                                                child: Text('Chất bột đường',
+                                                child: Text(R.string.chat_bot_duong.tr(),
                                                     style: TextStyle(
                                                         color: isEnergyTab
-                                                            ? Color(0xff666666)
-                                                            : Colors.white,
+                                                            ? R.color.primaryGreyColor
+                                                            : R.color.white,
                                                         fontSize: 14,
                                                         fontWeight: isEnergyTab
                                                             ? FontWeight.w400
@@ -212,8 +213,8 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                             .length, (i) {
                                                   final double radius = 35;
                                                   final item = isEnergyTab
-                                                      ? model.energyChart[i]
-                                                      : model.carbChart[i];
+                                                      ? model!.energyChart[i]
+                                                      : model!.carbChart[i];
                                                   return PieChartSectionData(
                                                     color:
                                                         toColor(item.colorCode),
@@ -233,10 +234,10 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                             padding: const EdgeInsets.only(
                                                 top: 2.0, bottom: 8),
                                             child: Text(
-                                              'Chú thích',
+                                              R.string.chu_thich.tr(),
                                               style: TextStyle(
                                                   fontSize: 14,
-                                                  color: textDark),
+                                                  color: R.color.textDark),
                                             ),
                                           ),
                                           Column(
@@ -250,8 +251,8 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                       : model.carbChart.length,
                                                   (i) {
                                                 final item = isEnergyTab
-                                                    ? model.energyChart[i]
-                                                    : model.carbChart[i];
+                                                    ? model!.energyChart[i]
+                                                    : model!.carbChart[i];
                                                 return Padding(
                                                   padding: EdgeInsets.only(
                                                       bottom: 4),
@@ -259,10 +260,10 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                     color:
                                                         toColor(item.colorCode),
                                                     number: roundNumber(
-                                                            item.percentValue) +
+                                                            item.percentValue!) +
                                                         '%',
                                                     text: item.text,
-                                                    textColor: Colors.white,
+                                                    textColor: R.color.white,
                                                     isSquare: true,
                                                   ),
                                                 );

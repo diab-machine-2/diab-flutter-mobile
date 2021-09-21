@@ -1,34 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class CircularMenuItem extends StatelessWidget {
   /// if icon and animatedIcon are passed, icon will be ignored
-  final IconData icon;
-  final Color color;
-  final Color iconColor;
+  final IconData? icon;
+  final Color? color;
+  final Color? iconColor;
   final VoidCallback onTap;
   final double iconSize;
   final double padding;
   final double margin;
-  final List<BoxShadow> boxShadow;
+  final List<BoxShadow>? boxShadow;
   final bool enableBadge;
-  final double badgeRightOffet;
-  final double badgeLeftOffet;
-  final double badgeTopOffet;
-  final double badgeBottomOffet;
-  final double badgeRadius;
-  final TextStyle badgeTextStyle;
-  final String badgeLabel;
-  final Color badgeTextColor;
-  final Color badgeColor;
+  final double? badgeRightOffet;
+  final double? badgeLeftOffet;
+  final double? badgeTopOffet;
+  final double? badgeBottomOffet;
+  final double? badgeRadius;
+  final TextStyle? badgeTextStyle;
+  final String? badgeLabel;
+  final Color? badgeTextColor;
+  final Color? badgeColor;
 
   /// if animatedIcon and icon are passed, icon will be ignored
-  final AnimatedIcon animatedIcon;
+  final AnimatedIcon? animatedIcon;
 
   /// creates a menu item .
   /// [onTap] must not be null.
   /// [padding] and [margin]  must be equal or greater than zero.
   CircularMenuItem({
-    @required this.onTap,
+    required this.onTap,
     this.icon,
     this.color,
     this.iconSize = 30,
@@ -55,7 +56,7 @@ class CircularMenuItem extends StatelessWidget {
     return Container(
       margin: EdgeInsets.all(margin),
       decoration: BoxDecoration(
-        color: Colors.transparent,
+        color: R.color.transparent,
         boxShadow: boxShadow ??
             [
               BoxShadow(
@@ -75,7 +76,7 @@ class CircularMenuItem extends StatelessWidget {
                   ? Icon(
                       icon,
                       size: iconSize,
-                      color: iconColor ?? Colors.white,
+                      color: iconColor ?? R.color.white,
                     )
                   : animatedIcon,
             ),
@@ -112,9 +113,9 @@ class CircularMenuItem extends StatelessWidget {
 
 class _Badge extends StatelessWidget {
   const _Badge({
-    Key key,
-    @required this.child,
-    @required this.label,
+    Key? key,
+    required this.child,
+    required this.label,
     this.color,
     this.textColor,
     this.onTap,
@@ -127,16 +128,16 @@ class _Badge extends StatelessWidget {
   }) : super(key: key);
 
   final Widget child;
-  final String label;
-  final Color color;
-  final Color textColor;
-  final Function onTap;
-  final double rightOffset;
-  final double leftOffset;
-  final double topOffset;
-  final double bottomOffset;
-  final double radius;
-  final TextStyle textStyle;
+  final String? label;
+  final Color? color;
+  final Color? textColor;
+  final Function? onTap;
+  final double? rightOffset;
+  final double? leftOffset;
+  final double? topOffset;
+  final double? bottomOffset;
+  final double? radius;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +153,7 @@ class _Badge extends StatelessWidget {
           bottom: bottomOffset,
           child: FittedBox(
             child: GestureDetector(
-              onTap: onTap ?? () {},
+              onTap: onTap as void Function()? ?? () {},
               child: CircleAvatar(
                 maxRadius: radius ?? 10,
                 minRadius: radius ?? 10,

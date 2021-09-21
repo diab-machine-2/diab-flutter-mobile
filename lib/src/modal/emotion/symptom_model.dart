@@ -2,14 +2,14 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 class SymptomModel {
-  final String id;
-  final String name;
+  final String? id;
+  final String? name;
   final ImagesModel icon;
 
   SymptomModel({
-    @required this.id,
-    @required this.name,
-    @required this.icon,
+    required this.id,
+    required this.name,
+    required this.icon,
   });
   @override
   factory SymptomModel.fromJson(Map<String, dynamic> json) {

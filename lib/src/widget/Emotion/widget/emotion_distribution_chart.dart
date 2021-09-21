@@ -1,15 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 class EmotionDistributionChart extends StatefulWidget {
-  EmotionDistributionChart({Key key}) : super(key: key);
+  EmotionDistributionChart({Key? key}) : super(key: key);
   @override
   EmotionDistributionChartState createState() =>
       EmotionDistributionChartState();
@@ -20,12 +21,12 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
   @override
   bool get wantKeepAlive => true;
   int periodFilterType = 1;
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   @override
   void initState() {
     periodFilterType =
-        EmotionDetailTabbarController.of(context).periodFilterType;
+        EmotionDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -56,7 +57,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
         child: BlocBuilder<EmotionBloc, EmotionState>(
             builder: (BuildContext context, EmotionState state) {
           currentContext = context;
-          EmotionStatisticModel model;
+          EmotionStatisticModel? model;
           int count = 0;
 
           if (state is EmotionInitial) {
@@ -73,7 +74,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
           if (state is EmotionStatisticLoaded) {
             model = state.model;
             model.emotions.forEach((element) {
-              count += element.count;
+              count += element.count!;
             });
           }
           return model == null
@@ -83,7 +84,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
               : Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                    image: AssetImage('assets/images/bg_emotion_1.png'),
+                    image: AssetImage(R.drawable.bg_emotion_1),
                     fit: BoxFit.cover,
                   )),
                   child: Padding(
@@ -96,9 +97,9 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                               Padding(
                                 padding: EdgeInsets.only(left: 16),
                                 child: Text(
-                                    'Cảm xúc của bạn ${periodFilterType == 1 ? '7' : periodFilterType == 2 ? '14' : periodFilterType == 3 ? '30' : '90'} ngày qua',
+                                    '${R.string.cam_xuc_cua_ban.tr()} ${periodFilterType == 1 ? '7' : periodFilterType == 2 ? '14' : periodFilterType == 3 ? '30' : '90'} ${R.string.ngay_qua.tr()}',
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -106,18 +107,18 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                         count == 0
                             ? GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/add_emo',
+                                  Navigator.pushNamed(context, NavigatorName.add_emo,
                                       arguments: {'type': 'input'});
                                 },
                                 child: Padding(
                                   padding: EdgeInsets.only(
                                       top: 16, left: 16, right: 16),
                                   child: Image.asset(
-                                      'assets/images/icon_emotion_empty.png'),
+                                      R.drawable.im_emotion_empty),
                                 ),
                               )
                             : Column(children: [
-                                model.note == null || model.note.isEmpty
+                                model.note == null || model.note!.isEmpty
                                     ? SizedBox(height: 16)
                                     : Padding(
                                         padding:
@@ -134,7 +135,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                                         const EdgeInsets.only(
                                                             bottom: 12.0),
                                                     child: Image.network(
-                                                      model.noteIcon.url ?? '',
+                                                      model.noteIcon!.url ?? '',
                                                       width: 20,
                                                       height: 20,
                                                     ),
@@ -143,9 +144,9 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                                     width: 4,
                                                   ),
                                                   Expanded(
-                                                    child: Text(model.note,
+                                                    child: Text(model.note!,
                                                         style: TextStyle(
-                                                            color: Colors.black,
+                                                            color: R.color.black,
                                                             fontSize: 14,
                                                             fontWeight:
                                                                 FontWeight
@@ -161,7 +162,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                               padding: const EdgeInsets.only(
                                                   top: 10.0),
                                               child: Image.network(
-                                                model.noteImage.url ?? '',
+                                                model.noteImage!.url ?? '',
                                                 width: 130,
                                                 height: 100,
                                               ),
@@ -191,12 +192,12 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
     return Container(
       decoration: BoxDecoration(boxShadow: [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.5),
+          color: R.color.grey.withOpacity(0.5),
           spreadRadius: 1,
           blurRadius: 4,
           offset: Offset(0, 2),
         ),
-      ], borderRadius: BorderRadius.circular(14), color: Colors.white),
+      ], borderRadius: BorderRadius.circular(14), color: R.color.white),
       padding: EdgeInsets.all(16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,7 +218,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                       final double radius = 20;
                       return PieChartSectionData(
                         color: toColor(model.emotions[i].colorCode),
-                        value: model.emotions[i].count /
+                        value: model.emotions[i].count! /
                             model.emotions.length *
                             100,
                         showTitle: false,
@@ -232,8 +233,8 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Chú thích:',
-                style: TextStyle(fontSize: 14, color: textDark),
+                '${R.string.chu_thich.tr()}:',
+                style: TextStyle(fontSize: 14, color: R.color.textDark),
               ),
               SizedBox(height: 8),
               Row(
@@ -245,7 +246,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                         model.emotions.length,
                         (index) => GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, '/emotionTable',
+                                Navigator.pushNamed(context, NavigatorName.emotion_table,
                                     arguments: {
                                       'title': model.emotions[index].text,
                                       'emotionId': model.emotions[index].id,
@@ -254,7 +255,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                               },
                               child: Container(
                                 height: 40,
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -266,9 +267,9 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                     SizedBox(
                                       width: 8,
                                     ),
-                                    Text(model.emotions[index].text,
+                                    Text(model.emotions[index].text!,
                                         style: TextStyle(
-                                            fontSize: 14, color: textDark))
+                                            fontSize: 14, color: R.color.textDark))
                                   ],
                                 ),
                               ),
@@ -282,7 +283,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                         model.emotions.length,
                         (index) => GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, '/emotionTable',
+                                Navigator.pushNamed(context, NavigatorName.emotion_table,
                                     arguments: {
                                       'title': model.emotions[index].text,
                                       'emotionId': model.emotions[index].id,
@@ -291,7 +292,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                               },
                               child: Container(
                                   height: 40,
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Center(
                                     child: Text(
                                         model.emotions[index].count.toString(),

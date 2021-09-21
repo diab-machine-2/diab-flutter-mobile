@@ -1,23 +1,23 @@
+import 'dart:math' as math;
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'dart:math' as math;
-
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Food/widget/add_target_food.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EnergyChart extends StatefulWidget {
-  EnergyChart({Key key}) : super(key: key);
+  EnergyChart({Key? key}) : super(key: key);
   @override
   EnergyChartState createState() => EnergyChartState();
 }
@@ -26,14 +26,14 @@ class EnergyChartState extends State<EnergyChart>
     with AutomaticKeepAliveClientMixin<EnergyChart> {
   @override
   bool get wantKeepAlive => true;
-  BuildContext currentContext;
+  late BuildContext currentContext;
   int periodFilterType = 1;
 
-  int touchIndex;
+  int? touchIndex;
 
   @override
   void initState() {
-    periodFilterType = FoodDetailTabbarController.of(context).periodFilterType;
+    periodFilterType = FoodDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -62,7 +62,7 @@ class EnergyChartState extends State<EnergyChart>
         child: BlocBuilder<FoodBloc, FoodState>(
             builder: (BuildContext context, FoodState state) {
           currentContext = context;
-          FoodCaloModel model;
+          FoodCaloModel? model;
           if (state is FoodInitial) {
             BlocProvider.of<FoodBloc>(context).add(FetchStatisticCalo());
           }
@@ -95,8 +95,8 @@ class EnergyChartState extends State<EnergyChart>
                                   child: CustomPaint(
                                       painter: GradientArcPainter(
                                     progress: 1,
-                                    startColor: Colors.white,
-                                    endColor: Colors.white,
+                                    startColor: R.color.white,
+                                    endColor: R.color.white,
                                     width: 56.0,
                                   ))),
                               SizedBox(
@@ -106,7 +106,7 @@ class EnergyChartState extends State<EnergyChart>
                                       painter: GradientArcPainter(
                                     progress: model.goal == null
                                         ? 0
-                                        : model.total / model.goal,
+                                        : model.total! / model.goal!,
                                     startColor: toColor(model.colorCode)
                                         .withOpacity(0.3),
                                     endColor: toColor(model.colorCode),
@@ -125,43 +125,43 @@ class EnergyChartState extends State<EnergyChart>
                               color: toColor(model.colorCode)),
                         ),
                       ),
-                      Image.asset('assets/images/apple_orange.png'),
+                      Image.asset(R.drawable.bg_apple_orange),
                       Padding(
                         padding: EdgeInsets.only(top: 16, left: 16, right: 16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Năng lượng',
+                            Text(R.string.nang_luong.tr(),
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700)),
                             GestureDetector(
                               onTap: () {
                                 showDialog(
                                   barrierColor:
-                                      Color(0xff003F38).withOpacity(0.5),
+                                      R.color.color0xff003F38.withOpacity(0.5),
                                   context: context,
                                   builder: (_) => AddTargetFood(
-                                      goal: model.goal.round(),
+                                      goal: model!.goal!.round(),
                                       callback: (number) {
                                         updateGoal(number);
                                       }),
                                 );
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Row(
                                   children: [
                                     Image.asset(
-                                      'assets/images/circle_plus_exe.png',
+                                      R.drawable.ic_circle_plus_exe,
                                       width: 24,
                                       height: 24,
                                     ),
                                     SizedBox(width: 4),
-                                    Text('Mục tiêu mới',
+                                    Text(R.string.muc_tieu_moi.tr(),
                                         style: TextStyle(
-                                            color: mainColor,
+                                            color: R.color.mainColor,
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700)),
                                   ],
@@ -187,13 +187,13 @@ class EnergyChartState extends State<EnergyChart>
                                     model.mealDetails.length,
                                     (index) => Row(children: [
                                           Image.network(
-                                              model.mealDetails[index].icon
+                                              model!.mealDetails[index].icon
                                                       .url ??
                                                   '',
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 4),
-                                          Text(model.mealDetails[index].text),
+                                          Text(model.mealDetails[index].text!),
                                         ])),
                               ),
                               SizedBox(width: 20),
@@ -206,12 +206,12 @@ class EnergyChartState extends State<EnergyChart>
                                     (index) => SizedBox(
                                           height: 24,
                                           child: Text(
-                                              model.mealDetails[index].value
+                                              model!.mealDetails[index].value!
                                                   .round()
                                                   .toString(),
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
-                                                  color: Colors.black,
+                                                  color: R.color.black,
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 18)),
                                         )),
@@ -232,13 +232,13 @@ class EnergyChartState extends State<EnergyChart>
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Image.asset('assets/images/icon_bat.png',
+                                  Image.asset(R.drawable.ic_bat,
                                       width: 24, height: 24),
                                   SizedBox(width: 4),
                                   Text(formatNumber(model.total),
                                       style: TextStyle(
                                           fontFamily: 'Viga',
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 30,
                                           fontWeight: FontWeight.w400)),
                                 ],
@@ -246,9 +246,9 @@ class EnergyChartState extends State<EnergyChart>
                               SizedBox(height: 4),
                               Text(
                                   model.goal == null
-                                      ? '0 kcal'
-                                      : '/${formatNumber(model.goal)} kcal',
-                                  style: TextStyle(color: Color(0xff666666)))
+                                      ? '0 ${R.string.kcal.tr()}'
+                                      : '/${formatNumber(model.goal)} ${R.string.kcal.tr()}',
+                                  style: TextStyle(color: R.color.primaryGreyColor))
                             ],
                           ),
                         ),
@@ -259,11 +259,11 @@ class EnergyChartState extends State<EnergyChart>
                         right: 16,
                         child: Row(
                           children: [
-                            Image.network(model.image.url ?? '',
+                            Image.network(model.image!.url ?? '',
                                 width: 65, height: 110),
                             SizedBox(width: 25),
                             Expanded(
-                              child: Text(model.note),
+                              child: Text(model.note!),
                             )
                           ],
                         ),
@@ -295,10 +295,10 @@ class EnergyChartState extends State<EnergyChart>
 
 class GradientArcPainter extends CustomPainter {
   const GradientArcPainter({
-    @required this.progress,
-    @required this.startColor,
-    @required this.endColor,
-    @required this.width,
+    required this.progress,
+    required this.startColor,
+    required this.endColor,
+    required this.width,
   })  : assert(progress != null),
         assert(startColor != null),
         assert(endColor != null),

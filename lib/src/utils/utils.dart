@@ -2,20 +2,19 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:flutter/services.dart' show rootBundle;
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:path/path.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import 'const.dart';
 import 'logger.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class Utils {
   static Future<bool> checkConnection() async {
@@ -46,7 +45,7 @@ class Utils {
   }
 
   static void onWidgetDidBuild(Function callback) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       callback();
     });
   }
@@ -78,7 +77,7 @@ class Utils {
     }
   }
 
-  static bool isEmpty(Object text) {
+  static bool isEmpty(Object? text) {
     if (text is String) return text.isEmpty;
     if (text is List) return text.isEmpty;
     return text == null;
@@ -98,9 +97,9 @@ class Utils {
       return Color(int.parse('0xff' + color.substring(1)));
   }
 
-  static String parseDateToString(DateTime dateTime, String format) {
+  static String parseDateToString(DateTime? dateTime, String format) {
     String date = "";
-    if (dateTime = null)
+    if (dateTime != null)
       try {
         date = DateFormat(format).format(dateTime);
       } on FormatException catch (e) {
@@ -109,10 +108,10 @@ class Utils {
     return date;
   }
 
-  static String parseStringDateToString(
-      String dateSv, String fromFormat, String toFormat) {
-    String date = dateSv;
-    if (dateSv = null)
+  static String? parseStringDateToString(
+      String? dateSv, String fromFormat, String toFormat) {
+    String? date = dateSv;
+    if (dateSv != null)
       try {
         date = DateFormat(toFormat, "en_US")
             .format(DateFormat(fromFormat).parse(dateSv));
@@ -123,19 +122,19 @@ class Utils {
   }
 
   static Future showDialogTextTwoButton(
-      {BuildContext context,
-      String title,
-      String contentText,
-      String submitText,
-      VoidCallback submitCallback,
+      {required BuildContext context,
+      String? title,
+      String? contentText,
+      String? submitText,
+      VoidCallback? submitCallback,
       bool dismissible: false}) {
     return showDialog(
         barrierDismissible: dismissible,
         context: context,
         builder: (context) {
           return AlertDialog(
-              title: isEmpty(title) ? Text(title) : null,
-              content: Text(contentText),
+              title: isEmpty(title) ? Text(title!) : null,
+              content: Text(contentText!),
               actions: [
                 FlatButton(
                   onPressed: () => popDialog(context),
@@ -146,9 +145,9 @@ class Utils {
                   child: FlatButton(
                     onPressed: () {
                       popDialog(context);
-                      submitCallback();
+                      submitCallback!();
                     },
-                    child: Text(submitText),
+                    child: Text(submitText!),
                   ),
                 )
               ]);
@@ -156,18 +155,18 @@ class Utils {
   }
 
   static Future showDialogTwoButton(
-      {BuildContext context,
-      String title,
-      Widget contentWidget,
-      String submitText,
-      VoidCallback submitCallback,
+      {required BuildContext context,
+      String? title,
+      Widget? contentWidget,
+      String? submitText,
+      VoidCallback? submitCallback,
       bool dismissible: false}) {
     return showDialog(
         barrierDismissible: dismissible,
         context: context,
         builder: (context) {
           return AlertDialog(
-              title: title == null ? Text(title) : null,
+              title: title == null ? Text(title!) : null,
               content: contentWidget,
               actions: [
                 // FlatButton(
@@ -179,9 +178,9 @@ class Utils {
                   child: FlatButton(
                     onPressed: () {
                       popDialog(context);
-                      submitCallback();
+                      submitCallback!();
                     },
-                    child: Text(submitText),
+                    child: Text(submitText!),
                   ),
                 )
               ]);
@@ -189,16 +188,16 @@ class Utils {
   }
 
   static void showDialogTwoButtonAfterLayout(
-      {BuildContext context,
-      String title,
-      Widget contentWidget,
-      List<Widget> actions}) async {
+      {BuildContext? context,
+      String? title,
+      Widget? contentWidget,
+      List<Widget>? actions}) async {
     onWidgetDidBuild(() => showDialog(
         barrierDismissible: false,
-        context: context,
+        context: context!,
         builder: (context) {
           return AlertDialog(
-              title: title == null ? Text(title) : null,
+              title: title == null ? Text(title!) : null,
               content: contentWidget,
               actions: actions);
         }));
@@ -257,12 +256,12 @@ class Utils {
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
         targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
         .buffer
         .asUint8List();
   }
 
-  static int convertPriceToNumber(String price) {
+  static int? convertPriceToNumber(String price) {
     if (price == null) return null;
     String newPrice = price
         .replaceAll(" ", "")
@@ -278,7 +277,7 @@ class Utils {
     }
   }
 
-  static String formatMoney(dynamic amount) {
+  static String? formatMoney(dynamic amount) {
     if (amount == null) {
       return null;
     }
@@ -347,17 +346,16 @@ class Utils {
   }
 
   static String base64Image(File file) {
-    if (file == null) return null;
     List<int> imageBytes = file.readAsBytesSync();
     return base64Encode(imageBytes);
   }
 
-  static String getImageUrl(String path, {String host}) {
+  static String? getImageUrl(String path, {String? host}) {
     if (isEmpty(path)) return null;
     return (host ?? Const.HOST_URL) + path;
   }
 
-  static Future<Map<String, dynamic>> parseJson(String fileName) async {
+  static Future<Map<String, dynamic>?> parseJson(String fileName) async {
     return jsonDecode(await rootBundle.loadString("assets/$fileName"));
   }
 

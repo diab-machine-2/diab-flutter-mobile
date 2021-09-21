@@ -1,16 +1,16 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
-import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
-import 'package:medical/src/widget/tabbar/guidline_panel.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeHeader extends StatefulWidget {
   @override
@@ -20,8 +20,8 @@ class HomeHeader extends StatefulWidget {
 class _HomeHeaderState extends State<HomeHeader> {
   bool isChoose = false;
 
-  int notificationCount = 0;
-  MotivationModel motivation;
+  int? notificationCount = 0;
+  MotivationModel? motivation;
 
   @override
   void initState() {
@@ -81,7 +81,7 @@ class _HomeHeaderState extends State<HomeHeader> {
 
   @override
   Widget build(BuildContext context) {
-    final user = AppSettings.userInfo;
+    final user = AppSettings.userInfo!;
     return SafeArea(
         bottom: false,
         child: Container(
@@ -94,10 +94,10 @@ class _HomeHeaderState extends State<HomeHeader> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/profile');
+                        Navigator.pushNamed(context, NavigatorName.profile);
                       },
                       child: Container(
-                        color: Colors.transparent,
+                        color: R.color.transparent,
                         child: Row(children: [
                           Stack(
                               alignment: AlignmentDirectional.bottomEnd,
@@ -107,31 +107,31 @@ class _HomeHeaderState extends State<HomeHeader> {
                                   child: Container(
                                       clipBehavior: Clip.hardEdge,
                                       decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           borderRadius:
                                               BorderRadius.circular(21)),
-                                      child: user.imageUrl.url == null
+                                      child: user.imageUrl!.url == null
                                           ? Icon(Icons.person,
-                                              size: 42, color: mainColor)
-                                          : Image.network(user.imageUrl.url,
+                                              size: 42, color: R.color.mainColor)
+                                          : Image.network(user.imageUrl!.url!,
                                               width: 42, height: 42)),
                                 ),
-                                Image.asset('assets/images/icon_crown.png',
+                                Image.asset(R.drawable.ic_crown,
                                     width: 20, height: 20)
                               ]),
                           SizedBox(width: 8),
                           Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(user.fullName.trim(),
+                                Text(user.fullName!.trim(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700)),
                                 SizedBox(height: 4),
-                                Text('Thành viên cơ bản',
+                                Text(R.string.thanh_vien_co_ban.tr(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 14,
                                         fontWeight: FontWeight.w400))
                               ]),
@@ -149,24 +149,24 @@ class _HomeHeaderState extends State<HomeHeader> {
                           },
                           child: isChoose
                               ? Image.asset(
-                                  'assets/images/book_question_selected.png',
+                                  R.drawable.ic_book_question_selected,
                                   width: 24,
                                   height: 24)
-                              : Image.asset('assets/images/book_question.png',
+                              : Image.asset(R.drawable.ic_book_question,
                                   width: 24, height: 24),
                         ),
                         SizedBox(width: 8),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, '/notification');
+                            Navigator.pushNamed(context, NavigatorName.notification);
                           },
                           child: Container(
                             padding: EdgeInsets.all(4),
-                            color: Colors.transparent,
+                            color: R.color.transparent,
                             child: Image.asset(
-                                notificationCount > 0
-                                    ? 'assets/images/bell_dot.png'
-                                    : 'assets/images/bell.png',
+                                notificationCount! > 0
+                                    ? R.drawable.ic_bell_dot
+                                    : R.drawable.ic_bell,
                                 width: 24,
                                 height: 24),
                           ),
@@ -181,9 +181,9 @@ class _HomeHeaderState extends State<HomeHeader> {
                     : (motivation != null
                         ? Padding(
                             padding: EdgeInsets.only(top: 16),
-                            child: Text(motivation.content,
+                            child: Text(motivation!.content!,
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
                           )
@@ -191,9 +191,9 @@ class _HomeHeaderState extends State<HomeHeader> {
                             Padding(
                               padding: EdgeInsets.only(top: 16),
                               child: Text(
-                                  'Điều gì tạo động lực sống khỏe hơn mỗi ngày cho bạn? Hãy chia sẻ cùng diaB nhé!',
+                                  R.string.share_with_diab.tr(),
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: R.color.white,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400)),
                             ),
@@ -206,7 +206,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                                 child: Container(
                                     height: 32,
                                     decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         borderRadius:
                                             BorderRadius.circular(16)),
                                     padding:
@@ -214,14 +214,14 @@ class _HomeHeaderState extends State<HomeHeader> {
                                     child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text('Viết động lực',
+                                          Text(R.string.viet_dong_luc.tr(),
                                               style: TextStyle(
-                                                  color: mainColor,
+                                                  color: R.color.mainColor,
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w600)),
                                           SizedBox(width: 4),
                                           Image.asset(
-                                              'assets/images/icon_arrow_right.png',
+                                              R.drawable.ic_arrow_right,
                                               width: 24,
                                               height: 24)
                                         ])),
@@ -232,7 +232,7 @@ class _HomeHeaderState extends State<HomeHeader> {
             )));
   }
 
-  _showDialogUpdateMotivation(MotivationModel model) {
+  _showDialogUpdateMotivation(MotivationModel? model) {
     showDialog(
         context: context,
         builder: (context) => Container(

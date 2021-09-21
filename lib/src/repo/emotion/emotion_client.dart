@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:medical/src/modal/bmi/bmi_Input_data_model.dart';
-import 'package:medical/src/modal/bmi/bmi_input.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/emotion/activity_model.dart';
 import 'package:medical/src/modal/emotion/emotion_model.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_item_model.dart';
@@ -10,6 +9,7 @@ import 'package:medical/src/modal/emotion/input_emotion_model.dart';
 import 'package:medical/src/modal/emotion/symptom_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EmotionClient extends FetchClient {
 // Lấy danh sách emotion
@@ -26,7 +26,7 @@ class EmotionClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -44,7 +44,7 @@ class EmotionClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -62,17 +62,17 @@ class EmotionClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //============ lấy danh sách input Emotion =============/
 
   Future<InputEmotionDataModel> fetchInput(
-    String currentDateTime,
-    String periodFilterType,
-    String emotionId,
-    int page,
+    String? currentDateTime,
+    String? periodFilterType,
+    String? emotionId,
+    int? page,
   ) async {
     try {
       Map<String, String> params = {
@@ -98,12 +98,12 @@ class EmotionClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ lấy chi tiết chỉ số cảm xúc =============/
 
-  Future<InputEmotionModel> fetchDetail(String id) async {
+  Future<InputEmotionModel> fetchDetail(String? id) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Emotion/Input/$id');
@@ -116,23 +116,23 @@ class EmotionClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // nhập chỉ số cảm xúc
   Future<bool> postEmotionInput(
-      String emotionId,
-      List<String> symptomIds,
-      List<String> activityIds,
-      String otherSymptom,
-      String otherActivity,
+      String? emotionId,
+      List<String?> symptomIds,
+      List<String?> activityIds,
+      String? otherSymptom,
+      String? otherActivity,
       int date,
-      String timeFrameId,
+      String? timeFrameId,
       String note,
       List<String> files) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'emotionId': emotionId,
         'date': date.toString(),
         'timeFrameId': timeFrameId,
@@ -155,30 +155,30 @@ class EmotionClient extends FetchClient {
       if (response.statusCode == 200) {
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   /// cập nhạt chỉ số cảm xúc
   Future<bool> updateEmotionInput(
-      String id,
-      String emotionId,
-      List<String> symptomIds,
-      List<String> activityIds,
-      String otherSymptom,
-      String otherActivity,
+      String? id,
+      String? emotionId,
+      List<String?> symptomIds,
+      List<String?> activityIds,
+      String? otherSymptom,
+      String? otherActivity,
       int date,
-      String timeFrameId,
+      String? timeFrameId,
       String note,
-      List<String> removalImageIds,
+      List<String?> removalImageIds,
       List<String> files) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'id': id,
         'emotionId': emotionId,
         'date': date.toString(),
@@ -205,17 +205,17 @@ class EmotionClient extends FetchClient {
         print(await response.stream.bytesToString());
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //============ xóa chỉ số Emotion =============/
-  Future<bool> deleteIndexEmotion(String bmiId) async {
+  Future<bool> deleteIndexEmotion(String? bmiId) async {
     try {
       final Response response =
           await super.delete(url: '/App/Emotion/Input/$bmiId');
@@ -230,13 +230,13 @@ class EmotionClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // Lấy thống kê emotion
   Future<EmotionStatisticModel> fetchEmotionStatistic(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Emotion/statistic/emotion', params: {
@@ -255,13 +255,13 @@ class EmotionClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // Lấy danh sách thống kê triệu chứng
   Future<List<EmotionStatisticItemModel>> fetchSymptomStatistic(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Emotion/statistic/symptom', params: {
@@ -281,13 +281,13 @@ class EmotionClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // Lấy danh sách thống kê hoạt động
   Future<List<EmotionStatisticItemModel>> fetchActivityStatistic(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response = await super
           .fetchData(url: '/App/Emotion/statistic/activity', params: {
@@ -307,7 +307,7 @@ class EmotionClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

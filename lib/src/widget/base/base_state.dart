@@ -7,7 +7,7 @@ abstract class BaseState<T extends StatefulWidget> extends State<T>
     with RouteAware {
   @override
   void didChangeDependencies() {
-    routeObserver.subscribe(this, ModalRoute.of(context));
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute<dynamic>);
     super.didChangeDependencies();
   }
 

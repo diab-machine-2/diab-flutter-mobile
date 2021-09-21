@@ -6,14 +6,12 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/modal/home/home_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
-import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeController extends StatefulWidget {
@@ -24,54 +22,42 @@ class HomeController extends StatefulWidget {
 class _HomeControllerState extends State<HomeController> {
   var data = [
     {
-      'name': 'Đường huyết',
+      'name': R.string.duong_huyet.tr(),
       'image': '',
-      'icon': 'assets/images/icon_bloodSugar.png',
+      'icon': R.drawable.ic_blood_sugar,
       'dataDetail': []
     },
     {
-      'name': 'Huyết áp',
-      'image': 'assets/images/im_bloodPresser.png',
-      'icon': 'assets/images/icon_heartPresse.png',
+      'name': R.string.huyet_ap.tr(),
+      'image': R.drawable.bg_blood_presser,
+      'icon': R.drawable.ic_heart_presse,
       'dataDetail': []
     },
     {
-      'name': 'Cân nặng',
-      'image': 'assets/images/im_weight.png',
-      'icon': 'assets/images/icon_weight.png',
+      'name': R.string.can_nang.tr(),
+      'image': R.drawable.bg_weight,
+      'icon': R.drawable.ic_weight_plus,
       'dataDetail': []
     },
     {
-      'name': 'Cảm xúc',
-      'image': 'assets/images/im_emotion.png',
-      'icon': 'assets/images/icon_emotion.png',
+      'name': R.string.cam_xuc.tr(),
+      'image': R.drawable.bg_emotion,
+      'icon': R.drawable.ic_emotion_plus,
       'dataDetail': [
-        {'name': 'Vui vẻ', 'image': 'assets/images/laughing.png'},
-        {'name': 'Buồn ngủ', 'image': 'assets/images/sleeping.png'},
-        {'name': 'Ốm', 'image': 'assets/images/sick.png'}
+        {'name': R.string.vui_ve.tr(), 'image': R.drawable.ic_laughing},
+        {'name': R.string.buon_ngu.tr(), 'image': R.drawable.ic_sleeping},
+        {'name': R.string.om.tr(), 'image': R.drawable.ic_sick}
       ]
     },
-    // {
-    //   'name': 'Vận động',
-    //   'image': 'assets/images/im_active.png',
-    //   'icon': 'assets/images/icon_active.png',
-    //   'dataDetail': []
-    // },
-    // {
-    //   'name': 'Dinh dưỡng',
-    //   'image': 'assets/images/im_nutrition.png',
-    //   'icon': 'assets/images/icon_nutrition.png',
-    //   'dataDetail': []
-    // }
   ];
 
   var dataDetail = [{}];
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   int page = 1;
   bool isLoading = false;
 
-  HomeModel model;
+  HomeModel? model;
 
   @override
   void initState() {
@@ -81,49 +67,49 @@ class _HomeControllerState extends State<HomeController> {
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_bloodPressure');
+          checkScreen(NavigatorName.detail_blood_pressure);
         });
     DartNotificationCenter.subscribe(
         channel: 'glucose_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_bloodSugar');
+          checkScreen(NavigatorName.detail_blood_sugar);
         });
     DartNotificationCenter.subscribe(
         channel: 'Weight_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_bmi');
+          checkScreen(NavigatorName.detail_bmi);
         });
     DartNotificationCenter.subscribe(
         channel: 'Emotion_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_emotion');
+          checkScreen(NavigatorName.detail_emotion);
         });
     DartNotificationCenter.subscribe(
         channel: 'active_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_exercrises');
+          checkScreen(NavigatorName.detail_exercrises);
         });
     DartNotificationCenter.subscribe(
         channel: 'food_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_food');
+          checkScreen(NavigatorName.detail_food);
         });
     DartNotificationCenter.subscribe(
         channel: 'hba1c_change_data',
         observer: this,
         onNotification: (_) {
           _refresh();
-          checkScreen('/detail_hba1c');
+          checkScreen(NavigatorName.detail_hba1c);
         });
     DartNotificationCenter.subscribe(
         channel: 'goal_calo_changed',
@@ -216,7 +202,7 @@ class _HomeControllerState extends State<HomeController> {
               body: Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                  image: AssetImage('assets/images/bg_home.jpg'),
+                  image: AssetImage(R.drawable.bg_home),
                   fit: BoxFit.fill,
                 )),
                 child: Column(
@@ -247,51 +233,51 @@ class _HomeControllerState extends State<HomeController> {
                                     final icon = data[index]['icon'];
                                     if (index == 0 &&
                                         model != null &&
-                                        model.glucoseIndex.index != 0) {
+                                        model!.glucoseIndex.index != 0) {
                                       return _buildBloodSuger(
                                           context,
                                           index,
-                                          name,
-                                          image,
-                                          icon,
-                                          model.glucoseIndex);
+                                          name as String,
+                                          image as String?,
+                                          icon as String?,
+                                          model!.glucoseIndex);
                                     }
                                     if (index == 1 &&
                                         model != null &&
-                                        model.bloodPressureIndex.diastolic !=
+                                        model!.bloodPressureIndex.diastolic !=
                                             0) {
                                       return _buildBloodPressure(
                                           context,
                                           index,
-                                          name,
-                                          image,
-                                          icon,
-                                          model.bloodPressureIndex);
+                                          name as String,
+                                          image as String?,
+                                          icon as String?,
+                                          model!.bloodPressureIndex);
                                     }
                                     if (index == 2 &&
                                         model != null &&
-                                        model.weightCard.weight != 0) {
-                                      return _buildWeight(context, index, name,
-                                          image, icon, model.weightCard);
+                                        model!.weightCard!.weight != 0) {
+                                      return _buildWeight(context, index, name as String,
+                                          image as String?, icon as String?, model!.weightCard!);
                                     }
                                     if (index == 3 &&
                                         model != null &&
-                                        model.emotionCard.details != null) {
-                                      return _buildEmotion(context, index, name,
-                                          image, icon, model.emotionCard);
+                                        model!.emotionCard!.details != null) {
+                                      return _buildEmotion(context, index, name as String,
+                                          image as String?, icon as String?, model!.emotionCard!);
                                     }
 
                                     return _buildItem(
-                                        context, index, name, image, icon);
+                                        context, index, name as String, image as String, icon as String);
                                   }),
                               SizedBox(height: 16),
                               Padding(
                                   padding: EdgeInsets.only(left: 16, right: 16),
                                   child: model != null &&
-                                          (model.energyCard.consumedEnergy !=
+                                          (model!.energyCard!.consumedEnergy !=
                                                   0 ||
-                                              model.exercise.index != 0)
-                                      ? buildFoodAndExcercise(model)
+                                              model!.exercise!.index != 0)
+                                      ? buildFoodAndExcercise(model!)
                                       : Container(
                                           height: width * 160 / 343,
                                           child: Stack(children: [
@@ -299,12 +285,12 @@ class _HomeControllerState extends State<HomeController> {
                                               child: Container(
                                                 padding: EdgeInsets.all(16),
                                                 decoration: BoxDecoration(
-                                                    color: Colors.white,
+                                                    color: R.color.white,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10)),
                                                 child: Text(
-                                                    'Dinh dưỡng & Vận động',
+                                                    R.string.dinh_duong_va_van_dong.tr(),
                                                     style: TextStyle(
                                                         fontSize: 16,
                                                         fontWeight:
@@ -316,10 +302,10 @@ class _HomeControllerState extends State<HomeController> {
                                                 bottom: 0,
                                                 left: 0,
                                                 child: Image.asset(
-                                                    'assets/images/im_food_and_excersire.png')),
+                                                    R.drawable.bg_food_and_excersire)),
                                             Center(
                                                 child: Image.asset(
-                                                    'assets/images/icon_food_and_excersire.png',
+                                                    R.drawable.ic_food_and_excersire,
                                                     width: 58,
                                                     height: 58)),
                                             Row(
@@ -332,22 +318,22 @@ class _HomeControllerState extends State<HomeController> {
                                                     onTap: () {
                                                       Navigator.pushNamed(
                                                           context,
-                                                          '/detail_food');
+                                                          NavigatorName.detail_food);
                                                     },
                                                     child: Container(
                                                         color:
-                                                            Colors.transparent),
+                                                            R.color.transparent),
                                                   )),
                                                   Expanded(
                                                       child: GestureDetector(
                                                     onTap: () {
                                                       Navigator.pushNamed(
                                                           context,
-                                                          '/detail_exercrises');
+                                                          NavigatorName.detail_exercrises);
                                                     },
                                                     child: Container(
                                                         color:
-                                                            Colors.transparent),
+                                                            R.color.transparent),
                                                   ))
                                                 ])
                                           ]),
@@ -358,11 +344,11 @@ class _HomeControllerState extends State<HomeController> {
                                 child: GestureDetector(
                                     onTap: () {
                                       Navigator.pushNamed(
-                                          context, '/detail_hba1c');
+                                          context, NavigatorName.detail_hba1c);
                                     },
                                     child: model != null &&
-                                            model.hbA1CIndex.index != 0
-                                        ? buildHbA1C(model.hbA1CIndex)
+                                            model!.hbA1CIndex.index != 0
+                                        ? buildHbA1C(model!.hbA1CIndex)
                                         : Container(
                                             height: width * 90 / 343,
                                             child: Stack(children: [
@@ -370,11 +356,11 @@ class _HomeControllerState extends State<HomeController> {
                                                 child: Container(
                                                   padding: EdgeInsets.all(16),
                                                   decoration: BoxDecoration(
-                                                      color: Colors.white,
+                                                      color: R.color.white,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               10)),
-                                                  child: Text('HbA1C',
+                                                  child: Text(R.string.hba1c.tr(),
                                                       style: TextStyle(
                                                           fontSize: 16,
                                                           fontWeight:
@@ -386,10 +372,10 @@ class _HomeControllerState extends State<HomeController> {
                                                   bottom: 0,
                                                   right: 0,
                                                   child: Image.asset(
-                                                      'assets/images/im_hba1c.png')),
+                                                      R.drawable.bg_hba1c)),
                                               Center(
                                                   child: Image.asset(
-                                                      'assets/images/icon_HbA1Cn.png',
+                                                      R.drawable.ic_hba1cn,
                                                       width: 58,
                                                       height: 58))
                                             ]),
@@ -413,17 +399,17 @@ class _HomeControllerState extends State<HomeController> {
     return GestureDetector(
       onTap: () {
         if (index == 0)
-          Navigator.pushNamed(context, '/detail_bloodSugar');
+          Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
         else if (index == 1) {
-          Navigator.pushNamed(context, '/detail_bloodPressure');
+          Navigator.pushNamed(context, NavigatorName.detail_blood_pressure);
         } else if (index == 2) {
-          Navigator.pushNamed(context, '/detail_bmi');
+          Navigator.pushNamed(context, NavigatorName.detail_bmi);
         } else if (index == 3) {
-          Navigator.pushNamed(context, '/detail_emotion');
+          Navigator.pushNamed(context, NavigatorName.detail_emotion);
         } else if (index == 4) {
-          Navigator.pushNamed(context, '/detail_food');
+          Navigator.pushNamed(context, NavigatorName.detail_food);
         } else if (index == 2) {
-          Navigator.pushNamed(context, '/detail_exercrises');
+          Navigator.pushNamed(context, NavigatorName.detail_exercrises);
         }
 
         return null;
@@ -433,7 +419,7 @@ class _HomeControllerState extends State<HomeController> {
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Text(name,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           ),
@@ -451,17 +437,17 @@ class _HomeControllerState extends State<HomeController> {
   }
 
   Widget _buildBloodSuger(BuildContext context, int index, String name,
-      String image, String icon, GloucoseIndexModel model) {
+      String? image, String? icon, GloucoseIndexModel model) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/detail_bloodSugar');
+        Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
       },
       child: Stack(children: [
         Positioned.fill(
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -472,18 +458,18 @@ class _HomeControllerState extends State<HomeController> {
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   SizedBox(height: 4),
                   Text(
-                      getStringToday(model.createDateTime).isEmpty
-                          ? convertToUTC(model.createDateTime, 'dd/MM/yyyy')
-                          : getStringToday(model.createDateTime),
+                      getStringToday(model.createDateTime!).isEmpty
+                          ? convertToUTC(model.createDateTime!, 'dd/MM/yyyy')
+                          : getStringToday(model.createDateTime!),
                       style: TextStyle(
-                          color: Color(0xff9C9C9C),
+                          color: R.color.captionColorGray,
                           fontSize: 12,
                           fontWeight: FontWeight.w400)),
                 ]),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(roundNumber(model.index),
+                    Text(roundNumber(model.index!),
                         style: TextStyle(
                             fontFamily: 'Viga',
                             color: toColor(model.color),
@@ -494,7 +480,7 @@ class _HomeControllerState extends State<HomeController> {
                       padding: EdgeInsets.only(top: 8),
                       child: Text(model.unit,
                           style: TextStyle(
-                              color: Color(0xff9C9C9C),
+                              color: R.color.captionColorGray,
                               fontSize: 12,
                               fontWeight: FontWeight.w400)),
                     )
@@ -505,17 +491,17 @@ class _HomeControllerState extends State<HomeController> {
                     : Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Image.network(model.icon.url ?? '',
+                          Image.network(model.icon!.url ?? '',
                               width: 25, height: 25),
                           SizedBox(width: 4),
                           Padding(
                             padding: EdgeInsets.only(top: 8),
                             child: Text(
-                                (model.indexChange > 0 ? '+' : '') +
+                                (model.indexChange! > 0 ? '+' : '') +
                                     roundNumber(
-                                        roundAsFixed(model.indexChange)),
+                                        roundAsFixed(model.indexChange!)),
                                 style: TextStyle(
-                                    color: Color(0xff9C9C9C),
+                                    color: R.color.captionColorGray,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400)),
                           )
@@ -530,17 +516,17 @@ class _HomeControllerState extends State<HomeController> {
   }
 
   Widget _buildBloodPressure(BuildContext context, int index, String name,
-      String image, String icon, BloodPressureIndexModel model) {
+      String? image, String? icon, BloodPressureIndexModel model) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/detail_bloodPressure');
+        Navigator.pushNamed(context, NavigatorName.detail_blood_pressure);
       },
       child: Stack(children: [
         Positioned.fill(
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -556,7 +542,7 @@ class _HomeControllerState extends State<HomeController> {
                               model.createDateTime ?? 0, 'dd/MM/yyyy')
                           : getStringToday(model.createDateTime ?? 0),
                       style: TextStyle(
-                          color: Color(0xff9C9C9C),
+                          color: R.color.captionColorGray,
                           fontSize: 12,
                           fontWeight: FontWeight.w400)),
                 ]),
@@ -564,9 +550,9 @@ class _HomeControllerState extends State<HomeController> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                        model.systolic.round().toString() +
+                        model.systolic!.round().toString() +
                             '/' +
-                            model.diastolic.round().toString(),
+                            model.diastolic!.round().toString(),
                         style: TextStyle(
                             fontFamily: 'Viga',
                             color: toColor(model.color),
@@ -575,9 +561,9 @@ class _HomeControllerState extends State<HomeController> {
                     SizedBox(width: 4),
                     Padding(
                       padding: EdgeInsets.only(top: 8),
-                      child: Text('mmHg',
+                      child: Text(R.string.mm_hg.tr(),
                           style: TextStyle(
-                              color: Color(0xff9C9C9C),
+                              color: R.color.captionColorGray,
                               fontSize: 12,
                               fontWeight: FontWeight.w400)),
                     )
@@ -586,18 +572,18 @@ class _HomeControllerState extends State<HomeController> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.network(model.icon.url ?? '', width: 25, height: 25),
+                    Image.network(model.icon!.url ?? '', width: 25, height: 25),
                     SizedBox(width: 4),
                     Padding(
                       padding: EdgeInsets.only(top: 8),
                       child: Text(
-                          (model.systolicChange > 0 ? '+' : '') +
-                              model.systolicChange.round().toString() +
+                          (model.systolicChange! > 0 ? '+' : '') +
+                              model.systolicChange!.round().toString() +
                               '/' +
-                              (model.diastolicChange > 0 ? '+' : '') +
-                              model.diastolicChange.round().toString(),
+                              (model.diastolicChange! > 0 ? '+' : '') +
+                              model.diastolicChange!.round().toString(),
                           style: TextStyle(
-                              color: Color(0xff9C9C9C),
+                              color: R.color.captionColorGray,
                               fontSize: 12,
                               fontWeight: FontWeight.w400)),
                     )
@@ -612,17 +598,17 @@ class _HomeControllerState extends State<HomeController> {
   }
 
   Widget _buildWeight(BuildContext context, int index, String name,
-      String image, String icon, WeightCardModel model) {
+      String? image, String? icon, WeightCardModel model) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/detail_bmi');
+        Navigator.pushNamed(context, NavigatorName.detail_bmi);
       },
       child: Stack(children: [
         Positioned.fill(
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -638,14 +624,14 @@ class _HomeControllerState extends State<HomeController> {
                               model.weightDateTime ?? 0, 'dd/MM/yyyy')
                           : getStringToday(model.weightDateTime ?? 0),
                       style: TextStyle(
-                          color: Color(0xff9C9C9C),
+                          color: R.color.captionColorGray,
                           fontSize: 12,
                           fontWeight: FontWeight.w400)),
                 ]),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(model.weight.round().toString(),
+                    Text(model.weight!.round().toString(),
                         style: TextStyle(
                             fontFamily: 'Viga',
                             color: toColor(model.weightColorCode),
@@ -654,9 +640,9 @@ class _HomeControllerState extends State<HomeController> {
                     SizedBox(width: 4),
                     Padding(
                       padding: EdgeInsets.only(top: 8),
-                      child: Text('/ ${model.goalWeight.round()} kg',
+                      child: Text('/ ${model.goalWeight!.round()} kg',
                           style: TextStyle(
-                              color: Color(0xff9C9C9C),
+                              color: R.color.captionColorGray,
                               fontSize: 12,
                               fontWeight: FontWeight.w400)),
                     )
@@ -671,17 +657,17 @@ class _HomeControllerState extends State<HomeController> {
   }
 
   Widget _buildEmotion(BuildContext context, int index, String name,
-      String image, String icon, EmotionCardModel model) {
+      String? image, String? icon, EmotionCardModel model) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/detail_emotion');
+        Navigator.pushNamed(context, NavigatorName.detail_emotion);
       },
       child: Stack(children: [
         Positioned.fill(
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -697,27 +683,27 @@ class _HomeControllerState extends State<HomeController> {
                               model.emotionDateTime ?? 0, 'dd/MM/yyyy')
                           : getStringToday(model.emotionDateTime ?? 0),
                       style: TextStyle(
-                          color: Color(0xff9C9C9C),
+                          color: R.color.captionColorGray,
                           fontSize: 12,
                           fontWeight: FontWeight.w400)),
                 ]),
                 Column(
                   children: List.generate(
-                      model.details.length,
+                      model.details!.length,
                       (index) => Padding(
                             padding: EdgeInsets.only(top: 8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text(model.details[index].text,
+                                Text(model.details![index].text!,
                                     style: TextStyle(
-                                        color: textDark,
+                                        color: R.color.textDark,
                                         fontSize: 14,
                                         fontWeight: FontWeight.w400)),
                                 SizedBox(width: 4),
                                 Image.network(
-                                    model.details[index].icon.url ?? '',
+                                    model.details![index].icon!.url ?? '',
                                     width: 25,
                                     height: 25),
                               ],
@@ -741,14 +727,14 @@ class _HomeControllerState extends State<HomeController> {
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                color: R.color.white, borderRadius: BorderRadius.circular(10)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('HbA1C',
+                    Text(R.string.hba1c.tr(),
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600)),
                     SizedBox(height: 4),
@@ -758,7 +744,7 @@ class _HomeControllerState extends State<HomeController> {
                                 model.createDateTime ?? 0, 'dd/MM/yyyy')
                             : getStringToday(model.createDateTime ?? 0),
                         style: TextStyle(
-                            color: Color(0xff9C9C9C),
+                            color: R.color.captionColorGray,
                             fontSize: 12,
                             fontWeight: FontWeight.w400))
                   ],
@@ -770,7 +756,7 @@ class _HomeControllerState extends State<HomeController> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(roundNumber(model.index),
+                          Text(roundNumber(model.index!),
                               style: TextStyle(
                                   fontFamily: 'Viga',
                                   color: toColor(model.color),
@@ -781,7 +767,7 @@ class _HomeControllerState extends State<HomeController> {
                             padding: EdgeInsets.only(top: 8),
                             child: Text('%',
                                 style: TextStyle(
-                                    color: Color(0xff9C9C9C),
+                                    color: R.color.captionColorGray,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400)),
                           )
@@ -792,17 +778,17 @@ class _HomeControllerState extends State<HomeController> {
                           : Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Image.network(model.icon.url ?? '',
+                                Image.network(model.icon!.url ?? '',
                                     width: 25, height: 25),
                                 SizedBox(width: 4),
                                 Padding(
                                   padding: EdgeInsets.only(top: 8),
                                   child: Text(
-                                      (model.indexChange > 0 ? '+' : '') +
-                                          roundNumber(model.indexChange) +
-                                          '% so với lần trước!',
+                                      (model.indexChange! > 0 ? '+' : '') +
+                                          roundNumber(model.indexChange!) +
+                                          R.string.ti_le_so_voi_lan_truoc.tr(),
                                       style: TextStyle(
-                                          color: Color(0xff9C9C9C),
+                                          color: R.color.captionColorGray,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w400)),
                                 )
@@ -836,8 +822,8 @@ class _HomeControllerState extends State<HomeController> {
               child: CustomPaint(
                   painter: GradientArcPainter(
                 progress: 1,
-                startColor: Colors.white,
-                endColor: Colors.white,
+                startColor: R.color.white,
+                endColor: R.color.white,
                 width: 36,
               ))),
           SizedBox(
@@ -845,13 +831,13 @@ class _HomeControllerState extends State<HomeController> {
               height: heightApple,
               child: CustomPaint(
                   painter: GradientArcPainter(
-                progress: model.energyExerciseCard.value < 0
+                progress: model.energyExerciseCard!.value! < 0
                     ? 1
-                    : (model.energyExerciseCard.value /
-                        model.energyExerciseCard.energyGoal),
-                startColor: toColor(model.energyExerciseCard.corlorCode)
+                    : (model.energyExerciseCard!.value! /
+                        model.energyExerciseCard!.energyGoal!),
+                startColor: toColor(model.energyExerciseCard!.corlorCode)
                     .withOpacity(0.3),
-                endColor: toColor(model.energyExerciseCard.corlorCode),
+                endColor: toColor(model.energyExerciseCard!.corlorCode),
                 width: 36.0,
               ))),
         ]),
@@ -863,14 +849,14 @@ class _HomeControllerState extends State<HomeController> {
               child: Container(
                   height: heightLA,
                   width: heightLA * 4,
-                  color: toColor(model.energyExerciseCard.corlorCode))),
+                  color: toColor(model.energyExerciseCard!.corlorCode))),
         ),
-        Image.asset('assets/images/apple_home.png'),
+        Image.asset(R.drawable.bg_apple_home),
         Positioned.fill(
           child: Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-                color: Colors.transparent,
+                color: R.color.transparent,
                 borderRadius: BorderRadius.circular(10)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -881,27 +867,27 @@ class _HomeControllerState extends State<HomeController> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Dinh dưỡng',
+                        Text(R.string.dinh_duong.tr(),
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600)),
                         SizedBox(height: 4),
                         Text(
                             model.energyCard == null
                                 ? ''
-                                : getStringToday(model.energyCard
+                                : getStringToday(model.energyCard!
                                                 .consumedEnergyDateTime ??
                                             0)
                                         .isEmpty
                                     ? convertToUTC(
-                                        model.energyCard
+                                        model.energyCard!
                                                 .consumedEnergyDateTime ??
                                             0,
                                         'dd/MM/yyyy')
-                                    : getStringToday(model.energyCard
+                                    : getStringToday(model.energyCard!
                                             .consumedEnergyDateTime ??
                                         0),
                             style: TextStyle(
-                                color: Color(0xff9C9C9C),
+                                color: R.color.captionColorGray,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400))
                       ],
@@ -909,23 +895,23 @@ class _HomeControllerState extends State<HomeController> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('Vận động',
+                        Text(R.string.van_dong.tr(),
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600)),
                         SizedBox(height: 4),
                         Text(
-                            model.exercise.createDateTime == 0
+                            model.exercise!.createDateTime == 0
                                 ? ''
                                 : getStringToday(
-                                            model.exercise.createDateTime ?? 0)
+                                            model.exercise!.createDateTime ?? 0)
                                         .isEmpty
                                     ? convertToUTC(
-                                        model.exercise.createDateTime ?? 0,
+                                        model.exercise!.createDateTime ?? 0,
                                         'dd/MM/yyyy')
                                     : getStringToday(
-                                        model.exercise.createDateTime ?? 0),
+                                        model.exercise!.createDateTime ?? 0),
                             style: TextStyle(
-                                color: Color(0xff9C9C9C),
+                                color: R.color.captionColorGray,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400))
                       ],
@@ -941,10 +927,10 @@ class _HomeControllerState extends State<HomeController> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Image.asset('assets/images/icon_home_energy.png',
+                            Image.asset(R.drawable.ic_home_energy,
                                 width: 20, height: 20),
                             SizedBox(width: 4),
-                            Text('Đã nạp',
+                            Text(R.string.da_nap.tr(),
                                 style: TextStyle(
                                     fontSize: 12, fontWeight: FontWeight.w500)),
                           ],
@@ -957,18 +943,18 @@ class _HomeControllerState extends State<HomeController> {
                                 model.energyCard == null
                                     ? '0'
                                     : formatNumber(
-                                        model.energyCard.consumedEnergy),
+                                        model.energyCard!.consumedEnergy),
                                 style: TextStyle(
                                     fontFamily: 'Viga',
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 26,
                                     fontWeight: FontWeight.w400)),
                             SizedBox(width: 4),
                             Padding(
                               padding: EdgeInsets.only(top: 8),
-                              child: Text('kcal',
+                              child: Text(R.string.kcal.tr(),
                                   style: TextStyle(
-                                      color: Color(0xff9C9C9C),
+                                      color: R.color.captionColorGray,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400)),
                             )
@@ -982,10 +968,10 @@ class _HomeControllerState extends State<HomeController> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Image.asset('assets/images/icon_home_excercise.png',
+                            Image.asset(R.drawable.ic_home_excercise,
                                 width: 20, height: 20),
                             SizedBox(width: 4),
-                            Text('Tiêu hao',
+                            Text(R.string.tieu_hao.tr(),
                                 style: TextStyle(
                                     fontSize: 12, fontWeight: FontWeight.w500)),
                           ],
@@ -994,18 +980,18 @@ class _HomeControllerState extends State<HomeController> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(formatNumber(model.exercise.index),
+                            Text(formatNumber(model.exercise!.index),
                                 style: TextStyle(
                                     fontFamily: 'Viga',
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 26,
                                     fontWeight: FontWeight.w400)),
                             SizedBox(width: 4),
                             Padding(
                               padding: EdgeInsets.only(top: 8),
-                              child: Text('kcal',
+                              child: Text(R.string.kcal.tr(),
                                   style: TextStyle(
-                                      color: Color(0xff9C9C9C),
+                                      color: R.color.captionColorGray,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400)),
                             )
@@ -1021,28 +1007,28 @@ class _HomeControllerState extends State<HomeController> {
         ),
         Positioned(
             top: 16,
-            child: Container(width: 1, height: 20, color: Color(0xffC0C2C5))),
+            child: Container(width: 1, height: 20, color: R.color.color0xffC0C2C5)),
         Stack(alignment: AlignmentDirectional.bottomCenter, children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
-                  (model.energyExerciseCard.value < 0 ? '-' : '') +
-                      formatNumber(model.energyExerciseCard.value),
+                  (model.energyExerciseCard!.value! < 0 ? '-' : '') +
+                      formatNumber(model.energyExerciseCard!.value),
                   style: TextStyle(
                       fontFamily: 'Viga',
-                      color: toColor(model.energyExerciseCard.corlorCode),
+                      color: toColor(model.energyExerciseCard!.corlorCode),
                       fontSize: 24,
                       fontWeight: FontWeight.w400)),
               SizedBox(height: 3),
-              Text('/' + formatNumber(model.energyExerciseCard.energyGoal),
+              Text('/' + formatNumber(model.energyExerciseCard!.energyGoal),
                   style: TextStyle(
-                      color: Color(0xff9C9C9C),
+                      color: R.color.captionColorGray,
                       fontSize: 11,
                       fontWeight: FontWeight.w400)),
-              Text(model.energyExerciseCard.text,
+              Text(model.energyExerciseCard!.text!,
                   style: TextStyle(
-                      color: Color(0xff9C9C9C),
+                      color: R.color.captionColorGray,
                       fontSize: 11,
                       fontWeight: FontWeight.w400)),
               SizedBox(height: height * 34 / 160)
@@ -1053,16 +1039,16 @@ class _HomeControllerState extends State<HomeController> {
           Expanded(
               child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/detail_food');
+              Navigator.pushNamed(context, NavigatorName.detail_food);
             },
-            child: Container(color: Colors.transparent),
+            child: Container(color: R.color.transparent),
           )),
           Expanded(
               child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/detail_exercrises');
+              Navigator.pushNamed(context, NavigatorName.detail_exercrises);
             },
-            child: Container(color: Colors.transparent),
+            child: Container(color: R.color.transparent),
           ))
         ])
       ]),

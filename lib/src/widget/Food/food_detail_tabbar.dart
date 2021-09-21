@@ -1,27 +1,26 @@
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/widget/Food/food_description.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
-import 'package:medical/src/widget/tabbar/action_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
   @override
   _FoodDetailTabbarControllerState createState() =>
       _FoodDetailTabbarControllerState();
 
-  static _FoodDetailTabbarControllerState of(BuildContext context) {
-    final _FoodDetailTabbarControllerState navigator =
+  static _FoodDetailTabbarControllerState? of(BuildContext context) {
+    final _FoodDetailTabbarControllerState? navigator =
         context.findAncestorStateOfType<_FoodDetailTabbarControllerState>();
     return navigator;
   }
@@ -29,7 +28,7 @@ class FoodDetailTabbarController extends StatefulWidget {
 
 class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
     with SingleTickerProviderStateMixin {
-  TabController _tabController;
+  TabController? _tabController;
   GlobalKey<CustomTabbarImageState> customTabbarKey = GlobalKey();
   GlobalKey<CustomActionDescriptionState> customActionDesKey = GlobalKey();
 
@@ -40,7 +39,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
 
   int periodFilterType = 1;
 
-  ShortGuiModel des;
+  ShortGuiModel? des;
   @override
   void initState() {
     super.initState();
@@ -50,10 +49,10 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
         observer: this,
         onNotification: (_) {
           if (overviewKey.currentState != null) {
-            overviewKey.currentState.reloadData(periodFilterType);
+            overviewKey.currentState!.reloadData(periodFilterType);
           }
           if (detailKey.currentState != null) {
-            detailKey.currentState.reloadData(periodFilterType);
+            detailKey.currentState!.reloadData(periodFilterType);
           }
         });
 
@@ -74,8 +73,8 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
     final showDes = prefs.getBool('show_des_food');
     prefs.setBool('show_des_food', false);
     if (showDes == null || showDes) {
-      customActionDesKey.currentState.showDes();
-      customTabbarKey.currentState.showDescription();
+      customActionDesKey.currentState!.showDes();
+      customTabbarKey.currentState!.showDescription();
     }
   }
 
@@ -90,31 +89,31 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
       child: Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: CustomAppBar(
-              backgroundColor: Colors.white,
-              title: Text('Dinh dưỡng',
+              backgroundColor: R.color.white,
+              title: Text(R.string.dinh_duong.tr(),
                   style: TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
-                      color: textDark)),
+                      color: R.color.textDark)),
               leadingIcon: GestureDetector(
                   onTap: () {
                     showDialog(
-                      barrierColor: Color(0xff003F38).withOpacity(0.3),
+                      barrierColor: R.color.color0xff003F38.withOpacity(0.3),
                       useSafeArea: false,
                       context: context,
                       builder: (_) => ActionListPanel(selectedIndex: 4),
                     );
                   },
-                  child: Icon(Icons.format_list_bulleted, color: textDark)),
+                  child: Icon(Icons.format_list_bulleted, color: R.color.textDark)),
               actions: [
                 CustomActionDescription(
                     key: customActionDesKey,
                     callback: (value) {
-                      customTabbarKey.currentState.showDescription();
+                      customTabbarKey.currentState!.showDescription();
                     }),
                 IconButton(
-                    icon: Icon(Icons.close, color: Colors.black),
+                    icon: Icon(Icons.close, color: R.color.black),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -129,9 +128,9 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
                 data: des,
                 callback: (periodFilter) {
                   periodFilterType = periodFilter;
-                  overviewKey.currentState.reloadData(periodFilterType);
+                  overviewKey.currentState!.reloadData(periodFilterType);
                   if (detailKey.currentState != null) {
-                    detailKey.currentState.reloadData(periodFilterType);
+                    detailKey.currentState!.reloadData(periodFilterType);
                   }
                 }),
             Expanded(
@@ -144,17 +143,17 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
             onPressed: () {
               _showMaterialDialog();
             },
-            child: Image.asset('assets/images/button_plus.png',
+            child: Image.asset(R.drawable.ic_button_plus,
                 width: 80, height: 80),
           )),
     );
   }
 
   _showMaterialDialog() {
-    Navigator.pushNamed(context, '/add_food',
+    Navigator.pushNamed(context, NavigatorName.add_food,
         arguments: {'type': 'input', 'id': null});
     // showDialog(
-    //   barrierColor: Color(0xff003F38).withOpacity(0.8),
+    //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
     //   useSafeArea: false,
     //   context: context,
     //   builder: (_) => FunkyOverlay(),
@@ -164,15 +163,15 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
 
 class CustomTabbarImage extends StatefulWidget {
   CustomTabbarImage(
-      {Key key,
-      @required this.tabController,
+      {Key? key,
+      required this.tabController,
       this.callback,
-      @required this.data})
+      required this.data})
       : super(key: key);
 
-  final ActionFilterCallback callback;
-  final TabController tabController;
-  final ShortGuiModel data;
+  final ActionFilterCallback? callback;
+  final TabController? tabController;
+  final ShortGuiModel? data;
 
   @override
   CustomTabbarImageState createState() => CustomTabbarImageState();
@@ -189,7 +188,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: R.color.white,
       child: Column(
         children: [
           showDes
@@ -198,7 +197,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                   child: Description(
                       input: false,
                       data: widget.data,
-                      titleDetail: 'Chế độ dinh dưỡng bệnh tiểu đường'),
+                      titleDetail: R.string.che_do_dinh_duong_benh_tieu_duong.tr()),
                 )
               : SizedBox(),
           Row(
@@ -207,24 +206,24 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
               children: [
                 TabBar(
                     isScrollable: true,
-                    labelColor: mainColor,
+                    labelColor: R.color.mainColor,
                     labelStyle: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: mainColor),
-                    unselectedLabelColor: captionColorGray,
+                        color: R.color.mainColor),
+                    unselectedLabelColor: R.color.captionColorGray,
                     unselectedLabelStyle:
                         TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
-                      Tab(text: 'Biểu đồ'),
-                      Tab(text: 'Chi tiết'),
+                      Tab(text: R.string.bieu_do.tr()),
+                      Tab(text: R.string.chi_tiet.tr()),
                     ],
                     controller: widget.tabController,
-                    indicatorColor: mainColor,
+                    indicatorColor: R.color.mainColor,
                     indicatorWeight: 3),
                 ActionFilter(
                   callback: (periodFilter) {
-                    widget.callback(periodFilter);
+                    widget.callback!(periodFilter);
                   },
                 )
               ]),
@@ -237,14 +236,14 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
 typedef ActionFilterCallback = Function(int);
 
 class ActionFilter extends StatefulWidget {
-  final ActionFilterCallback callback;
+  final ActionFilterCallback? callback;
   ActionFilter({this.callback});
   @override
   _ActionFilterState createState() => _ActionFilterState();
 }
 
 class _ActionFilterState extends State<ActionFilter> {
-  String name = '7 ngày';
+  String name = R.string.number_of_days.tr(args: ['7']);
   int selectedIndex = 0;
 
   @override
@@ -254,11 +253,11 @@ class _ActionFilterState extends State<ActionFilter> {
         showActionFilter(context);
       },
       child: Container(
-        color: Colors.transparent,
+        color: R.color.transparent,
         padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
         child: Row(
           children: [
-            Image.asset('assets/images/icon_filter.png', width: 24, height: 24),
+            Image.asset(R.drawable.ic_filter, width: 24, height: 24),
             SizedBox(width: 6),
             Padding(
               padding: const EdgeInsets.only(top: 6),
@@ -266,7 +265,7 @@ class _ActionFilterState extends State<ActionFilter> {
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: textDark)),
+                      color: R.color.textDark)),
             ),
           ],
         ),
@@ -281,17 +280,19 @@ class _ActionFilterState extends State<ActionFilter> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => FillterBloodPanel(
             selectedIndex: selectedIndex,
             callback: (value, index) {
-              setState(() {
-                name = value;
-                selectedIndex = index;
-              });
-              widget.callback(index + 1);
+              if (index != null) {
+                setState(() {
+                  name = value;
+                  selectedIndex = index;
+                });
+                widget.callback!(index + 1);
+              }
             }));
   }
 }

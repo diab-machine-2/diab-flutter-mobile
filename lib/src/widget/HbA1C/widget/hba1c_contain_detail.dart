@@ -1,16 +1,15 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_lastestSumary.dart';
-import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HbA1CDetail extends StatefulWidget {
-  HbA1CDetail({Key key}) : super(key: key);
+  HbA1CDetail({Key? key}) : super(key: key);
   @override
   HbA1CDetailState createState() => HbA1CDetailState();
 }
@@ -19,13 +18,13 @@ class HbA1CDetailState extends State<HbA1CDetail>
     with AutomaticKeepAliveClientMixin<HbA1CDetail> {
   @override
   bool get wantKeepAlive => true;
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   int periodFilterType = 1;
 
   @override
   void initState() {
-    periodFilterType = Hba1cDetailTabbarController.of(context).periodFilterType;
+    periodFilterType = Hba1cDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -44,7 +43,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
         child: BlocBuilder<HbA1CBloc, HbA1CState>(
             builder: (BuildContext context, HbA1CState state) {
           currentContext = context;
-          LastestSummaryModel model;
+          LastestSummaryModel? model;
           if (state is HbA1CInitial) {
             BlocProvider.of<HbA1CBloc>(context).add(FetchHbA1C(
                 currentDateTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
@@ -73,9 +72,9 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Gần nhất',
+                                  Text(R.string.gan_nhat.tr(),
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 20,
                                           fontWeight: FontWeight.w700)),
                                 ]),
@@ -89,7 +88,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                       model.hbA1C == 0 || model.hbA1C == null
                                           ? Text('--',
                                               style: TextStyle(
-                                                  color: textDark,
+                                                  color: R.color.textDark,
                                                   fontSize: 34,
                                                   fontWeight: FontWeight.w700))
                                           : Text(
@@ -107,7 +106,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                           style: TextStyle(
                                               color: model.hbA1C == 0 ||
                                                       model.hbA1C == null
-                                                  ? textDark
+                                                  ? R.color.textDark
                                                   : toColor(model.percentColor),
                                               fontSize: 24,
                                               fontWeight: FontWeight.w700)),
@@ -117,11 +116,11 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                                   model.differentPercentage ==
                                                       null
                                               ? ''
-                                              : (model.differentPercentage > 0
+                                              : (model.differentPercentage! > 0
                                                   ? '(+${model.differentPercentage}%)'
                                                   : '(${model.differentPercentage}%)'),
                                           style: TextStyle(
-                                              color: Color(0xff666666),
+                                              color: R.color.primaryGreyColor,
                                               fontSize: 20,
                                               fontWeight: FontWeight.w400)),
                                     ],
@@ -138,7 +137,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                               border: Border.all(
                                                   color: model.borderColor ==
                                                           'None'
-                                                      ? Colors.transparent
+                                                      ? R.color.transparent
                                                       : toColor(
                                                           model.borderColor),
                                                   width: model.borderColor ==
@@ -151,7 +150,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                                   bottomLeft:
                                                       Radius.circular(13))),
                                           child: Center(
-                                            child: Text(model.status,
+                                            child: Text(model.status!,
                                                 style: TextStyle(
                                                     color: toColor(
                                                         model.fontColor),
@@ -167,7 +166,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                       padding: EdgeInsets.only(
                                           top: 16, right: 16, left: 16),
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         borderRadius: BorderRadius.circular(16),
                                       ),
                                       child: Row(
@@ -187,18 +186,18 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                                     // mainAxisAlignment:
                                                     //     MainAxisAlignment.spaceBetween,
                                                     children: [
-                                                      Text('Chi tiết',
+                                                      Text(R.string.chi_tiet.tr(),
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.black,
+                                                                  R.color.black,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700)),
                                                       SizedBox(height: 8),
-                                                      Text(model.description,
+                                                      Text(model.description!,
                                                           style: TextStyle(
-                                                              color: textDark,
+                                                              color: R.color.textDark,
                                                               fontSize: 15,
                                                               fontWeight:
                                                                   FontWeight
@@ -217,7 +216,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                       padding: EdgeInsets.only(right: 16),
                                       child: model.imageUrl == null
                                           ? SizedBox()
-                                          : Image.network(model.imageUrl.url,
+                                          : Image.network(model.imageUrl!.url!,
                                               fit: BoxFit.fill))
                                 ]),
                           ]),

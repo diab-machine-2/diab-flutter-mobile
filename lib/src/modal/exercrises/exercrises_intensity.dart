@@ -1,14 +1,14 @@
 import 'package:meta/meta.dart';
 
 class ExercriseIntensityModel {
-  final String id;
-  final String name;
-  final String note;
+  final String? id;
+  final String? name;
+  final String? note;
 
   ExercriseIntensityModel({
-    @required this.id,
-    @required this.name,
-    @required this.note,
+    required this.id,
+    required this.name,
+    required this.note,
   });
   @override
   factory ExercriseIntensityModel.fromJson(Map<String, dynamic> json) {

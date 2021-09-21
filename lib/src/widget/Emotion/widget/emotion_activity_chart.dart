@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_item_model.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EmotionActivityChart extends StatefulWidget {
-  EmotionActivityChart({Key key}) : super(key: key);
+  EmotionActivityChart({Key? key}) : super(key: key);
   @override
   EmotionActivityChartState createState() => EmotionActivityChartState();
 }
@@ -16,14 +18,14 @@ class EmotionActivityChartState extends State<EmotionActivityChart>
     with AutomaticKeepAliveClientMixin<EmotionActivityChart> {
   @override
   bool get wantKeepAlive => true;
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   int periodFilterType = 1;
 
   @override
   void initState() {
     periodFilterType =
-        EmotionDetailTabbarController.of(context).periodFilterType;
+        EmotionDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -54,7 +56,7 @@ class EmotionActivityChartState extends State<EmotionActivityChart>
         child: BlocBuilder<EmotionBloc, EmotionState>(
             builder: (BuildContext context, EmotionState state) {
           currentContext = context;
-          List<EmotionStatisticItemModel> model;
+          List<EmotionStatisticItemModel>? model;
 
           if (state is EmotionInitial) {
             BlocProvider.of<EmotionBloc>(context).add(FetchActivityStatistic(
@@ -78,8 +80,8 @@ class EmotionActivityChartState extends State<EmotionActivityChart>
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
                               colors: [
-                                Color(0xFFC3E8D3).withOpacity(0.1),
-                                Color(0xFFB1DDDB).withOpacity(0.1),
+                                R.color.color0xFFC3E8D3.withOpacity(0.1),
+                                R.color.color0xffB1DDDB.withOpacity(0.1),
                               ],
                               begin: FractionalOffset(0.1, 0.0),
                               end: FractionalOffset(0.5, 0.5),
@@ -90,9 +92,9 @@ class EmotionActivityChartState extends State<EmotionActivityChart>
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Tổng quan hoạt động',
+                              Text(R.string.tong_quan_hoat_dong.tr(),
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                               Padding(
@@ -106,7 +108,7 @@ class EmotionActivityChartState extends State<EmotionActivityChart>
                                     itemCount: model.length,
                                     itemBuilder:
                                         (BuildContext context, int index) {
-                                      final name = model[index].text;
+                                      final name = model![index].text!;
                                       final icon = model[index].icon.url;
                                       final quantity = model[index].count;
                                       final color = model[index].colorCode;
@@ -122,7 +124,7 @@ class EmotionActivityChartState extends State<EmotionActivityChart>
   }
 
   Widget _buildItemSumary(BuildContext context, int index, String name,
-      String icon, int quantity, String color) {
+      String? icon, int? quantity, String? color) {
     return Container(
         child: Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 8),
@@ -137,7 +139,7 @@ class EmotionActivityChartState extends State<EmotionActivityChart>
               ),
               Text(name,
                   style: TextStyle(
-                      color: Colors.black,
+                      color: R.color.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w400)),
             ],

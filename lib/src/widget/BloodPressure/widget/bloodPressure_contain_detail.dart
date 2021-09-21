@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_heart_rate.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodPressureDetail extends StatefulWidget {
-  BloodPressureDetail({Key key}) : super(key: key);
+  BloodPressureDetail({Key? key}) : super(key: key);
 
   @override
   BloodPressureDetailState createState() => BloodPressureDetailState();
@@ -20,12 +20,12 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
   @override
   bool get wantKeepAlive => true;
   int periodFilterType = 1;
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   @override
   void initState() {
     periodFilterType =
-        BloodPressureDetailTabbarController.of(context).periodFilterType;
+        BloodPressureDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -58,8 +58,8 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
         child: BlocBuilder<BloodPressureBloc, BloodPressureState>(
             builder: (BuildContext context, BloodPressureState state) {
           currentContext = context;
-          BloodPressureHeartRateModel model;
-          BloodPressureModel modelLastest;
+          BloodPressureHeartRateModel? model;
+          BloodPressureModel? modelLastest;
 
           if (state is BloodPressureInitial) {
             BlocProvider.of<BloodPressureBloc>(context)
@@ -87,9 +87,9 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                         alignment: Alignment.centerLeft,
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text('Huyết áp',
+                          child: Text(R.string.huyet_ap.tr(),
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700)),
                         ),
@@ -101,15 +101,15 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                               child: GestureDetector(
                                 onTap: () {
                                   BloodPressureDetailTabbarController.of(
-                                          context)
+                                          context)!
                                       .loadInputWithId(
-                                          1, model.diastolicLowestId);
+                                          1, model!.diastolicLowestId);
                                 },
                                 child: Container(
                                   padding: EdgeInsets.only(
                                       top: 16, bottom: 16, left: 8, right: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Column(
@@ -123,34 +123,34 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                           Text(
                                               model == null
                                                   ? '--'
-                                                  : model.systolicLowest
+                                                  : model.systolicLowest!
                                                                   .toInt() ==
                                                               0 &&
-                                                          model.diastolicLowest
+                                                          model.diastolicLowest!
                                                                   .toInt() ==
                                                               0
                                                       ? '--'
-                                                      : '${model.systolicLowest.toInt()}/${model.diastolicLowest.toInt()}'
+                                                      : '${model.systolicLowest!.toInt()}/${model.diastolicLowest!.toInt()}'
                                                           .toString(),
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
                                                   color: model == null
-                                                      ? Colors.black
+                                                      ? R.color.black
                                                       : toColor(
                                                           model.lowestColor),
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
                                           Image.asset(
-                                              'assets/images/line_low.png',
+                                              R.drawable.ic_line_low,
                                               width: 20,
                                               height: 15)
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text('Thấp nhất',
+                                      Text(R.string.lowest.tr(),
                                           style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 15,
                                           )),
                                     ],
@@ -164,7 +164,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                 padding: EdgeInsets.only(
                                     top: 16, bottom: 16, left: 8, right: 8),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Column(
@@ -177,34 +177,34 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                         Text(
                                             model == null
                                                 ? '--'
-                                                : model.systolicAverage
+                                                : model.systolicAverage!
                                                                 .toInt() ==
                                                             0 &&
-                                                        model.diastolicAverage
+                                                        model.diastolicAverage!
                                                                 .toInt() ==
                                                             0
                                                     ? '--'
-                                                    : '${model.systolicAverage.toInt()}/${model.diastolicAverage.toInt()}'
+                                                    : '${model.systolicAverage!.toInt()}/${model.diastolicAverage!.toInt()}'
                                                         .toString(),
                                             style: TextStyle(
                                                 fontFamily: 'Viga',
                                                 color: model == null
-                                                    ? Colors.black
+                                                    ? R.color.black
                                                     : toColor(
                                                         model.averageColor),
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w400)),
                                         SizedBox(width: 10),
                                         Image.asset(
-                                            'assets/images/line_average.png',
+                                            R.drawable.ic_line_average,
                                             width: 20,
                                             height: 15)
                                       ],
                                     ),
                                     SizedBox(height: 8),
-                                    Text('Trung bình',
+                                    Text(R.string.medium.tr(),
                                         style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 15,
                                           // fontWeight: FontWeight.w700
                                         )),
@@ -217,15 +217,15 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                               child: GestureDetector(
                                 onTap: () {
                                   BloodPressureDetailTabbarController.of(
-                                          context)
+                                          context)!
                                       .loadInputWithId(
-                                          1, model.diastolicHighestId);
+                                          1, model!.diastolicHighestId);
                                 },
                                 child: Container(
                                   padding: EdgeInsets.only(
                                       top: 16, bottom: 16, left: 8, right: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Column(
@@ -239,34 +239,34 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                           Text(
                                               model == null
                                                   ? '--'
-                                                  : model.systolicHighest
+                                                  : model.systolicHighest!
                                                                   .toInt() ==
                                                               0 &&
-                                                          model.diastolicHighest
+                                                          model.diastolicHighest!
                                                                   .toInt() ==
                                                               0
                                                       ? '--'
-                                                      : '${model.systolicHighest.toInt()}/${model.diastolicHighest.toInt()}'
+                                                      : '${model.systolicHighest!.toInt()}/${model.diastolicHighest!.toInt()}'
                                                           .toString(),
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
                                                   color: model == null
-                                                      ? Colors.black
+                                                      ? R.color.black
                                                       : toColor(
                                                           model.highestColor),
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
                                           Image.asset(
-                                              'assets/images/line_high.png',
+                                              R.drawable.ic_line_high,
                                               width: 20,
                                               height: 15)
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text('Cao nhất',
+                                      Text(R.string.highest.tr(),
                                           style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 15,
                                             // fontWeight: FontWeight.w700
                                           )),
@@ -281,9 +281,9 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                         alignment: Alignment.centerLeft,
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Text('Nhịp tim',
+                          child: Text(R.string.heart_rate.tr(),
                               style: TextStyle(
-                                  color: Colors.black,
+                                  color: R.color.black,
                                   fontSize: 20,
                                   fontWeight: FontWeight.w700)),
                         ),
@@ -295,15 +295,15 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                               child: GestureDetector(
                                 onTap: () {
                                   BloodPressureDetailTabbarController.of(
-                                          context)
+                                          context)!
                                       .loadInputWithId(
-                                          1, model.pulseRateLowestId);
+                                          1, model!.pulseRateLowestId);
                                 },
                                 child: Container(
                                     padding: EdgeInsets.only(
                                         top: 16, bottom: 16, left: 8, right: 8),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: R.color.white,
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: Column(
@@ -319,13 +319,13 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                     ? '--'
                                                     : model.pulseRateLowest == 0
                                                         ? "--"
-                                                        : model.pulseRateLowest
+                                                        : model.pulseRateLowest!
                                                             .toInt()
                                                             .toString(),
                                                 style: TextStyle(
                                                     fontFamily: 'Viga',
                                                     color: model == null
-                                                        ? Colors.black
+                                                        ? R.color.black
                                                         : toColor(
                                                             model.lowestColor),
                                                     fontSize: 24,
@@ -333,15 +333,15 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                         FontWeight.w400)),
                                             SizedBox(width: 10),
                                             Image.asset(
-                                                'assets/images/line_low.png',
+                                                R.drawable.ic_line_low,
                                                 width: 20,
                                                 height: 15)
                                           ],
                                         ),
                                         SizedBox(height: 8),
-                                        Text('Thấp nhất',
+                                        Text(R.string.lowest.tr(),
                                             style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 15,
                                             )),
                                       ],
@@ -356,7 +356,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   padding: EdgeInsets.only(
                                       top: 16, bottom: 16, left: 8, right: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Column(
@@ -372,28 +372,28 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                   ? '--'
                                                   : model.pulseRateAverage == 0
                                                       ? '--'
-                                                      : model.pulseRateAverage
+                                                      : model.pulseRateAverage!
                                                           .toInt()
                                                           .toString(),
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
                                                   color: model == null
-                                                      ? Colors.black
+                                                      ? R.color.black
                                                       : toColor(
                                                           model.averageColor),
                                                   fontSize: 24,
                                                   fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
                                           Image.asset(
-                                              'assets/images/line_average.png',
+                                              R.drawable.ic_line_average,
                                               width: 20,
                                               height: 15)
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text('Trung bình',
+                                      Text(R.string.medium.tr(),
                                           style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 15,
                                             // fontWeight: FontWeight.w700
                                           )),
@@ -407,15 +407,15 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                               child: GestureDetector(
                                 onTap: () {
                                   BloodPressureDetailTabbarController.of(
-                                          context)
+                                          context)!
                                       .loadInputWithId(
-                                          1, model.pulseRateHighestId);
+                                          1, model!.pulseRateHighestId);
                                 },
                                 child: Container(
                                   padding: EdgeInsets.only(
                                       top: 16, bottom: 16, left: 8, right: 8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Column(
@@ -431,28 +431,28 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                                   ? '--'
                                                   : model.pulseRateHighest == 0
                                                       ? '--'
-                                                      : model.pulseRateHighest
+                                                      : model.pulseRateHighest!
                                                           .toInt()
                                                           .toString(),
                                               style: TextStyle(
                                                   fontFamily: 'Viga',
                                                   color: model == null
-                                                      ? Colors.black
+                                                      ? R.color.black
                                                       : toColor(
                                                           model.highestColor),
                                                   fontSize: 24,
                                                   fontWeight: FontWeight.w400)),
                                           SizedBox(width: 10),
                                           Image.asset(
-                                              'assets/images/line_high.png',
+                                              R.drawable.ic_line_high,
                                               width: 20,
                                               height: 15)
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Text('Cao nhất',
+                                      Text(R.string.highest.tr(),
                                           style: TextStyle(
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 15,
                                             // fontWeight: FontWeight.w700
                                           )),
@@ -469,9 +469,9 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Gần nhất',
+                              Text(R.string.gan_nhat.tr(),
                                   style: TextStyle(
-                                      color: textDark,
+                                      color: R.color.textDark,
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                               SizedBox(
@@ -479,18 +479,18 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                               ),
                               Row(
                                 children: [
-                                  Text('Nhập vào ',
+                                  Text('${R.string.enter_data.tr()} ',
                                       style: TextStyle(
-                                        color: grayCaption,
+                                        color: R.color.captionColorGray,
                                         fontSize: 12,
                                       )),
                                   Text(
                                       modelLastest == null
                                           ? '--'
                                           : convertToUTC(
-                                              modelLastest.date, 'dd/MM/yyyy'),
+                                              modelLastest.date!, 'dd/MM/yyyy'),
                                       style: TextStyle(
-                                        color: grayCaption,
+                                        color: R.color.captionColorGray,
                                         fontSize: 12,
                                       )),
                                 ],
@@ -513,7 +513,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                     child: Text(
                                         modelLastest == null
                                             ? '--'
-                                            : modelLastest.bloodPressureType,
+                                            : modelLastest.bloodPressureType!,
                                         style: TextStyle(
                                             color:
                                                 toColor(modelLastest.fontColor),
@@ -529,9 +529,9 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Huyết áp',
+                              Text(R.string.huyet_ap.tr(),
                                   style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 18,
                                   )),
                               SizedBox(height: 4),
@@ -540,18 +540,18 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   Text(
                                       modelLastest == null
                                           ? '--/--'
-                                          : modelLastest.systolic.toInt() ==
+                                          : modelLastest.systolic!.toInt() ==
                                                       0 &&
-                                                  modelLastest.diastolic
+                                                  modelLastest.diastolic!
                                                           .toInt() ==
                                                       0
                                               ? '--'
-                                              : '${modelLastest.systolic.toInt()}/${modelLastest.diastolic.toInt()}'
+                                              : '${modelLastest.systolic!.toInt()}/${modelLastest.diastolic!.toInt()}'
                                                   .toString(),
                                       style: TextStyle(
                                           fontFamily: 'Viga',
                                           color: modelLastest == null
-                                              ? Colors.black
+                                              ? R.color.black
                                               : toColor(modelLastest.color),
                                           fontSize: 32,
                                           fontWeight: FontWeight.w400)),
@@ -560,9 +560,9 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 12.0),
-                                    child: Text('mmHg',
+                                    child: Text(R.string.mm_hg.tr(),
                                         style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 18,
                                         )),
                                   ),
@@ -573,9 +573,9 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Nhịp tim',
+                              Text(R.string.heart_rate.tr(),
                                   style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 16,
                                   )),
                               SizedBox(height: 4),
@@ -584,14 +584,14 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   Text(
                                       modelLastest == null
                                           ? '--'
-                                          : modelLastest.pulseRate.toInt() == 0
+                                          : modelLastest.pulseRate!.toInt() == 0
                                               ? '--'
-                                              : modelLastest.pulseRate
+                                              : modelLastest.pulseRate!
                                                   .toInt()
                                                   .toString(),
                                       style: TextStyle(
                                           fontFamily: 'Viga',
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 32,
                                           fontWeight: FontWeight.w400)),
                                   SizedBox(
@@ -599,9 +599,9 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 14.0),
-                                    child: Text('lần/phút',
+                                    child: Text(R.string.time_per_minute.tr(),
                                         style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                         )),
                                   ),

@@ -11,7 +11,7 @@ class _AppApi implements AppApi {
 
   final Dio _dio;
 
-  String baseUrl;
+  String? baseUrl;
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&

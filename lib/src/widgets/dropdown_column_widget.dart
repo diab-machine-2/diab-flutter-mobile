@@ -5,21 +5,21 @@ import 'package:medical/src/utils/logger.dart';
 import 'package:medical/src/utils/utils.dart';
 
 class DropdownColumnWidget extends StatefulWidget {
-  final List<String> listData;
+  final List<String?> listData;
   final String currentValue;
-  final ValueChanged<String> selectedValue;
+  final ValueChanged<String?> selectedValue;
   final String label;
   final Color color;
   final String hintText;
 
   const DropdownColumnWidget(
-      {Key key,
-      @required this.listData,
-      @required this.currentValue,
-      @required this.selectedValue,
-      @required this.label,
-      @required this.color,
-      @required this.hintText})
+      {Key? key,
+      required this.listData,
+      required this.currentValue,
+      required this.selectedValue,
+      required this.label,
+      required this.color,
+      required this.hintText})
       : super(key: key);
 
   @override
@@ -27,8 +27,8 @@ class DropdownColumnWidget extends StatefulWidget {
 }
 
 class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
-  int _selectedPos;
-  List<String> list;
+  int? _selectedPos;
+  List<String?>? list;
 
   @override
   void initState() {
@@ -41,25 +41,25 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
     String firstElement = widget.hintText ?? "Chọn";
     if (Utils.isEmpty(widget.listData)) {
       try {
-        if (list.last != widget.listData.last) _selectedPos = null;
+        if (list!.last != widget.listData.last) _selectedPos = null;
       } catch (e) {
         logger.e(e.toString());
       }
       list = widget.listData;
-      if (list.contains(firstElement)) {
+      if (list!.contains(firstElement)) {
         if (_selectedPos == null)
-          _selectedPos = list.indexOf(widget.currentValue);
+          _selectedPos = list!.indexOf(widget.currentValue);
         return;
       }
-      list.insert(0, firstElement);
+      list!.insert(0, firstElement);
 
       if (_selectedPos == null)
-        _selectedPos = list.indexOf(widget.currentValue) ?? 0;
-      if (_selectedPos < 0) {
+        _selectedPos = list!.indexOf(widget.currentValue) ?? 0;
+      if (_selectedPos! < 0) {
         _selectedPos = 0;
       }
       if (Utils.isEmpty(list) && widget.selectedValue != null) {
-        String selectedValue = _selectedPos == 0 ? null : list[_selectedPos];
+        String? selectedValue = _selectedPos == 0 ? null : list![_selectedPos!];
         widget.selectedValue(selectedValue);
       }
     } else {
@@ -70,7 +70,7 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
   @override
   Widget build(BuildContext context) {
     initData();
-    int sizeList = list.length ?? 0;
+    int sizeList = list!.length ?? 0;
 
     return Container(
         alignment: Alignment.center,
@@ -103,7 +103,7 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Expanded(
-                            child: Text(list[0] ?? "",
+                            child: Text(list![0] ?? "",
                                 style: TextStyle(
                                   fontSize: 14.sp,
                                   color: R.color.gray,
@@ -128,10 +128,10 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
                               style: TextStyle(
                                   fontSize: 14.sp, color: R.color.gray),
                             ),
-                            value: _selectedPos != null && _selectedPos >= 0
-                                ? list[_selectedPos]
-                                : list[0],
-                            items: list
+                            value: _selectedPos != null && _selectedPos! >= 0
+                                ? list![_selectedPos!]
+                                : list![0],
+                            items: list!
                                 .map((item) => DropdownMenuItem<String>(
                                       child: Text(
                                         item ?? "",
@@ -148,11 +148,11 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
                                 : (value) {
                                     print(value);
                                     setState(() {
-                                      _selectedPos = list.indexOf(value);
+                                      _selectedPos = list!.indexOf(value);
                                     });
-                                    String selectedValue = _selectedPos == 0
+                                    String? selectedValue = _selectedPos == 0
                                         ? null
-                                        : list[_selectedPos];
+                                        : list![_selectedPos!];
                                     widget.selectedValue(selectedValue);
                                   }),
                       )),

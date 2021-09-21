@@ -4,15 +4,17 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HeartChart extends StatefulWidget {
-  HeartChart({Key key}) : super(key: key);
+  HeartChart({Key? key}) : super(key: key);
   @override
   HeartChartState createState() => HeartChartState();
 }
@@ -21,17 +23,17 @@ class HeartChartState extends State<HeartChart>
     with AutomaticKeepAliveClientMixin<HeartChart> {
   @override
   bool get wantKeepAlive => true;
-  BloodPressureTrendModel model;
+  BloodPressureTrendModel? model;
 
   int touchIndex = -1;
 
   int periodFilterType = 1;
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   @override
   void initState() {
     periodFilterType =
-        BloodPressureDetailTabbarController.of(context).periodFilterType;
+        BloodPressureDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -56,7 +58,7 @@ class HeartChartState extends State<HeartChart>
         child: BlocBuilder<BloodPressureBloc, BloodPressureState>(
             builder: (BuildContext context, BloodPressureState state) {
           currentContext = context;
-          BloodPressureTrendModel model;
+          BloodPressureTrendModel? model;
 
           if (state is BloodPressureInitial) {
             BlocProvider.of<BloodPressureBloc>(context).add(FetchPulseRateTrend(
@@ -76,7 +78,7 @@ class HeartChartState extends State<HeartChart>
                   height: 240,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.only(left: 18, right: 18),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +88,7 @@ class HeartChartState extends State<HeartChart>
                           children: [
                             Row(
                               children: [
-                                Text('Xu hướng nhịp tim',
+                                Text(R.string.heart_rate_trend.tr(),
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700)),
@@ -99,19 +101,19 @@ class HeartChartState extends State<HeartChart>
                             ? GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, '/add_bloodPressure',
+                                      context, NavigatorName.add_blood_pressure,
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                    'assets/images/blood_pressure_trend_empty.png'),
+                                    R.drawable.im_blood_pressure_trend_empty),
                               )
                             : Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
+                                      color: R.color.grey.withOpacity(0.5),
                                       spreadRadius: 1,
                                       blurRadius: 7,
                                       offset: Offset(0, 2),
@@ -130,7 +132,7 @@ class HeartChartState extends State<HeartChart>
   buildChart(BloodPressureTrendModel model) {
     final width = (MediaQuery.of(context).size.width - 200) / 5;
 
-    List<int> dates = [];
+    List<int?> dates = [];
     List<SubTrendItemModel> trends = [];
     model.trendItems.items.forEach((element) {
       dates.add(element.date);
@@ -139,9 +141,9 @@ class HeartChartState extends State<HeartChart>
           element.subTrendItems.length - 1, (index) => dates.add(null));
     });
 
-    double minY = trends.map<double>((e) => e.pulseRate).reduce(min);
+    double minY = trends.map<double>((e) => e.pulseRate ?? 0).reduce(min);
     minY = (minY * (trends.length == 1 ? 0.5 : 0.8)).roundToDouble();
-    double maxY = trends.map<double>((e) => e.pulseRate).reduce(max);
+    double maxY = trends.map<double>((e) => e.pulseRate ?? 0).reduce(max);
     maxY = (maxY * (trends.length == 1 ? 1.5 : 1.2)).roundToDouble();
     final jumpValue = (maxY - minY) / 4;
     List<int> number =
@@ -164,7 +166,7 @@ class HeartChartState extends State<HeartChart>
                     return Text(number[index].toString(),
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.normal));
                   })),
             ),
@@ -190,7 +192,7 @@ class HeartChartState extends State<HeartChart>
                                                     (width + 20))
                                                 .toDouble() -
                                             36,
-                                        color: Color(0xffDDDDDD),
+                                        color: R.color.grayComponentBorder,
                                       ),
                                     )))),
                     Container(
@@ -202,15 +204,17 @@ class HeartChartState extends State<HeartChart>
                         child: LineChart(
                           LineChartData(
                             lineTouchData: LineTouchData(
-                                 getTouchLineStart: (barData, index) => -double.infinity, // default: from bottom
-                                getTouchLineEnd: (barData, index) => double.infinity, //to top
+                                getTouchLineStart: (barData, index) =>
+                                    -double.infinity, // default: from bottom
+                                getTouchLineEnd: (barData, index) =>
+                                    double.infinity, //to top
                                 getTouchedSpotIndicator:
                                     (LineChartBarData barData,
                                         List<int> spotIndexes) {
                                   return spotIndexes.map((index) {
                                     return TouchedSpotIndicatorData(
                                       FlLine(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           strokeWidth: 0.5),
                                       FlDotData(
                                         show: false,
@@ -222,7 +226,7 @@ class HeartChartState extends State<HeartChart>
                                   showOnTopOfTheChartBoxArea: true,
                                   fitInsideVertically: true,
                                   fitInsideHorizontally: true,
-                                  tooltipBgColor: toColor(model.colors.first)
+                                  tooltipBgColor: toColor(model.colors!.first)
                                       .withOpacity(0.2),
                                   tooltipRoundedRadius: 8,
                                   getTooltipItems:
@@ -230,21 +234,25 @@ class HeartChartState extends State<HeartChart>
                                     return lineBarsSpot.map((lineBarSpot) {
                                       return LineTooltipItem(
                                         lineBarSpot.y.round().toString() +
-                                            ' lần/phút',
+                                            ' ${R.string.time_per_minute.tr()}',
                                         TextStyle(
-                                            color: Colors.black,
+                                            color: R.color.black,
                                             fontWeight: FontWeight.normal),
                                       );
                                     }).toList();
                                   },
                                 ),
-                                touchCallback: (FlTouchEvent event, LineTouchResponse lineTouch) {
+                                touchCallback: (FlTouchEvent event,
+                                    LineTouchResponse? lineTouch) {
                                   if (event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
-                                    final value = lineTouch.lineBarSpots[0].x;
-                                    setState(() {
-                                      touchIndex = value.toInt();
-                                    });
+                                    if (lineTouch?.lineBarSpots?.isNotEmpty == true) {
+                                      final double value =
+                                          lineTouch!.lineBarSpots!.first.x;
+                                      setState(() {
+                                        touchIndex = value.toInt();
+                                      });
+                                    }
                                   } else {
                                     touchIndex = -1;
                                   }
@@ -258,8 +266,8 @@ class HeartChartState extends State<HeartChart>
                                 getTextStyles: (context, value) {
                                   return TextStyle(
                                       color: touchIndex == value.toInt()
-                                          ? Colors.black
-                                          : Color(0xffC0C2C5),
+                                          ? R.color.black
+                                          : R.color.color0xffC0C2C5,
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal);
                                 },
@@ -298,7 +306,7 @@ class HeartChartState extends State<HeartChart>
           ]),
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/bloodPressureTable', arguments: {
+              Navigator.pushNamed(context, NavigatorName.blood_pressure_table, arguments: {
                 'title': '',
                 'bloodPressureType': null,
                 'periodFilterType': periodFilterType,
@@ -306,12 +314,12 @@ class HeartChartState extends State<HeartChart>
               });
             },
             child: Container(
-              color: Colors.transparent,
+              color: R.color.transparent,
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text('Xem chi tiết', style: TextStyle(color: mainColor)),
-                Image.asset('assets/images/icon_arrow_right.png',
-                    width: 20, height: 20)
+                Text(R.string.xem_chi_tiet.tr(),
+                    style: TextStyle(color: R.color.mainColor)),
+                Image.asset(R.drawable.ic_arrow_right, width: 20, height: 20)
               ]),
             ),
           )
@@ -331,10 +339,10 @@ class HeartChartState extends State<HeartChart>
         : [
             LineChartBarData(
               spots: List.generate(trends.length, (index) {
-                return FlSpot((index).toDouble(), trends[index].pulseRate);
+                return FlSpot((index).toDouble(), trends[index].pulseRate!);
               }),
               isCurved: false,
-              colors: [toColor(model.colors.first)],
+              colors: [toColor(model.colors!.first)],
               barWidth: 1,
               isStrokeCapRound: true,
               dotData: FlDotData(
@@ -345,9 +353,9 @@ class HeartChartState extends State<HeartChart>
                   getDotPainter: (spot, percent, barData, index) {
                     return FlDotCirclePainter(
                       radius: trends.length - 1 == index ? 6.5 : 4,
-                      color: toColor(model.colors.first),
+                      color: toColor(model.colors!.first),
                       strokeWidth: trends.length - 1 == index ? 18 : 0,
-                      strokeColor: toColor(model.colors.first).withOpacity(0.2),
+                      strokeColor: toColor(model.colors!.first).withOpacity(0.2),
                     );
                   }),
               belowBarData: BarAreaData(

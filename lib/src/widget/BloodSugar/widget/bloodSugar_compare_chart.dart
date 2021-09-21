@@ -4,17 +4,19 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_compare.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarCompareChart extends StatefulWidget {
-  BloodSugarCompareChart({Key key}) : super(key: key);
+  BloodSugarCompareChart({Key? key}) : super(key: key);
   @override
   BloodSugarCompareChartState createState() => BloodSugarCompareChartState();
 }
@@ -23,28 +25,26 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
     with AutomaticKeepAliveClientMixin<BloodSugarCompareChart> {
   @override
   bool get wantKeepAlive => true;
-  BuildContext currentContext;
+  late BuildContext currentContext;
   int periodFilterType = 1;
-  String name = 'Trước & sau ăn';
+  String name = R.string.before_and_after_eating.tr();
   int comparerType = 1;
   @override
   void initState() {
     periodFilterType =
-        BloodSugarDetailTabbarController.of(context).periodFilterType;
+        BloodSugarDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    // final width = MediaQuery.of(context).size.width;
-    // final height = 37.0;
     return BlocProvider<GlucoseBloc>(
         create: (context) => GlucoseBloc(),
         child: BlocBuilder<GlucoseBloc, GlucoseState>(
             builder: (BuildContext context, GlucoseState state) {
           currentContext = context;
-          List<ComparerModel> model;
+          List<ComparerModel>? model;
 
           if (state is GlucoseInitial) {
             BlocProvider.of<GlucoseBloc>(context).add(FetchComparerGlucose(
@@ -65,7 +65,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                   height: 530,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.only(left: 18, right: 18, bottom: 40),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +75,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                           children: [
                             Row(
                               children: [
-                                Text('So sánh',
+                                Text(R.string.compare.tr(),
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700)),
@@ -86,9 +86,9 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                 padding: const EdgeInsets.only(
                                     left: 10.0, right: 10.0),
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(200.0),
-                                    border: Border.all(color: grayBorder)),
+                                    border: Border.all(color: R.color.grayBorder)),
                                 child: GestureDetector(
                                   onTap: () {
                                     showActionCompareFilter(context);
@@ -100,7 +100,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                           Text(name),
                                           SizedBox(width: 2),
                                           Image.asset(
-                                              'assets/images/chevron_down.png',
+                                              R.drawable.ic_chevron_down,
                                               width: 24,
                                               height: 24)
                                         ],
@@ -113,19 +113,19 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                             ? GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, '/add_bloodSugar',
+                                      context, NavigatorName.add_blood_sugar,
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                    'assets/images/glucose_trend.png'),
+                                    R.drawable.im_glucose_trend),
                               )
                             : Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
+                                      color: R.color.grey.withOpacity(0.5),
                                       spreadRadius: 1,
                                       blurRadius: 7,
                                       offset: Offset(
@@ -134,10 +134,6 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                   ],
                                 ),
                                 child: buildChart(model)),
-                        // Stack(children: [
-                        //   // Image.asset('assets/images/compare_chart.png',
-                        //   //     width: 380, height: 380)
-                        // ]),
                       ]),
                 );
         }));
@@ -148,12 +144,12 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
 
     double minY = model
         .map<double>((e) =>
-            (e.postGlucose < e.preGlucose ? e.postGlucose : e.preGlucose))
+            (e.postGlucose! < e.preGlucose! ? e.postGlucose! : e.preGlucose!))
         .reduce(min);
     minY = (minY * (model.length == 1 ? 0.5 : 0.8)).roundToDouble();
     double maxY = model
         .map<double>((e) =>
-            (e.postGlucose > e.preGlucose ? e.postGlucose : e.preGlucose))
+            (e.postGlucose! > e.preGlucose! ? e.postGlucose! : e.preGlucose!))
         .reduce(max);
     maxY = (maxY * (model.length == 1 ? 1.5 : 1.2)).roundToDouble();
     final jumpValue = (maxY - minY) / 4;
@@ -170,7 +166,6 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
             Container(
               width: 30,
               height: 300,
-              //color: Colors.red,
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -178,7 +173,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                     return Text(number[index].toString(),
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black,
+                            color: R.color.black,
                             fontWeight: FontWeight.normal));
                   })),
             ),
@@ -204,7 +199,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                                   (width + 20))
                                               .toDouble() -
                                           36,
-                                      color: Color(0xffDDDDDD),
+                                      color: R.color.grayComponentBorder,
                                     ),
                                   )))),
                   Container(
@@ -221,7 +216,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                             barTouchData: BarTouchData(
                               enabled: true,
                               touchTooltipData: BarTouchTooltipData(
-                                tooltipBgColor: Color(0xffFDB913),
+                                tooltipBgColor: R.color.yellow,
                                 tooltipPadding: const EdgeInsets.only(
                                     left: 12, right: 12, top: 4, bottom: 0),
                                 tooltipMargin: 22,
@@ -254,7 +249,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                                         .round())
                                                     .toString()),
                                     TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   );
@@ -265,15 +260,15 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                               show: true,
                               bottomTitles: SideTitles(
                                 showTitles: true,
-                                getTextStyles: (context, value) => const TextStyle(
-                                    color: Colors.black,
+                                getTextStyles: (context, value) => TextStyle(
+                                    color: R.color.black,
                                     fontSize: 14,
                                     fontWeight: FontWeight.normal),
                                 reservedSize: -16,
                                 margin: 16,
                                 getTitles: (double value) {
                                   return convertToUTC(
-                                          model[value.toInt()].date, 'dd/MM') +
+                                          model[value.toInt()].date!, 'dd/MM') +
                                       (model[value.toInt()].description == null
                                           ? ''
                                           : '\n${model[value.toInt()].description}');
@@ -281,8 +276,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                               ),
                               leftTitles: SideTitles(
                                   showTitles: false,
-                                  getTextStyles: (context, value) => const TextStyle(
-                                      color: Colors.black, fontSize: 14)),
+                                  getTextStyles: (context, value) => TextStyle(
+                                      color: R.color.black, fontSize: 14)),
                             ),
                             borderData: FlBorderData(
                               show: false,
@@ -298,26 +293,26 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
           SizedBox(height: comparerType == 1 ? 56 : 36),
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             Row(children: [
-              Container(width: 14, height: 14, color: Color(0xff01645A)),
+              Container(width: 14, height: 14, color: R.color.mainColor),
               SizedBox(width: 8),
-              Text(comparerType == 1 ? 'Truớc ăn' : 'Truớc tập luyện')
+              Text(comparerType == 1 ? R.string.truoc_an.tr() : R.string.truoc_tap_luyen.tr())
             ]),
             Row(children: [
-              Container(width: 14, height: 14, color: Color(0xffFDB913)),
+              Container(width: 14, height: 14, color: R.color.yellow),
               SizedBox(width: 8),
-              Text(comparerType == 1 ? 'Sau ăn' : 'Sau tập luyện')
+              Text(comparerType == 1 ? R.string.sau_an.tr() : R.string.sau_tap_luyen.tr())
             ])
           ]),
           SizedBox(height: 16),
           GestureDetector(
             onTap: () {
               print(name);
-              Navigator.pushNamed(context, '/bloodSugarCompareTable',
+              Navigator.pushNamed(context, NavigatorName.blood_sugar_compare_table,
                   arguments: {'model': model, 'title': name});
             },
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text('Xem chi tiết', style: TextStyle(color: mainColor)),
-              Image.asset('assets/images/icon_arrow_right.png',
+              Text(R.string.xem_chi_tiet.tr(), style: TextStyle(color: R.color.mainColor)),
+              Image.asset(R.drawable.ic_arrow_right,
                   width: 20, height: 20)
             ]),
           )
@@ -335,13 +330,13 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
       barRods: [
         BarChartRodData(
           borderRadius: BorderRadius.circular(0),
-          y: model[index].preGlucose,
+          y: model[index].preGlucose!,
           colors: [toColor(model[index].preGlucoseColor)],
           width: 8,
         ),
         BarChartRodData(
           borderRadius: BorderRadius.circular(0),
-          y: model[index].postGlucose,
+          y: model[index].postGlucose!,
           colors: [toColor(model[index].postGlucoseColor)],
           width: 8,
         )
@@ -350,7 +345,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   }
 
   showDialog(BuildContext context) {
-    //Navigator.pushNamed(context, '/hba1c_tabble');
+    //Navigator.pushNamed(context, NavigatorName.hba1c_tabble);
     Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
         pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
@@ -363,15 +358,17 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => ActionListCompare(
             selectedIndex: comparerType,
             callback: (value, index) {
-              name = value;
-              comparerType = index == 0 ? 1 : 2;
-              reloadData(periodFilterType);
+              if (value != null) {
+                name = value;
+                comparerType = index == 0 ? 1 : 2;
+                reloadData(periodFilterType);
+              }
             }));
   }
 

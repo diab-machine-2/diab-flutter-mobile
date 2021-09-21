@@ -5,7 +5,8 @@ class Const {
   static const String API_URL = "${HOST_URL}api/";
   static const String URL_WEBSITE_DEV = "https://www.ninasoft.com.vn/";
 
-  static const String HOST_GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/";
+  static const String HOST_GOOGLE_MAP_URL =
+      "https://maps.googleapis.com/maps/api/";
   static const String ANDROID_KEY = "AIzaSyAVRrZKBfIphjlPiua9y5Pk4CJ3oaddGp0";
   static const String IOS_KEY = "AIzaSyB6P1Tq9lnnZPjkUJmAlTjUE1uqMVfTLFA";
   static const String PLACE_KEY = "AIzaSyC7tPpmwviNXdX0_krWw5QdxOVGOJgdFmo";
@@ -53,6 +54,8 @@ class Const {
   static const String YEAR = "yyyy";
   static const String HOUR_MIN = "hh:mm";
   static const String TIME = "hh:mm aa";
+
+  static const String key_app_language = "AppLanguage";
 
   static const int TYPE_WEB = 0;
   static const int TYPE_EMAIL = 1;

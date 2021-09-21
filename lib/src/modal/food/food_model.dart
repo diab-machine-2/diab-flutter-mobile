@@ -2,38 +2,38 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 class FoodModel {
-  final String id;
-  final String name;
+  final String? id;
+  final String? name;
   final double portion;
-  final String unit;
-  final double calorie;
-  final double glucose;
-  final double lipid;
-  final double protein;
-  final double fibre;
-  final ImagesModel image;
-  final bool liked;
-  final String text;
-  final String description;
-  final String foodCategoryId;
+  final String? unit;
+  final double? calorie;
+  final double? glucose;
+  final double? lipid;
+  final double? protein;
+  final double? fibre;
+  final ImagesModel? image;
+  final bool? liked;
+  final String? text;
+  final String? description;
+  final String? foodCategoryId;
   final double quantity;
 
   FoodModel(
-      {@required this.id,
-      @required this.name,
-      @required this.portion,
-      @required this.unit,
-      @required this.calorie,
-      @required this.glucose,
-      @required this.lipid,
-      @required this.protein,
-      @required this.fibre,
-      @required this.image,
-      @required this.liked,
-      @required this.text,
-      @required this.description,
-      @required this.foodCategoryId,
-      @required this.quantity});
+      {required this.id,
+      required this.name,
+      required this.portion,
+      required this.unit,
+      required this.calorie,
+      required this.glucose,
+      required this.lipid,
+      required this.protein,
+      required this.fibre,
+      required this.image,
+      required this.liked,
+      required this.text,
+      required this.description,
+      required this.foodCategoryId,
+      required this.quantity});
   @override
   factory FoodModel.fromJson(Map<String, dynamic> json) {
     return FoodModel(

@@ -1,24 +1,20 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/widget/Food/food_description.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/notification/notification.dart';
-import 'package:medical/src/widget/tabbar/action_panel.dart';
-import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class NotificationTabbarController extends StatefulWidget {
   @override
   _NotificationTabbarControllerState createState() =>
       _NotificationTabbarControllerState();
 
-  static _NotificationTabbarControllerState of(BuildContext context) {
-    final _NotificationTabbarControllerState navigator =
+  static _NotificationTabbarControllerState? of(BuildContext context) {
+    final _NotificationTabbarControllerState? navigator =
         context.findAncestorStateOfType<_NotificationTabbarControllerState>();
     return navigator;
   }
@@ -27,7 +23,7 @@ class NotificationTabbarController extends StatefulWidget {
 class _NotificationTabbarControllerState
     extends State<NotificationTabbarController>
     with SingleTickerProviderStateMixin {
-  TabController _tabController;
+  TabController? _tabController;
   GlobalKey<CustomActionDescriptionState> customActionDesKey = GlobalKey();
 
   GlobalKey<FoodOverviewControllerState> overviewKey = GlobalKey();
@@ -53,39 +49,39 @@ class _NotificationTabbarControllerState
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Container(
-        color: Color(0xfff5f5f5),
+        color: R.color.color0xfff5f5f5,
         child: Column(children: [
           CustomAppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: R.color.transparent,
             title: Text('Thông báo',
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: textDark)),
+                    color: R.color.textDark)),
             leadingIcon: IconButton(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                icon: Icon(Icons.arrow_back, color: textDark),
+                splashColor: R.color.transparent,
+                highlightColor: R.color.transparent,
+                icon: Icon(Icons.arrow_back, color: R.color.textDark),
                 onPressed: () {
                   Navigator.pop(context);
                 }),
           ),
           TabBar(
               isScrollable: true,
-              labelColor: mainColor,
+              labelColor: R.color.mainColor,
               labelStyle: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w600, color: mainColor),
-              unselectedLabelColor: captionColorGray,
+                  fontSize: 14, fontWeight: FontWeight.w600, color: R.color.mainColor),
+              unselectedLabelColor: R.color.captionColorGray,
               unselectedLabelStyle:
                   TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
               labelPadding: EdgeInsets.all(0),
               tabs: [
-                SizedBox(width: width / 3, child: Tab(text: 'Tất cả')),
-                SizedBox(width: width / 3, child: Tab(text: 'Chưa đọc')),
-                SizedBox(width: width / 3, child: Tab(text: 'Đã đọc')),
+                SizedBox(width: width / 3, child: Tab(text: R.string.all.tr())),
+                SizedBox(width: width / 3, child: Tab(text: R.string.not_read_yet.tr())),
+                SizedBox(width: width / 3, child: Tab(text: R.string.read.tr())),
               ],
               controller: _tabController,
-              indicatorColor: mainColor,
+              indicatorColor: R.color.mainColor,
               indicatorWeight: 3),
           Expanded(
               child: TabBarView(controller: _tabController, children: [

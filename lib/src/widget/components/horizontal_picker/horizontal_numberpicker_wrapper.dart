@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'horizontal_numberpicker.dart';
 
 ///对HorizontalNumberPicker进行简单包装，添加顶部的选中值显示和两边的半透明遮罩
@@ -22,10 +23,10 @@ class HorizontalNumberPickerWrapper extends StatefulWidget {
   final void Function(int) onSelectedChanged;
 
   ///返回上方大标题所展示的数值字符串
-  String Function(int) titleTransformer;
+  String Function(int?)? titleTransformer;
 
   ///返回标尺刻度所展示的数值字符串
-  final String Function(int) scaleTransformer;
+  final String Function(int)? scaleTransformer;
 
   ///标题文字颜色
   final Color titleTextColor;
@@ -40,7 +41,7 @@ class HorizontalNumberPickerWrapper extends StatefulWidget {
   final Color scaleTextColor;
 
   HorizontalNumberPickerWrapper({
-    Key key,
+    Key? key,
     this.initialValue = 500,
     this.minValue = 100,
     this.maxValue = 900,
@@ -49,7 +50,7 @@ class HorizontalNumberPickerWrapper extends StatefulWidget {
     this.widgetWidth = 200,
     this.subGridCountPerGrid = 10,
     this.subGridWidth = 8,
-    @required this.onSelectedChanged,
+    required this.onSelectedChanged,
     this.titleTransformer,
     this.scaleTransformer,
     this.titleTextColor = const Color(0xFF3995FF),
@@ -72,7 +73,7 @@ class HorizontalNumberPickerWrapper extends StatefulWidget {
 
 class HorizontalNumberPickerWrapperState
     extends State<HorizontalNumberPickerWrapper> {
-  int _selectedValue;
+  int? _selectedValue;
 
   @override
   void initState() {
@@ -101,7 +102,7 @@ class HorizontalNumberPickerWrapperState
           textBaseline: TextBaseline.alphabetic,
           children: <Widget>[
             Text(
-              widget.titleTransformer(_selectedValue),
+              widget.titleTransformer!(_selectedValue),
               style: TextStyle(
                   color: widget.titleTextColor,
                   fontSize: 24,
@@ -151,8 +152,8 @@ class HorizontalNumberPickerWrapperState
                 height: numberPickerHeight.toDouble(),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                    Colors.white.withOpacity(0.8),
-                    Colors.white.withOpacity(0)
+                    R.color.white.withOpacity(0.8),
+                    R.color.white.withOpacity(0)
                   ]),
                 ),
               ),
@@ -164,8 +165,8 @@ class HorizontalNumberPickerWrapperState
                 height: numberPickerHeight.toDouble(),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                    Colors.white.withOpacity(0),
-                    Colors.white.withOpacity(0.8)
+                    R.color.white.withOpacity(0),
+                    R.color.white.withOpacity(0.8)
                   ]),
                 ),
               ),

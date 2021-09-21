@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/login/login_model.dart';
 import 'package:medical/src/modal/register/register_model.dart';
 import 'package:medical/src/utils/logger.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
-import 'package:medical/src/widget/helper/http_helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LoginClient extends FetchClient {
   Future<LoginModel> login(Map<String, dynamic> params) async {
@@ -26,7 +27,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -46,7 +47,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -55,7 +56,7 @@ class LoginClient extends FetchClient {
       Map<String, dynamic> params = Map<String, String>();
       params['phone'] = phone;
       final Response<dynamic> response = await super
-          .fetchData(baseIdentify: true, url: '/Otp/Resend', params: params);
+          .fetchData(baseIdentify: true, url: '/Otp/Resend', params: params as Map<String, String?>?);
       if (response.statusCode == 200) {
         return LoginModel.fromJson(response.data['data']);
       } else {
@@ -65,11 +66,11 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> verifyOTP(String phone, String otp) async {
+  Future<bool> verifyOTP(String? phone, String otp) async {
     try {
       final Response response = await super.putData(
           baseIdentify: true,
@@ -84,7 +85,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -104,11 +105,11 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> syncToken(String deviceID, String token, int platform) async {
+  Future<bool> syncToken(String? deviceID, String? token, int platform) async {
     try {
       final Response response = await super.postUri(
           baseOption: true,
@@ -130,7 +131,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -150,7 +151,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -171,7 +172,7 @@ class LoginClient extends FetchClient {
       logger.e(e.toString());
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -191,11 +192,11 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> verifyOTPRecover(String phoneNumber, String token) async {
+  Future<bool> verifyOTPRecover(String? phoneNumber, String token) async {
     try {
       final Response<dynamic> response = await super.postUri(
           baseIdentify: true,
@@ -211,12 +212,12 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   Future<bool> resetPassword(
-      String phoneNumber, String password, String token) async {
+      String? phoneNumber, String password, String? token) async {
     try {
       final Response<dynamic> response = await super.postUri(
           baseIdentify: true,
@@ -236,7 +237,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -259,7 +260,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -277,11 +278,11 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<String> fetchTermAndCondition() async {
+  Future<String?> fetchTermAndCondition() async {
     try {
       final Response<dynamic> response = await super.fetchData(
         url: '/App/TermAndCondition',
@@ -295,7 +296,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -315,7 +316,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -335,7 +336,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -355,7 +356,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -375,7 +376,7 @@ class LoginClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

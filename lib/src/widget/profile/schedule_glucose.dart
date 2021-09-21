@@ -2,17 +2,16 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medical/src/modal/user/goal_info.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/schedule_glucose_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/components/horizontal_picker/horizontal_numberpicker_wrapper.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ScheduleGlucoseController extends StatefulWidget {
   @override
@@ -22,10 +21,10 @@ class ScheduleGlucoseController extends StatefulWidget {
 
 class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
   int selected = 0;
-  ScheduleModel scheduleDay;
-  ScheduleGlucoseModel model;
-  ScheduleGlucoseModel tempModel;
-  ScheduleGlucoseTimeModel timeModel;
+  ScheduleModel? scheduleDay;
+  ScheduleGlucoseModel? model;
+  ScheduleGlucoseModel? tempModel;
+  ScheduleGlucoseTimeModel? timeModel;
 
   List<bool> hasData = [false, false, false, false, false, false, false];
 
@@ -72,72 +71,72 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
 
   getScheduleDay() {
     if (selected == 0) {
-      scheduleDay = model.monday;
+      scheduleDay = model!.monday;
     } else if (selected == 1) {
-      scheduleDay = model.tuesday;
+      scheduleDay = model!.tuesday;
     } else if (selected == 2) {
-      scheduleDay = model.wednesday;
+      scheduleDay = model!.wednesday;
     } else if (selected == 3) {
-      scheduleDay = model.thursday;
+      scheduleDay = model!.thursday;
     } else if (selected == 4) {
-      scheduleDay = model.friday;
+      scheduleDay = model!.friday;
     } else if (selected == 5) {
-      scheduleDay = model.saturday;
+      scheduleDay = model!.saturday;
     } else if (selected == 6) {
-      scheduleDay = model.sunday;
+      scheduleDay = model!.sunday;
     }
   }
 
   getHasData() {
-    hasData[0] = model.monday.isBeforeBreakfast ||
-        model.monday.isAfterBreakfast ||
-        model.monday.isBeforeLunch ||
-        model.monday.isAfterLunch ||
-        model.monday.isBeforeDinner ||
-        model.monday.isAfterDinner ||
-        model.monday.isBeforeSleeping;
-    hasData[1] = model.tuesday.isBeforeBreakfast ||
-        model.tuesday.isAfterBreakfast ||
-        model.tuesday.isBeforeLunch ||
-        model.tuesday.isAfterLunch ||
-        model.tuesday.isBeforeDinner ||
-        model.tuesday.isAfterDinner ||
-        model.tuesday.isBeforeSleeping;
-    hasData[2] = model.wednesday.isBeforeBreakfast ||
-        model.wednesday.isAfterBreakfast ||
-        model.wednesday.isBeforeLunch ||
-        model.wednesday.isAfterLunch ||
-        model.wednesday.isBeforeDinner ||
-        model.wednesday.isAfterDinner ||
-        model.wednesday.isBeforeSleeping;
-    hasData[3] = model.thursday.isBeforeBreakfast ||
-        model.thursday.isAfterBreakfast ||
-        model.thursday.isBeforeLunch ||
-        model.thursday.isAfterLunch ||
-        model.thursday.isBeforeDinner ||
-        model.thursday.isAfterDinner ||
-        model.thursday.isBeforeSleeping;
-    hasData[4] = model.friday.isBeforeBreakfast ||
-        model.friday.isAfterBreakfast ||
-        model.friday.isBeforeLunch ||
-        model.friday.isAfterLunch ||
-        model.friday.isBeforeDinner ||
-        model.friday.isAfterDinner ||
-        model.friday.isBeforeSleeping;
-    hasData[5] = model.saturday.isBeforeBreakfast ||
-        model.saturday.isAfterBreakfast ||
-        model.saturday.isBeforeLunch ||
-        model.saturday.isAfterLunch ||
-        model.saturday.isBeforeDinner ||
-        model.saturday.isAfterDinner ||
-        model.saturday.isBeforeSleeping;
-    hasData[6] = model.sunday.isBeforeBreakfast ||
-        model.sunday.isAfterBreakfast ||
-        model.sunday.isBeforeLunch ||
-        model.sunday.isAfterLunch ||
-        model.sunday.isBeforeDinner ||
-        model.sunday.isAfterDinner ||
-        model.sunday.isBeforeSleeping;
+    hasData[0] = model!.monday!.isBeforeBreakfast! ||
+        model!.monday!.isAfterBreakfast! ||
+        model!.monday!.isBeforeLunch! ||
+        model!.monday!.isAfterLunch! ||
+        model!.monday!.isBeforeDinner! ||
+        model!.monday!.isAfterDinner! ||
+        model!.monday!.isBeforeSleeping!;
+    hasData[1] = model!.tuesday!.isBeforeBreakfast! ||
+        model!.tuesday!.isAfterBreakfast! ||
+        model!.tuesday!.isBeforeLunch! ||
+        model!.tuesday!.isAfterLunch! ||
+        model!.tuesday!.isBeforeDinner! ||
+        model!.tuesday!.isAfterDinner! ||
+        model!.tuesday!.isBeforeSleeping!;
+    hasData[2] = model!.wednesday!.isBeforeBreakfast! ||
+        model!.wednesday!.isAfterBreakfast! ||
+        model!.wednesday!.isBeforeLunch! ||
+        model!.wednesday!.isAfterLunch! ||
+        model!.wednesday!.isBeforeDinner! ||
+        model!.wednesday!.isAfterDinner! ||
+        model!.wednesday!.isBeforeSleeping!;
+    hasData[3] = model!.thursday!.isBeforeBreakfast! ||
+        model!.thursday!.isAfterBreakfast! ||
+        model!.thursday!.isBeforeLunch! ||
+        model!.thursday!.isAfterLunch! ||
+        model!.thursday!.isBeforeDinner! ||
+        model!.thursday!.isAfterDinner! ||
+        model!.thursday!.isBeforeSleeping!;
+    hasData[4] = model!.friday!.isBeforeBreakfast! ||
+        model!.friday!.isAfterBreakfast! ||
+        model!.friday!.isBeforeLunch! ||
+        model!.friday!.isAfterLunch! ||
+        model!.friday!.isBeforeDinner! ||
+        model!.friday!.isAfterDinner! ||
+        model!.friday!.isBeforeSleeping!;
+    hasData[5] = model!.saturday!.isBeforeBreakfast! ||
+        model!.saturday!.isAfterBreakfast! ||
+        model!.saturday!.isBeforeLunch! ||
+        model!.saturday!.isAfterLunch! ||
+        model!.saturday!.isBeforeDinner! ||
+        model!.saturday!.isAfterDinner! ||
+        model!.saturday!.isBeforeSleeping!;
+    hasData[6] = model!.sunday!.isBeforeBreakfast! ||
+        model!.sunday!.isAfterBreakfast! ||
+        model!.sunday!.isBeforeLunch! ||
+        model!.sunday!.isAfterLunch! ||
+        model!.sunday!.isBeforeDinner! ||
+        model!.sunday!.isAfterDinner! ||
+        model!.sunday!.isBeforeSleeping!;
   }
 
   @override
@@ -166,14 +165,14 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: [
                 Container(
-                  color: Color(0xffF4DBBD),
+                  color: R.color.color0xffF4DBBD,
                   child: Stack(
                       alignment: AlignmentDirectional.bottomEnd,
                       children: [
                         SafeArea(
                           bottom: false,
                           child: Image.asset(
-                              'assets/images/schedule_glucose_bg.png',
+                              R.drawable.im_schedule_glucose,
                               height: 220),
                         ),
                         Padding(
@@ -188,16 +187,16 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                       RichText(
                                         text: TextSpan(
                                           text:
-                                              'Thời điểm đo đường huyết mặc định là ',
+                                              '${R.string.default_time_to_measure_blood_sugar.tr()} ',
                                           style: TextStyle(
-                                              color: Color(0xff666666)),
+                                              color: R.color.primaryGreyColor),
                                           children: <TextSpan>[
                                             TextSpan(
                                                 text: timeModel == null
-                                                    ? '30p trước ăn, 60p sau ăn và 30p trước khi đi ngủ'
-                                                    : '${timeModel.beforeEat}p trước ăn, ${timeModel.afterEat}p sau ăn và ${timeModel.beforeSleeping}p trước khi đi ngủ',
+                                                    ? R.string.suggest_time_to_measure_blood_sugar.tr()
+                                                    : R.string.time_to_measure_blood_sugar.tr(args: ['${timeModel!.beforeEat}', '${timeModel!.afterEat}', '${timeModel!.beforeSleeping}']),
                                                 style: TextStyle(
-                                                    color: Colors.black,
+                                                    color: R.color.black,
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 14))
                                           ],
@@ -209,12 +208,12 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                           GestureDetector(
                                             onTap: () {
                                               Navigator.pushNamed(context,
-                                                  '/setting_schedule_glucose');
+                                                  NavigatorName.setting_schedule_glucose);
                                             },
                                             child: Container(
                                                 height: 36,
                                                 decoration: BoxDecoration(
-                                                    color: Colors.white,
+                                                    color: R.color.white,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             18)),
@@ -223,13 +222,13 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                                 child: Row(
                                                   children: [
                                                     Image.asset(
-                                                        'assets/images/alarm.png',
+                                                        R.drawable.ic_alarm,
                                                         width: 24,
                                                         height: 24),
                                                     SizedBox(width: 8),
-                                                    Text('Thiết lập',
+                                                    Text(R.string.setup.tr(),
                                                         style: TextStyle(
-                                                            color: mainColor,
+                                                            color: R.color.mainColor,
                                                             fontSize: 14,
                                                             fontWeight:
                                                                 FontWeight
@@ -268,33 +267,33 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                   width: 36,
                                   decoration: BoxDecoration(
                                       color: !hasData[index]
-                                          ? Colors.transparent
-                                          : Color(0xffE4F5F5),
+                                          ? R.color.transparent
+                                          : R.color.color0xFFE4F5F5,
                                       border: Border.all(
                                           color: selected == index
                                               ? (!hasData[index]
-                                                  ? Colors.black
-                                                  : mainColor)
+                                                  ? R.color.black
+                                                  : R.color.mainColor)
                                               : (!hasData[index]
-                                                  ? Color(0xffE2E4E7)
-                                                  : Color(0xffE4F5F5))),
+                                                  ? R.color.grayBorder
+                                                  : R.color.color0xFFE4F5F5)),
                                       borderRadius: BorderRadius.circular(18)),
                                   child: Center(
                                       child: Text(
-                                          index == 6 ? 'CN' : 'T${index + 2}',
+                                          index == 6 ? R.string.sunday.tr() : R.string.day_in_week.tr(args: ['${index + 2}']),
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: selected == index
                                                   ? (!hasData[index]
-                                                      ? Colors.black
-                                                      : mainColor)
+                                                      ? R.color.black
+                                                      : R.color.mainColor)
                                                   : (!hasData[index]
-                                                      ? Color(0xff666666)
-                                                      : mainColor))))),
+                                                      ? R.color.primaryGreyColor
+                                                      : R.color.mainColor))))),
                             );
                           }),
                         )),
-                Container(height: 0.5, color: Color(0xff737072)),
+                Container(height: 0.5, color: R.color.color0xff737072),
                 model == null
                     ? SizedBox()
                     : Padding(
@@ -303,27 +302,27 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Buổi sáng',
+                            Text(R.string.the_morning.tr(),
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             SizedBox(height: 16),
                             Row(children: [
                               buildItem(
-                                  scheduleDay.isBeforeBreakfast,
-                                  'Trước ăn',
-                                  scheduleDay.isBeforeBreakfast
-                                      ? 'assets/images/before_eat_selected.png'
-                                      : 'assets/images/before_eat.png',
+                                  scheduleDay!.isBeforeBreakfast!,
+                                  R.string.truoc_an.tr(),
+                                  scheduleDay!.isBeforeBreakfast!
+                                      ? R.drawable.ic_before_eat_selected
+                                      : R.drawable.ic_before_eat,
                                   0),
                               SizedBox(width: 16),
                               buildItem(
-                                  scheduleDay.isAfterBreakfast,
-                                  'Sau ăn',
-                                  scheduleDay.isAfterBreakfast
-                                      ? 'assets/images/after_eat_selected.png'
-                                      : 'assets/images/after_eat.png',
+                                  scheduleDay!.isAfterBreakfast!,
+                                  R.string.sau_an.tr(),
+                                  scheduleDay!.isAfterBreakfast!
+                                      ? R.drawable.ic_after_eat_selected
+                                      : R.drawable.ic_after_eat,
                                   1)
                             ])
                           ],
@@ -337,27 +336,27 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Buổi trưa',
+                            Text(R.string.the_noon.tr(),
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             SizedBox(height: 16),
                             Row(children: [
                               buildItem(
-                                  scheduleDay.isBeforeLunch,
-                                  'Trước ăn',
-                                  scheduleDay.isBeforeLunch
-                                      ? 'assets/images/before_eat_selected.png'
-                                      : 'assets/images/before_eat.png',
+                                  scheduleDay!.isBeforeLunch!,
+                                  R.string.truoc_an.tr(),
+                                  scheduleDay!.isBeforeLunch!
+                                      ? R.drawable.ic_before_eat_selected
+                                      : R.drawable.ic_before_eat,
                                   2),
                               SizedBox(width: 16),
                               buildItem(
-                                  scheduleDay.isAfterLunch,
-                                  'Sau ăn',
-                                  scheduleDay.isAfterLunch
-                                      ? 'assets/images/after_eat_selected.png'
-                                      : 'assets/images/after_eat.png',
+                                  scheduleDay!.isAfterLunch!,
+                                  R.string.sau_an.tr(),
+                                  scheduleDay!.isAfterLunch!
+                                      ? R.drawable.ic_after_eat_selected
+                                      : R.drawable.ic_after_eat,
                                   3)
                             ])
                           ],
@@ -371,27 +370,27 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Buổi tối',
+                            Text(R.string.the_evening.tr(),
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             SizedBox(height: 16),
                             Row(children: [
                               buildItem(
-                                  scheduleDay.isBeforeDinner,
-                                  'Trước ăn',
-                                  scheduleDay.isBeforeDinner
-                                      ? 'assets/images/before_eat_selected.png'
-                                      : 'assets/images/before_eat.png',
+                                  scheduleDay!.isBeforeDinner!,
+                                  R.string.truoc_an.tr(),
+                                  scheduleDay!.isBeforeDinner!
+                                      ? R.drawable.ic_before_eat_selected
+                                      : R.drawable.ic_before_eat,
                                   4),
                               SizedBox(width: 16),
                               buildItem(
-                                  scheduleDay.isAfterDinner,
-                                  'Sau ăn',
-                                  scheduleDay.isAfterDinner
-                                      ? 'assets/images/after_eat_selected.png'
-                                      : 'assets/images/after_eat.png',
+                                  scheduleDay!.isAfterDinner!,
+                                  R.string.sau_an.tr(),
+                                  scheduleDay!.isAfterDinner!
+                                      ? R.drawable.ic_after_eat_selected
+                                      : R.drawable.ic_after_eat,
                                   5)
                             ])
                           ],
@@ -405,20 +404,20 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Giờ ngủ',
+                            Text(R.string.sleep_time.tr(),
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             SizedBox(height: 16),
                             Row(
                               children: [
                                 buildItem(
-                                    scheduleDay.isBeforeSleeping,
-                                    'Trước khi ngủ',
-                                    scheduleDay.isBeforeSleeping
-                                        ? 'assets/images/before_sleep_selected.png'
-                                        : 'assets/images/before_sleep.png',
+                                    scheduleDay!.isBeforeSleeping!,
+                                    R.string.before_sleep.tr(),
+                                    scheduleDay!.isBeforeSleeping!
+                                        ? R.drawable.ic_before_sleep_selected
+                                        : R.drawable.ic_before_sleep,
                                     6),
                               ],
                             )
@@ -428,16 +427,16 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
               ]),
           Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             CustomAppBar(
-              backgroundColor: Colors.transparent,
-              title: Text('Lịch đo đường huyết',
+              backgroundColor: R.color.transparent,
+              title: Text(R.string.blood_sugar_schedule_single_line.tr(),
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: textDark)),
+                      color: R.color.textDark)),
               leadingIcon: IconButton(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  icon: Icon(Icons.arrow_back, color: textDark),
+                  splashColor: R.color.transparent,
+                  highlightColor: R.color.transparent,
+                  icon: Icon(Icons.arrow_back, color: R.color.textDark),
                   onPressed: () {
                     _showDialogSave();
                   }),
@@ -453,16 +452,16 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                     height: 48,
                     width: 195,
                     decoration: BoxDecoration(
-                        color: mainColor,
+                        color: R.color.mainColor,
                         borderRadius: BorderRadius.circular(200),
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [greenGradientTop, greenGradientBottom])),
+                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                     child: Center(
-                        child: Text('Lưu',
+                        child: Text(R.string.save.tr(),
                             style: TextStyle(
-                                color: Colors.white,
+                                color: R.color.white,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16)))),
               ),
@@ -479,131 +478,131 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
         onTap: () {
           if (index == 0) {
             scheduleDay = ScheduleModel(
-                isAfterBreakfast: scheduleDay.isAfterBreakfast,
-                isAfterDinner: scheduleDay.isAfterDinner,
-                isAfterLunch: scheduleDay.isAfterLunch,
-                isBeforeBreakfast: !scheduleDay.isBeforeBreakfast,
-                isBeforeDinner: scheduleDay.isBeforeDinner,
-                isBeforeLunch: scheduleDay.isBeforeLunch,
-                isBeforeSleeping: scheduleDay.isBeforeSleeping);
+                isAfterBreakfast: scheduleDay!.isAfterBreakfast,
+                isAfterDinner: scheduleDay!.isAfterDinner,
+                isAfterLunch: scheduleDay!.isAfterLunch,
+                isBeforeBreakfast: !scheduleDay!.isBeforeBreakfast!,
+                isBeforeDinner: scheduleDay!.isBeforeDinner,
+                isBeforeLunch: scheduleDay!.isBeforeLunch,
+                isBeforeSleeping: scheduleDay!.isBeforeSleeping);
           } else if (index == 1) {
             scheduleDay = ScheduleModel(
-                isAfterBreakfast: !scheduleDay.isAfterBreakfast,
-                isAfterDinner: scheduleDay.isAfterDinner,
-                isAfterLunch: scheduleDay.isAfterLunch,
-                isBeforeBreakfast: scheduleDay.isBeforeBreakfast,
-                isBeforeDinner: scheduleDay.isBeforeDinner,
-                isBeforeLunch: scheduleDay.isBeforeLunch,
-                isBeforeSleeping: scheduleDay.isBeforeSleeping);
+                isAfterBreakfast: !scheduleDay!.isAfterBreakfast!,
+                isAfterDinner: scheduleDay!.isAfterDinner,
+                isAfterLunch: scheduleDay!.isAfterLunch,
+                isBeforeBreakfast: scheduleDay!.isBeforeBreakfast,
+                isBeforeDinner: scheduleDay!.isBeforeDinner,
+                isBeforeLunch: scheduleDay!.isBeforeLunch,
+                isBeforeSleeping: scheduleDay!.isBeforeSleeping);
           } else if (index == 2) {
             scheduleDay = ScheduleModel(
-                isAfterBreakfast: scheduleDay.isAfterBreakfast,
-                isAfterDinner: scheduleDay.isAfterDinner,
-                isAfterLunch: scheduleDay.isAfterLunch,
-                isBeforeBreakfast: scheduleDay.isBeforeBreakfast,
-                isBeforeDinner: scheduleDay.isBeforeDinner,
-                isBeforeLunch: !scheduleDay.isBeforeLunch,
-                isBeforeSleeping: scheduleDay.isBeforeSleeping);
+                isAfterBreakfast: scheduleDay!.isAfterBreakfast,
+                isAfterDinner: scheduleDay!.isAfterDinner,
+                isAfterLunch: scheduleDay!.isAfterLunch,
+                isBeforeBreakfast: scheduleDay!.isBeforeBreakfast,
+                isBeforeDinner: scheduleDay!.isBeforeDinner,
+                isBeforeLunch: !scheduleDay!.isBeforeLunch!,
+                isBeforeSleeping: scheduleDay!.isBeforeSleeping);
           } else if (index == 3) {
             scheduleDay = ScheduleModel(
-                isAfterBreakfast: scheduleDay.isAfterBreakfast,
-                isAfterDinner: scheduleDay.isAfterDinner,
-                isAfterLunch: !scheduleDay.isAfterLunch,
-                isBeforeBreakfast: scheduleDay.isBeforeBreakfast,
-                isBeforeDinner: scheduleDay.isBeforeDinner,
-                isBeforeLunch: scheduleDay.isBeforeLunch,
-                isBeforeSleeping: scheduleDay.isBeforeSleeping);
+                isAfterBreakfast: scheduleDay!.isAfterBreakfast,
+                isAfterDinner: scheduleDay!.isAfterDinner,
+                isAfterLunch: !scheduleDay!.isAfterLunch!,
+                isBeforeBreakfast: scheduleDay!.isBeforeBreakfast,
+                isBeforeDinner: scheduleDay!.isBeforeDinner,
+                isBeforeLunch: scheduleDay!.isBeforeLunch,
+                isBeforeSleeping: scheduleDay!.isBeforeSleeping);
           } else if (index == 4) {
             scheduleDay = ScheduleModel(
-                isAfterBreakfast: scheduleDay.isAfterBreakfast,
-                isAfterDinner: scheduleDay.isAfterDinner,
-                isAfterLunch: scheduleDay.isAfterLunch,
-                isBeforeBreakfast: scheduleDay.isBeforeBreakfast,
-                isBeforeDinner: !scheduleDay.isBeforeDinner,
-                isBeforeLunch: scheduleDay.isBeforeLunch,
-                isBeforeSleeping: scheduleDay.isBeforeSleeping);
+                isAfterBreakfast: scheduleDay!.isAfterBreakfast,
+                isAfterDinner: scheduleDay!.isAfterDinner,
+                isAfterLunch: scheduleDay!.isAfterLunch,
+                isBeforeBreakfast: scheduleDay!.isBeforeBreakfast,
+                isBeforeDinner: !scheduleDay!.isBeforeDinner!,
+                isBeforeLunch: scheduleDay!.isBeforeLunch,
+                isBeforeSleeping: scheduleDay!.isBeforeSleeping);
           } else if (index == 5) {
             scheduleDay = ScheduleModel(
-                isAfterBreakfast: scheduleDay.isAfterBreakfast,
-                isAfterDinner: !scheduleDay.isAfterDinner,
-                isAfterLunch: scheduleDay.isAfterLunch,
-                isBeforeBreakfast: scheduleDay.isBeforeBreakfast,
-                isBeforeDinner: scheduleDay.isBeforeDinner,
-                isBeforeLunch: scheduleDay.isBeforeLunch,
-                isBeforeSleeping: scheduleDay.isBeforeSleeping);
+                isAfterBreakfast: scheduleDay!.isAfterBreakfast,
+                isAfterDinner: !scheduleDay!.isAfterDinner!,
+                isAfterLunch: scheduleDay!.isAfterLunch,
+                isBeforeBreakfast: scheduleDay!.isBeforeBreakfast,
+                isBeforeDinner: scheduleDay!.isBeforeDinner,
+                isBeforeLunch: scheduleDay!.isBeforeLunch,
+                isBeforeSleeping: scheduleDay!.isBeforeSleeping);
           } else if (index == 6) {
             scheduleDay = ScheduleModel(
-                isAfterBreakfast: scheduleDay.isAfterBreakfast,
-                isAfterDinner: scheduleDay.isAfterDinner,
-                isAfterLunch: scheduleDay.isAfterLunch,
-                isBeforeBreakfast: scheduleDay.isBeforeBreakfast,
-                isBeforeDinner: scheduleDay.isBeforeDinner,
-                isBeforeLunch: scheduleDay.isBeforeLunch,
-                isBeforeSleeping: !scheduleDay.isBeforeSleeping);
+                isAfterBreakfast: scheduleDay!.isAfterBreakfast,
+                isAfterDinner: scheduleDay!.isAfterDinner,
+                isAfterLunch: scheduleDay!.isAfterLunch,
+                isBeforeBreakfast: scheduleDay!.isBeforeBreakfast,
+                isBeforeDinner: scheduleDay!.isBeforeDinner,
+                isBeforeLunch: scheduleDay!.isBeforeLunch,
+                isBeforeSleeping: !scheduleDay!.isBeforeSleeping!);
           }
 
           if (selected == 0) {
             model = ScheduleGlucoseModel(
                 monday: scheduleDay,
-                tuesday: model.tuesday,
-                wednesday: model.wednesday,
-                thursday: model.thursday,
-                friday: model.friday,
-                saturday: model.saturday,
-                sunday: model.sunday);
+                tuesday: model!.tuesday,
+                wednesday: model!.wednesday,
+                thursday: model!.thursday,
+                friday: model!.friday,
+                saturday: model!.saturday,
+                sunday: model!.sunday);
           } else if (selected == 1) {
             model = ScheduleGlucoseModel(
-                monday: model.monday,
+                monday: model!.monday,
                 tuesday: scheduleDay,
-                wednesday: model.wednesday,
-                thursday: model.thursday,
-                friday: model.friday,
-                saturday: model.saturday,
-                sunday: model.sunday);
+                wednesday: model!.wednesday,
+                thursday: model!.thursday,
+                friday: model!.friday,
+                saturday: model!.saturday,
+                sunday: model!.sunday);
           } else if (selected == 2) {
             model = ScheduleGlucoseModel(
-                monday: model.monday,
-                tuesday: model.tuesday,
+                monday: model!.monday,
+                tuesday: model!.tuesday,
                 wednesday: scheduleDay,
-                thursday: model.thursday,
-                friday: model.friday,
-                saturday: model.saturday,
-                sunday: model.sunday);
+                thursday: model!.thursday,
+                friday: model!.friday,
+                saturday: model!.saturday,
+                sunday: model!.sunday);
           } else if (selected == 3) {
             model = ScheduleGlucoseModel(
-                monday: model.monday,
-                tuesday: model.tuesday,
-                wednesday: model.wednesday,
+                monday: model!.monday,
+                tuesday: model!.tuesday,
+                wednesday: model!.wednesday,
                 thursday: scheduleDay,
-                friday: model.friday,
-                saturday: model.saturday,
-                sunday: model.sunday);
+                friday: model!.friday,
+                saturday: model!.saturday,
+                sunday: model!.sunday);
           } else if (selected == 4) {
             model = ScheduleGlucoseModel(
-                monday: model.monday,
-                tuesday: model.tuesday,
-                wednesday: model.wednesday,
-                thursday: model.thursday,
+                monday: model!.monday,
+                tuesday: model!.tuesday,
+                wednesday: model!.wednesday,
+                thursday: model!.thursday,
                 friday: scheduleDay,
-                saturday: model.saturday,
-                sunday: model.sunday);
+                saturday: model!.saturday,
+                sunday: model!.sunday);
           } else if (selected == 5) {
             model = ScheduleGlucoseModel(
-                monday: model.monday,
-                tuesday: model.tuesday,
-                wednesday: model.wednesday,
-                thursday: model.thursday,
-                friday: model.friday,
+                monday: model!.monday,
+                tuesday: model!.tuesday,
+                wednesday: model!.wednesday,
+                thursday: model!.thursday,
+                friday: model!.friday,
                 saturday: scheduleDay,
-                sunday: model.sunday);
+                sunday: model!.sunday);
           } else if (selected == 6) {
             model = ScheduleGlucoseModel(
-                monday: model.monday,
-                tuesday: model.tuesday,
-                wednesday: model.wednesday,
-                thursday: model.thursday,
-                friday: model.friday,
-                saturday: model.saturday,
+                monday: model!.monday,
+                tuesday: model!.tuesday,
+                wednesday: model!.wednesday,
+                thursday: model!.thursday,
+                friday: model!.friday,
+                saturday: model!.saturday,
                 sunday: scheduleDay);
           }
           getHasData();
@@ -612,16 +611,16 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
         child: Container(
             height: 60,
             decoration: BoxDecoration(
-                color: highlight ? Color(0xffF4DBBD) : Color(0xffF5F7FA),
+                color: highlight ? R.color.color0xffF4DBBD : R.color.color0xffF5F7FA,
                 border: Border.all(
-                    color: highlight ? Color(0xffE5B440) : Color(0xffF5F7FA)),
+                    color: highlight ? R.color.color0xffE5B440 : R.color.color0xffF5F7FA),
                 borderRadius: BorderRadius.circular(12)),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Image.asset(icon, width: 51, height: 34),
               SizedBox(width: 8),
               Text(title,
                   style: TextStyle(
-                      color: highlight ? mainColor : Color(0xffA1A3A6),
+                      color: highlight ? R.color.mainColor : R.color.color0xffA1A3A6,
                       fontSize: 16))
             ])),
       ),
@@ -645,24 +644,24 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/backIcon.png',
+                      Image.asset(R.drawable.ic_back_icon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                            R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -680,11 +679,11 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -699,20 +698,20 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color: R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -726,7 +725,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -740,7 +739,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
   submitData() async {
     try {
       BotToast.showLoading();
-      await UserClient().updateScheduleGlucose(model);
+      await UserClient().updateScheduleGlucose(model!);
       BotToast.closeAllLoading();
       Navigator.pop(context);
     } catch (e, _) {

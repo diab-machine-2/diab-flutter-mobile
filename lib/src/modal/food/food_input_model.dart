@@ -3,10 +3,10 @@ import 'package:medical/src/modal/food/food_model.dart';
 import 'package:meta/meta.dart';
 
 class MealDayItemModel {
-  final int date;
+  final int? date;
   final List<MealItemModel> mealItems;
 
-  MealDayItemModel({@required this.date, @required this.mealItems});
+  MealDayItemModel({required this.date, required this.mealItems});
   @override
   factory MealDayItemModel.fromJson(Map<String, dynamic> json) {
     return MealDayItemModel(
@@ -19,28 +19,28 @@ class MealDayItemModel {
 }
 
 class FoodInputModel {
-  final String id;
-  final double calorie;
-  final double glucose;
-  final String mealId;
-  final String mealText;
-  final ImagesModel mealIcon;
-  final int date;
+  final String? id;
+  final double? calorie;
+  final double? glucose;
+  final String? mealId;
+  final String? mealText;
+  final ImagesModel? mealIcon;
+  final int? date;
   final List<ImagesModel> images;
   final List<FoodModel> foods;
-  final String note;
+  final String? note;
 
   FoodInputModel({
-    @required this.id,
-    @required this.calorie,
-    @required this.glucose,
-    @required this.mealId,
-    @required this.mealText,
-    @required this.mealIcon,
-    @required this.date,
-    @required this.images,
-    @required this.foods,
-    @required this.note,
+    required this.id,
+    required this.calorie,
+    required this.glucose,
+    required this.mealId,
+    required this.mealText,
+    required this.mealIcon,
+    required this.date,
+    required this.images,
+    required this.foods,
+    required this.note,
   });
   @override
   factory FoodInputModel.fromJson(Map<String, dynamic> json) {
@@ -66,12 +66,12 @@ class FoodInputModel {
 }
 
 class MealItemModel {
-  final String text;
-  final double caloValue;
+  final String? text;
+  final double? caloValue;
   final List<FoodInputModel> inputs;
 
   MealItemModel(
-      {@required this.text, @required this.caloValue, @required this.inputs});
+      {required this.text, required this.caloValue, required this.inputs});
   @override
   factory MealItemModel.fromJson(Map<String, dynamic> json) {
     return MealItemModel(

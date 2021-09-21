@@ -10,9 +10,9 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:meta/meta.dart';
 
 class ErrorModel extends BaseModel {
-  String code;
-  String message;
-  String error;
+  String? code;
+  String? message;
+  String? error;
 
   ErrorModel({this.code, this.message});
   @override
@@ -24,11 +24,11 @@ class ErrorModel extends BaseModel {
 }
 
 class Error {
-  final String code;
-  final String message;
-  final String error;
+  final String? code;
+  final String? message;
+  final String? error;
 
-  Error({@required this.code, @required this.message, @required this.error});
+  Error({required this.code, required this.message, required this.error});
 
   // factory Error.fromJson(Map<String, dynamic> json) {
   //   return Error(
