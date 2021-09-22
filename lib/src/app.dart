@@ -27,6 +27,7 @@ import 'package:medical/src/widget/Exercrises/search_exercrises.dart';
 import 'package:medical/src/widget/Food/add_food.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/base/base_state.dart';
+import 'package:medical/src/widget/detail_package/detail_package_page.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/change_password.dart';
@@ -93,8 +94,8 @@ class _AppState extends State<App> {
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,
-            home: FlashScreenController(),
-            // home: ListServicePage(),
+            // home: FlashScreenController(),
+            home: DetailPackagePage(),
             debugShowCheckedModeBanner: false,
 
             onGenerateRoute: (settings) {

@@ -623,4 +623,5 @@ option_already_register,Tôi đã đăng ký nhưng chưa được học.,
 option_need_more_info,Tôi đã đăng ký nhưng chưa được học.,
 option_another,Khác,
 send,Gửi,
-hint_msg_to_diab,Gửi lời nhắn tới diaB
+hint_msg_to_diab,Gửi lời nhắn tới diaB,
+interest,Quan tâm,

@@ -626,4 +626,5 @@ class Strings {
 	String get option_another => 'option_another';
 	String get send => 'send';
 	String get hint_msg_to_diab => 'hint_msg_to_diab';
+	String get interest => 'interest';
 }

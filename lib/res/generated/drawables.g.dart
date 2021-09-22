@@ -156,7 +156,6 @@ class Drawables {
 	String get ic_warning => "lib/res/drawables/ic_warning.png";
 	String get ic_weight => "lib/res/drawables/ic_weight.png";
 	String get ic_weight_plus => "lib/res/drawables/ic_weight_plus.png";
-	String get ic_welcome_2 => "lib/res/drawables/ic_welcome_2.png";
 	String get ic_year => "lib/res/drawables/ic_year.png";
 	String get im_add_hba1c => "lib/res/drawables/im_add_hba1c.png";
 	String get im_banner => "lib/res/drawables/im_banner.png";
@@ -199,5 +198,6 @@ class Drawables {
 	String get im_tabble_hba1c => "lib/res/drawables/im_tabble_hba1c.png";
 	String get img_list_service => "lib/res/drawables/img_list_service.png";
 	String get img_welcome_1 => "lib/res/drawables/img_welcome_1.png";
+	String get img_welcome_2 => "lib/res/drawables/img_welcome_2.png";
 	String get img_welcome_3 => "lib/res/drawables/img_welcome_3.png";
 }

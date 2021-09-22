@@ -8,7 +8,7 @@ class ButtonWidget extends StatelessWidget {
   final Color? textColor;
   final Color? borderColor;
   final String title;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final double? radius;
   final bool modeFlatButton;
 
@@ -33,11 +33,11 @@ class ButtonWidget extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
             color: backgroundColor ?? R.color.accentColor,
-            gradient: LinearGradient(
+            gradient: backgroundColor == null ? LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [Color(0xFF4BB2AB), Color(0xFF01857A), Color(0xFF008479)],
-            ),
+            ) : null,
 //            gradient: LinearGradient(
 //              colors: [Theme.of(context).primaryColor, Colors.lightBlue],
 //            ),
