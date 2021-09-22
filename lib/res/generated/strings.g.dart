@@ -130,7 +130,6 @@ class Strings {
 	String get confirm_logout_description => 'confirm_logout_description';
 	String get close => 'close';
 	String get yes => 'yes';
-	String get head => '<<<<<<< HEAD';
 	String get show => 'show';
 	String get hide => 'hide';
 	String get camera_permission_required => 'camera_permission_required';
@@ -621,4 +620,10 @@ class Strings {
 	String get service_basic => 'service_basic';
 	String get service_premium => 'service_premium';
 	String get text_continue => 'text_continue';
+	String get interest_course => 'interest_course';
+	String get option_already_register => 'option_already_register';
+	String get option_need_more_info => 'option_need_more_info';
+	String get option_another => 'option_another';
+	String get send => 'send';
+	String get hint_msg_to_diab => 'hint_msg_to_diab';
 }

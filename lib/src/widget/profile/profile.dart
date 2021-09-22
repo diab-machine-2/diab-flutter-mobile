@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/manual.dart';
@@ -19,19 +20,28 @@ class ProfileController extends StatefulWidget {
   _ProfileControllerState createState() => _ProfileControllerState();
 }
 
-class _ProfileControllerState extends State<ProfileController> {
+class _ProfileControllerState extends State<ProfileController> with Observer{
   SecureModel? secureModel;
 
   void initState() {
     super.initState();
-    DartNotificationCenter.subscribe(
-        channel: 'user_info_change',
-        observer: this,
-        onNotification: (_) {
-          setState(() {});
-        });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'user_info_change',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       setState(() {});
+    //     });
     loadData();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Profile');
+  }
+
+  @override
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'user_info_change') {
+      setState(() {});
+    }
   }
 
   loadData() async {
@@ -47,8 +57,9 @@ class _ProfileControllerState extends State<ProfileController> {
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'user_info_change', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'user_info_change', observer: this);
     super.dispose();
   }
 
@@ -331,7 +342,7 @@ class _ProfileControllerState extends State<ProfileController> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              final phone = textEditingController.text ?? '';
+                              final phone = textEditingController.text;
                               if (phone.isEmpty) {
                                 Message.showToastMessage(
                                     context, R.string.ban_chua_nhap_so_dien_thoai.tr());

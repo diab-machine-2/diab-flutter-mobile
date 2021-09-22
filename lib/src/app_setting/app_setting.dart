@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
@@ -103,7 +103,8 @@ class AppSettings {
     if (tokenLifetime > now) {
       return true;
     } else {
-      DartNotificationCenter.post(channel: 'token_time_out');
+      Observable.instance.notifyObservers([], notifyName : "token_time_out");
+      // DartNotificationCenter.post(channel: 'token_time_out');
       await logout();
       return false;
     }

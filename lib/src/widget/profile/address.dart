@@ -302,8 +302,8 @@ class _AddressControllerState extends State<AddressController> {
             ),
             GestureDetector(
               onTap: () {
-                final addess = _textEditingController.text ?? '';
-                if (addess.isEmpty) {
+                final address = _textEditingController.text;
+                if (address.isEmpty) {
                   Message.showToastMessage(context, R.string.mes_address_empty.tr());
                   return;
                 }
@@ -321,7 +321,7 @@ class _AddressControllerState extends State<AddressController> {
                 }
 
                 widget.callback!(
-                    addess, selectedProvince, selectedDistrict, selectedWard);
+                    address, selectedProvince, selectedDistrict, selectedWard);
                 Navigator.pop(context);
               },
               child: Container(

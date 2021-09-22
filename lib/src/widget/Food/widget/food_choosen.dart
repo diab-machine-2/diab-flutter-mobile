@@ -1,9 +1,10 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 typedef FoodCallback = Function(List<FoodModel>);
 
@@ -15,7 +16,7 @@ class FoodChoosen extends StatefulWidget {
   _FoodChoosenState createState() => _FoodChoosenState();
 }
 
-class _FoodChoosenState extends State<FoodChoosen> {
+class _FoodChoosenState extends State<FoodChoosen> with Observer{
   List<FoodModel> foods = [];
   double totalKcal = 0;
   bool showAll = false;
@@ -25,31 +26,49 @@ class _FoodChoosenState extends State<FoodChoosen> {
     super.initState();
     foods = [...widget.foods!];
     calculatorCalo();
-    DartNotificationCenter.subscribe(
-        channel: 'add_food_to_cart',
-        observer: this,
-        onNotification: (data) {
-          if (data is FoodModel) {
-            setState(() {
-              this.foods.removeWhere((element) => data.id == element!.id);
-              this.foods.add(data);
-              calculatorCalo();
-            });
-          }
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'add_food_to_cart',
+    //     observer: this,
+    //     onNotification: (data) {
+    //       if (data is FoodModel) {
+    //         setState(() {
+    //           this.foods.removeWhere((element) => data.id == element.id);
+    //           this.foods.add(data);
+    //           calculatorCalo();
+    //         });
+    //       }
+    //     });
+  }
+
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? food) {
+    // TODO: implement update
+    var firstValue = food?.values.first;
+    if (notifyName == 'add_food_to_cart') {
+      if (firstValue is FoodModel) {
+        setState(() {
+          this.foods.removeWhere((element) => firstValue.id == element.id);
+          this.foods.add(firstValue);
+          calculatorCalo();
         });
+      }
+    }
   }
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'add_food_to_cart', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'add_food_to_cart', observer: this);
     super.dispose();
   }
 
   calculatorCalo() {
     totalKcal = 0;
     foods.forEach((element) {
-      totalKcal += element!.calorie! * element.quantity;
+      totalKcal += element.calorie! * element.quantity;
     });
   }
 
@@ -150,7 +169,7 @@ class _FoodChoosenState extends State<FoodChoosen> {
                                 padding: EdgeInsets.only(
                                     left: 16, right: 16, top: 11, bottom: 11),
                                 child: Row(children: [
-                                  Image.network(foods[index]!.image!.url ?? '',
+                                  Image.network(foods[index].image!.url ?? '',
                                       width: 50, height: 50),
                                   SizedBox(width: 16),
                                   Expanded(
@@ -158,12 +177,12 @@ class _FoodChoosenState extends State<FoodChoosen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(foods[index]!.name!,
+                                        Text(foods[index].name!,
                                             style: TextStyle(
                                                 color: R.color.black,
                                                 fontWeight: FontWeight.w500)),
                                         Text(
-                                            '${R.string.da_an.tr()} ${roundAsFixed(foods[index]!.portion * foods[index]!.quantity)} ${foods[index]!.unit}, ${formatNumber(foods[index]!.quantity * foods[index]!.calorie!)} ${R.string.kcal.tr()}',
+                                            '${R.string.da_an.tr()} ${roundAsFixed(foods[index].portion * foods[index].quantity)} ${foods[index].unit}, ${formatNumber(foods[index].quantity * foods[index].calorie!)} ${R.string.kcal.tr()}',
                                             style: TextStyle(
                                                 color: R.color.color0xff172823,
                                                 fontWeight: FontWeight.w400))
@@ -173,9 +192,10 @@ class _FoodChoosenState extends State<FoodChoosen> {
                                   SizedBox(width: 8),
                                   GestureDetector(
                                     onTap: () {
-                                      DartNotificationCenter.post(
-                                          channel: 'remove_food_from_cart',
-                                          options: foods[index]);
+                                      Observable.instance.notifyObservers([], notifyName : "remove_food_from_cart");
+                                      // DartNotificationCenter.post(
+                                      //     channel: 'remove_food_from_cart',
+                                      //     options: foods[index]);
                                       setState(() {
                                         foods.removeAt(index);
                                         showAll = foods.length != 0;

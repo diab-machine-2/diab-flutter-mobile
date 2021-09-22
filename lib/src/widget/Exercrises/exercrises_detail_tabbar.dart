@@ -1,5 +1,7 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
@@ -14,7 +16,6 @@ import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class ExercrisesDetailTabbarController extends StatefulWidget {
   @override
@@ -29,7 +30,7 @@ class ExercrisesDetailTabbarController extends StatefulWidget {
 
 class _ExercrisesDetailTabbarControllerState
     extends State<ExercrisesDetailTabbarController>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, Observer {
   TabController? _tabController;
   GlobalKey<CustomTabbarImageState> customTabbarKey = GlobalKey();
   GlobalKey<CustomActionDescriptionState> customActionDesKey = GlobalKey();
@@ -44,23 +45,37 @@ class _ExercrisesDetailTabbarControllerState
   void initState() {
     super.initState();
     _tabController = new TabController(vsync: this, length: 2);
-    DartNotificationCenter.subscribe(
-        channel: 'active_change_data',
-        observer: this,
-        onNotification: (_) {
-          overViewKey.currentState!.reloadData(periodFilterType);
-          if (detailKey.currentState != null) {
-            detailKey.currentState!.reloadData(periodFilterType);
-          }
-        });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'active_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       overViewKey.currentState!.reloadData(periodFilterType);
+    //       if (detailKey.currentState != null) {
+    //         detailKey.currentState!.reloadData(periodFilterType);
+    //       }
+    //     });
     checkShowDes();
     loadDescription();
   }
 
   @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'active_change_data') {
+      overViewKey.currentState!.reloadData(periodFilterType);
+      if (detailKey.currentState != null) {
+        detailKey.currentState!.reloadData(periodFilterType);
+      }
+    }
+  }
+
+  @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'active_change_data', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'active_change_data', observer: this);
     super.dispose();
   }
 

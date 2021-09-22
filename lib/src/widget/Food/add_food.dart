@@ -2,9 +2,10 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
@@ -24,7 +25,6 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class AddFoodController extends StatefulWidget {
   final String? type;
@@ -702,7 +702,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
       final result = await FoodClient().deleteInputFood(widget.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        DartNotificationCenter.post(channel: 'food_change_data');
+        Observable.instance.notifyObservers([], notifyName : "food_change_data");
+        // DartNotificationCenter.post(channel: 'food_change_data');
         Navigator.pop(context);
       }
 
@@ -720,7 +721,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
 
   editData() async {
     FocusScope.of(context).unfocus();
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
 
     if (selectedDate == null) {
       Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
@@ -752,7 +753,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
           removeIDs,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'food_change_data');
+        Observable.instance.notifyObservers([], notifyName : "food_change_data");
+        // DartNotificationCenter.post(channel: 'food_change_data');
         Navigator.pop(context);
       }
 
@@ -769,7 +771,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
 
   _submitData() async {
     FocusScope.of(context).unfocus();
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
 
     if (selectedDate == null) {
       Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
@@ -797,7 +799,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
           selectedFoods,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'food_change_data');
+        Observable.instance.notifyObservers([], notifyName : "food_change_data");
+        // DartNotificationCenter.post(channel: 'food_change_data');
         Navigator.pop(context);
       }
 
@@ -915,7 +918,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
   }
 
   _showDialogSave() {
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
 
     if (model != null) {
       final noteText = model!.note ?? '';

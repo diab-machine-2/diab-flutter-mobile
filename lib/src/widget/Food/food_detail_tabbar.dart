@@ -1,5 +1,7 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
@@ -12,7 +14,6 @@ import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
   @override
@@ -27,7 +28,7 @@ class FoodDetailTabbarController extends StatefulWidget {
 }
 
 class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, Observer {
   TabController? _tabController;
   GlobalKey<CustomTabbarImageState> customTabbarKey = GlobalKey();
   GlobalKey<CustomActionDescriptionState> customActionDesKey = GlobalKey();
@@ -40,30 +41,47 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   int periodFilterType = 1;
 
   ShortGuiModel? des;
+
   @override
   void initState() {
     super.initState();
     _tabController = new TabController(vsync: this, length: 2);
-    DartNotificationCenter.subscribe(
-        channel: 'food_change_data',
-        observer: this,
-        onNotification: (_) {
-          if (overviewKey.currentState != null) {
-            overviewKey.currentState!.reloadData(periodFilterType);
-          }
-          if (detailKey.currentState != null) {
-            detailKey.currentState!.reloadData(periodFilterType);
-          }
-        });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'food_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       if (overviewKey.currentState != null) {
+    //         overviewKey.currentState!.reloadData(periodFilterType);
+    //       }
+    //       if (detailKey.currentState != null) {
+    //         detailKey.currentState!.reloadData(periodFilterType);
+    //       }
+    //     });
 
     checkShowDes();
     loadDescription();
   }
 
   @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'food_change_data') {
+      if (overviewKey.currentState != null) {
+        overviewKey.currentState!.reloadData(periodFilterType);
+      }
+      if (detailKey.currentState != null) {
+        detailKey.currentState!.reloadData(periodFilterType);
+      }
+    }
+  }
+
+  @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'food_change_data', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'food_change_data', observer: this);
     super.dispose();
   }
 
@@ -105,7 +123,8 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
                       builder: (_) => ActionListPanel(selectedIndex: 4),
                     );
                   },
-                  child: Icon(Icons.format_list_bulleted, color: R.color.textDark)),
+                  child: Icon(Icons.format_list_bulleted,
+                      color: R.color.textDark)),
               actions: [
                 CustomActionDescription(
                     key: customActionDesKey,
@@ -143,8 +162,8 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
             onPressed: () {
               _showMaterialDialog();
             },
-            child: Image.asset(R.drawable.ic_button_plus,
-                width: 80, height: 80),
+            child:
+                Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
           )),
     );
   }
@@ -197,7 +216,8 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                   child: Description(
                       input: false,
                       data: widget.data,
-                      titleDetail: R.string.che_do_dinh_duong_benh_tieu_duong.tr()),
+                      titleDetail:
+                          R.string.che_do_dinh_duong_benh_tieu_duong.tr()),
                 )
               : SizedBox(),
           Row(
@@ -237,7 +257,9 @@ typedef ActionFilterCallback = Function(int);
 
 class ActionFilter extends StatefulWidget {
   final ActionFilterCallback? callback;
+
   ActionFilter({this.callback});
+
   @override
   _ActionFilterState createState() => _ActionFilterState();
 }

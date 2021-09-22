@@ -1,5 +1,6 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
@@ -28,7 +29,7 @@ class BloodPressureDetailTabbarController extends StatefulWidget {
 
 class _BloodPressureDetailTabbarControllerState
     extends State<BloodPressureDetailTabbarController>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, Observer {
   TabController? _tabController;
 
   GlobalKey<CustomTabbarImageState> customTabbarKey = GlobalKey();
@@ -46,21 +47,33 @@ class _BloodPressureDetailTabbarControllerState
   void initState() {
     super.initState();
     _tabController = new TabController(vsync: this, length: 2);
-    DartNotificationCenter.subscribe(
-        channel: 'BloodPressure_change_data',
-        observer: this,
-        onNotification: (_) {
-          overViewKey.currentState!.reloadData(periodFilterType);
-          detailKey.currentState!.reloadData(periodFilterType);
-        });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'BloodPressure_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       overViewKey.currentState!.reloadData(periodFilterType);
+    //       detailKey.currentState!.reloadData(periodFilterType);
+    //     });
     checkShowDes();
     loadDescription();
   }
 
   @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'BloodPressure_change_data') {
+      overViewKey.currentState!.reloadData(periodFilterType);
+      detailKey.currentState!.reloadData(periodFilterType);
+    }
+  }
+
+  @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'BloodPressure_change_data', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'BloodPressure_change_data', observer: this);
     super.dispose();
   }
 
@@ -115,7 +128,8 @@ class _BloodPressureDetailTabbarControllerState
                     builder: (_) => ActionListPanel(selectedIndex: 2),
                   );
                 },
-                child: Icon(Icons.format_list_bulleted, color: R.color.textDark)),
+                child:
+                    Icon(Icons.format_list_bulleted, color: R.color.textDark)),
             actions: [
               CustomActionDescription(
                   key: customActionDesKey,
@@ -156,8 +170,8 @@ class _BloodPressureDetailTabbarControllerState
             onPressed: () {
               _showMaterialDialog();
             },
-            child: Image.asset(R.drawable.ic_button_plus,
-                width: 80, height: 80),
+            child:
+                Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
           )),
     );
   }
@@ -251,7 +265,9 @@ typedef ActionFilterCallback = Function(int);
 
 class ActionFilter extends StatefulWidget {
   final ActionFilterCallback? callback;
+
   ActionFilter({this.callback});
+
   @override
   _ActionFilterState createState() => _ActionFilterState();
 }

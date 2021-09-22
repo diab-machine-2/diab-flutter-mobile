@@ -381,7 +381,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            final otherText = textEditingController.text ?? '';
+                            final otherText = textEditingController.text;
                             setState(() {
                               otherActivity =
                                   otherText.isEmpty ? null : otherText;

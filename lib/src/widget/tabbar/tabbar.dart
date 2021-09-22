@@ -1,7 +1,8 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -31,7 +32,7 @@ class TabbarController extends StatefulWidget {
 }
 
 class _TabbarControllerState extends State<TabbarController>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, Observer {
   PageController? pageController;
   BottomTabbar? _bottomTabbar;
 
@@ -42,6 +43,7 @@ class _TabbarControllerState extends State<TabbarController>
   @override
   void initState() {
     super.initState();
+    Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken();
     pageController = PageController();
     _bottomTabbar = BottomTabbar(callback: (index) {
@@ -52,16 +54,32 @@ class _TabbarControllerState extends State<TabbarController>
       }
     });
 
-    DartNotificationCenter.subscribe(
-        channel: 'unauthorized',
-        observer: this,
-        onNotification: (_) {
-          Message.showToastMessage(
-              context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
-          AppSettings.logout();
-        });
+    // DartNotificationCenter.subscribe(
+    //     channel: 'unauthorized',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       Message.showToastMessage(
+    //           context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+    //       AppSettings.logout();
+    //     });
 
     getNewVersion();
+  }
+
+  // @override
+  // void dispose() {
+  //   Observable.instance.removeObserver(this);
+  //   super.dispose();
+  // }
+
+  @override
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'unauthorized') {
+      Message.showToastMessage(
+          context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+      AppSettings.logout();
+    }
   }
 
   jumpTo(int index) {

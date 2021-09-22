@@ -1,17 +1,18 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class ScheduleGlucoseController extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class ScheduleGlucoseController extends StatefulWidget {
       _ScheduleGlucoseControllerState();
 }
 
-class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
+class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> with Observer {
   int selected = 0;
   ScheduleModel? scheduleDay;
   ScheduleGlucoseModel? model;
@@ -38,12 +39,30 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
 
     loadSchedule();
     loadScheduleSetup();
-    DartNotificationCenter.subscribe(
-        channel: 'setup_schedule_change',
-        observer: this,
-        onNotification: (_) {
-          loadScheduleSetup();
-        });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'setup_schedule_change',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       loadScheduleSetup();
+    //     });
+  }
+
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'setup_schedule_change') {
+      loadScheduleSetup();
+    }
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'setup_schedule_change', observer: this);
+    super.dispose();
   }
 
   loadSchedule() async {
@@ -137,13 +156,6 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> {
         model!.sunday!.isBeforeDinner! ||
         model!.sunday!.isAfterDinner! ||
         model!.sunday!.isBeforeSleeping!;
-  }
-
-  @override
-  void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'setup_schedule_change', observer: this);
-    super.dispose();
   }
 
   @override

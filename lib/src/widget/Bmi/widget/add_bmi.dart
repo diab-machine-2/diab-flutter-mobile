@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
@@ -879,7 +879,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       final result = await WeightClient().deleteIndexBmi(widget.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        DartNotificationCenter.post(channel: 'Weight_change_data');
+        Observable.instance.notifyObservers([], notifyName : "Weight_change_data");
+        // DartNotificationCenter.post(channel: 'Weight_change_data');
         Navigator.pop(context);
       }
       BotToast.closeAllLoading();
@@ -894,10 +895,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   }
 
   editData() async {
-    final weight = _controllerWeight.text ?? '';
-    final height = _controllerHeight.text ?? '';
-    final hip = _controllerHip.text ?? '';
-    final note = _controllerNote.text ?? '';
+    final weight = _controllerWeight.text;
+    final height = _controllerHeight.text;
+    final hip = _controllerHip.text;
+    final note = _controllerNote.text;
 
     // if (weight.isEmpty) {
     //   Message.showToastMessage(context, R.string.mes_weight_empty.tr());
@@ -945,7 +946,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       if (result == true) {
         updateHeightProfile();
         Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
-        DartNotificationCenter.post(channel: 'Weight_change_data');
+        Observable.instance.notifyObservers([], notifyName : "Weight_change_data");
+        // DartNotificationCenter.post(channel: 'Weight_change_data');
         Navigator.pop(context);
       }
 
@@ -961,7 +963,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   }
 
   _submitData() async {
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
 
     if (selectedWeight == 0) {
       Message.showToastMessage(context, R.string.mes_weight_empty.tr());
@@ -1005,7 +1007,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       BotToast.closeAllLoading();
       if (result == true) {
         updateHeightProfile();
-        DartNotificationCenter.post(channel: 'Weight_change_data');
+        Observable.instance.notifyObservers([], notifyName : "Weight_change_data");
+        // DartNotificationCenter.post(channel: 'Weight_change_data');
         Navigator.pop(context);
       }
     } catch (e, _) {
@@ -1169,7 +1172,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   }
 
   _showDialogSave() {
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
     if (model != null) {
       final date = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
       if (selectedWeight == 0 &&

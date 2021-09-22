@@ -1,8 +1,10 @@
 import 'dart:ui';
 
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_category_model.dart';
@@ -11,58 +13,78 @@ import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/Food/widget/food_of_category.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class CategoryFood extends StatefulWidget {
-  final List<FoodModel?> foods;
+  final List<FoodModel> foods;
   CategoryFood({required this.foods});
   @override
   _CategoryFoodState createState() => _CategoryFoodState();
 }
 
 class _CategoryFoodState extends State<CategoryFood>
-    with AutomaticKeepAliveClientMixin<CategoryFood> {
+    with AutomaticKeepAliveClientMixin<CategoryFood>, Observer {
   @override
   bool get wantKeepAlive => true;
 
   late BuildContext currentContext;
 
-  List<FoodModel?> selectedFoods = [];
+  List<FoodModel> selectedFoods = [];
 
   @override
   void initState() {
     super.initState();
 
     selectedFoods = [...SearchFoodController.of(context)!.selectedFoods];
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'add_food_to_cart',
+    //     observer: this,
+    //     onNotification: (food) {
+    //       setState(() {
+    //         this.selectedFoods.removeWhere((element) => food.id == element!.id);
+    //         this.selectedFoods.add(food);
+    //       });
+    //     });
+    //
+    // DartNotificationCenter.subscribe(
+    //     channel: 'remove_food_from_cart',
+    //     observer: this,
+    //     onNotification: (food) {
+    //       if (food is FoodModel) {
+    //         setState(() {
+    //           selectedFoods.removeWhere((element) => element!.id == food.id);
+    //         });
+    //       }
+    //     });
+  }
 
-    DartNotificationCenter.subscribe(
-        channel: 'add_food_to_cart',
-        observer: this,
-        onNotification: (food) {
-          setState(() {
-            this.selectedFoods.removeWhere((element) => food.id == element!.id);
-            this.selectedFoods.add(food);
-          });
-        });
-
-    DartNotificationCenter.subscribe(
-        channel: 'remove_food_from_cart',
-        observer: this,
-        onNotification: (food) {
-          if (food is FoodModel) {
-            setState(() {
-              selectedFoods.removeWhere((element) => element!.id == food.id);
-            });
-          }
-        });
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? food) {
+    // TODO: implement update
+    var firstValue = food?.values.first;
+    if (notifyName == 'add_food_to_cart') {
+      if (firstValue is FoodModel) {
+        this.selectedFoods.removeWhere((element) => firstValue.id == element.id);
+        this.selectedFoods.add(firstValue);
+        setState(() {});
+      }
+    }
+    if (notifyName == 'remove_food_from_cart') {
+      if (firstValue is FoodModel) {
+        selectedFoods.removeWhere((element) => firstValue.id == element.id);
+        setState(() {});
+      }
+    }
   }
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'add_food_to_cart', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'remove_food_from_cart', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'add_food_to_cart', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'remove_food_from_cart', observer: this);
     super.dispose();
   }
 
@@ -127,13 +149,13 @@ class _CategoryFoodState extends State<CategoryFood>
 
                                   final foodOfCategory = selectedFoods.where(
                                       (element) =>
-                                          element!.foodCategoryId ==
+                                          element.foodCategoryId ==
                                           category.subCategories[index].id);
                                   double totalCalo = 0;
                                   double number = 0;
                                   foodOfCategory.forEach((element) {
                                     totalCalo +=
-                                        element!.quantity * element.calorie!;
+                                        element.quantity * element.calorie!;
                                     number += element.quantity;
                                   });
                                   return GestureDetector(

@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
@@ -880,7 +880,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
       BotToast.showLoading();
       final result = await EmotionClient().deleteIndexEmotion(widget.id);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'Emotion_change_data');
+        Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
+        // DartNotificationCenter.post(channel: 'Emotion_change_data');
         Navigator.pop(context);
       }
 
@@ -896,7 +897,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
   }
 
   editData() async {
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
     List<String?> symptomIds = [];
     List<String?> activityIds = [];
 
@@ -946,7 +947,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           removeIDs,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'Emotion_change_data');
+        Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
+        // DartNotificationCenter.post(channel: 'Emotion_change_data');
         Navigator.pop(context);
       }
 
@@ -962,7 +964,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
   }
 
   _submitData() async {
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
     List<String?> symptomIds = [];
     List<String?> activityIds = [];
 
@@ -1008,7 +1010,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           note,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'Emotion_change_data');
+        Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
+        // DartNotificationCenter.post(channel: 'Emotion_change_data');
         Navigator.pop(context);
       }
 
@@ -1126,7 +1129,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
   }
 
   _showDialogSave() {
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
     if (model != null) {
       final noteText = model!.note ?? '';
       final date = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);

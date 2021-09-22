@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -489,8 +489,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
   }
 
   _showDialogSave() {
-    final title = titleController.text ?? '';
-    final des = descriptionController.text ?? '';
+    final title = titleController.text;
+    final des = descriptionController.text;
 
     if (model != null) {
       final name = model!.name ?? '';
@@ -642,8 +642,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
   }
 
   submit() async {
-    final title = titleController.text ?? '';
-    final des = descriptionController.text ?? '';
+    final title = titleController.text;
+    final des = descriptionController.text;
     if (title.isEmpty) {
       Message.showToastMessage(context, R.string.mes_reminder_name_empty.tr());
       return;
@@ -664,7 +664,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
               1000,
           des,
           status);
-      DartNotificationCenter.post(channel: 'schedule_change');
+      Observable.instance.notifyObservers([], notifyName : "schedule_change");
+      // DartNotificationCenter.post(channel: 'schedule_change');
       Navigator.pop(context);
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -678,8 +679,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
   }
 
   edit() async {
-    final title = titleController.text ?? '';
-    final des = descriptionController.text ?? '';
+    final title = titleController.text;
+    final des = descriptionController.text;
     if (title.isEmpty) {
       Message.showToastMessage(context, R.string.mes_reminder_name_empty.tr());
       return;
@@ -700,7 +701,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
               1000,
           des,
           status);
-      DartNotificationCenter.post(channel: 'schedule_change');
+      Observable.instance.notifyObservers([], notifyName : "schedule_change");
+      // DartNotificationCenter.post(channel: 'schedule_change');
       Navigator.pop(context);
       BotToast.closeAllLoading();
     } catch (e, _) {

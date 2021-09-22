@@ -128,7 +128,6 @@ confirm_logout,Bạn muốn đăng xuất?
 confirm_logout_description,Bạn sẽ không thể theo dõi sức khoẻ của mình sau khi thoát. Bạn vẫn muốn đăng xuất khỏi DiaB?,
 close,Đóng
 yes,Đồng ý,
-<<<<<<< HEAD
 show,Hiện,
 hide,Ẩn,
 camera_permission_required,Bạn cần cấp quyền truy cập camera để sử dụng tính năng này,
@@ -618,4 +617,10 @@ list_service,Các gói dịch vụ của diaB,
 text_list_service,Mong muốn mang đến những giá trị thiết thực cho những khách hàng của DiaB, chúng tôi đã kiến tạo 2 gói dịch vụ gồm:,
 service_basic,Gói cơ bản,
 service_premium,Gói diaB Pro,
-text_continue,Tiếp tục
+text_continue,Tiếp tục,
+interest_course,Bạn quan tâm đến khoá học của diaB?,
+option_already_register,Tôi đã đăng ký nhưng chưa được học.,
+option_need_more_info,Tôi đã đăng ký nhưng chưa được học.,
+option_another,Khác,
+send,Gửi,
+hint_msg_to_diab,Gửi lời nhắn tới diaB

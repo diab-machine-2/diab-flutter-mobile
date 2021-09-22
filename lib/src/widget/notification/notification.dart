@@ -1,21 +1,22 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/notification/notification_bloc.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class NotificationController extends StatefulWidget {
   final bool? isRead;
@@ -25,7 +26,7 @@ class NotificationController extends StatefulWidget {
 }
 
 class NotificationControllerState extends State<NotificationController>
-    with AutomaticKeepAliveClientMixin<NotificationController> {
+    with AutomaticKeepAliveClientMixin<NotificationController>, Observer {
   @override
   bool get wantKeepAlive => true;
 
@@ -41,22 +42,36 @@ class NotificationControllerState extends State<NotificationController>
   void initState() {
     super.initState();
     if (widget.isRead == null || !widget.isRead!) {
-      DartNotificationCenter.subscribe(
-        channel: 'read_notification',
-        observer: this,
-        onNotification: (data) {
-          setState(() {
-            readIds.add(data);
-          });
-        },
-      );
+      Observable.instance.addObserver(this);
+      // DartNotificationCenter.subscribe(
+      //   channel: 'read_notification',
+      //   observer: this,
+      //   onNotification: (data) {
+      //     setState(() {
+      //       readIds.add(data);
+      //     });
+      //   },
+      // );
+    }
+  }
+
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'read_notification') {
+      var firstValue = map?.values.first;
+      setState(() {
+        readIds.add(firstValue);
+      });
     }
   }
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'read_notification', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'read_notification', observer: this);
     super.dispose();
   }
 
@@ -163,9 +178,10 @@ class NotificationControllerState extends State<NotificationController>
                                       if ((widget.isRead == null ||
                                               !widget.isRead!) &&
                                           !model![index].isRead!) {
-                                        DartNotificationCenter.post(
-                                            channel: 'read_notification',
-                                            options: model[index].id);
+                                        Observable.instance.notifyObservers([], notifyName : "read_notification", map: {'id': model[index].id});
+                                        // DartNotificationCenter.post(
+                                        //     channel: 'read_notification',
+                                        //     options: model[index].id);
                                         NotificationClient().readNotification(
                                             model[index].id,
                                             AppSettings.userInfo!.id,

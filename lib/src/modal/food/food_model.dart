@@ -34,6 +34,7 @@ class FoodModel {
       required this.description,
       required this.foodCategoryId,
       required this.quantity});
+
   @override
   factory FoodModel.fromJson(Map<String, dynamic> json) {
     return FoodModel(
@@ -62,4 +63,22 @@ class FoodModel {
   static List<FoodModel> toList(List<dynamic> items) {
     return items.map((item) => FoodModel.fromJson(item)).toList();
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'portion': portion,
+        'unit': unit,
+        'calorie': calorie,
+        'glucose': glucose,
+        'lipid': lipid,
+        'protein': protein,
+        'fibre': fibre,
+        'image': image,
+        'liked': liked,
+        'text': text,
+        'description': description,
+        'foodCategoryId': foodCategoryId,
+        'quantity': quantity
+      };
 }

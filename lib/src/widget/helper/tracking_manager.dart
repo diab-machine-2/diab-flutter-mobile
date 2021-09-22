@@ -41,7 +41,6 @@ class TrackingManager {
     // Pass all uncaught errors to Crashlytics.
     Function? originalOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails errorDetails) async {
-      print('tacking hiih');
       await FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
       // Forward to original handler.
       originalOnError!(errorDetails);

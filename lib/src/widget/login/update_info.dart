@@ -692,7 +692,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
   }
 
   _submitData() async {
-    final name = nameController.text ?? '';
+    final name = nameController.text;
     if (phone.isEmpty && widget.type != 'phone') {
       phoneKey.currentState!.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
@@ -758,7 +758,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       } else if (widget.type == 'facebook') {
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount!.accessToken.userId,
+          'providerKey': widget.facebookAccount!.accessToken?.userId,
           'phoneNumber': phone
         });
         Navigator.pushNamed(context, NavigatorName.verify, arguments: {

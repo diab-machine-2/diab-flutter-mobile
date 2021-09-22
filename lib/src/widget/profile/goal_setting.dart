@@ -1,7 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -287,7 +287,8 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
           goalWaist: goalWaist,
           goalWeight:
               double.parse(goalWeight.text.isEmpty ? '0' : goalWeight.text)));
-      DartNotificationCenter.post(channel: 'goal_calo_changed');
+      // DartNotificationCenter.post(channel: 'goal_calo_changed');
+      Observable.instance.notifyObservers([], notifyName : "goal_calo_changed");
       BotToast.closeAllLoading();
       Navigator.pop(context);
     } catch (e, _) {

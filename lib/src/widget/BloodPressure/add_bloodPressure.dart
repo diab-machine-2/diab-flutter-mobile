@@ -2,9 +2,10 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
@@ -780,8 +781,8 @@ class _AddBloodPressureControllerState
   }
 
   checkValidateInput() async {
-    final systolic = _controllerSystolic.text ?? '';
-    final diastolic = _controllerDiastolic.text ?? '';
+    final systolic = _controllerSystolic.text;
+    final diastolic = _controllerDiastolic.text;
     if (systolic.isNotEmpty && diastolic.isNotEmpty) {
       try {
         final result = await BloodPressureClient()
@@ -811,7 +812,8 @@ class _AddBloodPressureControllerState
           await BloodPressureClient().deleteBloodPressureInput(widget.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        DartNotificationCenter.post(channel: 'BloodPressure_change_data');
+        Observable.instance.notifyObservers([], notifyName : "BloodPressure_change_data");
+        // DartNotificationCenter.post(channel: 'BloodPressure_change_data');
         Navigator.pop(context);
       }
       BotToast.closeAllLoading();
@@ -827,11 +829,11 @@ class _AddBloodPressureControllerState
 
   editData() async {
     FocusScope.of(context).unfocus();
-    final systolic = _controllerSystolic.text ?? '';
-    final diastolic = _controllerDiastolic.text ?? '';
-    final pulseRate = _controllerHeart.text ?? '';
-    final note = _controllerNote.text ?? '';
-    final reason = _controllerReason.text ?? '';
+    final systolic = _controllerSystolic.text;
+    final diastolic = _controllerDiastolic.text;
+    final pulseRate = _controllerHeart.text;
+    final note = _controllerNote.text;
+    final reason = _controllerReason.text;
 
     if (systolic.isEmpty) {
       Message.showToastMessage(context, R.string.mes_systolic_empty.tr());
@@ -882,7 +884,8 @@ class _AddBloodPressureControllerState
           removeIDs,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'BloodPressure_change_data');
+        Observable.instance.notifyObservers([], notifyName : "BloodPressure_change_data");
+        // DartNotificationCenter.post(channel: 'BloodPressure_change_data');
         Navigator.pop(context);
       }
 
@@ -899,11 +902,11 @@ class _AddBloodPressureControllerState
 
   _submitData() async {
     FocusScope.of(context).unfocus();
-    final systolic = _controllerSystolic.text ?? '';
-    final diastolic = _controllerDiastolic.text ?? '';
-    final pulseRate = _controllerHeart.text ?? '';
-    final note = _controllerNote.text ?? '';
-    final reason = _controllerReason.text ?? '';
+    final systolic = _controllerSystolic.text;
+    final diastolic = _controllerDiastolic.text;
+    final pulseRate = _controllerHeart.text;
+    final note = _controllerNote.text;
+    final reason = _controllerReason.text;
 
     if (systolic.isEmpty) {
       Message.showToastMessage(context, R.string.mes_systolic_empty.tr());
@@ -955,7 +958,8 @@ class _AddBloodPressureControllerState
           reason,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'BloodPressure_change_data');
+        Observable.instance.notifyObservers([], notifyName : "BloodPressure_change_data");
+        // DartNotificationCenter.post(channel: 'BloodPressure_change_data');
         Navigator.pop(context);
       }
 
@@ -1073,11 +1077,11 @@ class _AddBloodPressureControllerState
   }
 
   _showDialogSave() {
-    final systolic = _controllerSystolic.text ?? '';
-    final diastolic = _controllerDiastolic.text ?? '';
-    final pulseRate = _controllerHeart.text ?? '';
-    final note = _controllerNote.text ?? '';
-    final reason = _controllerReason.text ?? '';
+    final systolic = _controllerSystolic.text;
+    final diastolic = _controllerDiastolic.text;
+    final pulseRate = _controllerHeart.text;
+    final note = _controllerNote.text;
+    final reason = _controllerReason.text;
     if (model != null) {
       final noteText = model!.note ?? '';
       final reasonText = model!.reason ?? '';

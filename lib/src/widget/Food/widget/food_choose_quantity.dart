@@ -1,15 +1,15 @@
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 typedef FoodQuantityCallback = Function(FoodModel);
 
@@ -271,25 +271,42 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                     context, R.string.ban_chua_nhap_du_lieu.tr());
                                 return;
                               }
-                              DartNotificationCenter.post(
-                                  channel: 'add_food_to_cart',
-                                  options: FoodModel(
-                                      id: widget.model!.id,
-                                      name: widget.model!.name,
-                                      portion: widget.model!.portion,
-                                      unit: widget.model!.unit,
-                                      calorie: widget.model!.calorie,
-                                      glucose: widget.model!.glucose,
-                                      lipid: widget.model!.lipid,
-                                      protein: widget.model!.protein,
-                                      fibre: widget.model!.fibre,
-                                      image: widget.model!.image,
-                                      liked: widget.model!.liked,
-                                      text: widget.model!.text,
-                                      description: widget.model!.description,
-                                      foodCategoryId:
-                                          widget.model!.foodCategoryId,
-                                      quantity: quantity));
+                              Observable.instance.notifyObservers([], notifyName : "add_food_to_cart", map: FoodModel(
+                                  id: widget.model!.id,
+                                  name: widget.model!.name,
+                                  portion: widget.model!.portion,
+                                  unit: widget.model!.unit,
+                                  calorie: widget.model!.calorie,
+                                  glucose: widget.model!.glucose,
+                                  lipid: widget.model!.lipid,
+                                  protein: widget.model!.protein,
+                                  fibre: widget.model!.fibre,
+                                  image: widget.model!.image,
+                                  liked: widget.model!.liked,
+                                  text: widget.model!.text,
+                                  description: widget.model!.description,
+                                  foodCategoryId:
+                                  widget.model!.foodCategoryId,
+                                  quantity: quantity).toJson());
+                              // DartNotificationCenter.post(
+                              //     channel: 'add_food_to_cart',
+                              //     options: FoodModel(
+                              //         id: widget.model!.id,
+                              //         name: widget.model!.name,
+                              //         portion: widget.model!.portion,
+                              //         unit: widget.model!.unit,
+                              //         calorie: widget.model!.calorie,
+                              //         glucose: widget.model!.glucose,
+                              //         lipid: widget.model!.lipid,
+                              //         protein: widget.model!.protein,
+                              //         fibre: widget.model!.fibre,
+                              //         image: widget.model!.image,
+                              //         liked: widget.model!.liked,
+                              //         text: widget.model!.text,
+                              //         description: widget.model!.description,
+                              //         foodCategoryId:
+                              //             widget.model!.foodCategoryId,
+                              //         quantity: quantity));
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -342,10 +359,12 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     try {
       if (isLike!) {
         await FoodClient().addFoodToFavorite(widget.model!.id);
-        DartNotificationCenter.post(channel: 'add_food_to_favorite');
+        Observable.instance.notifyObservers([], notifyName : "add_food_to_favorite");
+        // DartNotificationCenter.post(channel: 'add_food_to_favorite');
       } else {
         await FoodClient().romoveFoodFromFavorite(widget.model!.id);
-        DartNotificationCenter.post(channel: 'add_food_to_favorite');
+        Observable.instance.notifyObservers([], notifyName : "add_food_to_favorite");
+        // DartNotificationCenter.post(channel: 'add_food_to_favorite');
       }
 
       BotToast.closeAllLoading();

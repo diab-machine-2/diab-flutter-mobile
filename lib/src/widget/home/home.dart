@@ -1,10 +1,12 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
@@ -12,14 +14,13 @@ import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeController extends StatefulWidget {
   @override
   _HomeControllerState createState() => _HomeControllerState();
 }
 
-class _HomeControllerState extends State<HomeController> {
+class _HomeControllerState extends State<HomeController> with Observer {
   var data = [
     {
       'name': R.string.duong_huyet.tr(),
@@ -62,90 +63,129 @@ class _HomeControllerState extends State<HomeController> {
   @override
   void initState() {
     super.initState();
-    DartNotificationCenter.subscribe(
-        channel: 'BloodPressure_change_data',
-        observer: this,
-        onNotification: (_) {
-          _refresh();
-          checkScreen(NavigatorName.detail_blood_pressure);
-        });
-    DartNotificationCenter.subscribe(
-        channel: 'glucose_change_data',
-        observer: this,
-        onNotification: (_) {
-          _refresh();
-          checkScreen(NavigatorName.detail_blood_sugar);
-        });
-    DartNotificationCenter.subscribe(
-        channel: 'Weight_change_data',
-        observer: this,
-        onNotification: (_) {
-          _refresh();
-          checkScreen(NavigatorName.detail_bmi);
-        });
-    DartNotificationCenter.subscribe(
-        channel: 'Emotion_change_data',
-        observer: this,
-        onNotification: (_) {
-          _refresh();
-          checkScreen(NavigatorName.detail_emotion);
-        });
-    DartNotificationCenter.subscribe(
-        channel: 'active_change_data',
-        observer: this,
-        onNotification: (_) {
-          _refresh();
-          checkScreen(NavigatorName.detail_exercrises);
-        });
-    DartNotificationCenter.subscribe(
-        channel: 'food_change_data',
-        observer: this,
-        onNotification: (_) {
-          _refresh();
-          checkScreen(NavigatorName.detail_food);
-        });
-    DartNotificationCenter.subscribe(
-        channel: 'hba1c_change_data',
-        observer: this,
-        onNotification: (_) {
-          _refresh();
-          checkScreen(NavigatorName.detail_hba1c);
-        });
-    DartNotificationCenter.subscribe(
-        channel: 'goal_calo_changed',
-        observer: this,
-        onNotification: (_) {
-          _refresh();
-        });
-    DartNotificationCenter.subscribe(
-        channel: 'refresh_home',
-        observer: this,
-        onNotification: (_) {
-          _refresh();
-        });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'BloodPressure_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       _refresh();
+    //       checkScreen(NavigatorName.detail_blood_pressure);
+    //     });
+    // DartNotificationCenter.subscribe(
+    //     channel: 'glucose_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       _refresh();
+    //       checkScreen(NavigatorName.detail_blood_sugar);
+    //     });
+    // DartNotificationCenter.subscribe(
+    //     channel: 'Weight_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       _refresh();
+    //       checkScreen(NavigatorName.detail_bmi);
+    //     });
+    // DartNotificationCenter.subscribe(
+    //     channel: 'Emotion_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       _refresh();
+    //       checkScreen(NavigatorName.detail_emotion);
+    //     });
+    // DartNotificationCenter.subscribe(
+    //     channel: 'active_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       _refresh();
+    //       checkScreen(NavigatorName.detail_exercrises);
+    //     });
+    // DartNotificationCenter.subscribe(
+    //     channel: 'food_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       _refresh();
+    //       checkScreen(NavigatorName.detail_food);
+    //     });
+    // DartNotificationCenter.subscribe(
+    //     channel: 'hba1c_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       _refresh();
+    //       checkScreen(NavigatorName.detail_hba1c);
+    //     });
+    // DartNotificationCenter.subscribe(
+    //     channel: 'goal_calo_changed',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       _refresh();
+    //     });
+    // DartNotificationCenter.subscribe(
+    //     channel: 'refresh_home',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       _refresh();
+    //     });
     //getData();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Home');
   }
 
   @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'BloodPressure_change_data') {
+      _refresh();
+      checkScreen(NavigatorName.detail_blood_pressure);
+    }
+    if (notifyName == 'glucose_change_data') {
+      _refresh();
+      checkScreen(NavigatorName.detail_blood_sugar);
+    }
+    if (notifyName == 'Weight_change_data') {
+      _refresh();
+      checkScreen(NavigatorName.detail_bmi);
+    }
+    if (notifyName == 'Emotion_change_data') {
+      _refresh();
+      checkScreen(NavigatorName.detail_emotion);
+    }
+    if (notifyName == 'active_change_data') {
+      _refresh();
+      checkScreen(NavigatorName.detail_exercrises);
+    }
+    if (notifyName == 'food_change_data') {
+      _refresh();
+      checkScreen(NavigatorName.detail_food);
+    }
+    if (notifyName == 'hba1c_change_data') {
+      _refresh();
+      checkScreen(NavigatorName.detail_hba1c);
+    }
+    if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
+      _refresh();
+    }
+  }
+
+  @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'BloodPressure_change_data', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'glucose_change_data', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'Weight_change_data', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'Emotion_change_data', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'active_change_data', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'food_change_data', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'hba1c_change_data', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'goal_calo_changed', observer: this);
-    DartNotificationCenter.unsubscribe(channel: 'refresh_home', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'BloodPressure_change_data', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'glucose_change_data', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'Weight_change_data', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'Emotion_change_data', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'active_change_data', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'food_change_data', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'hba1c_change_data', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'goal_calo_changed', observer: this);
+    // DartNotificationCenter.unsubscribe(channel: 'refresh_home', observer: this);
     super.dispose();
   }
 

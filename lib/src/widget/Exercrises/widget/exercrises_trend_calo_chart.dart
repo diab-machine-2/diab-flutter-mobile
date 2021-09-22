@@ -730,13 +730,13 @@ class _InputCaloState extends State<InputCalo> {
                           GestureDetector(
                             onTap: () {
                               final calo = double.parse(
-                                  textEditingController.text ?? '0');
+                                  textEditingController.text);
                               if (calo <= 0) {
                                 Message.showToastMessage(context,
                                     R.string.ban_chua_nhap_thoi_gian_van_dong.tr());
                                 return;
                               }
-                              widget.callback!(textEditingController.text ?? '');
+                              widget.callback!(textEditingController.text);
                               Navigator.pop(context);
                             },
                             child: Container(

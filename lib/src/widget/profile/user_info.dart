@@ -2,16 +2,19 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
@@ -19,30 +22,29 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/profile/address.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class ProfileInfoController extends StatefulWidget {
   @override
   _ProfileInfoControllerState createState() => _ProfileInfoControllerState();
 }
 
-class _ProfileInfoControllerState extends State<ProfileInfoController> {
+class _ProfileInfoControllerState extends State<ProfileInfoController> with Observer {
   MotivationModel? motivation;
 
   void initState() {
     super.initState();
-    DartNotificationCenter.subscribe(
-        channel: 'user_info_change',
-        observer: this,
-        onNotification: (_) {
-          setState(() {});
-        });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'user_info_change',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       setState(() {});
+    //     });
 
     loadMotivation();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Update Profile');
@@ -50,15 +52,29 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
   loadMotivation() async {
     final result = await UserClient().fetchMotivationDiary(1);
-    DartNotificationCenter.post(channel: 'motivation_change');
+    Observable.instance.notifyObservers([], notifyName : "motivation_change");
+    // DartNotificationCenter.post(channel: 'motivation_change');
     motivation = result.models.length == 0 ? null : result.models.first;
     setState(() {});
   }
 
   @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'motivation_change') {
+      loadMotivation();
+    }
+    if (notifyName == 'user_info_change') {
+      setState(() {});
+    }
+  }
+
+  @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'user_info_change', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'user_info_change', observer: this);
     super.dispose();
   }
 
@@ -897,7 +913,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
           final result = await LoginClient().linkedAccountOTP({
             'providerName': 'Facebook',
-            'providerKey': resultFacebook.accessToken.userId,
+            'providerKey': resultFacebook.accessToken?.userId,
             'phoneNumber': user.phoneNumber
           });
           BotToast.closeAllLoading();
@@ -1172,7 +1188,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              final name = textEditingController.text ?? '';
+                              final name = textEditingController.text;
                               if (name.isEmpty) {
                                 Message.showToastMessage(
                                     context, R.string.mes_name_empty.tr());
@@ -1937,7 +1953,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              final phone = textEditingController.text ?? '';
+                              final phone = textEditingController.text;
                               if (phone.isEmpty) {
                                 Message.showToastMessage(
                                     context, R.string.ban_chua_nhap_so_dien_thoai.tr());
@@ -2218,7 +2234,7 @@ class _EmailValidateState extends State<EmailValidate> {
                   GestureDetector(
                     onTap: () {
                       FocusScope.of(context).unfocus();
-                      final email = widget.controller!.text ?? '';
+                      final email = widget.controller!.text;
                       if (email.isEmpty) {
                         Message.showToastMessage(
                             context, 'Bạn chưa nhập email');
@@ -2558,7 +2574,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
             GestureDetector(
               onTap: () {
                 FocusScope.of(context).unfocus();
-                final content = textEditingController.text ?? '';
+                final content = textEditingController.text;
                 if (content.isEmpty) {
                   Message.showToastMessage(context, R.string.mes_motivation_content_empty.tr());
                   return;

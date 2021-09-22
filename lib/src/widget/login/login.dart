@@ -365,7 +365,7 @@ class _LoginControllerState extends State<LoginController> {
       case FacebookLoginStatus.loggedIn:
         try {
           BotToast.showLoading();
-          final token = result.accessToken.token;
+          final token = result.accessToken?.token;
           final graphResponse = await http.get(Uri.parse(
               'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token'));
           profile = jsonDecode(graphResponse.body);
@@ -373,13 +373,13 @@ class _LoginControllerState extends State<LoginController> {
             "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
             "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
             "grant_type": "external",
-            "external_token": result.accessToken.token,
+            "external_token": token,
             "provider": 'Facebook'
           });
           final user = await UserClient().fetchUser();
           BotToast.closeAllLoading();
           if (user == null) {
-            registerAccount(result.accessToken.userId, result.accessToken.token,
+            registerAccount(result.accessToken?.userId, result.accessToken?.token,
                 'Facebook', profile['name'] ?? R.string.user_name_default.tr(), true);
             // Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
             //   'type': 'facebook',
@@ -395,8 +395,8 @@ class _LoginControllerState extends State<LoginController> {
           if (error is Error) {
             if (error.code == '5' && profile != null) {
               registerAccount(
-                  result.accessToken.userId,
-                  result.accessToken.token,
+                  result.accessToken?.userId,
+                  result.accessToken?.token,
                   'Facebook',
                   profile['name'] ?? R.string.user_name_default.tr(),
                   false);

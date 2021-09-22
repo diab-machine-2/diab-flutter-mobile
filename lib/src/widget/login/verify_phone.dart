@@ -326,7 +326,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
           "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
           "grant_type": "external",
-          "external_token": widget.facebookAccount!.accessToken.token,
+          "external_token": widget.facebookAccount!.accessToken?.token,
           "provider": 'Facebook'
         });
         final result = await LoginClient().createPatient(widget.userInfo);
@@ -368,7 +368,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       } else if (widget.type == 'linked_facebook') {
         final result = await LoginClient().linkedAccount({
           'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount!.accessToken.userId,
+          'providerKey': widget.facebookAccount!.accessToken?.userId,
           'phoneNumber': widget.phone,
           'token': otpCode
         });
@@ -432,7 +432,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       } else if (widget.type == 'facebook') {
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount!.accessToken.userId,
+          'providerKey': widget.facebookAccount!.accessToken?.userId,
           'phoneNumber': widget.phone
         });
         otpCount = result.remainingRequestCount;
@@ -448,7 +448,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       } else if (widget.type == 'linked_facebook') {
         final result = await LoginClient().linkedAccountOTP({
           'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount!.accessToken.userId,
+          'providerKey': widget.facebookAccount!.accessToken?.userId,
           'phoneNumber': widget.phone
         });
         otpCount = result.remainingRequestCount;

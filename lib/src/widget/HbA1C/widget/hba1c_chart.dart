@@ -141,11 +141,11 @@ class HbA1CChartState extends State<HbA1CChart>
 
   buildChart(TrendModel model) {
     double minY =
-        model.trendItems!.items.map<double>((e) => e.hbA1C ?? 0).reduce(min)!;
+        model.trendItems!.items.map<double>((e) => e.hbA1C ?? 0).reduce(min);
     minY = (minY * (model.trendItems!.items.length == 1 ? 0.5 : 0.8))
         .roundToDouble();
     double maxY =
-        model.trendItems!.items.map<double>((e) => e.hbA1C ?? 0).reduce(max)!;
+        model.trendItems!.items.map<double>((e) => e.hbA1C ?? 0).reduce(max);
     maxY = (maxY * (model.trendItems!.items.length == 1 ? 1.5 : 1.2))
         .roundToDouble();
     final jumpValue = (maxY - minY) / 4;

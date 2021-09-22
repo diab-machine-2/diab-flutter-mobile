@@ -369,7 +369,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            final otherText = textEditingController.text ?? '';
+                            final otherText = textEditingController.text;
                             setState(() {
                               otherSymptom =
                                   otherText.isEmpty ? null : otherText;

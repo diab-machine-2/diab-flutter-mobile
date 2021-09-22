@@ -128,7 +128,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
   buildChart(EnergyTrendModel model) {
     final width = (MediaQuery.of(context).size.width - 200) / 5;
 
-    double minY = model.items.map<double>((e) => e.value ?? 0).reduce(min)!;
+    double minY = model.items.map<double>((e) => e.value ?? 0).reduce(min);
     minY = (minY * (model.items.length == 1 ? 0.5 : 0.8)).roundToDouble();
     double maxY = model.items.map<double>((e) => (e.value ?? 0)).reduce(max);
     maxY = (maxY * (model.items.length == 1 ? 1.5 : 1.2)).roundToDouble();

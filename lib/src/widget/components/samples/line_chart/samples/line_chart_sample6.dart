@@ -18,7 +18,7 @@ class LineChartSample6 extends StatelessWidget {
     FlSpot(6, 1),
   ];
 
-  double minSpotX, maxSpotX;
+  double minSpotX = 0, maxSpotX = 0;
   double? minSpotY, maxSpotY;
 
   LineChartSample6() {

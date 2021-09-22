@@ -87,7 +87,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
         selectedCategories.add(selectedModel);
       } else {
         final index = selectedCategories.lastIndexWhere(
-            (element) => selectedModel!.categoryId == element!.categoryId);
+            (element) => selectedModel.categoryId == element.categoryId);
         // selectedCategories = selectedCategories.where((element) =>
         //         selectedModel.categoryModel.id != element.categoryModel.id) ??
         //     [];

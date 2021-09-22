@@ -89,7 +89,7 @@ class _SearchExercrisesControllerState
               .fold(
                   0,
                   (dynamic previousValue, element) =>
-                      previousValue + element!.burnedCalorie)
+                      previousValue + element.burnedCalorie)
               .round();
           return GestureDetector(
             onTap: () {

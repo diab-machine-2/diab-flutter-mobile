@@ -1,5 +1,5 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
@@ -29,7 +29,8 @@ class UserClient extends FetchClient {
           final user = UserModel.fromJson(response.data['data']);
           AppSettings.userInfo = user;
           //await fetchUserInfo(user.patientId);
-          DartNotificationCenter.post(channel: 'user_info_change');
+          Observable.instance.notifyObservers([], notifyName : "user_info_change");
+          // DartNotificationCenter.post(channel: 'user_info_change');
           return user;
         }
       } else {

@@ -1,6 +1,4 @@
 import 'dart:ui';
-
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -37,8 +35,8 @@ class BmiScaleChartState extends State<BmiScaleChart>
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'active_change_data', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'active_change_data', observer: this);
     super.dispose();
   }
 

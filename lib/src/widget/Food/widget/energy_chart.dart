@@ -1,9 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -14,7 +15,6 @@ import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Food/widget/add_target_food.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class EnergyChart extends StatefulWidget {
   EnergyChart({Key? key}) : super(key: key);
@@ -280,7 +280,8 @@ class EnergyChartState extends State<EnergyChart>
       await FoodClient().updateTargetEnergy(goal);
       UserClient().fetchUser();
       _refresh();
-      DartNotificationCenter.post(channel: 'goal_calo_changed');
+      Observable.instance.notifyObservers([], notifyName : "goal_calo_changed");
+      // DartNotificationCenter.post(channel: 'goal_calo_changed');
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();

@@ -1,14 +1,14 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/widget/Food/widget/food_choose_quantity.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 typedef FoodItemCallback = Function(FoodModel, int);
 
@@ -127,10 +127,12 @@ class FoodItem extends StatelessWidget {
     try {
       if (!model.liked!) {
         await FoodClient().addFoodToFavorite(model.id);
-        DartNotificationCenter.post(channel: 'add_food_to_favorite');
+        Observable.instance.notifyObservers([], notifyName : "add_food_to_favorite");
+        // DartNotificationCenter.post(channel: 'add_food_to_favorite');
       } else {
         await FoodClient().romoveFoodFromFavorite(model.id);
-        DartNotificationCenter.post(channel: 'add_food_to_favorite');
+        Observable.instance.notifyObservers([], notifyName : "add_food_to_favorite");
+        // DartNotificationCenter.post(channel: 'add_food_to_favorite');
       }
       BotToast.closeAllLoading();
     } catch (e, _) {

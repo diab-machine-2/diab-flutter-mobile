@@ -42,7 +42,7 @@ packages:
       name: bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.1.0"
+    version: "7.2.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -218,13 +218,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.3"
-  dart_notification_center:
-    dependency: "direct main"
-    description:
-      name: dart_notification_center
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0+1"
   dart_style:
     dependency: transitive
     description:
@@ -411,7 +404,7 @@ packages:
       name: flutter_bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.2.0"
+    version: "7.3.0"
   flutter_datetime_picker:
     dependency: "direct main"
     description:
@@ -422,10 +415,12 @@ packages:
   flutter_facebook_login:
     dependency: "direct main"
     description:
-      name: flutter_facebook_login
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
+      path: "."
+      ref: null_safety
+      resolved-ref: c05ccadb8d48178a9771d122ebb1f798b47caa4a
+      url: "https://github.com/samlythemanly/flutter_facebook_login.git"
+    source: git
+    version: "3.0.0-nullsafety"
   flutter_html:
     dependency: "direct main"
     description:
@@ -459,6 +454,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.1"
+  flutter_observer:
+    dependency: "direct main"
+    description:
+      name: flutter_observer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:

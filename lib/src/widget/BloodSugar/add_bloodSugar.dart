@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
@@ -228,8 +228,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                   value.split(',').join('.');
                                               number = newValue.isEmpty
                                                   ? 0
-                                                  : (double.parse(newValue) ??
-                                                      0);
+                                                  : double.parse(newValue);
 
                                               setState(() {
                                                 showReason = (AppSettings
@@ -677,7 +676,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       final result = await GlucoseClient().deleteIndexGlucose(widget.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        DartNotificationCenter.post(channel: 'glucose_change_data');
+        Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
+        // DartNotificationCenter.post(channel: 'glucose_change_data');
         Navigator.pop(context);
       }
 
@@ -695,9 +695,9 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
 
   editData() async {
     FocusScope.of(context).unfocus();
-    final reason = _controllerReason.text ?? '';
-    final note = _controllerNote.text ?? '';
-    final numberInput = _controller.text ?? '';
+    final reason = _controllerReason.text;
+    final note = _controllerNote.text;
+    final numberInput = _controller.text;
 
     if (numberInput.isEmpty) {
       Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
@@ -738,7 +738,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           removeIDs,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'glucose_change_data');
+        Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
+        // DartNotificationCenter.post(channel: 'glucose_change_data');
         Navigator.pop(context);
       }
 
@@ -755,8 +756,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
 
   _submitData() async {
     FocusScope.of(context).unfocus();
-    final reason = _controllerReason.text ?? '';
-    final note = _controllerNote.text ?? '';
+    final reason = _controllerReason.text;
+    final note = _controllerNote.text;
 
     if (number == 0) {
       Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
@@ -789,7 +790,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           note,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'glucose_change_data');
+        Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
+        // DartNotificationCenter.post(channel: 'glucose_change_data');
         Navigator.pop(context);
       }
 
@@ -907,9 +909,9 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
   }
 
   _showDialogSave() {
-    final reason = _controllerReason.text ?? '';
-    final note = _controllerNote.text ?? '';
-    final numberInput = _controller.text ?? '';
+    final reason = _controllerReason.text;
+    final note = _controllerNote.text;
+    final numberInput = _controller.text;
 
     if (model != null) {
       final noteText = model!.note ?? '';

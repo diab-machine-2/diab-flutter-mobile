@@ -1,5 +1,6 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
@@ -22,7 +23,7 @@ class BloodPressureDetailController extends StatefulWidget {
 
 class BloodPressureDetailControllerState
     extends State<BloodPressureDetailController>
-    with AutomaticKeepAliveClientMixin<BloodPressureDetailController> {
+    with AutomaticKeepAliveClientMixin<BloodPressureDetailController>, Observer {
   @override
   bool get wantKeepAlive => true;
 
@@ -46,12 +47,13 @@ class BloodPressureDetailControllerState
         BloodPressureDetailTabbarController.of(context)!.bloodPressureID;
     super.initState();
     initializeDateFormatting();
-    DartNotificationCenter.subscribe(
-        channel: 'BloodPressure_change_data',
-        observer: this,
-        onNotification: (_) {
-          _refresh();
-        });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'BloodPressure_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       _refresh();
+    //     });
 
     itemPositionsListener.itemPositions.addListener(() {
       final lastIndex = itemPositionsListener.itemPositions.value.last.index;
@@ -69,9 +71,18 @@ class BloodPressureDetailControllerState
   }
 
   @override
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'BloodPressure_change_data') {
+      _refresh();
+    }
+  }
+
+  @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'BloodPressure_change_data', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'BloodPressure_change_data', observer: this);
     super.dispose();
   }
 

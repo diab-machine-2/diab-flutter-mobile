@@ -77,7 +77,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
                 padding: EdgeInsets.only(bottom: 16),
                 child: RichText(
                   text: TextSpan(
-                    text: '${R.string.cong_ty_co_phan_cong_nghe_y_te} ',
+                    text: '${R.string.cong_ty_co_phan_cong_nghe_y_te.tr()} ',
                     style: TextStyle(
                         color: R.color.mainColor,
                         fontSize: 16,

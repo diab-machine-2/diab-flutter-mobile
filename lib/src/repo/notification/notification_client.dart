@@ -1,5 +1,5 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/notification/notification_data_model.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
@@ -81,7 +81,8 @@ class NotificationClient extends FetchClient {
         'isRead': isRead
       });
       if (response.statusCode == 200) {
-        DartNotificationCenter.post(channel: 'read_notification_success');
+        Observable.instance.notifyObservers([], notifyName : "read_notification_success");
+        // DartNotificationCenter.post(channel: 'read_notification_success');
         return response.data['data'];
       } else {
         final error = Error.fromJson(response);

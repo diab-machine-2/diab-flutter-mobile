@@ -1,7 +1,9 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
@@ -10,21 +12,20 @@ import 'package:medical/src/widget/Food/widget/food_item.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class SearchFood extends StatefulWidget {
-  final List<FoodModel?> foods;
+  final List<FoodModel> foods;
   SearchFood({required this.foods});
   @override
   _SearchFoodState createState() => _SearchFoodState();
 }
 
-class _SearchFoodState extends State<SearchFood> {
+class _SearchFoodState extends State<SearchFood> with Observer {
   late BuildContext currentContext;
 
   TextEditingController controller = TextEditingController();
 
-  List<FoodModel?> selectedFoods = [];
+  List<FoodModel> selectedFoods = [];
 
   int page = 1;
   bool? hasMore = false;
@@ -35,6 +36,7 @@ class _SearchFoodState extends State<SearchFood> {
     super.initState();
     controller.text = '';
     selectedFoods = [...widget.foods];
+    Observable.instance.addObserver(this);
     // DartNotificationCenter.subscribe(
     //     channel: 'add_food_to_favorite',
     //     observer: this,
@@ -42,22 +44,36 @@ class _SearchFoodState extends State<SearchFood> {
     //       refresh();
     //     });
 
-    DartNotificationCenter.subscribe(
-        channel: 'add_food_to_cart',
-        observer: this,
-        onNotification: (food) {
-          setState(() {
-            this.selectedFoods.add(food);
-          });
-        });
+    // DartNotificationCenter.subscribe(
+    //     channel: 'add_food_to_cart',
+    //     observer: this,
+    //     onNotification: (food) {
+    //       setState(() {
+    //         this.selectedFoods.add(food);
+    //       });
+    //     });
+  }
+
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? food) {
+    // TODO: implement update
+    var firstValue = food?.values.first;
+    if (notifyName == 'add_food_to_cart') {
+      if (firstValue is FoodModel) {
+        this.selectedFoods.add(firstValue);
+        setState(() {});
+      }
+    }
   }
 
   @override
   void dispose() {
+    Observable.instance.removeObserver(this);
     // DartNotificationCenter.unsubscribe(
     //     channel: 'add_food_to_favorite', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'add_food_to_cart', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'add_food_to_cart', observer: this);
     super.dispose();
   }
 
@@ -67,7 +83,7 @@ class _SearchFoodState extends State<SearchFood> {
     } else {
       isLoading = true;
       BlocProvider.of<FoodBloc>(currentContext)
-          .add(FetchSearchFood(keyword: controller.text ?? '', page: page));
+          .add(FetchSearchFood(keyword: controller.text, page: page));
     }
     return true;
   }
@@ -75,7 +91,7 @@ class _SearchFoodState extends State<SearchFood> {
   Future<bool> refresh() async {
     page = 1;
     BlocProvider.of<FoodBloc>(currentContext)
-        .add(FetchSearchFood(keyword: controller.text ?? '', page: page));
+        .add(FetchSearchFood(keyword: controller.text, page: page));
     return true;
   }
 
@@ -162,7 +178,7 @@ class _SearchFoodState extends State<SearchFood> {
                     if (state is FoodInitial) {
                       BlocProvider.of<FoodBloc>(currentContext).add(
                           FetchSearchFood(
-                              keyword: controller.text ?? '', page: 1));
+                              keyword: controller.text, page: 1));
                     }
                     if (state is FoodError) {
                       Message.showToastMessage(context, state.message);
@@ -217,7 +233,7 @@ class _SearchFoodState extends State<SearchFood> {
                                           } else {
                                             final selectedIndex = selectedFoods
                                                 .lastIndexWhere((element) =>
-                                                    element!.id ==
+                                                    element.id ==
                                                     model![index].id);
                                             return FoodItem(
                                               model: model[index],

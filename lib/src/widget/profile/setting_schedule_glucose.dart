@@ -1,16 +1,16 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class SettingScheduleGlucoseController extends StatefulWidget {
   @override
@@ -300,8 +300,10 @@ class _SettingScheduleGlucoseControllerState
       BotToast.showLoading();
       await UserClient().updateScheduleGlucoseSetting(timeModel!);
       await UserClient().fetchUser();
-      DartNotificationCenter.post(channel: 'setup_schedule_change');
-      DartNotificationCenter.post(channel: 'refresh_home');
+      Observable.instance.notifyObservers([], notifyName : "setup_schedule_change");
+      Observable.instance.notifyObservers([], notifyName : "refresh_home");
+      // DartNotificationCenter.post(channel: 'setup_schedule_change');
+      // DartNotificationCenter.post(channel: 'refresh_home');
       BotToast.closeAllLoading();
       Navigator.pop(context);
     } catch (e, _) {

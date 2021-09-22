@@ -1,6 +1,8 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/widget/Food/widget/category_food.dart';
@@ -9,7 +11,6 @@ import 'package:medical/src/widget/Food/widget/food_choosen.dart';
 import 'package:medical/src/widget/Food/widget/near_food.dart';
 import 'package:medical/src/widget/Food/widget/search_food.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 typedef SearchFoodCallback = Function(List<FoodModel>);
 
@@ -28,10 +29,10 @@ class SearchFoodController extends StatefulWidget {
 }
 
 class _SearchFoodControllerState extends State<SearchFoodController>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, Observer {
   GlobalKey<CustomSegmentState> segmentKey = GlobalKey();
   TabController? _tabController;
-  List<FoodModel?> selectedFoods = [];
+  List<FoodModel> selectedFoods = [];
   @override
   void initState() {
     super.initState();
@@ -42,31 +43,50 @@ class _SearchFoodControllerState extends State<SearchFoodController>
         segmentKey.currentState!.jumpTo(_tabController!.index);
       }
     });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'add_food_to_cart',
+    //     observer: this,
+    //     onNotification: (food) {
+    //       this.selectedFoods.removeWhere((element) => food.id == element!.id);
+    //       this.selectedFoods.add(food);
+    //     });
+    //
+    // DartNotificationCenter.subscribe(
+    //     channel: 'remove_food_from_cart',
+    //     observer: this,
+    //     onNotification: (food) {
+    //       if (food is FoodModel) {
+    //         selectedFoods.removeWhere((element) => element!.id == food.id);
+    //       }
+    //     });
+  }
 
-    DartNotificationCenter.subscribe(
-        channel: 'add_food_to_cart',
-        observer: this,
-        onNotification: (food) {
-          this.selectedFoods.removeWhere((element) => food.id == element!.id);
-          this.selectedFoods.add(food);
-        });
-
-    DartNotificationCenter.subscribe(
-        channel: 'remove_food_from_cart',
-        observer: this,
-        onNotification: (food) {
-          if (food is FoodModel) {
-            selectedFoods.removeWhere((element) => element!.id == food.id);
-          }
-        });
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? food) {
+    // TODO: implement update
+    var firstValue = food?.values.first;
+    if (notifyName == 'add_food_to_cart') {
+      if (firstValue is FoodModel) {
+        this.selectedFoods.removeWhere((element) => firstValue.id == element.id);
+        this.selectedFoods.add(firstValue);
+      }
+    }
+    if (notifyName == 'remove_food_from_cart') {
+      if (firstValue is FoodModel) {
+        selectedFoods.removeWhere((element) => firstValue.id == element.id);
+      }
+    }
   }
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'add_food_to_cart', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'remove_food_from_cart', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'add_food_to_cart', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'remove_food_from_cart', observer: this);
     super.dispose();
   }
 

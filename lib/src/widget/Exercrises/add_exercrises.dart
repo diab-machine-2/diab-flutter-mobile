@@ -2,10 +2,14 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/exercrises/exercrise_Input_detail_model.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
@@ -23,10 +27,6 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class AddExercrisesController extends StatefulWidget {
   final String? type;
@@ -1061,7 +1061,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
       BotToast.showLoading();
       final result = await ExercrisesClient().deleteExercrises(widget.id);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'active_change_data');
+        Observable.instance.notifyObservers([], notifyName : "active_change_data");
+        // DartNotificationCenter.post(channel: 'active_change_data');
         Navigator.pop(context);
       }
       BotToast.closeAllLoading();
@@ -1077,7 +1078,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
   }
 
   editData() async {
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
 
     FocusScope.of(context).unfocus();
 
@@ -1112,7 +1113,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           removeIDs,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'active_change_data');
+        Observable.instance.notifyObservers([], notifyName : "active_change_data");
+        // DartNotificationCenter.post(channel: 'active_change_data');
         Navigator.pop(context);
       }
 
@@ -1129,7 +1131,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
 
   _submitData() async {
     FocusScope.of(context).unfocus();
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
 
     if (selectedDate == null) {
       Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
@@ -1157,7 +1159,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           selectedCategory,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'active_change_data');
+        Observable.instance.notifyObservers([], notifyName : "active_change_data");
+        // DartNotificationCenter.post(channel: 'active_change_data');
         Navigator.pop(context);
       }
 
@@ -1274,7 +1277,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
 
   _showDialogSave() {
     FocusScope.of(context).unfocus();
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
     if (model != null && model!.exercise.length == selectedCategory.length) {
       final noteText = model!.note ?? '';
       final date = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);

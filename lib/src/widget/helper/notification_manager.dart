@@ -1,11 +1,11 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:device_info/device_info.dart';
 import 'dart:io';
+
+import 'package:device_info/device_info.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/main.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
@@ -43,7 +43,8 @@ class NotificationManager {
         title: message.notification!.title,
         body: message.notification!.body ?? '',
         data: NotificationData.fromJson(message.data));
-    DartNotificationCenter.post(channel: 'reload_notification');
+    Observable.instance.notifyObservers([], notifyName : "reload_notification");
+    // DartNotificationCenter.post(channel: 'reload_notification');
     NotificationManager.instance.navigateNotification(model);
   }
 
@@ -54,7 +55,8 @@ class NotificationManager {
           title: message.notification!.title,
           body: message.notification!.body ?? '',
           data: NotificationData.fromJson(message.data));
-      DartNotificationCenter.post(channel: 'reload_notification');
+      Observable.instance.notifyObservers([], notifyName : "reload_notification");
+      // DartNotificationCenter.post(channel: 'reload_notification');
       Message.showNotificationMessage(
           model: model,
           callback: (model) {
@@ -67,7 +69,8 @@ class NotificationManager {
           title: message.notification!.title,
           body: message.notification!.body ?? '',
           data: NotificationData.fromJson(message.data));
-      DartNotificationCenter.post(channel: 'reload_notification');
+      Observable.instance.notifyObservers([], notifyName : "reload_notification");
+      // DartNotificationCenter.post(channel: 'reload_notification');
       navigateNotification(model);
     });
 

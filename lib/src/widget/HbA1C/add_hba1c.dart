@@ -2,9 +2,9 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
@@ -601,8 +601,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   }
 
   _showDialogSave() {
-    final note = _controllerNote.text ?? '';
-    final numberInput = _controller.text ?? '';
+    final note = _controllerNote.text;
+    final numberInput = _controller.text;
     if (model != null) {
       final des = model!.description ?? '';
       final parseTime = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
@@ -729,7 +729,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       final result = await HbA1CClient().deleteIndexHbA1C(model!.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        DartNotificationCenter.post(channel: 'hba1c_change_data');
+        Observable.instance.notifyObservers([], notifyName : "hba1c_change_data");
+        // DartNotificationCenter.post(channel: 'hba1c_change_data');
         Navigator.pop(context);
       }
       BotToast.closeAllLoading();
@@ -745,8 +746,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
 
   editData() async {
     FocusScope.of(context).unfocus();
-    final note = _controllerNote.text ?? '';
-    String numberInput = _controller.text ?? '';
+    final note = _controllerNote.text;
+    String numberInput = _controller.text;
     numberInput = numberInput.split(',').join('.');
 
     if (numberInput == null) {
@@ -784,7 +785,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
           paths);
       if (result == true) {
         Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
-        DartNotificationCenter.post(channel: 'hba1c_change_data');
+        Observable.instance.notifyObservers([], notifyName : "hba1c_change_data");
+        // DartNotificationCenter.post(channel: 'hba1c_change_data');
         Navigator.pop(context);
       }
 
@@ -801,8 +803,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
 
   _submitData() async {
     FocusScope.of(context).unfocus();
-    final note = _controllerNote.text ?? '';
-    String numberInput = _controller.text ?? '';
+    final note = _controllerNote.text;
+    String numberInput = _controller.text;
     numberInput = numberInput.split(',').join('.');
 
     if (numberInput.isEmpty) {
@@ -835,7 +837,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
           note,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'hba1c_change_data');
+        Observable.instance.notifyObservers([], notifyName : "hba1c_change_data");
+        // DartNotificationCenter.post(channel: 'hba1c_change_data');
         Navigator.pop(context);
       }
 

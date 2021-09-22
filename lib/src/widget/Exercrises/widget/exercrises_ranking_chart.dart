@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -9,7 +9,6 @@ import 'package:medical/src/modal/exercrises/excercise_rank_model.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class ExercrisesRankingChart extends StatefulWidget {
   ExercrisesRankingChart({Key? key}) : super(key: key);
@@ -58,8 +57,8 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'active_change_data', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'active_change_data', observer: this);
     super.dispose();
   }
 

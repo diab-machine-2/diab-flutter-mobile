@@ -1,23 +1,24 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class HomeHeader extends StatefulWidget {
   @override
   _HomeHeaderState createState() => _HomeHeaderState();
 }
 
-class _HomeHeaderState extends State<HomeHeader> {
+class _HomeHeaderState extends State<HomeHeader> with Observer {
   bool isChoose = false;
 
   int? notificationCount = 0;
@@ -26,45 +27,61 @@ class _HomeHeaderState extends State<HomeHeader> {
   @override
   void initState() {
     super.initState();
-
-    DartNotificationCenter.subscribe(
-        channel: 'user_info_change',
-        observer: this,
-        onNotification: (_) {
-          setState(() {});
-        });
-
-    DartNotificationCenter.subscribe(
-        channel: 'reload_notification',
-        observer: this,
-        onNotification: (_) {
-          loadNotification();
-        });
-    DartNotificationCenter.subscribe(
-        channel: 'read_notification_success',
-        observer: this,
-        onNotification: (_) {
-          loadNotification();
-        });
-
-    DartNotificationCenter.subscribe(
-        channel: 'motivation_change',
-        observer: this,
-        onNotification: (_) {
-          loadMotivation();
-        });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'user_info_change',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       setState(() {});
+    //     });
+    //
+    // DartNotificationCenter.subscribe(
+    //     channel: 'reload_notification',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       loadNotification();
+    //     });
+    // DartNotificationCenter.subscribe(
+    //     channel: 'read_notification_success',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       loadNotification();
+    //     });
+    //
+    // DartNotificationCenter.subscribe(
+    //     channel: 'motivation_change',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       loadMotivation();
+    //     });
     loadNotification();
     loadMotivation();
   }
 
   @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'user_info_change') {
+      setState(() {});
+    }
+    if (notifyName == 'reload_notification' || notifyName == 'read_notification_success') {
+      loadNotification();
+    }
+    if (notifyName == 'motivation_change') {
+      loadMotivation();
+    }
+  }
+
+  @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'user_info_change', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'reload_notification', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'read_notification_success', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'user_info_change', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'reload_notification', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'read_notification_success', observer: this);
     super.dispose();
   }
 

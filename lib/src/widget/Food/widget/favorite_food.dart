@@ -1,6 +1,7 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_model.dart';
@@ -8,53 +9,72 @@ import 'package:medical/src/widget/Food/widget/food_item.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 class FavoriteFood extends StatefulWidget {
-  final List<FoodModel?> foods;
+  final List<FoodModel> foods;
   FavoriteFood({required this.foods});
   @override
   FavoriteFoodState createState() => FavoriteFoodState();
 }
 
 class FavoriteFoodState extends State<FavoriteFood>
-    with AutomaticKeepAliveClientMixin<FavoriteFood> {
+    with AutomaticKeepAliveClientMixin<FavoriteFood>, Observer {
   @override
   bool get wantKeepAlive => true;
   late BuildContext currentContext;
 
-  List<FoodModel?> selectedFoods = [];
+  List<FoodModel> selectedFoods = [];
 
   @override
   void initState() {
     super.initState();
     selectedFoods = [...widget.foods];
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'add_food_to_cart',
+    //     observer: this,
+    //     onNotification: (food) {
+    //       setState(() {
+    //         this.selectedFoods.removeWhere((element) => food.id == element!.id);
+    //         this.selectedFoods.add(food);
+    //       });
+    //     });
+    //
+    // DartNotificationCenter.subscribe(
+    //     channel: 'remove_food_from_cart',
+    //     observer: this,
+    //     onNotification: (food) {
+    //       if (food is FoodModel) {
+    //         setState(() {
+    //           selectedFoods.removeWhere((element) => element!.id == food.id);
+    //         });
+    //       }
+    //     });
+  }
 
-    DartNotificationCenter.subscribe(
-        channel: 'add_food_to_cart',
-        observer: this,
-        onNotification: (food) {
-          setState(() {
-            this.selectedFoods.removeWhere((element) => food.id == element!.id);
-            this.selectedFoods.add(food);
-          });
-        });
-
-    DartNotificationCenter.subscribe(
-        channel: 'remove_food_from_cart',
-        observer: this,
-        onNotification: (food) {
-          if (food is FoodModel) {
-            setState(() {
-              selectedFoods.removeWhere((element) => element!.id == food.id);
-            });
-          }
-        });
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? food) {
+    // TODO: implement update
+    var firstValue = food?.values.first;
+    if (notifyName == 'add_food_to_cart') {
+      if (firstValue is FoodModel) {
+        this.selectedFoods.removeWhere((element) => firstValue.id == element.id);
+        this.selectedFoods.add(firstValue);
+      }
+    }
+    if (notifyName == 'remove_food_from_cart') {
+      if (firstValue is FoodModel) {
+        selectedFoods.removeWhere((element) => firstValue.id == element.id);
+      }
+    }
   }
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'add_food_to_cart', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'remove_food_from_cart', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'add_food_to_cart', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'remove_food_from_cart', observer: this);
     super.dispose();
   }
 
@@ -106,7 +126,7 @@ class FavoriteFoodState extends State<FavoriteFood>
                           );
                         } else {
                           final selectedIndex = selectedFoods.lastIndexWhere(
-                              (element) => element!.id == model![index].id);
+                              (element) => element.id == model![index].id);
                           return FoodItem(
                               model: model[index],
                               selectedModel: selectedIndex != -1

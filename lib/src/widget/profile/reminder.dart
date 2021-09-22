@@ -1,27 +1,28 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class ReminderController extends StatefulWidget {
   @override
   _ReminderControllerState createState() => _ReminderControllerState();
 }
 
-class _ReminderControllerState extends State<ReminderController> {
+class _ReminderControllerState extends State<ReminderController> with Observer  {
   List<ScheduleReminderModel>? models;
 
   int page = 1;
@@ -32,13 +33,23 @@ class _ReminderControllerState extends State<ReminderController> {
   void initState() {
     super.initState();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Schedule Glucose');
-    DartNotificationCenter.subscribe(
-        channel: 'schedule_change',
-        observer: this,
-        onNotification: (_) {
-          loadData();
-        });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'schedule_change',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       loadData();
+    //     });
     loadData();
+  }
+
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'schedule_change') {
+      loadData();
+    }
   }
 
   Future<bool> loadData() async {
@@ -72,8 +83,9 @@ class _ReminderControllerState extends State<ReminderController> {
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'schedule_change', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'schedule_change', observer: this);
     super.dispose();
   }
 
