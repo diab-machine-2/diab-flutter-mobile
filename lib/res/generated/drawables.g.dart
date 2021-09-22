@@ -50,6 +50,7 @@ class Drawables {
 	String get ic_birthday => "lib/res/drawables/ic_birthday.png";
 	String get ic_blood_pressure => "lib/res/drawables/ic_blood_pressure.png";
 	String get ic_blood_sugar => "lib/res/drawables/ic_blood_sugar.png";
+	String get ic_blood_sugar_testing_suggest => "lib/res/drawables/ic_blood_sugar_testing_suggest.png";
 	String get ic_book_question => "lib/res/drawables/ic_book_question.png";
 	String get ic_book_question_selected => "lib/res/drawables/ic_book_question_selected.png";
 	String get ic_bowl => "lib/res/drawables/ic_bowl.png";

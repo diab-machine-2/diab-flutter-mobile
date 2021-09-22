@@ -153,6 +153,7 @@ class Strings {
 	String get enter_blood_pressure => 'enter_blood_pressure';
 	String get blood_pressure_for_diabetes => 'blood_pressure_for_diabetes';
 	String get systolic_diastolic => 'systolic_diastolic';
+	String get blood_sugar_testing_schedule_suggest => 'blood_sugar_testing_schedule_suggest';
 	String get mes_systolic_empty => 'mes_systolic_empty';
 	String get mes_diastolic_empty => 'mes_diastolic_empty';
 	String get mes_heart_rate_empty => 'mes_heart_rate_empty';
@@ -174,6 +175,8 @@ class Strings {
 	String get mes_blood_sugar_empty => 'mes_blood_sugar_empty';
 	String get mes_reason_empty => 'mes_reason_empty';
 	String get blood_sugar_group => 'blood_sugar_group';
+	String get result => 'result';
+	String get pick_a_model => 'pick_a_model';
 	String get bmiscreen => 'BMIScreen';
 	String get update_weight_info => 'update_weight_info';
 	String get enter_weight_info => 'enter_weight_info';

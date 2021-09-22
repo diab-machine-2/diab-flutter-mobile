@@ -20,7 +20,8 @@ class ScheduleGlucoseController extends StatefulWidget {
       _ScheduleGlucoseControllerState();
 }
 
-class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> with Observer {
+class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
+    with Observer {
   int selected = 0;
   ScheduleModel? scheduleDay;
   ScheduleGlucoseModel? model;
@@ -183,8 +184,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
                       children: [
                         SafeArea(
                           bottom: false,
-                          child: Image.asset(
-                              R.drawable.im_schedule_glucose,
+                          child: Image.asset(R.drawable.im_schedule_glucose,
                               height: 220),
                         ),
                         Padding(
@@ -193,66 +193,69 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
                             children: [
                               Expanded(
                                 child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      RichText(
-                                        text: TextSpan(
-                                          text:
-                                              '${R.string.default_time_to_measure_blood_sugar.tr()} ',
-                                          style: TextStyle(
-                                              color: R.color.primaryGreyColor),
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                                text: timeModel == null
-                                                    ? R.string.suggest_time_to_measure_blood_sugar.tr()
-                                                    : R.string.time_to_measure_blood_sugar.tr(args: ['${timeModel!.beforeEat}', '${timeModel!.afterEat}', '${timeModel!.beforeSleeping}']),
-                                                style: TextStyle(
-                                                    color: R.color.black,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 14))
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(height: 16),
-                                      Row(
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              Navigator.pushNamed(context,
-                                                  NavigatorName.setting_schedule_glucose);
-                                            },
-                                            child: Container(
-                                                height: 36,
-                                                decoration: BoxDecoration(
-                                                    color: R.color.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            18)),
-                                                padding: EdgeInsets.only(
-                                                    left: 16, right: 16),
-                                                child: Row(
-                                                  children: [
-                                                    Image.asset(
-                                                        R.drawable.ic_alarm,
-                                                        width: 24,
-                                                        height: 24),
-                                                    SizedBox(width: 8),
-                                                    Text(R.string.setup.tr(),
-                                                        style: TextStyle(
-                                                            color: R.color.mainColor,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600))
-                                                  ],
-                                                )),
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: RichText(
+                                            text: TextSpan(
+                                              text:
+                                                  '${R.string.default_time_to_measure_blood_sugar.tr()} ',
+                                              style: TextStyle(
+                                                  color:
+                                                      R.color.primaryGreyColor),
+                                              children: <TextSpan>[
+                                                TextSpan(
+                                                    text: timeModel == null
+                                                        ? R.string
+                                                            .suggest_time_to_measure_blood_sugar
+                                                            .tr()
+                                                        : R.string
+                                                            .time_to_measure_blood_sugar
+                                                            .tr(args: [
+                                                            '${timeModel!.beforeEat}',
+                                                            '${timeModel!.afterEat}',
+                                                            '${timeModel!.beforeSleeping}'
+                                                          ]),
+                                                    style: TextStyle(
+                                                        color: R.color.black,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 14))
+                                              ],
+                                            ),
                                           ),
-                                        ],
-                                      )
-                                    ]),
+                                        ),
+                                        SizedBox(width: 150)
+                                      ],
+                                    ),
+                                    SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        _buildSupportButton(
+                                            title: R.string.setup.tr(),
+                                            icon: R.drawable.ic_alarm,
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  context,
+                                                  NavigatorName
+                                                      .setting_schedule_glucose);
+                                            }),
+                                        const SizedBox(width: 16),
+                                        _buildSupportButton(
+                                            title: R.string.blood_sugar_testing_schedule_suggest.tr(),
+                                            icon: R.drawable.ic_blood_sugar_testing_suggest,
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  context,
+                                                  NavigatorName.blood_sugar_schedule_recommend);
+                                            }),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
-                              SizedBox(width: 150)
                             ],
                           ),
                         )
@@ -291,8 +294,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
                                                   : R.color.color0xFFE4F5F5)),
                                       borderRadius: BorderRadius.circular(18)),
                                   child: Center(
-                                      child: Text(
-                                          index == 6 ? R.string.sunday.tr() : R.string.day_in_week.tr(args: ['${index + 2}']),
+                                      child: Text(index == 6 ? R.string.sunday.tr() : R.string.day_in_week.tr(args: ['${index + 2}']),
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: selected == index
@@ -469,7 +471,10 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom
+                            ])),
                     child: Center(
                         child: Text(R.string.save.tr(),
                             style: TextStyle(
@@ -623,16 +628,22 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
         child: Container(
             height: 60,
             decoration: BoxDecoration(
-                color: highlight ? R.color.color0xffF4DBBD : R.color.color0xffF5F7FA,
+                color: highlight
+                    ? R.color.color0xffF4DBBD
+                    : R.color.color0xffF5F7FA,
                 border: Border.all(
-                    color: highlight ? R.color.color0xffE5B440 : R.color.color0xffF5F7FA),
+                    color: highlight
+                        ? R.color.color0xffE5B440
+                        : R.color.color0xffF5F7FA),
                 borderRadius: BorderRadius.circular(12)),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Image.asset(icon, width: 51, height: 34),
               SizedBox(width: 8),
               Text(title,
                   style: TextStyle(
-                      color: highlight ? R.color.mainColor : R.color.color0xffA1A3A6,
+                      color: highlight
+                          ? R.color.mainColor
+                          : R.color.color0xffA1A3A6,
                       fontSize: 16))
             ])),
       ),
@@ -669,8 +680,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_back.tr(),
+                        child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -763,4 +773,35 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
       }
     }
   }
+}
+
+Widget _buildSupportButton({
+  required String title,
+  required String icon,
+  required VoidCallback onTap,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      height: 36,
+      decoration: BoxDecoration(
+          color: R.color.white,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      padding: const EdgeInsets.only(left: 16, right: 16),
+      child: Row(
+        children: [
+          Image.asset(icon, width: 24, height: 24),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: TextStyle(
+                color: R.color.mainColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    ),
+  );
 }
