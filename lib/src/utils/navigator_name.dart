@@ -52,7 +52,4 @@ class NavigatorName {
   static const String add_reminder = '/add_reminder';
   static const String schedule_glucose = '/schedule_glucose';
   static const String setting_schedule_glucose = '/setting_schedule_glucose';
-  static const String blood_sugar_survey = '/bood_sugar_survey';
-  static const String blood_sugar_schedule_recommend =
-      '/blood_sugar_schedule_recommend';
 }

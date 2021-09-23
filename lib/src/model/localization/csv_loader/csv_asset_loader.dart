@@ -42,7 +42,7 @@ class CSVParser {
 
   CSVParser(this.strings, {this.fieldDelimiter = ','})
       : lines = CsvToListConverter(csvSettingsDetector: csvSettingsDetector)
-            .convert(strings, fieldDelimiter: fieldDelimiter);
+            .convert(strings);
 
   List getLanguages() {
     return lines.first.sublist(1, lines.first.length);

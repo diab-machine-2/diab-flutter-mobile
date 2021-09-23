@@ -20,7 +20,9 @@ class Drawables {
 	String get bg_profile => "lib/res/drawables/bg_profile.png";
 	String get bg_splash => "lib/res/drawables/bg_splash.png";
 	String get bg_sub_exe => "lib/res/drawables/bg_sub_exe.png";
+	String get bg_upgrade_account => "lib/res/drawables/bg_upgrade_account.png";
 	String get bg_weight => "lib/res/drawables/bg_weight.png";
+	String get bg_welcome => "lib/res/drawables/bg_welcome.png";
 	String get ic_a1c => "lib/res/drawables/ic_a1c.png";
 	String get ic_account => "lib/res/drawables/ic_account.png";
 	String get ic_activity_1 => "lib/res/drawables/ic_activity_1.png";
@@ -63,6 +65,7 @@ class Drawables {
 	String get ic_can_nang => "lib/res/drawables/ic_can_nang.png";
 	String get ic_chatting => "lib/res/drawables/ic_chatting.png";
 	String get ic_check => "lib/res/drawables/ic_check.png";
+	String get ic_check_circle => "lib/res/drawables/ic_check_circle.png";
 	String get ic_check_error => "lib/res/drawables/ic_check_error.png";
 	String get ic_check_mark => "lib/res/drawables/ic_check_mark.png";
 	String get ic_check_mark_bg => "lib/res/drawables/ic_check_mark_bg.png";
@@ -134,6 +137,7 @@ class Drawables {
 	String get ic_phone_info => "lib/res/drawables/ic_phone_info.png";
 	String get ic_photo => "lib/res/drawables/ic_photo.png";
 	String get ic_plan => "lib/res/drawables/ic_plan.png";
+	String get ic_pro => "lib/res/drawables/ic_pro.png";
 	String get ic_pulse => "lib/res/drawables/ic_pulse.png";
 	String get ic_question => "lib/res/drawables/ic_question.png";
 	String get ic_question_circle => "lib/res/drawables/ic_question_circle.png";
@@ -158,7 +162,6 @@ class Drawables {
 	String get ic_warning => "lib/res/drawables/ic_warning.png";
 	String get ic_weight => "lib/res/drawables/ic_weight.png";
 	String get ic_weight_plus => "lib/res/drawables/ic_weight_plus.png";
-	String get ic_welcome_2 => "lib/res/drawables/ic_welcome_2.png";
 	String get ic_year => "lib/res/drawables/ic_year.png";
 	String get im_add_hba1c => "lib/res/drawables/im_add_hba1c.png";
 	String get im_banner => "lib/res/drawables/im_banner.png";
@@ -202,6 +205,8 @@ class Drawables {
 	String get im_step3 => "lib/res/drawables/im_step3.png";
 	String get im_tabble_hba1c => "lib/res/drawables/im_tabble_hba1c.png";
 	String get img_list_service => "lib/res/drawables/img_list_service.png";
+	String get img_welcome_0 => "lib/res/drawables/img_welcome_0.png";
 	String get img_welcome_1 => "lib/res/drawables/img_welcome_1.png";
+	String get img_welcome_2 => "lib/res/drawables/img_welcome_2.png";
 	String get img_welcome_3 => "lib/res/drawables/img_welcome_3.png";
 }

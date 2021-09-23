@@ -119,14 +119,14 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                         widget.icon,
                         fit: BoxFit.fitHeight,
                         height: 5,
-                        color: R.color.black,
+                        color: R.color.textDark,
                       ),
                       padding: EdgeInsets.all(12),
                     )
                   : Icon(
                       widget.icon,
                       size: 30,
-                      color: R.color.black,
+                      color: R.color.textDark,
                     )),
           suffixIcon: widget.suffixIcon != null
               ? GestureDetector(
@@ -161,10 +161,10 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                         )
                       : null),
           labelStyle: TextStyle(
-              fontSize: 17.sp,
-              color: widget.isEnable ? R.color.black : R.color.gray),
+              fontSize: 16.sp,
+              color: widget.isEnable ? R.color.textDark : R.color.gray),
           hintStyle: TextStyle(
-            fontSize: 17.sp,
+            fontSize: 16.sp,
             color: R.color.gray,
           ),
           errorStyle: TextStyle(
@@ -179,8 +179,8 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       textAlign: TextAlign.start,
       textAlignVertical: TextAlignVertical.center,
       style: TextStyle(
-        fontSize: 17.sp,
-        color: widget.isEnable ? R.color.black : R.color.gray,
+        fontSize: 16.sp,
+        color: widget.isEnable ? R.color.textDark : R.color.gray,
       ),
     );
   }

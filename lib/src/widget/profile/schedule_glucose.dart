@@ -9,8 +9,10 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/blood_sugar_schedule_recommend/blood_sugar_schedule_recommend_page.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
@@ -247,10 +249,11 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                             title: R.string.blood_sugar_testing_schedule_suggest.tr(),
                                             icon: R.drawable.ic_blood_sugar_testing_suggest,
                                             onTap: () {
-                                              Navigator.pushNamed(
-                                                  context,
-                                                  NavigatorName.blood_sugar_schedule_recommend);
-                                            }),
+                                              NavigationUtil.navigatePage(
+                                                context,
+                                                const BloodSugarScheduleRecommand(),
+                                              );
+                                            })
                                       ],
                                     )
                                   ],

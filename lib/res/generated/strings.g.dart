@@ -619,7 +619,6 @@ class Strings {
 	String get plan => 'plan';
 	String get course => 'course';
 	String get individual => 'individual';
-	String get upgrade_account => 'upgrade_account';
 	String get list_service => 'list_service';
 	String get text_list_service => 'text_list_service';
 	String get service_basic => 'service_basic';
@@ -631,4 +630,22 @@ class Strings {
 	String get option_another => 'option_another';
 	String get send => 'send';
 	String get hint_msg_to_diab => 'hint_msg_to_diab';
+	String get interest => 'interest';
+	String get diab_pro => 'diab_pro';
+	String get description_diab_pro => 'description_diab_pro';
+	String get diab_basic => 'diab_basic';
+	String get description_diab_basic => 'description_diab_basic';
+	String get ignore => 'ignore';
+	String get des_1_welcome_2 => 'des_1_welcome_2';
+	String get des_2_welcome_2 => 'des_2_welcome_2';
+	String get des_3_welcome_2 => 'des_3_welcome_2';
+	String get des_1_welcome_3 => 'des_1_welcome_3';
+	String get des_2_welcome_3 => 'des_2_welcome_3';
+	String get start => 'start';
+	String get upgrade_account => 'upgrade_account';
+	String get see_detail => 'see_detail';
+	String get continue_basic_package => 'continue_basic_package';
+	String get feature => 'feature';
+	String get basic => 'basic';
+	String get pro => 'pro';
 }
