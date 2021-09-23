@@ -20,6 +20,7 @@ class Drawables {
 	String get bg_profile => "lib/res/drawables/bg_profile.png";
 	String get bg_splash => "lib/res/drawables/bg_splash.png";
 	String get bg_sub_exe => "lib/res/drawables/bg_sub_exe.png";
+	String get bg_upgrade_account => "lib/res/drawables/bg_upgrade_account.png";
 	String get bg_weight => "lib/res/drawables/bg_weight.png";
 	String get bg_welcome => "lib/res/drawables/bg_welcome.png";
 	String get ic_a1c => "lib/res/drawables/ic_a1c.png";

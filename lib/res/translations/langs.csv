@@ -612,7 +612,6 @@ number_of_days,{} ngày,
 plan,Kế hoạch,
 course,Khoá học,
 individual,Cá nhân,
-upgrade_account,Nâng cấp tài khoản,
 list_service,Các gói dịch vụ của diaB,
 text_list_service,"Mong muốn mang đến những giá trị thiết thực cho những khách hàng của DiaB, chúng tôi đã kiến tạo 2 gói dịch vụ gồm:",
 service_basic,Gói cơ bản,
@@ -635,4 +634,10 @@ des_2_welcome_2,"Lộ trình khoa học được thiết kế hàng tuần, phù
 des_3_welcome_2,Củng cố kiến thức sau mỗi bài học
 des_1_welcome_3,"Có huấn luyện viên sát cánh, hỗ trợ theo hết khoá học"
 des_2_welcome_3,"Hỏi đáp 24/7: Các chuyên gia luôn cố gắng giải đáp, thắc mắc"
-start,Bắt đầu
+start,Bắt đầu,
+upgrade_account,Nâng cấp tài khoản,
+see_detail,Xem chi tiết,
+continue_basic_package,Tiếp tục sử dụng gói cơ bản,
+feature,Tính năng,
+basic,Cơ bản,
+pro,Pro

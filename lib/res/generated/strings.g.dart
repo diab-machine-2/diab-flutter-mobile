@@ -614,7 +614,6 @@ class Strings {
 	String get plan => 'plan';
 	String get course => 'course';
 	String get individual => 'individual';
-	String get upgrade_account => 'upgrade_account';
 	String get list_service => 'list_service';
 	String get text_list_service => 'text_list_service';
 	String get service_basic => 'service_basic';
@@ -638,4 +637,10 @@ class Strings {
 	String get des_1_welcome_3 => 'des_1_welcome_3';
 	String get des_2_welcome_3 => 'des_2_welcome_3';
 	String get start => 'start';
+	String get upgrade_account => 'upgrade_account';
+	String get see_detail => 'see_detail';
+	String get continue_basic_package => 'continue_basic_package';
+	String get feature => 'feature';
+	String get basic => 'basic';
+	String get pro => 'pro';
 }

@@ -5,6 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -55,134 +56,148 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
 
   Widget buildPage(BuildContext context, WelcomeServiceState state) {
     return Scaffold(
-      body: Container(
-          height: double.infinity,
-          width: double.infinity,
-          padding: EdgeInsets.all(16.h),
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(R.drawable.bg_welcome), fit: BoxFit.fill)),
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(height: 20),
-                Expanded(
-                  child: PageView(
-                    onPageChanged: (value) {
-                      _cubit.selectOption(value);
-                    },
-                    controller: pageController,
-                    children: [
-                      widget.isPro
-                          ? pageFirst(
-                              R.drawable.img_welcome_1,
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(R.string.diab_pro.tr(),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 24.sp,
-                                          fontWeight: FontWeight.w700)),
-                                  SizedBox(width: 10),
-                                  Image.asset(
-                                    R.drawable.ic_pro,
-                                    height: 20.h,
-                                  )
-                                ],
-                              ),
-                              R.string.description_diab_pro.tr())
-                          : pageFirst(
-                              R.drawable.img_welcome_0,
-                              Text(
-                                R.string.diab_basic.tr(),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: R.color.textDark,
-                                    fontSize: 24.sp,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                              R.string.description_diab_basic.tr()),
-                      pageNext(R.drawable.img_welcome_2, [
-                        R.string.des_1_welcome_2.tr(),
-                        R.string.des_2_welcome_2.tr(),
-                        R.string.des_3_welcome_2.tr()
-                      ]),
-                      pageNext(R.drawable.img_welcome_3, [
-                        R.string.des_1_welcome_3.tr(),
-                        R.string.des_2_welcome_3.tr(),
-                        R.string.des_3_welcome_2.tr()
-                      ])
-                    ],
+      body: BackgroundPage(
+          background: R.drawable.bg_welcome,
+          child: Container(
+            padding: EdgeInsets.all(16.h),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(height: 20),
+                  Expanded(
+                    child: PageView(
+                      onPageChanged: (value) {
+                        _cubit.selectOption(value);
+                      },
+                      controller: pageController,
+                      children: [
+                        widget.isPro
+                            ? pageFirst(
+                                R.drawable.img_welcome_1,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(R.string.diab_pro.tr(),
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: R.color.textDark,
+                                            fontSize: 24.sp,
+                                            fontWeight: FontWeight.w700)),
+                                    SizedBox(width: 10),
+                                    Image.asset(
+                                      R.drawable.ic_pro,
+                                      height: 20.h,
+                                    )
+                                  ],
+                                ),
+                                R.string.description_diab_pro.tr())
+                            : pageFirst(
+                                R.drawable.img_welcome_0,
+                                Text(
+                                  R.string.diab_basic.tr(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: R.color.textDark,
+                                      fontSize: 24.sp,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                R.string.description_diab_basic.tr()),
+                        pageNext(R.drawable.img_welcome_2, [
+                          R.string.des_1_welcome_2.tr(),
+                          R.string.des_2_welcome_2.tr(),
+                          R.string.des_3_welcome_2.tr()
+                        ]),
+                        pageNext(R.drawable.img_welcome_3, [
+                          R.string.des_1_welcome_3.tr(),
+                          R.string.des_2_welcome_3.tr(),
+                          R.string.des_3_welcome_2.tr()
+                        ])
+                      ],
+                    ),
                   ),
-                ),
-                Column(children: [
-                  SizedBox(height: 33),
-                  Column(
-                    children: [
-                      SmoothPageIndicator(
-                        controller: pageController,
-                        count: 3,
-                        effect: ExpandingDotsEffect(
-                            dotWidth: 5,
-                            dotHeight: 5,
-                            dotColor: R.color.notActiveGreen,
-                            activeDotColor: R.color.mainColor),
-                      ),
-                      Container(
-                        width: double.infinity,
-                        margin: EdgeInsets.symmetric(
-                            horizontal: 16.h, vertical: 32.h),
-                        child: _cubit.selectedIndex < 2 ? Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: _cubit.selectedIndex == 0
-                                    ? null
-                                    : () {
-                                  pageController.previousPage( duration: const Duration(milliseconds: 400), curve: Curves.easeInOut,);
-                                        // _cubit.selectOption(
-                                        //     _cubit.selectedIndex--);
-                                      },
-                                child: Container(
-                                  width: 100.w,
-                                  alignment: Alignment.center,
-                                  child: Text(R.string.ignore.tr(),
-                                    style: TextStyle(
-                                        color: _cubit.selectedIndex == 0
-                                            ? R.color.gray
-                                            : R.color.accentColor,
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w700))),
-                              ),
-                              Container(
-                                  width: 128.w,
-                                  child: ButtonWidget(
-                                      title: R.string.text_continue.tr(),
-                                      onPressed: () {
-                                        pageController.nextPage( duration: const Duration(milliseconds: 400), curve: Curves.easeInOut,);
-                                        // _cubit.selectOption(
-                                        //     _cubit.selectedIndex++);
-                                      })),
-                            ]) : Wrap(
-                          alignment: WrapAlignment.center,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                Container(
-                                width: 128.w,
-                                child: ButtonWidget(
-                                    title: R.string.start.tr(),
-                                    onPressed: () {})),
-                              ],
-                            ),
-                      ),
-                      SizedBox(height: 16)
-                    ],
-                  )
+                  Column(children: [
+                    SizedBox(height: 33),
+                    Column(
+                      children: [
+                        SmoothPageIndicator(
+                          controller: pageController,
+                          count: 3,
+                          effect: ExpandingDotsEffect(
+                              dotWidth: 5,
+                              dotHeight: 5,
+                              dotColor: R.color.notActiveGreen,
+                              activeDotColor: R.color.mainColor),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 16.h, vertical: 32.h),
+                          child: _cubit.selectedIndex < 2
+                              ? Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                      GestureDetector(
+                                        onTap: _cubit.selectedIndex == 0
+                                            ? null
+                                            : () {
+                                                pageController.previousPage(
+                                                  duration: const Duration(
+                                                      milliseconds: 400),
+                                                  curve: Curves.easeInOut,
+                                                );
+                                                // _cubit.selectOption(
+                                                //     _cubit.selectedIndex--);
+                                              },
+                                        child: Container(
+                                            width: 100.w,
+                                            alignment: Alignment.center,
+                                            child: Text(R.string.ignore.tr(),
+                                                style: TextStyle(
+                                                    color:
+                                                        _cubit.selectedIndex ==
+                                                                0
+                                                            ? R.color.gray
+                                                            : R.color
+                                                                .accentColor,
+                                                    fontSize: 16.sp,
+                                                    fontWeight:
+                                                        FontWeight.w700))),
+                                      ),
+                                      Container(
+                                          width: 128.w,
+                                          child: ButtonWidget(
+                                              title:
+                                                  R.string.text_continue.tr(),
+                                              onPressed: () {
+                                                pageController.nextPage(
+                                                  duration: const Duration(
+                                                      milliseconds: 400),
+                                                  curve: Curves.easeInOut,
+                                                );
+                                                // _cubit.selectOption(
+                                                //     _cubit.selectedIndex++);
+                                              })),
+                                    ])
+                              : Wrap(
+                                  alignment: WrapAlignment.center,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Container(
+                                        width: 128.w,
+                                        child: ButtonWidget(
+                                            title: R.string.start.tr(),
+                                            onPressed: () {})),
+                                  ],
+                                ),
+                        ),
+                        SizedBox(height: 16)
+                      ],
+                    )
+                  ]),
                 ]),
-              ])),
+          )),
     );
   }
 
