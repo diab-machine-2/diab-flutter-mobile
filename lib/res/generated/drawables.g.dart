@@ -136,6 +136,7 @@ class Drawables {
 	String get ic_plan => "lib/res/drawables/ic_plan.png";
 	String get ic_pulse => "lib/res/drawables/ic_pulse.png";
 	String get ic_question => "lib/res/drawables/ic_question.png";
+	String get ic_question_circle => "lib/res/drawables/ic_question_circle.png";
 	String get ic_remove_excersire => "lib/res/drawables/ic_remove_excersire.png";
 	String get ic_repeat => "lib/res/drawables/ic_repeat.png";
 	String get ic_right => "lib/res/drawables/ic_right.png";
@@ -163,6 +164,8 @@ class Drawables {
 	String get im_banner => "lib/res/drawables/im_banner.png";
 	String get im_blood_pressure_distribution_empty => "lib/res/drawables/im_blood_pressure_distribution_empty.png";
 	String get im_blood_pressure_trend_empty => "lib/res/drawables/im_blood_pressure_trend_empty.png";
+	String get im_blood_sugar_testing_schedule_short => "lib/res/drawables/im_blood_sugar_testing_schedule_short.png";
+	String get im_blood_sugar_testing_schedule_tall => "lib/res/drawables/im_blood_sugar_testing_schedule_tall.png";
 	String get im_bmi_empty => "lib/res/drawables/im_bmi_empty.png";
 	String get im_check_phone => "lib/res/drawables/im_check_phone.png";
 	String get im_congrat => "lib/res/drawables/im_congrat.png";

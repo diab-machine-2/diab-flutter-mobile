@@ -177,6 +177,8 @@ class Strings {
 	String get blood_sugar_group => 'blood_sugar_group';
 	String get result => 'result';
 	String get pick_a_model => 'pick_a_model';
+	String get recommand_blood_sugar_test => 'recommand_blood_sugar_test';
+	String get time_per_day => 'time_per_day';
 	String get bmiscreen => 'BMIScreen';
 	String get update_weight_info => 'update_weight_info';
 	String get enter_weight_info => 'enter_weight_info';
