@@ -59,6 +59,7 @@ import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
+import 'package:medical/src/widget/welcome_service/welcome_service_page.dart';
 
 import 'widget/list_service/list_service_page.dart';
 import 'utils/navigator_name.dart';
@@ -95,7 +96,7 @@ class _AppState extends State<App> {
             supportedLocales: context.supportedLocales,
             locale: context.locale,
             // home: FlashScreenController(),
-            home: DetailPackagePage(),
+            home: WelcomeServicePage(isPro: true,),
             debugShowCheckedModeBanner: false,
 
             onGenerateRoute: (settings) {
