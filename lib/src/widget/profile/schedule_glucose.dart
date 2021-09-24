@@ -12,10 +12,7 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_schedule/blood_sugar_schedule.dart';
-import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_schedule_recommend/blood_sugar_schedule_recommend.dart';
-import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_schedule_sample/blood_sugar_schedule_sample.dart';
-import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_survey/blood_sugar_survey.dart';
+import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_schedule/blood_sugar_start_survey.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
@@ -249,12 +246,12 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                             }),
                                         const SizedBox(width: 16),
                                         _buildSupportButton(
-                                            title: R.string.blood_sugar_testing_schedule_suggest.tr(),
+                                            title: R.string.testing_schedule_suggest.tr(),
                                             icon: R.drawable.ic_blood_sugar_testing_suggest,
                                             onTap: () {
                                               NavigationUtil.navigatePage(
                                                 context,
-                                                const BloodScheduleSamplePage(),
+                                                const BloodSugarStartSurvey(surveyStatus: SurveyStatus.not_done,),
                                               );
                                             })
                                       ],

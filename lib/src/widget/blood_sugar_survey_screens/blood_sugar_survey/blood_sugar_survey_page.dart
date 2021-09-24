@@ -1,43 +1,99 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
-class BloodSugarSurvey extends StatelessWidget {
+import '../models/question_data.dart';
+import 'blood_sugar_survey.dart';
+
+class BloodSugarSurvey extends StatefulWidget {
   const BloodSugarSurvey();
 
   @override
+  State<BloodSugarSurvey> createState() => _BloodSugarSurveyState();
+}
+
+class _BloodSugarSurveyState extends State<BloodSugarSurvey> {
+  late BloodSugarSurveyCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    final AppRepository repository = AppRepository();
+    _cubit = BloodSugarSurveyCubit(repository);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CommonPage(
-        title: 'Gợi ý lịch đo đường huyết',
-        background: R.drawable.bg_blood_sugar_survey,
-        child: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 36.h, 16.w, 32.h),
-                    child: Column(
-                      children: [
-                        _buildSurveyQuestionItem(),
-                      ],
-                    ),
+    return WillPopScope(
+      onWillPop: () async {
+        return _cubit.onBack();
+      },
+      child: Scaffold(
+        body: BlocProvider(
+          create: (context) => _cubit,
+          child: BlocConsumer<BloodSugarSurveyCubit, BloodSugarSurveyState>(
+            listener: (context, state) {
+              if (state is BloodSugarSurveyFailure) {
+                Utils.showErrorSnackBar(context, state.error ?? '');
+              }
+            },
+            builder: (context, state) {
+              return CommonPage(
+                title: R.string.blood_sugar_testing_schedule_suggest.tr(),
+                background: R.drawable.bg_blood_sugar_survey,
+                onTapBack: (){
+                  if (_cubit.onBack()) {
+                    NavigationUtil.pop(context);
+                  }
+                },
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(16.w, 36.h, 16.w, 32.h),
+                            child: Column(
+                              children: List.generate(
+                                _cubit.questions.length,
+                                (index) => _buildSurveyQuestionItem(
+                                    question: _cubit.questions[index],
+                                    onSelectAnswer: (answerIndex) {
+                                      print(answerIndex);
+                                      _cubit.questions[index].selectedAnswer =
+                                          answerIndex;
+                                      _cubit.onSelectedAnswer(
+                                          _cubit.questions[index].questionKey);
+                                    }),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 27),
+                      Container(
+                        width: 195,
+                        child: ButtonWidget(
+                          title: _cubit.canSurveyDone
+                              ? R.string.show_result.tr()
+                              : R.string.text_continue.tr(),
+                          onPressed: () {
+                            _cubit.onSubmitAnswer();
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 27),
-              Container(
-                width: 195,
-                child: ButtonWidget(
-                  title: R.string.text_continue.tr(),
-                  onPressed: () {},
-                ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -45,32 +101,50 @@ class BloodSugarSurvey extends StatelessWidget {
   }
 }
 
-Widget _buildSurveyQuestionItem() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        '1. Bạn đang mắc đái tháo đường loại nào?',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      const SizedBox(height: 12),
+Widget _buildSurveyQuestionItem({
+  required Question question,
+  required Function(int answerIndex) onSelectAnswer,
+}) {
+  final List<Widget> answerList = [];
+  for (int index = 0; index < question.answers.length; index++) {
+    answerList.add(
       _buildSurveyAnswerItem(
-          answer: 'A. The selected answer', isSelected: true),
-      const SizedBox(height: 8),
-      _buildSurveyAnswerItem(answer: 'B. The not selected answer'),
-    ],
+          answer: question.getAnswer(index),
+          isSelected: index == question.selectedAnswer,
+          onTap: () {
+            onSelectAnswer(index);
+          }),
+    );
+    if (index != question.answers.length - 1) {
+      answerList.add(const SizedBox(height: 8));
+    }
+  }
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 32.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          question.question,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...answerList,
+      ],
+    ),
   );
 }
 
 Widget _buildSurveyAnswerItem({
   required String answer,
-  bool isSelected = false,
+  required bool isSelected,
+  VoidCallback? onTap,
 }) {
   return GestureDetector(
-    onTap: () {},
+    onTap: onTap,
     child: Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
