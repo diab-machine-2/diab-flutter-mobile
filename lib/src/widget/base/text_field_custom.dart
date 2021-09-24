@@ -197,7 +197,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                           child: Container(
                               color: R.color.transparent,
                               child: Text(!showPassword ? R.string.show.tr() : R.string.hide.tr(),
-                                  style: TextStyle(color: R.color.color0xff787A7D))))
+                                  style: TextStyle(color: R.color.grey_2))))
                       : SizedBox(),
                   isCorrect
                       ? Padding(

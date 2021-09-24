@@ -50,8 +50,9 @@ class Colors {
 	Color get grayCaption => Color(0xff9C9C9C);
 	Color get greenGradientTop => Color(0xff4BB2AB);
 	Color get greenGradientBottom => Color(0xff008479);
+	Color get main_1 => Color(0xff01645A);
 	Color get color0xffFF5756 => Color(0xffFF5756);
-	Color get color0xff787A7D => Color(0xff787A7D);
+	Color get grey_2 => Color(0xff787A7D);
 	Color get color0xffE5E5E5 => Color(0xffE5E5E5);
 	Color get color0xff003F38 => Color(0xff003F38);
 	Color get color0xffBEC0C8 => Color(0xffBEC0C8);
@@ -87,7 +88,6 @@ class Colors {
 	Color get color0xff4AAF05 => Color(0xff4AAF05);
 	Color get color0xff232527 => Color(0xff232527);
 	Color get color0xffFF5552 => Color(0xffFF5552);
-	Color get color0xffA1A3A6 => Color(0xffA1A3A6);
 	Color get color0xffDFF6EC => Color(0xffDFF6EC);
 	Color get color0xffD3EFEE => Color(0xffD3EFEE);
 	Color get color0xffFEEDDC => Color(0xffFEEDDC);

@@ -179,6 +179,11 @@ class Strings {
 	String get pick_a_model => 'pick_a_model';
 	String get recommand_blood_sugar_test => 'recommand_blood_sugar_test';
 	String get time_per_day => 'time_per_day';
+	String get upgrade_to_pro => 'upgrade_to_pro';
+	String get survey_again => 'survey_again';
+	String get blood_sugar_survey_description => 'blood_sugar_survey_description';
+	String get blood_sugar_survey_done_description => 'blood_sugar_survey_done_description';
+	String get blood_sugar_survey_update_require => 'blood_sugar_survey_update_require';
 	String get bmiscreen => 'BMIScreen';
 	String get update_weight_info => 'update_weight_info';
 	String get enter_weight_info => 'enter_weight_info';

@@ -328,7 +328,7 @@ class NotificationControllerState extends State<NotificationController>
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w400,
-                                                                      color: R.color.color0xffA1A3A6)),
+                                                                      color: R.color.gray)),
                                                             )
                                                           ]),
                                                     )

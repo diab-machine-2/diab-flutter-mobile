@@ -5,8 +5,9 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description_detail.dart';
-import 'package:medical/src/widget/blood_sugar_schedule_sample/blood_sugar_schedule_sample.dart';
 import 'package:medical/src/widgets/blood_sugar_recommand_layout_widget.dart';
+
+import '../blood_sugar_schedule_sample/blood_sugar_schedule_sample.dart';
 
 class BloodSugarScheduleRecommand extends StatelessWidget {
   const BloodSugarScheduleRecommand();
@@ -31,7 +32,8 @@ class BloodSugarScheduleRecommand extends StatelessWidget {
                 _buildModelItem(
                   context,
                   onShowDetail: () {
-                    NavigationUtil.navigatePage(context, const BloodScheduleSamplePage());
+                    NavigationUtil.navigatePage(
+                        context, const BloodScheduleSamplePage());
                   },
                   onShowHelp: () {
                     showDialog(

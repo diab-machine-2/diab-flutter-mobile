@@ -12,7 +12,10 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/blood_sugar_schedule_recommend/blood_sugar_schedule_recommend_page.dart';
+import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_schedule/blood_sugar_schedule.dart';
+import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_schedule_recommend/blood_sugar_schedule_recommend.dart';
+import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_schedule_sample/blood_sugar_schedule_sample.dart';
+import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_survey/blood_sugar_survey.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
@@ -251,7 +254,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                             onTap: () {
                                               NavigationUtil.navigatePage(
                                                 context,
-                                                const BloodSugarScheduleRecommand(),
+                                                const BloodScheduleSamplePage(),
                                               );
                                             })
                                       ],
@@ -646,7 +649,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                   style: TextStyle(
                       color: highlight
                           ? R.color.mainColor
-                          : R.color.color0xffA1A3A6,
+                          : R.color.gray,
                       fontSize: 16))
             ])),
       ),
