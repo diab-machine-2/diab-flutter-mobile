@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,20 +7,22 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_schedule_templete/blood_sugar_schedule_templete_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
+import '../blood_sugar_survey_result/blood_sugar_survey_result.dart';
 import '../models/question_data.dart';
 import 'blood_sugar_survey.dart';
 
-class BloodSugarSurvey extends StatefulWidget {
-  const BloodSugarSurvey();
+class BloodSugarSurveyPage extends StatefulWidget {
+  const BloodSugarSurveyPage();
 
   @override
-  State<BloodSugarSurvey> createState() => _BloodSugarSurveyState();
+  State<BloodSugarSurveyPage> createState() => _BloodSugarSurveyPageState();
 }
 
-class _BloodSugarSurveyState extends State<BloodSugarSurvey> {
+class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
   late BloodSugarSurveyCubit _cubit;
 
   @override
@@ -27,6 +30,7 @@ class _BloodSugarSurveyState extends State<BloodSugarSurvey> {
     super.initState();
     final AppRepository repository = AppRepository();
     _cubit = BloodSugarSurveyCubit(repository);
+    _cubit.initSurvey();
   }
 
   @override
@@ -43,12 +47,33 @@ class _BloodSugarSurveyState extends State<BloodSugarSurvey> {
               if (state is BloodSugarSurveyFailure) {
                 Utils.showErrorSnackBar(context, state.error ?? '');
               }
+              if (state is BloodSugarSurveyNavigate) {
+                if (state.listBloodSugarTemplateCategory.length == 1) {
+                  NavigationUtil.navigatePage(
+                    context,
+                    BloodSugarScheduleTempletePage(
+                        state.listBloodSugarTemplateCategory.first),
+                  );
+                } else {
+                  NavigationUtil.navigatePage(
+                    context,
+                    BloodSugarSurveyResultPage(
+                        state.listBloodSugarTemplateCategory),
+                  );
+                }
+              }
+              if (state is BloodSugarSurveyLoading) {
+                BotToast.showLoading();
+              }
+              if (state is BloodSugarSurveySuccess) {
+                BotToast.closeAllLoading();
+              }
             },
             builder: (context, state) {
               return CommonPage(
                 title: R.string.blood_sugar_testing_schedule_suggest.tr(),
                 background: R.drawable.bg_blood_sugar_survey,
-                onTapBack: (){
+                onTapBack: () {
                   if (_cubit.onBack()) {
                     NavigationUtil.pop(context);
                   }
@@ -59,7 +84,8 @@ class _BloodSugarSurveyState extends State<BloodSugarSurvey> {
                       Expanded(
                         child: SingleChildScrollView(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(16.w, 36.h, 16.w, 32.h),
+                            padding:
+                                EdgeInsets.fromLTRB(16.w, 36.h, 16.w, 32.h),
                             child: Column(
                               children: List.generate(
                                 _cubit.questions.length,
@@ -171,6 +197,8 @@ Widget _buildSurveyAnswerItem({
                 fontWeight: FontWeight.w400,
                 color: R.color.grey_2,
               ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     ),
   );

@@ -12,9 +12,10 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_schedule/blood_sugar_start_survey.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+
+import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
 
 class ScheduleGlucoseController extends StatefulWidget {
   @override
@@ -251,7 +252,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                             onTap: () {
                                               NavigationUtil.navigatePage(
                                                 context,
-                                                const BloodSugarStartSurvey(surveyStatus: SurveyStatus.not_done,),
+                                                const BloodSugarStartSurveyPage(surveyStatus: SurveyStatus.not_done,),
                                               );
                                             })
                                       ],

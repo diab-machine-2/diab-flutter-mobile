@@ -37,8 +37,8 @@ extension SurveyStatusDetail on SurveyStatus {
   }
 }
 
-class BloodSugarStartSurvey extends StatelessWidget {
-  const BloodSugarStartSurvey({this.surveyStatus = SurveyStatus.not_done});
+class BloodSugarStartSurveyPage extends StatelessWidget {
+  const BloodSugarStartSurveyPage({this.surveyStatus = SurveyStatus.not_done});
   final SurveyStatus surveyStatus;
 
   @override
@@ -115,7 +115,7 @@ Widget _buildActiveButton({
         child: ButtonWidget(
           title: R.string.start.tr(),
           onPressed: () {
-            NavigationUtil.navigatePage(context, const BloodSugarSurvey());
+            NavigationUtil.navigatePage(context, const BloodSugarSurveyPage());
           },
         ),
       );
