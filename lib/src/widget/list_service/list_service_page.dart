@@ -4,7 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/detail_package_data.dart';
+import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/detail_package/detail_package.dart';
+import 'package:medical/src/widget/upgrade_account/upgrade_account.dart';
+import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import 'list_service.dart';
@@ -25,6 +31,7 @@ class _ListServicePageState extends State<ListServicePage> {
     super.initState();
     AppRepository repository = AppRepository();
     _cubit = ListServiceCubit(repository);
+    _cubit.getListPackage();
   }
 
   @override
@@ -51,95 +58,121 @@ class _ListServicePageState extends State<ListServicePage> {
 
   Widget buildPage(BuildContext context, ListServiceState state) {
     return Scaffold(
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        padding: EdgeInsets.all(16.h),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-                R.drawable.bg_home
-            ),
-            fit: BoxFit.fill
-          )
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              margin: EdgeInsets.only(top: 50.h),
-              child: Image.asset(
-                R.drawable.img_list_service,
-                fit: BoxFit.cover,
+      body: BackgroundPage(
+        background: R.drawable.bg_upgrade_account,
+        child: Container(
+          padding: EdgeInsets.all(16.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: 50.h),
+                child: Image.asset(
+                  R.drawable.img_list_service,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
               ),
-            ),
-            Container(
-                margin: EdgeInsets.only(top: 32.h, left: 8.h, right: 8.h),
-                child: Text(
-                  R.string.list_service.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.sp,
+              Container(
+                  margin: EdgeInsets.only(top: 32.h, left: 8.h, right: 8.h),
+                  child: Text(
+                    R.string.list_service.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.sp,
+                    ),
+                  )),
+              Container(
+                  margin: EdgeInsets.only(top: 16.h, left: 8.h, right: 8.h),
+                  child: Text(
+                    R.string.text_list_service.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16.sp,
+                    ),
+                  )),
+              SizedBox(
+                height: 20.h,
+              ),
+              ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: _cubit.listFilterData.length,
+                  separatorBuilder: (context, index) =>  SizedBox(
+                    height: 20.h,
                   ),
-                )),
-            Container(
-                margin: EdgeInsets.only(top: 16.h, left: 8.h, right: 8.h),
-                child: Text(
-                  R.string.text_list_service.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 16.sp,
-                  ),
-                )),
-            SizedBox(
-              height: 35.h,
-            ),
-            rowService(R.string.service_basic.tr(), R.drawable.bg_basic, () {}),
-            SizedBox(
-              height: 20.h,
-            ),
-            rowService(R.string.service_premium.tr(), R.drawable.bg_premium, () {}),
-            SizedBox(
-              height: 115.h,
-            ),
-            Container(
-                width: 128.w,
-                child: ButtonWidget(
-                    title: R.string.text_continue.tr(), onPressed: () {}))
-          ],
+                  itemBuilder: (context, index) {
+                    DetailPackageData data = _cubit.listFilterData[index];
+                    return rowService(data, () {
+                      NavigationUtil.navigatePage(context, DetailPackagePage(data: data));
+                    });
+                  }),
+              SizedBox(
+                height: 110.h,
+              ),
+              Container(
+                  width: 128.w,
+                  child: ButtonWidget(
+                      title: R.string.text_continue.tr(), onPressed: () {
+                        NavigationUtil.navigatePage(context, UpgradeAccountPage());
+                  }))
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget rowService(
-      String title, String background, VoidCallback onChooseService) {
+  Widget rowService(DetailPackageData data, VoidCallback onChooseService) {
+    Color color = Utils.getColorByCode(data.code);
     return GestureDetector(
       onTap: onChooseService,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            height: 50.h,
-            margin: EdgeInsets.symmetric(horizontal: 20.h),
-            child: Image.asset(
-              background,
-              fit: BoxFit.cover,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.h),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              height: 50.h,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(16.h)),
             ),
-          ),
-          Text(
-            title,
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              color: R.color.textDark,
-              fontWeight: FontWeight.w700,
-              fontSize: 16.sp,
+            Positioned(
+              left: 0,
+              child: Container(
+                height: 50.h,
+                width: 50.h,
+                padding: EdgeInsets.all(15.h),
+                decoration: BoxDecoration(
+                    color: color.withOpacity(1/6),
+                    borderRadius: BorderRadius.circular(16.h)),
+                child: Image.asset(
+                  R.drawable.ic_pro,
+                  fit: BoxFit.contain,
+                  color: color,
+                  height: 20.h,
+                  width: 20.h,
+                ),
+              ),
             ),
-          )
-        ],
+            Positioned(
+              left: 65.h,
+              child: Text(
+                data.name ?? "",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16.sp,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

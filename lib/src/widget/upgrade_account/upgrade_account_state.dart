@@ -26,3 +26,8 @@ class UpgradeAccountFailure extends UpgradeAccountState {
   @override
   String toString() => 'UpgradeAccountFailure { error: $error }';
 }
+
+class UpgradeAccountSuccess extends UpgradeAccountState {
+  @override
+  String toString() => 'UpgradeAccountSuccess';
+}

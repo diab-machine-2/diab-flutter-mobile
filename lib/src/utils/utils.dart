@@ -350,9 +350,9 @@ class Utils {
     return base64Encode(imageBytes);
   }
 
-  static String? getImageUrl(String path, {String? host}) {
+  static String? getImageUrl(String? path, {String? host}) {
     if (isEmpty(path)) return null;
-    return (host ?? Const.HOST_URL) + path;
+    return (host ?? Const.HOST_URL) + path!;
   }
 
   static Future<Map<String, dynamic>?> parseJson(String fileName) async {
@@ -382,6 +382,14 @@ class Utils {
   static String getMediaUrl(String url, String token) {
     if (isEmpty(url)) return url;
     return Const.API_URL + url + "token=$token";
+  }
+
+  static Color getColorByCode(String? code) {
+    if (code == Const.PRO)
+      return R.color.yellow;
+    else if (code == Const.PREMIUM)
+      return R.color.accentColor;
+    return R.color.white;
   }
 
   // static Future updateBadge(int count) async {

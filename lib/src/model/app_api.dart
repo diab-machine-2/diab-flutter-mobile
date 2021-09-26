@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
+
+import 'response/detail_package_response.dart';
+import 'response/list_package_response.dart';
+import 'response/upgrade_account_response.dart';
 
 
 part 'app_api.g.dart';
@@ -11,6 +14,12 @@ part 'app_api.g.dart';
 abstract class AppApi {
   factory AppApi(Dio dio, {String baseUrl}) = _AppApi;
 
-  // @POST("sign-in")
-  // Future<LoginResponse> login(@Body() LoginRequest request);
+  @GET("App/Package")
+  Future<ListPackageResponse> getListPackage();
+
+  @GET("App/Package/{code}")
+  Future<DetailPackageResponse> getDetailPackage(@Path("code") String code,);
+
+  @GET("App/Feature/GetPackageComparison")
+  Future<UpgradeAccountResponse> getUpgradeAccount();
 }

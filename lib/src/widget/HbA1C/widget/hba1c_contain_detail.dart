@@ -186,7 +186,7 @@ class HbA1CDetailState extends State<HbA1CDetail>
                                                     // mainAxisAlignment:
                                                     //     MainAxisAlignment.spaceBetween,
                                                     children: [
-                                                      Text(R.string.chi_tiet.tr(),
+                                                      Text(R.string.detail.tr(),
                                                           style: TextStyle(
                                                               color:
                                                                   R.color.black,

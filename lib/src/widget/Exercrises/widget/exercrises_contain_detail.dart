@@ -488,7 +488,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                           children: [
                                             // Padding(
                                             //   padding: const EdgeInsets.only(top: 0.0),
-                                            //   child: Text(R.string.chi_tiet.tr(),
+                                            //   child: Text(R.string.detail.tr(),
                                             //       style: TextStyle(
                                             //           color: R.color.black,
                                             //           fontSize: 16,

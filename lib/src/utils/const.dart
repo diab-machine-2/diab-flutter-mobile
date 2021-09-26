@@ -1,9 +1,7 @@
 class Const {
-  static const String HOST_URL = "http://localhost/";
+  static const String HOST_URL = "http://diab-api-dev.savvycom.vn/";
 
-  //static const String HOST_URL = "https://fasgroup.com.vn/";
   static const String API_URL = "${HOST_URL}api/";
-  static const String URL_WEBSITE_DEV = "https://www.ninasoft.com.vn/";
 
   static const String HOST_GOOGLE_MAP_URL =
       "https://maps.googleapis.com/maps/api/";
@@ -89,4 +87,8 @@ class Const {
 
   static const String PARENT = 'parent';
   static const String GUARDIAN = 'guardian';
+
+  static const String PRO = "pro";
+  static const String BASIC = "basic";
+  static const String PREMIUM = "premium";
 }

@@ -26,3 +26,8 @@ class DetailPackageFailure extends DetailPackageState {
   @override
   String toString() => 'DetailPackageFailure { error: $error }';
 }
+
+class DetailPackageSuccess extends DetailPackageState {
+  @override
+  String toString() => 'DetailPackageSuccess';
+}
