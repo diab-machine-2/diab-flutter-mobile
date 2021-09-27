@@ -58,6 +58,69 @@ class _AppApi implements AppApi {
     return value;
   }
 
+  @override
+  Future<BloodSugarTemplateCategoryResponse> getListTemplateByCategory(
+      category) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'category': category};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BloodSugarTemplateCategoryResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(
+                    _dio.options, '/App/BloodSugarTemplate/GetListByCategory',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BloodSugarTemplateCategoryResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<BloodSugarTemplateDetailResponse> getTemplateDetail(id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BloodSugarTemplateDetailResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/App/BloodSugarTemplate/$id',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BloodSugarTemplateDetailResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<DiabetesStatusResponse> getDiabetesStatus() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<DiabetesStatusResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(
+                    _dio.options, '/App/DiabetesStatus/GetOwnDiabetesStatus',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = DiabetesStatusResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<LatestHba1cInputResponse> getLatestHbA1CInput() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<LatestHba1cInputResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/App/HbA1C/LatestHbA1CInput',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = LatestHba1cInputResponse.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

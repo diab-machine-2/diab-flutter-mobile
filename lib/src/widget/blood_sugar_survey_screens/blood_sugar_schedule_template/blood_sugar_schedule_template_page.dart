@@ -11,46 +11,47 @@ import 'package:medical/src/widget/profile/schedule_glucose.dart';
 import 'package:medical/src/widgets/blood_sugar_recommand_layout_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
-import 'blood_sugar_schedule_templete.dart';
+import 'blood_sugar_schedule_template.dart';
 
-class BloodSugarScheduleTempletePage extends StatefulWidget {
-  const BloodSugarScheduleTempletePage(this.template);
-  final BloodSugarTemplateCategory template;
+class BloodSugarScheduleTemplatePage extends StatefulWidget {
+  const BloodSugarScheduleTemplatePage(this.template);
+  final BloodSugarTemplateCategoryResponseData? template;
 
   @override
-  State<BloodSugarScheduleTempletePage> createState() =>
-      _BloodSugarScheduleTempletePageState();
+  State<BloodSugarScheduleTemplatePage> createState() =>
+      _BloodSugarScheduleTemplatePageState();
 }
 
-class _BloodSugarScheduleTempletePageState
-    extends State<BloodSugarScheduleTempletePage> {
-  late final BloodSugarScheduleTempleteCubit _cubit;
+class _BloodSugarScheduleTemplatePageState
+    extends State<BloodSugarScheduleTemplatePage> {
+  late final BloodSugarScheduleTemplateCubit _cubit;
 
   @override
   void initState() {
     super.initState();
     final AppRepository repository = AppRepository();
-    _cubit = BloodSugarScheduleTempleteCubit(repository);
-    _cubit.getTempleteDetail();
+    _cubit = BloodSugarScheduleTemplateCubit(repository);
+    _cubit.getTemplateDetail(widget.template?.id);
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => _cubit,
-      child: BlocConsumer<BloodSugarScheduleTempleteCubit,
-          BloodSugarScheduleTempleteState>(
+      child: BlocConsumer<BloodSugarScheduleTemplateCubit,
+          BloodSugarScheduleTemplateState>(
         listener: (context, state) {
-          if (state is BloodSugarScheduleTempleteFailure) {
+          if (state is BloodSugarScheduleTemplateFailure) {
             Utils.showErrorSnackBar(context, state.error ?? '');
           }
           if (state is BloodSugarScheduleSaveSuccess) {
-            NavigationUtil.pushAndRemoveUtilPage(context, ScheduleGlucoseController());
+            NavigationUtil.pushAndRemoveUtilPage(
+                context, ScheduleGlucoseController());
           }
         },
         builder: (context, state) {
           return BloodSugarRecommandLayoutWidget(
-            title: widget.template.name ?? '',
+            title: widget.template?.name ?? '',
             resultSurvey: _cubit.isWeekTemplate ? '' : '2',
             child: Container(
               width: double.infinity,
@@ -58,11 +59,11 @@ class _BloodSugarScheduleTempletePageState
               color: R.color.white,
               child: SafeArea(
                 top: false,
-                child: state is BloodSugarScheduleTempleteLoading
+                child: state is BloodSugarScheduleTemplateLoading
                     ? const SizedBox()
                     : _cubit.isWeekTemplate
-                        ? _buildTempleteWeekSchedule()
-                        : _buildTempleteDaySchedule(),
+                        ? _buildTemplateWeekSchedule()
+                        : _buildTemplateDaySchedule(),
               ),
             ),
           );
@@ -71,7 +72,7 @@ class _BloodSugarScheduleTempletePageState
     );
   }
 
-  Widget _buildTempleteWeekSchedule() {
+  Widget _buildTemplateWeekSchedule() {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(right: 16),
@@ -153,8 +154,9 @@ class _BloodSugarScheduleTempletePageState
     );
   }
 
-  Widget _buildTempleteDaySchedule() {
-    final BloodSugarTemplateDetailResponse templeteDetail =
+  Widget _buildTemplateDaySchedule() {
+    if (_cubit.templeteDetailList.isEmpty) return const SizedBox();
+    final BloodSugarTemplateDetailResponseData? templeteDetail =
         _cubit.templeteDetailList.first;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
@@ -162,47 +164,47 @@ class _BloodSugarScheduleTempletePageState
         children: [
           _buildFoodItem(
             title: R.string.the_morning.tr(),
-            isBeforeSelected: templeteDetail.isBeforeBreakfast,
-            isAfterSelected: templeteDetail.isAfterBreakfast,
+            isBeforeSelected: templeteDetail?.isBeforeBreakfast,
+            isAfterSelected: templeteDetail?.isAfterBreakfast,
             onSelectBefore: (isSelected) {
-              templeteDetail.isBeforeBreakfast = isSelected;
+              templeteDetail?.isBeforeBreakfast = isSelected;
               _cubit.refreshState();
             },
             onSelectAfter: (isSelected) {
-              templeteDetail.isAfterBreakfast = isSelected;
+              templeteDetail?.isAfterBreakfast = isSelected;
               _cubit.refreshState();
             },
           ),
           _buildFoodItem(
             title: R.string.the_noon.tr(),
-            isBeforeSelected: templeteDetail.isBeforeLunch,
-            isAfterSelected: templeteDetail.isAfterLunch,
+            isBeforeSelected: templeteDetail?.isBeforeLunch,
+            isAfterSelected: templeteDetail?.isAfterLunch,
             onSelectBefore: (isSelected) {
-              templeteDetail.isBeforeLunch = isSelected;
+              templeteDetail?.isBeforeLunch = isSelected;
               _cubit.refreshState();
             },
             onSelectAfter: (isSelected) {
-              templeteDetail.isAfterLunch = isSelected;
+              templeteDetail?.isAfterLunch = isSelected;
               _cubit.refreshState();
             },
           ),
           _buildFoodItem(
             title: R.string.the_evening.tr(),
-            isBeforeSelected: templeteDetail.isBeforeDinner,
-            isAfterSelected: templeteDetail.isAfterDinner,
+            isBeforeSelected: templeteDetail?.isBeforeDinner,
+            isAfterSelected: templeteDetail?.isAfterDinner,
             onSelectBefore: (isSelected) {
-              templeteDetail.isBeforeDinner = isSelected;
+              templeteDetail?.isBeforeDinner = isSelected;
               _cubit.refreshState();
             },
             onSelectAfter: (isSelected) {
-              templeteDetail.isAfterDinner = isSelected;
+              templeteDetail?.isAfterDinner = isSelected;
               _cubit.refreshState();
             },
           ),
           _buildSleepTimeItem(
-              isSelected: templeteDetail.isBeforeSleeping ?? false,
+              isSelected: templeteDetail?.isBeforeSleeping ?? false,
               onSelected: (isSelected) {
-                templeteDetail.isBeforeSleeping = isSelected;
+                templeteDetail?.isBeforeSleeping = isSelected;
                 _cubit.refreshState();
               }),
           _buildButtons(),
@@ -213,7 +215,7 @@ class _BloodSugarScheduleTempletePageState
 
   Widget _buildDayInWeekSchedule({
     required int index,
-    required BloodSugarTemplateDetailResponse? templateDetail,
+    required BloodSugarTemplateDetailResponseData? templateDetail,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -408,7 +410,7 @@ class _BloodSugarScheduleTempletePageState
           child: ButtonWidget(
             title: 'Đặt lại lịch gợi ý',
             onPressed: () {
-              _cubit.getTempleteDetail();
+              _cubit.getTemplateDetail(widget.template?.id);
             },
             backgroundColor: R.color.white,
             borderColor: R.color.gray,

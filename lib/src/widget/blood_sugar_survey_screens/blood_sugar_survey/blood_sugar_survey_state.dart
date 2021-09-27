@@ -46,7 +46,8 @@ class BloodSugarSurveyLoading extends BloodSugarSurveyState {
 
 class BloodSugarSurveyNavigate extends BloodSugarSurveyState {
   const BloodSugarSurveyNavigate(this.listBloodSugarTemplateCategory);
-  final List<BloodSugarTemplateCategory> listBloodSugarTemplateCategory;
+  final List<BloodSugarTemplateCategoryResponseData?>
+      listBloodSugarTemplateCategory;
 
   @override
   String toString() {

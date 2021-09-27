@@ -7,6 +7,7 @@ import 'package:medical/src/app.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/repo/login/login_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/user/user_model.dart';
@@ -17,34 +18,34 @@ class AppSettings {
   static final AppPreference appPreference = AppPreference();
 
   static Future<bool> saveToken(String? token) async {
-    appPreference.setData('token', token);
+    appPreference.setData(Const.TOKEN, token);
     return true;
   }
 
   static Future<String> getToken() async {
-    final token = appPreference.getData('token') ?? '';
+    final token = appPreference.getData(Const.TOKEN) ?? '';
     print(token);
     return token;
   }
 
   static Future<bool> clearToken() async {
-    appPreference.removeData('token');
+    appPreference.removeData(Const.TOKEN);
     return true;
   }
 
   static Future<bool> saveRefreshToken(String? token) async {
-    appPreference.setData('refresh_token', token);
+    appPreference.setData(Const.REFRESH_TOKEN, token);
     return true;
   }
 
   static Future<String> getRefreshToken() async {
-    final token = appPreference.getData('refresh_token') ?? '';
+    final token = appPreference.getData(Const.REFRESH_TOKEN) ?? '';
     print(token);
     return token;
   }
 
   static Future<bool> clearRefreshToken() async {
-    appPreference.removeData('refresh_token');
+    appPreference.removeData(Const.REFRESH_TOKEN);
     return true;
   }
 

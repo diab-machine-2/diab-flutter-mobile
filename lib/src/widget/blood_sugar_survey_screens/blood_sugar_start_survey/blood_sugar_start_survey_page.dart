@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_survey/blood_sugar_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
+
+import '../blood_sugar_survey/blood_sugar_survey.dart';
 
 enum SurveyStatus {
   done,

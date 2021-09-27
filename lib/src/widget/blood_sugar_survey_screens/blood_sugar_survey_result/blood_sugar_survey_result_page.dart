@@ -11,12 +11,12 @@ import 'package:medical/src/widget/HbA1C/widget/description/description_detail.d
 import 'package:medical/src/widgets/blood_sugar_recommand_layout_widget.dart';
 
 import '../../../model/response/blood_sugar_template_category_response.dart';
-import '../blood_sugar_schedule_templete/blood_sugar_schedule_templete.dart';
+import '../blood_sugar_schedule_template/blood_sugar_schedule_template.dart';
 import 'blood_sugar_survey_result.dart';
 
 class BloodSugarSurveyResultPage extends StatefulWidget {
   const BloodSugarSurveyResultPage(this.templateList);
-  final List<BloodSugarTemplateCategory> templateList;
+  final List<BloodSugarTemplateCategoryResponseData?> templateList;
 
   @override
   State<BloodSugarSurveyResultPage> createState() =>
@@ -80,7 +80,7 @@ class _BloodSugarSurveyResultPageState
 
 List<Widget> _buildListOfTemplate(
   BuildContext context, {
-  required List<BloodSugarTemplateCategory> templateList,
+  required List<BloodSugarTemplateCategoryResponseData?> templateList,
 }) {
   return List.generate(
     templateList.length,
@@ -123,8 +123,9 @@ Widget _buildExpandedText() {
 
 Widget _buildTemplateItem(
   BuildContext context, {
-  required BloodSugarTemplateCategory data,
+  BloodSugarTemplateCategoryResponseData? data,
 }) {
+  if (data == null) return const SizedBox();
   return Container(
     margin: const EdgeInsets.only(top: 16),
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -139,7 +140,7 @@ Widget _buildTemplateItem(
             onTap: () {
               NavigationUtil.navigatePage(
                 context,
-                BloodSugarScheduleTempletePage(data),
+                BloodSugarScheduleTemplatePage(data),
               );
             },
             child: Text(

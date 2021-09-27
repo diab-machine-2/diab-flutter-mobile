@@ -7,10 +7,10 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/blood_sugar_survey_screens/blood_sugar_schedule_templete/blood_sugar_schedule_templete_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
+import '../blood_sugar_schedule_template/blood_sugar_schedule_template.dart';
 import '../blood_sugar_survey_result/blood_sugar_survey_result.dart';
 import '../models/question_data.dart';
 import 'blood_sugar_survey.dart';
@@ -51,7 +51,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                 if (state.listBloodSugarTemplateCategory.length == 1) {
                   NavigationUtil.navigatePage(
                     context,
-                    BloodSugarScheduleTempletePage(
+                    BloodSugarScheduleTemplatePage(
                         state.listBloodSugarTemplateCategory.first),
                   );
                 } else {
