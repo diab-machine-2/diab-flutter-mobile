@@ -45,6 +45,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
           child: BlocConsumer<BloodSugarSurveyCubit, BloodSugarSurveyState>(
             listener: (context, state) {
               if (state is BloodSugarSurveyFailure) {
+                BotToast.closeAllLoading();
                 Utils.showErrorSnackBar(context, state.error ?? '');
               }
               if (state is BloodSugarSurveyNavigate) {

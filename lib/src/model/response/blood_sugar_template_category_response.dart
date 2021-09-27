@@ -4,31 +4,36 @@
 class BloodSugarTemplateCategoryResponseData {
 /*
 {
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "name": "string",
-  "description": "string"
+  "id": "0ef78d3c-20b0-4c98-a292-6410b2f600ed",
+  "name": "Mẫu A2",
+  "description": "Cơ sở y tế khuyến nghị của việc đo đường huyết?\r\nGlucose (còn gọi là đường) là nguồn năng lượng chính đi nuôi cơ thể, được chuyển hóa từ các loại thực phẩm mà chúng ta cung cấp cho bản thân mỗi ngày. Trong máu của con người luôn có một lượng Glucose nhất định để đảm bảo việc cung cấp năng lượng cho các hoạt động thường ngày:\r\n90 - 130 mg/dl (tức 5 - 7,2 mmol/l) ở thời điểm trước bữa ăn.\r\nDưới 180 mg/dl (tức 10 mmol/l) ở thời điểm sau ăn khoảng 1 - 2 tiếng.\r\n100 - 150 mg/l (tức 6 - 8,3 mmol/l) ở thời điểm trước khi đi ngủ.\r\nĐo chỉ số Glucose của mình ở những khoảng thời gian đo này và đối chiếu chỉ số cho phù hợp để biết mình có mắc bệnh tiểu đường hay không.",
+  "template": 2
 } 
 */
 
   String? id;
   String? name;
   String? description;
+  int? template;
 
   BloodSugarTemplateCategoryResponseData({
     this.id,
     this.name,
     this.description,
+    this.template,
   });
   BloodSugarTemplateCategoryResponseData.fromJson(Map<String, dynamic> json) {
     id = json["id"]?.toString();
     name = json["name"]?.toString();
     description = json["description"]?.toString();
+    template = json["template"]?.toInt();
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data["id"] = id;
     data["name"] = name;
     data["description"] = description;
+    data["template"] = template;
     return data;
   }
 }
@@ -63,9 +68,10 @@ class BloodSugarTemplateCategoryResponse {
   },
   "data": [
     {
-      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "name": "string",
-      "description": "string"
+      "id": "0ef78d3c-20b0-4c98-a292-6410b2f600ed",
+      "name": "Mẫu A2",
+      "description": "Cơ sở y tế khuyến nghị của việc đo đường huyết?\r\nGlucose (còn gọi là đường) là nguồn năng lượng chính đi nuôi cơ thể, được chuyển hóa từ các loại thực phẩm mà chúng ta cung cấp cho bản thân mỗi ngày. Trong máu của con người luôn có một lượng Glucose nhất định để đảm bảo việc cung cấp năng lượng cho các hoạt động thường ngày:\r\n90 - 130 mg/dl (tức 5 - 7,2 mmol/l) ở thời điểm trước bữa ăn.\r\nDưới 180 mg/dl (tức 10 mmol/l) ở thời điểm sau ăn khoảng 1 - 2 tiếng.\r\n100 - 150 mg/l (tức 6 - 8,3 mmol/l) ở thời điểm trước khi đi ngủ.\r\nĐo chỉ số Glucose của mình ở những khoảng thời gian đo này và đối chiếu chỉ số cho phù hợp để biết mình có mắc bệnh tiểu đường hay không.",
+      "template": 2
     }
   ]
 } 
@@ -105,4 +111,3 @@ class BloodSugarTemplateCategoryResponse {
     return data;
   }
 }
-

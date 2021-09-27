@@ -76,14 +76,15 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<BloodSugarTemplateDetailResponse> getTemplateDetail(id) async {
+  Future<BloodSugarTemplateDetailResponse> getTemplateDetail(type) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'type': type};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<BloodSugarTemplateDetailResponse>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, '/App/BloodSugarTemplate/$id',
+                .compose(
+                    _dio.options, '/App/BloodSugarTemplate/GetByTemplateType',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = BloodSugarTemplateDetailResponse.fromJson(_result.data!);

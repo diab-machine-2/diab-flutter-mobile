@@ -35,7 +35,13 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
     emit(const BloodSugarSurveyInitial());
   }
 
+  Future<void> showLoading() async {
+    await Future.delayed(const Duration());
+    emit(const BloodSugarSurveyLoading());
+  }
+
   Future<void> selectDefaultAnswerForQuestion1() async {
+    await showLoading();  
     final ApiResult<DiabetesStatusResponse> apiResult =
         await repository.getDiabetesStatus();
     apiResult.when(success: (DiabetesStatusResponse response) {
@@ -52,6 +58,7 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
   }
 
   Future<void> selectDefaultAnswerForQuestion2() async {
+    await showLoading();
     final ApiResult<LatestHba1cInputResponse> apiResult =
         await repository.getLatestHbA1CInput();
     apiResult.when(success: (LatestHba1cInputResponse response) {
@@ -225,6 +232,7 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
       emit(const BloodSugarSurveyNavigate([]));
       return;
     }
+    await showLoading();
     final ApiResult<BloodSugarTemplateCategoryResponse> apiResult =
         await repository.getListTemplateByCategory('$templateIndex');
     apiResult.when(success: (BloodSugarTemplateCategoryResponse response) {

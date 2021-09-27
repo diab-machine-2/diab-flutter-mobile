@@ -78,7 +78,7 @@ class BloodSugarStartSurveyPage extends StatelessWidget {
                     child: ButtonWidget(
                       title: R.string.survey_again.tr(),
                       onPressed: () {
-                        //TODO: Tuyen survey again
+                        NavigationUtil.navigatePage(context, const BloodSugarSurveyPage());
                       },
                       backgroundColor: R.color.white,
                       borderColor: R.color.accentColor,

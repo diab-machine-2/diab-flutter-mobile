@@ -177,12 +177,16 @@ class Strings {
 	String get result => 'result';
 	String get pick_a_model => 'pick_a_model';
 	String get recommand_blood_sugar_test => 'recommand_blood_sugar_test';
+	String get no_need_to_test => 'no_need_to_test';
+	String get often_testing_blood_sugar => 'often_testing_blood_sugar';
 	String get time_per_day => 'time_per_day';
 	String get upgrade_to_pro => 'upgrade_to_pro';
 	String get survey_again => 'survey_again';
 	String get testing_schedule_suggest => 'testing_schedule_suggest';
 	String get blood_sugar_testing_schedule_suggest => 'blood_sugar_testing_schedule_suggest';
 	String get show_result => 'show_result';
+	String get set_as_my_schedule => 'set_as_my_schedule';
+	String get reset_schedule => 'reset_schedule';
 	String get blood_sugar_survey_description => 'blood_sugar_survey_description';
 	String get blood_sugar_survey_done_description => 'blood_sugar_survey_done_description';
 	String get blood_sugar_survey_update_require => 'blood_sugar_survey_update_require';
@@ -694,4 +698,7 @@ class Strings {
 	String get receiver => 'receiver';
 	String get content => 'content';
 	String get des_pro => 'des_pro';
+	String get morning_first_upper_case => 'morning_first_upper_case';
+	String get noon_first_upper_case => 'noon_first_upper_case';
+	String get evening_first_upper_case => 'evening_first_upper_case';
 }

@@ -30,9 +30,9 @@ abstract class AppApi {
     @Query("category") String category,
   );
 
-  @GET("/App/BloodSugarTemplate/{id}")
+  @GET("/App/BloodSugarTemplate/GetByTemplateType")
   Future<BloodSugarTemplateDetailResponse> getTemplateDetail(
-    @Path("id") String id,
+    @Query("type") int type,
   );
 
   @GET("/App/DiabetesStatus/GetOwnDiabetesStatus")

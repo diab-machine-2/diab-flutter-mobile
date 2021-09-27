@@ -48,7 +48,7 @@ class _BloodSugarSurveyResultPageState
         builder: (context, state) {
           return BloodSugarRecommandLayoutWidget(
             title: R.string.result.tr(),
-            resultSurvey: '2',
+            timeToTestPerDay: 0,
             onTapBack: () {
               Navigator.pop(context);
             },

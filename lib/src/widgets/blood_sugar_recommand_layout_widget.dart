@@ -10,12 +10,12 @@ class BloodSugarRecommandLayoutWidget extends StatelessWidget {
   const BloodSugarRecommandLayoutWidget({
     required this.title,
     required this.child,
-    this.resultSurvey = '',
+    this.timeToTestPerDay,
     this.onTapBack,
   });
   final String title;
   final Widget child;
-  final String resultSurvey;
+  final int? timeToTestPerDay;
   final VoidCallback? onTapBack;
 
   @override
@@ -24,7 +24,7 @@ class BloodSugarRecommandLayoutWidget extends StatelessWidget {
       backgroundColor: R.color.color0xffF4DBBD,
       body: Stack(
         alignment: AlignmentDirectional.topEnd,
-        children: resultSurvey.isEmpty
+        children: timeToTestPerDay == null
             ? _layoutWithShortAppBar(context)
             : _layoutWithTallAppBar(context),
       ),
@@ -51,23 +51,45 @@ class BloodSugarRecommandLayoutWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: Row(children: [
                   Expanded(
-                    child: RichText(
-                      textDirection: ui.TextDirection.ltr,
-                      text: TextSpan(
-                        text: R.string.recommand_blood_sugar_test.tr(),
-                        style: TextStyle(color: R.color.primaryGreyColor),
-                        children: <TextSpan>[
-                          TextSpan(
-                            text:
-                                R.string.time_per_day.tr(args: [resultSurvey]),
-                            style: TextStyle(
-                                color: R.color.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14),
+                    child: timeToTestPerDay == 0
+                        ? RichText(
+                            textDirection: ui.TextDirection.ltr,
+                            text: TextSpan(
+                              text: R.string.recommand_blood_sugar_test.tr(),
+                              style: TextStyle(color: R.color.primaryGreyColor),
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: ' ${R.string.no_need_to_test.tr()} ',
+                                  style: TextStyle(
+                                      color: R.color.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14),
+                                ),
+                                TextSpan(
+                                  text: R.string.often_testing_blood_sugar.tr(),
+                                  style: TextStyle(
+                                      color: R.color.primaryGreyColor),
+                                )
+                              ],
+                            ),
                           )
-                        ],
-                      ),
-                    ),
+                        : RichText(
+                            textDirection: ui.TextDirection.ltr,
+                            text: TextSpan(
+                              text: R.string.recommand_blood_sugar_test.tr(),
+                              style: TextStyle(color: R.color.primaryGreyColor),
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: R.string.time_per_day
+                                      .tr(args: ['$timeToTestPerDay']),
+                                  style: TextStyle(
+                                      color: R.color.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14),
+                                )
+                              ],
+                            ),
+                          ),
                   ),
                   SizedBox(width: 153.w)
                 ]),

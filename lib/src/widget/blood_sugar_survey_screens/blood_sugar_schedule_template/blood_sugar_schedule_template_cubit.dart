@@ -16,13 +16,19 @@ class BloodSugarScheduleTemplateCubit
   List<BloodSugarTemplateDetailResponseData?> templeteDetailList = [];
 
   void refreshState() {
-    emit(const BloodSugarScheduleTemplateLoading());
+    emit(const BloodSugarScheduleTemplateSuccess());
     emit(const BloodSugarScheduleTemplateInitial());
   }
 
-  Future<void> getTemplateDetail(String? id) async {
+  Future<void> showLoading() async {
+    await Future.delayed(const Duration());
+    emit(const BloodSugarScheduleTemplateLoading());
+  }
+
+  Future<void> getTemplateDetail(int? type) async {
+    await showLoading();
     final ApiResult<BloodSugarTemplateDetailResponse> apiResult =
-        await repository.getListTemplateDetail(id ?? '');
+        await repository.getListTemplateDetail(type ?? 0);
     apiResult.when(success: (BloodSugarTemplateDetailResponse response) {
       if (response.data != null) {
         final List<BloodSugarTemplateDetailResponseData?> data = response.data!;
@@ -35,7 +41,7 @@ class BloodSugarScheduleTemplateCubit
     });
   }
 
-  bool get isWeekTemplate => templeteDetailList.length >= 7;
+ bool get isWeekTemplate => templeteDetailList.length >= 7;
 
   BloodSugarTemplateDetailResponseData? getDayInWeek(int index) {
     final int dataIndex = templeteDetailList.indexWhere(
@@ -51,7 +57,7 @@ class BloodSugarScheduleTemplateCubit
     final ScheduleGlucoseModel? scheduleGlucoseModel = getScheduleGlucose();
     if (scheduleGlucoseModel == null) return;
     try {
-      emit(const BloodSugarScheduleTemplateLoading());
+      await showLoading();
       await UserClient().updateScheduleGlucose(scheduleGlucoseModel);
       emit(const BloodSugarScheduleSaveSuccess());
     } catch (e) {

@@ -4,19 +4,19 @@
 class BloodSugarTemplateDetailResponseData {
 /*
 {
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "name": "string",
-  "category": 1,
-  "template": 1,
+  "id": "09dbfa4f-c23c-4a5a-88ab-3f4b783b6893",
+  "name": "Mẫu K",
+  "category": 5,
+  "template": 6,
   "isWeekTemplate": true,
-  "day": 1,
-  "isBeforeBreakfast": true,
-  "isAfterBreakfast": true,
-  "isBeforeLunch": true,
-  "isAfterLunch": true,
-  "isBeforeDinner": true,
-  "isAfterDinner": true,
-  "isBeforeSleeping": true
+  "day": 6,
+  "isBeforeBreakfast": false,
+  "isAfterBreakfast": false,
+  "isBeforeLunch": false,
+  "isAfterLunch": false,
+  "isBeforeDinner": false,
+  "isAfterDinner": false,
+  "isBeforeSleeping": false
 } 
 */
 
@@ -113,19 +113,19 @@ class BloodSugarTemplateDetailResponse {
   },
   "data": [
     {
-      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "name": "string",
-      "category": 1,
-      "template": 1,
+      "id": "09dbfa4f-c23c-4a5a-88ab-3f4b783b6893",
+      "name": "Mẫu K",
+      "category": 5,
+      "template": 6,
       "isWeekTemplate": true,
-      "day": 1,
-      "isBeforeBreakfast": true,
-      "isAfterBreakfast": true,
-      "isBeforeLunch": true,
-      "isAfterLunch": true,
-      "isBeforeDinner": true,
-      "isAfterDinner": true,
-      "isBeforeSleeping": true
+      "day": 6,
+      "isBeforeBreakfast": false,
+      "isAfterBreakfast": false,
+      "isBeforeLunch": false,
+      "isAfterLunch": false,
+      "isBeforeDinner": false,
+      "isAfterDinner": false,
+      "isBeforeSleeping": false
     }
   ]
 } 

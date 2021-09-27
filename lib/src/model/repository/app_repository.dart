@@ -51,11 +51,11 @@ class AppRepository {
   }
 
   Future<ApiResult<BloodSugarTemplateDetailResponse>> getListTemplateDetail(
-    String id,
+    int type,
   ) async {
     try {
       final BloodSugarTemplateDetailResponse response =
-          await appClient.getTemplateDetail(id);
+          await appClient.getTemplateDetail(type);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,7 +32,7 @@ class _BloodSugarScheduleTemplatePageState
     super.initState();
     final AppRepository repository = AppRepository();
     _cubit = BloodSugarScheduleTemplateCubit(repository);
-    _cubit.getTemplateDetail(widget.template?.id);
+    _cubit.getTemplateDetail(widget.template?.template);
   }
 
   @override
@@ -42,17 +43,24 @@ class _BloodSugarScheduleTemplatePageState
           BloodSugarScheduleTemplateState>(
         listener: (context, state) {
           if (state is BloodSugarScheduleTemplateFailure) {
+            BotToast.closeAllLoading();
             Utils.showErrorSnackBar(context, state.error ?? '');
           }
           if (state is BloodSugarScheduleSaveSuccess) {
             NavigationUtil.pushAndRemoveUtilPage(
                 context, ScheduleGlucoseController());
           }
+          if (state is BloodSugarScheduleTemplateLoading) {
+            BotToast.showLoading();
+          }
+          if (state is BloodSugarScheduleTemplateSuccess) {
+            BotToast.closeAllLoading();
+          }
         },
         builder: (context, state) {
           return BloodSugarRecommandLayoutWidget(
             title: widget.template?.name ?? '',
-            resultSurvey: _cubit.isWeekTemplate ? '' : '2',
+            timeToTestPerDay: 0,
             child: Container(
               width: double.infinity,
               height: double.infinity,
@@ -87,7 +95,7 @@ class _BloodSugarScheduleTemplatePageState
                   Expanded(
                     child: Center(
                       child: Text(
-                        'Sáng',
+                        R.string.morning_first_upper_case.tr(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -99,7 +107,7 @@ class _BloodSugarScheduleTemplatePageState
                   Expanded(
                     child: Center(
                       child: Text(
-                        'Trưa',
+                        R.string.noon_first_upper_case.tr(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -111,7 +119,7 @@ class _BloodSugarScheduleTemplatePageState
                   Expanded(
                     child: Center(
                       child: Text(
-                        'Tối',
+                        R.string.evening_first_upper_case.tr(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -246,7 +254,7 @@ class _BloodSugarScheduleTemplatePageState
                       child: Column(
                         children: [
                           _buildTestTimeItem(
-                              testTime: 'Trước ăn',
+                              testTime: R.string.truoc_an.tr(),
                               isSelected: templateDetail?.isBeforeBreakfast,
                               onSelect: (isSelected) {
                                 templateDetail?.isBeforeBreakfast = isSelected;
@@ -259,7 +267,7 @@ class _BloodSugarScheduleTemplatePageState
                             color: R.color.color0xffE5B440,
                           ),
                           _buildTestTimeItem(
-                              testTime: 'Sau ăn',
+                              testTime: R.string.sau_an.tr(),
                               isSelected: templateDetail?.isAfterBreakfast,
                               onSelect: (isSelected) {
                                 templateDetail?.isAfterBreakfast = isSelected;
@@ -278,7 +286,7 @@ class _BloodSugarScheduleTemplatePageState
                       child: Column(
                         children: [
                           _buildTestTimeItem(
-                            testTime: 'Trước ăn',
+                            testTime: R.string.truoc_an.tr(),
                             isSelected: templateDetail?.isBeforeLunch,
                             onSelect: (isSelected) {
                               templateDetail?.isBeforeLunch = isSelected;
@@ -290,7 +298,7 @@ class _BloodSugarScheduleTemplatePageState
                             color: R.color.color0xffE5B440,
                           ),
                           _buildTestTimeItem(
-                            testTime: 'Sau ăn',
+                            testTime: R.string.sau_an.tr(),
                             isSelected: templateDetail?.isAfterLunch,
                             onSelect: (isSelected) {
                               templateDetail?.isAfterLunch = isSelected;
@@ -308,7 +316,7 @@ class _BloodSugarScheduleTemplatePageState
                       child: Column(
                         children: [
                           _buildTestTimeItem(
-                            testTime: 'Trước ăn',
+                            testTime: R.string.truoc_an.tr(),
                             isSelected: templateDetail?.isBeforeDinner,
                             onSelect: (isSelected) {
                               templateDetail?.isBeforeDinner = isSelected;
@@ -320,7 +328,7 @@ class _BloodSugarScheduleTemplatePageState
                             color: R.color.color0xffE5B440,
                           ),
                           _buildTestTimeItem(
-                            testTime: 'Sau ăn',
+                            testTime: R.string.sau_an.tr(),
                             isSelected: templateDetail?.isAfterDinner,
                             onSelect: (isSelected) {
                               templateDetail?.isAfterDinner = isSelected;
@@ -336,7 +344,7 @@ class _BloodSugarScheduleTemplatePageState
                     ),
                     Expanded(
                       child: _buildTestTimeItem(
-                        testTime: 'Trước khi đi ngủ',
+                        testTime: R.string.before_sleep.tr(),
                         isSelected: templateDetail?.isBeforeSleeping,
                         onSelect: (isSelected) {
                           templateDetail?.isBeforeSleeping = isSelected;
@@ -398,7 +406,7 @@ class _BloodSugarScheduleTemplatePageState
         SizedBox(
           width: 208,
           child: ButtonWidget(
-            title: 'Đặt làm lịch của tôi',
+            title: R.string.set_as_my_schedule.tr(),
             onPressed: () {
               _cubit.onSubmitSchedule();
             },
@@ -408,9 +416,9 @@ class _BloodSugarScheduleTemplatePageState
         SizedBox(
           width: 208,
           child: ButtonWidget(
-            title: 'Đặt lại lịch gợi ý',
+            title: R.string.reset_schedule.tr(),
             onPressed: () {
-              _cubit.getTemplateDetail(widget.template?.id);
+              _cubit.getTemplateDetail(widget.template?.template);
             },
             backgroundColor: R.color.white,
             borderColor: R.color.gray,
@@ -518,7 +526,7 @@ class _BloodSugarScheduleTemplatePageState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Giờ ngủ',
+          Text(R.string.sleep_time.tr(),
               style: TextStyle(
                   color: R.color.black,
                   fontSize: 16,
