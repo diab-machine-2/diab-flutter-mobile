@@ -2,13 +2,12 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/blood_sugar_template_category_response.dart';
 import 'package:medical/src/model/response/blood_sugar_template_detail_response.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/profile/schedule_glucose.dart';
 import 'package:medical/src/widgets/blood_sugar_recommand_layout_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
@@ -47,8 +46,7 @@ class _BloodSugarScheduleTemplatePageState
             Utils.showErrorSnackBar(context, state.error ?? '');
           }
           if (state is BloodSugarScheduleSaveSuccess) {
-            NavigationUtil.pushAndRemoveUtilPage(
-                context, ScheduleGlucoseController());
+            //TODO: Tuyen Navigate to blood schedule screen
           }
           if (state is BloodSugarScheduleTemplateLoading) {
             BotToast.showLoading();
@@ -83,21 +81,21 @@ class _BloodSugarScheduleTemplatePageState
   Widget _buildTemplateWeekSchedule() {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.only(right: 16),
+        padding: EdgeInsets.only(right: 16.w),
         child: Column(
           children: [
             //Part of the day
             Padding(
-              padding: const EdgeInsets.only(top: 19, bottom: 7),
+              padding: EdgeInsets.only(top: 19.h, bottom: 7.h),
               child: Row(
                 children: [
-                  const SizedBox(width: 68),
+                  SizedBox(width: 68.w),
                   Expanded(
                     child: Center(
                       child: Text(
                         R.string.morning_first_upper_case.tr(),
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
                           color: R.color.textDark,
                         ),
@@ -109,7 +107,7 @@ class _BloodSugarScheduleTemplatePageState
                       child: Text(
                         R.string.noon_first_upper_case.tr(),
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
                           color: R.color.textDark,
                         ),
@@ -121,7 +119,7 @@ class _BloodSugarScheduleTemplatePageState
                       child: Text(
                         R.string.evening_first_upper_case.tr(),
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
                           color: R.color.textDark,
                         ),
@@ -133,7 +131,7 @@ class _BloodSugarScheduleTemplatePageState
                       child: Text(
                         R.string.sleep_time.tr(),
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
                           color: R.color.textDark,
                         ),
@@ -167,7 +165,7 @@ class _BloodSugarScheduleTemplatePageState
     final BloodSugarTemplateDetailResponseData? templeteDetail =
         _cubit.templeteDetailList.first;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+      padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 0),
       child: Column(
         children: [
           _buildFoodItem(
@@ -226,16 +224,16 @@ class _BloodSugarScheduleTemplatePageState
     required BloodSugarTemplateDetailResponseData? templateDetail,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: EdgeInsets.only(bottom: 4.h),
       child: Row(
         children: [
           Container(
-            width: 68,
+            width: 68.w,
             alignment: Alignment.center,
             child: Text(
               getDayInWeekTitle(index),
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
                 color: R.color.textDark,
               ),
@@ -388,7 +386,7 @@ class _BloodSugarScheduleTemplatePageState
         child: Text(
           testTime,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 14.sp,
             fontWeight: FontWeight.w400,
             color: isSelected ?? false ? R.color.main_1 : R.color.gray,
           ),
@@ -402,9 +400,9 @@ class _BloodSugarScheduleTemplatePageState
   Widget _buildButtons() {
     return Column(
       children: [
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
         SizedBox(
-          width: 208,
+          width: 208.w,
           child: ButtonWidget(
             title: R.string.set_as_my_schedule.tr(),
             onPressed: () {
@@ -412,9 +410,9 @@ class _BloodSugarScheduleTemplatePageState
             },
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         SizedBox(
-          width: 208,
+          width: 208.w,
           child: ButtonWidget(
             title: R.string.reset_schedule.tr(),
             onPressed: () {
@@ -437,16 +435,16 @@ class _BloodSugarScheduleTemplatePageState
     Function(bool isSelected)? onSelectAfter,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(top: 20),
+      padding: EdgeInsets.only(top: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
               style: TextStyle(
                   color: R.color.black,
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w700)),
-          const SizedBox(height: 6),
+          SizedBox(height: 6.h),
           Row(
             children: [
               _buildSingleFoodItem(
@@ -454,7 +452,7 @@ class _BloodSugarScheduleTemplatePageState
                 isSelected: isBeforeSelected ?? false,
                 onSelect: onSelectBefore,
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16.h),
               _buildSingleFoodItem(
                 isBeforeEat: false,
                 isSelected: isAfterSelected ?? false,
@@ -480,7 +478,7 @@ class _BloodSugarScheduleTemplatePageState
           }
         },
         child: Container(
-          height: 60,
+          height: 60.h,
           decoration: BoxDecoration(
               color: isSelected
                   ? R.color.color0xffF4DBBD
@@ -501,14 +499,14 @@ class _BloodSugarScheduleTemplatePageState
                       : isSelected
                           ? R.drawable.ic_after_eat_selected
                           : R.drawable.ic_after_eat,
-                  width: 51,
-                  height: 34),
+                  width: 51.w,
+                  height: 34.h),
               const SizedBox(width: 8),
               Text(
                 isBeforeEat ? R.string.truoc_an.tr() : R.string.sau_an.tr(),
                 style: TextStyle(
                     color: isSelected ? R.color.mainColor : R.color.gray,
-                    fontSize: 16),
+                    fontSize: 16.sp),
               ),
             ],
           ),
@@ -522,14 +520,14 @@ class _BloodSugarScheduleTemplatePageState
     Function(bool isSelected)? onSelected,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(top: 20),
+      padding: EdgeInsets.only(top: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(R.string.sleep_time.tr(),
               style: TextStyle(
                   color: R.color.black,
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           GestureDetector(
@@ -539,7 +537,7 @@ class _BloodSugarScheduleTemplatePageState
               }
             },
             child: Container(
-              height: 60,
+              height: 60.h,
               decoration: BoxDecoration(
                   color: isSelected
                       ? R.color.color0xffF4DBBD
@@ -556,14 +554,14 @@ class _BloodSugarScheduleTemplatePageState
                       isSelected
                           ? R.drawable.ic_before_sleep_selected
                           : R.drawable.ic_before_sleep,
-                      width: 51,
-                      height: 34),
+                      width: 51.w,
+                      height: 34.h),
                   const SizedBox(width: 8),
                   Text(
                     isSelected ? R.string.truoc_an.tr() : R.string.sau_an.tr(),
                     style: TextStyle(
                         color: isSelected ? R.color.mainColor : R.color.gray,
-                        fontSize: 16),
+                        fontSize: 16.sp),
                   ),
                 ],
               ),

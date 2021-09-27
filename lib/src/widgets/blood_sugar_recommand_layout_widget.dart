@@ -4,7 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widgets/custom_app_bar.dart';
 
 class BloodSugarRecommandLayoutWidget extends StatelessWidget {
   const BloodSugarRecommandLayoutWidget({
@@ -48,7 +49,7 @@ class BloodSugarRecommandLayoutWidget extends StatelessWidget {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.w),
                 child: Row(children: [
                   Expanded(
                     child: timeToTestPerDay == 0
@@ -56,19 +57,24 @@ class BloodSugarRecommandLayoutWidget extends StatelessWidget {
                             textDirection: ui.TextDirection.ltr,
                             text: TextSpan(
                               text: R.string.recommand_blood_sugar_test.tr(),
-                              style: TextStyle(color: R.color.primaryGreyColor),
+                              style: TextStyle(
+                                      color: R.color.primaryGreyColor,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16.sp),
                               children: <TextSpan>[
                                 TextSpan(
                                   text: ' ${R.string.no_need_to_test.tr()} ',
                                   style: TextStyle(
                                       color: R.color.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16.sp),
                                 ),
                                 TextSpan(
                                   text: R.string.often_testing_blood_sugar.tr(),
                                   style: TextStyle(
-                                      color: R.color.primaryGreyColor),
+                                      color: R.color.primaryGreyColor,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16.sp),
                                 )
                               ],
                             ),
@@ -77,15 +83,18 @@ class BloodSugarRecommandLayoutWidget extends StatelessWidget {
                             textDirection: ui.TextDirection.ltr,
                             text: TextSpan(
                               text: R.string.recommand_blood_sugar_test.tr(),
-                              style: TextStyle(color: R.color.primaryGreyColor),
+                              style: TextStyle(
+                                      color: R.color.primaryGreyColor,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16.sp),
                               children: <TextSpan>[
                                 TextSpan(
                                   text: R.string.time_per_day
                                       .tr(args: ['$timeToTestPerDay']),
                                   style: TextStyle(
                                       color: R.color.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16.sp),
                                 )
                               ],
                             ),
@@ -126,27 +135,16 @@ class BloodSugarRecommandLayoutWidget extends StatelessWidget {
   }
 
   Widget _buildAppBar(BuildContext context) {
-    return Container(
-      height: 100,
+    return SafeArea(
       child: CustomAppBar(
-        backgroundColor: Colors.transparent,
-        title: Text(title,
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: R.color.textDark)),
-        leadingIcon: IconButton(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          icon: Icon(Icons.arrow_back, color: R.color.textDark),
-          onPressed: () {
-            if (onTapBack == null)
-              Navigator.pop(context);
-            else {
-              onTapBack!.call();
-            }
-          },
-        ),
+        title: title,
+        backCallback: () {
+          if (onTapBack == null)
+            NavigationUtil.pop(context);
+          else {
+            onTapBack!.call();
+          }
+        },
       ),
     );
   }

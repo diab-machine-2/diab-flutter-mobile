@@ -104,9 +104,9 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 27),
+                      SizedBox(height: 27.h),
                       Container(
-                        width: 195,
+                        width: 195.w,
                         child: ButtonWidget(
                           title: _cubit.canSurveyDone
                               ? R.string.show_result.tr()
@@ -143,22 +143,22 @@ Widget _buildSurveyQuestionItem({
           }),
     );
     if (index != question.answers.length - 1) {
-      answerList.add(const SizedBox(height: 8));
+      answerList.add(SizedBox(height: 8.h));
     }
   }
   return Padding(
-    padding: const EdgeInsets.only(bottom: 32.0),
+    padding: EdgeInsets.only(bottom: 32.h),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           question.question,
-          style: const TextStyle(
-            fontSize: 16,
+          style: TextStyle(
+            fontSize: 16.sp,
             fontWeight: FontWeight.w700,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         ...answerList,
       ],
     ),
@@ -174,7 +174,7 @@ Widget _buildSurveyAnswerItem({
     onTap: onTap,
     child: Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: isSelected
@@ -189,12 +189,12 @@ Widget _buildSurveyAnswerItem({
         answer,
         style: isSelected
             ? TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
                 color: R.color.main_1,
               )
             : TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w400,
                 color: R.color.grey_2,
               ),

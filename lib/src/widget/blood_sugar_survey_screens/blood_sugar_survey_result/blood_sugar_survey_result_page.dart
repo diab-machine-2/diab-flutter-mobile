@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -57,10 +58,19 @@ class _BloodSugarSurveyResultPageState
               child: SingleChildScrollView(
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
                   child: Column(
                     children: [
-                      Text(R.string.pick_a_model.tr(args: [''])),
+                      Text(
+                        R.string.pick_a_model.tr(
+                          args: ['${widget.templateList.length}'],
+                        ),
+                        style: TextStyle(
+                          color: R.color.textDark,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
                       ..._buildListOfTemplate(
                         context,
                         templateList: widget.templateList,
@@ -127,8 +137,8 @@ Widget _buildTemplateItem(
 }) {
   if (data == null) return const SizedBox();
   return Container(
-    margin: const EdgeInsets.only(top: 16),
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    margin: EdgeInsets.only(top: 16.h),
+    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
     decoration: BoxDecoration(
       color: R.color.color0xFFE4F5F5,
       borderRadius: BorderRadius.circular(8),
@@ -146,7 +156,7 @@ Widget _buildTemplateItem(
             child: Text(
               data.name ?? '',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w700,
                 color: R.color.greenGradientBottom,
               ),
@@ -174,8 +184,8 @@ Widget _buildTemplateItem(
           },
           child: Image.asset(
             R.drawable.ic_question_circle,
-            height: 24,
-            width: 24,
+            height: 24.w,
+            width: 24.w,
           ),
         ),
       ],
