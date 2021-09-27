@@ -51,7 +51,7 @@ class DetailDescription extends StatelessWidget {
                               padding: EdgeInsets.only(bottom: 16),
                               child: ListView(children: [
                                 Html(
-                                    data: input ? data!.content2 : data!.content4)
+                                    data: (input ? data?.content2 : data?.content4) ?? "")
                               ]),
                             ),
                           ),

@@ -26,3 +26,8 @@ class ListServiceFailure extends ListServiceState {
   @override
   String toString() => 'ListServiceFailure { error: $error }';
 }
+
+class ListServiceSuccess extends ListServiceState {
+  @override
+  String toString() => 'ListServiceSuccess';
+}

@@ -72,7 +72,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
             builder: (context, state) {
               return CommonPage(
                 title: R.string.blood_sugar_testing_schedule_suggest.tr(),
-                background: R.drawable.bg_blood_sugar_survey,
+                background: R.drawable.bg_detail_pro,
                 onTapBack: () {
                   if (_cubit.onBack()) {
                     NavigationUtil.pop(context);

@@ -22,7 +22,7 @@ class WelcomeServicePage extends StatefulWidget {
 
 class _WelcomeServicePageState extends State<WelcomeServicePage> {
   late WelcomeServiceCubit _cubit;
-  final PageController pageController = PageController();
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                       onPageChanged: (value) {
                         _cubit.selectOption(value);
                       },
-                      controller: pageController,
+                      controller: _pageController,
                       children: [
                         widget.isPro
                             ? pageFirst(
@@ -95,7 +95,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                             : pageFirst(
                                 R.drawable.img_welcome_0,
                                 Text(
-                                  R.string.diab_basic.tr(),
+                                  R.string.diab_premium.tr(),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       color: R.color.textDark,
@@ -121,7 +121,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                     Column(
                       children: [
                         SmoothPageIndicator(
-                          controller: pageController,
+                          controller: _pageController,
                           count: 3,
                           effect: ExpandingDotsEffect(
                               dotWidth: 5,
@@ -142,7 +142,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                                         onTap: _cubit.selectedIndex == 0
                                             ? null
                                             : () {
-                                                pageController.previousPage(
+                                                _pageController.previousPage(
                                                   duration: const Duration(
                                                       milliseconds: 400),
                                                   curve: Curves.easeInOut,
@@ -171,7 +171,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                                               title:
                                                   R.string.text_continue.tr(),
                                               onPressed: () {
-                                                pageController.nextPage(
+                                                _pageController.nextPage(
                                                   duration: const Duration(
                                                       milliseconds: 400),
                                                   curve: Curves.easeInOut,
@@ -245,15 +245,20 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
 
   Widget rowInfoDescription(String title) {
     return Container(
-      margin: EdgeInsets.only(bottom: 24.h),
+      margin: EdgeInsets.only(bottom: 24.h, left: 16.h, right: 16.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            height: 44.h,
+            height: 45.h,
+            padding: EdgeInsets.all(11.h),
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: R.color.color0xFFE4F5F5),
             child: Image.asset(
-              R.drawable.ic_check_circle,
+              R.drawable.ic_verify,
               fit: BoxFit.fill,
+              height: 22.h,
             ),
           ),
           SizedBox(

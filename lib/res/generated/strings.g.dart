@@ -603,7 +603,7 @@ class Strings {
 	String get pick_date => 'pick_date';
 	String get pick_time => 'pick_time';
 	String get bieu_do => 'bieu_do';
-	String get chi_tiet => 'chi_tiet';
+	String get detail => 'detail';
 	String get all => 'all';
 	String get truoc_an => 'truoc_an';
 	String get sau_an => 'sau_an';
@@ -648,6 +648,7 @@ class Strings {
 	String get list_service => 'list_service';
 	String get text_list_service => 'text_list_service';
 	String get service_basic => 'service_basic';
+	String get service_pro => 'service_pro';
 	String get service_premium => 'service_premium';
 	String get text_continue => 'text_continue';
 	String get interest_course => 'interest_course';
@@ -658,8 +659,9 @@ class Strings {
 	String get hint_msg_to_diab => 'hint_msg_to_diab';
 	String get interest => 'interest';
 	String get diab_pro => 'diab_pro';
+	String get premium => 'premium';
 	String get description_diab_pro => 'description_diab_pro';
-	String get diab_basic => 'diab_basic';
+	String get diab_premium => 'diab_premium';
 	String get description_diab_basic => 'description_diab_basic';
 	String get ignore => 'ignore';
 	String get des_1_welcome_2 => 'des_1_welcome_2';
@@ -674,4 +676,22 @@ class Strings {
 	String get feature => 'feature';
 	String get basic => 'basic';
 	String get pro => 'pro';
+	String get payment => 'payment';
+	String get number_month => 'number_month';
+	String get number_course => 'number_course';
+	String get number_hour => 'number_hour';
+	String get period => 'period';
+	String get total_price => 'total_price';
+	String get notice_payment => 'notice_payment';
+	String get success_story => 'success_story';
+	String get price_per_month => 'price_per_month';
+	String get package_number_month => 'package_number_month';
+	String get how_to_register => 'how_to_register';
+	String get time => 'time';
+	String get amount => 'amount';
+	String get account_number => 'account_number';
+	String get bank => 'bank';
+	String get receiver => 'receiver';
+	String get content => 'content';
+	String get des_pro => 'des_pro';
 }

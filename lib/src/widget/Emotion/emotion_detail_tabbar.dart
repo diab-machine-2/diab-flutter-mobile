@@ -231,7 +231,7 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                         TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
                       Tab(text: R.string.bieu_do.tr()),
-                      Tab(text: R.string.chi_tiet.tr()),
+                      Tab(text: R.string.detail.tr()),
                     ],
                     controller: widget.tabController,
                     indicatorColor: R.color.mainColor,

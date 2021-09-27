@@ -11,7 +11,7 @@ const _defaultConnectTimeout = Duration.millisecondsPerMinute;
 const _defaultReceiveTimeout = Duration.millisecondsPerMinute;
 
 class AppClient {
-  AppApi? appClient;
+  late AppApi appClient;
 
   AppClient._privateConstructor() {
     _setupClient();
@@ -53,4 +53,4 @@ class AppClient {
   }
 }
 
-AppApi? appClient = AppClient().appClient;
+AppApi appClient = AppClient().appClient;

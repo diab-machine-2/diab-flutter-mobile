@@ -46,7 +46,7 @@ class BloodSugarStartSurveyPage extends StatelessWidget {
     return Scaffold(
       body: CommonPage(
         title: R.string.blood_sugar_testing_schedule_suggest.tr(),
-        background: R.drawable.bg_blood_sugar_survey,
+        background: R.drawable.bg_detail_pro,
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(28.w, 51.h, 28.h, 32.h),
