@@ -562,6 +562,8 @@ good_successed,Tốt / đạt mục tiêu,
 mes_new_version_available,"Phiên bản mới {}.\nBấm cập nhật để trải nghiệm những tính năng mới",
 update_weight,Cập nhật cân nặng,
 update_weight_description,Vui lòng cho chúng tôi biết số cân nặng của bạn trước khi nhập dữ liệu để ghi nhận chính xác hơn,
+FoodMenuScreen,============================================FoodMenu screen====================================================
+food_menu,Thực đơn mẫu,
 Common,============================================Common====================================================
 huyet_ap,Huyết áp,
 duong_huyet,Đường huyết,

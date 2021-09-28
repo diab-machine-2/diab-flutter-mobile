@@ -564,6 +564,8 @@ class Strings {
 	String get mes_new_version_available => 'mes_new_version_available';
 	String get update_weight => 'update_weight';
 	String get update_weight_description => 'update_weight_description';
+	String get foodmenuscreen => 'FoodMenuScreen';
+	String get food_menu => 'food_menu';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';

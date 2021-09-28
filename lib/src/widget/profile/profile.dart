@@ -20,7 +20,8 @@ class ProfileController extends StatefulWidget {
   _ProfileControllerState createState() => _ProfileControllerState();
 }
 
-class _ProfileControllerState extends State<ProfileController> with Observer{
+class _ProfileControllerState extends State<ProfileController> with Observer {
+  bool isPro = false;
   SecureModel? secureModel;
 
   void initState() {
@@ -37,7 +38,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer{
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     // TODO: implement update
     if (notifyName == 'user_info_change') {
       setState(() {});
@@ -71,7 +73,9 @@ class _ProfileControllerState extends State<ProfileController> with Observer{
           backgroundColor: R.color.color0xffB1DDDB.withOpacity(0.2),
           title: Text(R.string.profile_file.tr(),
               style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: R.color.textDark)),
           leadingIcon: IconButton(
               splashColor: R.color.transparent,
               highlightColor: R.color.transparent,
@@ -94,10 +98,11 @@ class _ProfileControllerState extends State<ProfileController> with Observer{
                             color: R.color.mainColor,
                             borderRadius: BorderRadius.circular(52)),
                         child: user.imageUrl!.url == null
-                            ? Icon(Icons.person, size: 104, color: R.color.white)
+                            ? Icon(Icons.person,
+                                size: 104, color: R.color.white)
                             : Image.network(user.imageUrl!.url!,
                                 width: 104, height: 104)),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +134,9 @@ class _ProfileControllerState extends State<ProfileController> with Observer{
                                   child: Row(
                                     children: [
                                       Image.asset(
-                                          R.drawable.ic_crown,
+                                          isPro
+                                              ? R.drawable.ic_crown_yellow
+                                              : R.drawable.ic_crown_green,
                                           width: 20,
                                           height: 20),
                                       SizedBox(width: 8),
@@ -146,23 +153,85 @@ class _ProfileControllerState extends State<ProfileController> with Observer{
                           ]),
                     ),
                   ]),
-                  SizedBox(height: 16),
+                  //Buttons
+                  const SizedBox(height: 19),
                   Row(children: [
-                    buildItem(R.color.color0xffD3EFEE, R.string.goal_setting.tr(),
-                        R.drawable.ic_muc_tieu, 0),
-                    SizedBox(width: 16),
-                    buildItem(R.color.color0xffFEEDDC, R.string.remind.tr(),
-                        R.drawable.ic_nhac_nho, 1)
+                    Expanded(
+                      child: buildItem(
+                          color: R.color.color0xffD3EFEE,
+                          title: R.string.blood_sugar_schedule_single_line.tr(),
+                          image: R.drawable.ic_blood_sugar_testing_schedule,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, NavigatorName.schedule_glucose);
+                          }),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: buildItem(
+                          color: R.color.color0xffFEEDDC,
+                          title: R.string.goal_setting.tr(),
+                          image: R.drawable.ic_set_goal,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, NavigatorName.goal_setting);
+                          }),
+                    )
                   ]),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   Row(children: [
-                    buildItem(R.color.color0xffFCF8DA, R.string.personal_schedule.tr(),
-                        R.drawable.ic_lich, 2),
-                    SizedBox(width: 16),
-                    buildItem(R.color.color0xffFDE9E9, R.string.blood_sugar_schedule.tr(),
-                        R.drawable.ic_lich_do_duong_huyet, 3)
+                    Expanded(
+                      child: buildItem(
+                          isShow: isPro,
+                          color: R.color.color0xffFCF8DA,
+                          title: R.string.remind.tr(),
+                          image: R.drawable.ic_remind,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, NavigatorName.reminder);
+                          }),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: buildItem(
+                          isShow: isPro,
+                          color: R.color.color0xffD3EFEE,
+                          title: R.string.food_menu.tr(),
+                          image: R.drawable.ic_food_menu,
+                          onTap: () {
+                            //TODO: Tuyen navigate to foodMenu screen
+                          }),
+                    )
                   ]),
-                  SizedBox(height: 16),
+                  buildItem(
+                      isShow: !isPro,
+                      isRow: true,
+                      color: R.color.color0xffFCF8DA,
+                      title: R.string.remind.tr(),
+                      image: R.drawable.ic_remind,
+                      onTap: () {
+                        Navigator.pushNamed(context, NavigatorName.reminder);
+                      }),
+                  const SizedBox(height: 12),
+                  buildItem(
+                      isRow: true,
+                      color: R.color.color0xffFDE9E9,
+                      title: R.string.personal_schedule_single_line.tr(),
+                      image: R.drawable.ic_personal_schedule,
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, NavigatorName.schedule_activity);
+                      }),
+                  const SizedBox(height: 12),
+                  buildItem(
+                      isRow: true,
+                      color: R.color.color0xffD3EFEE,
+                      title: R.string.my_package.tr(),
+                      image: R.drawable.ic_my_package,
+                      onTap: () {
+                        //TODO: Tuyen navigate to my package screen
+                      }),
+                  const SizedBox(height: 16),
                   buildAction(
                       R.string.personal_info.tr(), R.drawable.ic_user, 0),
                   buildAction(
@@ -171,47 +240,57 @@ class _ProfileControllerState extends State<ProfileController> with Observer{
                       R.drawable.ic_security, 2),
                   buildAction(
                       R.string.contact_diab.tr(), R.drawable.ic_contact, 3),
-                  buildAction(R.string.password.tr(), R.drawable.ic_password, 4),
+                  buildAction(
+                      R.string.password.tr(), R.drawable.ic_password, 4),
                 ],
               ),
             )));
   }
 
-  Widget buildItem(Color color, String title, String image, int index) {
-    return Expanded(
+  Widget buildItem({
+    bool isShow = true,
+    bool isRow = false,
+    required Color color,
+    required String title,
+    required String image,
+    required VoidCallback onTap,
+  }) {
+    final Widget textWidget = Text(
+      title,
+      style: TextStyle(
+          fontSize: 14, fontWeight: FontWeight.w700, color: R.color.textDark),
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+    return Visibility(
+      visible: isShow,
       child: GestureDetector(
-        onTap: () {
-          if (index == 0) {
-            Navigator.pushNamed(context, NavigatorName.goal_setting);
-          }
-          if (index == 2) {
-            Navigator.pushNamed(context, NavigatorName.schedule_activity);
-          }
-          if (index == 1) {
-            Navigator.pushNamed(context, NavigatorName.reminder);
-          }
-          if (index == 3) {
-            Navigator.pushNamed(context, NavigatorName.schedule_glucose);
-          }
-          // if (index == 1 || index == 3) {
-          //   Message.showToastMessage(context,
-          //       'Tính năng này sẽ được ra mắt trong bản nâng cấp tiếp theo');
-          //}
-        },
+        onTap: onTap,
         child: Container(
-            decoration: BoxDecoration(
-                color: color, borderRadius: BorderRadius.circular(12)),
-            padding: EdgeInsets.all(14),
-            child: Column(children: [
-              Image.asset(image, width: 35, height: 35),
-              SizedBox(height: 12),
-              Text(title,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.textDark),
-                  textAlign: TextAlign.center)
-            ])),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: isRow
+              ? const EdgeInsets.symmetric(vertical: 7, horizontal: 12)
+              : const EdgeInsets.symmetric(vertical: 14),
+          child: isRow
+              ? Row(
+                  children: [
+                    Image.asset(image, width: 35, height: 35),
+                    const SizedBox(width: 12),
+                    textWidget,
+                  ],
+                )
+              : Column(
+                  children: [
+                    Image.asset(image, width: 35, height: 35),
+                    const SizedBox(height: 12),
+                    textWidget,
+                  ],
+                ),
+        ),
       ),
     );
   }
@@ -253,7 +332,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer{
                   SizedBox(width: 16),
                   Text(title, style: TextStyle(fontSize: 16))
                 ]),
-                Icon(Icons.arrow_forward_ios, color: R.color.mainColor, size: 16)
+                Icon(Icons.arrow_forward_ios,
+                    color: R.color.mainColor, size: 16)
               ]),
               SizedBox(height: 20),
               Container(height: 1, color: R.color.grey.withOpacity(0.2))
@@ -284,7 +364,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer{
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                            child: Icon(Icons.close,
+                                color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -303,12 +384,13 @@ class _ProfileControllerState extends State<ProfileController> with Observer{
                             fillColor: R.color.textDark,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: R.color.grayComponentBorder, width: 1.0),
+                                  color: R.color.grayComponentBorder,
+                                  width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: R.color.mainColor, width: 1.0),
+                              borderSide: BorderSide(
+                                  color: R.color.mainColor, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             contentPadding:
@@ -324,7 +406,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer{
                           GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
-                              Navigator.pushNamed(context, NavigatorName.profile_info);
+                              Navigator.pushNamed(
+                                  context, NavigatorName.profile_info);
                             },
                             child: Container(
                                 height: 48,
@@ -344,8 +427,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer{
                             onTap: () {
                               final phone = textEditingController.text;
                               if (phone.isEmpty) {
-                                Message.showToastMessage(
-                                    context, R.string.ban_chua_nhap_so_dien_thoai.tr());
+                                Message.showToastMessage(context,
+                                    R.string.ban_chua_nhap_so_dien_thoai.tr());
                                 return;
                               } else {
                                 updatePhone(phone);
