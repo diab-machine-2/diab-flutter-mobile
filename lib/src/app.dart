@@ -41,6 +41,7 @@ import 'package:medical/src/widget/login/verify_phone.dart';
 import 'package:medical/src/widget/login/create_new_password.dart';
 import 'package:medical/src/widget/login/register_success.dart';
 import 'package:medical/src/widget/login/update_info.dart';
+import 'package:medical/src/widget/my_package/my_package_page.dart';
 import 'package:medical/src/widget/notification/notification_detail.dart';
 import 'package:medical/src/widget/notification/notification_tabbar.dart';
 import 'package:medical/src/widget/payment_package/payment_package_page.dart';

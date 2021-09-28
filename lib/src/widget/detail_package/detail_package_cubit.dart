@@ -16,6 +16,8 @@ class DetailPackageCubit extends Cubit<DetailPackageState> {
   int selectedCourse = 0;
   int? selectedIndex;
 
+  bool get isBoughtPro => false;
+
   DetailPackageCubit(this.appRepository, this.data)
       : super(DetailPackageInitial());
 

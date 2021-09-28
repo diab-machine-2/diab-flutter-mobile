@@ -4,6 +4,7 @@ import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
+import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -38,12 +39,24 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<BloodSugarTemplateCategoryResponse>> getListTemplateByCategory(
+  Future<ApiResult<BloodSugarTemplateCategoryResponse>>
+      getListTemplateByCategory(
     int category,
   ) async {
     try {
       final BloodSugarTemplateCategoryResponse response =
           await appClient.getListTemplateByCategory(category);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ListTransactionResponse>> getListTransaction(
+      {bool? isExpired, int? page, int? size}) async {
+    try {
+      ListTransactionResponse response =
+          await appClient.getListTransaction(isExpired, page, size);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -81,5 +94,4 @@ class AppRepository {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
-
 }

@@ -245,7 +245,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
 
   Widget rowInfoDescription(String title) {
     return Container(
-      margin: EdgeInsets.only(bottom: 24.h, left: 16.h, right: 16.h),
+      margin: EdgeInsets.only(bottom: 24.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

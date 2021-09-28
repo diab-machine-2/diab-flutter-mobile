@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
+import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -16,11 +17,15 @@ part 'app_api.g.dart';
 abstract class AppApi {
   factory AppApi(Dio dio, {String baseUrl}) = _AppApi;
 
+  // Package
+
   @GET("App/Package")
   Future<ListPackageResponse> getListPackage();
 
   @GET("App/Package/{code}")
-  Future<DetailPackageResponse> getDetailPackage(@Path("code") String code,);
+  Future<DetailPackageResponse> getDetailPackage(
+    @Path("code") String code,
+  );
 
   @GET("App/Feature/GetPackageComparison")
   Future<UpgradeAccountResponse> getUpgradeAccount();
@@ -40,4 +45,12 @@ abstract class AppApi {
 
   @GET("/App/HbA1C/LatestHbA1CInput")
   Future<LatestHba1cInputResponse> getLatestHbA1CInput();
+  // Transaction
+
+  @GET("App/PackageTransaction")
+  Future<ListTransactionResponse> getListTransaction(
+    @Query("isExpired") bool? isExpired,
+    @Query("page") int? page,
+    @Query("size") int? size,
+  );
 }

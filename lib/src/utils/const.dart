@@ -17,15 +17,15 @@ class Const {
   static const String ADDRESS = "Address";
   static const String CITY = "City";
   static const String DISTRICT = "District";
-  static const String STATE = "State";
+  static const String PACKAGE_CODE = "package_code";
   static const String EMAIL = "Email";
   static const String AVATAR = "Avatar";
   static const String POINT = "POINT";
   static const String INTRODUCE = "INTRODUCE";
   static const String URL = "Url";
   static const String REFRESH = "Refresh";
-  static const String REFRESH_TOKEN = "Refresh Token Authorization";
-  static const String TOKEN = "Token Authorization";
+  static const String REFRESH_TOKEN = "refresh_token";
+  static const String TOKEN = "token";
   static const String PHONE = "Phone";
   static const String CITY_ID = "CITY_ID";
   static const String CITY_NAME = "CITY_NAME";
@@ -40,8 +40,8 @@ class Const {
   static const String REFERENCE_CODE = "REFERENCE_CODE";
   static const String DEVICE_TOKEN = "Device Token";
   static const String LOCALE = "LOCALE";
-  static const String DATE_TIME_FORMAT = "dd/MM/yyyy  HH:mm";
-  static const String DATE_TIME_SV_FORMAT = "d MMM, yyyy";
+  static const String DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
+  static const String DATE_TIME_SV_FORMAT = "MM/dd/yyyy HH:mm:ss";
   static const String DATE_TIME_CREATE_SV_FORMAT = "yyyy-MM-dd HH:mm:ss";
   static const String DATE_REQUEST_FORMAT = "MM-dd-yyyy";
   static const String DATE_FORMAT = "dd/MM/yyyy";
@@ -71,7 +71,7 @@ class Const {
   static const int COURSE_SCREEN = 2;
   static const int ACCOUNT_SCREEN = 3;
 
-  static const int DEFAULT_SIZE = 100;
+  static const int DEFAULT_SIZE = 10;
 
   static const String EN = "en";
   static const String VI = "vi";

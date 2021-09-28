@@ -33,7 +33,7 @@ extension SurveyStatusDetail on SurveyStatus {
       case SurveyStatus.not_done:
         return R.drawable.im_blood_sugar_start_survey;
       case SurveyStatus.upgrade_require:
-        return R.drawable.im_upgrade_to_take_survey;
+        return R.drawable.img_my_package;
     }
   }
 }
@@ -124,7 +124,7 @@ Widget _buildActiveButton({
       return Container(
         width: 245.w,
         child: ButtonWidget(
-          title: R.string.upgrade_to_pro.tr(),
+          title: R.string.upgrade_to_diab_pro.tr(),
           onPressed: () {
             //TODO: Tuyen open update page
           },

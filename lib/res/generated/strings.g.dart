@@ -180,7 +180,7 @@ class Strings {
 	String get no_need_to_test => 'no_need_to_test';
 	String get often_testing_blood_sugar => 'often_testing_blood_sugar';
 	String get time_per_day => 'time_per_day';
-	String get upgrade_to_pro => 'upgrade_to_pro';
+	String get upgrade_to_diab_pro => 'upgrade_to_diab_pro';
 	String get survey_again => 'survey_again';
 	String get testing_schedule_suggest => 'testing_schedule_suggest';
 	String get blood_sugar_testing_schedule_suggest => 'blood_sugar_testing_schedule_suggest';
@@ -683,6 +683,7 @@ class Strings {
 	String get pro => 'pro';
 	String get payment => 'payment';
 	String get number_month => 'number_month';
+	String get number_year => 'number_year';
 	String get number_course => 'number_course';
 	String get number_hour => 'number_hour';
 	String get period => 'period';
@@ -704,4 +705,20 @@ class Strings {
 	String get evening_first_upper_case => 'evening_first_upper_case';
 	String get show_more => 'show_more';
 	String get show_less => 'show_less';
+	String get text_upgrade_to_pro => 'text_upgrade_to_pro';
+	String get upgrade_to_pro => 'upgrade_to_pro';
+	String get upgrade_package_pro => 'upgrade_package_pro';
+	String get renewal_package_pro => 'renewal_package_pro';
+	String get text_way_register_1 => 'text_way_register_1';
+	String get text_way_register_2 => 'text_way_register_2';
+	String get my_package => 'my_package';
+	String get text_my_package => 'text_my_package';
+	String get history_transaction => 'history_transaction';
+	String get repurchase => 'repurchase';
+	String get service_price => 'service_price';
+	String get next_renewal => 'next_renewal';
+	String get status_expired => 'status_expired';
+	String get status_actived => 'status_actived';
+	String get time_period => 'time_period';
+	String get package_deactivate => 'package_deactivate';
 }

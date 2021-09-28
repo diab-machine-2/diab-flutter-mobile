@@ -66,10 +66,8 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
               Utils.showErrorSnackBar(context, state.error);
             }
           },
-          builder: (
-            BuildContext context,
-            DetailPackageState state,
-          ) {
+          builder: (BuildContext context,
+              DetailPackageState state,) {
             return buildPage(context, state);
           },
         ),
@@ -90,9 +88,9 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  Container(
-                      height: 240.h,
-                      child: Image.asset(R.drawable.img_list_service)),
+                  Image.asset(
+                    R.drawable.img_list_service, width: double.infinity,
+                    height: 240.h,),
                   Container(
                     padding: EdgeInsets.all(16.h),
                     child: Column(
@@ -103,7 +101,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(data?.name ?? R.string.diab_pro.tr(),
                                 textAlign: TextAlign.center,
@@ -138,30 +136,110 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                         SizedBox(
                           height: 24.h,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: List.generate(
-                              (_cubit.data?.prices ?? []).length,
-                              (index) => GestureDetector(
-                                  onTap: () => _cubit.selectPrice(index),
-                                  child: packageWidget(
-                                      _cubit.data!.prices![index],
-                                      index == _cubit.selectedPrice))),
+                        Visibility(
+                          visible: data?.code == Const.PRO,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween,
+                                children: List.generate(
+                                    (data?.prices ?? []).length,
+                                        (index) =>
+                                        GestureDetector(
+                                            onTap: () =>
+                                                _cubit.selectPrice(index),
+                                            child: packageWidget(
+                                                data!.prices![index],
+                                                index ==
+                                                    _cubit.selectedPrice))),
+                              ),
+                              SizedBox(
+                                height: 32.h,
+                              ),
+                              courseWidget(iconColor: R.color.green),
+                              SizedBox(
+                                height: 32.h,
+                              ),
+                              detailWidget(data),
+                              SizedBox(
+                                height: 32.h,
+                              ),
+                              storyWidget(data?.successStories ?? []),
+                              SizedBox(
+                                height: 40.h,
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          height: 32.h,
-                        ),
-                        courseWidget(iconColor: R.color.green),
-                        SizedBox(
-                          height: 32.h,
-                        ),
-                        detailWidget(data),
-                        SizedBox(
-                          height: 32.h,
-                        ),
-                        storyWidget(data?.successStories ?? []),
-                        SizedBox(
-                          height: 40.h,
+                        Visibility(
+                          visible: data?.code == Const.PREMIUM &&
+                              !_cubit.isBoughtPro,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                R.string.how_to_register.tr(),
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: R.color.textDark,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 20.sp,
+                                  letterSpacing: 0.08,
+                                  height: 1.4,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 12.h,
+                              ),
+                              CardWidget(
+                                  borderWidth: 0,
+                                  borderColor: Colors.transparent,
+                                  padding: EdgeInsets.all(16.h),
+                                  child: Column(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child:
+                                        RichText(
+                                          text: TextSpan(
+                                            text: R.string.upgrade_to_pro.tr(),
+                                            style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 16.sp,
+                                              letterSpacing: 0.4,
+                                              height: 1.375,
+                                            ),
+                                            children: <TextSpan>[
+                                              TextSpan(text: R.string.diab_pro.tr(), style: TextStyle(color: R.color.textDark,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16.sp,
+                                                letterSpacing: 0.4,
+                                                height: 1.375,)),
+                                            ],
+                                          ),
+                                        )
+                                      ),
+                                      SizedBox(
+                                        height: 16.h,
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        margin: EdgeInsets.symmetric(horizontal: 40.h),
+                                        child: ButtonWidget(
+                                          title: R.string.upgrade_package_pro.tr(),
+                                          onPressed: () {
+
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -169,61 +247,63 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                 ],
               ),
             ),
-            Container(
-                width: double.infinity,
-                height: 80.h,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: R.color.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16))),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      width: 128.w,
-                      child: ButtonWidget(
-                        title: R.string.interest.tr(),
-                        onPressed: () {
-                          showModelSheet(context);
-                        },
-                        backgroundColor: R.color.white,
-                        borderColor: R.color.accentColor,
-                        textColor: R.color.accentColor,
+            Visibility(
+              visible: data?.code == Const.PRO,
+              child: Container(
+                  width: double.infinity,
+                  height: 80.h,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: R.color.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16))),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: 128.w,
+                        child: ButtonWidget(
+                          title: R.string.interest.tr(),
+                          onPressed: () {
+                            showModelSheet(context);
+                          },
+                          backgroundColor: R.color.white,
+                          borderColor: R.color.accentColor,
+                          textColor: R.color.accentColor,
+                        ),
                       ),
-                    ),
-                    Container(
-                      width: 128.w,
-                      child: ButtonWidget(
-                        title: R.string.sign_up.tr(),
-                        onPressed: () {
-                          if (!Utils.isEmpty(data?.prices))
-                            NavigationUtil.navigatePage(
-                                context,
-                                PaymentPackagePage(
-                                  packageName:
-                                      data?.name ?? R.string.diab_pro.tr(),
-                                  packageCode: data?.code ?? Const.PRO,
-                                  price: data!.prices![_cubit.selectedPrice],
-                                ));
-                        },
+                      Container(
+                        width: 128.w,
+                        child: ButtonWidget(
+                          title: R.string.sign_up.tr(),
+                          onPressed: () {
+                            if (!Utils.isEmpty(data?.prices))
+                              NavigationUtil.navigatePage(
+                                  context,
+                                  PaymentPackagePage(
+                                    packageName:
+                                    data?.name ?? R.string.diab_pro.tr(),
+                                    packageCode: data?.code ?? Const.PRO,
+                                    price: data!.prices![_cubit.selectedPrice],
+                                  ));
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ))
+                    ],
+                  )),
+            )
           ],
         ),
       ),
     );
   }
 
-  Widget courseWidget(
-      {String? name,
-      String? description,
-      Color? iconColor,
-      int? numberCourse,
-      int? numberHour}) {
+  Widget courseWidget({String? name,
+    String? description,
+    Color? iconColor,
+    int? numberCourse,
+    int? numberHour}) {
     return Column(
       children: [
         Container(
@@ -235,7 +315,8 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
             controller: _pageCourseController,
             children: List.generate(
                 4,
-                (index) => CardWidget(
+                    (index) =>
+                    CardWidget(
                       borderWidth: 0,
                       borderColor: Colors.transparent,
                       backgroundImage: R.drawable.bg_pro_group_1,
@@ -297,7 +378,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         "25+",
@@ -346,7 +427,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         "25+",
@@ -406,88 +487,89 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
             },
             controller: _pageStoryController,
             children: listStory
-                .map((e) => CardWidget(
-                      borderWidth: 0,
-                      borderColor: Colors.transparent,
-                      padding: EdgeInsets.symmetric(horizontal: 12.h),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
+                .map((e) =>
+                CardWidget(
+                  borderWidth: 0,
+                  borderColor: Colors.transparent,
+                  padding: EdgeInsets.symmetric(horizontal: 12.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        R.string.success_story.tr(),
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: R.color.textDark,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16.sp,
+                          letterSpacing: 0.4,
+                          height: 1.375,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 12.h,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            R.string.success_story.tr(),
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              color: R.color.textDark,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16.sp,
-                              letterSpacing: 0.4,
-                              height: 1.375,
-                            ),
+                          AvatarWidget(
+                            name: Utils.getImageUrl(e.avatarPath) ?? "",
+                            size: 33.h,
+                            avatar: e.name,
                           ),
-                          SizedBox(
-                            height: 12.h,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              AvatarWidget(
-                                name: Utils.getImageUrl(e.avatarPath) ?? "",
-                                size: 33.h,
-                                avatar: e.name,
-                              ),
-                              SizedBox(width: 20.w),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      e.name ?? "",
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                        color: R.color.textDark,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 16.sp,
-                                        letterSpacing: 0.4,
-                                        height: 1.375,
-                                      ),
-                                    ),
-                                    Text(
-                                      e.job ?? "",
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                        color: R.color.grey_2,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 14.sp,
-                                        letterSpacing: 0.2,
-                                        height: 1.42857,
-                                      ),
-                                    )
-                                  ],
+                          SizedBox(width: 20.w),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  e.name ?? "",
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    color: R.color.textDark,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16.sp,
+                                    letterSpacing: 0.4,
+                                    height: 1.375,
+                                  ),
                                 ),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: 22.h,
-                          ),
-                          Flexible(
-                            child: Text(
-                              e.story ?? "",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                color: R.color.color0xff454649,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16.sp,
-                                letterSpacing: 0.4,
-                                height: 1.375,
-                              ),
+                                Text(
+                                  e.job ?? "",
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    color: R.color.grey_2,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14.sp,
+                                    letterSpacing: 0.2,
+                                    height: 1.42857,
+                                  ),
+                                )
+                              ],
                             ),
-                          ),
+                          )
                         ],
                       ),
-                    ))
+                      SizedBox(
+                        height: 22.h,
+                      ),
+                      Flexible(
+                        child: Text(
+                          e.story ?? "",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: R.color.color0xff454649,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16.sp,
+                            letterSpacing: 0.4,
+                            height: 1.375,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ))
                 .toList(),
           ),
         ),
@@ -509,7 +591,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
     return CardWidget(
       padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 6.h),
       borderColor:
-          isSelected ? R.color.accentColor : R.color.grayComponentBorder,
+      isSelected ? R.color.accentColor : R.color.grayComponentBorder,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -547,7 +629,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
               data.monthUsed == 1
                   ? ""
                   : R.string.price_per_month
-                      .tr(args: [Utils.formatMoney(data.monthPrice) ?? ""]),
+                  .tr(args: [Utils.formatMoney(data.monthPrice) ?? ""]),
               style: TextStyle(
                 color: R.color.gray,
                 fontSize: 10.sp,
@@ -610,33 +692,35 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
             padding: EdgeInsets.zero,
             physics: NeverScrollableScrollPhysics(),
             itemCount: data?.enableFeatures?.length ?? 0,
-            itemBuilder: (context, index) => Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset(
-                  R.drawable.ic_verify,
-                  fit: BoxFit.fill,
-                  height: 15.h,
-                ),
-                SizedBox(
-                  width: 7.w,
-                ),
-                Expanded(
-                  child: Text(
-                    data?.enableFeatures![index].featureName ?? "",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      color: R.color.color0xff454649,
-                      fontSize: 16.sp,
-                      letterSpacing: 0.4,
+            itemBuilder: (context, index) =>
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      R.drawable.ic_verify,
+                      fit: BoxFit.fill,
+                      height: 15.h,
                     ),
-                  ),
-                )
-              ],
-            ),
-            separatorBuilder: (context, index) => SizedBox(
-              height: 8.h,
-            ),
+                    SizedBox(
+                      width: 7.w,
+                    ),
+                    Expanded(
+                      child: Text(
+                        data?.enableFeatures![index].featureName ?? "",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: R.color.color0xff454649,
+                          fontSize: 16.sp,
+                          letterSpacing: 0.4,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+            separatorBuilder: (context, index) =>
+                SizedBox(
+                  height: 8.h,
+                ),
           )
         ],
       ),
@@ -647,68 +731,69 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
     showBarModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider<DetailPackageCubit>.value(
+      builder: (context) =>
+      BlocProvider<DetailPackageCubit>.value(
           value: _cubit,
-          child: BlocBuilder<DetailPackageCubit, DetailPackageState>(builder: (
-            BuildContext context,
-            DetailPackageState state,
-          ) {
-            return SingleChildScrollView(
-              child: Container(
-                color: R.color.white,
-                child: Column(
-                  children: [
-                    Container(
-                      decoration:
+          child: BlocBuilder<DetailPackageCubit, DetailPackageState>(
+              builder: (BuildContext context,
+                  DetailPackageState state,) {
+                return SingleChildScrollView(
+                  child: Container(
+                    color: R.color.white,
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration:
                           BoxDecoration(color: R.color.white, boxShadow: [
-                        BoxShadow(
-                          color: R.color.accentColor.withOpacity(0.08),
-                          spreadRadius: 0,
-                          blurRadius: 8,
-                          offset: Offset(0, 4),
-                        ),
-                      ]),
-                      child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(
-                            vertical: 23.h, horizontal: 31.h),
-                        color: R.color.white,
-                        child: Text(
-                          R.string.interest_course.tr(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: R.color.textDark,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16.sp,
+                            BoxShadow(
+                              color: R.color.accentColor.withOpacity(0.08),
+                              spreadRadius: 0,
+                              blurRadius: 8,
+                              offset: Offset(0, 4),
+                            ),
+                          ]),
+                          child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(
+                                vertical: 23.h, horizontal: 31.h),
+                            color: R.color.white,
+                            child: Text(
+                              R.string.interest_course.tr(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: R.color.textDark,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16.sp,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    rowOptionWidget(R.string.option_already_register.tr(), 0),
-                    rowOptionWidget(R.string.option_need_more_info.tr(), 1),
-                    rowOptionWidget(R.string.option_another.tr(), 2),
-                    sendMessageWidget(),
-                    Container(
-                      margin:
+                        rowOptionWidget(
+                            R.string.option_already_register.tr(), 0),
+                        rowOptionWidget(R.string.option_need_more_info.tr(), 1),
+                        rowOptionWidget(R.string.option_another.tr(), 2),
+                        sendMessageWidget(),
+                        Container(
+                          margin:
                           EdgeInsets.only(top: 24.h, left: 16.h, right: 16.h),
-                      child: ButtonWidget(
-                        title: R.string.send.tr(),
-                        textColor: _cubit.selectedIndex == null
-                            ? R.color.gray
-                            : R.color.white,
-                        onPressed: _cubit.selectedIndex == null
-                            ? null
-                            : () {
-                                NavigationUtil.pop(context);
-                              },
-                      ),
+                          child: ButtonWidget(
+                            title: R.string.send.tr(),
+                            textColor: _cubit.selectedIndex == null
+                                ? R.color.gray
+                                : R.color.white,
+                            onPressed: _cubit.selectedIndex == null
+                                ? null
+                                : () {
+                              NavigationUtil.pop(context);
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 40.h),
+                      ],
                     ),
-                    SizedBox(height: 40.h),
-                  ],
-                ),
-              ),
-            );
-          })),
+                  ),
+                );
+              })),
     );
   }
 
