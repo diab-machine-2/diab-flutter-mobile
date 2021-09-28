@@ -236,7 +236,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                     SizedBox(height: 16),
                                     Row(
                                       children: [
-                                        _buildSupportButton(
+                                        _buildButton(
                                             title: R.string.setup.tr(),
                                             icon: R.drawable.ic_alarm,
                                             onTap: () {
@@ -246,7 +246,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                                       .setting_schedule_glucose);
                                             }),
                                         const SizedBox(width: 16),
-                                        _buildSupportButton(
+                                        _buildButton(
                                             title: R.string.testing_schedule_suggest.tr(),
                                             icon: R.drawable.ic_blood_sugar_testing_suggest,
                                             onTap: () {
@@ -779,7 +779,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
   }
 }
 
-Widget _buildSupportButton({
+Widget _buildButton({
   required String title,
   required String icon,
   required VoidCallback onTap,

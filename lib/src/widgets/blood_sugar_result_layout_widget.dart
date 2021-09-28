@@ -7,8 +7,8 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widgets/custom_app_bar.dart';
 
-class BloodSugarRecommandLayoutWidget extends StatelessWidget {
-  const BloodSugarRecommandLayoutWidget({
+class BloodSugarResultLayoutWidget extends StatelessWidget {
+  const BloodSugarResultLayoutWidget({
     required this.title,
     required this.child,
     this.timeToTestPerDay,

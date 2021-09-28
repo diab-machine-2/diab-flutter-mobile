@@ -8,7 +8,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description_detail.dart';
-import 'package:medical/src/widgets/blood_sugar_recommand_layout_widget.dart';
+import 'package:medical/src/widgets/blood_sugar_result_layout_widget.dart';
 import 'package:medical/src/widgets/expandable_rich_text.dart';
 
 import '../../../model/response/blood_sugar_template_category_response.dart';
@@ -47,7 +47,7 @@ class _BloodSugarSurveyResultPageState
           }
         },
         builder: (context, state) {
-          return BloodSugarRecommandLayoutWidget(
+          return BloodSugarResultLayoutWidget(
             title: R.string.result.tr(),
             timeToTestPerDay: 0,
             onTapBack: () {

@@ -8,7 +8,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/blood_sugar_template_category_response.dart';
 import 'package:medical/src/model/response/blood_sugar_template_detail_response.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widgets/blood_sugar_recommand_layout_widget.dart';
+import 'package:medical/src/widgets/blood_sugar_result_layout_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import 'blood_sugar_schedule_template.dart';
@@ -57,7 +57,7 @@ class _BloodSugarScheduleTemplatePageState
           }
         },
         builder: (context, state) {
-          return BloodSugarRecommandLayoutWidget(
+          return BloodSugarResultLayoutWidget(
             title: widget.template?.name ?? '',
             timeToTestPerDay: 0,
             child: Container(
