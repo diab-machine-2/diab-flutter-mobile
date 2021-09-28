@@ -539,7 +539,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                                   e.job ?? "",
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
-                                    color: R.color.color0xff787A7D,
+                                    color: R.color.grey_2,
                                     fontWeight: FontWeight.w400,
                                     fontSize: 14.sp,
                                     letterSpacing: 0.2,

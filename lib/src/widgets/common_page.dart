@@ -7,13 +7,15 @@ class CommonPage extends StatelessWidget {
   final String? title;
   final Color? textColor;
   final Widget child;
+  final VoidCallback? onTapBack;
 
   const CommonPage(
       {Key? key,
       required this.background,
       required this.child,
       this.title,
-      this.textColor})
+      this.textColor,
+      this.onTapBack})
       : super(key: key);
 
   @override
@@ -27,6 +29,7 @@ class CommonPage extends StatelessWidget {
               CustomAppBar(
                 title: title ?? "",
                 textColor: textColor,
+                backCallback: onTapBack,
               ),
               Expanded(child: child)
             ],

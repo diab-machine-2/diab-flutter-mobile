@@ -32,7 +32,7 @@ class DetailDescription extends StatelessWidget {
                           SizedBox(height: 8),
                           Row(children: [
                             Image.asset(
-                              R.drawable.im_des,
+                              R.drawable.img_des,
                               width: 99,
                               height: 85,
                             ),

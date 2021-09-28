@@ -145,7 +145,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                                         Column(
                                           children: [
                                             Image.asset(
-                                                R.drawable.im_reminder,
+                                                R.drawable.img_reminder,
                                                 height: 113),
                                             Padding(
                                               padding: EdgeInsets.only(
