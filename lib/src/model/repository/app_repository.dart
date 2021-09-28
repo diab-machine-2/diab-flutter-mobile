@@ -1,4 +1,6 @@
 
+import 'package:medical/src/model/request/send_interest_request.dart';
+import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
@@ -31,6 +33,18 @@ class AppRepository {
     try {
       UpgradeAccountResponse response = await appClient.getUpgradeAccount();
       return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> sendInterestFeedback(SendInterestRequest request) async {
+    try {
+      CommonResponse response = await appClient.sendInterestFeedback(request);
+      if (response.error == null)
+      return ApiResult.success(data: response);
+      else
+        return ApiResult.failure(error: NetworkExceptions.defaultError(response.error!.message ?? ""));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,6 +45,11 @@ class _ListServicePageState extends State<ListServicePage> {
           listener: (context, state) {
             if (state is ListServiceFailure) {
               Utils.showErrorSnackBar(context, state.error);
+            }
+            if (state is ListServiceLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
             }
           },
           builder: (

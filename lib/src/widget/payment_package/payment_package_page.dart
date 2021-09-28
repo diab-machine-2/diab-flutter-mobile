@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,6 +48,11 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
             if (state is PaymentPackageFailure) {
               Utils.showErrorSnackBar(context, state.error);
             }
+            if (state is PaymentPackageLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
           },
           builder: (
             BuildContext context,
@@ -84,7 +90,7 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(widget.packageName ?? R.string.diab_pro.tr(),
+                              Text(widget.packageName,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       color: R.color.textDark,

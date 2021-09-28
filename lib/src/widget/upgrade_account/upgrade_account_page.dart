@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,6 +60,11 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
           listener: (context, state) {
             if (state is UpgradeAccountFailure) {
               Utils.showErrorSnackBar(context, state.error);
+            }
+            if (state is UpgradeAccountLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
             }
           },
           builder: (

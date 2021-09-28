@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,6 +65,14 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
           listener: (context, state) {
             if (state is DetailPackageFailure) {
               Utils.showErrorSnackBar(context, state.error);
+            }
+            if (state is SendInterestSuccess) {
+              NavigationUtil.pop(context);
+            }
+            if (state is DetailPackageLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
             }
           },
           builder: (BuildContext context,
@@ -778,13 +787,13 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                           EdgeInsets.only(top: 24.h, left: 16.h, right: 16.h),
                           child: ButtonWidget(
                             title: R.string.send.tr(),
-                            textColor: _cubit.selectedIndex == null
+                            textColor: _cubit.selectedIndexInterest == null
                                 ? R.color.gray
                                 : R.color.white,
-                            onPressed: _cubit.selectedIndex == null
+                            onPressed: _cubit.selectedIndexInterest == null
                                 ? null
                                 : () {
-                              NavigationUtil.pop(context);
+                              _cubit.sendInterestFeedback(_controller.text.trim());
                             },
                           ),
                         ),
@@ -799,7 +808,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
 
   Widget sendMessageWidget() {
     return Visibility(
-      visible: _cubit.selectedIndex == 2,
+      visible: _cubit.selectedIndexInterest == 2,
       child: Container(
         alignment: Alignment.centerLeft,
         margin: EdgeInsets.only(top: 16.h, left: 16.h, right: 16.h),
@@ -818,9 +827,9 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
   }
 
   Widget rowOptionWidget(String title, int index) {
-    bool isSelected = index == _cubit.selectedIndex;
+    bool isSelected = index == _cubit.selectedIndexInterest;
     return GestureDetector(
-      onTap: () => _cubit.selectOption(index),
+      onTap: () => _cubit.selectOptionInterest(index),
       child: Container(
         alignment: Alignment.centerLeft,
         margin: EdgeInsets.only(top: 16.h, left: 16.h, right: 16.h),

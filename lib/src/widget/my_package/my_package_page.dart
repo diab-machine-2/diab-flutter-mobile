@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,6 +40,11 @@ class _MyPackagePageState extends State<MyPackagePage> {
           listener: (context, state) {
             if (state is MyPackageFailure) {
               Utils.showErrorSnackBar(context, state.error);
+            }
+            if (state is MyPackageLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
             }
           },
           builder: (

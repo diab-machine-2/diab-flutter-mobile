@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -41,6 +42,11 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
           listener: (context, state) {
             if (state is WelcomeServiceFailure) {
               Utils.showErrorSnackBar(context, state.error);
+            }
+            if (state is WelcomeServiceLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
             }
           },
           builder: (

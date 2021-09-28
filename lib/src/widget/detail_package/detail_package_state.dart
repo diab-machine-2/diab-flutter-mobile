@@ -31,3 +31,8 @@ class DetailPackageSuccess extends DetailPackageState {
   @override
   String toString() => 'DetailPackageSuccess';
 }
+
+class SendInterestSuccess extends DetailPackageState {
+  @override
+  String toString() => 'DetailPackageSuccess';
+}
