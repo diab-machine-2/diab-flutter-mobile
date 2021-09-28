@@ -24,19 +24,19 @@ class _StepListControllerState extends State<StepListController> {
   var data = [
     {
       'name': R.string.dong_hanh_va_se_chia.tr(),
-      'image': R.drawable.im_step1,
+      'image': R.drawable.img_step1,
       'text':
           R.string.dong_hanh_va_se_chia_description.tr(),
     },
     {
       'name': R.string.hieu_de_yeu_ban_than_hon.tr(),
-      'image': R.drawable.im_step2,
+      'image': R.drawable.img_step2,
       'text':
           R.string.hieu_de_yeu_ban_than_hon_description.tr(),
     },
     {
       'name': R.string.va_khong_chi_co_ban.tr(),
-      'image': R.drawable.im_step3,
+      'image': R.drawable.img_step3,
       'text':
           R.string.va_khong_chi_co_ban_description.tr(),
     }

@@ -265,7 +265,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                               });
                                         },
                                         child: Image.asset(
-                                            R.drawable.im_nothing_chart_weight),
+                                            R.drawable.img_nothing_chart_weight),
                                       )
                                     : Container(
                                         decoration: BoxDecoration(

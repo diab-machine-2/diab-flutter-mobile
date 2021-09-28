@@ -273,7 +273,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                           }
                                         },
                                         child: Image.asset(
-                                          R.drawable.im_excerise_trend_empty,
+                                          R.drawable.img_excerise_trend_empty,
                                         ),
                                       )
                                     : Column(children: [

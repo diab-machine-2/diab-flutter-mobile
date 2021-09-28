@@ -98,8 +98,8 @@ class _AppState extends State<App> {
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,
-            home: FlashScreenController(),
-            // home: ListServicePage(),
+            // home: FlashScreenController(),
+            home: TabbarController(),
             debugShowCheckedModeBanner: false,
             onGenerateRoute: (settings) {
               switch (settings.name) {

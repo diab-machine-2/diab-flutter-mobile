@@ -260,7 +260,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
             padding: EdgeInsets.all(11.h),
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: R.color.color0xFFE4F5F5),
+                color: R.color.main_6),
             child: Image.asset(
               R.drawable.ic_verify,
               fit: BoxFit.fill,

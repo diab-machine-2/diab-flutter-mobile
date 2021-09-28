@@ -81,7 +81,7 @@ class HbA1CChartState extends State<HbA1CChart>
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                  R.drawable.im_nothing,
+                                  R.drawable.img_nothing,
                                 ),
                               )
                             : Container(

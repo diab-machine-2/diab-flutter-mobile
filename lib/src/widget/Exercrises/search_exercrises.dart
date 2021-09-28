@@ -150,7 +150,7 @@ class _SearchExercrisesControllerState
                             padding: const EdgeInsets.only(
                                 left: 16, right: 16, bottom: 16),
                             child: isClicked
-                                ? Image.asset(R.drawable.im_add_hba1c)
+                                ? Image.asset(R.drawable.img_add_hba1c)
                                 : SizedBox()),
                         Container(
                             height: 54,

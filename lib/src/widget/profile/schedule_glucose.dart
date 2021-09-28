@@ -9,10 +9,13 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+
+import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
 
 class ScheduleGlucoseController extends StatefulWidget {
   @override
@@ -20,7 +23,8 @@ class ScheduleGlucoseController extends StatefulWidget {
       _ScheduleGlucoseControllerState();
 }
 
-class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> with Observer {
+class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
+    with Observer {
   int selected = 0;
   ScheduleModel? scheduleDay;
   ScheduleGlucoseModel? model;
@@ -183,8 +187,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
                       children: [
                         SafeArea(
                           bottom: false,
-                          child: Image.asset(
-                              R.drawable.im_schedule_glucose,
+                          child: Image.asset(R.drawable.img_schedule_glucose,
                               height: 220),
                         ),
                         Padding(
@@ -193,66 +196,70 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
                             children: [
                               Expanded(
                                 child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      RichText(
-                                        text: TextSpan(
-                                          text:
-                                              '${R.string.default_time_to_measure_blood_sugar.tr()} ',
-                                          style: TextStyle(
-                                              color: R.color.primaryGreyColor),
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                                text: timeModel == null
-                                                    ? R.string.suggest_time_to_measure_blood_sugar.tr()
-                                                    : R.string.time_to_measure_blood_sugar.tr(args: ['${timeModel!.beforeEat}', '${timeModel!.afterEat}', '${timeModel!.beforeSleeping}']),
-                                                style: TextStyle(
-                                                    color: R.color.black,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 14))
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(height: 16),
-                                      Row(
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              Navigator.pushNamed(context,
-                                                  NavigatorName.setting_schedule_glucose);
-                                            },
-                                            child: Container(
-                                                height: 36,
-                                                decoration: BoxDecoration(
-                                                    color: R.color.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            18)),
-                                                padding: EdgeInsets.only(
-                                                    left: 16, right: 16),
-                                                child: Row(
-                                                  children: [
-                                                    Image.asset(
-                                                        R.drawable.ic_alarm,
-                                                        width: 24,
-                                                        height: 24),
-                                                    SizedBox(width: 8),
-                                                    Text(R.string.setup.tr(),
-                                                        style: TextStyle(
-                                                            color: R.color.mainColor,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600))
-                                                  ],
-                                                )),
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: RichText(
+                                            text: TextSpan(
+                                              text:
+                                                  '${R.string.default_time_to_measure_blood_sugar.tr()} ',
+                                              style: TextStyle(
+                                                  color:
+                                                      R.color.primaryGreyColor),
+                                              children: <TextSpan>[
+                                                TextSpan(
+                                                    text: timeModel == null
+                                                        ? R.string
+                                                            .suggest_time_to_measure_blood_sugar
+                                                            .tr()
+                                                        : R.string
+                                                            .time_to_measure_blood_sugar
+                                                            .tr(args: [
+                                                            '${timeModel!.beforeEat}',
+                                                            '${timeModel!.afterEat}',
+                                                            '${timeModel!.beforeSleeping}'
+                                                          ]),
+                                                    style: TextStyle(
+                                                        color: R.color.black,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 14))
+                                              ],
+                                            ),
                                           ),
-                                        ],
-                                      )
-                                    ]),
+                                        ),
+                                        SizedBox(width: 150)
+                                      ],
+                                    ),
+                                    SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        _buildButton(
+                                            title: R.string.setup.tr(),
+                                            icon: R.drawable.ic_alarm,
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  context,
+                                                  NavigatorName
+                                                      .setting_schedule_glucose);
+                                            }),
+                                        const SizedBox(width: 16),
+                                        _buildButton(
+                                            title: R.string.testing_schedule_suggest.tr(),
+                                            icon: R.drawable.ic_blood_sugar_testing_suggest,
+                                            onTap: () {
+                                              NavigationUtil.navigatePage(
+                                                context,
+                                                const BloodSugarStartSurveyPage(surveyStatus: SurveyStatus.not_done,),
+                                              );
+                                            })
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
-                              SizedBox(width: 150)
                             ],
                           ),
                         )
@@ -280,7 +287,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
                                   decoration: BoxDecoration(
                                       color: !hasData[index]
                                           ? R.color.transparent
-                                          : R.color.color0xFFE4F5F5,
+                                          : R.color.main_6,
                                       border: Border.all(
                                           color: selected == index
                                               ? (!hasData[index]
@@ -288,11 +295,10 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
                                                   : R.color.mainColor)
                                               : (!hasData[index]
                                                   ? R.color.grayBorder
-                                                  : R.color.color0xFFE4F5F5)),
+                                                  : R.color.main_6)),
                                       borderRadius: BorderRadius.circular(18)),
                                   child: Center(
-                                      child: Text(
-                                          index == 6 ? R.string.sunday.tr() : R.string.day_in_week.tr(args: ['${index + 2}']),
+                                      child: Text(index == 6 ? R.string.sunday.tr() : R.string.day_in_week.tr(args: ['${index + 2}']),
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: selected == index
@@ -469,7 +475,10 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
                         gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerRight,
-                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom
+                            ])),
                     child: Center(
                         child: Text(R.string.save.tr(),
                             style: TextStyle(
@@ -623,16 +632,22 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
         child: Container(
             height: 60,
             decoration: BoxDecoration(
-                color: highlight ? R.color.color0xffF4DBBD : R.color.color0xffF5F7FA,
+                color: highlight
+                    ? R.color.color0xffF4DBBD
+                    : R.color.color0xffF5F7FA,
                 border: Border.all(
-                    color: highlight ? R.color.color0xffE5B440 : R.color.color0xffF5F7FA),
+                    color: highlight
+                        ? R.color.color0xffE5B440
+                        : R.color.color0xffF5F7FA),
                 borderRadius: BorderRadius.circular(12)),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Image.asset(icon, width: 51, height: 34),
               SizedBox(width: 8),
               Text(title,
                   style: TextStyle(
-                      color: highlight ? R.color.mainColor : R.color.color0xffA1A3A6,
+                      color: highlight
+                          ? R.color.mainColor
+                          : R.color.gray,
                       fontSize: 16))
             ])),
       ),
@@ -669,8 +684,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_back.tr(),
+                        child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -763,4 +777,35 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController> w
       }
     }
   }
+}
+
+Widget _buildButton({
+  required String title,
+  required String icon,
+  required VoidCallback onTap,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      height: 36,
+      decoration: BoxDecoration(
+          color: R.color.white,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      padding: const EdgeInsets.only(left: 16, right: 16),
+      child: Row(
+        children: [
+          Image.asset(icon, width: 24, height: 24),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: TextStyle(
+                color: R.color.mainColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    ),
+  );
 }

@@ -183,7 +183,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                       : R.string.status_actived.tr(),
                   textAlign: TextAlign.right,
                   style: TextStyle(
-                    color: isExpired ? R.color.color0xff787A7D : R.color.green,
+                    color: isExpired ? R.color.grey_2 : R.color.green,
                     fontWeight: FontWeight.w400,
                     fontSize: 12.sp,
                     letterSpacing: 0.2,

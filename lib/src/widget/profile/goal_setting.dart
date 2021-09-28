@@ -118,7 +118,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                         Stack(
                             alignment: AlignmentDirectional.topEnd,
                             children: [
-                              Image.asset(R.drawable.im_goal),
+                              Image.asset(R.drawable.img_goal),
                               Padding(
                                 padding: EdgeInsets.only(left: 16, top: 20),
                                 child: Row(children: [

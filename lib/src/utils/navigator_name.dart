@@ -23,7 +23,8 @@ class NavigatorName {
   static const String input_detail_exercrise = '/input_detail_exercrise';
   static const String blood_pressure_table = '/blood_pressure_table';
   static const String blood_sugar_table = '/blood_sugar_table';
-  static const String blood_sugar_distribution_table = '/blood_sugar_distribution_table';
+  static const String blood_sugar_distribution_table =
+      '/blood_sugar_distribution_table';
   static const String blood_sugar_compare_table = '/blood_sugar_compare_table';
   static const String detail_blood_pressure = '/detail_blood_pressure';
   static const String detail_bmi = '/detail_bmi';
