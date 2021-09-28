@@ -21,7 +21,7 @@ class ProfileController extends StatefulWidget {
 }
 
 class _ProfileControllerState extends State<ProfileController> with Observer {
-  bool isPro = false;
+  bool isPro = true;
   SecureModel? secureModel;
 
   void initState() {
