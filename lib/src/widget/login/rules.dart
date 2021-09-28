@@ -66,7 +66,7 @@ class _RulesControllerState extends State<RulesController> {
                       child: ListView(padding: EdgeInsets.all(16), children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 16, bottom: 16),
-                          child: Image.asset(R.drawable.im_logo,
+                          child: Image.asset(R.drawable.img_logo,
                               width: 87, height: 50),
                         ),
                         Html(

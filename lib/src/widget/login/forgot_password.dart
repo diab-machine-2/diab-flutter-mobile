@@ -41,7 +41,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                     textAlign: TextAlign.center),
                 Padding(
                   padding: const EdgeInsets.only(top: 40, bottom: 40),
-                  child: Image.asset(R.drawable.im_forgot_pass,
+                  child: Image.asset(R.drawable.img_forgot_pass,
                       width: 112, height: 90),
                 ),
                 TextFieldCustom(

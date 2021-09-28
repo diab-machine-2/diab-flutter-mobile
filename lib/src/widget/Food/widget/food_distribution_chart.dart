@@ -98,7 +98,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                     arguments: {'type': 'input', 'id': null});
                               },
                               child: Image.asset(
-                                R.drawable.im_food_empty,
+                                R.drawable.img_food_empty,
                               ),
                             )
                           : Container(

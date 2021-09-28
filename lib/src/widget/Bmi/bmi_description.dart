@@ -25,7 +25,7 @@ class BmiDescription extends StatelessWidget {
                         children: [
                           Row(children: [
                             Image.asset(
-                              R.drawable.im_des_person,
+                              R.drawable.img_des_person,
                               width: 71,
                               height: 76,
                             ),

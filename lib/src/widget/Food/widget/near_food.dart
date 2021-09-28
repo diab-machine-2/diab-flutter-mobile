@@ -125,7 +125,7 @@ class _NearFoodState extends State<NearFood>
                             padding:
                                 EdgeInsets.only(left: 84, right: 84, top: 100),
                             child: Image.asset(
-                                R.drawable.im_near_food_empty),
+                                R.drawable.img_near_food_empty),
                           );
                         } else {
                           final selectedIndex = selectedFoods.lastIndexWhere(

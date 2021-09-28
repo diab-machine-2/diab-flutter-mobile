@@ -197,7 +197,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   margin: const EdgeInsets.only(
                                       left: 16, right: 32, top: 9),
                                   child: Image.asset(
-                                      R.drawable.im_male_weight,
+                                      R.drawable.img_male_weight,
                                       height: 131),
                                 ),
                                 Expanded(

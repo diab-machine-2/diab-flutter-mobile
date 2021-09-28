@@ -117,7 +117,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                       arguments: {'type': 'input', 'id': null});
                                 },
                                 child: Image.asset(
-                                    R.drawable.im_glucose_trend),
+                                    R.drawable.img_glucose_trend),
                               )
                             : Container(
                                 decoration: BoxDecoration(

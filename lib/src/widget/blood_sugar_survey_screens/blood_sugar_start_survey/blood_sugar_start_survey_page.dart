@@ -29,9 +29,9 @@ extension SurveyStatusDetail on SurveyStatus {
   String get image {
     switch (this) {
       case SurveyStatus.done:
-        return R.drawable.im_blood_sugar_start_survey;
+        return R.drawable.img_blood_sugar_start_survey;
       case SurveyStatus.not_done:
-        return R.drawable.im_blood_sugar_start_survey;
+        return R.drawable.img_blood_sugar_start_survey;
       case SurveyStatus.upgrade_require:
         return R.drawable.img_my_package;
     }

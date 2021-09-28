@@ -42,7 +42,7 @@ class BloodSugarResultLayoutWidget extends StatelessWidget {
               Stack(
                 children: [
                   Image.asset(
-                    R.drawable.im_blood_sugar_testing_schedule_tall,
+                    R.drawable.img_blood_sugar_testing_schedule_tall,
                     fit: BoxFit.fitWidth,
                   ),
                   _buildAppBar(context),
@@ -116,7 +116,7 @@ class BloodSugarResultLayoutWidget extends StatelessWidget {
   List<Widget> _layoutWithShortAppBar(BuildContext context) {
     return [
       Image.asset(
-        R.drawable.im_blood_sugar_testing_schedule_short,
+        R.drawable.img_blood_sugar_testing_schedule_short,
         fit: BoxFit.fitWidth,
       ),
       Column(

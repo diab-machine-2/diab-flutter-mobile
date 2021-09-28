@@ -228,7 +228,7 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                                                   right: 64,
                                                   top: 100),
                                               child: Image.asset(
-                                                  R.drawable.im_near_food_empty),
+                                                  R.drawable.img_near_food_empty),
                                             );
                                           } else {
                                             final selectedIndex = selectedFoods

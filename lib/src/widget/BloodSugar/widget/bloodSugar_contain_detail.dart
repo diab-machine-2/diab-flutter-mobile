@@ -296,7 +296,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                                 });
                                           },
                                           child: Image.asset(
-                                              R.drawable.im_glucose_distribution),
+                                              R.drawable.img_glucose_distribution),
                                         )
                                       : buildChart(model),
                                 )
