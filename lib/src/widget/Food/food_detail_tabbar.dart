@@ -141,6 +141,33 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
                 ),
               ]),
           body: Column(children: [
+            GestureDetector(
+              onTap: (){
+                //TODO: Tuyen navigate to foodMenu screen
+              },
+              child: Container(
+                color: R.color.white,
+                padding: const EdgeInsets.only(top: 14, bottom: 14, right: 18),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Image.asset(R.drawable.ic_bowl_of_food,
+                    width: 24,
+                      height: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      R.string.food_menu.tr(),
+                      style: TextStyle(
+                        color: R.color.greenGradientBottom,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             CustomTabbarImage(
                 key: customTabbarKey,
                 tabController: _tabController,

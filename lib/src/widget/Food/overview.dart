@@ -51,6 +51,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
@@ -66,8 +67,8 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
               ],
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
-              stops: [0.0, 0.3, 0.8, 1.0])),
-      child: ListView(physics: ClampingScrollPhysics(), children: [
+              stops: const [0.0, 0.3, 0.8, 1.0])),
+      child: ListView(physics: const ClampingScrollPhysics(), children: [
         EnergyChart(key: energyKey),
         StarchChart(key: starchKey),
         FoodChart(key: foodKey),
