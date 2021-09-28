@@ -27,7 +27,7 @@ abstract class AppApi {
 
   @GET("/App/BloodSugarTemplate/GetListByCategory")
   Future<BloodSugarTemplateCategoryResponse> getListTemplateByCategory(
-    @Query("category") String category,
+    @Query("category") int category,
   );
 
   @GET("/App/BloodSugarTemplate/GetByTemplateType")

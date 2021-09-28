@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +9,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description_detail.dart';
 import 'package:medical/src/widgets/blood_sugar_recommand_layout_widget.dart';
+import 'package:medical/src/widgets/expandable_rich_text.dart';
 
 import '../../../model/response/blood_sugar_template_category_response.dart';
 import '../blood_sugar_schedule_template/blood_sugar_schedule_template.dart';
@@ -55,28 +55,61 @@ class _BloodSugarSurveyResultPageState
             },
             child: Container(
               color: R.color.white,
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
-                  child: Column(
-                    children: [
-                      Text(
-                        R.string.pick_a_model.tr(
-                          args: ['${widget.templateList.length}'],
+              child: SafeArea(
+                top: false,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+                    child: Column(
+                      children: [
+                        Text(
+                          R.string.pick_a_model.tr(
+                            args: ['${widget.templateList.length}'],
+                          ),
+                          style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                        style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w400,
+                        ..._buildListOfTemplate(
+                          context,
+                          templateList: widget.templateList,
                         ),
-                      ),
-                      ..._buildListOfTemplate(
-                        context,
-                        templateList: widget.templateList,
-                      ),
-                      _buildExpandedText(),
-                    ],
+                        SizedBox(height: 32.h),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                              color: R.color.main_6,
+                              borderRadius: BorderRadius.circular(8)),
+                          child: ExpandableRichText(
+                            //TODO: Tuyen add long text into this
+                            'Long text',
+                            maxLines: 3,
+                            trimExpandedText: R.string.show_less.tr(),
+                            trimCollapsedText: R.string.show_more.tr(),
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400,
+                              color: R.color.textDark,
+                            ),
+                            moreStyle: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                              color: R.color.greenGradientBottom,
+                            ),
+                            lessStyle: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                              color: R.color.greenGradientBottom,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 14.h)
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -101,36 +134,6 @@ List<Widget> _buildListOfTemplate(
   );
 }
 
-Widget _buildExpandedText() {
-  return Container(
-    margin: const EdgeInsets.only(top: 16),
-    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-    decoration: BoxDecoration(
-        color: R.color.color0xFFE4F5F5, borderRadius: BorderRadius.circular(8)),
-    child: ExpandableText(
-      'sdfhkashdfksajhdfksdhgjkdshgjkdfbvvhjasbldsjhfbsahjbfiweufbuwehfIAFHJKSAhfkdsjhfdsfhuerhfuihaiHFIUSGDSBpbgidsbgfuwgbvci',
-      expandText: 'Xem thêm',
-      maxLines: 3,
-      linkColor: Colors.blue,
-      animation: true,
-      collapseOnTextTap: true,
-      prefixText: 'username',
-      onPrefixTap: () => {},
-      prefixStyle: const TextStyle(
-          fontWeight: FontWeight.bold, fontFamily: 'MaterialIcons'),
-      onHashtagTap: (name) => {},
-      hashtagStyle: const TextStyle(
-          color: Color(0xFF30B6F9), fontFamily: 'MaterialIcons'),
-      onMentionTap: (username) => {},
-      mentionStyle: const TextStyle(
-          fontWeight: FontWeight.w600, fontFamily: 'MaterialIcons'),
-      onUrlTap: (url) => {},
-      urlStyle: const TextStyle(
-          decoration: TextDecoration.underline, fontFamily: 'MaterialIcons'),
-    ),
-  );
-}
-
 Widget _buildTemplateItem(
   BuildContext context, {
   BloodSugarTemplateCategoryResponseData? data,
@@ -140,7 +143,7 @@ Widget _buildTemplateItem(
     margin: EdgeInsets.only(top: 16.h),
     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
     decoration: BoxDecoration(
-      color: R.color.color0xFFE4F5F5,
+      color: R.color.main_6,
       borderRadius: BorderRadius.circular(8),
     ),
     child: Row(

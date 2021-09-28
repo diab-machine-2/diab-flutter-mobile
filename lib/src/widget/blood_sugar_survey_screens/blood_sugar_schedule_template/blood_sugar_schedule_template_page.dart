@@ -47,6 +47,7 @@ class _BloodSugarScheduleTemplatePageState
           }
           if (state is BloodSugarScheduleSaveSuccess) {
             //TODO: Tuyen Navigate to blood schedule screen
+            BotToast.closeAllLoading();
           }
           if (state is BloodSugarScheduleTemplateLoading) {
             BotToast.showLoading();
@@ -342,7 +343,7 @@ class _BloodSugarScheduleTemplatePageState
                     ),
                     Expanded(
                       child: _buildTestTimeItem(
-                        testTime: R.string.before_sleep.tr(),
+                        testTime: R.string.before_go_to_sleep.tr(),
                         isSelected: templateDetail?.isBeforeSleeping,
                         onSelect: (isSelected) {
                           templateDetail?.isBeforeSleeping = isSelected;
@@ -385,6 +386,7 @@ class _BloodSugarScheduleTemplatePageState
             borderRadius: borderRadius),
         child: Text(
           testTime,
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,

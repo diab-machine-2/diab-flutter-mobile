@@ -234,7 +234,7 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
     }
     await showLoading();
     final ApiResult<BloodSugarTemplateCategoryResponse> apiResult =
-        await repository.getListTemplateByCategory('$templateIndex');
+        await repository.getListTemplateByCategory(templateIndex);
     apiResult.when(success: (BloodSugarTemplateCategoryResponse response) {
       if (response.data != null) {
         final List<BloodSugarTemplateCategoryResponseData?> data =

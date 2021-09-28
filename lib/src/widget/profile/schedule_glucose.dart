@@ -287,7 +287,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                   decoration: BoxDecoration(
                                       color: !hasData[index]
                                           ? R.color.transparent
-                                          : R.color.color0xFFE4F5F5,
+                                          : R.color.main_6,
                                       border: Border.all(
                                           color: selected == index
                                               ? (!hasData[index]
@@ -295,7 +295,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                                   : R.color.mainColor)
                                               : (!hasData[index]
                                                   ? R.color.grayBorder
-                                                  : R.color.color0xFFE4F5F5)),
+                                                  : R.color.main_6)),
                                       borderRadius: BorderRadius.circular(18)),
                                   child: Center(
                                       child: Text(index == 6 ? R.string.sunday.tr() : R.string.day_in_week.tr(args: ['${index + 2}']),

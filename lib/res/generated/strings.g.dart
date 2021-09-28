@@ -187,6 +187,7 @@ class Strings {
 	String get show_result => 'show_result';
 	String get set_as_my_schedule => 'set_as_my_schedule';
 	String get reset_schedule => 'reset_schedule';
+	String get before_go_to_sleep => 'before_go_to_sleep';
 	String get blood_sugar_survey_description => 'blood_sugar_survey_description';
 	String get blood_sugar_survey_done_description => 'blood_sugar_survey_done_description';
 	String get blood_sugar_survey_update_require => 'blood_sugar_survey_update_require';
@@ -701,4 +702,6 @@ class Strings {
 	String get morning_first_upper_case => 'morning_first_upper_case';
 	String get noon_first_upper_case => 'noon_first_upper_case';
 	String get evening_first_upper_case => 'evening_first_upper_case';
+	String get show_more => 'show_more';
+	String get show_less => 'show_less';
 }

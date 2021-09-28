@@ -114,7 +114,7 @@ class ActionListPanel extends StatelessWidget {
       },
       child: Container(
           height: 74,
-          color: selectedIndex == index ? R.color.color0xFFE4F5F5 : R.color.white,
+          color: selectedIndex == index ? R.color.main_6 : R.color.white,
           padding: EdgeInsets.only(left: 16, right: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

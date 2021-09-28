@@ -39,7 +39,7 @@ class AppRepository {
   }
 
   Future<ApiResult<BloodSugarTemplateCategoryResponse>> getListTemplateByCategory(
-    String category,
+    int category,
   ) async {
     try {
       final BloodSugarTemplateCategoryResponse response =

@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 abstract class BloodSugarScheduleTemplateState extends Equatable {
-  const BloodSugarScheduleTemplateState([List props = const []]) : super();
+  const BloodSugarScheduleTemplateState() : super();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
