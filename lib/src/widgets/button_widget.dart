@@ -6,6 +6,7 @@ class ButtonWidget extends StatelessWidget {
   final double? height;
   final Color? backgroundColor;
   final Color? textColor;
+  final double? textSize;
   final Color? borderColor;
   final String title;
   final VoidCallback? onPressed;
@@ -14,6 +15,7 @@ class ButtonWidget extends StatelessWidget {
 
   ButtonWidget({
     this.backgroundColor,
+    this.textSize,
     this.textColor,
     this.borderColor,
     this.height,
@@ -49,7 +51,7 @@ class ButtonWidget extends StatelessWidget {
           title,
           style: TextStyle(
               color: textColor ?? R.color.white,
-              fontSize: 16.sp,
+              fontSize: textSize ?? 16.sp,
               fontWeight: FontWeight.w700),
         ),
       ),

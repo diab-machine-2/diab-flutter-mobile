@@ -647,6 +647,7 @@ class Strings {
 	String get pro => 'pro';
 	String get payment => 'payment';
 	String get number_month => 'number_month';
+	String get number_year => 'number_year';
 	String get number_course => 'number_course';
 	String get number_hour => 'number_hour';
 	String get period => 'period';
@@ -663,4 +664,20 @@ class Strings {
 	String get receiver => 'receiver';
 	String get content => 'content';
 	String get des_pro => 'des_pro';
+	String get text_upgrade_to_pro => 'text_upgrade_to_pro';
+	String get upgrade_to_pro => 'upgrade_to_pro';
+	String get upgrade_package_pro => 'upgrade_package_pro';
+	String get renewal_package_pro => 'renewal_package_pro';
+	String get text_way_register_1 => 'text_way_register_1';
+	String get text_way_register_2 => 'text_way_register_2';
+	String get my_package => 'my_package';
+	String get text_my_package => 'text_my_package';
+	String get history_transaction => 'history_transaction';
+	String get repurchase => 'repurchase';
+	String get service_price => 'service_price';
+	String get next_renewal => 'next_renewal';
+	String get status_expired => 'status_expired';
+	String get status_actived => 'status_actived';
+	String get time_period => 'time_period';
+	String get package_deactivate => 'package_deactivate';
 }

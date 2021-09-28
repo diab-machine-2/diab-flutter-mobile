@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -95,29 +96,32 @@ class _ListServicePageState extends State<ListServicePage> {
                     ),
                   )),
               SizedBox(
-                height: 20.h,
+                height: 24.h,
               ),
               ListView.separated(
                   shrinkWrap: true,
                   itemCount: _cubit.listFilterData.length,
-                  separatorBuilder: (context, index) =>  SizedBox(
-                    height: 20.h,
-                  ),
+                  separatorBuilder: (context, index) => SizedBox(
+                        height: 16.h,
+                      ),
                   itemBuilder: (context, index) {
                     DetailPackageData data = _cubit.listFilterData[index];
                     return rowService(data, () {
-                      NavigationUtil.navigatePage(context, DetailPackagePage(data: data));
+                      NavigationUtil.navigatePage(
+                          context, DetailPackagePage(data: data));
                     });
                   }),
               SizedBox(
-                height: 110.h,
+                height: 27.h,
               ),
               Container(
                   width: 128.w,
                   child: ButtonWidget(
-                      title: R.string.text_continue.tr(), onPressed: () {
-                        NavigationUtil.navigatePage(context, UpgradeAccountPage());
-                  }))
+                      title: R.string.text_continue.tr(),
+                      onPressed: () {
+                        NavigationUtil.navigatePage(
+                            context, UpgradeAccountPage());
+                      }))
             ],
           ),
         ),
@@ -127,6 +131,12 @@ class _ListServicePageState extends State<ListServicePage> {
 
   Widget rowService(DetailPackageData data, VoidCallback onChooseService) {
     Color color = Utils.getColorByCode(data.code);
+    String background;
+    if (data.code == Const.PRO) {
+      background = R.drawable.bg_pro;
+    } else {
+      background = R.drawable.bg_premium;
+    }
     return GestureDetector(
       onTap: onChooseService,
       child: Padding(
@@ -135,7 +145,7 @@ class _ListServicePageState extends State<ListServicePage> {
           alignment: Alignment.center,
           children: [
             Container(
-              height: 50.h,
+              height: 96.h,
               width: double.infinity,
               decoration: BoxDecoration(
                   color: R.color.white,
@@ -144,11 +154,12 @@ class _ListServicePageState extends State<ListServicePage> {
             Positioned(
               left: 0,
               child: Container(
-                height: 50.h,
-                width: 50.h,
+                height: 96.h,
+                width: 54.h,
                 padding: EdgeInsets.all(15.h),
                 decoration: BoxDecoration(
-                    color: color.withOpacity(1/6),
+                    image: DecorationImage(
+                        image: AssetImage(background), fit: BoxFit.fill),
                     borderRadius: BorderRadius.circular(16.h)),
                 child: Image.asset(
                   R.drawable.ic_pro,
@@ -160,17 +171,40 @@ class _ListServicePageState extends State<ListServicePage> {
               ),
             ),
             Positioned(
-              left: 65.h,
-              child: Text(
-                data.name ?? "",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  color: R.color.textDark,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16.sp,
-                ),
+              left: 70.h,
+              right: 32.h,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    data.name ?? "",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 20.sp,
+                    ),
+                  ),
+                  SizedBox(height: 5.h),
+                  Text(
+                    data.description ?? "",
+                    textAlign: TextAlign.left,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                ],
               ),
-            )
+            ),
+            Positioned(
+                right: 10.h,
+                child: Icon(
+                  CupertinoIcons.chevron_right,
+                  color: R.color.accentColor,
+                ))
           ],
         ),
       ),
