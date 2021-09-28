@@ -186,7 +186,7 @@ Widget _buildTemplateItem(
             );
           },
           child: Image.asset(
-            R.drawable.ic_question_circle,
+            R.drawable.ic_question_circle_fill,
             height: 24.w,
             width: 24.w,
           ),

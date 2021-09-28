@@ -149,6 +149,7 @@ class Drawables {
 	String get ic_pulse => "lib/res/drawables/ic_pulse.png";
 	String get ic_question => "lib/res/drawables/ic_question.png";
 	String get ic_question_circle => "lib/res/drawables/ic_question_circle.png";
+	String get ic_question_circle_fill => "lib/res/drawables/ic_question_circle_fill.png";
 	String get ic_remove_excersire => "lib/res/drawables/ic_remove_excersire.png";
 	String get ic_repeat => "lib/res/drawables/ic_repeat.png";
 	String get ic_right => "lib/res/drawables/ic_right.png";
