@@ -135,7 +135,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                                     children: [
                                       Image.asset(
                                           isPro
-                                              ? R.drawable.ic_crown_yellow
+                                              ? R.drawable.ic_pro
                                               : R.drawable.ic_crown_green,
                                           width: 20,
                                           height: 20),

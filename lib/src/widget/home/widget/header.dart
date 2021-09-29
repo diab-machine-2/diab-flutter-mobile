@@ -109,50 +109,54 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.profile);
-                      },
-                      child: Container(
-                        color: R.color.transparent,
-                        child: Row(children: [
-                          Stack(
-                              alignment: AlignmentDirectional.bottomEnd,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(right: 4, bottom: 4),
-                                  child: Container(
-                                      clipBehavior: Clip.hardEdge,
-                                      decoration: BoxDecoration(
-                                          color: R.color.white,
-                                          borderRadius:
-                                              BorderRadius.circular(21)),
-                                      child: user.imageUrl!.url == null
-                                          ? Icon(Icons.person,
-                                              size: 42, color: R.color.mainColor)
-                                          : Image.network(user.imageUrl!.url!,
-                                              width: 42, height: 42)),
-                                ),
-                                Image.asset(R.drawable.ic_crown,
-                                    width: 20, height: 20)
-                              ]),
-                          SizedBox(width: 8),
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(user.fullName!.trim(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700)),
-                                SizedBox(height: 4),
-                                Text(R.string.thanh_vien_co_ban.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400))
-                              ]),
-                        ]),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, NavigatorName.profile);
+                        },
+                        child: Container(
+                          color: R.color.transparent,
+                          child: Row(children: [
+                            Stack(
+                                alignment: AlignmentDirectional.bottomEnd,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(right: 4, bottom: 4),
+                                    child: Container(
+                                        clipBehavior: Clip.hardEdge,
+                                        decoration: BoxDecoration(
+                                            color: R.color.white,
+                                            borderRadius:
+                                                BorderRadius.circular(21)),
+                                        child: user.imageUrl!.url == null
+                                            ? Icon(Icons.person,
+                                                size: 42, color: R.color.mainColor)
+                                            : Image.network(user.imageUrl!.url!,
+                                                width: 42, height: 42)),
+                                  ),
+                                  Image.asset(R.drawable.ic_crown,
+                                      width: 20, height: 20)
+                                ]),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(user.fullName!.trim(),
+                                        style: TextStyle(
+                                            color: R.color.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,)),
+                                    SizedBox(height: 4),
+                                    Text(R.string.thanh_vien_co_ban.tr(),
+                                        style: TextStyle(
+                                            color: R.color.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400))
+                                  ]),
+                            ),
+                          ]),
+                        ),
                       ),
                     ),
                     Row(

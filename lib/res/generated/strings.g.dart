@@ -566,6 +566,13 @@ class Strings {
 	String get update_weight_description => 'update_weight_description';
 	String get foodmenuscreen => 'FoodMenuScreen';
 	String get food_menu => 'food_menu';
+	String get change_food_info => 'change_food_info';
+	String get total_kcals => 'total_kcals';
+	String get total_starch => 'total_starch';
+	String get attention => 'attention';
+	String get note => 'note';
+	String get dessert => 'dessert';
+	String get choose_alternative_dish => 'choose_alternative_dish';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';

@@ -5,12 +5,14 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
+import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -144,6 +146,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
             GestureDetector(
               onTap: (){
                 //TODO: Tuyen navigate to foodMenu screen
+                NavigationUtil.navigatePage(context, const FoodMenuPage());
               },
               child: Container(
                 color: R.color.white,

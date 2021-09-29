@@ -93,7 +93,6 @@ class Drawables {
 	String get ic_course => "lib/res/drawables/ic_course.png";
 	String get ic_crown => "lib/res/drawables/ic_crown.png";
 	String get ic_crown_green => "lib/res/drawables/ic_crown_green.png";
-	String get ic_crown_yellow => "lib/res/drawables/ic_crown_yellow.png";
 	String get ic_dinh_duong => "lib/res/drawables/ic_dinh_duong.png";
 	String get ic_duong_huyet => "lib/res/drawables/ic_duong_huyet.png";
 	String get ic_earse => "lib/res/drawables/ic_earse.png";
@@ -128,6 +127,7 @@ class Drawables {
 	String get ic_home_excercise => "lib/res/drawables/ic_home_excercise.png";
 	String get ic_hotline => "lib/res/drawables/ic_hotline.png";
 	String get ic_huyet_ap => "lib/res/drawables/ic_huyet_ap.png";
+	String get ic_info => "lib/res/drawables/ic_info.png";
 	String get ic_kg => "lib/res/drawables/ic_kg.png";
 	String get ic_laughing => "lib/res/drawables/ic_laughing.png";
 	String get ic_line_average => "lib/res/drawables/ic_line_average.png";
@@ -153,6 +153,7 @@ class Drawables {
 	String get ic_question => "lib/res/drawables/ic_question.png";
 	String get ic_question_circle => "lib/res/drawables/ic_question_circle.png";
 	String get ic_question_circle_fill => "lib/res/drawables/ic_question_circle_fill.png";
+	String get ic_refresh => "lib/res/drawables/ic_refresh.png";
 	String get ic_remind => "lib/res/drawables/ic_remind.png";
 	String get ic_remove_excersire => "lib/res/drawables/ic_remove_excersire.png";
 	String get ic_repeat => "lib/res/drawables/ic_repeat.png";

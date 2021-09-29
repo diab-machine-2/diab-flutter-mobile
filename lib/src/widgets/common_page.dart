@@ -8,6 +8,7 @@ class CommonPage extends StatelessWidget {
   final Color? textColor;
   final Widget child;
   final VoidCallback? onTapBack;
+  final IconData? icon;
 
   const CommonPage(
       {Key? key,
@@ -15,25 +16,29 @@ class CommonPage extends StatelessWidget {
       required this.child,
       this.title,
       this.textColor,
-      this.onTapBack})
+      this.onTapBack,
+      this.icon})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BackgroundPage(
-        background: background,
-        child: SafeArea(
-          top: true,
-          child: Column(
-            children: [
-              CustomAppBar(
-                title: title ?? "",
-                textColor: textColor,
-                backCallback: onTapBack,
-              ),
-              Expanded(child: child)
-            ],
-          ),
-        ));
+      background: background,
+      child: SafeArea(
+        top: true,
+        child: Column(
+          children: [
+            CustomAppBar(
+              title: title ?? "",
+              textColor: textColor,
+              backCallback: onTapBack,
+              icon: icon,
+            ),
+            Expanded(child: child)
+          ],
+        ),
+      ),
+    );
   }
 }
+

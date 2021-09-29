@@ -157,7 +157,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                 textAlign: TextAlign.center,
                 text: TextSpan(
                   text: R.string.da_gui_otp_5_lan_cho_so_dien_thoai.tr(),
-                  style: TextStyle(color: R.color.color0xff172823, fontSize: 16),
+                  style: TextStyle(color: R.color.textDark, fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(
                         text: phone,
@@ -167,7 +167,7 @@ class _ForgotPasswordControllerState extends State<ForgotPasswordController> {
                         text:
                             R.string.dang_ky_lai_hom_sau.tr(),
                         style:
-                            TextStyle(color: R.color.color0xff172823, fontSize: 16)),
+                            TextStyle(color: R.color.textDark, fontSize: 16)),
                   ],
                 ),
               )

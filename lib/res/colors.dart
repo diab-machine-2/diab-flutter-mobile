@@ -54,6 +54,7 @@ class AppColors {
   static const color0xffFF5756 = Color(0xffFF5756);
   static const grey_2 = Color(0xff787A7D);
   static const main_6 = Color(0xFFE4F5F5);
+  static const attentionText = Color(0xffAF0000);
   static const color0xffE5E5E5 = Color(0xffE5E5E5);
   static const color0xff003F38 = Color(0xff003F38);
   static const color0xffBEC0C8 = Color(0xffBEC0C8);
@@ -84,7 +85,6 @@ class AppColors {
   static const color0xE2DB6B = Color(0xE2DB6B);
   static const color0xFFFFF7C0 = Color(0xFFFFF7C0);
   static const color0xfff5f5f5 = Color(0xfff5f5f5);
-  static const color0xff172823 = Color(0xff172823);
   static const color0xff4AAF05 = Color(0xff4AAF05);
   static const color0xff232527 = Color(0xff232527);
   static const color0xffFF5552 = Color(0xffFF5552);

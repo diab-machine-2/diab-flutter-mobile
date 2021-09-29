@@ -232,7 +232,7 @@ class _BloodSugarScheduleTemplatePageState
             width: 68.w,
             alignment: Alignment.center,
             child: Text(
-              getDayInWeekTitle(index),
+              Utils.getDayInWeekTitle(index),
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
@@ -572,11 +572,5 @@ class _BloodSugarScheduleTemplatePageState
         ],
       ),
     );
-  }
-
-  String getDayInWeekTitle(int index) {
-    if (index >= 0 && index < 6) return 'T${index + 2}';
-    if (index == 6) return 'CN';
-    return '';
   }
 }

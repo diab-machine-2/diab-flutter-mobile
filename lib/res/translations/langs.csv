@@ -564,6 +564,13 @@ update_weight,Cập nhật cân nặng,
 update_weight_description,Vui lòng cho chúng tôi biết số cân nặng của bạn trước khi nhập dữ liệu để ghi nhận chính xác hơn,
 FoodMenuScreen,============================================FoodMenu screen====================================================
 food_menu,Thực đơn mẫu,
+change_food_info,Sửa chỉ số,
+total_kcals,{} kcals,
+total_starch,{}g bột đường,
+attention,Lưu ý:,
+note,Chú thích:,
+dessert,Món tráng miệng,
+choose_alternative_dish,Chọn món ăn thay thế,
 Common,============================================Common====================================================
 huyet_ap,Huyết áp,
 duong_huyet,Đường huyết,

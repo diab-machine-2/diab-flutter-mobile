@@ -54,6 +54,7 @@ class Colors {
 	Color get color0xffFF5756 => Color(0xffFF5756);
 	Color get grey_2 => Color(0xff787A7D);
 	Color get main_6 => Color(0xFFE4F5F5);
+	Color get attentionText => Color(0xffAF0000);
 	Color get color0xffE5E5E5 => Color(0xffE5E5E5);
 	Color get color0xff003F38 => Color(0xff003F38);
 	Color get color0xffBEC0C8 => Color(0xffBEC0C8);
@@ -84,7 +85,6 @@ class Colors {
 	Color get color0xE2DB6B => Color(0xE2DB6B);
 	Color get color0xFFFFF7C0 => Color(0xFFFFF7C0);
 	Color get color0xfff5f5f5 => Color(0xfff5f5f5);
-	Color get color0xff172823 => Color(0xff172823);
 	Color get color0xff4AAF05 => Color(0xff4AAF05);
 	Color get color0xff232527 => Color(0xff232527);
 	Color get color0xffFF5552 => Color(0xffFF5552);

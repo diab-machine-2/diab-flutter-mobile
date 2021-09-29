@@ -397,4 +397,10 @@ class Utils {
   //     FlutterAppBadger.updateBadgeCount(count);
   //   }
   // }
+
+  static String getDayInWeekTitle(int index) {
+    if (index >= 0 && index < 6) return 'T${index + 2}';
+    if (index == 6) return 'CN';
+    return '';
+  }
 }

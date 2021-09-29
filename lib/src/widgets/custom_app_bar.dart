@@ -13,6 +13,7 @@ class CustomAppBar extends StatelessWidget {
   final bool isShowBack;
   final VoidCallback? backCallback;
   final Widget? rightWidget;
+  final IconData? icon;
 
   CustomAppBar(
       {required this.title,
@@ -22,7 +23,8 @@ class CustomAppBar extends StatelessWidget {
       this.rightWidget,
       this.titleSize,
       this.iconSize,
-      this.paddingVertical});
+      this.paddingVertical,
+      this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,7 @@ class CustomAppBar extends StatelessWidget {
               child: Padding(
                   padding: EdgeInsets.only(right: 10.h),
                   child: Icon(
-                    CupertinoIcons.arrow_left,
+                    icon ?? CupertinoIcons.arrow_left,
                     color: textColor ?? R.color.textDark,
                     size: iconSize ?? 25.h,
                   )),

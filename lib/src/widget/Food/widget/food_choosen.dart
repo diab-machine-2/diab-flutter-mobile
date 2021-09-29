@@ -184,7 +184,7 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                                         Text(
                                             '${R.string.da_an.tr()} ${roundAsFixed(foods[index].portion * foods[index].quantity)} ${foods[index].unit}, ${formatNumber(foods[index].quantity * foods[index].calorie!)} ${R.string.kcal.tr()}',
                                             style: TextStyle(
-                                                color: R.color.color0xff172823,
+                                                color: R.color.textDark,
                                                 fontWeight: FontWeight.w400))
                                       ],
                                     ),
