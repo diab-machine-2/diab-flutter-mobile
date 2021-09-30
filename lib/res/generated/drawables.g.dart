@@ -195,6 +195,7 @@ class Drawables {
 	String get img_des_person => "lib/res/drawables/img_des_person.png";
 	String get img_email_support => "lib/res/drawables/img_email_support.png";
 	String get img_emotion_empty => "lib/res/drawables/img_emotion_empty.png";
+	String get img_empty_food_suggestion => "lib/res/drawables/img_empty_food_suggestion.png";
 	String get img_excerise_calo_empty => "lib/res/drawables/img_excerise_calo_empty.png";
 	String get img_excerise_trend_empty => "lib/res/drawables/img_excerise_trend_empty.png";
 	String get img_favorite_food_empty => "lib/res/drawables/img_favorite_food_empty.png";

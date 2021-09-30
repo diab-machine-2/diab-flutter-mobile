@@ -573,6 +573,8 @@ class Strings {
 	String get note => 'note';
 	String get dessert => 'dessert';
 	String get choose_alternative_dish => 'choose_alternative_dish';
+	String get food_quantity_recommand => 'food_quantity_recommand';
+	String get for_this_food => 'for_this_food';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';
@@ -631,6 +633,7 @@ class Strings {
 	String get ngay_sinh => 'ngay_sinh';
 	String get nam_phat_hien_benh => 'nam_phat_hien_benh';
 	String get kg => 'kg';
+	String get gram => 'gram';
 	String get cm => 'cm';
 	String get ban_chua_nhap_ghi_chu => 'ban_chua_nhap_ghi_chu';
 	String get tiep_tuc => 'tiep_tuc';
