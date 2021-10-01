@@ -36,8 +36,8 @@ class CategoryMenuCubit extends Cubit<CategoryMenuState> {
     }
   }
 
-  Future<void> likeFood({FoodModel? foodModel}) async {
-    if (foodModel == null) return;
+  Future<void> toogleFavorite(int foodModelIndex) async {
+    final FoodModel foodModel = foods[foodModelIndex];
     emit(const CategoryMenuLoading());
     try {
       if (!foodModel.liked!) {
@@ -45,17 +45,13 @@ class CategoryMenuCubit extends Cubit<CategoryMenuState> {
       } else {
         await FoodClient().romoveFoodFromFavorite(foodModel.id);
       }
-      await fetchFoodCategory();
+      foods[foodModelIndex] = foodModel.copyWith(liked: !foodModel.liked!);
       emit(const CategoryMenuSuccess());
     } catch (e, _) {
       if (e is Error) {
         emit(CategoryMenuFailure('$e'));
       } else {
-        emit(
-          CategoryMenuFailure(
-            R.string.error_can_not_connect_to_server.tr(),
-          ),
-        );
+        emit(CategoryMenuFailure(R.string.error_can_not_connect_to_server.tr()));
       }
     }
   }

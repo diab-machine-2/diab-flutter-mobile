@@ -12,7 +12,10 @@ import '../change_menu/widgets/food_item_widget.dart';
 import 'category_menu.dart';
 
 class CategoryMenuPage extends StatefulWidget {
-  const CategoryMenuPage({required this.category, required this.onTapYes,});
+  const CategoryMenuPage({
+    required this.category,
+    required this.onTapYes,
+  });
 
   final FoodSubCategoryModel category;
   final Function(FoodModel foodModel) onTapYes;
@@ -93,13 +96,14 @@ class _CategoryMenuPageState extends State<CategoryMenuPage> {
                               return FoodItemWidget(
                                 model: _cubit.foods[index],
                                 onFavorite: () {
-                                  _cubit.likeFood(
-                                    foodModel: _cubit.foods[index],
+                                  _cubit.toogleFavorite(
+                                    index,
                                   );
                                 },
                                 onTapYes: () {
                                   widget.onTapYes(_cubit.foods[index]);
-                                  NavigationUtil.pop(context);                                },
+                                  NavigationUtil.pop(context);
+                                },
                               );
                             },
                           ),

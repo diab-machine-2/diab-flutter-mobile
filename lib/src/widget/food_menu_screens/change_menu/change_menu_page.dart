@@ -8,11 +8,11 @@ import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/food_menu_screens/seach_food/search_food.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/stack_loading_view.dart';
 
 import '../category_menu/category_menu.dart';
+import '../seach_food/search_food.dart';
 import 'change_menu.dart';
 import 'models/tab_item_enum.dart';
 import 'widgets/food_item_widget.dart';
@@ -166,7 +166,9 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
     required VoidCallback onRefresh,
   }) {
     return RefreshIndicator(
-      onRefresh: () async => onRefresh,
+      onRefresh: () async {
+        onRefresh.call();
+      },
       child: ListView.separated(
         padding: const EdgeInsets.all(0),
         itemCount: foods.isEmpty ? 1 : foods.length,
@@ -199,7 +201,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
             return FoodItemWidget(
               model: foods[index],
               onFavorite: () {
-                _cubit.likeFood(foodModel: foods[index]);
+                _cubit.toogleFavorite(index);
               },
               onTapYes: () {
                 _cubit.onChoseFood(foodModel: foods[index]);

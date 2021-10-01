@@ -97,9 +97,24 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
       }
     }
   }
-
-  Future<void> likeFood({FoodModel? foodModel}) async {
-    if (foodModel == null) return;
+  
+  Future<void> toogleFavorite(int foodModelIndex) async {
+    late List<FoodModel> foods;
+    switch (currentTab) {
+      case TabItem.suggest:
+        foods = suggestFoods;
+        break;
+      case TabItem.recently:
+        foods = recentlyFoods;
+        break;
+      case TabItem.favorite:
+        foods = favoriteFoods;
+        break;
+      default:
+        foods = [];
+    }
+    if (foodModelIndex < 0 || foodModelIndex >= foods.length) return;
+    final FoodModel foodModel = foods[foodModelIndex];
     emit(const ChangeMenuLoading());
     try {
       if (!foodModel.liked!) {
@@ -107,7 +122,7 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
       } else {
         await FoodClient().romoveFoodFromFavorite(foodModel.id);
       }
-      await refreshTab();
+      foods[foodModelIndex] = foodModel.copyWith(liked: !foodModel.liked!);
       emit(const ChangeMenuSuccess());
     } catch (e, _) {
       if (e is Error) {
