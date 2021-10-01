@@ -6,10 +6,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/food_menu_screens/change_menu/change_menu.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/stack_loading_view.dart';
 
+import '../change_menu/change_menu.dart';
+import 'day_in_week_buttons.dart';
 import 'food_menu.dart';
 
 class FoodMenuPage extends StatefulWidget {
@@ -21,109 +22,112 @@ class FoodMenuPage extends StatefulWidget {
 
 class _FoodMenuPageState extends State<FoodMenuPage> {
   late final FoodMenuCubit _cubit;
-  int _selectedDay = 0;
   @override
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = FoodMenuCubit(appRepository);
+    _cubit.getTemplateDetail();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CommonPage(
-        title: R.string.food_menu.tr(),
-        background: R.drawable.bg_detail_pro,
-        child: BlocProvider(
-          create: (context) => _cubit,
-          child: BlocConsumer<FoodMenuCubit, FoodMenuState>(
-            listener: (context, state) {},
-            builder: (context, state) {
-              return SafeArea(
-                child: Column(
-                  children: [
-                    _buildTitle(title: 'Thực đơn Dành cho Gymer 65Kg'),
-                    _buildSelectDayButtonList(
-                        selectedIndex: _selectedDay,
-                        onSlectDay: (dayIndex) {
-                          setState(() {
-                            _selectedDay = dayIndex;
-                          });
-                        }),
-                    //Divider
-                    Container(
-                      margin: EdgeInsets.only(top: 10.h),
-                      color: R.color.color0xffE5E5E5,
-                      height: 1,
-                      width: double.infinity,
-                    ),
-                    Expanded(
-                      child: ListView(
-                        padding: EdgeInsets.fromLTRB(16.w, 0, 16.h, 32.h),
+      body: BlocProvider(
+        create: (context) => _cubit,
+        child: BlocConsumer<FoodMenuCubit, FoodMenuState>(
+          listener: (context, state) {},
+          builder: (context, state) {
+            return StackLoadingView(
+              visibleLoading: state is FoodMenuLoading,
+              child: CommonPage(
+                title: R.string.food_menu.tr(),
+                background: R.drawable.bg_detail_pro,
+                child: _cubit.listDayFood.isEmpty
+                    ? const SizedBox()
+                    : Column(
                         children: [
-                          _buildMealWidget(
-                            mealName: 'Sáng',
-                            totalKcal: 100,
-                            totalStarch: 150,
-                            onChangeFood: (){
-                              NavigationUtil.navigatePage(context, const ChangeMenuPage());
-                            }
+                          _buildTitle(title: 'Thực đơn Dành cho Gymer 65Kg'),
+                          DayInWeekButtons(
+                              initDay: _cubit.currentDayInWeek,
+                              onSlectDay: (dayIndex) {
+                                _cubit.onChangeDay(dayIndex);
+                                setState(() {});
+                              }),
+                          //Divider
+                          Container(
+                            margin: EdgeInsets.only(top: 10.h),
+                            color: R.color.color0xffE5E5E5,
+                            height: 1,
+                            width: double.infinity,
                           ),
-                          _buildMealWidget(
-                            mealName: 'Trưa',
-                            totalKcal: 100,
-                            totalStarch: 150,
-                          ),
-                          _buildMealWidget(
-                            mealName: 'Tối',
-                            totalKcal: 100,
-                            totalStarch: 150,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 18.w,
-                        vertical: 10.h,
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            R.drawable.ic_info,
-                            width: 24,
-                            height: 24,
-                          ),
-                          const SizedBox(width: 8),
                           Expanded(
-                            child: RichText(
-                              text: TextSpan(
-                                text: '${R.string.note.tr()} ',
-                                style: TextStyle(
-                                    color: R.color.textDark,
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w700),
-                                children: [
-                                  TextSpan(
-                                    text: 'Gia vị nên được nêm vừa phải',
-                                    style: TextStyle(
-                                        color: R.color.textDark,
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w400),
-                                  )
-                                ],
-                              ),
+                            child: ListView(
+                              padding: EdgeInsets.fromLTRB(16.w, 0, 16.h, 32.h),
+                              children: [
+                                _buildMealWidget(
+                                    mealName: 'Sáng',
+                                    totalKcal: 100,
+                                    totalStarch: 150,
+                                    onChangeFood: () {
+                                      NavigationUtil.navigatePage(
+                                          context, const ChangeMenuPage());
+                                    }),
+                                _buildMealWidget(
+                                  mealName: 'Trưa',
+                                  totalKcal: 100,
+                                  totalStarch: 150,
+                                ),
+                                _buildMealWidget(
+                                  mealName: 'Tối',
+                                  totalKcal: 100,
+                                  totalStarch: 150,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 33.h,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        R.drawable.ic_info,
+                                        width: 24,
+                                        height: 24,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            text: '${R.string.note.tr()} ',
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w700),
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    'Gia vị nên được nêm vừa phải',
+                                                style: TextStyle(
+                                                    color: R.color.textDark,
+                                                    fontSize: 16.sp,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -171,54 +175,6 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSelectDayButtonList({
-    required int selectedIndex,
-    required Function(int index) onSlectDay,
-  }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(7, (index) {
-          return _buildDayOfTheWeekSingleButton(
-              dayTitle: Utils.getDayInWeekTitle(index),
-              isSelected: index == selectedIndex,
-              onTap: () {
-                onSlectDay(index);
-              });
-        }),
-      ),
-    );
-  }
-
-  Widget _buildDayOfTheWeekSingleButton({
-    required String dayTitle,
-    required bool isSelected,
-    VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(8.w),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: isSelected ? R.color.mainColor : R.color.grayBorder,
-          ),
-          color: isSelected ? R.color.main_6 : Colors.transparent,
-        ),
-        child: Text(
-          dayTitle,
-          style: TextStyle(
-            color: isSelected ? R.color.mainColor : R.color.primaryGreyColor,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
       ),
     );
   }
@@ -284,13 +240,15 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             ),
           ),
           Visibility(
-            visible: _selectedDay > 0,
+            visible: _cubit.currentDayInWeek > 0,
             child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 16.w),
                 height: 1,
                 color: R.color.notActiveGreen),
           ),
-          ..._buildListFoodWidget(numberOfFood: _selectedDay, onChangeFood: onChangeFood),
+          ..._buildListFoodWidget(
+              numberOfFood: _cubit.currentDayInWeek,
+              onChangeFood: onChangeFood),
         ],
       ),
     );

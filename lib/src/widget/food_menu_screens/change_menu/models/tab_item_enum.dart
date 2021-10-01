@@ -8,25 +8,6 @@ enum TabItem {
 }
 
 extension TabItemDetail on TabItem {
-  Widget get tab {
-    switch (this) {
-      case TabItem.suggest:
-        //TODO: Tuyen add SuggestFoodWidget
-        return Container(color: Colors.red);
-      case TabItem.recently:
-        //TODO: Tuyen add RecentlyFoodWidget
-        return Container(color: Colors.blue);
-      case TabItem.favorite:
-        //TODO: Tuyen add FavoriteFoodWidget
-        return Container(color: Colors.orange);
-      case TabItem.category:
-        //TODO: Tuyen add CategoryFoodWidget
-        return Container(color: Colors.green);
-      default:
-        return Container();
-    }
-  }
-
   int get tabIndex {
     switch (this) {
       case TabItem.suggest:

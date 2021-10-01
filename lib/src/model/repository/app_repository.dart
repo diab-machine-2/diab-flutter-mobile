@@ -7,6 +7,7 @@ import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
+import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -111,4 +112,14 @@ class AppRepository {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
+
+  Future<ApiResult<MenuResponse>> getGetUserFoodMenu() async {
+    try {
+      final MenuResponse response = await appClient.getGetUserFoodMenu();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+  
 }

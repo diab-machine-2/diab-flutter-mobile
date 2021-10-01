@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:medical/src/model/response/menu_response.dart';
 import 'request/send_interest_request.dart';
 import 'response/diabetes_status_response.dart';
 import 'response/latest_hba1c_input_response.dart';
@@ -57,4 +58,7 @@ abstract class AppApi {
     @Query("page") int? page,
     @Query("size") int? size,
   );
+
+  @GET("App/PatientFoodMenu/GetUserFoodMenu")
+  Future<MenuResponse> getGetUserFoodMenu();
 }
