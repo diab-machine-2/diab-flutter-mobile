@@ -575,6 +575,7 @@ class Strings {
 	String get choose_alternative_dish => 'choose_alternative_dish';
 	String get food_quantity_recommand => 'food_quantity_recommand';
 	String get for_this_food => 'for_this_food';
+	String get suggest_food_empty => 'suggest_food_empty';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';

@@ -8,7 +8,7 @@ import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/Food/widget/search_food.dart';
+import 'package:medical/src/widget/food_menu_screens/seach_food/search_food.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/stack_loading_view.dart';
 
@@ -77,8 +77,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
                           _buildTab(
                             foods: _cubit.suggestFoods,
                             emptyImage: R.drawable.img_empty_food_suggestion,
-                            emptyText:
-                                'Rất tiếc! Chúng tôi chưa tìm được món ăn phù hợp để gợi ý cho bạn!',
+                            emptyText: R.string.suggest_food_empty.tr(),
                             onRefresh: () {
                               _cubit.fetchSuggestFood();
                             },
@@ -121,15 +120,14 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
       ),
       child: GestureDetector(
         onTap: () async {
-          await Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  fullscreenDialog: true,
-                  builder: (BuildContext context) {
-                    return SearchFood(
-                      foods: const [],
-                    );
-                  }));
+          await NavigationUtil.navigatePage(
+            context,
+            SeachFoodPage(
+              onTapYes: (foodModel) {
+                _cubit.onChoseFood(foodModel: foodModel);
+              },
+            ),
+          );
         },
         child: Container(
           height: 48,
@@ -142,9 +140,17 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(R.string.tim_kiem_mon_an.tr(),
-                    style: TextStyle(color: R.color.primaryGreyColor)),
-                Image.asset(R.drawable.ic_search, width: 24, height: 24)
+                Text(
+                  R.string.tim_kiem_mon_an.tr(),
+                  style: TextStyle(
+                    color: R.color.primaryGreyColor,
+                  ),
+                ),
+                Image.asset(
+                  R.drawable.ic_search,
+                  width: 24,
+                  height: 24,
+                )
               ],
             ),
           ),

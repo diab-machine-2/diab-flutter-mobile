@@ -64,6 +64,43 @@ class FoodModel {
     return items.map((item) => FoodModel.fromJson(item)).toList();
   }
 
+  FoodModel copyWith({
+    String? id,
+    String? name,
+    double? portion,
+    String? unit,
+    double? calorie,
+    double? glucose,
+    double? lipid,
+    double? protein,
+    double? fibre,
+    ImagesModel? image,
+    bool? liked,
+    String? text,
+    String? description,
+    String? foodCategoryId,
+    double? quantity,
+  }) {
+    return FoodModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      portion: portion ?? this.portion,
+      unit: unit ?? this.unit,
+      calorie: calorie ?? this.calorie,
+      glucose: glucose ?? this.glucose,
+      lipid: lipid ?? this.lipid,
+      protein: protein ?? this.protein,
+      fibre: fibre ?? this.fibre,
+      image: image ?? this.image,
+      liked: liked ?? this.liked,
+      text: text ?? this.text,
+      description: description ?? this.description,
+      foodCategoryId: foodCategoryId ?? this.foodCategoryId,
+      quantity: quantity ?? this.quantity,
+    );
+  }
+  
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,

@@ -573,6 +573,7 @@ dessert,Món tráng miệng,
 choose_alternative_dish,Chọn món ăn thay thế,
 food_quantity_recommand,"Để phù hợp với thực đơn mẫu, bạn nên ăn",
 for_this_food,cho khẩu phần này,
+suggest_food_empty,"Rất tiếc! Chúng tôi chưa tìm được món ăn phù hợp để gợi ý cho bạn!"
 Common,============================================Common====================================================
 huyet_ap,Huyết áp,
 duong_huyet,Đường huyết,
