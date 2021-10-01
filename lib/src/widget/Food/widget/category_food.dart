@@ -36,43 +36,22 @@ class _CategoryFoodState extends State<CategoryFood>
 
     selectedFoods = [...SearchFoodController.of(context)!.selectedFoods];
     Observable.instance.addObserver(this);
-    // DartNotificationCenter.subscribe(
-    //     channel: 'add_food_to_cart',
-    //     observer: this,
-    //     onNotification: (food) {
-    //       setState(() {
-    //         this.selectedFoods.removeWhere((element) => food.id == element!.id);
-    //         this.selectedFoods.add(food);
-    //       });
-    //     });
-    //
-    // DartNotificationCenter.subscribe(
-    //     channel: 'remove_food_from_cart',
-    //     observer: this,
-    //     onNotification: (food) {
-    //       if (food is FoodModel) {
-    //         setState(() {
-    //           selectedFoods.removeWhere((element) => element!.id == food.id);
-    //         });
-    //       }
-    //     });
   }
 
   @override
   void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? food) {
-    // TODO: implement update
-    var firstValue = food?.values.first;
-    if (notifyName == 'add_food_to_cart') {
-      if (firstValue is FoodModel) {
-        this.selectedFoods.removeWhere((element) => firstValue.id == element.id);
-        this.selectedFoods.add(firstValue);
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    final FoodModel? selectedModel = map?['food'];
+    if (selectedModel != null) {
+      if (notifyName == 'add_food_to_cart') {
+        this
+            .selectedFoods
+            .removeWhere((element) => selectedModel.id == element.id);
+        this.selectedFoods.add(selectedModel);
         setState(() {});
       }
-    }
-    if (notifyName == 'remove_food_from_cart') {
-      if (firstValue is FoodModel) {
-        selectedFoods.removeWhere((element) => firstValue.id == element.id);
+      if (notifyName == 'remove_food_from_cart') {
+        selectedFoods.removeWhere((element) => selectedModel.id == element.id);
         setState(() {});
       }
     }
@@ -81,10 +60,6 @@ class _CategoryFoodState extends State<CategoryFood>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'add_food_to_cart', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'remove_food_from_cart', observer: this);
     super.dispose();
   }
 
@@ -139,7 +114,8 @@ class _CategoryFoodState extends State<CategoryFood>
                                 separatorBuilder:
                                     (BuildContext context, int index) {
                                   return Container(
-                                      height: 1, color: R.color.color0xffE5E5E5);
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5);
                                 },
                                 itemBuilder: (BuildContext context, int index) {
                                   // final selectedIndex =
@@ -169,10 +145,10 @@ class _CategoryFoodState extends State<CategoryFood>
                                                 ? R.color.color0xFFC3E8D3
                                                 : R.color.transparent,
                                             border: Border.all(
-                                                color:
-                                                    foodOfCategory.length != 0
-                                                        ? R.color.color0xff72CB9C
-                                                        : R.color.transparent)),
+                                                color: foodOfCategory.length !=
+                                                        0
+                                                    ? R.color.color0xff72CB9C
+                                                    : R.color.transparent)),
                                         padding: EdgeInsets.only(
                                             left: 16,
                                             right: 16,

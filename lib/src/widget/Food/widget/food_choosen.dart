@@ -27,30 +27,17 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
     foods = [...widget.foods!];
     calculatorCalo();
     Observable.instance.addObserver(this);
-    // DartNotificationCenter.subscribe(
-    //     channel: 'add_food_to_cart',
-    //     observer: this,
-    //     onNotification: (data) {
-    //       if (data is FoodModel) {
-    //         setState(() {
-    //           this.foods.removeWhere((element) => data.id == element.id);
-    //           this.foods.add(data);
-    //           calculatorCalo();
-    //         });
-    //       }
-    //     });
   }
 
   @override
   void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? food) {
-    // TODO: implement update
-    var firstValue = food?.values.first;
-    if (notifyName == 'add_food_to_cart') {
-      if (firstValue is FoodModel) {
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    final FoodModel foodModel = map?['food'];
+    if (foodModel != null) {
+      if (notifyName == 'add_food_to_cart') {
         setState(() {
-          this.foods.removeWhere((element) => firstValue.id == element.id);
-          this.foods.add(firstValue);
+          this.foods.removeWhere((element) => foodModel.id == element.id);
+          this.foods.add(foodModel);
           calculatorCalo();
         });
       }
@@ -60,8 +47,6 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'add_food_to_cart', observer: this);
     super.dispose();
   }
 
@@ -192,10 +177,9 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                                   SizedBox(width: 8),
                                   GestureDetector(
                                     onTap: () {
-                                      Observable.instance.notifyObservers([], notifyName : "remove_food_from_cart");
-                                      // DartNotificationCenter.post(
-                                      //     channel: 'remove_food_from_cart',
-                                      //     options: foods[index]);
+                                      Observable.instance.notifyObservers([], notifyName : "remove_food_from_cart", map: {
+                                    "food": foods[index]
+                                  });
                                       setState(() {
                                         foods.removeAt(index);
                                         showAll = foods.length != 0;

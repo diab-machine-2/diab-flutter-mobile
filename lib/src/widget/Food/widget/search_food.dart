@@ -37,31 +37,15 @@ class _SearchFoodState extends State<SearchFood> with Observer {
     controller.text = '';
     selectedFoods = [...widget.foods];
     Observable.instance.addObserver(this);
-    // DartNotificationCenter.subscribe(
-    //     channel: 'add_food_to_favorite',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       refresh();
-    //     });
-
-    // DartNotificationCenter.subscribe(
-    //     channel: 'add_food_to_cart',
-    //     observer: this,
-    //     onNotification: (food) {
-    //       setState(() {
-    //         this.selectedFoods.add(food);
-    //       });
-    //     });
   }
 
   @override
   void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? food) {
-    // TODO: implement update
-    var firstValue = food?.values.first;
-    if (notifyName == 'add_food_to_cart') {
-      if (firstValue is FoodModel) {
-        this.selectedFoods.add(firstValue);
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    final FoodModel foodModel = map?['food'];
+    if (foodModel != null) {
+      if (notifyName == 'add_food_to_cart') {
+        this.selectedFoods.add(foodModel);
         setState(() {});
       }
     }
@@ -70,10 +54,6 @@ class _SearchFoodState extends State<SearchFood> with Observer {
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'add_food_to_favorite', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'add_food_to_cart', observer: this);
     super.dispose();
   }
 

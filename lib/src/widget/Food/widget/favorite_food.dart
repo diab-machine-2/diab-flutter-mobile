@@ -28,42 +28,23 @@ class FavoriteFoodState extends State<FavoriteFood>
     super.initState();
     selectedFoods = [...widget.foods];
     Observable.instance.addObserver(this);
-    // DartNotificationCenter.subscribe(
-    //     channel: 'add_food_to_cart',
-    //     observer: this,
-    //     onNotification: (food) {
-    //       setState(() {
-    //         this.selectedFoods.removeWhere((element) => food.id == element!.id);
-    //         this.selectedFoods.add(food);
-    //       });
-    //     });
-    //
-    // DartNotificationCenter.subscribe(
-    //     channel: 'remove_food_from_cart',
-    //     observer: this,
-    //     onNotification: (food) {
-    //       if (food is FoodModel) {
-    //         setState(() {
-    //           selectedFoods.removeWhere((element) => element!.id == food.id);
-    //         });
-    //       }
-    //     });
   }
 
   @override
   void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? food) {
-    // TODO: implement update
-    var firstValue = food?.values.first;
-    if (notifyName == 'add_food_to_cart') {
-      if (firstValue is FoodModel) {
-        this.selectedFoods.removeWhere((element) => firstValue.id == element.id);
-        this.selectedFoods.add(firstValue);
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    final FoodModel? selectedModel = map?['food'];
+    if (selectedModel != null) {
+      if (notifyName == 'add_food_to_cart') {
+        this
+            .selectedFoods
+            .removeWhere((element) => selectedModel.id == element.id);
+        this.selectedFoods.add(selectedModel);
+        setState(() {});
       }
-    }
-    if (notifyName == 'remove_food_from_cart') {
-      if (firstValue is FoodModel) {
-        selectedFoods.removeWhere((element) => firstValue.id == element.id);
+      if (notifyName == 'remove_food_from_cart') {
+        selectedFoods.removeWhere((element) => selectedModel.id == element.id);
+        setState(() {});
       }
     }
   }
@@ -71,10 +52,6 @@ class FavoriteFoodState extends State<FavoriteFood>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'add_food_to_cart', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'remove_food_from_cart', observer: this);
     super.dispose();
   }
 

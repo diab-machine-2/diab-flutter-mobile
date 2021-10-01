@@ -271,42 +271,27 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                     context, R.string.ban_chua_nhap_du_lieu.tr());
                                 return;
                               }
-                              Observable.instance.notifyObservers([], notifyName : "add_food_to_cart", map: FoodModel(
-                                  id: widget.model!.id,
-                                  name: widget.model!.name,
-                                  portion: widget.model!.portion,
-                                  unit: widget.model!.unit,
-                                  calorie: widget.model!.calorie,
-                                  glucose: widget.model!.glucose,
-                                  lipid: widget.model!.lipid,
-                                  protein: widget.model!.protein,
-                                  fibre: widget.model!.fibre,
-                                  image: widget.model!.image,
-                                  liked: widget.model!.liked,
-                                  text: widget.model!.text,
-                                  description: widget.model!.description,
-                                  foodCategoryId:
-                                  widget.model!.foodCategoryId,
-                                  quantity: quantity).toJson());
-                              // DartNotificationCenter.post(
-                              //     channel: 'add_food_to_cart',
-                              //     options: FoodModel(
-                              //         id: widget.model!.id,
-                              //         name: widget.model!.name,
-                              //         portion: widget.model!.portion,
-                              //         unit: widget.model!.unit,
-                              //         calorie: widget.model!.calorie,
-                              //         glucose: widget.model!.glucose,
-                              //         lipid: widget.model!.lipid,
-                              //         protein: widget.model!.protein,
-                              //         fibre: widget.model!.fibre,
-                              //         image: widget.model!.image,
-                              //         liked: widget.model!.liked,
-                              //         text: widget.model!.text,
-                              //         description: widget.model!.description,
-                              //         foodCategoryId:
-                              //             widget.model!.foodCategoryId,
-                              //         quantity: quantity));
+                              Observable.instance.notifyObservers([],
+                                  notifyName: "add_food_to_cart",
+                                  map: {
+                                    "food": FoodModel(
+                                        id: widget.model!.id,
+                                        name: widget.model!.name,
+                                        portion: widget.model!.portion,
+                                        unit: widget.model!.unit,
+                                        calorie: widget.model!.calorie,
+                                        glucose: widget.model!.glucose,
+                                        lipid: widget.model!.lipid,
+                                        protein: widget.model!.protein,
+                                        fibre: widget.model!.fibre,
+                                        image: widget.model!.image,
+                                        liked: widget.model!.liked,
+                                        text: widget.model!.text,
+                                        description: widget.model!.description,
+                                        foodCategoryId:
+                                            widget.model!.foodCategoryId,
+                                        quantity: quantity)
+                                  });
                               Navigator.pop(context);
                             },
                             child: Container(
