@@ -27,7 +27,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = FoodMenuCubit(appRepository);
-    _cubit.getTemplateDetail();
+    // _cubit.getTemplateDetail();
   }
 
   @override
@@ -43,81 +43,78 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               child: CommonPage(
                 title: R.string.food_menu.tr(),
                 background: R.drawable.bg_detail_pro,
-                child: _cubit.listDayFood.isEmpty
-                    ? const SizedBox()
-                    : Column(
+                child: Column(
+                  children: [
+                    _buildTitle(title: 'Thực đơn Dành cho Gymer 65Kg'),
+                    DayInWeekButtons(
+                        initDay: _cubit.currentDayInWeek,
+                        onSlectDay: (dayIndex) {
+                          _cubit.onChangeDay(dayIndex);
+                          setState(() {});
+                        }),
+                    //Divider
+                    Container(
+                      margin: EdgeInsets.only(top: 10.h),
+                      color: R.color.color0xffE5E5E5,
+                      height: 1,
+                      width: double.infinity,
+                    ),
+                    Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.fromLTRB(16.w, 0, 16.h, 32.h),
                         children: [
-                          _buildTitle(title: 'Thực đơn Dành cho Gymer 65Kg'),
-                          DayInWeekButtons(
-                              initDay: _cubit.currentDayInWeek,
-                              onSlectDay: (dayIndex) {
-                                _cubit.onChangeDay(dayIndex);
-                                setState(() {});
-                              }),
-                          //Divider
-                          Container(
-                            margin: EdgeInsets.only(top: 10.h),
-                            color: R.color.color0xffE5E5E5,
-                            height: 1,
-                            width: double.infinity,
-                          ),
-                          Expanded(
-                            child: ListView(
-                              padding: EdgeInsets.fromLTRB(16.w, 0, 16.h, 32.h),
-                              children: [
-                                _buildMealWidget(
-                                    mealName: 'Sáng',
-                                    totalKcal: 100,
-                                    totalStarch: 150,
-                                    onChangeFood: () {
-                                      NavigationUtil.navigatePage(
-                                          context, const ChangeMenuPage());
-                                    }),
-                                _buildMealWidget(
-                                  mealName: 'Trưa',
-                                  totalKcal: 100,
-                                  totalStarch: 150,
-                                ),
-                                _buildMealWidget(
-                                  mealName: 'Tối',
-                                  totalKcal: 100,
-                                  totalStarch: 150,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 33.h,
+                          _buildMealWidget(
+                              mealName: 'Sáng',
+                              totalKcal: 100,
+                              totalStarch: 150,
+                              onChangeFood: () {
+                                NavigationUtil.navigatePage(
+                                  context,
+                                  const ChangeMenuPage(
+                                    hasSelectQuantity: false,
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Image.asset(
-                                        R.drawable.ic_info,
-                                        width: 24,
-                                        height: 24,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: RichText(
-                                          text: TextSpan(
-                                            text: '${R.string.note.tr()} ',
-                                            style: TextStyle(
-                                                color: R.color.textDark,
-                                                fontSize: 16.sp,
-                                                fontWeight: FontWeight.w700),
-                                            children: [
-                                              TextSpan(
-                                                text:
-                                                    'Gia vị nên được nêm vừa phải',
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontSize: 16.sp,
-                                                    fontWeight:
-                                                        FontWeight.w400),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                );
+                              }),
+                          _buildMealWidget(
+                            mealName: 'Trưa',
+                            totalKcal: 100,
+                            totalStarch: 150,
+                          ),
+                          _buildMealWidget(
+                            mealName: 'Tối',
+                            totalKcal: 100,
+                            totalStarch: 150,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 33.h,
+                            ),
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  R.drawable.ic_info,
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      text: '${R.string.note.tr()} ',
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w700),
+                                      children: [
+                                        TextSpan(
+                                          text: 'Gia vị nên được nêm vừa phải',
+                                          style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontSize: 16.sp,
+                                              fontWeight: FontWeight.w400),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -125,6 +122,9 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                           ),
                         ],
                       ),
+                    ),
+                  ],
+                ),
               ),
             );
           },

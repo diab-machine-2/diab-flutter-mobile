@@ -97,7 +97,7 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
       }
     }
   }
-  
+
   Future<void> toogleFavorite(int foodModelIndex) async {
     late List<FoodModel> foods;
     switch (currentTab) {
@@ -133,9 +133,15 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
     }
   }
 
-  Future<void> onChoseFood({required FoodModel foodModel}) async {
-    emit(const ChangeMenuLoading());
-    await Future.delayed(const Duration(seconds: 2));
+  Future<void> onChoseFood({
+    required FoodModel foodModel,
+    required bool hasSelectQuantity,
+  }) async {
+    selectedFood = foodModel;
+    if (!hasSelectQuantity) {
+      emit(const ChangeMenuLoading());
+      await Future.delayed(const Duration(seconds: 2));
+    }
     emit(const ChangeMenuDone());
   }
 }

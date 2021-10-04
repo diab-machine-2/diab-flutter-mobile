@@ -15,12 +15,14 @@ import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/food/food_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/add_bloodSugar.dart';
 import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/Food/widget/time_frame_food.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/food_menu_screens/change_menu/change_menu_page.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -383,67 +385,79 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                             (BuildContext context, int index) {
                                           return Container(
                                             color: R.color.transparent,
-                                            padding: EdgeInsets.only(
-                                                bottom: 12, top: 12),
+                                            padding: const EdgeInsets.only(
+                                              bottom: 12,
+                                              top: 12,
+                                            ),
                                             child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
                                               children: [
+                                                Image.network(
+                                                  selectedFoods[index]
+                                                          .image!
+                                                          .url ??
+                                                      '',
+                                                  width: 50,
+                                                  height: 50,
+                                                ),
                                                 Expanded(
-                                                  child: Row(
-                                                    children: [
-                                                      Image.network(
-                                                        selectedFoods[index]
-                                                                .image!
-                                                                .url ??
-                                                            '',
-                                                        width: 50,
-                                                        height: 50,
-                                                      ),
-                                                      SizedBox(
-                                                        width: 8,
-                                                      ),
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                                selectedFoods[
-                                                                        index]
-                                                                    .name!,
-                                                                style: TextStyle(
-                                                                    color:
-                                                                        R.color.textDark,
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700)),
-                                                            SizedBox(
-                                                              height: 4,
-                                                            ),
-                                                            Text(
-                                                                '${R.string.da_an.tr()} ${roundAsFixed(selectedFoods[index].portion * selectedFoods[index].quantity)} ${selectedFoods[index].unit}, ${formatNumber(selectedFoods[index].quantity * selectedFoods[index].calorie!)} ${R.string.kcal.tr()}',
-                                                                style: TextStyle(
-                                                                    color:
-                                                                        R.color.textDark,
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400))
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 8),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                            selectedFoods[index]
+                                                                .name!,
+                                                            style: TextStyle(
+                                                                color: R.color
+                                                                    .textDark,
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700)),
+                                                        const SizedBox(
+                                                            height: 4),
+                                                        Text(
+                                                          '${R.string.da_an.tr()} ${roundAsFixed(selectedFoods[index].portion * selectedFoods[index].quantity)} ${selectedFoods[index].unit}, ${formatNumber(selectedFoods[index].quantity * selectedFoods[index].calorie!)} ${R.string.kcal.tr()}',
+                                                          style: TextStyle(
+                                                              color: R.color
+                                                                  .textDark,
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                        )
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
-                                                SizedBox(
-                                                  width: 8,
+                                                GestureDetector(
+                                                  onTap: () async {
+                                                    //TODO: Tuyen open change menu screen
+                                                      final dynamic result =
+                                                        await NavigationUtil
+                                                            .navigatePage(
+                                                      context,
+                                                      const ChangeMenuPage(
+                                                        hasSelectQuantity: true,
+                                                      ),
+                                                    );
+                                                    if (result is FoodModel) {
+                                                      selectedFoods[index] = result;
+                                                    setState(() {});
+                                                    }
+                                                  },
+                                                  child: Image.asset(
+                                                    R.drawable.ic_refresh,
+                                                    width: 20,
+                                                    height: 20,
+                                                  ),
                                                 ),
+                                                const SizedBox(width: 24),
                                                 GestureDetector(
                                                   onTap: () {
                                                     setState(() {

@@ -19,8 +19,9 @@ import 'widgets/food_item_widget.dart';
 import 'widgets/tab_bar_widget.dart';
 
 class ChangeMenuPage extends StatefulWidget {
-  const ChangeMenuPage({this.foodModel});
+  const ChangeMenuPage({this.foodModel, required this.hasSelectQuantity});
   final FoodModel? foodModel;
+  final bool hasSelectQuantity;
 
   @override
   _ChangeMenuPageState createState() => _ChangeMenuPageState();
@@ -46,7 +47,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
         child: BlocConsumer<ChangeMenuCubit, ChangeMenuState>(
           listener: (context, state) {
             if (state is ChangeMenuDone) {
-              NavigationUtil.pop(context);
+              NavigationUtil.pop(context, result: _cubit.selectedFood);
             }
           },
           builder: (context, state) {
@@ -123,9 +124,13 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
           await NavigationUtil.navigatePage(
             context,
             SeachFoodPage(
-              onTapYes: (foodModel) {
-                _cubit.onChoseFood(foodModel: foodModel);
+              onConfirm: (foodModel) {
+                _cubit.onChoseFood(
+                  foodModel: foodModel,
+                  hasSelectQuantity: widget.hasSelectQuantity,
+                );
               },
+              hasSelectQuantity: widget.hasSelectQuantity,
             ),
           );
         },
@@ -203,9 +208,13 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
               onFavorite: () {
                 _cubit.toogleFavorite(index);
               },
-              onTapYes: () {
-                _cubit.onChoseFood(foodModel: foods[index]);
+              onConfirm: (foodModel) {
+                _cubit.onChoseFood(
+                  foodModel: foodModel,
+                  hasSelectQuantity: widget.hasSelectQuantity,
+                );
               },
+              hasSelectQuantity: widget.hasSelectQuantity,
             );
           }
         },
@@ -315,8 +324,12 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
       builder: (_) => CategoryMenuPage(
         category: category,
         onTapYes: (foodModel) {
-          _cubit.onChoseFood(foodModel: foodModel);
+          _cubit.onChoseFood(
+            foodModel: foodModel,
+            hasSelectQuantity: widget.hasSelectQuantity,
+          );
         },
+        hasSelectQuantity: widget.hasSelectQuantity,
       ),
     );
   }

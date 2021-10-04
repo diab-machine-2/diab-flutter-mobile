@@ -15,10 +15,12 @@ class CategoryMenuPage extends StatefulWidget {
   const CategoryMenuPage({
     required this.category,
     required this.onTapYes,
+    required this.hasSelectQuantity,
   });
 
   final FoodSubCategoryModel category;
   final Function(FoodModel foodModel) onTapYes;
+  final bool hasSelectQuantity;
 
   @override
   _CategoryMenuPageState createState() => _CategoryMenuPageState();
@@ -100,10 +102,11 @@ class _CategoryMenuPageState extends State<CategoryMenuPage> {
                                     index,
                                   );
                                 },
-                                onTapYes: () {
-                                  widget.onTapYes(_cubit.foods[index]);
+                                onConfirm: (foodModel) {
+                                  widget.onTapYes(foodModel);
                                   NavigationUtil.pop(context);
                                 },
+                                hasSelectQuantity: widget.hasSelectQuantity,
                               );
                             },
                           ),

@@ -16,9 +16,13 @@ import '../change_menu/widgets/food_item_widget.dart';
 import 'search_food.dart';
 
 class SeachFoodPage extends StatefulWidget {
-  const SeachFoodPage({required this.onTapYes});
+  const SeachFoodPage({
+    required this.onConfirm,
+    required this.hasSelectQuantity,
+  });
 
-  final Function(FoodModel foodModel) onTapYes;
+  final Function(FoodModel foodModel) onConfirm;
+  final bool hasSelectQuantity;
 
   @override
   _SeachFoodPageState createState() => _SeachFoodPageState();
@@ -136,10 +140,11 @@ class _SeachFoodPageState extends State<SeachFoodPage> {
                                   onFavorite: () async {
                                     _cubit.toogleFavorite(index);
                                   },
-                                  onTapYes: () {
-                                    widget.onTapYes(_cubit.foods[index]);
+                                  onConfirm: (foodModel) {
+                                    widget.onConfirm(foodModel);
                                     NavigationUtil.pop(context);
                                   },
+                                  hasSelectQuantity: widget.hasSelectQuantity,
                                 );
                               }
                             },
