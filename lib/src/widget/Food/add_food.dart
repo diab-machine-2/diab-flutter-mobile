@@ -442,7 +442,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                         await NavigationUtil
                                                             .navigatePage(
                                                       context,
-                                                      const ChangeMenuPage(
+                                                      ChangeMenuPage(
+                                                        foodModel: selectedFoods[index],
                                                         hasSelectQuantity: true,
                                                       ),
                                                     );
