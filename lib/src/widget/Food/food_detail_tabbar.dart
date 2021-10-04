@@ -12,7 +12,7 @@ import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
-import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
+import 'package:medical/src/widget/intro_sample_menu/intro_sample_menu.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -145,8 +145,8 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
           body: Column(children: [
             GestureDetector(
               onTap: (){
-                //TODO: Tuyen navigate to foodMenu screen
-                NavigationUtil.navigatePage(context, const FoodMenuPage());
+                //TODO: Tuyen navigate to IntroSampleMenuPage
+                NavigationUtil.navigatePage(context, IntroSampleMenuPage());
               },
               child: Container(
                 color: R.color.white,

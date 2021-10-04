@@ -9,6 +9,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/body_parameter/body_parameter_page.dart';
+import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
 import 'package:medical/src/widget/kcal_parameter/kcal_parameter.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 import 'package:medical/src/widget/upgrade_account/upgrade_account.dart';
@@ -173,7 +174,8 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                               R.color.color0xff003F38.withOpacity(0.5),
                           context: context,
                           builder: (_) => KcalParameterPage(callback: (number) {
-                            // TODO
+                            //TODO: Navigate to FoodMenuPage
+                            NavigationUtil.navigatePage(context, const FoodMenuPage());
                             // NavigationUtil.pushAndRemoveUtilPage(context, widget)
                           },),
                         );

@@ -8,6 +8,7 @@ import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/kcal_parameter/kcal_parameter.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/stack_loading_view.dart';
 
@@ -32,6 +33,17 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     _cubit.getTemplateDetail();
   }
 
+  void updateKcal(BuildContext context) {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      builder: (_) => KcalParameterPage(
+        isUpdate: true,
+        callback: (number) {},
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,11 +58,60 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                 title: R.string.food_menu.tr(),
                 background: R.drawable.bg_detail_pro,
                 child: _cubit.listDayFood.isEmpty
-                    ? const SizedBox()
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding:
+                                EdgeInsets.fromLTRB(67.w, 100.h, 67.w, 52.h),
+                            child: Image.asset(R.drawable.img_cooking),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 28.w),
+                            child: Text(
+                              R.string.food_menu_empty.tr(),
+                              style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              updateKcal(context);
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(top: 24.h),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 8.h),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(200),
+                                border: Border.all(
+                                  width: 2,
+                                  color: R.color.greenGradientBottom,
+                                ),
+                              ),
+                              child: Text(
+                                R.string.change_food_info.tr(),
+                                style: TextStyle(
+                                  color: R.color.greenGradientBottom,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
                     : Column(
                         children: [
                           _buildTitle(
-                              title: _cubit.menuResponseFood?.menuTitle ?? ''),
+                              title: _cubit.menuResponseFood?.menuTitle ?? '',
+                              onUpdateKcal: () {
+                                updateKcal(context);
+                              }),
                           DayInWeekButtons(
                               initDay: _cubit.currentDayInWeek,
                               onSlectDay: (dayIndex) {
@@ -138,6 +199,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
 
   Widget _buildTitle({
     required String title,
+    VoidCallback? onUpdateKcal,
   }) {
     return Padding(
       padding: EdgeInsets.fromLTRB(20.w, 28.h, 16.w, 34.h),
@@ -157,7 +219,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
           ),
           SizedBox(width: 50.w),
           GestureDetector(
-            onTap: () {},
+            onTap: onUpdateKcal,
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               decoration: BoxDecoration(
@@ -332,9 +394,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               GestureDetector(
                 onTap: () {
                   if (onChangeFood != null) {
-onChangeFood(foodDetail?.foodModel);
+                    onChangeFood(foodDetail?.foodModel);
                   }
-                  
                 },
                 child: Image.asset(
                   R.drawable.ic_refresh,

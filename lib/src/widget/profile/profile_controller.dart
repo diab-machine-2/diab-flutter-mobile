@@ -8,12 +8,14 @@ import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/modal/user/secure.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/intro_sample_menu/intro_sample_menu.dart';
 
 class ProfileController extends StatefulWidget {
   @override
@@ -199,7 +201,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           title: R.string.food_menu.tr(),
                           image: R.drawable.ic_food_menu,
                           onTap: () {
-                            //TODO: Tuyen navigate to foodMenu screen
+                            NavigationUtil.navigatePage(context, IntroSampleMenuPage());
                           }),
                     )
                   ]),
