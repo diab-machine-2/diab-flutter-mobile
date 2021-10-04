@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/stack_loading_view.dart';
@@ -27,7 +29,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = FoodMenuCubit(appRepository);
-    // _cubit.getTemplateDetail();
+    _cubit.getTemplateDetail();
   }
 
   @override
@@ -43,78 +45,82 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               child: CommonPage(
                 title: R.string.food_menu.tr(),
                 background: R.drawable.bg_detail_pro,
-                child: Column(
-                  children: [
-                    _buildTitle(title: 'Thực đơn Dành cho Gymer 65Kg'),
-                    DayInWeekButtons(
-                        initDay: _cubit.currentDayInWeek,
-                        onSlectDay: (dayIndex) {
-                          _cubit.onChangeDay(dayIndex);
-                          setState(() {});
-                        }),
-                    //Divider
-                    Container(
-                      margin: EdgeInsets.only(top: 10.h),
-                      color: R.color.color0xffE5E5E5,
-                      height: 1,
-                      width: double.infinity,
-                    ),
-                    Expanded(
-                      child: ListView(
-                        padding: EdgeInsets.fromLTRB(16.w, 0, 16.h, 32.h),
+                child: _cubit.listDayFood.isEmpty
+                    ? const SizedBox()
+                    : Column(
                         children: [
-                          _buildMealWidget(
-                              mealName: 'Sáng',
-                              totalKcal: 100,
-                              totalStarch: 150,
-                              onChangeFood: () {
-                                NavigationUtil.navigatePage(
-                                  context,
-                                  const ChangeMenuPage(
-                                    hasSelectQuantity: false,
-                                  ),
-                                );
+                          _buildTitle(
+                              title: _cubit.menuResponseFood?.menuTitle ?? ''),
+                          DayInWeekButtons(
+                              initDay: _cubit.currentDayInWeek,
+                              onSlectDay: (dayIndex) {
+                                _cubit.onChangeDay(dayIndex);
                               }),
-                          _buildMealWidget(
-                            mealName: 'Trưa',
-                            totalKcal: 100,
-                            totalStarch: 150,
+                          //Divider
+                          Container(
+                            margin: EdgeInsets.only(top: 10.h),
+                            color: R.color.color0xffE5E5E5,
+                            height: 1,
+                            width: double.infinity,
                           ),
-                          _buildMealWidget(
-                            mealName: 'Tối',
-                            totalKcal: 100,
-                            totalStarch: 150,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 33.h,
-                            ),
-                            child: Row(
+                          Expanded(
+                            child: ListView(
+                              padding: EdgeInsets.fromLTRB(16.w, 0, 16.h, 32.h),
                               children: [
-                                Image.asset(
-                                  R.drawable.ic_info,
-                                  width: 24,
-                                  height: 24,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: RichText(
-                                    text: TextSpan(
-                                      text: '${R.string.note.tr()} ',
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.w700),
-                                      children: [
-                                        TextSpan(
-                                          text: 'Gia vị nên được nêm vừa phải',
-                                          style: TextStyle(
-                                              color: R.color.textDark,
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w400),
-                                        )
-                                      ],
-                                    ),
+                                ...List.generate(
+                                    _cubit.listDayFood[_cubit.currentDayInWeek]
+                                            ?.timeGroups?.length ??
+                                        0, (index) {
+                                  return _buildMealWidget(
+                                      mealData: _cubit
+                                          .listDayFood[_cubit.currentDayInWeek]
+                                          ?.timeGroups?[index],
+                                      onChangeFood: (foodModel) {
+                                        NavigationUtil.navigatePage(
+                                          context,
+                                          ChangeMenuPage(
+                                            foodModel: foodModel,
+                                            hasSelectQuantity: false,
+                                          ),
+                                        );
+                                      });
+                                }).toList(),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 33.h,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        R.drawable.ic_info,
+                                        width: 24,
+                                        height: 24,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            text: '${R.string.note.tr()} ',
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w700),
+                                            children: [
+                                              TextSpan(
+                                                text: _cubit.menuResponseFood
+                                                        ?.note ??
+                                                    '',
+                                                style: TextStyle(
+                                                    color: R.color.textDark,
+                                                    fontSize: 16.sp,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -122,9 +128,6 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
               ),
             );
           },
@@ -180,10 +183,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
   }
 
   Widget _buildMealWidget({
-    required String mealName,
-    required int totalKcal,
-    required int totalStarch,
-    VoidCallback? onChangeFood,
+    required MenuResponseListdayfoodTimeGroups? mealData,
+    Function(FoodModel? foodModel)? onChangeFood,
   }) {
     return Container(
       margin: EdgeInsets.only(top: 20.h),
@@ -207,7 +208,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               children: [
                 Expanded(
                   child: Text(
-                    mealName,
+                    mealData?.timeName ?? '',
                     style: TextStyle(
                       color: R.color.greenGradientBottom,
                       fontSize: 20.sp,
@@ -216,7 +217,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                   ),
                 ),
                 Text(
-                  R.string.total_kcals.tr(args: ['$totalKcal']),
+                  R.string.total_kcals
+                      .tr(args: ['${mealData?.totalKcal ?? 0.0}']),
                   style: TextStyle(
                     color: R.color.textDark,
                     fontSize: 16.sp,
@@ -229,7 +231,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                       size: 4.w, color: R.color.greenGradientBottom),
                 ),
                 Text(
-                  R.string.total_starch.tr(args: ['$totalStarch']),
+                  R.string.total_starch
+                      .tr(args: ['${mealData?.totalGlucose ?? 0.0}']),
                   style: TextStyle(
                     color: R.color.textDark,
                     fontSize: 16.sp,
@@ -240,35 +243,28 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             ),
           ),
           Visibility(
-            visible: _cubit.currentDayInWeek > 0,
+            visible: mealData?.defaultFood?.isNotEmpty ?? false,
             child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 16.w),
                 height: 1,
                 color: R.color.notActiveGreen),
           ),
           ..._buildListFoodWidget(
-              numberOfFood: _cubit.currentDayInWeek,
-              onChangeFood: onChangeFood),
+              foods: mealData?.defaultFood, onChangeFood: onChangeFood),
         ],
       ),
     );
   }
 
   List<Widget> _buildListFoodWidget({
-    required int numberOfFood,
-    VoidCallback? onChangeFood,
+    required List<MenuResponseListdayfoodTimeGroupsDefaultFood?>? foods,
+    Function(FoodModel? foodModel)? onChangeFood,
   }) {
-    if (numberOfFood <= 0) return [];
-    return List.generate((numberOfFood * 2) - 1, (index) {
+    if (foods == null || foods.isEmpty) return [];
+    return List.generate((foods.length * 2) - 1, (index) {
       return index.isEven
           ? _buildSingleFoodWidget(
-              imageUrl: 'https://picsum.photos/200/300',
-              foodName: 'foodName',
-              foodUnit: 'foodUnit',
-              foodPortion: 1,
-              totalKcal: 50,
-              totalStarch: 50,
-              isDessert: false,
+              foodDetail: foods[index ~/ 2],
               onChangeFood: onChangeFood,
             )
           : Container(
@@ -279,15 +275,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
   }
 
   Widget _buildSingleFoodWidget({
-    required String imageUrl,
-    required String foodName,
-    required String foodUnit,
-    required int foodPortion,
-    required int totalKcal,
-    required int totalStarch,
-    required bool isDessert,
-    String? note,
-    VoidCallback? onChangeFood,
+    MenuResponseListdayfoodTimeGroupsDefaultFood? foodDetail,
+    Function(FoodModel? foodModel)? onChangeFood,
   }) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
@@ -302,7 +291,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: CachedNetworkImage(
-                    imageUrl: imageUrl,
+                    imageUrl: foodDetail?.foodImgUrl ?? '',
                     width: 50,
                     height: 50,
                     errorWidget: (_, __, ___) {
@@ -316,7 +305,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Visibility(
-                      visible: isDessert,
+                      visible: foodDetail?.isDessert ?? false,
                       child: Padding(
                         padding: EdgeInsets.only(bottom: 4.h),
                         child: Text(
@@ -330,7 +319,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                       ),
                     ),
                     Text(
-                      foodName,
+                      foodDetail?.foodName ?? '',
                       style: TextStyle(
                         color: R.color.textDark,
                         fontSize: 16.sp,
@@ -341,7 +330,12 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                 ),
               ),
               GestureDetector(
-                onTap: onChangeFood,
+                onTap: () {
+                  if (onChangeFood != null) {
+onChangeFood(foodDetail?.foodModel);
+                  }
+                  
+                },
                 child: Image.asset(
                   R.drawable.ic_refresh,
                   width: 20,
@@ -356,7 +350,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             child: Row(
               children: [
                 Text(
-                  '$foodPortion $foodUnit',
+                  '${foodDetail?.portion} ${foodDetail?.foodUnitName}',
                   style: TextStyle(
                     color: R.color.color0xff454649,
                     fontSize: 16.sp,
@@ -369,7 +363,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                       size: 4, color: R.color.greenGradientBottom),
                 ),
                 Text(
-                  R.string.total_kcals.tr(args: ['$totalKcal']),
+                  R.string.total_kcals
+                      .tr(args: ['${foodDetail?.calorie ?? 0.0}']),
                   style: TextStyle(
                     color: R.color.color0xff454649,
                     fontSize: 16.sp,
@@ -382,7 +377,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                       size: 4.w, color: R.color.greenGradientBottom),
                 ),
                 Text(
-                  R.string.total_starch.tr(args: ['$totalStarch']),
+                  R.string.total_starch
+                      .tr(args: ['${foodDetail?.glucose ?? 0.0}']),
                   style: TextStyle(
                     color: R.color.color0xff454649,
                     fontSize: 16.sp,
@@ -394,7 +390,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
           ),
           SizedBox(height: 4.h),
           Visibility(
-            visible: note != null,
+            visible: foodDetail?.note?.isNotEmpty ?? false,
             child: RichText(
               text: TextSpan(
                 text: '${R.string.attention.tr()} ',
@@ -405,7 +401,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                     fontStyle: FontStyle.italic),
                 children: [
                   TextSpan(
-                    text: note,
+                    text: foodDetail?.note,
                     style: TextStyle(
                         color: R.color.color0xff454649,
                         fontSize: 14.sp,

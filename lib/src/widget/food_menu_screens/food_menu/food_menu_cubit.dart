@@ -11,17 +11,20 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
 
   final AppRepository repository;
 
+  MenuResponseFood? menuResponseFood;
   List<MenuResponseListdayfood?> listDayFood = [];
   int currentDayInWeek = 0;
 
   MenuResponseListdayfood? get currentDayData {
-    if (currentDayInWeek < 0 || currentDayInWeek >= listDayFood.length) return null;
+    if (currentDayInWeek < 0 || currentDayInWeek >= listDayFood.length)
+      return null;
     return listDayFood[currentDayInWeek];
   }
 
   void onChangeDay(int newDay) {
     currentDayInWeek = newDay;
     emit(const FoodMenuSuccess());
+    emit(const FoodMenuInitial());
   }
 
   Future<void> getTemplateDetail() async {
@@ -32,6 +35,9 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
       print(response);
       if (response.listdayfood != null) {
         listDayFood = response.listdayfood!;
+      }
+      if (response.food != null) {
+        menuResponseFood = response.food;
       }
       emit(const FoodMenuSuccess());
     }, failure: (NetworkExceptions error) {
