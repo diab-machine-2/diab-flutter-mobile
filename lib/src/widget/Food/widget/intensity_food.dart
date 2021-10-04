@@ -1,30 +1,35 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
+import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/utils/utils.dart';
 
-typedef TimeCallback = Function(ExercriseIntensityModel?);
+typedef TimeCallback = Function(ExerciseIntensityModel?);
 
 class ActionListIntensityFood extends StatefulWidget {
-  final ExercriseIntensityModel? selected;
+  final ExerciseIntensityModel? selected;
   final TimeCallback? callback;
-  ActionListIntensityFood({this.selected, this.callback});
+  final List<ExerciseIntensityModel>? listIntensity;
+  ActionListIntensityFood({this.listIntensity, this.selected, this.callback});
   @override
   ActionListIntensityFoodState createState() => ActionListIntensityFoodState();
 }
 
 class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
-  ExercriseIntensityModel? selected;
+  ExerciseIntensityModel? selected;
 
-  List<ExercriseIntensityModel> intensity = [];
+  List<ExerciseIntensityModel> intensity = [];
 
   @override
   void initState() {
     super.initState();
+    intensity = widget.listIntensity ?? [];
     selected = widget.selected;
-    loadData();
+    if (Utils.isEmpty(intensity)) {
+      loadData();
+    }
   }
 
   loadData() async {
@@ -139,7 +144,7 @@ class ActionListIntensityFoodState extends State<ActionListIntensityFood> {
     );
   }
 
-  Widget _buildItem(ExercriseIntensityModel model, int index) {
+  Widget _buildItem(ExerciseIntensityModel model, int index) {
     return Container(
       child: Column(
         children: [

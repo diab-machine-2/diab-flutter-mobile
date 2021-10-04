@@ -84,7 +84,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text(R.string.diab_pro.tr(),
+                                    Text(R.string.package_pro.tr(),
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             color: R.color.textDark,
@@ -101,7 +101,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                             : pageFirst(
                                 R.drawable.img_welcome_0,
                                 Text(
-                                  R.string.diab_premium.tr(),
+                                  R.string.package_premium.tr(),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       color: R.color.textDark,

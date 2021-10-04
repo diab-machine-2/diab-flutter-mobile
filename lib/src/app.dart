@@ -30,6 +30,7 @@ import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/detail_package/detail_package_page.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/intro_sample_menu/intro_sample_menu_page.dart';
 import 'package:medical/src/widget/login/change_password.dart';
 import 'package:medical/src/widget/login/login.dart';
 import 'package:medical/src/widget/login/register.dart';
@@ -99,7 +100,7 @@ class _AppState extends State<App> {
             supportedLocales: context.supportedLocales,
             locale: context.locale,
             // home: FlashScreenController(),
-            home: TabbarController(),
+            home: IntroSampleMenuPage(),
             debugShowCheckedModeBanner: false,
             onGenerateRoute: (settings) {
               switch (settings.name) {

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/modal/exercrises/exercrises_active.dart';
-import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
+import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/widget/Exercrises/widget/action_list_active.dart';
 import 'package:medical/src/widget/Exercrises/widget/action_list_intensity.dart';
@@ -28,7 +28,7 @@ class InputDetailExercrisesController extends StatefulWidget {
 
 class _InputDetailExercrisesControllerState
     extends BaseState<InputDetailExercrisesController> {
-  ExercriseIntensityModel? selectedintensity;
+  ExerciseIntensityModel? selectedintensity;
   ExercriseActiveModel? selectedActive;
   int selectedHour = 0;
   int selectedMinute = 0;

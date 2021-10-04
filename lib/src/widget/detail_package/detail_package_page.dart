@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,15 +17,16 @@ import 'package:medical/src/widgets/avatar_widget.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/card_widget.dart';
+import 'package:medical/src/widgets/image_widget.dart';
 import 'package:medical/src/widgets/text_field_widget.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'detail_package.dart';
 
 class DetailPackagePage extends StatefulWidget {
-  final DetailPackageData? data;
+  final String code;
 
-  const DetailPackagePage({Key? key, required this.data}) : super(key: key);
+  const DetailPackagePage({Key? key, required this.code}) : super(key: key);
 
   @override
   _DetailPackagePageState createState() => _DetailPackagePageState();
@@ -32,7 +34,7 @@ class DetailPackagePage extends StatefulWidget {
 
 class _DetailPackagePageState extends State<DetailPackagePage> {
   late DetailPackageCubit _cubit;
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _feedbackController = TextEditingController();
   final PageController _pageCourseController = PageController();
   final PageController _pageStoryController = PageController();
 
@@ -45,7 +47,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
       SystemUiOverlay.bottom, //This line is used for showing the bottom bar
     ]);
     AppRepository repository = AppRepository();
-    _cubit = DetailPackageCubit(repository, widget.data);
+    _cubit = DetailPackageCubit(repository, widget.code);
     _cubit.getDetailPackage();
   }
 
@@ -97,9 +99,28 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  Image.asset(
-                    R.drawable.img_list_service, width: double.infinity,
-                    height: 240.h,),
+                  Stack(
+                    children: [
+                      Image.asset(
+                        R.drawable.img_list_service, width: double.infinity,
+                        height: 240.h,),
+                      Positioned(
+                        left: 10.h,
+                        child: GestureDetector(
+                          onTap: () => NavigationUtil.pop(context),
+                          child: Container(
+                            height: 40.h,
+                            width: 40.h,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: R.color.color0xff172823
+                            ),
+                            child: Icon(CupertinoIcons.arrow_left, color: R.color.white, size: 24.h)
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                   Container(
                     padding: EdgeInsets.all(16.h),
                     child: Column(
@@ -150,102 +171,21 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .spaceBetween,
-                                children: List.generate(
-                                    (data?.prices ?? []).length,
-                                        (index) =>
-                                        GestureDetector(
-                                            onTap: () =>
-                                                _cubit.selectPrice(index),
-                                            child: packageWidget(
-                                                data!.prices![index],
-                                                index ==
-                                                    _cubit.selectedPrice))),
-                              ),
+                              rowPriceWidget(data?.prices ?? []),
                               SizedBox(
                                 height: 32.h,
                               ),
-                              courseWidget(iconColor: R.color.green),
-                              SizedBox(
-                                height: 32.h,
-                              ),
-                              detailWidget(data),
+                              courseWidget(data?.courseSections ?? []),
                               SizedBox(
                                 height: 32.h,
                               ),
                               storyWidget(data?.successStories ?? []),
                               SizedBox(
-                                height: 40.h,
+                                height: 32.h,
                               ),
-                            ],
-                          ),
-                        ),
-                        Visibility(
-                          visible: data?.code == Const.PREMIUM &&
-                              !_cubit.isBoughtPro,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                R.string.how_to_register.tr(),
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  color: R.color.textDark,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 20.sp,
-                                  letterSpacing: 0.08,
-                                  height: 1.4,
-                                ),
-                              ),
+                              detailWidget(data),
                               SizedBox(
-                                height: 12.h,
-                              ),
-                              CardWidget(
-                                  borderWidth: 0,
-                                  borderColor: Colors.transparent,
-                                  padding: EdgeInsets.all(16.h),
-                                  child: Column(
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child:
-                                        RichText(
-                                          text: TextSpan(
-                                            text: R.string.upgrade_to_pro.tr(),
-                                            style: TextStyle(
-                                              color: R.color.textDark,
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 16.sp,
-                                              letterSpacing: 0.4,
-                                              height: 1.375,
-                                            ),
-                                            children: <TextSpan>[
-                                              TextSpan(text: R.string.diab_pro.tr(), style: TextStyle(color: R.color.textDark,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16.sp,
-                                                letterSpacing: 0.4,
-                                                height: 1.375,)),
-                                            ],
-                                          ),
-                                        )
-                                      ),
-                                      SizedBox(
-                                        height: 16.h,
-                                      ),
-                                      Container(
-                                        width: double.infinity,
-                                        margin: EdgeInsets.symmetric(horizontal: 40.h),
-                                        child: ButtonWidget(
-                                          title: R.string.upgrade_package_pro.tr(),
-                                          onPressed: () {
-
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  )
+                                height: 20.h,
                               ),
                             ],
                           ),
@@ -308,11 +248,24 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
     );
   }
 
-  Widget courseWidget({String? name,
-    String? description,
-    Color? iconColor,
-    int? numberCourse,
-    int? numberHour}) {
+  Widget rowPriceWidget(List<Price> listData) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment
+          .spaceBetween,
+      children: List.generate(
+          listData.length,
+              (index) =>
+              GestureDetector(
+                  onTap: () =>
+                      _cubit.selectPrice(index),
+                  child: packageWidget(
+                      listData[index],
+                      index ==
+                          _cubit.selectedPrice))),
+    );
+  }
+
+  Widget courseWidget(List<CourseSection> listData) {
     return Column(
       children: [
         Container(
@@ -322,157 +275,160 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
               _cubit.selectCourse(value);
             },
             controller: _pageCourseController,
-            children: List.generate(
-                4,
-                    (index) =>
-                    CardWidget(
-                      borderWidth: 0,
-                      borderColor: Colors.transparent,
-                      backgroundImage: R.drawable.bg_pro_group_1,
-                      padding: EdgeInsets.symmetric(horizontal: 12.h),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            name ?? "Hiểu đúng về bệnh lý",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              color: R.color.textDark,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 20.sp,
-                              letterSpacing: 0.08,
-                              height: 1.4,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 6.h,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(right: 100.w),
-                            child: Text(
-                              description ??
-                                  "Cung cấp những kiến thức quan trọng về bệnh đái tháo đường.",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                color: R.color.textDark,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14.sp,
-                                letterSpacing: 0.2,
-                                height: 1.42857,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 13.h,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+            children: listData.map(
+                    (data) =>
+                    Stack(
+                      children: [
+                        ImageWidget(url: data.image?.url),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12.h),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    height: 40.h,
-                                    padding: EdgeInsets.all(11.h),
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: iconColor?.withOpacity(0.1)),
-                                    child: Image.asset(
-                                      R.drawable.ic_book,
-                                      fit: BoxFit.fill,
-                                      color: iconColor,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "25+",
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 16.sp,
-                                          letterSpacing: 0.4,
-                                          height: 1.375,
-                                        ),
-                                      ),
-                                      Text(
-                                        R.string.number_course.tr(),
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 14.sp,
-                                          letterSpacing: 0.2,
-                                          height: 1.42857,
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ],
+                              Text(
+                                data.name ?? "",
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  color: R.color.textDark,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 20.sp,
+                                  letterSpacing: 0.08,
+                                  height: 1.4,
+                                ),
                               ),
                               SizedBox(
-                                width: 24.w,
+                                height: 6.h,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(right: 100.w),
+                                child: Text(
+                                  data.description ??
+                                      "",
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    color: R.color.textDark,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14.sp,
+                                    letterSpacing: 0.2,
+                                    height: 1.42857,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 13.h,
                               ),
                               Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Container(
-                                    height: 40.h,
-                                    padding: EdgeInsets.all(11.h),
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: iconColor?.withOpacity(0.1)),
-                                    child: Image.asset(
-                                      R.drawable.ic_stack,
-                                      fit: BoxFit.fill,
-                                      color: iconColor,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                  Row(
                                     children: [
-                                      Text(
-                                        "25+",
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 16.sp,
-                                          letterSpacing: 0.4,
-                                          height: 1.375,
+                                      Container(
+                                        height: 40.h,
+                                        padding: EdgeInsets.all(11.h),
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: R.color.green.withOpacity(0.1)),
+                                        child: Image.asset(
+                                          R.drawable.ic_book,
+                                          fit: BoxFit.fill,
+                                          color: R.color.green,
                                         ),
                                       ),
-                                      Text(
-                                        R.string.number_hour.tr(),
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 14.sp,
-                                          letterSpacing: 0.2,
-                                          height: 1.42857,
-                                        ),
+                                      SizedBox(width: 8.w),
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            (data.totalLesson ?? 0).toString(),
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 16.sp,
+                                              letterSpacing: 0.4,
+                                              height: 1.375,
+                                            ),
+                                          ),
+                                          Text(
+                                            R.string.number_course.tr(),
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 14.sp,
+                                              letterSpacing: 0.2,
+                                              height: 1.42857,
+                                            ),
+                                          )
+                                        ],
                                       )
                                     ],
-                                  )
+                                  ),
+                                  SizedBox(
+                                    width: 24.w,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        height: 40.h,
+                                        padding: EdgeInsets.all(11.h),
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: R.color.green.withOpacity(0.1)),
+                                        child: Image.asset(
+                                          R.drawable.ic_stack,
+                                          fit: BoxFit.fill,
+                                          color: R.color.green,
+                                        ),
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            (data.totalHours ?? 0).toString(),
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 16.sp,
+                                              letterSpacing: 0.4,
+                                              height: 1.375,
+                                            ),
+                                          ),
+                                          Text(
+                                            R.string.number_hour.tr(),
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 14.sp,
+                                              letterSpacing: 0.2,
+                                              height: 1.42857,
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
                                 ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    )),
+                        ),
+                      ],
+                    )).toList(),
           ),
         ),
         SizedBox(height: 12.h),
-        SmoothPageIndicator(
+        Utils.isEmpty(listData) ? Container() : SmoothPageIndicator(
           controller: _pageCourseController,
           count: 4,
           effect: ExpandingDotsEffect(
@@ -523,7 +479,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           AvatarWidget(
-                            name: Utils.getImageUrl(e.avatarPath) ?? "",
+                            name: Utils.getImageUrl(e.image?.url) ?? "",
                             size: 33.h,
                             avatar: e.name,
                           ),
@@ -583,7 +539,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
           ),
         ),
         SizedBox(height: 12.h),
-        SmoothPageIndicator(
+        Utils.isEmpty(listStory) ? Container() : SmoothPageIndicator(
           controller: _pageStoryController,
           count: listStory.length,
           effect: ExpandingDotsEffect(
@@ -793,7 +749,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                             onPressed: _cubit.selectedIndexInterest == null
                                 ? null
                                 : () {
-                              _cubit.sendInterestFeedback(_controller.text.trim());
+                              _cubit.sendInterestFeedback(_feedbackController.text.trim());
                             },
                           ),
                         ),
@@ -813,7 +769,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
         alignment: Alignment.centerLeft,
         margin: EdgeInsets.only(top: 16.h, left: 16.h, right: 16.h),
         child: TextFieldWidget(
-          controller: _controller,
+          controller: _feedbackController,
           padding: EdgeInsets.all(16.h),
           maxLines: 5,
           hintText: R.string.hint_msg_to_diab.tr(),

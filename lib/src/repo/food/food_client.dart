@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
+import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_data_model.dart';
@@ -407,12 +407,12 @@ class FoodClient extends FetchClient {
 
   // lay danh sach cuong do van dong
 
-  Future<List<ExercriseIntensityModel>> fetchIntensity() async {
+  Future<List<ExerciseIntensityModel>> fetchIntensity() async {
     try {
       final Response response =
           await super.fetchData(url: '/App/ActivityLevel');
       if (response.statusCode == 200) {
-        return ExercriseIntensityModel.toList(response.data['data']);
+        return ExerciseIntensityModel.toList(response.data['data']);
       } else {
         final error = Error.fromJson(response);
         throw error;

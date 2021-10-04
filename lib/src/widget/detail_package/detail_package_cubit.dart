@@ -12,6 +12,7 @@ import 'detail_package.dart';
 
 class DetailPackageCubit extends Cubit<DetailPackageState> {
   final AppRepository appRepository;
+  String code;
   DetailPackageData? data;
   int selectedPrice = 1;
   int selectedStory = 0;
@@ -20,17 +21,13 @@ class DetailPackageCubit extends Cubit<DetailPackageState> {
 
   bool get isBoughtPro => false;
 
-  DetailPackageCubit(this.appRepository, this.data)
+  DetailPackageCubit(this.appRepository, this.code)
       : super(DetailPackageInitial());
 
   void getDetailPackage() async {
     emit(DetailPackageLoading());
-    if (data?.code == null) {
-      emit(DetailPackageInitial());
-      return;
-    }
     ApiResult<DetailPackageResponse> apiResult =
-        await appRepository.getDetailPackage(data?.code ?? Const.PRO);
+        await appRepository.getDetailPackage(code);
     apiResult.when(success: (DetailPackageResponse response) {
       if (response.data != null) data = response.data!;
       emit(DetailPackageSuccess());

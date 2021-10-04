@@ -2,7 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
+import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
@@ -17,6 +17,7 @@ class CalculatorTDEEFood extends StatefulWidget {
   final NumCallback? callback;
 
   CalculatorTDEEFood({this.callback});
+
   @override
   CalculatorTDEEFoodState createState() => CalculatorTDEEFoodState();
 }
@@ -25,7 +26,8 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
   int selectedWeight = 0;
   int selectedHeight = 0;
   int selectedYear = 0;
-  ExercriseIntensityModel? intensity;
+  ExerciseIntensityModel? intensity;
+
   @override
   void initState() {
     super.initState();
@@ -74,7 +76,8 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                         fontWeight: FontWeight.w700)),
                                 IconButton(
                                     // padding: EdgeInsets.only(right: 30),
-                                    icon: Icon(Icons.close, color: R.color.grey),
+                                    icon:
+                                        Icon(Icons.close, color: R.color.grey),
                                     onPressed: () {
                                       Navigator.pop(context);
                                     })
@@ -104,29 +107,32 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                             GestureDetector(
                                               onTap: () {
                                                 showDialog(
-                                                  barrierColor:
-                                                      R.color.color0xff003F38
-                                                          .withOpacity(0.5),
+                                                  barrierColor: R
+                                                      .color.color0xff003F38
+                                                      .withOpacity(0.5),
                                                   context: context,
                                                   builder: (_) =>
                                                       CustomNumPicker(
                                                           callback: (number) {
-    if (number != null) {
-      setState(() {
-        selectedWeight =
-            number;
-      });
-    }
+                                                            if (number !=
+                                                                null) {
+                                                              setState(() {
+                                                                selectedWeight =
+                                                                    number;
+                                                              });
+                                                            }
                                                           },
-                                                          title:
-                                                              R.string.enter_weight.tr(),
+                                                          title: R.string
+                                                              .enter_weight
+                                                              .tr(),
                                                           max: 200,
                                                           numberDefault:
                                                               selectedWeight ==
                                                                       0
                                                                   ? 50
                                                                   : selectedWeight,
-                                                          unit: R.string.kg.tr()),
+                                                          unit:
+                                                              R.string.kg.tr()),
                                                 );
                                               },
                                               child: Container(
@@ -140,8 +146,10 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                         style: TextStyle(
                                                             color: selectedWeight ==
                                                                     0
-                                                                ? R.color.captionColorGray
-                                                                : R.color.textDark,
+                                                                ? R.color
+                                                                    .captionColorGray
+                                                                : R.color
+                                                                    .textDark,
                                                             fontSize: 34,
                                                             fontWeight:
                                                                 FontWeight
@@ -191,29 +199,32 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                             GestureDetector(
                                               onTap: () {
                                                 showDialog(
-                                                  barrierColor:
-                                                      R.color.color0xff003F38
-                                                          .withOpacity(0.5),
+                                                  barrierColor: R
+                                                      .color.color0xff003F38
+                                                      .withOpacity(0.5),
                                                   context: context,
                                                   builder: (_) =>
                                                       CustomNumPicker(
                                                           callback: (number) {
-    if (number != null) {
-      setState(() {
-        selectedHeight =
-            number;
-      });
-    }
+                                                            if (number !=
+                                                                null) {
+                                                              setState(() {
+                                                                selectedHeight =
+                                                                    number;
+                                                              });
+                                                            }
                                                           },
-                                                          title:
-                                                              R.string.enter_height.tr(),
+                                                          title: R.string
+                                                              .enter_height
+                                                              .tr(),
                                                           max: 300,
                                                           numberDefault:
                                                               selectedHeight ==
                                                                       0
                                                                   ? 160
                                                                   : selectedHeight,
-                                                          unit: R.string.cm.tr()),
+                                                          unit:
+                                                              R.string.cm.tr()),
                                                 );
                                               },
                                               child: Container(
@@ -227,8 +238,10 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                         style: TextStyle(
                                                             color: selectedHeight ==
                                                                     0
-                                                                ? R.color.captionColorGray
-                                                                : R.color.textDark,
+                                                                ? R.color
+                                                                    .captionColorGray
+                                                                : R.color
+                                                                    .textDark,
                                                             fontSize: 34,
                                                             fontWeight:
                                                                 FontWeight
@@ -278,29 +291,32 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                             GestureDetector(
                                               onTap: () {
                                                 showDialog(
-                                                  barrierColor:
-                                                      R.color.color0xff003F38
-                                                          .withOpacity(0.5),
+                                                  barrierColor: R
+                                                      .color.color0xff003F38
+                                                      .withOpacity(0.5),
                                                   context: context,
                                                   builder: (_) =>
                                                       CustomNumPicker(
                                                           callback: (number) {
-    if (number != null) {
-      setState(() {
-        selectedYear =
-            number;
-      });
-    }
+                                                            if (number !=
+                                                                null) {
+                                                              setState(() {
+                                                                selectedYear =
+                                                                    number;
+                                                              });
+                                                            }
                                                           },
-                                                          title:
-                                                              R.string.nhap_nam_sinh.tr(),
+                                                          title: R.string
+                                                              .nhap_nam_sinh
+                                                              .tr(),
                                                           max: DateTime.now()
                                                               .year,
                                                           numberDefault:
                                                               selectedYear == 0
                                                                   ? 1970
                                                                   : selectedYear,
-                                                          unit: R.string.year.tr()),
+                                                          unit: R.string.year
+                                                              .tr()),
                                                 );
                                               },
                                               child: Container(
@@ -314,8 +330,10 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                         style: TextStyle(
                                                             color: selectedYear ==
                                                                     0
-                                                                ? R.color.captionColorGray
-                                                                : R.color.textDark,
+                                                                ? R.color
+                                                                    .captionColorGray
+                                                                : R.color
+                                                                    .textDark,
                                                             fontSize: 34,
                                                             fontWeight:
                                                                 FontWeight
@@ -373,7 +391,9 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(intensity == null
-                                                ? R.string.chon_cuong_do_tap_luyen.tr()
+                                                ? R.string
+                                                    .chon_cuong_do_tap_luyen
+                                                    .tr()
                                                 : intensity!.note!),
                                             Icon(
                                               Icons.arrow_forward_ios_outlined,
@@ -384,7 +404,8 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                         ),
                                         SizedBox(height: 16),
                                         Container(
-                                            height: 1, color: R.color.color0xffE5E5E5)
+                                            height: 1,
+                                            color: R.color.color0xffE5E5E5)
                                       ]),
                                     ),
                                   )
@@ -463,7 +484,8 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
       return;
     }
     if (intensity == null) {
-      Message.showToastMessage(context, R.string.ban_chua_chon_cuong_do_tap_luyen.tr());
+      Message.showToastMessage(
+          context, R.string.ban_chua_chon_cuong_do_tap_luyen.tr());
       return;
     }
     BotToast.showLoading();

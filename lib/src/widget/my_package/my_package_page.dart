@@ -11,6 +11,7 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/upgrade_package_widget.dart';
 
 import 'my_package.dart';
 
@@ -63,37 +64,32 @@ class _MyPackagePageState extends State<MyPackagePage> {
       title: R.string.my_package.tr(),
       background: R.drawable.bg_welcome,
       child: ListView(
+        padding: EdgeInsets.all(16.h),
         shrinkWrap: true,
         children: [
           Visibility(
             visible: _cubit.isBasic,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.asset(
-                  R.drawable.img_my_package,
-                  width: double.infinity,
-                  height: 240.h,
-                ),
-                SizedBox(
-                  height: 32.h,
-                ),
-                Text(
-                  R.string.text_my_package.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 16.sp,
-                    letterSpacing: 0.4,
-                    height: 1.375,
-                  ),
-                ),
-              ],
-            ),
+            child: UpgradePackageWidget(onClickUpgrade: () {  },),
           ),
           Visibility(
               visible: !_cubit.isBasic,
-              child: listTransactionWidget(_cubit.listActiveTransaction)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  listTransactionWidget(_cubit.listActiveTransaction),
+                  SizedBox(
+                    height: 24.h,
+                  ),
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(horizontal: 40.h),
+                    child: ButtonWidget(
+                      title: R.string.renewal_package_pro.tr(),
+                      onPressed: () {},
+                    ),
+                  ),
+                ],
+              )),
           SizedBox(
             height: 5.h,
           ),

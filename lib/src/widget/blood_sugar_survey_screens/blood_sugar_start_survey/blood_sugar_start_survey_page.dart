@@ -33,7 +33,7 @@ extension SurveyStatusDetail on SurveyStatus {
       case SurveyStatus.not_done:
         return R.drawable.img_blood_sugar_start_survey;
       case SurveyStatus.upgrade_require:
-        return R.drawable.img_my_package;
+        return R.drawable.img_upgrade_package;
     }
   }
 }
