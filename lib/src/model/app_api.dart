@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/response/menu_response.dart';
+import 'package:medical/src/model/response/list_activity_response.dart';
 import 'request/send_interest_request.dart';
 import 'response/diabetes_status_response.dart';
 import 'response/food_suggest_response.dart';
@@ -12,6 +13,7 @@ import 'response/blood_sugar_template_category_response.dart';
 import 'response/blood_sugar_template_detail_response.dart';
 import 'response/detail_package_response.dart';
 import 'response/list_package_response.dart';
+import 'response/tdee_response.dart';
 import 'response/upgrade_account_response.dart';
 
 part 'app_api.g.dart';
@@ -34,7 +36,17 @@ abstract class AppApi {
   Future<UpgradeAccountResponse> getUpgradeAccount();
 
   @POST("App/PackageInterest/Input")
-  Future<CommonResponse> sendInterestFeedback(@Body() SendInterestRequest request);
+  Future<CommonResponse> sendInterestFeedback(
+      @Body() SendInterestRequest request);
+
+  // Transaction
+
+  @GET("App/PackageTransaction")
+  Future<ListTransactionResponse> getListTransaction(
+    @Query("isExpired") bool? isExpired,
+    @Query("page") int? page,
+    @Query("size") int? size,
+  );
 
   @GET("/App/BloodSugarTemplate/GetListByCategory")
   Future<BloodSugarTemplateCategoryResponse> getListTemplateByCategory(
@@ -51,13 +63,16 @@ abstract class AppApi {
 
   @GET("/App/HbA1C/LatestHbA1CInput")
   Future<LatestHba1cInputResponse> getLatestHbA1CInput();
-  // Transaction
 
-  @GET("App/PackageTransaction")
-  Future<ListTransactionResponse> getListTransaction(
-    @Query("isExpired") bool? isExpired,
-    @Query("page") int? page,
-    @Query("size") int? size,
+  @GET("App/ActivityLevel")
+  Future<ListActivityResponse> getListActivity();
+
+  @GET("App/Diet/TDEE")
+  Future<TDEEResponse> getTDEE(
+    @Query("activityLevelId") String? activityLevelId,
+    @Query("weight") num? weight,
+    @Query("height") num? height,
+    @Query("yearOfBirth") num? yearOfBirth,
   );
 
   @GET("App/PatientFoodMenu/GetUserFoodMenu")

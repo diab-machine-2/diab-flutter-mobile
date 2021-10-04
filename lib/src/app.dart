@@ -30,6 +30,7 @@ import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/detail_package/detail_package_page.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/intro_sample_menu/intro_sample_menu_page.dart';
 import 'package:medical/src/widget/login/change_password.dart';
 import 'package:medical/src/widget/login/login.dart';
 import 'package:medical/src/widget/login/register.dart';
@@ -51,7 +52,6 @@ import 'package:medical/src/widget/profile/goal_setting.dart';
 import 'package:medical/src/widget/profile/manual_detail.dart';
 import 'package:medical/src/widget/profile/manuals.dart';
 import 'package:medical/src/widget/profile/motivation_diary.dart';
-import 'package:medical/src/widget/profile/profile.dart';
 import 'package:medical/src/widget/profile/reminder.dart';
 import 'package:medical/src/widget/profile/schedule_activities.dart';
 import 'package:medical/src/widget/profile/schedule_glucose.dart';
@@ -66,6 +66,7 @@ import 'package:medical/src/widget/welcome_service/welcome_service_page.dart';
 
 import 'widget/list_service/list_service_page.dart';
 import 'utils/navigator_name.dart';
+import 'widget/profile/profile_controller.dart';
 
 class App extends StatefulWidget {
   @override
@@ -98,8 +99,8 @@ class _AppState extends State<App> {
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,
-            // home: FlashScreenController(),
-            home: TabbarController(),
+            home: FlashScreenController(),
+            // home: IntroSampleMenuPage(),
             debugShowCheckedModeBanner: false,
             onGenerateRoute: (settings) {
               switch (settings.name) {

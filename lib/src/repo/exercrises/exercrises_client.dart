@@ -11,7 +11,7 @@ import 'package:medical/src/modal/exercrises/exercrise_walk_summary.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/modal/exercrises/exercrises_active.dart';
 import 'package:medical/src/modal/exercrises/exercrises_data_model.dart';
-import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
+import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -44,7 +44,7 @@ class ExercrisesClient extends FetchClient {
   }
   // lay danh sach cuong do van dong
 
-  Future<List<ExercriseIntensityModel>> fetchIntensity(
+  Future<List<ExerciseIntensityModel>> fetchIntensity(
       String? exerciseCategoryId) async {
     try {
       final Response response = await super.fetchData(
@@ -54,7 +54,7 @@ class ExercrisesClient extends FetchClient {
             'exerciseCategoryId': exerciseCategoryId
           });
       if (response.statusCode == 200) {
-        return ExercriseIntensityModel.toList(response.data['data']);
+        return ExerciseIntensityModel.toList(response.data['data']);
       } else {
         final error = Error.fromJson(response);
         throw error;

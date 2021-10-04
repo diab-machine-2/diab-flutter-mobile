@@ -31,3 +31,8 @@ class UpgradeAccountSuccess extends UpgradeAccountState {
   @override
   String toString() => 'UpgradeAccountSuccess';
 }
+
+class SendInterestSuccess extends UpgradeAccountState {
+  @override
+  String toString() => 'SendInterestSuccess';
+}

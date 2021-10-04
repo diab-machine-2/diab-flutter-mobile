@@ -16,17 +16,19 @@ class PopupWindowWidget extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    width: double.infinity,
-                      padding: EdgeInsets.all(16.h),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.h),
-                        image: DecorationImage(
-                          image: AssetImage(R.drawable.bg_popup),
-                          fit: BoxFit.fill,
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                        // padding: EdgeInsets.all(16.h),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.h),
+                          image: DecorationImage(
+                            image: AssetImage(R.drawable.bg_des),
+                            fit: BoxFit.fill,
+                          ),
                         ),
-                      ),
-                      child: child
+                        child: child
+                    ),
                   ),
                   SizedBox(height: 16.h),
                   Center(

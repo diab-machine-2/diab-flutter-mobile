@@ -1,11 +1,11 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
+import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-typedef TimeCallback = Function(ExercriseIntensityModel?);
+typedef TimeCallback = Function(ExerciseIntensityModel?);
 
 class ActionListIntensity extends StatefulWidget {
   final TimeCallback? callback;
@@ -15,9 +15,9 @@ class ActionListIntensity extends StatefulWidget {
 }
 
 class ActionListIntensityState extends State<ActionListIntensity> {
-  ExercriseIntensityModel? selected;
+  ExerciseIntensityModel? selected;
 
-  List<ExercriseIntensityModel> intensity = [];
+  List<ExerciseIntensityModel> intensity = [];
 
   @override
   void initState() {
@@ -137,7 +137,7 @@ class ActionListIntensityState extends State<ActionListIntensity> {
     );
   }
 
-  Widget _buildItem(ExercriseIntensityModel model, int index) {
+  Widget _buildItem(ExerciseIntensityModel model, int index) {
     return Container(
       child: Column(
         children: [

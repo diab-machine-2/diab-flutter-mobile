@@ -75,6 +75,27 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<ListTransactionResponse> getListTransaction(
+      isExpired, page, size) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'isExpired': isExpired,
+      r'page': page,
+      r'size': size
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ListTransactionResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/PackageTransaction',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ListTransactionResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<BloodSugarTemplateCategoryResponse> getListTemplateByCategory(
       category) async {
     const _extra = <String, dynamic>{};
@@ -139,23 +160,39 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<ListTransactionResponse> getListTransaction(
-      isExpired, page, size) async {
+  Future<ListActivityResponse> getListActivity() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ListActivityResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/ActivityLevel',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ListActivityResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<TDEEResponse> getTDEE(
+      activityLevelId, weight, height, yearOfBirth) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'isExpired': isExpired,
-      r'page': page,
-      r'size': size
+      r'activityLevelId': activityLevelId,
+      r'weight': weight,
+      r'height': height,
+      r'yearOfBirth': yearOfBirth
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ListTransactionResponse>(
+        _setStreamType<TDEEResponse>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, 'App/PackageTransaction',
+                .compose(_dio.options, 'App/Diet/TDEE',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = ListTransactionResponse.fromJson(_result.data!);
+    final value = TDEEResponse.fromJson(_result.data!);
     return value;
   }
 

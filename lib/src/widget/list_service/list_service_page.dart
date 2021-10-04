@@ -102,9 +102,10 @@ class _ListServicePageState extends State<ListServicePage> {
                     ),
                   )),
               SizedBox(
-                height: 24.h,
+                height: 32.h,
               ),
               ListView.separated(
+                padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   itemCount: _cubit.listFilterData.length,
                   separatorBuilder: (context, index) => SizedBox(
@@ -114,20 +115,20 @@ class _ListServicePageState extends State<ListServicePage> {
                     DetailPackageData data = _cubit.listFilterData[index];
                     return rowService(data, () {
                       NavigationUtil.navigatePage(
-                          context, DetailPackagePage(data: data));
+                          context, UpgradeAccountPage(code: data.code ?? Const.PRO));
                     });
                   }),
               SizedBox(
                 height: 27.h,
               ),
-              Container(
-                  width: 128.w,
-                  child: ButtonWidget(
-                      title: R.string.text_continue.tr(),
-                      onPressed: () {
-                        NavigationUtil.navigatePage(
-                            context, UpgradeAccountPage());
-                      }))
+              // Container(
+              //     width: 128.w,
+              //     child: ButtonWidget(
+              //         title: R.string.text_continue.tr(),
+              //         onPressed: () {
+              //           NavigationUtil.navigatePage(
+              //               context, UpgradeAccountPage());
+              //         }))
             ],
           ),
         ),
@@ -138,10 +139,13 @@ class _ListServicePageState extends State<ListServicePage> {
   Widget rowService(DetailPackageData data, VoidCallback onChooseService) {
     Color color = Utils.getColorByCode(data.code);
     String background;
+    String icon;
     if (data.code == Const.PRO) {
       background = R.drawable.bg_pro;
+      icon = R.drawable.ic_package_pro;
     } else {
       background = R.drawable.bg_premium;
+      icon = R.drawable.ic_package_premium;
     }
     return GestureDetector(
       onTap: onChooseService,
@@ -162,17 +166,17 @@ class _ListServicePageState extends State<ListServicePage> {
               child: Container(
                 height: 96.h,
                 width: 54.h,
-                padding: EdgeInsets.all(15.h),
+                padding: EdgeInsets.all(5.h),
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         image: AssetImage(background), fit: BoxFit.fill),
-                    borderRadius: BorderRadius.circular(16.h)),
+                    borderRadius: BorderRadius.circular(5.h)),
                 child: Image.asset(
-                  R.drawable.ic_pro,
+                  icon,
                   fit: BoxFit.contain,
-                  color: color,
-                  height: 20.h,
-                  width: 20.h,
+                  // color: color,
+                  height: 43.h,
+                  width: 43.h,
                 ),
               ),
             ),

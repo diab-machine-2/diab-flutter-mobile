@@ -9,6 +9,8 @@ import 'package:medical/src/model/response/detail_package_data.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/congratulation/congratulation.dart';
+import 'package:medical/src/widget/register_package/register_package_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/text_field_widget.dart';
@@ -16,12 +18,16 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'payment_package.dart';
 
 class PaymentPackagePage extends StatefulWidget {
-
   final String packageName;
   final String packageCode;
   final Price price;
 
-  const PaymentPackagePage({Key? key, required this.packageName, required this.packageCode, required this.price}) : super(key: key);
+  const PaymentPackagePage(
+      {Key? key,
+      required this.packageName,
+      required this.packageCode,
+      required this.price})
+      : super(key: key);
 
   @override
   _PaymentPackagePageState createState() => _PaymentPackagePageState();
@@ -70,7 +76,7 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
       body: CommonPage(
         background: R.drawable.bg_welcome,
         title: R.string.payment.tr(),
-        child:  Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
@@ -79,7 +85,8 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                 padding: EdgeInsets.all(16.h),
                 children: [
                   Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.h,vertical: 12.h),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.h, vertical: 12.h),
                       decoration: BoxDecoration(
                           color: R.color.white,
                           borderRadius: BorderRadius.circular(10.sp)),
@@ -115,16 +122,21 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                                     color: R.color.textDark,
                                     fontSize: 16.sp,
                                     letterSpacing: 0.4,
-                                    height: 1.375,)),
+                                    height: 1.375,
+                                  )),
                               SizedBox(width: 10),
-                              Text(R.string.number_month.tr(args: [(widget.price.monthUsed ?? 0).toString()]),
+                              Text(
+                                  R.string.number_month.tr(args: [
+                                    (widget.price.monthUsed ?? 0).toString()
+                                  ]),
                                   textAlign: TextAlign.end,
                                   style: TextStyle(
                                     color: R.color.accentColor,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20.sp,
                                     letterSpacing: 0.08,
-                                    height: 1.4,)),
+                                    height: 1.4,
+                                  )),
                             ],
                           ),
                           SizedBox(height: 14.h),
@@ -138,16 +150,20 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                                     color: R.color.textDark,
                                     fontSize: 16.sp,
                                     letterSpacing: 0.4,
-                                    height: 1.375,)),
+                                    height: 1.375,
+                                  )),
                               SizedBox(width: 10),
-                              Text(Utils.formatMoney(widget.price.totalPrice) ?? "",
+                              Text(
+                                  Utils.formatMoney(widget.price.totalPrice) ??
+                                      "",
                                   textAlign: TextAlign.end,
                                   style: TextStyle(
                                     color: R.color.accentColor,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20.sp,
                                     letterSpacing: 0.08,
-                                    height: 1.4,)),
+                                    height: 1.4,
+                                  )),
                             ],
                           ),
                         ],
@@ -160,7 +176,8 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                         fontStyle: FontStyle.italic,
                         fontSize: 14.sp,
                         letterSpacing: 0.2,
-                        height: 1.42857,)),
+                        height: 1.42857,
+                      )),
                 ],
               ),
             ),
@@ -169,10 +186,11 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
               child: ButtonWidget(
                 title: R.string.payment.tr(),
                 onPressed: () {
-                  NavigationUtil.pop(context);
+                  NavigationUtil.navigatePage(context, RegisterPackagePage(code: widget.packageCode, priceData: widget.price));
                 },
               ),
             ),
+            SizedBox(height: 20.h),
           ],
         ),
       ),

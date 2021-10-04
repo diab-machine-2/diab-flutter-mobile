@@ -12,6 +12,8 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import 'add_target_food.dart';
+
 class FoodChart extends StatefulWidget {
   FoodChart({Key? key}) : super(key: key);
   @override
@@ -92,9 +94,18 @@ class FoodChartState extends State<FoodChart>
                                 : model.carbChart.length == 0)
                             ? GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(
-                                      context, NavigatorName.add_food,
-                                      arguments: {'type': 'input', 'id': null});
+                                  // Navigator.pushNamed(
+                                  //     context, NavigatorName.add_food,
+                                  //     arguments: {'type': 'input', 'id': null});
+                                  showDialog(
+                                    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+                                    context: context,
+                                    builder: (_) => AddTargetFood(
+                                        goal: 23,
+                                        callback: (number) {
+
+                                        }),
+                                  );
                                 },
                                 child: Image.asset(
                                   R.drawable.img_food_empty,
@@ -140,12 +151,12 @@ class FoodChartState extends State<FoodChart>
     ]);
   }
 
-  showDialog(BuildContext context) {
+  // showDialog(BuildContext context) {
     //Navigator.pushNamed(context, NavigatorName.hba1c_tabble);
     // Navigator.of(context).push(PageRouteBuilder(
     //     opaque: false,
     //     pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
-  }
+  // }
 
   String getToolTips(FoodDietModel model) {
     final data = isEnergyTab

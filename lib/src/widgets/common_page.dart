@@ -26,6 +26,7 @@ class CommonPage extends StatelessWidget {
       background: background,
       child: SafeArea(
         top: true,
+        bottom: false,
         child: Column(
           children: [
             CustomAppBar(
