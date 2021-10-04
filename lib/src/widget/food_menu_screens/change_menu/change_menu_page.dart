@@ -19,7 +19,10 @@ import 'widgets/food_item_widget.dart';
 import 'widgets/tab_bar_widget.dart';
 
 class ChangeMenuPage extends StatefulWidget {
-  const ChangeMenuPage({this.foodModel, required this.hasSelectQuantity});
+  const ChangeMenuPage({
+    this.foodModel,
+    required this.hasSelectQuantity,
+  });
   final FoodModel? foodModel;
   final bool hasSelectQuantity;
 
