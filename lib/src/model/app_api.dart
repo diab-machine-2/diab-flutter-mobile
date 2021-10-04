@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'request/send_interest_request.dart';
 import 'response/diabetes_status_response.dart';
+import 'response/food_suggest_response.dart';
 import 'response/latest_hba1c_input_response.dart';
 import 'response/list_transaction_response.dart';
 import 'package:retrofit/http.dart';
@@ -61,4 +62,9 @@ abstract class AppApi {
 
   @GET("App/PatientFoodMenu/GetUserFoodMenu")
   Future<MenuResponse> getGetUserFoodMenu();
+
+  @GET("App/PatientFoodMenu/SuggestionFood/{id}")
+  Future<FoodSuggestResponse> getSuggestionFood(
+    @Path("code") String code,
+  );
 }

@@ -4,6 +4,7 @@ import 'package:medical/src/model/response/blood_sugar_template_category_respons
 import 'package:medical/src/model/response/blood_sugar_template_detail_response.dart';
 import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
+import 'package:medical/src/model/response/food_suggest_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
@@ -116,6 +117,15 @@ class AppRepository {
   Future<ApiResult<MenuResponse>> getGetUserFoodMenu() async {
     try {
       final MenuResponse response = await appClient.getGetUserFoodMenu();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<FoodSuggestResponse>> getSuggestionFood(String id) async {
+    try {
+      final FoodSuggestResponse response = await appClient.getSuggestionFood(id);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

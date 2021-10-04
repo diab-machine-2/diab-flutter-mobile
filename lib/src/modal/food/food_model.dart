@@ -40,7 +40,7 @@ class FoodModel {
     return FoodModel(
         id: json['id'],
         name: json['name'],
-        portion: json['portion'] == null ? 0 : json['portion'].toDouble() ?? 0,
+        portion: json['portion'] == null ? 1 : json['portion'].toDouble() ?? 1,
         unit: json['unit'],
         calorie: json['calorie'] == null
             ? (json['caloValue'] == null
