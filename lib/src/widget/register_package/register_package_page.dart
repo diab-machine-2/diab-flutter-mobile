@@ -50,11 +50,6 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
         create: (context) => _cubit,
         child: BlocConsumer<RegisterPackageCubit, RegisterPackageState>(
           listener: (context, state) {
-            if (state is RegisterPackageLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
             if (state is RegisterPackageFailure) {
               Message.showToastMessage(context, state.error);
             }
@@ -63,6 +58,11 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
             BuildContext context,
             RegisterPackageState state,
           ) {
+            if (state is RegisterPackageLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
             return buildPage(context, state);
           },
         ),

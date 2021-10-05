@@ -28,7 +28,6 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
   }
 
   Future<void> getTemplateDetail({bool isRefresh = false}) async {
-    await Future.delayed(Duration.zero);
     if (!isRefresh) emit(const FoodMenuLoading());
     final ApiResult<MenuResponse> apiResult =
         await repository.getGetUserFoodMenu();

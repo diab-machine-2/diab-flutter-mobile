@@ -49,16 +49,16 @@ class _CategoryMenuPageState extends State<CategoryMenuPage> {
       create: (context) => _cubit,
       child: BlocConsumer<CategoryMenuCubit, CategoryMenuState>(
         listener: (context, state) {
-          if (state is CategoryMenuLoading) {
-            BotToast.showLoading();
-          } else {
-            BotToast.closeAllLoading();
-          }
           if (state is CategoryMenuFailure) {
             Message.showToastMessage(context, state.error);
           }
         },
         builder: (context, state) {
+          if (state is CategoryMenuLoading) {
+            BotToast.showLoading();
+          } else {
+            BotToast.closeAllLoading();
+          }
           return GestureDetector(
             onTap: () {
               Navigator.pop(context);

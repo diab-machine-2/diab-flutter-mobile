@@ -51,6 +51,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
     AppRepository repository = AppRepository();
     _cubit = UpgradeAccountCubit(repository);
     _cubit.getUpgradeAccount(widget.code);
+    // BotToast.showLoading();
   }
 
   @override
@@ -60,12 +61,6 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
         create: (context) => _cubit,
         child: BlocConsumer<UpgradeAccountCubit, UpgradeAccountState>(
           listener: (context, state) {
-            if (state is UpgradeAccountLoading) {
-              BotToast.showLoading();
-            } else {
-              _controller.refreshCompleted();
-              BotToast.closeAllLoading();
-            }
             if (state is UpgradeAccountFailure) {
               Message.showToastMessage(context, state.error);
             }
@@ -74,6 +69,12 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
             BuildContext context,
             UpgradeAccountState state,
           ) {
+            if (state is UpgradeAccountLoading) {
+              BotToast.showLoading();
+            } else {
+              _controller.refreshCompleted();
+              BotToast.closeAllLoading();
+            }
             return buildPage(context, state);
           },
         ),
@@ -149,6 +150,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
               visible: widget.code == Const.PREMIUM,
               child: Container(
                   decoration: BoxDecoration(
+                      color: R.color.white,
                       boxShadow: [
                         BoxShadow(
                           color: R.color.grayBorder,
@@ -404,7 +406,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       child: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(topRight: Radius.circular(10.h)),
+            borderRadius: BorderRadius.only(topRight: Radius.circular(widget.code == Const.PREMIUM ? 0 : 10.h)),
             color: R.color.color0xffB1DDDB),
         child: Text(R.string.diab_pro.tr(),
             textAlign: TextAlign.center,
@@ -420,7 +422,9 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
         tableCell(
           child: Container(
             alignment: Alignment.center,
-            decoration: BoxDecoration(color: R.color.color0xffB1DDDB),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(topRight: Radius.circular(10.h)),
+                color: R.color.color0xffB1DDDB),
             child: Text(R.string.diab_premium.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -433,80 +437,105 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       );
     }
     listRow.add(TableRow(children: listCell));
+
     listRow.addAll(listData.map((e) {
       int index = listData.indexOf(e);
       bool isLast = index + 1 == listData.length;
-      return TableRow(children: [
-        tableCell(
-          child: Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    bottomLeft: !isLast ? Radius.zero : Radius.circular(10.h)),
-                color:
-                    index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
-            padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.h),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                GestureDetector(
-                    onTap: () {
-                      showDescriptionPopup(e);
-                    },
-                    child: Image.asset(
-                      R.drawable.ic_question_circle,
-                      color: R.color.accentColor,
-                      fit: BoxFit.fill,
-                      height: 24.h,
-                    )),
-                SizedBox(
-                  width: 16.w,
-                ),
-                Expanded(
-                  child: Text(
-                    e.name ?? "",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16.sp,
-                    ),
+      final List<Widget> listCell = [];
+      listCell.add(tableCell(
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  bottomLeft: !isLast ? Radius.zero : Radius.circular(10.h)),
+              color:
+              index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
+          padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.h),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                  onTap: () {
+                    showDescriptionPopup(e);
+                  },
+                  child: Image.asset(
+                    R.drawable.ic_question_circle,
+                    color: R.color.accentColor,
+                    fit: BoxFit.fill,
+                    height: 24.h,
+                  )),
+              SizedBox(
+                width: 16.w,
+              ),
+              Expanded(
+                child: Text(
+                  e.name ?? "",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 16.sp,
                   ),
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
         ),
-        tableCell(
-          child: Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color:
-                    index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
-            child: Image.asset(
-              e.toggleStatus?.isEnableBasic == true
-                  ? R.drawable.ic_mark
-                  : R.drawable.ic_x,
-              height: 26.h,
+      ),);
+      if (widget.code == Const.PRO) {
+        listCell.add(
+          tableCell(
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color:
+                  index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
+              child: Image.asset(
+                e.toggleStatus?.isEnableBasic == true
+                    ? R.drawable.ic_mark
+                    : R.drawable.ic_x,
+                height: 26.h,
+              ),
             ),
           ),
-        ),
-        tableCell(
-          child: Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    bottomRight: !isLast ? Radius.zero : Radius.circular(10.h)),
-                color:
-                    index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
-            child: Image.asset(
-              e.toggleStatus?.isEnablePro == true
-                  ? R.drawable.ic_mark
-                  : R.drawable.ic_x,
-              height: 26.h,
-            ),
+        );
+      }
+      listCell.add(tableCell(
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  bottomRight: (!isLast || widget.code == Const.PREMIUM) ? Radius.zero : Radius.circular(10.h)),
+              color:
+              index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
+          child: Image.asset(
+            e.toggleStatus?.isEnablePro == true
+                ? R.drawable.ic_mark
+                : R.drawable.ic_x,
+            height: 26.h,
           ),
         ),
-      ]);
+      ),);
+      if (widget.code == Const.PREMIUM) {
+        listCell.add(
+          tableCell(
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      bottomRight: !isLast ? Radius.zero : Radius.circular(10.h)),
+                  color:
+                  index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
+              child: Image.asset(
+                e.toggleStatus?.isEnablePremium == true
+                    ? R.drawable.ic_mark
+                    : R.drawable.ic_x,
+                height: 26.h,
+              ),
+            ),
+          ),
+        );
+      }
+      return TableRow(children: listCell);
     }));
     return Table(
       border: TableBorder(),
@@ -514,7 +543,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       columnWidths: {
         0: FlexColumnWidth(), // fixed to 100 width
         1: FixedColumnWidth(70.h),
-        2: FixedColumnWidth(50.h), //fixed to 100 width
+        2: FixedColumnWidth(60.h), //fixed to 100 width
       },
       children: listRow,
     );

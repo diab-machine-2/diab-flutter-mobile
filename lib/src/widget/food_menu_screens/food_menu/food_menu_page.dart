@@ -56,17 +56,17 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
         create: (context) => _cubit,
         child: BlocConsumer<FoodMenuCubit, FoodMenuState>(
           listener: (context, state) {
+            if (state is FoodMenuFailure) {
+              Message.showToastMessage(context, state.error);
+            }
+          },
+          builder: (context, state) {
             if (state is FoodMenuLoading) {
               BotToast.showLoading();
             } else {
               _controller.refreshCompleted();
               BotToast.closeAllLoading();
             }
-            if (state is FoodMenuFailure) {
-              Message.showToastMessage(context, state.error);
-            }
-          },
-          builder: (context, state) {
             return CommonPage(
               title: R.string.food_menu.tr(),
               background: R.drawable.bg_detail_pro,

@@ -43,11 +43,6 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
         create: (context) => _cubit,
         child: BlocConsumer<IntroSampleMenuCubit, IntroSampleMenuState>(
           listener: (context, state) {
-            if (state is IntroSampleMenuLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
             if (state is IntroSampleMenuFailure) {
               Message.showToastMessage(context, state.error);
             }
@@ -56,6 +51,11 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
             BuildContext context,
             IntroSampleMenuState state,
           ) {
+            if (state is IntroSampleMenuLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
             return buildPage(context, state);
           },
         ),

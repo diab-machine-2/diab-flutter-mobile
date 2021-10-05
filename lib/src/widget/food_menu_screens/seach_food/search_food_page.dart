@@ -51,16 +51,16 @@ class _SearchFoodPageState extends State<SearchFoodPage> {
         create: (context) => _cubit,
         child: BlocConsumer<SearchFoodCubit, SearchFoodState>(
           listener: (context, state) {
-            if (state is SearchFoodLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
             if (state is SearchFoodFailure) {
               Message.showToastMessage(context, state.error);
             }
           },
           builder: (context, state) {
+            if (state is SearchFoodLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
             return CommonPage(
               title: R.string.choose_alternative_dish.tr(),
               background: R.drawable.bg_detail_pro,
