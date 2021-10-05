@@ -443,7 +443,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                             .navigatePage(
                                                       context,
                                                       ChangeMenuPage(
-                                                        foodModel: selectedFoods[index],
+                                                        selectedFood: selectedFoods[index],
                                                         hasSelectQuantity: true,
                                                       ),
                                                     );

@@ -17,10 +17,12 @@ import 'search_food.dart';
 
 class SeachFoodPage extends StatefulWidget {
   const SeachFoodPage({
+    required this.selectedFood,
     required this.onConfirm,
     required this.hasSelectQuantity,
   });
 
+  final FoodModel? selectedFood;
   final Function(FoodModel foodModel) onConfirm;
   final bool hasSelectQuantity;
 
@@ -136,7 +138,8 @@ class _SeachFoodPageState extends State<SeachFoodPage> {
                                 );
                               } else {
                                 return FoodItemWidget(
-                                  model: _cubit.foods[index],
+                                  foodModel: _cubit.foods[index],
+                                  isSelected: _cubit.foods[index].id == widget.selectedFood?.id,
                                   onFavorite: () async {
                                     _cubit.toogleFavorite(index);
                                   },

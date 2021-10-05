@@ -111,6 +111,7 @@ class Drawables {
 	String get ic_folder => "lib/res/drawables/ic_folder.png";
 	String get ic_food_action => "lib/res/drawables/ic_food_action.png";
 	String get ic_food_and_excersire => "lib/res/drawables/ic_food_and_excersire.png";
+	String get ic_food_default => "lib/res/drawables/ic_food_default.png";
 	String get ic_food_menu => "lib/res/drawables/ic_food_menu.png";
 	String get ic_gender => "lib/res/drawables/ic_gender.png";
 	String get ic_glucose => "lib/res/drawables/ic_glucose.png";

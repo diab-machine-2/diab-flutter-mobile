@@ -68,8 +68,7 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
         emit(const ChangeMenuSuccess());
       }
     }, failure: (NetworkExceptions error) {
-      emit(ChangeMenuFailure(
-          NetworkExceptions.getErrorMessage(error)));
+      emit(ChangeMenuFailure(NetworkExceptions.getErrorMessage(error)));
     });
     emit(const ChangeMenuInitial());
   }
@@ -156,15 +155,9 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
     }
   }
 
-  Future<void> onChoseFood({
-    required FoodModel foodModel,
-    required bool hasSelectQuantity,
-  }) async {
-    selectedFood = foodModel;
-    if (!hasSelectQuantity) {
-      emit(const ChangeMenuLoading());
-      await Future.delayed(const Duration(seconds: 2));
-    }
+  Future<void> onChoseFood({required FoodModel selectedFood}) async {
+    selectedFood = selectedFood;
     emit(const ChangeMenuDone());
+    emit(const ChangeMenuInitial());
   }
 }

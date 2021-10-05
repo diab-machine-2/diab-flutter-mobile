@@ -136,14 +136,18 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                       mealData: _cubit
                                           .listDayFood[_cubit.currentDayInWeek]
                                           ?.timeGroups?[index],
-                                      onChangeFood: (foodModel) {
-                                        NavigationUtil.navigatePage(
+                                      onChangeFood: (foodModel) async {
+                                        final dynamic result =
+                                            await NavigationUtil.navigatePage(
                                           context,
                                           ChangeMenuPage(
-                                            foodModel: foodModel,
+                                            selectedFood: foodModel,
                                             hasSelectQuantity: false,
                                           ),
                                         );
+                                        if (result is FoodModel) {
+                                          //TODO: Tuyen Handle new food
+                                        }
                                       });
                                 }).toList(),
                                 Padding(
@@ -356,9 +360,11 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                     imageUrl: foodDetail?.foodImgUrl ?? '',
                     width: 50,
                     height: 50,
+                    placeholder: (_, __) {
+                      return const Center(child: CircularProgressIndicator());
+                    },
                     errorWidget: (_, __, ___) {
-                      //TODO: Tuyen add error image here
-                      return Image.asset(R.drawable.ic_photo);
+                      return Image.asset(R.drawable.ic_food_default);
                     },
                   )),
               SizedBox(width: 16.w),

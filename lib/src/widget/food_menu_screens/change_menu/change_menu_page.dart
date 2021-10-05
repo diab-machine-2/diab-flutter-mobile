@@ -20,10 +20,10 @@ import 'widgets/tab_bar_widget.dart';
 
 class ChangeMenuPage extends StatefulWidget {
   const ChangeMenuPage({
-    this.foodModel,
+    required this.selectedFood,
     required this.hasSelectQuantity,
   });
-  final FoodModel? foodModel;
+  final FoodModel? selectedFood;
   final bool hasSelectQuantity;
 
   @override
@@ -127,10 +127,10 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
           await NavigationUtil.navigatePage(
             context,
             SeachFoodPage(
-              onConfirm: (foodModel) {
+              selectedFood: widget.selectedFood,
+              onConfirm: (selectedFood) {
                 _cubit.onChoseFood(
-                  foodModel: foodModel,
-                  hasSelectQuantity: widget.hasSelectQuantity,
+                  selectedFood: selectedFood,
                 );
               },
               hasSelectQuantity: widget.hasSelectQuantity,
@@ -207,14 +207,14 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
             );
           } else {
             return FoodItemWidget(
-              model: foods[index],
+              foodModel: foods[index],
+              isSelected: foods[index].id == widget.selectedFood?.id,
               onFavorite: () {
                 _cubit.toogleFavorite(index);
               },
               onConfirm: (foodModel) {
                 _cubit.onChoseFood(
-                  foodModel: foodModel,
-                  hasSelectQuantity: widget.hasSelectQuantity,
+                  selectedFood: foodModel,
                 );
               },
               hasSelectQuantity: widget.hasSelectQuantity,
@@ -289,7 +289,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
                                     child: CircularProgressIndicator());
                               },
                               errorWidget: (_, __, ___) {
-                                return Image.asset(R.drawable.ic_photo);
+                                return Image.asset(R.drawable.ic_food_default);
                               },
                             ),
                           ),
@@ -325,11 +325,11 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => CategoryMenuPage(
+        selectedFood: widget.selectedFood,
         category: category,
         onTapYes: (foodModel) {
           _cubit.onChoseFood(
-            foodModel: foodModel,
-            hasSelectQuantity: widget.hasSelectQuantity,
+            selectedFood: foodModel,
           );
         },
         hasSelectQuantity: widget.hasSelectQuantity,
