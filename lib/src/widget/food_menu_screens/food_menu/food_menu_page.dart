@@ -152,17 +152,19 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                       mealData: _cubit
                                           .listDayFood[_cubit.currentDayInWeek]
                                           ?.timeGroups?[index],
-                                      onChangeFood: (foodModel) async {
+                                      onChangeFood: (foodDetail) async {
                                         final dynamic result =
                                             await NavigationUtil.navigatePage(
                                           context,
                                           ChangeMenuPage(
-                                            selectedFood: foodModel,
+                                            selectedFood: foodDetail?.foodModel,
                                             hasSelectQuantity: false,
                                           ),
                                         );
                                         if (result is FoodModel) {
-                                          //TODO: Tuyen Handle new food
+                                          _cubit.changeFood(
+                                              foodId: foodDetail?.id,
+                                              newFoodModel: result);
                                         }
                                       });
                                 }).toList(),
@@ -282,7 +284,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
 
   Widget _buildMealWidget({
     required MenuResponseListdayfoodTimeGroups? mealData,
-    Function(FoodModel? foodModel)? onChangeFood,
+    Function(MenuResponseListdayfoodTimeGroupsDefaultFood? foodDetail)?
+        onChangeFood,
   }) {
     return Container(
       margin: EdgeInsets.only(top: 20.h),
@@ -356,13 +359,15 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
 
   List<Widget> _buildListFoodWidget({
     required List<MenuResponseListdayfoodTimeGroupsDefaultFood?>? foods,
-    Function(FoodModel? foodModel)? onChangeFood,
+    Function(MenuResponseListdayfoodTimeGroupsDefaultFood? foodDetail)?
+        onChangeFood,
   }) {
     if (foods == null || foods.isEmpty) return [];
     return List.generate((foods.length * 2) - 1, (index) {
       return index.isEven
           ? _buildSingleFoodWidget(
               foodDetail: foods[index ~/ 2],
+              isSingleFoodMeal: foods.length == 1,
               onChangeFood: onChangeFood,
             )
           : Container(
@@ -374,7 +379,9 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
 
   Widget _buildSingleFoodWidget({
     MenuResponseListdayfoodTimeGroupsDefaultFood? foodDetail,
-    Function(FoodModel? foodModel)? onChangeFood,
+    required bool isSingleFoodMeal,
+    Function(MenuResponseListdayfoodTimeGroupsDefaultFood? foodDetail)?
+        onChangeFood,
   }) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
@@ -426,13 +433,27 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+                    Visibility(
+                      visible: isSingleFoodMeal,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 4.h),
+                        child: Text(
+                          '${foodDetail?.portion} ${foodDetail?.foodUnitName}',
+                          style: TextStyle(
+                            color: R.color.color0xff454649,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
               GestureDetector(
                 onTap: () {
                   if (onChangeFood != null) {
-                    onChangeFood(foodDetail?.foodModel);
+                    onChangeFood(foodDetail);
                   }
                 },
                 child: Image.asset(
@@ -444,47 +465,50 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             ],
           ),
           SizedBox(height: 8.h),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                Text(
-                  '${foodDetail?.portion} ${foodDetail?.foodUnitName}',
-                  style: TextStyle(
-                    color: R.color.color0xff454649,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w400,
+          Visibility(
+            visible: !isSingleFoodMeal,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  Text(
+                    '${foodDetail?.portion} ${foodDetail?.foodUnitName}',
+                    style: TextStyle(
+                      color: R.color.color0xff454649,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Icon(Icons.brightness_1,
-                      size: 4, color: R.color.greenGradientBottom),
-                ),
-                Text(
-                  R.string.total_kcals
-                      .tr(args: ['${foodDetail?.calorie ?? 0.0}']),
-                  style: TextStyle(
-                    color: R.color.color0xff454649,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w400,
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Icon(Icons.brightness_1,
+                        size: 4, color: R.color.greenGradientBottom),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Icon(Icons.brightness_1,
-                      size: 4.w, color: R.color.greenGradientBottom),
-                ),
-                Text(
-                  R.string.total_starch
-                      .tr(args: ['${foodDetail?.glucose ?? 0.0}']),
-                  style: TextStyle(
-                    color: R.color.color0xff454649,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w400,
+                  Text(
+                    R.string.total_kcals
+                        .tr(args: ['${foodDetail?.calorie ?? 0.0}']),
+                    style: TextStyle(
+                      color: R.color.color0xff454649,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                ),
-              ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Icon(Icons.brightness_1,
+                        size: 4.w, color: R.color.greenGradientBottom),
+                  ),
+                  Text(
+                    R.string.total_starch
+                        .tr(args: ['${foodDetail?.glucose ?? 0.0}']),
+                    style: TextStyle(
+                      color: R.color.color0xff454649,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           SizedBox(height: 4.h),

@@ -1,4 +1,5 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
+import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/blood_sugar_template_category_response.dart';
@@ -158,6 +159,10 @@ class AppRepository {
     }
   }
 
+  /**
+   * Food Menu
+   */
+
   Future<ApiResult<MenuResponse>> getGetUserFoodMenu() async {
     try {
       final MenuResponse response = await appClient.getGetUserFoodMenu();
@@ -171,6 +176,21 @@ class AppRepository {
     try {
       final FoodSuggestResponse response = await appClient.getSuggestionFood(id);
       return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> changeFood(
+      FoodChangeRequest request) async {
+    try {
+      final CommonResponse response = await appClient.changeFood(request);
+      if (response.error == null)
+        return ApiResult.success(data: response);
+      else
+        return ApiResult.failure(
+            error:
+                NetworkExceptions.defaultError(response.error!.message ?? ""));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
