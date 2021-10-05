@@ -11,9 +11,11 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/detail_package/detail_package.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/upgrade_account/upgrade_account.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/common_page.dart';
 
 import 'list_service.dart';
 
@@ -43,13 +45,13 @@ class _ListServicePageState extends State<ListServicePage> {
         create: (context) => _cubit,
         child: BlocConsumer<ListServiceCubit, ListServiceState>(
           listener: (context, state) {
-            if (state is ListServiceFailure) {
-              Utils.showErrorSnackBar(context, state.error);
-            }
             if (state is ListServiceLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
+            }
+            if (state is ListServiceFailure) {
+              Message.showToastMessage(context, state.error);
             }
           },
           builder: (
@@ -65,20 +67,18 @@ class _ListServicePageState extends State<ListServicePage> {
 
   Widget buildPage(BuildContext context, ListServiceState state) {
     return Scaffold(
-      body: BackgroundPage(
-        background: R.drawable.bg_upgrade_account,
+      body: CommonPage(
+        title: R.string.list_service.tr(),
+        background: R.drawable.bg_welcome,
         child: Container(
           padding: EdgeInsets.all(16.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                margin: EdgeInsets.only(top: 50.h),
-                child: Image.asset(
-                  R.drawable.img_list_service,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                ),
+              Image.asset(
+                R.drawable.img_list_service,
+                fit: BoxFit.cover,
+                width: double.infinity,
               ),
               Container(
                   margin: EdgeInsets.only(top: 32.h, left: 8.h, right: 8.h),

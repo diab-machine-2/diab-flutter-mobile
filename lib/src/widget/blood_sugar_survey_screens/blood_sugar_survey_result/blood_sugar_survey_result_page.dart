@@ -8,6 +8,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description_detail.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/blood_sugar_result_layout_widget.dart';
 import 'package:medical/src/widgets/expandable_rich_text.dart';
 
@@ -43,7 +44,7 @@ class _BloodSugarSurveyResultPageState
           BloodSugarSurveyResultState>(
         listener: (context, state) {
           if (state is BloodSugarSurveyResultFailure) {
-            Utils.showErrorSnackBar(context, state.error ?? '');
+            Message.showToastMessage(context, state.error ?? '');
           }
         },
         builder: (context, state) {

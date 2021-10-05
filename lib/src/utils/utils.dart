@@ -39,7 +39,7 @@ class Utils {
   static void showSnackBar(BuildContext context, String text) {
     final snackBar = SnackBar(
       content: Text(text),
-      backgroundColor: R.color.primaryColor,
+      backgroundColor: R.color.accentColor,
     );
     Scaffold.of(context).showSnackBar(snackBar);
   }

@@ -23,8 +23,8 @@ class UpgradeAccountCubit extends Cubit<UpgradeAccountState> {
 
   UpgradeAccountCubit(this.appRepository) : super(UpgradeAccountInitial());
 
-  void getUpgradeAccount(String code) async {
-    emit(UpgradeAccountLoading());
+  void getUpgradeAccount(String code, {bool isRefresh = false}) async {
+    emit(isRefresh ? UpgradeAccountInitial() : UpgradeAccountLoading());
     ApiResult<DetailPackageResponse> apiResult = await appRepository.getDetailPackage(code);
     apiResult.when(success: (DetailPackageResponse response) {
       data = response.data;

@@ -10,6 +10,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/congratulation/congratulation.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/register_package/register_package_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -51,13 +52,13 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
         create: (context) => _cubit,
         child: BlocConsumer<PaymentPackageCubit, PaymentPackageState>(
           listener: (context, state) {
-            if (state is PaymentPackageFailure) {
-              Utils.showErrorSnackBar(context, state.error);
-            }
             if (state is PaymentPackageLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
+            }
+            if (state is PaymentPackageFailure) {
+              Message.showToastMessage(context, state.error);
             }
           },
           builder: (

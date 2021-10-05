@@ -75,6 +75,21 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<GetOwnPackageCodeResponse> getOwnPackageCode() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<GetOwnPackageCodeResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/PackageAccount/GetOwnPackageCode',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = GetOwnPackageCodeResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<ListTransactionResponse> getListTransaction(
       isExpired, page, size) async {
     const _extra = <String, dynamic>{};

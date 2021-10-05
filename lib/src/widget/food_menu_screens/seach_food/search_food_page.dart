@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,14 +10,14 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/debouncer.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/components/load_more.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/common_page.dart';
-import 'package:medical/src/widgets/stack_loading_view.dart';
 
 import '../change_menu/widgets/food_item_widget.dart';
 import 'search_food.dart';
 
-class SeachFoodPage extends StatefulWidget {
-  const SeachFoodPage({
+class SearchFoodPage extends StatefulWidget {
+  const SearchFoodPage({
     required this.onConfirm,
     required this.hasSelectQuantity,
   });
@@ -25,10 +26,10 @@ class SeachFoodPage extends StatefulWidget {
   final bool hasSelectQuantity;
 
   @override
-  _SeachFoodPageState createState() => _SeachFoodPageState();
+  _SearchFoodPageState createState() => _SearchFoodPageState();
 }
 
-class _SeachFoodPageState extends State<SeachFoodPage> {
+class _SearchFoodPageState extends State<SearchFoodPage> {
   late final SearchFoodCubit _cubit;
   TextEditingController controller = TextEditingController();
   final _debouncer = Debouncer(milliseconds: 500);
@@ -47,113 +48,119 @@ class _SeachFoodPageState extends State<SeachFoodPage> {
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocConsumer<SearchFoodCubit, SearchFoodState>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            if (state is SearchFoodLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
+            if (state is SearchFoodFailure) {
+              Message.showToastMessage(context, state.error);
+            }
+          },
           builder: (context, state) {
-            return StackLoadingView(
-              visibleLoading: state is SearchFoodLoading,
-              child: CommonPage(
-                title: R.string.choose_alternative_dish.tr(),
-                background: R.drawable.bg_detail_pro,
-                icon: Icons.clear_rounded,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16, right: 16, top: 8, bottom: 16),
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 48,
-                          decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                  color: R.color.grayComponentBorder)),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 16, right: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: CupertinoTextField(
-                                    autofocus: true,
-                                    controller: controller,
-                                    placeholder: R.string.tim_kiem_mon_an.tr(),
-                                    decoration:
-                                        const BoxDecoration(border: null),
-                                    onChanged: (value) {
-                                      _debouncer.run(() {
-                                        _cubit.searchFood(keyWord: value);
-                                      });
-                                    },
-                                  ),
+            return CommonPage(
+              title: R.string.choose_alternative_dish.tr(),
+              background: R.drawable.bg_detail_pro,
+              icon: Icons.clear_rounded,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, top: 8, bottom: 16),
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        height: 48,
+                        decoration: BoxDecoration(
+                            color: R.color.white,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                                color: R.color.grayComponentBorder)),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 16, right: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: CupertinoTextField(
+                                  autofocus: true,
+                                  controller: controller,
+                                  placeholder: R.string.tim_kiem_mon_an.tr(),
+                                  decoration:
+                                      const BoxDecoration(border: null),
+                                  onChanged: (value) {
+                                    _debouncer.run(() {
+                                      _cubit.searchFood(keyWord: value);
+                                    });
+                                  },
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Image.asset(R.drawable.ic_clear,
-                                      width: 35, height: 35),
-                                )
-                              ],
-                            ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Image.asset(R.drawable.ic_clear,
+                                    width: 35, height: 35),
+                              )
+                            ],
                           ),
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          _cubit.searchFood();
+                  ),
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        _cubit.searchFood();
+                      },
+                      child: LoadMore(
+                        onLoadMore: () async {
+                          return _cubit.searchFood(isLoadMore: true);
                         },
-                        child: LoadMore(
-                          onLoadMore: () async {
-                            return _cubit.searchFood(isLoadMore: true);
+                        isFinish: !_cubit.hasMore,
+                        whenEmptyLoad: false,
+                        delegate: const CustomLoadMoreDelegate(),
+                        textBuilder: DefaultLoadMoreTextBuilder.english,
+                        child: ListView.separated(
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          itemCount:
+                              _cubit.foods.isEmpty ? 1 : _cubit.foods.length,
+                          separatorBuilder:
+                              (BuildContext context, int index) {
+                            return Container(
+                                height: 1, color: R.color.color0xffE5E5E5);
                           },
-                          isFinish: !_cubit.hasMore,
-                          whenEmptyLoad: false,
-                          delegate: const CustomLoadMoreDelegate(),
-                          textBuilder: DefaultLoadMoreTextBuilder.english,
-                          child: ListView.separated(
-                            keyboardDismissBehavior:
-                                ScrollViewKeyboardDismissBehavior.onDrag,
-                            shrinkWrap: true,
-                            padding: EdgeInsets.zero,
-                            itemCount:
-                                _cubit.foods.isEmpty ? 1 : _cubit.foods.length,
-                            separatorBuilder:
-                                (BuildContext context, int index) {
-                              return Container(
-                                  height: 1, color: R.color.color0xffE5E5E5);
-                            },
-                            itemBuilder: (BuildContext context, int index) {
-                              if (_cubit.foods.isEmpty) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 64, right: 64, top: 100),
-                                  child: Image.asset(
-                                      R.drawable.img_near_food_empty),
-                                );
-                              } else {
-                                return FoodItemWidget(
-                                  model: _cubit.foods[index],
-                                  onFavorite: () async {
-                                    _cubit.toogleFavorite(index);
-                                  },
-                                  onConfirm: (foodModel) {
-                                    widget.onConfirm(foodModel);
-                                    NavigationUtil.pop(context);
-                                  },
-                                  hasSelectQuantity: widget.hasSelectQuantity,
-                                );
-                              }
-                            },
-                          ),
+                          itemBuilder: (BuildContext context, int index) {
+                            if (_cubit.foods.isEmpty) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 64, right: 64, top: 100),
+                                child: Image.asset(
+                                    R.drawable.img_near_food_empty),
+                              );
+                            } else {
+                              return FoodItemWidget(
+                                model: _cubit.foods[index],
+                                onFavorite: () async {
+                                  _cubit.toogleFavorite(index);
+                                },
+                                onConfirm: (foodModel) {
+                                  widget.onConfirm(foodModel);
+                                  NavigationUtil.pop(context);
+                                },
+                                hasSelectQuantity: widget.hasSelectQuantity,
+                              );
+                            }
+                          },
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           },

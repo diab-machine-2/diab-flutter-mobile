@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -40,13 +41,13 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
         create: (context) => _cubit,
         child: BlocConsumer<WelcomeServiceCubit, WelcomeServiceState>(
           listener: (context, state) {
-            if (state is WelcomeServiceFailure) {
-              Utils.showErrorSnackBar(context, state.error);
-            }
             if (state is WelcomeServiceLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
+            }
+            if (state is WelcomeServiceFailure) {
+              Message.showToastMessage(context, state.error);
             }
           },
           builder: (
