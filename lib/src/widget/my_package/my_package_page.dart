@@ -88,7 +88,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
               visible: isBasic,
               child: UpgradePackageWidget(
                 onClickUpgrade: () {
-                  Utils.navigatePage(
+                  NavigationUtil.navigatePage(
                       context, UpgradeAccountPage(code: Const.PRO));
                 },
               ),
@@ -108,7 +108,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                       child: ButtonWidget(
                         title: R.string.renewal_package_pro.tr(),
                         onPressed: () {
-                          Utils.navigatePage(
+                          NavigationUtil.navigatePage(
                               context, UpgradeAccountPage(code: Const.PRO));
                         },
                       ),
@@ -371,7 +371,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                               height: 32.h,
                               onPressed: () {
                                 if (!Utils.isEmpty(data.packageCode))
-                                Utils.navigatePage(
+                                  NavigationUtil.navigatePage(
                                     context, UpgradeAccountPage(code: data.packageCode!));
                               },
                             ),

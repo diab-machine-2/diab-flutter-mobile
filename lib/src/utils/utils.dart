@@ -137,14 +137,14 @@ class Utils {
               content: Text(contentText!),
               actions: [
                 FlatButton(
-                  onPressed: () => popDialog(context),
+                  onPressed: () =>  Navigator.of(context).pop(),
                   child: Text(R.string.close.tr()),
                 ),
                 Visibility(
                   visible: isEmpty(submitText),
                   child: FlatButton(
                     onPressed: () {
-                      popDialog(context);
+                      Navigator.of(context).pop();
                       submitCallback!();
                     },
                     child: Text(submitText!),
@@ -177,7 +177,7 @@ class Utils {
                   visible: isEmpty(submitText),
                   child: FlatButton(
                     onPressed: () {
-                      popDialog(context);
+                      Navigator.of(context).pop();
                       submitCallback!();
                     },
                     child: Text(submitText!),
@@ -201,48 +201,6 @@ class Utils {
               content: contentWidget,
               actions: actions);
         }));
-  }
-
-  static Future pushAndRemoveUtilPage(BuildContext context, Widget widget) {
-    return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => widget),
-        (Route<dynamic> route) => false);
-  }
-
-  static Future pushAndRemoveUtilKeepFirstPage(
-      BuildContext context, Widget widget) {
-    return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => widget),
-        ModalRoute.withName(Navigator.defaultRouteName));
-  }
-
-  static void popToFirst(BuildContext context) {
-    return Navigator.of(context)
-        .popUntil((Route<dynamic> route) => route.isFirst);
-  }
-
-  static void popByTime(BuildContext context, int count, {dynamic result}) {
-    for (int i = 0; i < count - 1; i++) Navigator.of(context).pop();
-
-    Navigator.of(context).pop(result);
-  }
-
-  static void popUtil(BuildContext context) {
-    return Navigator.of(context).popUntil((Route<dynamic> route) => false);
-  }
-
-  static void popDialog(BuildContext context) {
-    return Navigator.of(context, rootNavigator: true).pop('dialog');
-  }
-
-  static Future navigatePage(BuildContext context, Widget widget) {
-    return Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => widget));
-  }
-
-  static Future rootNavigatePage(BuildContext context, Widget widget) {
-    return Navigator.of(context, rootNavigator: true)
-        .push(MaterialPageRoute(builder: (context) => widget));
   }
 
   static navigateNextFocusChange(

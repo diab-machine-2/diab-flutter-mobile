@@ -209,7 +209,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
             visible: data?.code == Const.PRO,
             child: Container(
                 width: double.infinity,
-                height: 80.h,
+                padding: EdgeInsets.symmetric(vertical: 24.h),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                     color: R.color.white,
@@ -250,7 +250,8 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                     ),
                   ],
                 )),
-          )
+          ),
+          SizedBox(height: 10.h,),
         ],
       ),
     );

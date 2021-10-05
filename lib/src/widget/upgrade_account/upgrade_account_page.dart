@@ -232,6 +232,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                     },
                   )),
             ),
+            SizedBox(height: 10.h,),
           ],
         ),
       ),

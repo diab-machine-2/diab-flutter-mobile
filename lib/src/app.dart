@@ -66,6 +66,7 @@ import 'package:medical/src/widget/upgrade_account/upgrade_account_page.dart';
 import 'package:medical/src/widget/welcome_service/welcome_service_page.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'model/service/app_client.dart';
 import 'widget/list_service/list_service_page.dart';
 import 'utils/navigator_name.dart';
 import 'widget/profile/profile_controller.dart';
@@ -81,6 +82,7 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
+    AppClient();
   }
 
   @override
