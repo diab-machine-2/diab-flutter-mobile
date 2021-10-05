@@ -13,6 +13,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/kcal_parameter/kcal_parameter.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../change_menu/change_menu.dart';
 import 'day_in_week_buttons.dart';
@@ -27,6 +28,8 @@ class FoodMenuPage extends StatefulWidget {
 
 class _FoodMenuPageState extends State<FoodMenuPage> {
   late final FoodMenuCubit _cubit;
+  final RefreshController _controller = RefreshController();
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +59,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             if (state is FoodMenuLoading) {
               BotToast.showLoading();
             } else {
+              _controller.refreshCompleted();
               BotToast.closeAllLoading();
             }
             if (state is FoodMenuFailure) {
@@ -66,156 +70,162 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             return CommonPage(
               title: R.string.food_menu.tr(),
               background: R.drawable.bg_detail_pro,
-              child: _cubit.listDayFood.isEmpty
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(67.w, 100.h, 67.w, 52.h),
-                          child: Image.asset(R.drawable.img_cooking),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 28.w),
-                          child: Text(
-                            R.string.food_menu_empty.tr(),
-                            style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.center,
+              child: SmartRefresher(
+                controller: _controller,
+                onRefresh: () => _cubit.getTemplateDetail(isRefresh: true),
+                child: _cubit.listDayFood.isEmpty
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding:
+                                EdgeInsets.fromLTRB(67.w, 100.h, 67.w, 52.h),
+                            child: Image.asset(R.drawable.img_cooking),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            updateKcal(context);
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(top: 24.h),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 8.h),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(200),
-                              border: Border.all(
-                                width: 2,
-                                color: R.color.greenGradientBottom,
-                              ),
-                            ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 28.w),
                             child: Text(
-                              R.string.change_food_info.tr(),
+                              R.string.food_menu_empty.tr(),
                               style: TextStyle(
-                                color: R.color.greenGradientBottom,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w700,
+                                color: R.color.textDark,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              updateKcal(context);
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(top: 24.h),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w, vertical: 8.h),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(200),
+                                border: Border.all(
+                                  width: 2,
+                                  color: R.color.greenGradientBottom,
+                                ),
+                              ),
+                              child: Text(
+                                R.string.change_food_info.tr(),
+                                style: TextStyle(
+                                  color: R.color.greenGradientBottom,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    )
-                  : Column(
-                      children: [
-                        _buildTitle(
-                            title: _cubit.menuResponseFood?.menuTitle ?? '',
-                            onUpdateKcal: () {
-                              updateKcal(context);
-                            }),
-                        DayInWeekButtons(
-                            initDay: _cubit.currentDayInWeek,
-                            onSlectDay: (dayIndex) {
-                              _cubit.onChangeDay(dayIndex);
-                            }),
-                        //Divider
-                        Container(
-                          margin: EdgeInsets.only(top: 10.h),
-                          color: R.color.color0xffE5E5E5,
-                          height: 1,
-                          width: double.infinity,
-                        ),
-                        Expanded(
-                          child: ListView(
-                            padding: EdgeInsets.fromLTRB(16.w, 0, 16.h, 32.h),
-                            children: [
-                              ...List.generate(
-                                  _cubit.listDayFood[_cubit.currentDayInWeek]
-                                          ?.timeGroups?.length ??
-                                      0, (index) {
-                                return _buildMealWidget(
-                                    mealData: _cubit
-                                        .listDayFood[_cubit.currentDayInWeek]
-                                        ?.timeGroups?[index],
-                                    onChangeFood: (foodModel) async {
-                                      final dynamic result =
-                                          await NavigationUtil.navigatePage(
-                                        context,
-                                        ChangeMenuPage(
-                                          selectedFood: foodModel,
-                                          hasSelectQuantity: false,
-                                        ),
-                                      );
-                                      if (result is FoodModel) {
-                                        //TODO: Tuyen Handle new food
-                                      }
-                                    });
-                              }).toList(),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 33.h,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      R.drawable.ic_info,
-                                      width: 24,
-                                      height: 24,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: RichText(
-                                        text: TextSpan(
-                                          text: '${R.string.note.tr()} ',
-                                          style: TextStyle(
-                                              color: R.color.textDark,
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w700),
-                                          children: [
-                                            TextSpan(
-                                              text: _cubit
-                                                      .menuResponseFood?.note ??
-                                                  '',
-                                              style: TextStyle(
-                                                  color: R.color.textDark,
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.w400),
-                                            )
-                                          ],
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          _buildTitle(
+                              title: _cubit.menuResponseFood?.menuTitle ?? '',
+                              onUpdateKcal: () {
+                                updateKcal(context);
+                              }),
+                          DayInWeekButtons(
+                              initDay: _cubit.currentDayInWeek,
+                              onSlectDay: (dayIndex) {
+                                _cubit.onChangeDay(dayIndex);
+                              }),
+                          //Divider
+                          Container(
+                            margin: EdgeInsets.only(top: 10.h),
+                            color: R.color.color0xffE5E5E5,
+                            height: 1,
+                            width: double.infinity,
+                          ),
+                          Expanded(
+                            child: ListView(
+                              padding: EdgeInsets.fromLTRB(16.w, 0, 16.h, 32.h),
+                              children: [
+                                ...List.generate(
+                                    _cubit.listDayFood[_cubit.currentDayInWeek]
+                                            ?.timeGroups?.length ??
+                                        0, (index) {
+                                  return _buildMealWidget(
+                                      mealData: _cubit
+                                          .listDayFood[_cubit.currentDayInWeek]
+                                          ?.timeGroups?[index],
+                                      onChangeFood: (foodModel) async {
+                                        final dynamic result =
+                                            await NavigationUtil.navigatePage(
+                                          context,
+                                          ChangeMenuPage(
+                                            selectedFood: foodModel,
+                                            hasSelectQuantity: false,
+                                          ),
+                                        );
+                                        if (result is FoodModel) {
+                                          //TODO: Tuyen Handle new food
+                                        }
+                                      });
+                                }).toList(),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 33.h,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        R.drawable.ic_info,
+                                        width: 24,
+                                        height: 24,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: RichText(
+                                          text: TextSpan(
+                                            text: '${R.string.note.tr()} ',
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w700),
+                                            children: [
+                                              TextSpan(
+                                                text: _cubit.menuResponseFood
+                                                        ?.note ??
+                                                    '',
+                                                style: TextStyle(
+                                                    color: R.color.textDark,
+                                                    fontSize: 16.sp,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              )
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        Visibility(
-                          visible: false,
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 15.h),
-                            child: SafeArea(
-                              top: false,
-                              child: Container(
-                                width: 242.w,
-                                child: ButtonWidget(
-                                  title: 'Đặt làm thực đơn của tôi',
-                                  onPressed: () {},
+                          Visibility(
+                            visible: false,
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 15.h),
+                              child: SafeArea(
+                                top: false,
+                                child: Container(
+                                  width: 242.w,
+                                  child: ButtonWidget(
+                                    title: 'Đặt làm thực đơn của tôi',
+                                    onPressed: () {},
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+              ),
             );
           },
         ),

@@ -27,8 +27,9 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     emit(const FoodMenuInitial());
   }
 
-  Future<void> getTemplateDetail() async {
-    emit(const FoodMenuLoading());
+  Future<void> getTemplateDetail({bool isRefresh = false}) async {
+    await Future.delayed(Duration.zero);
+    if (!isRefresh) emit(const FoodMenuLoading());
     final ApiResult<MenuResponse> apiResult =
         await repository.getGetUserFoodMenu();
     apiResult.when(success: (MenuResponse response) {
@@ -42,9 +43,8 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     }, failure: (NetworkExceptions error) {
       emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));
     });
+    emit(const FoodMenuInitial());
   }
 
-  Future<void> changeFood() async {
-    
-  }
+  Future<void> changeFood() async {}
 }

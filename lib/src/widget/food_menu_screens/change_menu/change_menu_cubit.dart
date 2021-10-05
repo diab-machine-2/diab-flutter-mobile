@@ -14,11 +14,14 @@ import 'change_menu.dart';
 import 'models/tab_item_enum.dart';
 
 class ChangeMenuCubit extends Cubit<ChangeMenuState> {
-  ChangeMenuCubit(this.repository) : super(const ChangeMenuInitial());
+  ChangeMenuCubit(this.repository, {required this.initFood})
+      : super(const ChangeMenuInitial());
 
   final AppRepository repository;
   final FoodClient client = FoodClient();
   TabItem currentTab = TabItem.suggest;
+
+  FoodModel? initFood;
 
   FoodModel? selectedFood;
 
@@ -57,10 +60,10 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
     emit(const ChangeMenuLoading());
   }
 
-  Future<void> fetchSuggestFood({String? id}) async {
+  Future<void> fetchSuggestFood() async {
     await showLoading();
     final ApiResult<FoodSuggestResponse> apiResult =
-        await repository.getSuggestionFood(id ?? '');
+        await repository.getSuggestionFood(initFood?.id ?? '');
     apiResult.when(success: (response) {
       if (response.data != null) {
         final List<FoodSuggestResponseData?>? data = response.data;

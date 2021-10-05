@@ -90,6 +90,6 @@ abstract class AppApi {
 
   @GET("App/PatientFoodMenu/SuggestionFood/{id}")
   Future<FoodSuggestResponse> getSuggestionFood(
-    @Path("code") String code,
+    @Path("id") String id,
   );
 }

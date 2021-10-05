@@ -39,8 +39,8 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
-    _cubit = ChangeMenuCubit(appRepository);
-    _cubit.fetchFoodLatest();
+    _cubit = ChangeMenuCubit(appRepository, initFood: widget.selectedFood);
+    _cubit.fetchSuggestFood();
   }
 
   @override
@@ -133,7 +133,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
           await NavigationUtil.navigatePage(
             context,
             SearchFoodPage(
-              selectedFood: widget.selectedFood,
+              selectedFood: _cubit.initFood,
               onConfirm: (selectedFood) {
                 _cubit.onChoseFood(
                   newSelectedFood: selectedFood,
@@ -214,7 +214,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
           } else {
             return FoodItemWidget(
               foodModel: foods[index],
-              isSelected: foods[index].id == widget.selectedFood?.id,
+              isSelected: foods[index].id == _cubit.initFood?.id,
               onFavorite: () {
                 _cubit.toogleFavorite(index);
               },
@@ -331,7 +331,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => CategoryMenuPage(
-        selectedFood: widget.selectedFood,
+        selectedFood: _cubit.initFood,
         category: category,
         onTapYes: (foodModel) {
           _cubit.onChoseFood(
