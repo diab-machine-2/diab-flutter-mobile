@@ -8,10 +8,15 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/detail_package/detail_package.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/upgrade_account/upgrade_account.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/upgrade_package_widget.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'my_package.dart';
 
@@ -21,6 +26,7 @@ class MyPackagePage extends StatefulWidget {
 }
 
 class _MyPackagePageState extends State<MyPackagePage> {
+  final RefreshController _controller = RefreshController();
   late MyPackageCubit _cubit;
 
   @override
@@ -29,6 +35,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
     super.initState();
     AppRepository repository = AppRepository();
     _cubit = MyPackageCubit(repository);
+    _cubit.getOwnPackageCode();
     _cubit.getListTransaction();
   }
 
@@ -39,14 +46,16 @@ class _MyPackagePageState extends State<MyPackagePage> {
         create: (context) => _cubit,
         child: BlocConsumer<MyPackageCubit, MyPackageState>(
           listener: (context, state) {
-            if (state is MyPackageFailure) {
-              Utils.showErrorSnackBar(context, state.error);
-            }
             if (state is MyPackageLoading) {
               BotToast.showLoading();
+              _controller.refreshCompleted();
             } else {
               BotToast.closeAllLoading();
             }
+            if (state is MyPackageFailure) {
+              Message.showToastMessage(context, state.error);
+            }
+
           },
           builder: (
             BuildContext context,
@@ -60,6 +69,8 @@ class _MyPackagePageState extends State<MyPackagePage> {
   }
 
   Widget buildPage(BuildContext context, MyPackageState state) {
+    String? code = _cubit.code;
+    bool isBasic = code?.isEmpty == true || code == Const.BASIC;
     return CommonPage(
       title: R.string.my_package.tr(),
       background: R.drawable.bg_welcome,
@@ -68,11 +79,13 @@ class _MyPackagePageState extends State<MyPackagePage> {
         shrinkWrap: true,
         children: [
           Visibility(
-            visible: _cubit.isBasic,
-            child: UpgradePackageWidget(onClickUpgrade: () {  },),
+            visible: isBasic,
+            child: UpgradePackageWidget(onClickUpgrade: () { 
+              Utils.navigatePage(context, UpgradeAccountPage(code: Const.PRO));
+            },),
           ),
           Visibility(
-              visible: !_cubit.isBasic,
+              visible: !isBasic,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -85,39 +98,25 @@ class _MyPackagePageState extends State<MyPackagePage> {
                     margin: EdgeInsets.symmetric(horizontal: 40.h),
                     child: ButtonWidget(
                       title: R.string.renewal_package_pro.tr(),
-                      onPressed: () {},
+                      onPressed: () {
+                        Utils.navigatePage(context, UpgradeAccountPage(code: Const.PRO));
+                      },
                     ),
                   ),
                 ],
               )),
           SizedBox(
-            height: 5.h,
-          ),
-          Container(
-            width: double.infinity,
-            margin: EdgeInsets.symmetric(horizontal: 40.h),
-            child: ButtonWidget(
-              title: _cubit.isBasic
-                  ? R.string.upgrade_package_pro.tr()
-                  : R.string.renewal_package_pro.tr(),
-              onPressed: () {},
-            ),
-          ),
-          SizedBox(
             height: 50.h,
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.h),
-            child: Text(
-              R.string.history_transaction.tr(),
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                color: R.color.accentColor,
-                fontWeight: FontWeight.w700,
-                fontSize: 20.sp,
-                letterSpacing: 0.08,
-                height: 1.4,
-              ),
+          Text(
+            R.string.history_transaction.tr(),
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              color: R.color.accentColor,
+              fontWeight: FontWeight.w700,
+              fontSize: 20.sp,
+              letterSpacing: 0.08,
+              height: 1.4,
             ),
           ),
           listTransactionWidget(_cubit.listExpiredTransaction)
@@ -129,7 +128,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
   Widget listTransactionWidget(List<TransactionData> list) {
     return ListView.separated(
         shrinkWrap: true,
-        padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 20.h),
+        padding: EdgeInsets.symmetric(/*horizontal: 16.h, */vertical: 20.h),
         physics: const NeverScrollableScrollPhysics(),
         itemCount: list.length,
         separatorBuilder: (context, index) => Container(
@@ -325,7 +324,10 @@ class _MyPackagePageState extends State<MyPackagePage> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            if (!Utils.isEmpty(data.packageCode))
+                            NavigationUtil.navigatePage(context, DetailPackagePage(code: data.packageCode!));
+                          },
                           child: Text(
                             R.string.see_detail.tr(),
                             textAlign: TextAlign.center,

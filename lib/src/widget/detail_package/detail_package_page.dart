@@ -12,6 +12,7 @@ import 'package:medical/src/model/response/detail_package_data.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/payment_package/payment_package.dart';
 import 'package:medical/src/widgets/avatar_widget.dart';
 import 'package:medical/src/widgets/background_page.dart';
@@ -65,16 +66,16 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
         create: (context) => _cubit,
         child: BlocConsumer<DetailPackageCubit, DetailPackageState>(
           listener: (context, state) {
-            if (state is DetailPackageFailure) {
-              Utils.showErrorSnackBar(context, state.error);
-            }
-            if (state is SendInterestSuccess) {
-              NavigationUtil.pop(context);
-            }
             if (state is DetailPackageLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
+            }
+            if (state is DetailPackageFailure) {
+              Message.showToastMessage(context, state.error);
+            }
+            if (state is SendInterestSuccess) {
+              NavigationUtil.pop(context);
             }
           },
           builder: (BuildContext context,

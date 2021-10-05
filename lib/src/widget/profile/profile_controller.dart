@@ -10,12 +10,14 @@ import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widget/intro_sample_menu/intro_sample_menu.dart';
+import 'package:medical/src/widget/my_package/my_package_page.dart';
 
 class ProfileController extends StatefulWidget {
   @override
@@ -231,7 +233,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                       title: R.string.my_package.tr(),
                       image: R.drawable.ic_my_package,
                       onTap: () {
-                        //TODO: Tuyen navigate to my package screen
+                        Utils.navigatePage(context, MyPackagePage());
                       }),
                   const SizedBox(height: 16),
                   buildAction(

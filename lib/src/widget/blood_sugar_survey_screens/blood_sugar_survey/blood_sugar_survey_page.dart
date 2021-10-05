@@ -7,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
@@ -44,9 +45,13 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
           create: (context) => _cubit,
           child: BlocConsumer<BloodSugarSurveyCubit, BloodSugarSurveyState>(
             listener: (context, state) {
-              if (state is BloodSugarSurveyFailure) {
+              if (state is BloodSugarSurveyLoading) {
+                BotToast.showLoading();
+              } else {
                 BotToast.closeAllLoading();
-                Utils.showErrorSnackBar(context, state.error ?? '');
+              }
+              if (state is BloodSugarSurveyFailure) {
+                Message.showToastMessage(context, state.error ?? '');
               }
               if (state is BloodSugarSurveyNavigate) {
                 if (state.listBloodSugarTemplateCategory.length == 1) {
@@ -62,12 +67,6 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                         state.listBloodSugarTemplateCategory),
                   );
                 }
-              }
-              if (state is BloodSugarSurveyLoading) {
-                BotToast.showLoading();
-              }
-              if (state is BloodSugarSurveySuccess) {
-                BotToast.closeAllLoading();
               }
             },
             builder: (context, state) {

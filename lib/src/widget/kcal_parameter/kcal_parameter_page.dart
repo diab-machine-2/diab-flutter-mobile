@@ -10,6 +10,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/body_parameter/body_parameter.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
@@ -59,7 +60,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                     child: BlocConsumer<KcalParameterCubit, KcalParameterState>(
                       listener: (context, state) {
                         if (state is KcalParameterFailure) {
-                          Utils.showErrorSnackBar(context, state.error);
+                          Message.showToastMessage(context, state.error);
                         }
                         if (state is KcalParameterLoading) {
                           BotToast.showLoading();
@@ -230,20 +231,28 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                   title: R.string.agree.tr(),
                   height: 43.h,
                   onPressed: () {
-                    showDialog(
-                      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-                      context: context,
-                      builder: (_) => NoticeChangePage(onClick: () {
-                        String text = _controller.text;
-                        num? number;
-                        if (!Utils.isEmpty(text)) {
-                          number = num.parse(text);
-                        }
-                        if (widget.callback != null && number != null)
-                          widget.callback!(number);
-                        NavigationUtil.pop(context);
-                      }),
-                    );
+                    String text = _controller.text.trim();
+                    num? number;
+                    if (!Utils.isEmpty(text)) {
+                      number = num.parse(text);
+                      showDialog(
+                        barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+                        context: context,
+                        builder: (_) => NoticeChangePage(onClick: () {
+                          NavigationUtil.pop(context);
+                          Future.delayed(Duration(milliseconds: 200), () {
+                            if (widget.callback != null && number != null) {
+                              widget.callback!(number);
+                            }
+                          });
+                        }),
+                      );
+                    } else {
+                      Message.showToastMessage(
+                          context, R.string.ban_chua_nhap_gia_tri.tr());
+                      // Message.showToastMessage(context, R.string.ban_chua_nhap_gia_tri.tr());
+                    }
+
                   },
                 )),
           ],

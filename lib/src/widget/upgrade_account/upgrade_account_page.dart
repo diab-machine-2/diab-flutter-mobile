@@ -13,6 +13,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description_detail.dart';
 import 'package:medical/src/widget/detail_package/detail_package_page.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/payment_package/payment_package_page.dart';
 import 'package:medical/src/widgets/avatar_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -22,6 +23,7 @@ import 'package:medical/src/widgets/image_widget.dart';
 import 'package:medical/src/widgets/popup_window_widget.dart';
 import 'package:medical/src/widgets/text_field_widget.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import 'upgrade_account.dart';
@@ -36,25 +38,11 @@ class UpgradeAccountPage extends StatefulWidget {
 }
 
 class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
+  final RefreshController _controller = RefreshController();
   late UpgradeAccountCubit _cubit;
   final TextEditingController _feedbackController = TextEditingController();
   final PageController _packageAdvantageController = PageController();
   final PageController _pageStoryController = PageController();
-
-  var data = [
-    {
-      'name': "Mở khoá gói Coaching",
-      'text': "Kết nối 1 - 1 với huấn luyện viên",
-    },
-    {
-      'name': "Gợi ý lịch đo đường huyết",
-      'text': "Lịch đo mẫu dựa trên cơ sở y học",
-    },
-    {
-      'name': "Đánh giá lối sống toàn diện",
-      'text': "Chuyên gia sẽ góp ý cho bạn lịch sinh hoạt phù hợp",
-    }
-  ];
 
   @override
   void initState() {
@@ -72,13 +60,14 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
         create: (context) => _cubit,
         child: BlocConsumer<UpgradeAccountCubit, UpgradeAccountState>(
           listener: (context, state) {
-            if (state is UpgradeAccountFailure) {
-              Utils.showErrorSnackBar(context, state.error);
-            }
             if (state is UpgradeAccountLoading) {
               BotToast.showLoading();
             } else {
+              _controller.refreshCompleted();
               BotToast.closeAllLoading();
+            }
+            if (state is UpgradeAccountFailure) {
+              Message.showToastMessage(context, state.error);
             }
           },
           builder: (
@@ -98,69 +87,76 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       backgroundColor: R.color.white,
       body: CommonPage(
         title: data?.name ?? R.string.upgrade_account.tr(),
-        background: R.drawable.bg_detail,
+        background: R.drawable.bg_upgrade_account,
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.all(16.h),
-                  // decoration: BoxDecoration(
-                  //     borderRadius: BorderRadius.circular(10.h),
-                  //     color: R.color.white),
-                  child: Column(children: [
-                    AspectRatio(
-                      aspectRatio: 2,
-                      child: ImageWidget(
-                        url: data?.image?.url ?? "",
+              child: SmartRefresher(
+                controller: _controller,
+                onRefresh: () => _cubit.getUpgradeAccount(widget.code, isRefresh: true),
+                child: ListView(
+                    padding: EdgeInsets.all(16.h),
+                    shrinkWrap: true,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 2,
+                        child: ImageWidget(
+                          url: data?.image?.url ?? "",
+                        ),
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 23.h),
-                      child: Text(
-                        data?.advantageHighlight?.toUpperCase() ?? "",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            color: R.color.accentColor,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 18.sp,
-                            height: 1.56,
-                            letterSpacing: 0.4),
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 23.h),
+                        child: Text(
+                          data?.advantageHighlight?.toUpperCase() ?? "",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              color: R.color.accentColor,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 18.sp,
+                              height: 1.56,
+                              letterSpacing: 0.4),
+                        ),
                       ),
-                    ),
-                    sliderWidget(data?.packageAdvantages ?? []),
-                    SizedBox(
-                      height: 30.h,
-                    ),
-                    Visibility(
+                      sliderWidget(data?.packageAdvantages ?? []),
+                      SizedBox(
+                        height: 30.h,
+                      ),
+                      Visibility(
+                          visible: widget.code == Const.PREMIUM,
+                          child: Container(
+                              margin: EdgeInsets.only(bottom: 24.h),
+                              child: priceWidget(data?.prices ?? []))),
+                      tableComparison(data?.featuresComparisonTable ?? []),
+                      Visibility(
                         visible: widget.code == Const.PREMIUM,
-                        child: Container(
-                            margin: EdgeInsets.only(bottom: 24.h),
-                            child: priceWidget(data?.prices ?? []))),
-                    tableComparison(data?.featuresComparisonTable ?? []),
-                    Visibility(
-                      visible: widget.code == Const.PREMIUM,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 32.h,
-                          ),
-                          storyWidget(data?.successStories ?? []),
-                          SizedBox(
-                            height: 32.h,
-                          ),
-                          detailWidget(data),
-                        ],
-                      ),
-                    )
-                  ]),
-                ),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 32.h,
+                            ),
+                            storyWidget(data?.successStories ?? []),
+                            SizedBox(
+                              height: 32.h,
+                            ),
+                            detailWidget(data),
+                          ],
+                        ),
+                      )
+                    ]),
               ),
             ),
             Visibility(
               visible: widget.code == Const.PREMIUM,
               child: Container(
                   decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: R.color.grayBorder,
+                          spreadRadius: 0,
+                          blurRadius: 5,
+                          offset: Offset(0, -3),
+                        ),
+                      ],
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(16),
                           topRight: Radius.circular(16))),
@@ -187,12 +183,14 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                           title: R.string.sign_up.tr(),
                           onPressed: () {
                             if (!Utils.isEmpty(data?.prices)) {
-                              int index = widget.code == Const.PREMIUM ? 0 : _cubit.selectedPrice;
+                              int index = widget.code == Const.PREMIUM
+                                  ? 0
+                                  : _cubit.selectedPrice;
                               NavigationUtil.navigatePage(
                                   context,
                                   PaymentPackagePage(
                                     packageName:
-                                    data?.name ?? R.string.diab_pro.tr(),
+                                        data?.name ?? R.string.diab_pro.tr(),
                                     packageCode: data?.code ?? Const.PRO,
                                     price: data!.prices![index],
                                   ));
@@ -208,6 +206,14 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
               child: Container(
                   decoration: BoxDecoration(
                       color: R.color.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: R.color.grayBorder,
+                          spreadRadius: 0,
+                          blurRadius: 5,
+                          offset: Offset(0, -3),
+                        ),
+                      ],
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(16),
                           topRight: Radius.circular(16))),
@@ -360,52 +366,73 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
 
   Widget tableComparison(List<FeaturesComparisonTable> listData) {
     List<TableRow> listRow = [];
-    listRow.add(TableRow(children: [
-      tableCell(
-        child: Container(
-          alignment: Alignment.centerLeft,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(10.h)),
-              color: R.color.color0xffB1DDDB),
-          padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.h),
-          child: Text(R.string.feature.tr(),
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                color: R.color.textDark,
-                fontWeight: FontWeight.bold,
-                fontSize: 16.sp,
-              )),
-        ),
+    final List<Widget> listCell = [];
+    listCell.add(tableCell(
+      child: Container(
+        alignment: Alignment.centerLeft,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(10.h)),
+            color: R.color.color0xffB1DDDB),
+        padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.h),
+        child: Text(R.string.feature.tr(),
+            textAlign: TextAlign.start,
+            style: TextStyle(
+              color: R.color.textDark,
+              fontWeight: FontWeight.bold,
+              fontSize: 16.sp,
+            )),
       ),
-      tableCell(
-        child: Container(
-          alignment: Alignment.center,
-          decoration: BoxDecoration(color: R.color.color0xffB1DDDB),
-          child: Text(R.string.basic.tr(),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: R.color.textDark,
-                fontWeight: FontWeight.bold,
-                fontSize: 16.sp,
-              )),
+    ));
+    if (widget.code == Const.PRO) {
+      listCell.add(
+        tableCell(
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(color: R.color.color0xffB1DDDB),
+            child: Text(R.string.basic.tr(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.sp,
+                )),
+          ),
         ),
+      );
+    }
+    listCell.add(tableCell(
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(topRight: Radius.circular(10.h)),
+            color: R.color.color0xffB1DDDB),
+        child: Text(R.string.diab_pro.tr(),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Utils.getColorByCode(Const.PRO),
+              fontWeight: FontWeight.bold,
+              fontSize: 16.sp,
+            )),
       ),
-      tableCell(
-        child: Container(
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(topRight: Radius.circular(10.h)),
-              color: R.color.color0xffB1DDDB),
-          child: Text(R.string.pro.tr(),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: R.color.accentColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 16.sp,
-              )),
+    ));
+    if (widget.code == Const.PREMIUM) {
+      listCell.add(
+        tableCell(
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(color: R.color.color0xffB1DDDB),
+            child: Text(R.string.diab_premium.tr(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Utils.getColorByCode(Const.PREMIUM),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.sp,
+                )),
+          ),
         ),
-      ),
-    ]));
+      );
+    }
+    listRow.add(TableRow(children: listCell));
     listRow.addAll(listData.map((e) {
       int index = listData.indexOf(e);
       bool isLast = index + 1 == listData.length;
@@ -486,7 +513,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       columnWidths: {
         0: FlexColumnWidth(), // fixed to 100 width
-        1: FixedColumnWidth(80.h),
+        1: FixedColumnWidth(70.h),
         2: FixedColumnWidth(50.h), //fixed to 100 width
       },
       children: listRow,

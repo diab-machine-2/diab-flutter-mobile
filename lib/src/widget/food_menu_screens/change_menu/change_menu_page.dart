@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,10 +9,10 @@ import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/common_page.dart';
-import 'package:medical/src/widgets/stack_loading_view.dart';
 
-import '../category_menu/category_menu.dart';
+import '../category_menu/category_menu_page.dart';
 import '../seach_food/search_food.dart';
 import 'change_menu.dart';
 import 'models/tab_item_enum.dart';
@@ -49,63 +50,68 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
         create: (context) => _cubit,
         child: BlocConsumer<ChangeMenuCubit, ChangeMenuState>(
           listener: (context, state) {
+            if (state is ChangeMenuLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
+            if (state is ChangeMenuFailure) {
+              Message.showToastMessage(context, state.error);
+            }
             if (state is ChangeMenuDone) {
               NavigationUtil.pop(context, result: _cubit.selectedFood);
             }
           },
           builder: (context, state) {
-            return StackLoadingView(
-              visibleLoading: state is ChangeMenuLoading,
-              child: CommonPage(
-                title: R.string.choose_alternative_dish.tr(),
-                background: R.drawable.bg_detail_pro,
-                icon: Icons.clear_rounded,
-                child: Column(
-                  children: [
-                    _buildSearchBar(),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 27),
-                      child: TabBarWidget(
-                        initTab: TabItem.suggest,
-                        onSelect: (TabItem tab) {
-                          _cubit.refreshTab(newTab: tab);
-                          _controller.jumpToPage(tab.index);
-                        },
-                      ),
+            return CommonPage(
+              title: R.string.choose_alternative_dish.tr(),
+              background: R.drawable.bg_detail_pro,
+              icon: Icons.clear_rounded,
+              child: Column(
+                children: [
+                  _buildSearchBar(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 27),
+                    child: TabBarWidget(
+                      initTab: TabItem.suggest,
+                      onSelect: (TabItem tab) {
+                        _cubit.refreshTab(newTab: tab);
+                        _controller.jumpToPage(tab.index);
+                      },
                     ),
-                    Expanded(
-                      child: PageView(
-                        controller: _controller,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: [
-                          _buildTab(
-                            foods: _cubit.suggestFoods,
-                            emptyImage: R.drawable.img_empty_food_suggestion,
-                            emptyText: R.string.suggest_food_empty.tr(),
-                            onRefresh: () {
-                              _cubit.fetchSuggestFood();
-                            },
-                          ),
-                          _buildTab(
-                            foods: _cubit.recentlyFoods,
-                            emptyImage: R.drawable.img_near_food_empty,
-                            onRefresh: () {
-                              _cubit.fetchFoodLatest();
-                            },
-                          ),
-                          _buildTab(
-                            foods: _cubit.favoriteFoods,
-                            emptyImage: R.drawable.img_favorite_food_empty,
-                            onRefresh: () {
-                              _cubit.fetchFoodFavorite();
-                            },
-                          ),
-                          _buildCategoryList(),
-                        ],
-                      ),
+                  ),
+                  Expanded(
+                    child: PageView(
+                      controller: _controller,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        _buildTab(
+                          foods: _cubit.suggestFoods,
+                          emptyImage: R.drawable.img_empty_food_suggestion,
+                          emptyText: R.string.suggest_food_empty.tr(),
+                          onRefresh: () {
+                            _cubit.fetchSuggestFood();
+                          },
+                        ),
+                        _buildTab(
+                          foods: _cubit.recentlyFoods,
+                          emptyImage: R.drawable.img_near_food_empty,
+                          onRefresh: () {
+                            _cubit.fetchFoodLatest();
+                          },
+                        ),
+                        _buildTab(
+                          foods: _cubit.favoriteFoods,
+                          emptyImage: R.drawable.img_favorite_food_empty,
+                          onRefresh: () {
+                            _cubit.fetchFoodFavorite();
+                          },
+                        ),
+                        _buildCategoryList(),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           },
@@ -126,7 +132,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
         onTap: () async {
           await NavigationUtil.navigatePage(
             context,
-            SeachFoodPage(
+            SearchFoodPage(
               selectedFood: widget.selectedFood,
               onConfirm: (selectedFood) {
                 _cubit.onChoseFood(

@@ -10,6 +10,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/body_parameter/body_parameter_page.dart';
 import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/kcal_parameter/kcal_parameter.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 import 'package:medical/src/widget/upgrade_account/upgrade_account.dart';
@@ -42,13 +43,13 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
         create: (context) => _cubit,
         child: BlocConsumer<IntroSampleMenuCubit, IntroSampleMenuState>(
           listener: (context, state) {
-            if (state is IntroSampleMenuFailure) {
-              Utils.showErrorSnackBar(context, state.error);
-            }
             if (state is IntroSampleMenuLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
+            }
+            if (state is IntroSampleMenuFailure) {
+              Message.showToastMessage(context, state.error);
             }
           },
           builder: (

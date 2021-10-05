@@ -4,6 +4,7 @@ import 'package:medical/src/model/response/list_activity_response.dart';
 import 'request/send_interest_request.dart';
 import 'response/diabetes_status_response.dart';
 import 'response/food_suggest_response.dart';
+import 'response/get_own_package_code_response.dart';
 import 'response/latest_hba1c_input_response.dart';
 import 'response/list_transaction_response.dart';
 import 'package:retrofit/http.dart';
@@ -39,6 +40,9 @@ abstract class AppApi {
   Future<CommonResponse> sendInterestFeedback(
       @Body() SendInterestRequest request);
 
+  @GET("App/PackageAccount/GetOwnPackageCode")
+  Future<GetOwnPackageCodeResponse> getOwnPackageCode();
+
   // Transaction
 
   @GET("App/PackageTransaction")
@@ -47,6 +51,8 @@ abstract class AppApi {
     @Query("page") int? page,
     @Query("size") int? size,
   );
+
+  // Blood sugar
 
   @GET("/App/BloodSugarTemplate/GetListByCategory")
   Future<BloodSugarTemplateCategoryResponse> getListTemplateByCategory(
@@ -64,6 +70,8 @@ abstract class AppApi {
   @GET("/App/HbA1C/LatestHbA1CInput")
   Future<LatestHba1cInputResponse> getLatestHbA1CInput();
 
+  // Sample menu
+
   @GET("App/ActivityLevel")
   Future<ListActivityResponse> getListActivity();
 
@@ -74,6 +82,8 @@ abstract class AppApi {
     @Query("height") num? height,
     @Query("yearOfBirth") num? yearOfBirth,
   );
+
+  //Food Menu
 
   @GET("App/PatientFoodMenu/GetUserFoodMenu")
   Future<MenuResponse> getGetUserFoodMenu();

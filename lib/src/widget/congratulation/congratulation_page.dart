@@ -10,6 +10,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/detail_package_data.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/card_widget.dart';
@@ -48,13 +49,13 @@ class _CongratulationPageState extends State<CongratulationPage> {
         create: (context) => _cubit,
         child: BlocConsumer<CongratulationCubit, CongratulationState>(
           listener: (context, state) {
-            if (state is CongratulationFailure) {
-              Utils.showErrorSnackBar(context, state.error);
-            }
             if (state is CongratulationLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
+            }
+            if (state is CongratulationFailure) {
+              Message.showToastMessage(context, state.error);
             }
           },
           builder: (

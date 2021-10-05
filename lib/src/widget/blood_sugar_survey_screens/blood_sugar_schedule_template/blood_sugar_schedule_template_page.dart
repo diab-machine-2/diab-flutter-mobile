@@ -8,6 +8,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/blood_sugar_template_category_response.dart';
 import 'package:medical/src/model/response/blood_sugar_template_detail_response.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/blood_sugar_result_layout_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
@@ -41,19 +42,13 @@ class _BloodSugarScheduleTemplatePageState
       child: BlocConsumer<BloodSugarScheduleTemplateCubit,
           BloodSugarScheduleTemplateState>(
         listener: (context, state) {
-          if (state is BloodSugarScheduleTemplateFailure) {
-            BotToast.closeAllLoading();
-            Utils.showErrorSnackBar(context, state.error ?? '');
-          }
-          if (state is BloodSugarScheduleSaveSuccess) {
-            //TODO: Tuyen Navigate to blood schedule screen
-            BotToast.closeAllLoading();
-          }
           if (state is BloodSugarScheduleTemplateLoading) {
             BotToast.showLoading();
-          }
-          if (state is BloodSugarScheduleTemplateSuccess) {
+          } else {
             BotToast.closeAllLoading();
+          }
+          if (state is BloodSugarScheduleTemplateFailure) {
+            Message.showToastMessage(context, state.error ?? '');
           }
         },
         builder: (context, state) {

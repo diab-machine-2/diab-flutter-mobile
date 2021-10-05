@@ -7,6 +7,7 @@ import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/logger.dart';
 
 import 'my_package.dart';
 
@@ -17,23 +18,28 @@ class MyPackageCubit extends Cubit<MyPackageState> {
   int _currentPage = 1;
   bool hasMorePage = true;
 
-  bool get isBasic => appPreference.getData(Const.PACKAGE_CODE) == Const.BASIC;
+  String? code;
 
-  MyPackageCubit(this.appRepository)
-      : super(MyPackageInitial());
+  MyPackageCubit(this.appRepository) : super(MyPackageInitial());
+
+  void getOwnPackageCode() async {
+    ApiResult<String> apiResult = await appRepository.getOwnPackageCode();
+    apiResult.when(success: (String response) {
+      code = response;
+    }, failure: (NetworkExceptions error) {
+      logger.e(NetworkExceptions.getErrorMessage(error));
+    });
+  }
 
   void getListTransaction(
       {bool isRefresh = false, bool isLoadMore = false}) async {
-    emit((!isRefresh && !isLoadMore)
-        ? MyPackageLoading()
-        : MyPackageInitial());
+    emit((!isRefresh && !isLoadMore) ? MyPackageLoading() : MyPackageInitial());
     if (isRefresh) _currentPage = 1;
     if (isLoadMore) {
       _currentPage++;
     }
     if (isLoadMore == false) {
-      List<ApiResult<ListTransactionResponse>> apiResults =
-      await Future.wait([
+      List<ApiResult<ListTransactionResponse>> apiResults = await Future.wait([
         appRepository.getListTransaction(isExpired: false, page: 1, size: 100),
         appRepository.getListTransaction(isExpired: true, page: 1, size: 100)
       ]);
@@ -50,9 +56,9 @@ class MyPackageCubit extends Cubit<MyPackageState> {
         });
       });
     } else {
-      ApiResult<ListTransactionResponse> apiResult = await appRepository
-          .getListTransaction(
-          isExpired: false, page: _currentPage, size: Const.DEFAULT_SIZE);
+      ApiResult<ListTransactionResponse> apiResult =
+          await appRepository.getListTransaction(
+              isExpired: false, page: _currentPage, size: Const.DEFAULT_SIZE);
       apiResult.when(success: (ListTransactionResponse response) {
         listExpiredTransaction.addAll(response.data ?? []);
         emit(MyPackageSuccess());

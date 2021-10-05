@@ -6,6 +6,7 @@ import 'package:medical/src/model/response/blood_sugar_template_detail_response.
 import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
+import 'package:medical/src/model/response/get_own_package_code_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
@@ -19,6 +20,10 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import '../service/app_client.dart';
 
 class AppRepository {
+  /**
+   * Package flow
+   */
+
   Future<ApiResult<ListPackageResponse>> getListPackage() async {
     try {
       ListPackageResponse response = await appClient.getListPackage();
@@ -72,24 +77,18 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<List<ExerciseIntensityModel>>> getListActivity() async {
+  Future<ApiResult<String>> getOwnPackageCode() async {
     try {
-      ListActivityResponse response = await appClient.getListActivity();
-      return ApiResult.success(data: response.data ?? []);
+      GetOwnPackageCodeResponse response = await appClient.getOwnPackageCode();
+      return ApiResult.success(data: response.data ?? "");
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
-  Future<ApiResult<TDEEResponse>> getTDEE(
-      {int? weight, int? height, int? yearOfBirth, String? activityLevelId}) async {
-    try {
-      TDEEResponse response = await appClient.getTDEE(activityLevelId, weight, height, yearOfBirth);
-      return ApiResult.success(data: response);
-    } catch (e) {
-      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
-    }
-  }
+  /**
+   * Blood sugar
+   */
 
   Future<ApiResult<BloodSugarTemplateCategoryResponse>>
       getListTemplateByCategory(
@@ -130,6 +129,29 @@ class AppRepository {
     try {
       final LatestHba1cInputResponse response =
           await appClient.getLatestHbA1CInput();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /**
+   * Sample menu
+   */
+
+  Future<ApiResult<List<ExerciseIntensityModel>>> getListActivity() async {
+    try {
+      ListActivityResponse response = await appClient.getListActivity();
+      return ApiResult.success(data: response.data ?? []);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<TDEEResponse>> getTDEE(
+      {int? weight, int? height, int? yearOfBirth, String? activityLevelId}) async {
+    try {
+      TDEEResponse response = await appClient.getTDEE(activityLevelId, weight, height, yearOfBirth);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

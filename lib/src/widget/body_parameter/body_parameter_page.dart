@@ -58,7 +58,7 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
                     child: BlocConsumer<BodyParameterCubit, BodyParameterState>(
                       listener: (context, state) {
                         if (state is BodyParameterFailure) {
-                          Utils.showErrorSnackBar(context, state.error);
+                          Message.showToastMessage(context, state.error);
                         }
                         if (state is BodyParameterLoading) {
                           BotToast.showLoading();
