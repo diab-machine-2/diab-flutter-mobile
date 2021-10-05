@@ -15,8 +15,6 @@ import 'package:medical/src/modal/user/user_model.dart';
 class AppSettings {
   static UserModel? userInfo;
 
-  static final AppPreference appPreference = AppPreference();
-
   static Future<bool> saveToken(String? token) async {
     appPreference.setData(Const.TOKEN, token);
     return true;

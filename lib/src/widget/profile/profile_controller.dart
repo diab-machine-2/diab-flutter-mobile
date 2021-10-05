@@ -233,7 +233,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                       title: R.string.my_package.tr(),
                       image: R.drawable.ic_my_package,
                       onTap: () {
-                        Utils.navigatePage(context, MyPackagePage());
+                        NavigationUtil.navigatePage(context, MyPackagePage());
                       }),
                   const SizedBox(height: 16),
                   buildAction(

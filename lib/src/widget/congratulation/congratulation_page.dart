@@ -9,6 +9,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/detail_package_data.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/background_page.dart';
@@ -70,61 +71,76 @@ class _CongratulationPageState extends State<CongratulationPage> {
   }
 
   Widget buildPage(BuildContext context, CongratulationState state) {
-    return Scaffold(
-      body: CommonPage(
+    return CommonPage(
           title: R.string.sign_up.tr(),
           background: R.drawable.bg_detail_pro,
-          child: SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.all(16.h),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Container(
-                        height: 240.h,
-                        child: Image.asset(widget.code == Const.PRO
-                            ? R.drawable.ic_congratulation
-                            : R.drawable.ic_workaround)),
-                    Visibility(
-                      visible: widget.code == Const.PRO,
-                      child: Container(
-                        margin:
-                            EdgeInsets.only(top: 20.h, left: 20.h, right: 20.h),
-                        child: Text(
-                          R.string.text_congratulation.tr(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.bold,
-                              height: 1.4,
-                              letterSpacing: 0.4),
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.all(16.h),
+                    children: [
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Container(
+                          height: 240.h,
+                          child: Image.asset(widget.code == Const.PRO
+                              ? R.drawable.ic_congratulation
+                              : R.drawable.ic_workaround)),
+                      Visibility(
+                        visible: widget.code == Const.PRO,
+                        child: Container(
+                          margin: EdgeInsets.only(top: 20.h, left: 20.h, right: 20.h),
+                          child: Text(
+                            R.string.text_congratulation.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.bold,
+                                height: 1.4,
+                                letterSpacing: 0.4),
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 44.h,
-                    ),
-                    Text(
-                      R.string.text_please_bank.tr(),
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 16.sp,
-                        height: 1.87,
-                        // letterSpacing: 0.4
+                      SizedBox(
+                        height: 44.h,
                       ),
-                    ),
-                    SizedBox(
-                      height: 16.h,
-                    ),
-                    bankWidget(widget.priceData)
-                  ]),
-            ),
-          )),
+                      Text(
+                        R.string.text_please_bank.tr(),
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: R.color.textDark,
+                          fontSize: 16.sp,
+                          height: 1.87,
+                          // letterSpacing: 0.4
+                        ),
+                      ),
+                      SizedBox(
+                        height: 16.h,
+                      ),
+                      bankWidget(widget.priceData)
+                    ]),
+              ),
+              Container(
+                padding: EdgeInsets.all(16.h),
+                child: ButtonWidget(
+                  title: R.string.back_home.tr(),
+                  onPressed: () {
+                    NavigationUtil.popToFirst(context);
+                  },
+                  backgroundColor: R.color.white,
+                  borderColor: R.color.accentColor,
+                  textColor: R.color.accentColor,
+                ),
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+            ],
+          )
     );
   }
 
@@ -202,15 +218,15 @@ class _CongratulationPageState extends State<CongratulationPage> {
             ),
           ),
         ),
-        Visibility(
-          visible: isCopy,
-          child: Container(
-            width: 40.w,
-            alignment: Alignment.center,
+        Container(
+          width: 25.h,
+          alignment: Alignment.center,
+          child: Visibility(
+            visible: isCopy,
             child: InkWell(
               onTap: () {
                 Clipboard.setData(ClipboardData(text: text)).then((_) {
-                  Utils.showToast("Copied to clipboard");
+                  Message.showToastMessage(context, "Copied to clipboard");
                 });
               },
               child: Image.asset(

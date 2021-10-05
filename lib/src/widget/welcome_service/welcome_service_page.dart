@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/background_page.dart';
@@ -14,9 +16,9 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'welcome_service.dart';
 
 class WelcomeServicePage extends StatefulWidget {
-  final bool isPro;
+  final String code;
 
-  const WelcomeServicePage({Key? key, required this.isPro}) : super(key: key);
+  const WelcomeServicePage({Key? key, required this.code}) : super(key: key);
 
   @override
   _WelcomeServicePageState createState() => _WelcomeServicePageState();
@@ -36,34 +38,36 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocProvider(
-        create: (context) => _cubit,
-        child: BlocConsumer<WelcomeServiceCubit, WelcomeServiceState>(
-          listener: (context, state) {
-            if (state is WelcomeServiceFailure) {
-              Message.showToastMessage(context, state.error);
-            }
-          },
-          builder: (
-            BuildContext context,
-            WelcomeServiceState state,
-          ) {
-            if (state is WelcomeServiceLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
-            return buildPage(context, state);
-          },
+    return WillPopScope(
+      onWillPop: () => Future.value(false),
+      child: Scaffold(
+        body: BlocProvider(
+          create: (context) => _cubit,
+          child: BlocConsumer<WelcomeServiceCubit, WelcomeServiceState>(
+            listener: (context, state) {
+              if (state is WelcomeServiceFailure) {
+                Message.showToastMessage(context, state.error);
+              }
+            },
+            builder: (
+              BuildContext context,
+              WelcomeServiceState state,
+            ) {
+              if (state is WelcomeServiceLoading) {
+                BotToast.showLoading();
+              } else {
+                BotToast.closeAllLoading();
+              }
+              return buildPage(context, state);
+            },
+          ),
         ),
       ),
     );
   }
 
   Widget buildPage(BuildContext context, WelcomeServiceState state) {
-    return Scaffold(
-      body: BackgroundPage(
+    return BackgroundPage(
           background: R.drawable.bg_welcome,
           child: Container(
             padding: EdgeInsets.all(16.h),
@@ -78,37 +82,14 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                       },
                       controller: _pageController,
                       children: [
-                        widget.isPro
+                        widget.code == Const.PRO
                             ? pageFirst(
                                 R.drawable.img_welcome_1,
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(R.string.package_pro.tr(),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: R.color.textDark,
-                                            fontSize: 24.sp,
-                                            fontWeight: FontWeight.w700)),
-                                    SizedBox(width: 10),
-                                    Image.asset(
-                                      R.drawable.ic_pro,
-                                      height: 20.h,
-                                    )
-                                  ],
-                                ),
+                                R.string.package_pro.tr(),
                                 R.string.description_diab_pro.tr())
                             : pageFirst(
                                 R.drawable.img_welcome_0,
-                                Text(
-                                  R.string.package_premium.tr(),
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontSize: 24.sp,
-                                      fontWeight: FontWeight.w700),
-                                ),
+                                R.string.package_premium.tr(),
                                 R.string.description_diab_basic.tr()),
                         pageNext(R.drawable.img_welcome_2, [
                           R.string.des_1_welcome_2.tr(),
@@ -195,7 +176,10 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                                         width: 128.w,
                                         child: ButtonWidget(
                                             title: R.string.start.tr(),
-                                            onPressed: () {})),
+                                            onPressed: () {
+                                              Future.delayed(Duration(milliseconds: 200), () =>
+                                              NavigationUtil.popToFirst(context));
+                                            })),
                                   ],
                                 ),
                         ),
@@ -204,11 +188,11 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                     )
                   ]),
                 ]),
-          )),
+          ),
     );
   }
 
-  Widget pageFirst(String image, Widget titleWidget, String description) {
+  Widget pageFirst(String image, String titleWidget, String description) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -219,7 +203,24 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
         SizedBox(
           height: 50.h,
         ),
-        titleWidget,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(titleWidget,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w700)),
+            SizedBox(width: 10),
+            Image.asset(
+              R.drawable.ic_pro,
+              height: 20.h,
+              color: Utils.getColorByCode(widget.code),
+            )
+          ],
+        ),
         SizedBox(
           height: 12.h,
         ),
@@ -259,9 +260,8 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
           Container(
             height: 45.h,
             padding: EdgeInsets.all(11.h),
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: R.color.main_6),
+            decoration:
+                BoxDecoration(shape: BoxShape.circle, color: R.color.main_6),
             child: Image.asset(
               R.drawable.ic_verify,
               fit: BoxFit.fill,

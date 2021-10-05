@@ -6,10 +6,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/detail_package_data.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/congratulation/congratulation_page.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/register_package/register_package_page.dart';
+import 'package:medical/src/widget/welcome_service/welcome_service_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
@@ -184,7 +187,15 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
               child: ButtonWidget(
                 title: R.string.payment.tr(),
                 onPressed: () {
-                  NavigationUtil.navigatePage(context, RegisterPackagePage(code: widget.packageCode, priceData: widget.price));
+                  if (widget.packageCode == Const.PREMIUM) {
+                    NavigationUtil.navigatePage(
+                        context,
+                        CongratulationPage(
+                            code: widget.packageCode, priceData: widget.price));
+                  } else {
+                    // TODO IAP
+                    NavigationUtil.navigatePage(context, WelcomeServicePage(code: widget.packageCode,));
+                  }
                 },
               ),
             ),

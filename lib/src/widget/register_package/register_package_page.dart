@@ -221,7 +221,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      Text(R.string.period.tr(),
+                                      Text(R.string.time.tr() + ":",
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                             color: R.color.textDark,
@@ -249,7 +249,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      Text(R.string.amount.tr(),
+                                      Text(R.string.service_price.tr() + ":",
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                             color: R.color.textDark,
@@ -284,8 +284,8 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                             style: TextStyle(
                               color: R.color.textDark,
                               fontSize: 16.sp,
-                              height: 1.87,
-                              // letterSpacing: 0.4
+                              height: 1.37,
+                              letterSpacing: 0.4
                             ),
                           ),
                           SizedBox(

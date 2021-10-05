@@ -763,4 +763,5 @@ class Strings {
 	String get text_please_bank => 'text_please_bank';
 	String get text_need_2_steps_complete => 'text_need_2_steps_complete';
 	String get text_notice_upgrade_premium => 'text_notice_upgrade_premium';
+	String get back_home => 'back_home';
 }
