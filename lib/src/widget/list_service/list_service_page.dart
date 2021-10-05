@@ -16,6 +16,7 @@ import 'package:medical/src/widget/upgrade_account/upgrade_account.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'list_service.dart';
 
@@ -27,6 +28,7 @@ class ListServicePage extends StatefulWidget {
 }
 
 class _ListServicePageState extends State<ListServicePage> {
+  final RefreshController _controller = RefreshController();
   late ListServiceCubit _cubit;
 
   @override
@@ -45,11 +47,6 @@ class _ListServicePageState extends State<ListServicePage> {
         create: (context) => _cubit,
         child: BlocConsumer<ListServiceCubit, ListServiceState>(
           listener: (context, state) {
-            if (state is ListServiceLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
             if (state is ListServiceFailure) {
               Message.showToastMessage(context, state.error);
             }
@@ -58,6 +55,12 @@ class _ListServicePageState extends State<ListServicePage> {
             BuildContext context,
             ListServiceState state,
           ) {
+            if (state is ListServiceLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+              _controller.refreshCompleted();
+            }
             return buildPage(context, state);
           },
         ),
@@ -69,11 +72,12 @@ class _ListServicePageState extends State<ListServicePage> {
     return Scaffold(
       body: CommonPage(
         title: R.string.list_service.tr(),
-        background: R.drawable.bg_welcome,
-        child: Container(
-          padding: EdgeInsets.all(16.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+        background: R.drawable.bg_upgrade_account,
+        child:  SmartRefresher(
+          controller: _controller,
+          onRefresh: () => _cubit.getListPackage(isRefresh: true),
+          child: ListView(
+            padding: EdgeInsets.all(16.h),
             children: [
               Image.asset(
                 R.drawable.img_list_service,

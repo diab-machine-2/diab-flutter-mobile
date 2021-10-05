@@ -45,11 +45,6 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
           create: (context) => _cubit,
           child: BlocConsumer<BloodSugarSurveyCubit, BloodSugarSurveyState>(
             listener: (context, state) {
-              if (state is BloodSugarSurveyLoading) {
-                BotToast.showLoading();
-              } else {
-                BotToast.closeAllLoading();
-              }
               if (state is BloodSugarSurveyFailure) {
                 Message.showToastMessage(context, state.error ?? '');
               }
@@ -70,6 +65,11 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
               }
             },
             builder: (context, state) {
+              if (state is BloodSugarSurveyLoading) {
+                BotToast.showLoading();
+              } else {
+                BotToast.closeAllLoading();
+              }
               return CommonPage(
                 title: R.string.blood_sugar_testing_schedule_suggest.tr(),
                 background: R.drawable.bg_detail_pro,

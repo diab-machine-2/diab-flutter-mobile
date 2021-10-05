@@ -42,16 +42,16 @@ class _BloodSugarScheduleTemplatePageState
       child: BlocConsumer<BloodSugarScheduleTemplateCubit,
           BloodSugarScheduleTemplateState>(
         listener: (context, state) {
-          if (state is BloodSugarScheduleTemplateLoading) {
-            BotToast.showLoading();
-          } else {
-            BotToast.closeAllLoading();
-          }
           if (state is BloodSugarScheduleTemplateFailure) {
             Message.showToastMessage(context, state.error ?? '');
           }
         },
         builder: (context, state) {
+          if (state is BloodSugarScheduleTemplateLoading) {
+            BotToast.showLoading();
+          } else {
+            BotToast.closeAllLoading();
+          }
           return BloodSugarResultLayoutWidget(
             title: widget.template?.name ?? '',
             timeToTestPerDay: 0,

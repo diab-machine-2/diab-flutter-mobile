@@ -48,14 +48,14 @@ class _MyPackagePageState extends State<MyPackagePage> {
           listener: (context, state) {
             if (state is MyPackageLoading) {
               BotToast.showLoading();
-              _controller.refreshCompleted();
             } else {
+              _controller.refreshCompleted();
+              _controller.loadComplete();
               BotToast.closeAllLoading();
             }
             if (state is MyPackageFailure) {
               Message.showToastMessage(context, state.error);
             }
-
           },
           builder: (
             BuildContext context,
@@ -74,53 +74,64 @@ class _MyPackagePageState extends State<MyPackagePage> {
     return CommonPage(
       title: R.string.my_package.tr(),
       background: R.drawable.bg_welcome,
-      child: ListView(
-        padding: EdgeInsets.all(16.h),
-        shrinkWrap: true,
-        children: [
-          Visibility(
-            visible: isBasic,
-            child: UpgradePackageWidget(onClickUpgrade: () { 
-              Utils.navigatePage(context, UpgradeAccountPage(code: Const.PRO));
-            },),
-          ),
-          Visibility(
-              visible: !isBasic,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  listTransactionWidget(_cubit.listActiveTransaction),
-                  SizedBox(
-                    height: 24.h,
-                  ),
-                  Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.symmetric(horizontal: 40.h),
-                    child: ButtonWidget(
-                      title: R.string.renewal_package_pro.tr(),
-                      onPressed: () {
-                        Utils.navigatePage(context, UpgradeAccountPage(code: Const.PRO));
-                      },
-                    ),
-                  ),
-                ],
-              )),
-          SizedBox(
-            height: 50.h,
-          ),
-          Text(
-            R.string.history_transaction.tr(),
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              color: R.color.accentColor,
-              fontWeight: FontWeight.w700,
-              fontSize: 20.sp,
-              letterSpacing: 0.08,
-              height: 1.4,
+      child: SmartRefresher(
+        controller: _controller,
+        onRefresh: () {
+          _cubit.getOwnPackageCode();
+          _cubit.getListTransaction(isRefresh: true);
+        },
+        child: ListView(
+          padding: EdgeInsets.all(16.h),
+          shrinkWrap: true,
+          children: [
+            Visibility(
+              visible: isBasic,
+              child: UpgradePackageWidget(
+                onClickUpgrade: () {
+                  Utils.navigatePage(
+                      context, UpgradeAccountPage(code: Const.PRO));
+                },
+              ),
             ),
-          ),
-          listTransactionWidget(_cubit.listExpiredTransaction)
-        ],
+            Visibility(
+                visible: !Utils.isEmpty(code) ,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    listTransactionWidget(_cubit.listActiveTransaction),
+                    SizedBox(
+                      height: 24.h,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(horizontal: 40.h),
+                      child: ButtonWidget(
+                        title: R.string.renewal_package_pro.tr(),
+                        onPressed: () {
+                          Utils.navigatePage(
+                              context, UpgradeAccountPage(code: Const.PRO));
+                        },
+                      ),
+                    ),
+                  ],
+                )),
+            SizedBox(
+              height: 50.h,
+            ),
+            Text(
+              R.string.history_transaction.tr(),
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: R.color.accentColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 20.sp,
+                letterSpacing: 0.08,
+                height: 1.4,
+              ),
+            ),
+            listTransactionWidget(_cubit.listExpiredTransaction)
+          ],
+        ),
       ),
     );
   }
@@ -128,7 +139,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
   Widget listTransactionWidget(List<TransactionData> list) {
     return ListView.separated(
         shrinkWrap: true,
-        padding: EdgeInsets.symmetric(/*horizontal: 16.h, */vertical: 20.h),
+        padding: EdgeInsets.symmetric(/*horizontal: 16.h, */ vertical: 20.h),
         physics: const NeverScrollableScrollPhysics(),
         itemCount: list.length,
         separatorBuilder: (context, index) => Container(
@@ -169,7 +180,8 @@ class _MyPackagePageState extends State<MyPackagePage> {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8.h),
-                  color: isExpired ? R.color.grayBorder : R.color.color0xFFC3E8D3,
+                  color:
+                      isExpired ? R.color.grayBorder : R.color.color0xFFC3E8D3,
                 ),
                 padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 8.h),
                 child: Text(
@@ -255,7 +267,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     DateUtil.parseStringDateToString(data.endDate,
-                        Const.DATE_TIME_SV_FORMAT, Const.DATE_FORMAT) ??
+                            Const.DATE_TIME_SV_FORMAT, Const.DATE_FORMAT) ??
                         "",
                     textAlign: TextAlign.right,
                     style: TextStyle(
@@ -325,8 +337,13 @@ class _MyPackagePageState extends State<MyPackagePage> {
                         alignment: Alignment.centerLeft,
                         child: GestureDetector(
                           onTap: () {
-                            if (!Utils.isEmpty(data.packageCode))
-                            NavigationUtil.navigatePage(context, DetailPackagePage(code: data.packageCode!));
+                            if (_cubit.code == Const.PRO) {
+                              NavigationUtil.navigatePage(context,
+                                  DetailPackagePage(code: Const.PRO));
+                            } else {
+                              NavigationUtil.navigatePage(context,
+                                  UpgradeAccountPage(code: Const.PREMIUM));
+                            }
                           },
                           child: Text(
                             R.string.see_detail.tr(),
@@ -343,7 +360,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                       ),
                       Spacer(),
                       Visibility(
-                        visible: isEmptyCurrent,
+                        visible: Utils.isEmpty(_cubit.code),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Container(
@@ -352,7 +369,11 @@ class _MyPackagePageState extends State<MyPackagePage> {
                               title: R.string.repurchase.tr(),
                               textSize: 14.sp,
                               height: 32.h,
-                              onPressed: () {},
+                              onPressed: () {
+                                if (!Utils.isEmpty(data.packageCode))
+                                Utils.navigatePage(
+                                    context, UpgradeAccountPage(code: data.packageCode!));
+                              },
                             ),
                           ),
                         ),

@@ -50,11 +50,6 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
         create: (context) => _cubit,
         child: BlocConsumer<ChangeMenuCubit, ChangeMenuState>(
           listener: (context, state) {
-            if (state is ChangeMenuLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
             if (state is ChangeMenuFailure) {
               Message.showToastMessage(context, state.error);
             }
@@ -63,6 +58,11 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
             }
           },
           builder: (context, state) {
+            if (state is ChangeMenuLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
             return CommonPage(
               title: R.string.choose_alternative_dish.tr(),
               background: R.drawable.bg_detail_pro,

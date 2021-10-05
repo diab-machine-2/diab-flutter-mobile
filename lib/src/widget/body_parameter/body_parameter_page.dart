@@ -60,11 +60,6 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
                         if (state is BodyParameterFailure) {
                           Message.showToastMessage(context, state.error);
                         }
-                        if (state is BodyParameterLoading) {
-                          BotToast.showLoading();
-                        } else {
-                          BotToast.closeAllLoading();
-                        }
                         if (state is GetTDEESuccess) {
                           widget.callback!(_cubit.number);
                           UserClient().fetchUser();
@@ -75,6 +70,11 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
                         BuildContext context,
                         BodyParameterState state,
                       ) {
+                        if (state is BodyParameterLoading) {
+                          BotToast.showLoading();
+                        } else {
+                          BotToast.closeAllLoading();
+                        }
                         return buildPage(context, state);
                       },
                     ),

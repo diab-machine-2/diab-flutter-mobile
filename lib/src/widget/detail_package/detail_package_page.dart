@@ -21,6 +21,7 @@ import 'package:medical/src/widgets/card_widget.dart';
 import 'package:medical/src/widgets/image_widget.dart';
 import 'package:medical/src/widgets/text_field_widget.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'detail_package.dart';
 
@@ -34,6 +35,7 @@ class DetailPackagePage extends StatefulWidget {
 }
 
 class _DetailPackagePageState extends State<DetailPackagePage> {
+  final RefreshController _controller = RefreshController();
   late DetailPackageCubit _cubit;
   final TextEditingController _feedbackController = TextEditingController();
   final PageController _pageCourseController = PageController();
@@ -66,11 +68,6 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
         create: (context) => _cubit,
         child: BlocConsumer<DetailPackageCubit, DetailPackageState>(
           listener: (context, state) {
-            if (state is DetailPackageLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
             if (state is DetailPackageFailure) {
               Message.showToastMessage(context, state.error);
             }
@@ -80,6 +77,12 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
           },
           builder: (BuildContext context,
               DetailPackageState state,) {
+            if (state is DetailPackageLoading) {
+              BotToast.showLoading();
+            } else {
+              _controller.refreshCompleted();
+              BotToast.closeAllLoading();
+            }
             return buildPage(context, state);
           },
         ),
@@ -89,24 +92,28 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
 
   Widget buildPage(BuildContext context, DetailPackageState state) {
     DetailPackageData? data = _cubit.data;
-    return SafeArea(
-      top: false,
-      child: BackgroundPage(
-        background: R.drawable.bg_home,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
+    return BackgroundPage(
+      background: R.drawable.bg_upgrade_account,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: SmartRefresher(
+              controller: _controller,
+              onRefresh: () => _cubit.getDetailPackage(isRefresh: true),
               child: ListView(
+                padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 children: [
                   Stack(
                     children: [
                       Image.asset(
                         R.drawable.img_list_service, width: double.infinity,
+                        fit: BoxFit.fill,
                         height: 240.h,),
                       Positioned(
-                        left: 10.h,
+                        top: 40.h,
+                        left: 15.h,
                         child: GestureDetector(
                           onTap: () => NavigationUtil.pop(context),
                           child: Container(
@@ -134,7 +141,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(data?.name ?? R.string.diab_pro.tr(),
+                            Text(data?.name ?? R.string.package_pro.tr(),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: R.color.textDark,
@@ -197,54 +204,54 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                 ],
               ),
             ),
-            Visibility(
-              visible: data?.code == Const.PRO,
-              child: Container(
-                  width: double.infinity,
-                  height: 80.h,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      color: R.color.white,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16))),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: 128.w,
-                        child: ButtonWidget(
-                          title: R.string.interest.tr(),
-                          onPressed: () {
-                            showModelSheet(context);
-                          },
-                          backgroundColor: R.color.white,
-                          borderColor: R.color.accentColor,
-                          textColor: R.color.accentColor,
-                        ),
+          ),
+          Visibility(
+            visible: data?.code == Const.PRO,
+            child: Container(
+                width: double.infinity,
+                height: 80.h,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: R.color.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      width: 128.w,
+                      child: ButtonWidget(
+                        title: R.string.interest.tr(),
+                        onPressed: () {
+                          showModelSheet(context);
+                        },
+                        backgroundColor: R.color.white,
+                        borderColor: R.color.accentColor,
+                        textColor: R.color.accentColor,
                       ),
-                      Container(
-                        width: 128.w,
-                        child: ButtonWidget(
-                          title: R.string.sign_up.tr(),
-                          onPressed: () {
-                            if (!Utils.isEmpty(data?.prices))
-                              NavigationUtil.navigatePage(
-                                  context,
-                                  PaymentPackagePage(
-                                    packageName:
-                                    data?.name ?? R.string.diab_pro.tr(),
-                                    packageCode: data?.code ?? Const.PRO,
-                                    price: data!.prices![_cubit.selectedPrice],
-                                  ));
-                          },
-                        ),
+                    ),
+                    Container(
+                      width: 128.w,
+                      child: ButtonWidget(
+                        title: R.string.sign_up.tr(),
+                        onPressed: () {
+                          if (!Utils.isEmpty(data?.prices))
+                            NavigationUtil.navigatePage(
+                                context,
+                                PaymentPackagePage(
+                                  packageName:
+                                  data?.name ?? R.string.diab_pro.tr(),
+                                  packageCode: data?.code ?? Const.PRO,
+                                  price: data!.prices![_cubit.selectedPrice],
+                                ));
+                        },
                       ),
-                    ],
-                  )),
-            )
-          ],
-        ),
+                    ),
+                  ],
+                )),
+          )
+        ],
       ),
     );
   }
@@ -331,11 +338,11 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                                         padding: EdgeInsets.all(11.h),
                                         decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            color: R.color.green.withOpacity(0.1)),
+                                            color: Utils.parseStringToColor(data.hexCode).withOpacity(0.4)),
                                         child: Image.asset(
                                           R.drawable.ic_book,
                                           fit: BoxFit.fill,
-                                          color: R.color.green,
+                                          color: Utils.parseStringToColor(data.hexCode),
                                         ),
                                       ),
                                       SizedBox(width: 8.w),
@@ -380,11 +387,11 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                                         padding: EdgeInsets.all(11.h),
                                         decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            color: R.color.green.withOpacity(0.1)),
+                                            color: Utils.parseStringToColor(data.hexCode).withOpacity(0.4)),
                                         child: Image.asset(
                                           R.drawable.ic_stack,
                                           fit: BoxFit.fill,
-                                          color: R.color.green,
+                                          color: Utils.parseStringToColor(data.hexCode),
                                         ),
                                       ),
                                       SizedBox(width: 8.w),

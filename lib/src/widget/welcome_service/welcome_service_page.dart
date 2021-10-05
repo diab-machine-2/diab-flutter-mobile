@@ -41,11 +41,6 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
         create: (context) => _cubit,
         child: BlocConsumer<WelcomeServiceCubit, WelcomeServiceState>(
           listener: (context, state) {
-            if (state is WelcomeServiceLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
             if (state is WelcomeServiceFailure) {
               Message.showToastMessage(context, state.error);
             }
@@ -54,6 +49,11 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
             BuildContext context,
             WelcomeServiceState state,
           ) {
+            if (state is WelcomeServiceLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
             return buildPage(context, state);
           },
         ),

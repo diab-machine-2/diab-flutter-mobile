@@ -355,13 +355,15 @@ class CourseSection {
     String? description,
     ImageData? image,
     int? totalLesson,
-    int? totalHours,}){
+    int? totalHours,
+    String? hexCode,}){
     _id = id;
     _name = name;
     _description = description;
     _image = image;
     _totalLesson = totalLesson;
     _totalHours = totalHours;
+    _hexCode = hexCode;
   }
   CourseSection.fromJson(dynamic json) {
     _id = json['id'];
@@ -370,6 +372,7 @@ class CourseSection {
     _image = json['image'] != null ? ImageData.fromJson(json['image']) : null;
     _totalLesson = json['totalLesson'];
     _totalHours = json['totalHours'];
+    _hexCode = json['hexCode'];
   }
   String? _id;
   String? _name;
@@ -377,6 +380,7 @@ class CourseSection {
   ImageData? _image;
   int? _totalLesson;
   int? _totalHours;
+  String? _hexCode;
 
   String? get id => _id;
   String? get name => _name;
@@ -384,6 +388,7 @@ class CourseSection {
   ImageData? get image => _image;
   int? get totalLesson => _totalLesson;
   int? get totalHours => _totalHours;
+  String? get hexCode => _hexCode;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -395,6 +400,7 @@ class CourseSection {
     }
     map['totalLesson'] = _totalLesson;
     map['totalHours'] = _totalHours;
+    map['hexCode'] = _hexCode;
     return map;
   }
 

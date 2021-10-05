@@ -16,8 +16,8 @@ class ListServiceCubit extends Cubit<ListServiceState> {
 
   ListServiceCubit(this.appRepository) : super(ListServiceInitial());
 
-  void getListPackage() async {
-    emit(ListServiceLoading());
+  void getListPackage({bool isRefresh = false}) async {
+    emit(isRefresh ? ListServiceInitial() : ListServiceLoading());
     ApiResult<ListPackageResponse> apiResult = await appRepository.getListPackage();
     apiResult.when(success: (ListPackageResponse response) {
       listData = response.data ?? [];

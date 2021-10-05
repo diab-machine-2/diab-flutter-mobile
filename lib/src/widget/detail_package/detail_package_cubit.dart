@@ -24,8 +24,8 @@ class DetailPackageCubit extends Cubit<DetailPackageState> {
   DetailPackageCubit(this.appRepository, this.code)
       : super(DetailPackageInitial());
 
-  void getDetailPackage() async {
-    emit(DetailPackageLoading());
+  void getDetailPackage({bool isRefresh = false}) async {
+    emit(isRefresh ? DetailPackageInitial() : DetailPackageLoading());
     ApiResult<DetailPackageResponse> apiResult =
         await appRepository.getDetailPackage(code);
     apiResult.when(success: (DetailPackageResponse response) {

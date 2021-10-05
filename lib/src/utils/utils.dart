@@ -90,11 +90,11 @@ class Utils {
   static bool isInteger(num value) =>
       value is int || value == value.roundToDouble();
 
-  static Color parseStringToColor(String color) {
+  static Color parseStringToColor(String? color) {
     if (isEmpty(color))
       return R.color.white;
     else
-      return Color(int.parse('0xff' + color.substring(1)));
+      return Color(int.parse('0xff' + color!.substring(1)));
   }
 
   static String parseDateToString(DateTime? dateTime, String format) {

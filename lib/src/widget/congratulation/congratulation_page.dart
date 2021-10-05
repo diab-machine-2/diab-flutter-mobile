@@ -49,11 +49,6 @@ class _CongratulationPageState extends State<CongratulationPage> {
         create: (context) => _cubit,
         child: BlocConsumer<CongratulationCubit, CongratulationState>(
           listener: (context, state) {
-            if (state is CongratulationLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
             if (state is CongratulationFailure) {
               Message.showToastMessage(context, state.error);
             }
@@ -62,6 +57,11 @@ class _CongratulationPageState extends State<CongratulationPage> {
             BuildContext context,
             CongratulationState state,
           ) {
+            if (state is CongratulationLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
             return buildPage(context, state);
           },
         ),

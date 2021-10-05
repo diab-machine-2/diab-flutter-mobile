@@ -1,21 +1,18 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/detail_package_data.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/congratulation/congratulation.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/register_package/register_package_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
-import 'package:medical/src/widgets/text_field_widget.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+
 import 'payment_package.dart';
 
 class PaymentPackagePage extends StatefulWidget {
@@ -52,11 +49,6 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
         create: (context) => _cubit,
         child: BlocConsumer<PaymentPackageCubit, PaymentPackageState>(
           listener: (context, state) {
-            if (state is PaymentPackageLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
             if (state is PaymentPackageFailure) {
               Message.showToastMessage(context, state.error);
             }
@@ -65,6 +57,11 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
             BuildContext context,
             PaymentPackageState state,
           ) {
+            if (state is PaymentPackageLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
             return buildPage(context, state);
           },
         ),
