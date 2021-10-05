@@ -32,7 +32,6 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     final ApiResult<MenuResponse> apiResult =
         await repository.getGetUserFoodMenu();
     apiResult.when(success: (MenuResponse response) {
-      print(response);
       if (response.listdayfood != null) {
         listDayFood = response.listdayfood!;
       }
@@ -43,5 +42,9 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     }, failure: (NetworkExceptions error) {
       emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));
     });
+  }
+
+  Future<void> changeFood() async {
+    
   }
 }

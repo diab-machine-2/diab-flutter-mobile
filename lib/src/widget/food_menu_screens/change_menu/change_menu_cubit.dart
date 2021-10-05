@@ -155,8 +155,8 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
     }
   }
 
-  Future<void> onChoseFood({required FoodModel selectedFood}) async {
-    selectedFood = selectedFood;
+  Future<void> onChoseFood({required FoodModel newSelectedFood}) async {
+    selectedFood = newSelectedFood;
     emit(const ChangeMenuDone());
     emit(const ChangeMenuInitial());
   }

@@ -9,6 +9,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/kcal_parameter/kcal_parameter.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/stack_loading_view.dart';
 
@@ -189,6 +190,22 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                   ),
                                 ),
                               ],
+                            ),
+                          ),
+                          Visibility(
+                            visible: false,
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 15.h),
+                              child: SafeArea(
+                                top: false,
+                                child: Container(
+                                  width: 242.w,
+                                  child: ButtonWidget(
+                                    title: 'Đặt làm thực đơn của tôi',
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ],

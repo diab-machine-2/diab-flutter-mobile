@@ -130,7 +130,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
               selectedFood: widget.selectedFood,
               onConfirm: (selectedFood) {
                 _cubit.onChoseFood(
-                  selectedFood: selectedFood,
+                  newSelectedFood: selectedFood,
                 );
               },
               hasSelectQuantity: widget.hasSelectQuantity,
@@ -214,7 +214,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
               },
               onConfirm: (foodModel) {
                 _cubit.onChoseFood(
-                  selectedFood: foodModel,
+                  newSelectedFood: foodModel,
                 );
               },
               hasSelectQuantity: widget.hasSelectQuantity,
@@ -329,7 +329,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
         category: category,
         onTapYes: (foodModel) {
           _cubit.onChoseFood(
-            selectedFood: foodModel,
+            newSelectedFood: foodModel,
           );
         },
         hasSelectQuantity: widget.hasSelectQuantity,
