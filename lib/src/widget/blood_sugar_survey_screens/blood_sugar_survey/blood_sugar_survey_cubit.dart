@@ -25,6 +25,8 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
 
   List<Question> questions = [];
 
+  double? hba1c;
+
   void initSurvey() {
     questions.add(question1);
     selectDefaultAnswerForQuestion1();
@@ -64,6 +66,7 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
     apiResult.when(success: (LatestHba1cInputResponse response) {
       if (response.data != null) {
         final LatestHba1cInputResponseData data = response.data!;
+        hba1c = data.hbA1C?.toDouble();
         if (data.hbA1C == null) return;
         if (data.hbA1C! <= 7) {
           question2.selectedAnswer = 1;
