@@ -27,6 +27,8 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
 
   double? hba1c;
 
+  bool get isFirstQuestionScreen => questions.contains(question1);
+
   void initSurvey() {
     questions.add(question1);
     selectDefaultAnswerForQuestion1();

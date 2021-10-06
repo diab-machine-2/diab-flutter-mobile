@@ -86,18 +86,27 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                             padding:
                                 EdgeInsets.fromLTRB(16.w, 36.h, 16.w, 32.h),
                             child: Column(
-                              children: List.generate(
-                                _cubit.questions.length,
-                                (index) => _buildQuestion(
-                                    question: _cubit.questions[index],
-                                    onSelectAnswer: (answerIndex) {
-                                      print(answerIndex);
-                                      _cubit.questions[index].selectedAnswer =
-                                          answerIndex;
-                                      _cubit.onSelectedAnswer(
-                                          _cubit.questions[index].questionKey);
-                                    }),
-                              ),
+                              children: [
+                                Visibility(
+                                  visible: _cubit.isFirstQuestionScreen,
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(67.w, 0, 67.w, 50.h),
+                                    child: Image.asset(R.drawable
+                                        .img_blood_sugar_survey_question_1),
+                                  ),
+                                ),
+                                ...List.generate(
+                                  _cubit.questions.length,
+                                  (index) => _buildQuestion(
+                                      question: _cubit.questions[index],
+                                      onSelectAnswer: (answerIndex) {
+                                        _cubit.questions[index].selectedAnswer =
+                                            answerIndex;
+                                        _cubit.onSelectedAnswer(_cubit
+                                            .questions[index].questionKey);
+                                      }),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -216,7 +225,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(16),
           border: isSelected
               ? null
               : Border.all(

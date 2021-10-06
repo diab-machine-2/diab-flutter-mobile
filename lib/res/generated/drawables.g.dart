@@ -203,6 +203,7 @@ class Drawables {
 	String get img_blood_pressure_trend_empty => "lib/res/drawables/img_blood_pressure_trend_empty.png";
 	String get img_blood_sugar_start_survey => "lib/res/drawables/img_blood_sugar_start_survey.png";
 	String get img_blood_sugar_survey_empty_result => "lib/res/drawables/img_blood_sugar_survey_empty_result.png";
+	String get img_blood_sugar_survey_question_1 => "lib/res/drawables/img_blood_sugar_survey_question_1.png";
 	String get img_blood_sugar_testing_schedule_short => "lib/res/drawables/img_blood_sugar_testing_schedule_short.png";
 	String get img_blood_sugar_testing_schedule_tall => "lib/res/drawables/img_blood_sugar_testing_schedule_tall.png";
 	String get img_bmi_empty => "lib/res/drawables/img_bmi_empty.png";
