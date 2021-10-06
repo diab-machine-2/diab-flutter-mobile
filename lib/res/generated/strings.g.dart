@@ -764,4 +764,5 @@ class Strings {
 	String get text_need_2_steps_complete => 'text_need_2_steps_complete';
 	String get text_notice_upgrade_premium => 'text_notice_upgrade_premium';
 	String get back_home => 'back_home';
+	String get not_found_sku => 'not_found_sku';
 }

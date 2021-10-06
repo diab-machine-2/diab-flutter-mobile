@@ -46,13 +46,6 @@ class _MyPackagePageState extends State<MyPackagePage> {
         create: (context) => _cubit,
         child: BlocConsumer<MyPackageCubit, MyPackageState>(
           listener: (context, state) {
-            if (state is MyPackageLoading) {
-              BotToast.showLoading();
-            } else {
-              _controller.refreshCompleted();
-              _controller.loadComplete();
-              BotToast.closeAllLoading();
-            }
             if (state is MyPackageFailure) {
               Message.showToastMessage(context, state.error);
             }
@@ -61,6 +54,13 @@ class _MyPackagePageState extends State<MyPackagePage> {
             BuildContext context,
             MyPackageState state,
           ) {
+            if (state is MyPackageLoading) {
+              BotToast.showLoading();
+            } else {
+              _controller.refreshCompleted();
+              _controller.loadComplete();
+              BotToast.closeAllLoading();
+            }
             return buildPage(context, state);
           },
         ),
@@ -69,7 +69,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
   }
 
   Widget buildPage(BuildContext context, MyPackageState state) {
-    String? code = _cubit.code;
+    String? code = _cubit.ownCode;
     bool isBasic = code?.isEmpty == true || code == Const.BASIC;
     return CommonPage(
       title: R.string.my_package.tr(),
@@ -337,7 +337,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                         alignment: Alignment.centerLeft,
                         child: GestureDetector(
                           onTap: () {
-                            if (_cubit.code == Const.PRO) {
+                            if (_cubit.ownCode == Const.PRO) {
                               NavigationUtil.navigatePage(context,
                                   DetailPackagePage(code: Const.PRO));
                             } else {
@@ -360,7 +360,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                       ),
                       Spacer(),
                       Visibility(
-                        visible: Utils.isEmpty(_cubit.code),
+                        visible: Utils.isEmpty(_cubit.ownCode),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Container(

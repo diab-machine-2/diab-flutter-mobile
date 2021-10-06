@@ -30,7 +30,7 @@ class CustomAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-          vertical: paddingVertical ?? 10.h, horizontal: 16.h),
+          vertical: paddingVertical ?? 18.h, horizontal: 16.h),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -45,7 +45,7 @@ class CustomAppBar extends StatelessWidget {
                   child: Icon(
                     icon ?? CupertinoIcons.arrow_left,
                     color: textColor ?? R.color.textDark,
-                    size: iconSize ?? 25.h,
+                    size: iconSize ?? 28.h,
                   )),
             ),
           ),
