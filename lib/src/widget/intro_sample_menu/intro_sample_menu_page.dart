@@ -174,9 +174,10 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                           barrierColor:
                               R.color.color0xff003F38.withOpacity(0.5),
                           context: context,
-                          builder: (_) => KcalParameterPage(callback: (number) {
+                          builder: (_) => KcalParameterPage(callback: (request) {
                             //TODO: Navigate to FoodMenuPage
-                            NavigationUtil.navigatePage(context, const FoodMenuPage());
+                            NavigationUtil.navigatePage(context,
+                                  FoodMenuPage(createMenuRequest: request));
                             // NavigationUtil.pushAndRemoveUtilPage(context, widget)
                           },),
                         );

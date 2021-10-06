@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/body_parameter/body_parameter.dart';
@@ -16,11 +17,9 @@ import 'package:medical/src/widgets/button_widget.dart';
 
 import 'kcal_parameter.dart';
 
-typedef NumCallback = Function(num?);
-
 class KcalParameterPage extends StatefulWidget {
   final bool isUpdate;
-  final NumCallback? callback;
+  final Function(CreateMenuRequest request)? callback;
 
   const KcalParameterPage({Key? key, this.callback, this.isUpdate = false})
       : super(key: key);
@@ -231,18 +230,19 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                   title: R.string.agree.tr(),
                   height: 43.h,
                   onPressed: () {
-                    String text = _controller.text.trim();
-                    num? number;
+                    final String text = _controller.text.trim();
+                    int? number;
                     if (!Utils.isEmpty(text)) {
-                      number = num.parse(text);
+                      number = int.parse(text);
                       showDialog(
                         barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                         context: context,
                         builder: (_) => NoticeChangePage(onClick: () {
                           NavigationUtil.pop(context);
-                          Future.delayed(Duration(milliseconds: 200), () {
+                          Future.delayed(const Duration(milliseconds: 200), () {
                             if (widget.callback != null && number != null) {
-                              widget.callback!(number);
+                              _cubit.createMenuRequest.setKcal = number;
+                              widget.callback!(_cubit.createMenuRequest);
                             }
                           });
                         }),
@@ -250,7 +250,6 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                     } else {
                       Message.showToastMessage(
                           context, R.string.ban_chua_nhap_gia_tri.tr());
-                      // Message.showToastMessage(context, R.string.ban_chua_nhap_gia_tri.tr());
                     }
 
                   },
@@ -265,35 +264,63 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        buildRowCheck(R.string.no_sub_meal.tr(), 0),
+        buildRowCheck(
+            title: R.string.no_sub_meal.tr(),
+            isChecked: _cubit.isNoSubMeal,
+            onChecked: (isChecked) {
+              if (isChecked == true) {
+                _cubit.onCheckedNoSubMeal();
+              }
+            }),
         SizedBox(height: 10.h),
         Container(
           height: 1,
-          margin: EdgeInsets.only(left: 10),
+          margin: const EdgeInsets.only(left: 10),
           width: 170.h,
           color: R.color.gray,
         ),
         SizedBox(height: 10.h),
-        buildRowCheck(R.string.breakfast_meal.tr(), 1),
-        buildRowCheck(R.string.lunch_meal.tr(), 2),
-        buildRowCheck(R.string.dinner_meal.tr(), 3),
+        buildRowCheck(
+            title: R.string.breakfast_meal.tr(),
+            isChecked: _cubit.createMenuRequest.includeBreakfast,
+            onChecked: (isChecked) {
+              _cubit.createMenuRequest.includeBreakfast = isChecked;
+              _cubit.refresh();
+            }),
+        buildRowCheck(
+            title: R.string.lunch_meal.tr(),
+            isChecked: _cubit.createMenuRequest.includeLunch,
+            onChecked: (isChecked) {
+              _cubit.createMenuRequest.includeLunch = isChecked;
+              _cubit.refresh();
+            }),
+        buildRowCheck(
+            title: R.string.dinner_meal.tr(),
+            isChecked: _cubit.createMenuRequest.includeDinner,
+            onChecked: (isChecked) {
+              _cubit.createMenuRequest.includeDinner = isChecked;
+              _cubit.refresh();
+            }),
       ],
     );
   }
 
-  Widget buildRowCheck(String title, int index) {
-    bool isChecked = _cubit.selectedMeal == index;
+  Widget buildRowCheck({
+    required String title,
+    required bool? isChecked,
+    required Function(bool isSelected) onChecked,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Transform.scale(
           scale: 1.5,
           child: Checkbox(
-            value: isChecked,
+            value: isChecked ?? false,
             checkColor: R.color.white,
             activeColor: R.color.accentColor,
-            onChanged: (bool? newValue) {
-              _cubit.selectOptionMeal(index);
+            onChanged: (isChecked) {
+              onChecked(isChecked ?? false);
             },
           ),
         ),

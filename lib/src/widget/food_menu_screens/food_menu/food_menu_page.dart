@@ -7,8 +7,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/kcal_parameter/kcal_parameter.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -16,11 +18,12 @@ import 'package:medical/src/widgets/common_page.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../change_menu/change_menu.dart';
-import 'day_in_week_buttons.dart';
 import 'food_menu.dart';
 
 class FoodMenuPage extends StatefulWidget {
-  const FoodMenuPage();
+  const FoodMenuPage({required this.createMenuRequest});
+
+  final CreateMenuRequest? createMenuRequest;
 
   @override
   _FoodMenuPageState createState() => _FoodMenuPageState();
@@ -35,7 +38,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = FoodMenuCubit(appRepository);
-    _cubit.getTemplateDetail();
+    _cubit.createMenu(request: widget.createMenuRequest);
   }
 
   void updateKcal(BuildContext context) {
@@ -44,7 +47,9 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
       context: context,
       builder: (_) => KcalParameterPage(
         isUpdate: true,
-        callback: (number) {},
+        callback: (request) {
+          _cubit.createMenu(request: request);
+        },
       ),
     );
   }
@@ -128,11 +133,21 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                               onUpdateKcal: () {
                                 updateKcal(context);
                               }),
-                          DayInWeekButtons(
-                              initDay: _cubit.currentDayInWeek,
-                              onSlectDay: (dayIndex) {
-                                _cubit.onChangeDay(dayIndex);
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: List.generate(7, (index) {
+                                return _buildDayOfTheWeekSingleButton(
+                                    dayTitle: Utils.getDayInWeekTitle(index),
+                                    isSelected:
+                                        index == _cubit.currentDayInWeek,
+                                    onTap: () {
+                                      _cubit.onChangeDay(index);
+                                    });
                               }),
+                            ),
+                          ),
                           //Divider
                           Container(
                             margin: EdgeInsets.only(top: 10.h),
@@ -168,44 +183,50 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                         }
                                       });
                                 }).toList(),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 33.h,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Image.asset(
-                                        R.drawable.ic_info,
-                                        width: 24,
-                                        height: 24,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: RichText(
-                                          text: TextSpan(
-                                            text: '${R.string.note.tr()} ',
-                                            style: TextStyle(
-                                                color: R.color.textDark,
-                                                fontSize: 16.sp,
-                                                fontWeight: FontWeight.w700),
-                                            children: [
-                                              TextSpan(
-                                                text: _cubit.menuResponseFood
-                                                        ?.note ??
-                                                    '',
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontSize: 16.sp,
-                                                    fontWeight:
-                                                        FontWeight.w400),
-                                              )
-                                            ],
+                                Visibility(
+                                  visible: _cubit
+                                          .menuResponseFood?.note?.isNotEmpty ??
+                                      false,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                      top: 33.h,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Image.asset(
+                                          R.drawable.ic_info,
+                                          width: 24,
+                                          height: 24,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: RichText(
+                                            text: TextSpan(
+                                              text: '${R.string.note.tr()} ',
+                                              style: TextStyle(
+                                                  color: R.color.textDark,
+                                                  fontSize: 16.sp,
+                                                  fontWeight: FontWeight.w700),
+                                              children: [
+                                                TextSpan(
+                                                  text: _cubit.menuResponseFood
+                                                          ?.note ??
+                                                      '',
+                                                  style: TextStyle(
+                                                      color: R.color.textDark,
+                                                      fontSize: 16.sp,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                )
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
+                                SizedBox(height: 33.h),
                               ],
                             ),
                           ),
@@ -309,7 +330,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               children: [
                 Expanded(
                   child: Text(
-                    mealData?.timeName ?? '',
+                    mealData?.mealName ?? '',
                     style: TextStyle(
                       color: R.color.greenGradientBottom,
                       fontSize: 20.sp,
@@ -536,6 +557,34 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Widget _buildDayOfTheWeekSingleButton({
+    required String dayTitle,
+    required bool isSelected,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(8.w),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: isSelected ? R.color.mainColor : R.color.grayBorder,
+          ),
+          color: isSelected ? R.color.main_6 : Colors.transparent,
+        ),
+        child: Text(
+          dayTitle,
+          style: TextStyle(
+            color: isSelected ? R.color.mainColor : R.color.primaryGreyColor,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
       ),
     );
   }

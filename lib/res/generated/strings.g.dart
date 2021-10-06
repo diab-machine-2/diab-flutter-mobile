@@ -752,6 +752,9 @@ class Strings {
 	String get breakfast_meal => 'breakfast_meal';
 	String get lunch_meal => 'lunch_meal';
 	String get dinner_meal => 'dinner_meal';
+	String get breakfast_sub_meal => 'breakfast_sub_meal';
+	String get lunch_sub_meal => 'lunch_sub_meal';
+	String get dinner_sub_meal => 'dinner_sub_meal';
 	String get text_warning_change_param => 'text_warning_change_param';
 	String get confirm_change => 'confirm_change';
 	String get diab_parameter => 'diab_parameter';

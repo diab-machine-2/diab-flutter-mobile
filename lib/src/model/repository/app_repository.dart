@@ -1,9 +1,11 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
+import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/blood_sugar_template_category_response.dart';
 import 'package:medical/src/model/response/blood_sugar_template_detail_response.dart';
+import 'package:medical/src/model/response/create_menu_response.dart';
 import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
@@ -191,6 +193,21 @@ class AppRepository {
         return ApiResult.failure(
             error:
                 NetworkExceptions.defaultError(response.error!.message ?? ""));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CreateMenuResponse>> createMenu(
+      CreateMenuRequest request) async {
+    try {
+      final CreateMenuResponse response = await appClient.createMenu(request);
+      if (response.meta?.success == true) {
+        return ApiResult.success(data: response);
+      } else
+        return const ApiResult.failure(
+            error:
+                NetworkExceptions.defaultError("Can't find a matching menu"));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

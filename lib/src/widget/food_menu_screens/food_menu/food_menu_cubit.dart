@@ -1,8 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
+import 'package:medical/src/model/response/create_menu_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -30,12 +32,35 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     emit(const FoodMenuInitial());
   }
 
+  Future<void> createMenu({CreateMenuRequest? request}) async {
+    if (request != null) {
+      emit(const FoodMenuLoading());
+      final ApiResult<CreateMenuResponse> apiResult =
+          await repository.createMenu(request);
+      apiResult.when(success: (CreateMenuResponse response) async {
+        if (response.data == null) {
+          listDayFood = [];
+        } else {
+          currentDayInWeek = 0;
+          final String menuId = response.data!;
+          //TODO: Call API to get menu detail
+        }
+        emit(const FoodMenuSuccess());
+      }, failure: (NetworkExceptions error) {
+        emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));
+      });
+      emit(const FoodMenuInitial());
+    }
+    getTemplateDetail();
+  }
+
   Future<void> getTemplateDetail({bool isRefresh = false}) async {
     if (!isRefresh) emit(const FoodMenuLoading());
     final ApiResult<MenuResponse> apiResult =
         await repository.getGetUserFoodMenu();
     apiResult.when(success: (MenuResponse response) {
       if (response.listdayfood != null) {
+        response.sortListDayFood();
         listDayFood = response.listdayfood!;
       }
       if (response.food != null) {

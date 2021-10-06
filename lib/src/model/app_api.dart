@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'response/create_menu_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
+import 'request/create_menu_request.dart';
 import 'request/food_change_request.dart';
 import 'request/send_interest_request.dart';
 import 'response/diabetes_status_response.dart';
@@ -97,5 +99,10 @@ abstract class AppApi {
   @POST("App/PatientFoodMenu/Input")
   Future<CommonResponse> changeFood(
     @Body() FoodChangeRequest request,
+  );
+
+  @POST("App/PatientFoodMenu/Input")
+  Future<CreateMenuResponse> createMenu(
+    @Body() CreateMenuRequest request,
   );
 }

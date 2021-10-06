@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 
@@ -191,6 +193,13 @@ class MenuResponseListdayfoodTimeGroups {
     this.totalGlucose,
     this.defaultFood,
   });
+
+  String? get mealName {
+    if (timeCode == 4) return R.string.breakfast_sub_meal.tr();
+    if (timeCode == 5) return R.string.lunch_sub_meal.tr();
+    if (timeCode == 6) return R.string.dinner_sub_meal.tr();
+    return this.timeName;
+  }
   MenuResponseListdayfoodTimeGroups.fromJson(Map<String, dynamic> json) {
     timeCode = json["timeCode"]?.toInt();
     timeName = json["timeName"]?.toString();
@@ -275,6 +284,7 @@ class MenuResponseListdayfood {
     this.totalGlucose,
     this.timeGroups,
   });
+
   MenuResponseListdayfood.fromJson(Map<String, dynamic> json) {
     dateCode = json["dateCode"]?.toString();
     totalKcal = json["totalKcal"]?.toDouble();
@@ -409,6 +419,29 @@ class MenuResponse {
     this.listdayfood,
     this.message,
   });
+
+  void sortListDayFood() {
+    if (listdayfood != null) {
+      for (int index = 0; index < listdayfood!.length; index++) {
+        listdayfood![index]?.timeGroups =
+            _sortSingleTimeGroup(listdayfood![index]?.timeGroups);
+      }
+    }
+  }
+
+List<MenuResponseListdayfoodTimeGroups?>? _sortSingleTimeGroup(
+      List<MenuResponseListdayfoodTimeGroups?>? mealList) {
+    if (mealList == null) return null;
+    final List<MenuResponseListdayfoodTimeGroups?> newMealList = [];
+    newMealList.addAll(mealList.where((meal) => meal?.timeCode == 1));
+    newMealList.addAll(mealList.where((meal) => meal?.timeCode == 4));
+    newMealList.addAll(mealList.where((meal) => meal?.timeCode == 2));
+    newMealList.addAll(mealList.where((meal) => meal?.timeCode == 5));
+    newMealList.addAll(mealList.where((meal) => meal?.timeCode == 3));
+    newMealList.addAll(mealList.where((meal) => meal?.timeCode == 6));
+    return newMealList;
+  }
+
   MenuResponse.fromJson(Map<String, dynamic> json) {
     totalKcal = json["totalKcal"]?.toDouble();
     totalGlucose = json["totalGlucose"]?.toDouble();
