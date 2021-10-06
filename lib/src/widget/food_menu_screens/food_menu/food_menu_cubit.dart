@@ -42,8 +42,6 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
           listDayFood = [];
         } else {
           currentDayInWeek = 0;
-          final String menuId = response.data!;
-          //TODO: Call API to get menu detail
         }
         emit(const FoodMenuSuccess());
       }, failure: (NetworkExceptions error) {
@@ -59,11 +57,9 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     final ApiResult<MenuResponse> apiResult =
         await repository.getGetUserFoodMenu();
     apiResult.when(success: (MenuResponse response) {
-      if (response.listdayfood != null) {
+      if (response.listdayfood != null && response.food != null) {
         response.sortListDayFood();
         listDayFood = response.listdayfood!;
-      }
-      if (response.food != null) {
         menuResponseFood = response.food;
       }
       emit(const FoodMenuSuccess());
