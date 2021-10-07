@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +13,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/congratulation/congratulation_page.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/register_package/register_package_page.dart';
+import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:medical/src/widget/welcome_service/welcome_service_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -22,12 +24,14 @@ class PaymentPackagePage extends StatefulWidget {
   final String packageName;
   final String packageCode;
   final Price price;
+  final bool isBuyDirect;
 
   const PaymentPackagePage(
       {Key? key,
       required this.packageName,
       required this.packageCode,
-      required this.price})
+      required this.price,
+      this.isBuyDirect = true})
       : super(key: key);
 
   @override
@@ -54,6 +58,16 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
           listener: (context, state) {
             if (state is PaymentPackageFailure) {
               Message.showToastMessage(context, state.error);
+            }
+            if (state is PurchaseSuccess) {
+              NavigationUtil.navigatePage(
+                  context,
+                  widget.isBuyDirect
+                      ? WelcomeServicePage(
+                          code: widget.packageCode,
+                        )
+                      : CongratulationPage(
+                          code: widget.packageCode, priceData: widget.price));
             }
           },
           builder: (
@@ -193,8 +207,7 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                         CongratulationPage(
                             code: widget.packageCode, priceData: widget.price));
                   } else {
-                    // TODO IAP
-                    NavigationUtil.navigatePage(context, WelcomeServicePage(code: widget.packageCode,));
+                    _cubit.requestPurchase(widget.price.monthUsed ?? 1);
                   }
                 },
               ),

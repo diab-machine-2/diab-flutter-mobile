@@ -7,12 +7,15 @@ import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/logger.dart';
 
 import 'upgrade_account.dart';
 
 class UpgradeAccountCubit extends Cubit<UpgradeAccountState> {
 
   final AppRepository appRepository;
+
+  String? ownCode;
 
   DetailPackageData? data;
   int selectedPrice = 1;
@@ -22,6 +25,16 @@ class UpgradeAccountCubit extends Cubit<UpgradeAccountState> {
   int? selectedIndexInterest;
 
   UpgradeAccountCubit(this.appRepository) : super(UpgradeAccountInitial());
+
+  void getOwnPackageCode() async {
+    ApiResult<String> apiResult = await appRepository.getOwnPackageCode();
+    apiResult.when(success: (String response) {
+      ownCode = response;
+    }, failure: (NetworkExceptions error) {
+      logger.e(NetworkExceptions.getErrorMessage(error));
+    });
+  }
+
 
   void getUpgradeAccount(String code, {bool isRefresh = false}) async {
     emit(isRefresh ? UpgradeAccountInitial() : UpgradeAccountLoading());

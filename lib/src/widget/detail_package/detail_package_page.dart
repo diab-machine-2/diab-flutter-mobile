@@ -27,8 +27,9 @@ import 'detail_package.dart';
 
 class DetailPackagePage extends StatefulWidget {
   final String code;
+  final bool isBuyDirect;
 
-  const DetailPackagePage({Key? key, required this.code}) : super(key: key);
+  const DetailPackagePage({Key? key, required this.code, this.isBuyDirect = true}) : super(key: key);
 
   @override
   _DetailPackagePageState createState() => _DetailPackagePageState();
@@ -45,10 +46,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    FlutterStatusbarManager.setHidden(true);
-    SystemChrome.setEnabledSystemUIOverlays([
-      SystemUiOverlay.bottom, //This line is used for showing the bottom bar
-    ]);
+    // FlutterStatusbarManager.setHidden(true);
     AppRepository repository = AppRepository();
     _cubit = DetailPackageCubit(repository, widget.code);
     _cubit.getDetailPackage();
@@ -57,7 +55,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
   @override
   void dispose() {
     // TODO: implement dispose
-    FlutterStatusbarManager.setHidden(false);
+    // FlutterStatusbarManager.setHidden(false);
     super.dispose();
   }
 
@@ -244,6 +242,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                                   data?.name ?? R.string.diab_pro.tr(),
                                   packageCode: data?.code ?? Const.PRO,
                                   price: data!.prices![_cubit.selectedPrice],
+                                  isBuyDirect: widget.isBuyDirect,
                                 ));
                         },
                       ),
@@ -251,7 +250,6 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                   ],
                 )),
           ),
-          SizedBox(height: 10.h,),
         ],
       ),
     );
@@ -562,66 +560,71 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
   }
 
   Widget packageWidget(Price data, bool isSelected) {
-    return CardWidget(
-      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 6.h),
-      borderColor:
-      isSelected ? R.color.accentColor : R.color.grayComponentBorder,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(data.highlight ?? "",
-              style: TextStyle(
-                  color: R.color.yellow,
-                  fontWeight: FontWeight.w600,
+    return Container(
+      constraints: new BoxConstraints(
+        minWidth: 107.w,
+      ),
+      child: CardWidget(
+        padding: EdgeInsets.symmetric(vertical: 12.h),
+        borderColor:
+        isSelected ? R.color.accentColor : R.color.grayComponentBorder,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(data.highlight ?? "",
+                style: TextStyle(
+                    color: R.color.yellow,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 10.sp,
+                    letterSpacing: 0.2,
+                    height: 1.4)),
+            SizedBox(
+              height: 10.h,
+            ),
+            Text(
+                R.string.package_number_month
+                    .tr(args: [data.monthUsed?.toString() ?? ""]),
+                style: TextStyle(
+                    color: R.color.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.sp,
+                    letterSpacing: -0.2,
+                    height: 1.375)),
+            SizedBox(
+              height: 5.h,
+            ),
+            Text(Utils.formatMoney(data.totalPrice) ?? "",
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 16.sp,
+                  letterSpacing: 0.4,
+                  height: 1.375,
+                )),
+            Text(
+                data.monthUsed == 1
+                    ? ""
+                    : R.string.price_per_month
+                    .tr(args: [Utils.formatMoney(data.monthPrice) ?? ""]),
+                style: TextStyle(
+                  color: R.color.gray,
                   fontSize: 10.sp,
                   letterSpacing: 0.2,
-                  height: 1.4)),
-          SizedBox(
-            height: 10.h,
-          ),
-          Text(
-              R.string.package_number_month
-                  .tr(args: [data.monthUsed?.toString() ?? ""]),
-              style: TextStyle(
-                  color: R.color.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.sp,
-                  letterSpacing: -0.2,
-                  height: 1.375)),
-          SizedBox(
-            height: 5.h,
-          ),
-          Text(Utils.formatMoney(data.totalPrice) ?? "",
-              style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 16.sp,
-                letterSpacing: 0.4,
-                height: 1.375,
-              )),
-          Text(
-              data.monthUsed == 1
-                  ? ""
-                  : R.string.price_per_month
-                  .tr(args: [Utils.formatMoney(data.monthPrice) ?? ""]),
-              style: TextStyle(
-                color: R.color.gray,
-                fontSize: 10.sp,
-                letterSpacing: 0.2,
-                height: 1.4,
-              )),
-          SizedBox(
-            height: 12.h,
-          ),
-          Text(data.discount ?? "",
-              style: TextStyle(
-                color: R.color.green,
-                fontWeight: FontWeight.w600,
-                fontSize: 12.sp,
-                letterSpacing: 0.2,
-                height: 1.16667,
-              )),
-        ],
+                  height: 1.4,
+                )),
+            SizedBox(
+              height: 12.h,
+            ),
+            Text(data.discount ?? "",
+                style: TextStyle(
+                  color: R.color.green,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12.sp,
+                  letterSpacing: 0.2,
+                  height: 1.16667,
+                )),
+          ],
+        ),
       ),
     );
   }

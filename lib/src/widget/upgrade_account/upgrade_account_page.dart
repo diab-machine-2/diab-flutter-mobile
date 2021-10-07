@@ -9,12 +9,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/detail_package_data.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/logger.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description_detail.dart';
+import 'package:medical/src/widget/congratulation/congratulation.dart';
 import 'package:medical/src/widget/detail_package/detail_package_page.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/payment_package/payment_package_page.dart';
+import 'package:medical/src/widget/register_package/register_package_page.dart';
 import 'package:medical/src/widgets/avatar_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/card_widget.dart';
@@ -30,8 +33,9 @@ import 'upgrade_account.dart';
 
 class UpgradeAccountPage extends StatefulWidget {
   final String code;
+  final bool isBuyDirect;
 
-  const UpgradeAccountPage({Key? key, required this.code}) : super(key: key);
+  const UpgradeAccountPage({Key? key, required this.code, this.isBuyDirect = true}) : super(key: key);
 
   @override
   _UpgradeAccountPageState createState() => _UpgradeAccountPageState();
@@ -50,6 +54,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
     super.initState();
     AppRepository repository = AppRepository();
     _cubit = UpgradeAccountCubit(repository);
+    _cubit.getOwnPackageCode();
     _cubit.getUpgradeAccount(widget.code);
     // BotToast.showLoading();
   }
@@ -94,7 +99,10 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
             Expanded(
               child: SmartRefresher(
                 controller: _controller,
-                onRefresh: () => _cubit.getUpgradeAccount(widget.code, isRefresh: true),
+                onRefresh: () {
+                  _cubit.getOwnPackageCode();
+                  _cubit.getUpgradeAccount(widget.code, isRefresh: true);
+                },
                 child: ListView(
                     padding: EdgeInsets.all(16.h),
                     shrinkWrap: true,
@@ -188,14 +196,33 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                               int index = widget.code == Const.PREMIUM
                                   ? 0
                                   : _cubit.selectedPrice;
-                              NavigationUtil.navigatePage(
-                                  context,
-                                  PaymentPackagePage(
-                                    packageName:
-                                        data?.name ?? R.string.diab_pro.tr(),
-                                    packageCode: data?.code ?? Const.PRO,
-                                    price: data!.prices![index],
-                                  ));
+                              if (widget.code == Const.PRO) {
+                                NavigationUtil.navigatePage(
+                                    context,
+                                    PaymentPackagePage(
+                                      packageName:
+                                          data?.name ?? R.string.diab_pro.tr(),
+                                      packageCode: data?.code ?? Const.PRO,
+                                      price: data!.prices![index],
+                                      isBuyDirect: widget.isBuyDirect,
+                                    ));
+                              } else {
+                                if (Utils.isEmpty(_cubit.ownCode)) {
+                                  NavigationUtil.navigatePage(
+                                      context,
+                                      RegisterPackagePage(
+                                        code: data?.code ?? Const.PRO,
+                                        priceData: data!.prices![index],
+                                      ));
+                                } else {
+                                  NavigationUtil.navigatePage(
+                                      context,
+                                      CongratulationPage(
+                                        code: data?.code ?? Const.PRO,
+                                        priceData: data!.prices![index],
+                                      ));
+                                }
+                              }
                             }
                           },
                         ),
@@ -228,11 +255,11 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                           context,
                           DetailPackagePage(
                             code: widget.code,
+                            isBuyDirect: widget.isBuyDirect,
                           ));
                     },
                   )),
             ),
-            SizedBox(height: 10.h,),
           ],
         ),
       ),
@@ -407,7 +434,9 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       child: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(topRight: Radius.circular(widget.code == Const.PREMIUM ? 0 : 10.h)),
+            borderRadius: BorderRadius.only(
+                topRight:
+                    Radius.circular(widget.code == Const.PREMIUM ? 0 : 10.h)),
             color: R.color.color0xffB1DDDB),
         child: Text(R.string.diab_pro.tr(),
             textAlign: TextAlign.center,
@@ -424,7 +453,8 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
           child: Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(topRight: Radius.circular(10.h)),
+                borderRadius:
+                    BorderRadius.only(topRight: Radius.circular(10.h)),
                 color: R.color.color0xffB1DDDB),
             child: Text(R.string.diab_premium.tr(),
                 textAlign: TextAlign.center,
@@ -443,45 +473,47 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       int index = listData.indexOf(e);
       bool isLast = index + 1 == listData.length;
       final List<Widget> listCell = [];
-      listCell.add(tableCell(
-        child: Container(
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  bottomLeft: !isLast ? Radius.zero : Radius.circular(10.h)),
-              color:
-              index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
-          padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.h),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              GestureDetector(
-                  onTap: () {
-                    showDescriptionPopup(e);
-                  },
-                  child: Image.asset(
-                    R.drawable.ic_question_circle,
-                    color: R.color.accentColor,
-                    fit: BoxFit.fill,
-                    height: 24.h,
-                  )),
-              SizedBox(
-                width: 16.w,
-              ),
-              Expanded(
-                child: Text(
-                  e.name ?? "",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 16.sp,
-                  ),
+      listCell.add(
+        tableCell(
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: !isLast ? Radius.zero : Radius.circular(10.h)),
+                color:
+                    index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
+            padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.h),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                    onTap: () {
+                      showDescriptionPopup(e);
+                    },
+                    child: Image.asset(
+                      R.drawable.ic_question_circle,
+                      color: R.color.accentColor,
+                      fit: BoxFit.fill,
+                      height: 24.h,
+                    )),
+                SizedBox(
+                  width: 16.w,
                 ),
-              )
-            ],
+                Expanded(
+                  child: Text(
+                    e.name ?? "",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16.sp,
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
-      ),);
+      );
       if (widget.code == Const.PRO) {
         listCell.add(
           tableCell(
@@ -489,7 +521,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                   color:
-                  index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
+                      index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
               child: Image.asset(
                 e.toggleStatus?.isEnableBasic == true
                     ? R.drawable.ic_mark
@@ -500,22 +532,26 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
           ),
         );
       }
-      listCell.add(tableCell(
-        child: Container(
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  bottomRight: (!isLast || widget.code == Const.PREMIUM) ? Radius.zero : Radius.circular(10.h)),
-              color:
-              index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
-          child: Image.asset(
-            e.toggleStatus?.isEnablePro == true
-                ? R.drawable.ic_mark
-                : R.drawable.ic_x,
-            height: 26.h,
+      listCell.add(
+        tableCell(
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    bottomRight: (!isLast || widget.code == Const.PREMIUM)
+                        ? Radius.zero
+                        : Radius.circular(10.h)),
+                color:
+                    index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
+            child: Image.asset(
+              e.toggleStatus?.isEnablePro == true
+                  ? R.drawable.ic_mark
+                  : R.drawable.ic_x,
+              height: 26.h,
+            ),
           ),
         ),
-      ),);
+      );
       if (widget.code == Const.PREMIUM) {
         listCell.add(
           tableCell(
@@ -523,9 +559,10 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
-                      bottomRight: !isLast ? Radius.zero : Radius.circular(10.h)),
+                      bottomRight:
+                          !isLast ? Radius.zero : Radius.circular(10.h)),
                   color:
-                  index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
+                      index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
               child: Image.asset(
                 e.toggleStatus?.isEnablePremium == true
                     ? R.drawable.ic_mark

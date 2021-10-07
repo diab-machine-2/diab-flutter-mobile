@@ -18,14 +18,14 @@ class MyPackageCubit extends Cubit<MyPackageState> {
   int _currentPage = 1;
   bool hasMorePage = true;
 
-  String? code;
+  String? ownCode;
 
   MyPackageCubit(this.appRepository) : super(MyPackageInitial());
 
   void getOwnPackageCode() async {
     ApiResult<String> apiResult = await appRepository.getOwnPackageCode();
     apiResult.when(success: (String response) {
-      code = response;
+      ownCode = response;
     }, failure: (NetworkExceptions error) {
       logger.e(NetworkExceptions.getErrorMessage(error));
     });

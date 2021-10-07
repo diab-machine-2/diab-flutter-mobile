@@ -26,3 +26,8 @@ class PaymentPackageFailure extends PaymentPackageState {
   @override
   String toString() => 'PaymentPackageFailure { error: $error }';
 }
+
+class PurchaseSuccess extends PaymentPackageState {
+  @override
+  String toString() => 'PurchaseSuccess';
+}
