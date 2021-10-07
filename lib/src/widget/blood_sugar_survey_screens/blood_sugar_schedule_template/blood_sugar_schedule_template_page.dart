@@ -47,6 +47,9 @@ class _BloodSugarScheduleTemplatePageState
           if (state is BloodSugarScheduleTemplateFailure) {
             Message.showToastMessage(context, state.error ?? '');
           }
+          if (state is BloodSugarScheduleSaveSuccess) {
+            //TODO: Tuyen navigate to blood sugar test schedule screen
+          }
         },
         builder: (context, state) {
           if (state is BloodSugarScheduleTemplateLoading) {
