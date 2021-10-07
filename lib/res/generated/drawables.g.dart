@@ -44,6 +44,14 @@ class Drawables {
 	String get ic_after_eat_selected => "lib/res/drawables/ic_after_eat_selected.png";
 	String get ic_alarm => "lib/res/drawables/ic_alarm.png";
 	String get ic_angry => "lib/res/drawables/ic_angry.png";
+	String get ic_answer_insulin => "lib/res/drawables/ic_answer_insulin.png";
+	String get ic_answer_no => "lib/res/drawables/ic_answer_no.png";
+	String get ic_answer_no_pill => "lib/res/drawables/ic_answer_no_pill.png";
+	String get ic_answer_one => "lib/res/drawables/ic_answer_one.png";
+	String get ic_answer_pill => "lib/res/drawables/ic_answer_pill.png";
+	String get ic_answer_three => "lib/res/drawables/ic_answer_three.png";
+	String get ic_answer_two => "lib/res/drawables/ic_answer_two.png";
+	String get ic_answer_yes => "lib/res/drawables/ic_answer_yes.png";
 	String get ic_app => "lib/res/drawables/ic_app.png";
 	String get ic_arrow_des => "lib/res/drawables/ic_arrow_des.png";
 	String get ic_arrow_right => "lib/res/drawables/ic_arrow_right.png";
@@ -194,6 +202,8 @@ class Drawables {
 	String get img_blood_pressure_distribution_empty => "lib/res/drawables/img_blood_pressure_distribution_empty.png";
 	String get img_blood_pressure_trend_empty => "lib/res/drawables/img_blood_pressure_trend_empty.png";
 	String get img_blood_sugar_start_survey => "lib/res/drawables/img_blood_sugar_start_survey.png";
+	String get img_blood_sugar_survey_empty_result => "lib/res/drawables/img_blood_sugar_survey_empty_result.png";
+	String get img_blood_sugar_survey_question_1 => "lib/res/drawables/img_blood_sugar_survey_question_1.png";
 	String get img_blood_sugar_testing_schedule_short => "lib/res/drawables/img_blood_sugar_testing_schedule_short.png";
 	String get img_blood_sugar_testing_schedule_tall => "lib/res/drawables/img_blood_sugar_testing_schedule_tall.png";
 	String get img_bmi_empty => "lib/res/drawables/img_bmi_empty.png";
@@ -214,6 +224,7 @@ class Drawables {
 	String get img_glucose_distribution => "lib/res/drawables/img_glucose_distribution.png";
 	String get img_glucose_trend => "lib/res/drawables/img_glucose_trend.png";
 	String get img_goal => "lib/res/drawables/img_goal.png";
+	String get img_gym_trainer => "lib/res/drawables/img_gym_trainer.png";
 	String get img_hotline => "lib/res/drawables/img_hotline.png";
 	String get img_list_service => "lib/res/drawables/img_list_service.png";
 	String get img_logo => "lib/res/drawables/img_logo.png";

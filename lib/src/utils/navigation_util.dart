@@ -37,6 +37,11 @@ class NavigationUtil {
     return Navigator.of(context, rootNavigator: true).pop('dialog');
   }
 
+  static void replace(BuildContext context, Widget widget) {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => widget));
+  }
+
   static Future navigatePage(BuildContext context, Widget widget) {
     return Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => widget));

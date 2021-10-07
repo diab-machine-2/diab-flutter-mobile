@@ -41,3 +41,11 @@ class FoodMenuLoading extends FoodMenuState {
     return 'FoodMenuLoading{}';
   }
 }
+
+class FoodMenuEmpty extends FoodMenuState {
+  const FoodMenuEmpty();
+  @override
+  String toString() {
+    return 'FoodMenuEmpty{}';
+  }
+}

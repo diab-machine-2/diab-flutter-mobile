@@ -87,12 +87,15 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            R.string.diab_parameter.tr(),
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w700,
-              color: R.color.textDark,
+          Center(
+            child: Text(
+              R.string.diab_parameter.tr(),
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.w700,
+                color: R.color.textDark,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
           SizedBox(height: 14.h),

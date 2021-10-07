@@ -252,7 +252,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                             onTap: () {
                                               NavigationUtil.navigatePage(
                                                 context,
-                                                const BloodSugarStartSurveyPage(surveyStatus: SurveyStatus.not_done,),
+                                                const BloodSugarStartSurveyPage(),
                                               );
                                             })
                                       ],

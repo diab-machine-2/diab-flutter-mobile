@@ -5,8 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/response/blood_sugar_template_category_response.dart';
-import 'package:medical/src/model/response/blood_sugar_template_detail_response.dart';
+import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/blood_sugar_result_layout_widget.dart';
@@ -15,8 +14,8 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'blood_sugar_schedule_template.dart';
 
 class BloodSugarScheduleTemplatePage extends StatefulWidget {
-  const BloodSugarScheduleTemplatePage(this.template);
-  final BloodSugarTemplateCategoryResponseData? template;
+  const BloodSugarScheduleTemplatePage(this.templateDetail);
+  final BloodSugarTemplateResponseData templateDetail;
 
   @override
   State<BloodSugarScheduleTemplatePage> createState() =>
@@ -31,8 +30,11 @@ class _BloodSugarScheduleTemplatePageState
   void initState() {
     super.initState();
     final AppRepository repository = AppRepository();
-    _cubit = BloodSugarScheduleTemplateCubit(repository);
-    _cubit.getTemplateDetail(widget.template?.template);
+    _cubit = BloodSugarScheduleTemplateCubit(
+      repository,
+      initialTemplateDetail: widget.templateDetail,
+    );
+    _cubit.resetTemplateDetail();
   }
 
   @override
@@ -45,6 +47,9 @@ class _BloodSugarScheduleTemplatePageState
           if (state is BloodSugarScheduleTemplateFailure) {
             Message.showToastMessage(context, state.error ?? '');
           }
+          if (state is BloodSugarScheduleSaveSuccess) {
+            //TODO: Tuyen navigate to blood sugar test schedule screen
+          }
         },
         builder: (context, state) {
           if (state is BloodSugarScheduleTemplateLoading) {
@@ -53,8 +58,8 @@ class _BloodSugarScheduleTemplatePageState
             BotToast.closeAllLoading();
           }
           return BloodSugarResultLayoutWidget(
-            title: widget.template?.name ?? '',
-            timeToTestPerDay: 0,
+            title: R.string.result.tr(),
+            timeToTestPerDay: _cubit.templateDetail.timePerDay,
             child: Container(
               width: double.infinity,
               height: double.infinity,
@@ -157,9 +162,10 @@ class _BloodSugarScheduleTemplatePageState
   }
 
   Widget _buildTemplateDaySchedule() {
-    if (_cubit.templeteDetailList.isEmpty) return const SizedBox();
-    final BloodSugarTemplateDetailResponseData? templeteDetail =
-        _cubit.templeteDetailList.first;
+    if (_cubit.templateDetail.schedules?.isNotEmpty != true)
+      return const SizedBox();
+    final BloodSugarTemplateResponseDataSchedules? templeteDetail =
+        _cubit.templateDetail.schedules?.first;
     return Padding(
       padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 0),
       child: Column(
@@ -217,7 +223,7 @@ class _BloodSugarScheduleTemplatePageState
 
   Widget _buildDayInWeekSchedule({
     required int index,
-    required BloodSugarTemplateDetailResponseData? templateDetail,
+    required BloodSugarTemplateResponseDataSchedules? templateDetail,
   }) {
     return Padding(
       padding: EdgeInsets.only(bottom: 4.h),
@@ -370,6 +376,7 @@ class _BloodSugarScheduleTemplatePageState
       onTap: () {
         if (onSelect != null) {
           onSelect(!(isSelected ?? false));
+          _cubit.scheduleChanged();
         }
       },
       child: Container(
@@ -413,11 +420,11 @@ class _BloodSugarScheduleTemplatePageState
           child: ButtonWidget(
             title: R.string.reset_schedule.tr(),
             onPressed: () {
-              _cubit.getTemplateDetail(widget.template?.template);
+              _cubit.refreshTemplateDetail();
             },
             backgroundColor: R.color.white,
-            borderColor: R.color.gray,
-            textColor: R.color.gray,
+            borderColor: _cubit.isChanged ? R.color.greenGradientBottom : R.color.gray,
+            textColor: _cubit.isChanged ? R.color.greenGradientBottom : R.color.gray,
           ),
         ),
       ],
@@ -472,6 +479,7 @@ class _BloodSugarScheduleTemplatePageState
         onTap: () {
           if (onSelect != null) {
             onSelect(!isSelected);
+            _cubit.scheduleChanged();
           }
         },
         child: Container(
@@ -531,6 +539,7 @@ class _BloodSugarScheduleTemplatePageState
             onTap: () {
               if (onSelected != null) {
                 onSelected(!isSelected);
+                _cubit.scheduleChanged();
               }
             },
             child: Container(

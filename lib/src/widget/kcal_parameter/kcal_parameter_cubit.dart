@@ -1,17 +1,31 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/create_menu_request.dart';
 
 import 'kcal_parameter.dart';
 
 class KcalParameterCubit extends Cubit<KcalParameterState> {
-  final AppRepository repository;
-  int selectedMeal = 0;
-
   KcalParameterCubit(this.repository) : super(InitialKcalParameterState());
 
-  void selectOptionMeal(int index) {
+  final AppRepository repository;
+  CreateMenuRequest createMenuRequest = CreateMenuRequest.emptyRequest();
+
+  bool get isNoSubMeal =>
+      createMenuRequest.includeBreakfast != true &&
+      createMenuRequest.includeLunch != true &&
+      createMenuRequest.includeDinner != true;
+
+  void onCheckedNoSubMeal() {
     emit(KcalParameterLoading());
-    selectedMeal = index;
+    createMenuRequest =
+        CreateMenuRequest.emptyRequest().copyWith(kcal: createMenuRequest.kcal);
+    emit(
+      InitialKcalParameterState(),
+    );
+  }
+
+  void refresh() {
+    emit(KcalParameterLoading());
     emit(InitialKcalParameterState());
   }
 }

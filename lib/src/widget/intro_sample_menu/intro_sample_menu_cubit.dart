@@ -6,7 +6,6 @@ import 'intro_sample_menu.dart';
 class IntroSampleMenuCubit extends Cubit<IntroSampleMenuState> {
 
   final AppRepository appRepository;
-  final bool isBasic = false;
   int? selectedIndex;
 
   IntroSampleMenuCubit(this.appRepository) : super(IntroSampleMenuInitial());

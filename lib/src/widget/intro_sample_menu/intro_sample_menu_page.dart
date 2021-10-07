@@ -72,120 +72,112 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
           padding: EdgeInsets.all(16.h),
           shrinkWrap: true,
           children: [
-            Visibility(
-                visible: _cubit.isBasic,
-                child: UpgradePackageWidget(onClickUpgrade: () {
-                  NavigationUtil.navigatePage(context, UpgradeAccountPage(code: Const.PRO,));
-                })),
-            Visibility(
-              visible: !_cubit.isBasic,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    R.drawable.img_cooking,
-                    width: double.infinity,
-                    height: 240.h,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(
+                  R.drawable.img_cooking,
+                  width: double.infinity,
+                  height: 240.h,
+                ),
+                SizedBox(
+                  height: 32.h,
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    R.string.text_intro_menu.tr(),
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16.sp,
+                      letterSpacing: 0.4,
+                      height: 1.375,
+                    ),
                   ),
-                  SizedBox(
-                    height: 32.h,
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      R.string.text_intro_menu.tr(),
+                ),
+                SizedBox(
+                  height: 12.h,
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.symmetric(horizontal: 20.h),
+                  child: RichText(
+                    text: TextSpan(
+                      text: R.string.step_1.tr(),
                       style: TextStyle(
                         color: R.color.textDark,
+                        fontWeight: FontWeight.bold,
                         fontSize: 16.sp,
                         letterSpacing: 0.4,
                         height: 1.375,
                       ),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: R.string.text_step_1.tr(),
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 16.sp,
+                              letterSpacing: 0.4,
+                              height: 1.375,
+                            )),
+                      ],
                     ),
                   ),
-                  SizedBox(
-                    height: 12.h,
-                  ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.symmetric(horizontal: 20.h),
-                    child: RichText(
-                      text: TextSpan(
-                        text: R.string.step_1.tr(),
-                        style: TextStyle(
-                          color: R.color.textDark,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.sp,
-                          letterSpacing: 0.4,
-                          height: 1.375,
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: R.string.text_step_1.tr(),
-                              style: TextStyle(
-                                color: R.color.textDark,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 16.sp,
-                                letterSpacing: 0.4,
-                                height: 1.375,
-                              )),
-                        ],
+                ),
+                SizedBox(
+                  height: 12.h,
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.symmetric(horizontal: 20.h),
+                  child: RichText(
+                    text: TextSpan(
+                      text: R.string.step_2.tr(),
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
+                        letterSpacing: 0.4,
+                        height: 1.375,
                       ),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: R.string.text_step_2.tr(),
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 16.sp,
+                              letterSpacing: 0.4,
+                              height: 1.375,
+                            )),
+                      ],
                     ),
                   ),
-                  SizedBox(
-                    height: 12.h,
-                  ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.symmetric(horizontal: 20.h),
-                    child: RichText(
-                      text: TextSpan(
-                        text: R.string.step_2.tr(),
-                        style: TextStyle(
-                          color: R.color.textDark,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.sp,
-                          letterSpacing: 0.4,
-                          height: 1.375,
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: R.string.text_step_2.tr(),
-                              style: TextStyle(
-                                color: R.color.textDark,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 16.sp,
-                                letterSpacing: 0.4,
-                                height: 1.375,
-                              )),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 34.h,
-                  ),
-                  Container(
-                    width: 128.w,
-                    child: ButtonWidget(
-                      title: R.string.start.tr(),
-                      onPressed: () {
-                        showDialog(
-                          barrierColor:
-                              R.color.color0xff003F38.withOpacity(0.5),
-                          context: context,
-                          builder: (_) => KcalParameterPage(callback: (number) {
-                            //TODO: Navigate to FoodMenuPage
-                            NavigationUtil.navigatePage(context, const FoodMenuPage());
+                ),
+                SizedBox(
+                  height: 34.h,
+                ),
+                Container(
+                  width: 128.w,
+                  child: ButtonWidget(
+                    title: R.string.start.tr(),
+                    onPressed: () {
+                      showDialog(
+                        barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+                        context: context,
+                        builder: (_) => KcalParameterPage(
+                          callback: (request) {
+                            NavigationUtil.navigatePage(context,
+                                FoodMenuPage(createMenuRequest: request));
                             // NavigationUtil.pushAndRemoveUtilPage(context, widget)
-                          },),
-                        );
-                        // NavigationUtil.pop(context);
-                      },
-                    ),
-                  )
-                ],
-              ),
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                )
+              ],
             ),
           ],
         ),
