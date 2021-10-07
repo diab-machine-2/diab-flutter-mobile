@@ -6,8 +6,12 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/modal/user/secure.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -27,6 +31,7 @@ class ProfileController extends StatefulWidget {
 class _ProfileControllerState extends State<ProfileController> with Observer {
   bool isPro = true;
   SecureModel? secureModel;
+  final AppRepository _appRepository = AppRepository();
 
   void initState() {
     super.initState();
@@ -51,14 +56,26 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   }
 
   loadData() async {
+    await checkPackage();
     try {
       BotToast.showLoading();
       secureModel = await UserClient().fetchInfoSecure();
+      await checkPackage();
       BotToast.closeAllLoading();
       setState(() {});
     } catch (_) {
       BotToast.closeAllLoading();
     }
+  }
+
+  Future<void> checkPackage() async {
+    final ApiResult<String> apiResult =
+        await _appRepository.getOwnPackageCode();
+    apiResult.when(success: (String code) {
+      isPro = code.isNotEmpty && code != Const.BASIC;
+    }, failure: (NetworkExceptions error) {
+      isPro = false;
+    });
   }
 
   @override

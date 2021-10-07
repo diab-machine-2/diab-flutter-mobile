@@ -409,7 +409,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 ),
                                 buildItem(
                                   R.drawable.ic_year,
-                                  convertToUTC(user.diabetesDate!, 'yyyy'),
+                                  convertToUTC(user.diabetesDate ?? 0, 'yyyy'),
                                   R.string.year_illness_start.tr(),
                                   null,
                                   4,

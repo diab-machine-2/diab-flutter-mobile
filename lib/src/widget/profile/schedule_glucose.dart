@@ -249,11 +249,12 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                         _buildButton(
                                             title: R.string.testing_schedule_suggest.tr(),
                                             icon: R.drawable.ic_blood_sugar_testing_suggest,
-                                            onTap: () {
-                                              NavigationUtil.navigatePage(
+                                            onTap: () async {
+                                              await NavigationUtil.navigatePage(
                                                 context,
                                                 const BloodSugarStartSurveyPage(),
                                               );
+                                              loadSchedule();
                                             })
                                       ],
                                     )

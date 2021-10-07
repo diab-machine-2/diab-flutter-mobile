@@ -190,6 +190,7 @@ class Strings {
 	String get reset_schedule => 'reset_schedule';
 	String get before_go_to_sleep => 'before_go_to_sleep';
 	String get latest_hba1c_is => 'latest_hba1c_is';
+	String get back_to_schedule => 'back_to_schedule';
 	String get blood_sugar_survey_description => 'blood_sugar_survey_description';
 	String get blood_sugar_survey_done_description => 'blood_sugar_survey_done_description';
 	String get blood_sugar_survey_update_require => 'blood_sugar_survey_update_require';

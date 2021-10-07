@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/blood_sugar_result_layout_widget.dart';
@@ -48,7 +49,8 @@ class _BloodSugarScheduleTemplatePageState
             Message.showToastMessage(context, state.error ?? '');
           }
           if (state is BloodSugarScheduleSaveSuccess) {
-            //TODO: Tuyen navigate to blood sugar test schedule screen
+            Navigator.popUntil(
+                context, ModalRoute.withName(NavigatorName.schedule_glucose));
           }
         },
         builder: (context, state) {
