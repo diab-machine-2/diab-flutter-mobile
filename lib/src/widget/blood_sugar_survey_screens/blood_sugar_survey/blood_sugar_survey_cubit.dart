@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/response/blood_sugar_template_category_response.dart';
+import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -39,30 +39,30 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
     emit(const BloodSugarSurveyInitial());
   }
 
-  Future<void> showLoading() async {
-    await Future.delayed(const Duration());
-    emit(const BloodSugarSurveyLoading());
-  }
-
   Future<void> selectDefaultAnswerForQuestion1() async {
-    await showLoading();  
+    emit(const BloodSugarSurveyLoading());
     final ApiResult<DiabetesStatusResponse> apiResult =
         await repository.getDiabetesStatus();
     apiResult.when(success: (DiabetesStatusResponse response) {
       if (response.data != null) {
         final DiabetesStatusResponseData data = response.data!;
-        if (data.status != null && data.status! >= 0 && data.status! < 4) {
-          question1.selectedAnswer = data.status;
+        if (data.status != null && data.status! > 0 && data.status! <= 4) {
+          if (data.status == 1) question1.selectedAnswer = 3;
+          if (data.status == 2) question1.selectedAnswer = 0;
+          if (data.status == 3) question1.selectedAnswer = 1;
+          if (data.status == 4) question1.selectedAnswer = 2;
           onSelectedAnswer(question1.questionKey);
         }
       }
+      emit(const BloodSugarSurveySuccess());
     }, failure: (NetworkExceptions error) {
       emit(BloodSugarSurveyFailure(NetworkExceptions.getErrorMessage(error)));
     });
+    emit(const BloodSugarSurveyInitial());
   }
 
   Future<void> selectDefaultAnswerForQuestion2() async {
-    await showLoading();
+    emit(const BloodSugarSurveyLoading());
     final ApiResult<LatestHba1cInputResponse> apiResult =
         await repository.getLatestHbA1CInput();
     apiResult.when(success: (LatestHba1cInputResponse response) {
@@ -109,15 +109,15 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
       if (canSurveyDone) {
         if (question1.selectedAnswer == 0) {
           //Template D
-          showResult(templateIndex: 4);
+          showTemplate(templateCode: 'D');
         }
         if (question1.selectedAnswer == 2) {
           //Template OP
-          showResult(templateIndex: 7);
+          showTemplate(templateCode: 'OP');
         }
         if (question1.selectedAnswer == 3) {
           //No Template
-          showResult();
+          showTemplate();
         }
       } else {
         //Continue Survey from question 2
@@ -130,24 +130,24 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
         if (question3.selectedAnswer == 0) {
           if (question4_1.selectedAnswer == 0) {
             //Template A1
-            showResult(templateIndex: 1);
+            showTemplate(templateCode: 'A1');
           }
           if (question4_1.selectedAnswer == 1) {
             //Template B
-            showResult(templateIndex: 3);
+            showTemplate(templateCode: 'B');
           }
           if (question4_1.selectedAnswer == 2) {
             //Template D
-            showResult(templateIndex: 4);
+            showTemplate(templateCode: 'D');
           }
         } else {
           if (question4_2.selectedAnswer == 0) {
             //Template FGHI
-            showResult(templateIndex: 6);
+            showTemplate(templateCode: 'FGHI');
           }
           if (question4_2.selectedAnswer == 1) {
             //Template K
-            showResult(templateIndex: 5);
+            showTemplate(templateCode: 'K');
           }
         }
       }
@@ -155,21 +155,21 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
         if (question3.selectedAnswer == 0) {
           if (question4_1.selectedAnswer == 0) {
             //Template A2
-            showResult(templateIndex: 2);
+            showTemplate(templateCode: 'A2');
           }
           if (question4_1.selectedAnswer == 1) {
             //Template B
-            showResult(templateIndex: 3);
+            showTemplate(templateCode: 'B');
           }
           if (question4_1.selectedAnswer == 2) {
             //Template D
-            showResult(templateIndex: 4);
+            showTemplate(templateCode: 'D');
           }
         } else {
           if (question4_2.selectedAnswer == 0 ||
               question4_2.selectedAnswer == 1) {
             //Template FGHI
-            showResult(templateIndex: 6);
+            showTemplate(templateCode: 'FGHI');
           }
         }
       }
@@ -232,19 +232,17 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
     canSurveyDone = true;
   }
 
-  Future<void> showResult({int? templateIndex}) async {
-    if (templateIndex == null) {
-      emit(const BloodSugarSurveyNavigate([]));
+  Future<void> showTemplate({String? templateCode}) async {
+    if (templateCode == null) {
+      emit(const BloodSugarSurveyNavigate());
       return;
     }
-    await showLoading();
-    final ApiResult<BloodSugarTemplateCategoryResponse> apiResult =
-        await repository.getListTemplateByCategory(templateIndex);
-    apiResult.when(success: (BloodSugarTemplateCategoryResponse response) {
+    emit(const BloodSugarSurveyLoading());
+    final ApiResult<BloodSugarTemplateResponse> apiResult =
+        await repository.getTemplateDetail(templateCode);
+    apiResult.when(success: (BloodSugarTemplateResponse response) {
       if (response.data != null) {
-        final List<BloodSugarTemplateCategoryResponseData?> data =
-            response.data!;
-        emit(BloodSugarSurveyNavigate(data));
+        emit(BloodSugarSurveyNavigate(templateDetail: response.data));
         refreshState();
       }
     }, failure: (NetworkExceptions error) {

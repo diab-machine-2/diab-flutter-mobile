@@ -11,9 +11,9 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
 import '../blood_sugar_schedule_template/blood_sugar_schedule_template.dart';
-import '../blood_sugar_survey_result/blood_sugar_survey_result.dart';
 import '../models/question_data.dart';
 import 'blood_sugar_survey.dart';
+import 'widgets/blood_sugar_survey_result_empty.dart';
 
 class BloodSugarSurveyPage extends StatefulWidget {
   const BloodSugarSurveyPage();
@@ -48,18 +48,12 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                 Message.showToastMessage(context, state.error ?? '');
               }
               if (state is BloodSugarSurveyNavigate) {
-                if (state.listBloodSugarTemplateCategory.length == 1) {
+                if (state.templateDetail == null) {
                   NavigationUtil.navigatePage(
-                    context,
-                    BloodSugarScheduleTemplatePage(
-                        state.listBloodSugarTemplateCategory.first),
-                  );
+                      context, const BloodSugarSurveyEmpty());
                 } else {
-                  NavigationUtil.navigatePage(
-                    context,
-                    BloodSugarSurveyResultPage(
-                        state.listBloodSugarTemplateCategory),
-                  );
+                  NavigationUtil.navigatePage(context,
+                      BloodSugarScheduleTemplatePage(state.templateDetail!));
                 }
               }
             },
@@ -90,7 +84,8 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                                 Visibility(
                                   visible: _cubit.isFirstQuestionScreen,
                                   child: Padding(
-                                    padding: EdgeInsets.fromLTRB(67.w, 0, 67.w, 50.h),
+                                    padding: EdgeInsets.fromLTRB(
+                                        67.w, 0, 67.w, 50.h),
                                     child: Image.asset(R.drawable
                                         .img_blood_sugar_survey_question_1),
                                   ),

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'response/blood_sugar_template_response.dart';
 import 'response/create_menu_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
@@ -56,22 +57,16 @@ abstract class AppApi {
   );
 
   // Blood sugar
-
-  @GET("/App/BloodSugarTemplate/GetListByCategory")
-  Future<BloodSugarTemplateCategoryResponse> getListTemplateByCategory(
-    @Query("category") int category,
-  );
-
-  @GET("/App/BloodSugarTemplate/GetByTemplateType")
-  Future<BloodSugarTemplateDetailResponse> getTemplateDetail(
-    @Query("type") int type,
-  );
-
   @GET("/App/DiabetesStatus/GetOwnDiabetesStatus")
   Future<DiabetesStatusResponse> getDiabetesStatus();
 
   @GET("/App/HbA1C/LatestHbA1CInput")
   Future<LatestHba1cInputResponse> getLatestHbA1CInput();
+
+  @GET("/App/BloodSugarTemplate/{code}")
+  Future<BloodSugarTemplateResponse> getTemplateDetail(
+    @Path("code") String code,
+  );
 
   // Sample menu
 

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:medical/src/model/response/blood_sugar_template_category_response.dart';
+import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 
 abstract class BloodSugarSurveyState extends Equatable {
   const BloodSugarSurveyState([List props = const []]) : super();
@@ -45,9 +45,9 @@ class BloodSugarSurveyLoading extends BloodSugarSurveyState {
 }
 
 class BloodSugarSurveyNavigate extends BloodSugarSurveyState {
-  const BloodSugarSurveyNavigate(this.listBloodSugarTemplateCategory);
-  final List<BloodSugarTemplateCategoryResponseData?>
-      listBloodSugarTemplateCategory;
+  const BloodSugarSurveyNavigate({this.templateDetail});
+
+  final BloodSugarTemplateResponseData? templateDetail;
 
   @override
   String toString() {

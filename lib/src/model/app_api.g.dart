@@ -111,39 +111,6 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<BloodSugarTemplateCategoryResponse> getListTemplateByCategory(
-      category) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'category': category};
-    final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<BloodSugarTemplateCategoryResponse>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(
-                    _dio.options, '/App/BloodSugarTemplate/GetListByCategory',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = BloodSugarTemplateCategoryResponse.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
-  Future<BloodSugarTemplateDetailResponse> getTemplateDetail(type) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'type': type};
-    final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<BloodSugarTemplateDetailResponse>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(
-                    _dio.options, '/App/BloodSugarTemplate/GetByTemplateType',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = BloodSugarTemplateDetailResponse.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
   Future<DiabetesStatusResponse> getDiabetesStatus() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -171,6 +138,21 @@ class _AppApi implements AppApi {
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = LatestHba1cInputResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<BloodSugarTemplateResponse> getTemplateDetail(code) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BloodSugarTemplateResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/App/BloodSugarTemplate/$code',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BloodSugarTemplateResponse.fromJson(_result.data!);
     return value;
   }
 

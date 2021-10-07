@@ -2,6 +2,7 @@ import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
+import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/blood_sugar_template_category_response.dart';
 import 'package:medical/src/model/response/blood_sugar_template_detail_response.dart';
@@ -93,25 +94,11 @@ class AppRepository {
    * Blood sugar
    */
 
-  Future<ApiResult<BloodSugarTemplateCategoryResponse>>
-      getListTemplateByCategory(
-    int category,
-  ) async {
+  Future<ApiResult<BloodSugarTemplateResponse>> getTemplateDetail(
+      String code) async {
     try {
-      final BloodSugarTemplateCategoryResponse response =
-          await appClient.getListTemplateByCategory(category);
-      return ApiResult.success(data: response);
-    } catch (e) {
-      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
-    }
-  }
-
-  Future<ApiResult<BloodSugarTemplateDetailResponse>> getListTemplateDetail(
-    int type,
-  ) async {
-    try {
-      final BloodSugarTemplateDetailResponse response =
-          await appClient.getTemplateDetail(type);
+      final BloodSugarTemplateResponse response =
+          await appClient.getTemplateDetail(code);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
