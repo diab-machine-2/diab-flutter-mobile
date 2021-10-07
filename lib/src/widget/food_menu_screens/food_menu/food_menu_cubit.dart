@@ -8,6 +8,7 @@ import 'package:medical/src/model/response/create_menu_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/const.dart';
 
 import 'food_menu.dart';
 
@@ -19,6 +20,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
   MenuResponseFood? menuResponseFood;
   List<MenuResponseListdayfood?> listDayFood = [];
   int currentDayInWeek = 0;
+  bool isBasicUser = true;
 
   MenuResponseListdayfood? get currentDayData {
     if (currentDayInWeek < 0 || currentDayInWeek >= listDayFood.length)
@@ -49,6 +51,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
       });
       emit(const FoodMenuInitial());
     }
+    getOwnPackageCode();
     getTemplateDetail();
   }
 
@@ -57,7 +60,9 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     final ApiResult<MenuResponse> apiResult =
         await repository.getGetUserFoodMenu();
     apiResult.when(success: (MenuResponse response) {
-      if (response.listdayfood != null && response.food != null) {
+      if (response.listdayfood == null || response.food == null) {
+        emit(const FoodMenuEmpty());
+      } else {
         response.sortListDayFood();
         listDayFood = response.listdayfood!;
         menuResponseFood = response.food;
@@ -80,6 +85,18 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
         await repository.changeFood(request);
     apiResult.when(success: (CommonResponse response) {
       getTemplateDetail();
+      emit(const FoodMenuSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    emit(const FoodMenuInitial());
+  }
+
+  Future<void> getOwnPackageCode() async {
+    emit(const FoodMenuLoading());
+    final ApiResult<String> apiResult = await repository.getOwnPackageCode();
+    apiResult.when(success: (String response) {
+      isBasicUser = response.isEmpty || response == Const.BASIC;
       emit(const FoodMenuSuccess());
     }, failure: (NetworkExceptions error) {
       emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));

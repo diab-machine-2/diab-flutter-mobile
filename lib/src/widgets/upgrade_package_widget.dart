@@ -5,8 +5,9 @@ import 'package:medical/res/R.dart';
 import 'button_widget.dart';
 
 class UpgradePackageWidget extends StatelessWidget {
+  final String? text;
   final VoidCallback onClickUpgrade;
-  const UpgradePackageWidget({Key? key, required this.onClickUpgrade}) : super(key: key);
+  const UpgradePackageWidget({Key? key, required this.onClickUpgrade, this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class UpgradePackageWidget extends StatelessWidget {
           height: 32.h,
         ),
         Text(
-          R.string.text_upgrade_package.tr(),
+          text ?? R.string.text_upgrade_package.tr(),
           textAlign: TextAlign.center,
           style: TextStyle(
             color: R.color.textDark,

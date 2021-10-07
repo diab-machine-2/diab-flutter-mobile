@@ -12,16 +12,18 @@ import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/intro_sample_menu/intro_sample_menu.dart';
 import 'package:medical/src/widget/kcal_parameter/kcal_parameter.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../widgets/update_required_widget.dart';
 import '../change_menu/change_menu.dart';
 import 'food_menu.dart';
 
 class FoodMenuPage extends StatefulWidget {
-  const FoodMenuPage({required this.createMenuRequest});
+  const FoodMenuPage({this.createMenuRequest});
 
   final CreateMenuRequest? createMenuRequest;
 
@@ -63,6 +65,9 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
           listener: (context, state) {
             if (state is FoodMenuFailure) {
               Message.showToastMessage(context, state.error);
+            }
+            if (state is FoodMenuEmpty) {
+              NavigationUtil.replace(context, IntroSampleMenuPage());
             }
           },
           builder: (context, state) {
@@ -142,8 +147,20 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                     dayTitle: Utils.getDayInWeekTitle(index),
                                     isSelected:
                                         index == _cubit.currentDayInWeek,
-                                    onTap: () {
+                                    isEnable: !_cubit.isBasicUser || index <= 1,
+                                    onTapEnabled: () {
                                       _cubit.onChangeDay(index);
+                                    },
+                                    onTapDisable: () {
+                                      NavigationUtil.navigatePage(
+                                        context,
+                                        UpdateRequiredWidget(
+                                          title: R.string.food_menu.tr(),
+                                          description: R
+                                              .string.food_menu_update_required
+                                              .tr(),
+                                        ),
+                                      );
                                     });
                               }),
                             ),
@@ -563,11 +580,13 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
 
   Widget _buildDayOfTheWeekSingleButton({
     required String dayTitle,
+    required bool isEnable,
     required bool isSelected,
-    VoidCallback? onTap,
+    VoidCallback? onTapEnabled,
+    VoidCallback? onTapDisable,
   }) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: isEnable ? onTapEnabled : onTapDisable,
       child: Container(
         padding: EdgeInsets.all(8.w),
         decoration: BoxDecoration(
@@ -575,7 +594,11 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
           border: Border.all(
             color: isSelected ? R.color.mainColor : R.color.grayBorder,
           ),
-          color: isSelected ? R.color.main_6 : Colors.transparent,
+          color: isEnable
+              ? isSelected
+                  ? R.color.main_6
+                  : R.color.transparent
+              : R.color.grayBorder,
         ),
         child: Text(
           dayTitle,
