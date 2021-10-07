@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/detail_package/detail_package.dart';
 import 'package:medical/src/widget/upgrade_account/upgrade_account.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -45,7 +46,11 @@ class UpdateRequiredWidget extends StatelessWidget {
                     backgroundColor: R.color.white,
                     borderColor: R.color.accentColor,
                     textColor: R.color.accentColor,
-                    onPressed: () {}),
+                    onPressed: () {
+                      NavigationUtil.navigatePage(
+                          context,
+                          const DetailPackagePage(code: Const.PRO));
+                    }),
               )
             ],
           ),

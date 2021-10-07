@@ -26,6 +26,10 @@ class NoticeChangePage extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: 4.h),
+                Padding(
+                  padding: EdgeInsets.only(top: 4.h, bottom: 24.h),
+                  child: Image.asset(R.drawable.img_upgrade_package, width: 155.w, height: 150.h),
+                ),
                 Text(
                   R.string.confirm_change.tr(),
                   style: TextStyle(

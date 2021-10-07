@@ -582,6 +582,7 @@ class Strings {
 	String get suggest_food_empty => 'suggest_food_empty';
 	String get food_menu_empty => 'food_menu_empty';
 	String get food_menu_update_required => 'food_menu_update_required';
+	String get energy_use_per_day => 'energy_use_per_day';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';
@@ -759,6 +760,10 @@ class Strings {
 	String get breakfast_sub_meal => 'breakfast_sub_meal';
 	String get lunch_sub_meal => 'lunch_sub_meal';
 	String get dinner_sub_meal => 'dinner_sub_meal';
+	String get text_if => 'text_if';
+	String get increase => 'increase';
+	String get text_or => 'text_or';
+	String get decrease => 'decrease';
 	String get text_warning_change_param => 'text_warning_change_param';
 	String get confirm_change => 'confirm_change';
 	String get diab_parameter => 'diab_parameter';
