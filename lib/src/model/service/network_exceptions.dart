@@ -10,7 +10,7 @@ part 'network_exceptions.freezed.dart';
 abstract class NetworkExceptions with _$NetworkExceptions {
   const factory NetworkExceptions.requestCancelled() = RequestCancelled;
 
-  const factory NetworkExceptions.unauthorizedRequest(String reason) = UnauthorizedRequest;
+  const factory NetworkExceptions.unauthorizedRequest(String? reason) = UnauthorizedRequest;
 
   const factory NetworkExceptions.badRequest() = BadRequest;
 
@@ -42,8 +42,8 @@ abstract class NetworkExceptions with _$NetworkExceptions {
 
   const factory NetworkExceptions.unexpectedError() = UnexpectedError;
 
-  static NetworkExceptions handleResponse(dynamic data, int statusCode) {
-    String message;
+  static NetworkExceptions handleResponse(dynamic data, int? statusCode) {
+    String? message;
     if (data.toString().contains("errorMesssage")) {
       message = data["errorMesssage"];
     }
@@ -77,7 +77,7 @@ abstract class NetworkExceptions with _$NetworkExceptions {
   static NetworkExceptions getDioException(error) {
     if (error is Exception) {
       try {
-        NetworkExceptions networkExceptions;
+        NetworkExceptions? networkExceptions;
         if (error is DioError) {
           switch (error.type) {
             case DioErrorType.cancel:
@@ -94,7 +94,7 @@ abstract class NetworkExceptions with _$NetworkExceptions {
               break;
             case DioErrorType.response:
               networkExceptions =
-                  NetworkExceptions.handleResponse(error.response.data, error.response.statusCode);
+                  NetworkExceptions.handleResponse(error.response!.data, error.response!.statusCode);
               break;
             case DioErrorType.sendTimeout:
               networkExceptions = NetworkExceptions.sendTimeout();

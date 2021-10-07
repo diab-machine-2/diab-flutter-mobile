@@ -6,10 +6,10 @@ abstract class GlucoseState {}
 class GlucoseInitial extends GlucoseState {}
 
 class GlucoseError extends GlucoseState {
-  final String message;
+  final String? message;
 
   GlucoseError({
-    @required this.message,
+    required this.message,
   });
 }
 
@@ -21,21 +21,21 @@ class GlucoseLoaded extends GlucoseState {
 
 class GlucoseComparerLoaded extends GlucoseState {
   final List<ComparerModel> listcomparer;
-  GlucoseComparerLoaded({@required this.listcomparer});
+  GlucoseComparerLoaded({required this.listcomparer});
 }
 
 class GlucoseDistributionLoaded extends GlucoseState {
   final DistributionModel listDistribution;
-  GlucoseDistributionLoaded({@required this.listDistribution});
+  GlucoseDistributionLoaded({required this.listDistribution});
 }
 
 class GlucoseAlllLoaded extends GlucoseState {
   final List<InputGlucoseModel> inputGlucoseModel;
-  final bool hasMore;
-  GlucoseAlllLoaded({@required this.inputGlucoseModel, @required this.hasMore});
+  final bool? hasMore;
+  GlucoseAlllLoaded({required this.inputGlucoseModel, required this.hasMore});
 }
 
 class GlucoseTrendLoaded extends GlucoseState {
   final TrendDataModel trend;
-  GlucoseTrendLoaded({@required this.trend});
+  GlucoseTrendLoaded({required this.trend});
 }

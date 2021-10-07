@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/res/R.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-typedef TimeCallback = Function(String, int);
+typedef TimeCallback = Function(String, int?);
 
 class FillterHbA1C extends StatefulWidget {
   final selectedIndex;
-  final TimeCallback callback;
+  final TimeCallback? callback;
   FillterHbA1C({
-    Key key,
+    Key? key,
     this.selectedIndex,
     this.callback,
   }) : super(key: key);
@@ -16,9 +17,9 @@ class FillterHbA1C extends StatefulWidget {
 }
 
 class _FillterHbA1CState extends State<FillterHbA1C> {
-  var data = ['6 tháng', '1 năm', '2 năm'];
+  var data = [R.string.sau_thang.tr(), R.string.mot_nam.tr(), R.string.hai_nam.tr()];
 
-  int selectedIndex = 0;
+  int? selectedIndex = 0;
   String time = '';
 
   @override
@@ -39,7 +40,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
           child: Container(
             height: 3.86,
             width: 60,
-            decoration: BoxDecoration(color: Color(0xffE5E5E5)),
+            decoration: BoxDecoration(color: R.color.color0xffE5E5E5),
           ),
         ),
         SizedBox(height: 27),
@@ -48,7 +49,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Lọc theo thời gian',
+              Text(R.string.loc_theo_thoi_gian.tr(),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               GestureDetector(
                 onTap: () {
@@ -57,7 +58,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
                 child: Container(
                   height: 24,
                   width: 24,
-                  child: Image.asset('assets/images/x_icon.png'),
+                  child: Image.asset(R.drawable.ic_close),
                 ),
               ),
             ],
@@ -77,7 +78,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
         Center(
           child: GestureDetector(
             onTap: () {
-              widget.callback(data[selectedIndex], selectedIndex);
+              widget.callback!(data[selectedIndex!], selectedIndex);
               Navigator.pop(context);
             },
             child: Container(
@@ -88,12 +89,12 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.centerRight,
-                        colors: [greenGradientTop, greenGradientBottom]),
+                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                     borderRadius: BorderRadius.circular(200)),
                 child: Center(
-                  child: Text('Lưu',
+                  child: Text(R.string.save.tr(),
                       style: TextStyle(
-                          color: Colors.white,
+                          color: R.color.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600)),
                 )),
@@ -114,7 +115,7 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
               });
             },
             child: Container(
-              color: selectedIndex == index ? greenbg : Colors.white,
+              color: selectedIndex == index ? R.color.greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(
@@ -134,9 +135,9 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: mainColor)),
+                                      color: R.color.mainColor)),
                           selectedIndex == index
-                              ? Image.asset('assets/images/check_mark.png',
+                              ? Image.asset(R.drawable.ic_check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],
@@ -149,8 +150,8 @@ class _FillterHbA1CState extends State<FillterHbA1C> {
                           height: 1,
                           width: 373,
                           color: selectedIndex == index
-                              ? greenbg
-                              : Color(0xffD6D8E0))
+                              ? R.color.greenbg
+                              : R.color.color0xffD6D8E0)
                       : SizedBox(),
                 ],
               ),

@@ -2,21 +2,19 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_tags/flutter_tags.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
-import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/emotion/activity_model.dart';
 import 'package:medical/src/modal/emotion/emotion_model.dart';
 import 'package:medical/src/modal/emotion/input_emotion_model.dart';
 import 'package:medical/src/modal/emotion/symptom_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/emotion/emotion_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/Emotion/widget/add_emo.dart';
 import 'package:medical/src/widget/Emotion/widget/add_symbo.dart';
@@ -32,15 +30,16 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddInsightController extends StatefulWidget {
-  final String type;
-  final String id;
-  final EmotionModel emotion;
-  final List<SymptomModel> symptoms;
-  final List<ActivityModel> activities;
-  final String otherSymptom;
-  final String otherActivity;
+  final String? type;
+  final String? id;
+  final EmotionModel? emotion;
+  final List<SymptomModel>? symptoms;
+  final List<ActivityModel>? activities;
+  final String? otherSymptom;
+  final String? otherActivity;
 
   AddInsightController(
       {this.type,
@@ -61,18 +60,18 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
   DateTime time = DateTime.now();
-  TimeFrameModel selectedTimeFrame;
-  List<String> removeIDs = [];
+  TimeFrameModel? selectedTimeFrame;
+  List<String?> removeIDs = [];
 
-  InputEmotionModel model;
+  InputEmotionModel? model;
 
-  EmotionModel emotion;
-  List<SymptomModel> symptoms = [];
-  List<ActivityModel> activities = [];
-  String otherSymptom;
-  String otherActivity;
+  EmotionModel? emotion;
+  List<SymptomModel>? symptoms = [];
+  List<ActivityModel>? activities = [];
+  String? otherSymptom;
+  String? otherActivity;
 
-  ShortGuiModel des;
+  ShortGuiModel? des;
 
   void initState() {
     super.initState();
@@ -99,26 +98,26 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
     model = await EmotionClient().fetchDetail(widget.id);
     BotToast.closeAllLoading();
 
-    selectedDate = DateTime.fromMillisecondsSinceEpoch(model.date * 1000);
+    selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
     selectedTimeFrame = TimeFrameModel(
-        id: model.timeFrameId, code: '', name: model.timeFrameText);
-    files.addAll(model.images);
+        id: model!.timeFrameId, code: '', name: model!.timeFrameText);
+    files.addAll(model!.images);
 
     emotion = EmotionModel(
-        id: model.emotionId,
+        id: model!.emotionId,
         code: null,
-        vietnameseName: model.emotionText,
+        vietnameseName: model!.emotionText,
         englishName: null,
         description: null,
         emotionCategoryId: null,
         coverId: null,
         status: null,
-        imageUrl: model.emotionIcon.url);
-    symptoms = model.symptoms;
-    activities = model.activities;
-    otherSymptom = model.otherSymptom;
-    otherActivity = model.otherActivity;
-    _controllerNote.text = model.note ?? '';
+        imageUrl: model!.emotionIcon.url);
+    symptoms = model!.symptoms;
+    activities = model!.activities;
+    otherSymptom = model!.otherSymptom;
+    otherActivity = model!.otherActivity;
+    _controllerNote.text = model!.note ?? '';
     setState(() {});
   }
 
@@ -148,28 +147,28 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           return false;
         },
         child: Scaffold(
-          backgroundColor: backgroundColor,
+          backgroundColor:  R.color.backgroundColor,
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.bg_splash),
                     fit: BoxFit.cover)),
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? 'Chỉnh sửa cảm xúc'
-                          : 'Nhập cảm xúc',
+                          ? R.string.chinh_sua_cam_xuc.tr()
+                          : R.string.nhap_cam_xuc.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
                       }),
@@ -184,10 +183,10 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
                             ? Image.asset(
-                                'assets/images/help_circle_active.png',
+                                R.drawable.ic_help_circle_active,
                                 width: 24,
                                 height: 24)
-                            : Image.asset('assets/images/help_circle.png',
+                            : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
                     ),
@@ -207,7 +206,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                     input: true,
                                     data: des,
                                     titleDetail:
-                                        'Kiểm soát cảm xúc bệnh tiểu đường'),
+                                        R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr()),
                               )
                             : SizedBox(),
                         GestureDetector(
@@ -226,20 +225,20 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                             }));
                           },
                           child: Container(
-                            color: Colors.transparent,
+                            color: R.color.transparent,
                             child: Column(
                               children: [
                                 Image.network(
                                     emotion == null
                                         ? ''
-                                        : emotion.imageUrl ?? '',
+                                        : emotion!.imageUrl ?? '',
                                     width: 60,
                                     height: 60),
                                 SizedBox(height: 16),
                                 Text(
                                     emotion == null
                                         ? ''
-                                        : emotion.vietnameseName,
+                                        : emotion!.vietnameseName!,
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700)),
@@ -253,10 +252,10 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
+                            // color: R.color.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
                               children: [
@@ -270,11 +269,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         children: [
                                           Row(children: [
                                             Image.asset(
-                                                'assets/images/chatting.png',
+                                                R.drawable.ic_chatting,
                                                 width: 24,
                                                 height: 24),
                                             SizedBox(width: 8),
-                                            Text('Triệu chứng của bạn',
+                                            Text(R.string.trieu_chung_cua_ban.tr(),
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight:
@@ -298,11 +297,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                 );
                                               }));
                                             },
-                                            child: Text('Chỉnh sửa',
+                                            child: Text(R.string.chinh_sua.tr(),
                                                 style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
-                                                    color: mainColor)),
+                                                    color: R.color.mainColor)),
                                           ),
                                         ],
                                       ),
@@ -313,9 +312,9 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         runAlignment: WrapAlignment.start,
                                         spacing: 2,
                                         horizontalScroll: false,
-                                        itemCount: symptoms.length,
+                                        itemCount: symptoms!.length,
                                         itemBuilder: (index) {
-                                          final item = symptoms[index];
+                                          final item = symptoms![index];
 
                                           return ItemTags(
                                               padding: EdgeInsets.only(
@@ -332,14 +331,14 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                     width: 24,
                                                     height: 24),
                                               ),
-                                              title: item.name,
-                                              activeColor: Colors.white,
+                                              title: item.name!,
+                                              activeColor: R.color.white,
                                               textOverflow:
                                                   TextOverflow.visible,
-                                              splashColor: Colors.green,
+                                              splashColor: R.color.green,
                                               combine:
                                                   ItemTagsCombine.withTextAfter,
-                                              textActiveColor: textDark,
+                                              textActiveColor: R.color.textDark,
                                               textStyle:
                                                   TextStyle(fontSize: 14),
                                               elevation: 0,
@@ -347,7 +346,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         },
                                       ),
                                       otherSymptom == null ||
-                                              otherSymptom.isEmpty
+                                              otherSymptom!.isEmpty
                                           ? SizedBox()
                                           : Column(children: [
                                               SizedBox(
@@ -355,7 +354,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                               ),
                                               Container(
                                                   height: 1,
-                                                  color: Color(0xffE5E5E5)),
+                                                  color: R.color.color0xffE5E5E5),
                                               Column(
                                                 children: [
                                                   SizedBox(
@@ -369,20 +368,20 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      Text('Khác',
+                                                      Text(R.string.khac.tr(),
                                                           style: TextStyle(
                                                               fontSize: 14,
-                                                              color: textDark,
+                                                              color: R.color.textDark,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700)),
                                                       SizedBox(width: 8),
                                                       Expanded(
                                                         child: Text(
-                                                            otherSymptom,
+                                                            otherSymptom!,
                                                             style: TextStyle(
                                                                 fontSize: 14,
-                                                                color: textDark,
+                                                                color: R.color.textDark,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w400)),
@@ -402,10 +401,10 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
+                            // color: R.color.white,
                             padding: EdgeInsets.all(20),
                             child: Column(
                               children: [
@@ -419,11 +418,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         children: [
                                           Row(children: [
                                             Image.asset(
-                                                'assets/images/pulse.png',
+                                                R.drawable.ic_pulse,
                                                 width: 24,
                                                 height: 24),
                                             SizedBox(width: 8),
-                                            Text('Hoạt động của bạn',
+                                            Text(R.string.hoat_dong_cua_ban.tr(),
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight:
@@ -447,11 +446,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                 );
                                               }));
                                             },
-                                            child: Text('Chỉnh sửa',
+                                            child: Text(R.string.chinh_sua.tr(),
                                                 style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
-                                                    color: mainColor)),
+                                                    color: R.color.mainColor)),
                                           ),
                                         ],
                                       ),
@@ -462,9 +461,9 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         runAlignment: WrapAlignment.start,
                                         //columns: 3,
                                         horizontalScroll: false,
-                                        itemCount: activities.length,
+                                        itemCount: activities!.length,
                                         itemBuilder: (index) {
-                                          final item = activities[index];
+                                          final item = activities![index];
                                           print(item.icon.url);
 
                                           return ItemTags(
@@ -482,14 +481,14 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                     width: 24,
                                                     height: 24),
                                               ),
-                                              title: item.name,
-                                              activeColor: Colors.white,
+                                              title: item.name!,
+                                              activeColor: R.color.white,
                                               textOverflow:
                                                   TextOverflow.visible,
-                                              splashColor: Colors.green,
+                                              splashColor: R.color.green,
                                               combine:
                                                   ItemTagsCombine.withTextAfter,
-                                              textActiveColor: textDark,
+                                              textActiveColor: R.color.textDark,
                                               textStyle:
                                                   TextStyle(fontSize: 14),
                                               elevation: 0,
@@ -497,7 +496,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         },
                                       ),
                                       otherActivity == null ||
-                                              otherActivity.isEmpty
+                                              otherActivity!.isEmpty
                                           ? SizedBox()
                                           : Column(children: [
                                               SizedBox(
@@ -505,7 +504,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                               ),
                                               Container(
                                                   height: 1,
-                                                  color: Color(0xffE5E5E5)),
+                                                  color: R.color.color0xffE5E5E5),
                                               Column(
                                                 children: [
                                                   SizedBox(
@@ -519,20 +518,20 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      Text('Khác',
+                                                      Text(R.string.khac.tr(),
                                                           style: TextStyle(
                                                               fontSize: 14,
-                                                              color: textDark,
+                                                              color: R.color.textDark,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700)),
                                                       SizedBox(width: 8),
                                                       Expanded(
                                                         child: Text(
-                                                            otherActivity,
+                                                            otherActivity!,
                                                             style: TextStyle(
                                                                 fontSize: 14,
-                                                                color: textDark,
+                                                                color: R.color.textDark,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w400)),
@@ -552,7 +551,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -561,15 +560,17 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                 onTap: () {
                                   showDialog(
                                     barrierColor:
-                                        Color(0xff003F38).withOpacity(0.5),
+                                        R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                       initDate: selectedDate,
                                       callback: (date) {
-                                        setState(() {
-                                          selectedDate = date;
-                                        });
-                                        loadTimeFrame();
+                                        if (date != null) {
+                                          setState(() {
+                                            selectedDate = date;
+                                          });
+                                          loadTimeFrame();
+                                        }
                                       },
                                       // selectedHour: (hour) {
                                       //   setState(() {
@@ -585,14 +586,14 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   );
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              'assets/images/icon_calendar.png',
+                                              R.drawable.ic_calendar,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
@@ -605,7 +606,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                           1000,
                                                       'HH:mm - dd/MM/yyyy'),
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w400)),
@@ -614,7 +615,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -627,7 +628,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -637,28 +638,28 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   showActionFilter(context);
                                 },
                                 child: Container(
-                                  color: Colors.transparent,
+                                  color: R.color.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(
-                                              'assets/images/icon_clock.png',
+                                              R.drawable.ic_clock,
                                               width: 24,
                                               height: 24),
                                           SizedBox(width: 8),
                                           Text(
                                               selectedTimeFrame == null
-                                                  ? 'Chọn khung giờ'
-                                                  : selectedTimeFrame.name,
+                                                  ? R.string.chon_khung_gio.tr()
+                                                  : selectedTimeFrame!.name!,
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w400))
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -671,19 +672,19 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            // color: Colors.white,
+                            // color: R.color.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    Image.asset('assets/images/note_text.png',
+                                    Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text('Ghi chú',
+                                    Text(R.string.ghi_chu.tr(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -692,20 +693,20 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   TextField(
                                       controller: _controllerNote,
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: 'Nhập ghi chú của bạn',
+                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: Color(0xff666666)))),
+                                              color: R.color.primaryGreyColor))),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -728,7 +729,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                             child: index == files.length
                                                 ? Container(
                                                     child: Image.asset(
-                                                        'assets/images/icon_add_photo.png'))
+                                                        R.drawable.ic_add_photo))
                                                 : Stack(
                                                     alignment:
                                                         AlignmentDirectional
@@ -752,7 +753,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                         ),
                                                         IconButton(
                                                             icon: Image.asset(
-                                                                'assets/images/icon_trash.png'),
+                                                                R.drawable.ic_trash),
                                                             onPressed: () {
                                                               setState(() {
                                                                 if (files[index]
@@ -787,19 +788,19 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               height: 48,
                               width: 195,
                               decoration: BoxDecoration(
-                                  color: mainColor,
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text('Lưu',
+                                  child: Text(R.string.save.tr(),
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)))),
                         ),
@@ -826,11 +827,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             border: Border.all(
-                                                color: red, width: 2)),
+                                                color:R.color.red, width: 2)),
                                         child: Center(
-                                          child: Text('Xoá dữ liệu',
+                                          child: Text(R.string.xoa_du_lieu.tr(),
                                               style: TextStyle(
-                                                  color: Colors.red,
+                                                  color: R.color.red,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         )),
@@ -843,20 +844,20 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           gradient: LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.centerRight,
                                               colors: [
-                                                greenGradientTop,
-                                                greenGradientBottom
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Lưu',
+                                        child: Text(R.string.save.tr(),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ),
@@ -879,7 +880,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
       BotToast.showLoading();
       final result = await EmotionClient().deleteIndexEmotion(widget.id);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'Emotion_change_data');
+        Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
+        // DartNotificationCenter.post(channel: 'Emotion_change_data');
         Navigator.pop(context);
       }
 
@@ -895,14 +897,14 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
   }
 
   editData() async {
-    final note = _controllerNote.text ?? '';
-    List<String> symptomIds = [];
-    List<String> activityIds = [];
+    final note = _controllerNote.text;
+    List<String?> symptomIds = [];
+    List<String?> activityIds = [];
 
-    symptoms.forEach((element) {
+    symptoms!.forEach((element) {
       symptomIds.add(element.id);
     });
-    activities.forEach((element) {
+    activities!.forEach((element) {
       activityIds.add(element.id);
     });
 
@@ -911,16 +913,16 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
     //   return;
     // }
     // if (activityIds.length == 0) {
-    //   Message.showToastMessage(context, 'Bạn chưa chọn hoạt động');
+    //   Message.showToastMessage(context, R.string.ban_chua_chon_hoat_dong.tr());
     //   return;
     // }
 
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
     BotToast.showLoading();
@@ -934,18 +936,19 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
       }
       final result = await EmotionClient().updateEmotionInput(
           widget.id,
-          emotion.id,
+          emotion!.id,
           symptomIds,
           activityIds,
           otherSymptom,
           otherActivity,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          selectedTimeFrame.id,
+          selectedTimeFrame!.id,
           note,
           removeIDs,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'Emotion_change_data');
+        Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
+        // DartNotificationCenter.post(channel: 'Emotion_change_data');
         Navigator.pop(context);
       }
 
@@ -961,14 +964,14 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
   }
 
   _submitData() async {
-    final note = _controllerNote.text ?? '';
-    List<String> symptomIds = [];
-    List<String> activityIds = [];
+    final note = _controllerNote.text;
+    List<String?> symptomIds = [];
+    List<String?> activityIds = [];
 
-    symptoms.forEach((element) {
+    symptoms!.forEach((element) {
       symptomIds.add(element.id);
     });
-    activities.forEach((element) {
+    activities!.forEach((element) {
       activityIds.add(element.id);
     });
 
@@ -977,16 +980,16 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
     //   return;
     // }
     // if (activityIds.length == 0) {
-    //   Message.showToastMessage(context, 'Bạn chưa chọn hoạt động');
+    //   Message.showToastMessage(context, R.string.ban_chua_chon_hoat_dong.tr());
     //   return;
     // }
 
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
     BotToast.showLoading();
@@ -997,17 +1000,18 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
         paths.add(file.path);
       }
       final result = await EmotionClient().postEmotionInput(
-          emotion.id,
+          emotion!.id,
           symptomIds,
           activityIds,
           otherSymptom,
           otherActivity,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          selectedTimeFrame.id,
+          selectedTimeFrame!.id,
           note,
           paths);
       if (result == true) {
-        DartNotificationCenter.post(channel: 'Emotion_change_data');
+        Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
+        // DartNotificationCenter.post(channel: 'Emotion_change_data');
         Navigator.pop(context);
       }
 
@@ -1035,24 +1039,24 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/earseIcon.png',
+                      Image.asset(R.drawable.ic_earse,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn xoá dữ liệu?',
+                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
+                            R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1071,11 +1075,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Quay lại',
+                                        child: Text(R.string.back.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -1091,13 +1095,13 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color: red,
+                                      color:R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text('Xoá',
+                                      child: Text(R.string.delete.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1113,7 +1117,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1125,22 +1129,22 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
   }
 
   _showDialogSave() {
-    final note = _controllerNote.text ?? '';
+    final note = _controllerNote.text;
     if (model != null) {
-      final noteText = model.note ?? '';
-      final date = DateTime.fromMillisecondsSinceEpoch(model.date * 1000);
-      if (model.symptoms == symptoms &&
-          model.activities == activities &&
+      final noteText = model!.note ?? '';
+      final date = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+      if (model!.symptoms == symptoms &&
+          model!.activities == activities &&
           note == noteText &&
-          files.length == model.images.length &&
+          files.length == model!.images.length &&
           removeIDs.length == 0 &&
           date.millisecondsSinceEpoch == selectedDate.millisecondsSinceEpoch) {
         Navigator.pop(context);
         return;
       }
     } else {
-      if ((symptoms.isEmpty && widget.symptoms == null) &&
-          (activities.isEmpty && widget.activities == null) &&
+      if ((symptoms!.isEmpty && widget.symptoms == null) &&
+          (activities!.isEmpty && widget.activities == null) &&
           note.isEmpty &&
           files.length == 0) {
         Navigator.pop(context);
@@ -1160,24 +1164,24 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/backIcon.png',
+                      Image.asset(R.drawable.ic_back_icon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                            R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -1195,11 +1199,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -1214,20 +1218,20 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color:R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1241,7 +1245,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1256,7 +1260,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => ActionListTrend(
@@ -1279,11 +1283,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_camera_black.png',
+                  Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chọn trong thư viện",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text(R.string.chon_trong_thu_vien.tr(),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1297,11 +1301,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset('assets/images/icon_photo.png',
+                  Image.asset(R.drawable.ic_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text("Chụp ảnh",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text(R.string.chup_anh.tr(),
+                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1312,8 +1316,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text("Hủy",
-              style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+          child: Text(R.string.cancel.tr(),
+              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -1321,7 +1325,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      Message.showToastMessage(context, 'Chỉ đuợc chọn tối đa 5 ảnh');
+      Message.showToastMessage(context, R.string.max_image_select.tr());
     }
   }
 
@@ -1360,13 +1364,13 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = FlatButton(
-      child: Text("Huỷ"),
+      child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Cấp quyền"),
+      child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -1374,9 +1378,9 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Thông báo"),
+      title: Text(R.string.notification.tr()),
       content:
-          Text("Bạn cần cấp quyền truy cập camera để sử dụng tính năng này"),
+          Text(R.string.camera_permission_required.tr()),
       actions: [
         cancelButton,
         continueButton,
@@ -1391,18 +1395,18 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
   }
 }
 
-typedef TimeCallback = Function(DateTime);
+typedef TimeCallback = Function(DateTime?);
 
 class DateMultiPicker extends StatefulWidget {
-  final DateTime initDate;
-  final TimeCallback callback;
+  final DateTime? initDate;
+  final TimeCallback? callback;
   DateMultiPicker({this.initDate, this.callback});
   @override
   _DateMultiPickerState createState() => _DateMultiPickerState();
 }
 
 class _DateMultiPickerState extends State<DateMultiPicker> {
-  DateTime selectedDate = DateTime.now();
+  DateTime? selectedDate = DateTime.now();
   int selectedHour = DateTime.now().hour;
   int selectedMinute = DateTime.now().minute;
 
@@ -1410,8 +1414,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   void initState() {
     if (widget.initDate != null) {
       selectedDate = widget.initDate;
-      selectedHour = widget.initDate.hour;
-      selectedMinute = widget.initDate.minute;
+      selectedHour = widget.initDate!.hour;
+      selectedMinute = widget.initDate!.minute;
     }
     super.initState();
   }
@@ -1423,7 +1427,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -1432,7 +1436,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1442,14 +1446,14 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Chọn ngày',
+                            Text(R.string.pick_date.tr(),
                                 style: TextStyle(
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
                                 icon:
-                                    Icon(Icons.close, color: Color(0xffBEC0C8)),
+                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
@@ -1458,10 +1462,10 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                     CustomCalendarDatePicker(
                         initialDate: widget.initDate == null
                             ? DateTime.now()
-                            : widget.initDate,
+                            : widget.initDate!,
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
-                        onDateChanged: (DateTime datetime) {
+                        onDateChanged: (datetime) {
                           selectedDate = datetime;
                         }),
                     Row(
@@ -1469,9 +1473,9 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         SizedBox(
                           width: 16,
                         ),
-                        Text('Chọn thời gian',
+                        Text(R.string.pick_time.tr(),
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700)),
                       ],
@@ -1481,8 +1485,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
                         callback: (hour, minute) {
-                          selectedHour = hour;
-                          selectedMinute = minute;
+                          selectedHour = hour ?? DateTime.now().hour;
+                          selectedMinute = minute ?? DateTime.now().minute;
                         }),
                     SizedBox(height: 20),
                     Row(children: [
@@ -1495,12 +1499,12 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xffE2E4E7),
+                                  color: R.color.grayBorder,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1510,25 +1514,25 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         child: GestureDetector(
                           onTap: () {
                             selectedDate = DateTime(
-                                selectedDate.year,
-                                selectedDate.month,
-                                selectedDate.day,
+                                selectedDate!.year,
+                                selectedDate!.month,
+                                selectedDate!.day,
                                 selectedHour,
                                 selectedMinute);
 
-                            widget.callback(selectedDate);
+                            widget.callback!(selectedDate);
 
                             Navigator.pop(context);
                           },
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: Color(0xff01645A),
+                                  color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
-                                  child: Text('Đồng ý',
+                                  child: Text(R.string.yes.tr(),
                                       style: TextStyle(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700)))),
                         ),
@@ -1547,22 +1551,22 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   }
 }
 
-typedef TimeHourCallback = Function(int, int);
+typedef TimeHourCallback = Function(int?, int?);
 
 class CustomTimePicker extends StatefulWidget {
-  final int selectedHour;
-  final int selectedMinute;
-  final TimeHourCallback callback;
+  final int? selectedHour;
+  final int? selectedMinute;
+  final TimeHourCallback? callback;
   CustomTimePicker({this.selectedHour, this.selectedMinute, this.callback});
   @override
   _CustomTimePickerState createState() => _CustomTimePickerState();
 }
 
 class _CustomTimePickerState extends State<CustomTimePicker> {
-  FixedExtentScrollController hourController;
-  FixedExtentScrollController minuteController;
-  int selectedHour = 1;
-  int selectedMinute = 1;
+  FixedExtentScrollController? hourController;
+  FixedExtentScrollController? minuteController;
+  int? selectedHour = 1;
+  int? selectedMinute = 1;
 
   @override
   void initState() {
@@ -1576,8 +1580,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     if (widget.selectedMinute != null) {
       selectedMinute = widget.selectedMinute;
     }
-    hourController = FixedExtentScrollController(initialItem: selectedHour);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute);
+    hourController = FixedExtentScrollController(initialItem: selectedHour!);
+    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   @override
@@ -1594,7 +1598,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 onSelectedItemChanged: (value) {
                   setState(() {
                     selectedHour = value;
-                    widget.callback(selectedHour, selectedMinute);
+                    widget.callback!(selectedHour, selectedMinute);
                   });
                 },
                 itemExtent: 47.0,
@@ -1603,8 +1607,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedHour == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))
@@ -1619,7 +1623,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 onSelectedItemChanged: (value) {
                   setState(() {
                     selectedMinute = value;
-                    widget.callback(selectedHour, selectedMinute);
+                    widget.callback!(selectedHour, selectedMinute);
                   });
                 },
                 itemExtent: 47.0,
@@ -1628,8 +1632,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedMinute == e
-                                      ? Color(0xff01645A)
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.mainColor
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
                         ))

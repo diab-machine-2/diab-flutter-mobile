@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class BarChartSample2 extends StatefulWidget {
   @override
@@ -7,14 +8,14 @@ class BarChartSample2 extends StatefulWidget {
 }
 
 class BarChartSample2State extends State<BarChartSample2> {
-  final Color leftBarColor = const Color(0xff01645A);
-  final Color rightBarColor = const Color(0xffFDB913);
+  final Color leftBarColor = R.color.mainColor;
+  final Color rightBarColor = R.color.yellow;
   final double width = 7;
 
-  List<BarChartGroupData> rawBarGroups;
-  List<BarChartGroupData> showingBarGroups;
+  List<BarChartGroupData>? rawBarGroups;
+  List<BarChartGroupData>? showingBarGroups;
 
-  int touchedGroupIndex;
+  int? touchedGroupIndex;
 
   @override
   void initState() {
@@ -45,7 +46,7 @@ class BarChartSample2State extends State<BarChartSample2> {
       child: Card(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: Colors.white,
+        color: R.color.white,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -74,45 +75,45 @@ class BarChartSample2State extends State<BarChartSample2> {
                       maxY: 20,
                       barTouchData: BarTouchData(
                           touchTooltipData: BarTouchTooltipData(
-                            tooltipBgColor: Colors.grey,
+                            tooltipBgColor: R.color.grey,
                             getTooltipItem: (_a, _b, _c, _d) => null,
                           ),
                           touchCallback: (event, response) {
                             print(response);
-                            if (response.spot == null) {
+                            if (response!.spot == null) {
                               setState(() {
                                 // touchedGroupIndex = -1;
-                                showingBarGroups = List.of(rawBarGroups);
+                                showingBarGroups = List.of(rawBarGroups!);
                               });
                               return;
                             }
 
                             touchedGroupIndex =
-                                response.spot.touchedBarGroupIndex;
+                                response.spot!.touchedBarGroupIndex;
 
                             setState(() {
                               if (event is FlLongPressEnd ||
                                   event is FlPanEndEvent) {
                                 touchedGroupIndex = -1;
-                                showingBarGroups = List.of(rawBarGroups);
+                                showingBarGroups = List.of(rawBarGroups!);
                               } else {
-                                showingBarGroups = List.of(rawBarGroups);
+                                showingBarGroups = List.of(rawBarGroups!);
                                 if (touchedGroupIndex != -1) {
                                   double sum = 0;
                                   for (BarChartRodData rod
-                                      in showingBarGroups[touchedGroupIndex]
+                                      in showingBarGroups![touchedGroupIndex!]
                                           .barRods) {
                                     sum += rod.y;
                                   }
                                   final avg = sum /
-                                      showingBarGroups[touchedGroupIndex]
+                                      showingBarGroups![touchedGroupIndex!]
                                           .barRods
                                           .length;
 
-                                  showingBarGroups[touchedGroupIndex] =
-                                      showingBarGroups[touchedGroupIndex]
+                                  showingBarGroups![touchedGroupIndex!] =
+                                      showingBarGroups![touchedGroupIndex!]
                                           .copyWith(
-                                    barRods: showingBarGroups[touchedGroupIndex]
+                                    barRods: showingBarGroups![touchedGroupIndex!]
                                         .barRods
                                         .map((rod) {
                                       return rod.copyWith(y: avg);
@@ -126,8 +127,8 @@ class BarChartSample2State extends State<BarChartSample2> {
                         show: true,
                         bottomTitles: SideTitles(
                           showTitles: true,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Color(0xff7589a2),
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.color0xff7589a2,
                               fontWeight: FontWeight.bold,
                               fontSize: 14),
                           margin: 20,
@@ -151,8 +152,8 @@ class BarChartSample2State extends State<BarChartSample2> {
                         ),
                         leftTitles: SideTitles(
                           showTitles: true,
-                          getTextStyles: (context, value) => const TextStyle(
-                              color: Color(0xff7589a2),
+                          getTextStyles: (context, value) => TextStyle(
+                              color: R.color.color0xff7589a2,
                               fontWeight: FontWeight.bold,
                               fontSize: 14),
                           margin: 32,
@@ -217,7 +218,7 @@ class BarChartSample2State extends State<BarChartSample2> {
         Container(
           width: width,
           height: 10,
-          color: Colors.white.withOpacity(0.4),
+          color: R.color.white.withOpacity(0.4),
         ),
         const SizedBox(
           width: space,
@@ -225,7 +226,7 @@ class BarChartSample2State extends State<BarChartSample2> {
         Container(
           width: width,
           height: 28,
-          color: Colors.white.withOpacity(0.8),
+          color: R.color.white.withOpacity(0.8),
         ),
         const SizedBox(
           width: space,
@@ -233,7 +234,7 @@ class BarChartSample2State extends State<BarChartSample2> {
         Container(
           width: width,
           height: 42,
-          color: Colors.white.withOpacity(1),
+          color: R.color.white.withOpacity(1),
         ),
         const SizedBox(
           width: space,
@@ -241,7 +242,7 @@ class BarChartSample2State extends State<BarChartSample2> {
         Container(
           width: width,
           height: 28,
-          color: Colors.white.withOpacity(0.8),
+          color: R.color.white.withOpacity(0.8),
         ),
         const SizedBox(
           width: space,
@@ -249,7 +250,7 @@ class BarChartSample2State extends State<BarChartSample2> {
         Container(
           width: width,
           height: 10,
-          color: Colors.white.withOpacity(0.4),
+          color: R.color.white.withOpacity(0.4),
         ),
       ],
     );

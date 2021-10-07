@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>116899682757-kt4c6299sdkumlbosa9sv6jjcra3jb23.apps.googleusercontent.com</string>
+	<string>116899682757-4kn786hdp9h20piq394theg9r4tcfha5.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.116899682757-kt4c6299sdkumlbosa9sv6jjcra3jb23</string>
+	<string>com.googleusercontent.apps.116899682757-4kn786hdp9h20piq394theg9r4tcfha5</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>116899682757-71u9g8ihe5qqvfsaekp6g1vloskm36s2.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.cactusoftware.diab</string>
+	<string>vn.com.diab</string>
 	<key>PROJECT_ID</key>
 	<string>diab-655e2</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:116899682757:ios:c74e4bbc29df54fbe013ac</string>
+	<string>1:116899682757:ios:16deead823107098e013ac</string>
 </dict>
 </plist>

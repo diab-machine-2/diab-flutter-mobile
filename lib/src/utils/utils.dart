@@ -2,20 +2,19 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:flutter/services.dart' show rootBundle;
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:path/path.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import 'const.dart';
 import 'logger.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class Utils {
   static Future<bool> checkConnection() async {
@@ -40,13 +39,13 @@ class Utils {
   static void showSnackBar(BuildContext context, String text) {
     final snackBar = SnackBar(
       content: Text(text),
-      backgroundColor: R.color.primaryColor,
+      backgroundColor: R.color.accentColor,
     );
     Scaffold.of(context).showSnackBar(snackBar);
   }
 
   static void onWidgetDidBuild(Function callback) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       callback();
     });
   }
@@ -78,7 +77,7 @@ class Utils {
     }
   }
 
-  static bool isEmpty(Object text) {
+  static bool isEmpty(Object? text) {
     if (text is String) return text.isEmpty;
     if (text is List) return text.isEmpty;
     return text == null;
@@ -91,16 +90,16 @@ class Utils {
   static bool isInteger(num value) =>
       value is int || value == value.roundToDouble();
 
-  static Color parseStringToColor(String color) {
+  static Color parseStringToColor(String? color) {
     if (isEmpty(color))
       return R.color.white;
     else
-      return Color(int.parse('0xff' + color.substring(1)));
+      return Color(int.parse('0xff' + color!.substring(1)));
   }
 
-  static String parseDateToString(DateTime dateTime, String format) {
+  static String parseDateToString(DateTime? dateTime, String format) {
     String date = "";
-    if (dateTime = null)
+    if (dateTime != null)
       try {
         date = DateFormat(format).format(dateTime);
       } on FormatException catch (e) {
@@ -109,10 +108,10 @@ class Utils {
     return date;
   }
 
-  static String parseStringDateToString(
-      String dateSv, String fromFormat, String toFormat) {
-    String date = dateSv;
-    if (dateSv = null)
+  static String? parseStringDateToString(
+      String? dateSv, String fromFormat, String toFormat) {
+    String? date = dateSv;
+    if (dateSv != null)
       try {
         date = DateFormat(toFormat, "en_US")
             .format(DateFormat(fromFormat).parse(dateSv));
@@ -123,32 +122,32 @@ class Utils {
   }
 
   static Future showDialogTextTwoButton(
-      {BuildContext context,
-      String title,
-      String contentText,
-      String submitText,
-      VoidCallback submitCallback,
+      {required BuildContext context,
+      String? title,
+      String? contentText,
+      String? submitText,
+      VoidCallback? submitCallback,
       bool dismissible: false}) {
     return showDialog(
         barrierDismissible: dismissible,
         context: context,
         builder: (context) {
           return AlertDialog(
-              title: isEmpty(title) ? Text(title) : null,
-              content: Text(contentText),
+              title: isEmpty(title) ? Text(title!) : null,
+              content: Text(contentText!),
               actions: [
                 FlatButton(
-                  onPressed: () => popDialog(context),
+                  onPressed: () =>  Navigator.of(context).pop(),
                   child: Text(R.string.close.tr()),
                 ),
                 Visibility(
                   visible: isEmpty(submitText),
                   child: FlatButton(
                     onPressed: () {
-                      popDialog(context);
-                      submitCallback();
+                      Navigator.of(context).pop();
+                      submitCallback!();
                     },
-                    child: Text(submitText),
+                    child: Text(submitText!),
                   ),
                 )
               ]);
@@ -156,18 +155,18 @@ class Utils {
   }
 
   static Future showDialogTwoButton(
-      {BuildContext context,
-      String title,
-      Widget contentWidget,
-      String submitText,
-      VoidCallback submitCallback,
+      {required BuildContext context,
+      String? title,
+      Widget? contentWidget,
+      String? submitText,
+      VoidCallback? submitCallback,
       bool dismissible: false}) {
     return showDialog(
         barrierDismissible: dismissible,
         context: context,
         builder: (context) {
           return AlertDialog(
-              title: title == null ? Text(title) : null,
+              title: title == null ? Text(title!) : null,
               content: contentWidget,
               actions: [
                 // FlatButton(
@@ -178,10 +177,10 @@ class Utils {
                   visible: isEmpty(submitText),
                   child: FlatButton(
                     onPressed: () {
-                      popDialog(context);
-                      submitCallback();
+                      Navigator.of(context).pop();
+                      submitCallback!();
                     },
-                    child: Text(submitText),
+                    child: Text(submitText!),
                   ),
                 )
               ]);
@@ -189,61 +188,19 @@ class Utils {
   }
 
   static void showDialogTwoButtonAfterLayout(
-      {BuildContext context,
-      String title,
-      Widget contentWidget,
-      List<Widget> actions}) async {
+      {BuildContext? context,
+      String? title,
+      Widget? contentWidget,
+      List<Widget>? actions}) async {
     onWidgetDidBuild(() => showDialog(
         barrierDismissible: false,
-        context: context,
+        context: context!,
         builder: (context) {
           return AlertDialog(
-              title: title == null ? Text(title) : null,
+              title: title == null ? Text(title!) : null,
               content: contentWidget,
               actions: actions);
         }));
-  }
-
-  static Future pushAndRemoveUtilPage(BuildContext context, Widget widget) {
-    return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => widget),
-        (Route<dynamic> route) => false);
-  }
-
-  static Future pushAndRemoveUtilKeepFirstPage(
-      BuildContext context, Widget widget) {
-    return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => widget),
-        ModalRoute.withName(Navigator.defaultRouteName));
-  }
-
-  static void popToFirst(BuildContext context) {
-    return Navigator.of(context)
-        .popUntil((Route<dynamic> route) => route.isFirst);
-  }
-
-  static void popByTime(BuildContext context, int count, {dynamic result}) {
-    for (int i = 0; i < count - 1; i++) Navigator.of(context).pop();
-
-    Navigator.of(context).pop(result);
-  }
-
-  static void popUtil(BuildContext context) {
-    return Navigator.of(context).popUntil((Route<dynamic> route) => false);
-  }
-
-  static void popDialog(BuildContext context) {
-    return Navigator.of(context, rootNavigator: true).pop('dialog');
-  }
-
-  static Future navigatePage(BuildContext context, Widget widget) {
-    return Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => widget));
-  }
-
-  static Future rootNavigatePage(BuildContext context, Widget widget) {
-    return Navigator.of(context, rootNavigator: true)
-        .push(MaterialPageRoute(builder: (context) => widget));
   }
 
   static navigateNextFocusChange(
@@ -257,12 +214,12 @@ class Utils {
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
         targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
         .buffer
         .asUint8List();
   }
 
-  static int convertPriceToNumber(String price) {
+  static int? convertPriceToNumber(String price) {
     if (price == null) return null;
     String newPrice = price
         .replaceAll(" ", "")
@@ -278,7 +235,7 @@ class Utils {
     }
   }
 
-  static String formatMoney(dynamic amount) {
+  static String? formatMoney(dynamic amount) {
     if (amount == null) {
       return null;
     }
@@ -347,17 +304,16 @@ class Utils {
   }
 
   static String base64Image(File file) {
-    if (file == null) return null;
     List<int> imageBytes = file.readAsBytesSync();
     return base64Encode(imageBytes);
   }
 
-  static String getImageUrl(String path, {String host}) {
+  static String? getImageUrl(String? path, {String? host}) {
     if (isEmpty(path)) return null;
-    return (host ?? Const.HOST_URL) + path;
+    return (host ?? Const.HOST_URL) + path!;
   }
 
-  static Future<Map<String, dynamic>> parseJson(String fileName) async {
+  static Future<Map<String, dynamic>?> parseJson(String fileName) async {
     return jsonDecode(await rootBundle.loadString("assets/$fileName"));
   }
 
@@ -386,9 +342,23 @@ class Utils {
     return Const.API_URL + url + "token=$token";
   }
 
+  static Color getColorByCode(String? code) {
+    if (code == Const.PRO)
+      return R.color.yellow;
+    else if (code == Const.PREMIUM)
+      return R.color.accentColor;
+    return R.color.white;
+  }
+
   // static Future updateBadge(int count) async {
   //   if (await FlutterAppBadger.isAppBadgeSupported()) {
   //     FlutterAppBadger.updateBadgeCount(count);
   //   }
   // }
+
+  static String getDayInWeekTitle(int index) {
+    if (index >= 0 && index < 6) return 'T${index + 2}';
+    if (index == 6) return 'CN';
+    return '';
+  }
 }

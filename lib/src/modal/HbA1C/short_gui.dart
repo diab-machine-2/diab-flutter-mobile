@@ -9,10 +9,10 @@ class ShortGuiModel {
   final String content4;
 
   ShortGuiModel(
-      {@required this.content1,
-      @required this.content2,
-      @required this.content3,
-      @required this.content4});
+      {required this.content1,
+      required this.content2,
+      required this.content3,
+      required this.content4});
   @override
   factory ShortGuiModel.fromJson(Map<String, dynamic> json) {
     final List<dynamic> data = json['data'];

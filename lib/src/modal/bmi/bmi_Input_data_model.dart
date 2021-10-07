@@ -5,5 +5,5 @@ class InputBmiDataModel {
   final List<InputBmiModel> inputs;
   final bool hasMore;
 
-  InputBmiDataModel({@required this.inputs, @required this.hasMore});
+  InputBmiDataModel({required this.inputs, required this.hasMore});
 }

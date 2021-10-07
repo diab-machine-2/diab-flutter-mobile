@@ -1,6 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'dart:ui' as ui;
 
 // ignore: must_be_immutable
 class HorizontalNumberPicker extends StatefulWidget {
@@ -16,25 +17,25 @@ class HorizontalNumberPicker extends StatefulWidget {
   final int widgetHeight;
 
   ///大格的总数
-  int gridCount;
+  late int gridCount;
 
   ///一大格中有多少个小格
   final int subGridCountPerGrid;
 
   ///大格的宽度
-  int gridWidth;
+  late int gridWidth;
 
   ///每一小格的宽度
   final int subGridWidth;
 
-  int listViewItemCount;
+  int? listViewItemCount;
 
-  double paddingItemWidth;
+  double? paddingItemWidth;
 
   final void Function(int) onSelectedChanged;
 
   ///返回标尺刻度所展示的数值字符串
-  String Function(int) scaleTransformer;
+  String Function(int)? scaleTransformer;
 
   ///刻度颜色
   final Color scaleColor;
@@ -46,7 +47,7 @@ class HorizontalNumberPicker extends StatefulWidget {
   final Color scaleTextColor;
 
   HorizontalNumberPicker({
-    Key key,
+    Key? key,
     this.initialValue = 500,
     this.minValue = 100,
     this.maxValue = 900,
@@ -55,7 +56,7 @@ class HorizontalNumberPicker extends StatefulWidget {
     this.widgetHeight = 60,
     this.subGridCountPerGrid = 10,
     this.subGridWidth = 8,
-    @required this.onSelectedChanged,
+    required this.onSelectedChanged,
     this.scaleTransformer,
     this.scaleColor = const Color(0xFFE9E9E9),
     this.indicatorColor = const Color(0xFF3995FF),
@@ -100,7 +101,7 @@ class HorizontalNumberPicker extends StatefulWidget {
 }
 
 class HorizontalNumberPickerState extends State<HorizontalNumberPicker> {
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
 
   @override
   void initState() {
@@ -145,7 +146,7 @@ class HorizontalNumberPickerState extends State<HorizontalNumberPicker> {
               itemCount: widget.listViewItemCount,
               itemBuilder: (BuildContext context, int index) {
                 //首尾空白元素
-                if (index == 0 || index == widget.listViewItemCount - 1) {
+                if (index == 0 || index == widget.listViewItemCount! - 1) {
                   return Container(
                     width: widget.paddingItemWidth,
                     height: 0,
@@ -157,7 +158,7 @@ class HorizontalNumberPickerState extends State<HorizontalNumberPicker> {
                   if (index == 1) {
                     type = 0;
                     //最后一个普通元素
-                  } else if (index == widget.listViewItemCount - 2) {
+                  } else if (index == widget.listViewItemCount! - 2) {
                     type = 2;
                     //中间普通元素
                   } else {
@@ -169,7 +170,7 @@ class HorizontalNumberPickerState extends State<HorizontalNumberPicker> {
                       subGridCount: widget.subGridCountPerGrid,
                       subGridWidth: widget.subGridWidth,
                       itemHeight: widget.widgetHeight,
-                      valueStr: widget.scaleTransformer(widget.minValue +
+                      valueStr: widget.scaleTransformer!(widget.minValue +
                           (index - 1) *
                               widget.subGridCountPerGrid *
                               widget.step),
@@ -217,18 +218,18 @@ class HorizontalNumberPickerState extends State<HorizontalNumberPicker> {
   ///判断是否用户手指离开屏幕且列表的滚动停止
   bool _scrollingStopped(
     Notification notification,
-    ScrollController scrollController,
+    ScrollController? scrollController,
   ) {
     return notification is UserScrollNotification &&
         notification.direction == ScrollDirection.idle &&
-        scrollController.position.activity is! HoldScrollActivity;
+        scrollController!.position.activity is! HoldScrollActivity;
   }
 
   //public------------------------------------------------------------------------
 
   ///选中值
   select(int valueToSelect) {
-    _scrollController.animateTo(
+    _scrollController!.animateTo(
       (valueToSelect - widget.minValue) / widget.step * widget.subGridWidth,
       duration: Duration(milliseconds: 200),
       curve: Curves.decelerate,
@@ -252,14 +253,14 @@ class NumberPickerItem extends StatelessWidget {
   final Color scaleTextColor;
 
   const NumberPickerItem({
-    Key key,
-    @required this.subGridCount,
-    @required this.subGridWidth,
-    @required this.itemHeight,
-    @required this.valueStr,
-    @required this.type,
-    @required this.scaleColor,
-    @required this.scaleTextColor,
+    Key? key,
+    required this.subGridCount,
+    required this.subGridWidth,
+    required this.itemHeight,
+    required this.valueStr,
+    required this.type,
+    required this.scaleColor,
+    required this.scaleTextColor,
   }) : super(key: key);
 
   @override
@@ -287,7 +288,7 @@ class MyPainter extends CustomPainter {
 
   final Color scaleTextColor;
 
-  Paint _linePaint;
+  late Paint _linePaint;
 
   double _lineWidth = 2;
 

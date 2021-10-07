@@ -2,30 +2,26 @@ import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
-// import 'package:horizontal_card_pager/card_item.dart';
-import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/emotion/emotion_model.dart';
-import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/emotion/emotion_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/card_horizontal/card_horizontal.dart';
 import 'package:medical/src/widget/components/card_horizontal/card_item.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-typedef EmotionCallback = Function(EmotionModel);
+typedef EmotionCallback = Function(EmotionModel?);
 
 class AddEmoController extends StatefulWidget {
-  final String type;
-  final EmotionModel emotion;
-  final EmotionCallback callback;
+  final String? type;
+  final EmotionModel? emotion;
+  final EmotionCallback? callback;
 
   AddEmoController({this.type, this.emotion, this.callback});
   @override
@@ -34,11 +30,11 @@ class AddEmoController extends StatefulWidget {
 
 class _AddEmoControllerState extends BaseState<AddEmoController> {
   bool isClicked = false;
-  EmotionModel selectedEmotion;
+  EmotionModel? selectedEmotion;
 
   List<EmotionModel> model = [];
 
-  ShortGuiModel des;
+  ShortGuiModel? des;
 
   void initState() {
     super.initState();
@@ -82,29 +78,29 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: backgroundColor,
+        backgroundColor:  R.color.backgroundColor,
         body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/images/background_splash.png'),
+                  image: AssetImage(R.drawable.bg_splash),
                   fit: BoxFit.cover)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
+                backgroundColor: R.color.transparent,
                 title: Text(
                     widget.type == 'update'
-                        ? 'Chỉnh sửa cảm xúc'
-                        : 'Nhập cảm xúc',
+                        ? R.string.chinh_sua_cam_xuc.tr()
+                        : R.string.nhap_cam_xuc.tr(),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark)),
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    icon: Icon(Icons.arrow_back, color: textDark),
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -118,9 +114,9 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 16, right: 16),
                       child: isClicked
-                          ? Image.asset('assets/images/help_circle_active.png',
+                          ? Image.asset(R.drawable.ic_help_circle_active,
                               width: 24, height: 24)
-                          : Image.asset('assets/images/help_circle.png',
+                          : Image.asset(R.drawable.ic_help_circle,
                               width: 24, height: 24),
                     ),
                   ),
@@ -137,7 +133,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                           ? Description(
                               input: true,
                               data: des,
-                              titleDetail: 'Kiểm soát cảm xúc bệnh tiểu đường')
+                              titleDetail: R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr())
                           : SizedBox(),
                     ),
                     Expanded(
@@ -145,9 +141,9 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                         shrinkWrap: true,
                         children: [
                           Center(
-                            child: Text('Hôm nay bạn\ncảm thấy thế nào?',
+                            child: Text(R.string.hom_nay_ban_cam_thay_the_nao.tr(),
                                 style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 24,
                                     fontWeight: FontWeight.w700),
                                 textAlign: TextAlign.center),
@@ -155,9 +151,9 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                           SizedBox(height: 10),
                           Center(
                             child: Text(
-                                'Trượt sang trái hoặc phải để chọn 1 cảm xúc',
+                                R.string.scroll_to_select_emotion.tr(),
                                 style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
                           ),
@@ -170,8 +166,9 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                                   : HorizontalCardPager(
                                       initialPage: model.lastIndexWhere(
                                           (element) =>
-                                              element.id == selectedEmotion.id),
+                                              element.id == selectedEmotion!.id),
                                       onPageChanged: (page) {
+                                        if (page != null)
                                         setState(() {
                                           selectedEmotion = model[page.toInt()];
                                         });
@@ -183,11 +180,11 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                                             height: 100,
                                             width: 100,
                                             padding: EdgeInsets.all(
-                                                selectedEmotion.id ==
+                                                selectedEmotion!.id ==
                                                         model[index].id
                                                     ? 0
                                                     : 12),
-                                            //color: Colors.red,
+                                            //color: R.color.red,
                                             child: Image.network(
                                               model[index].imageUrl ?? '',
                                               // width: selectedEmotion.id ==
@@ -207,7 +204,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                               Text(
                                 model.length == 0
                                     ? ''
-                                    : selectedEmotion.vietnameseName,
+                                    : selectedEmotion!.vietnameseName!,
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w400),
                               )
@@ -222,12 +219,12 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
               GestureDetector(
                 onTap: () async {
                   if (widget.type == 'input') {
-                    Navigator.pushNamed(context, '/add_symbo', arguments: {
+                    Navigator.pushNamed(context, NavigatorName.add_symbo, arguments: {
                       'type': 'input',
                       'emotion': selectedEmotion,
                     });
                   } else {
-                    widget.callback(selectedEmotion);
+                    widget.callback!(selectedEmotion);
                     Navigator.pop(context);
                   }
                 },
@@ -238,17 +235,17 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                       height: 48,
                       width: 195,
                       decoration: BoxDecoration(
-                          color: mainColor,
+                          color: R.color.mainColor,
                           borderRadius: BorderRadius.circular(200),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [greenGradientTop, greenGradientBottom])),
+                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
                           child: Text(
-                              widget.type == 'input' ? 'Tiếp tục' : 'Cập nhật',
+                              widget.type == 'input' ? R.string.tiep_tuc.tr() : R.string.cap_nhat.tr(),
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16)))),
                 ),

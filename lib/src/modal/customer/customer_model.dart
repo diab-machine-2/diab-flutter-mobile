@@ -1,20 +1,20 @@
 import 'package:meta/meta.dart';
 
 class CustomerModel {
-  final String id;
-  final String code;
-  final String name;
-  final String phone;
-  final String address;
-  final String avatarLink;
+  final String? id;
+  final String? code;
+  final String? name;
+  final String? phone;
+  final String? address;
+  final String? avatarLink;
 
   CustomerModel(
-      {@required this.id,
-      @required this.code,
-      @required this.name,
-      @required this.phone,
-      @required this.address,
-      @required this.avatarLink});
+      {required this.id,
+      required this.code,
+      required this.name,
+      required this.phone,
+      required this.address,
+      required this.avatarLink});
   @override
   factory CustomerModel.fromJson(Map<String, dynamic> json) {
     return CustomerModel(

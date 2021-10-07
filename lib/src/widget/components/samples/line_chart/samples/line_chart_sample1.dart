@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class LineChartSample1 extends StatefulWidget {
   @override
@@ -7,7 +8,7 @@ class LineChartSample1 extends StatefulWidget {
 }
 
 class LineChartSample1State extends State<LineChartSample1> {
-  bool isShowingMainData;
+  late bool isShowingMainData;
 
   @override
   void initState() {
@@ -50,10 +51,10 @@ class LineChartSample1State extends State<LineChartSample1> {
                 const SizedBox(
                   height: 4,
                 ),
-                const Text(
+                Text(
                   'Monthly Sales',
                   style: TextStyle(
-                      color: Colors.white,
+                      color: R.color.white,
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2),
@@ -79,7 +80,7 @@ class LineChartSample1State extends State<LineChartSample1> {
             IconButton(
               icon: Icon(
                 Icons.refresh,
-                color: Colors.white.withOpacity(isShowingMainData ? 1.0 : 0.5),
+                color: R.color.white.withOpacity(isShowingMainData ? 1.0 : 0.5),
               ),
               onPressed: () {
                 setState(() {
@@ -97,9 +98,9 @@ class LineChartSample1State extends State<LineChartSample1> {
     return LineChartData(
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
-          tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
+          tooltipBgColor: R.color.blueGrey.withOpacity(0.8),
         ),
-        touchCallback: (FlTouchEvent event, LineTouchResponse touchResponse) {},
+        touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {},
         handleBuiltInTouches: true,
       ),
       gridData: FlGridData(
@@ -153,19 +154,19 @@ class LineChartSample1State extends State<LineChartSample1> {
       ),
       borderData: FlBorderData(
         show: true,
-        border: const Border(
+        border: Border(
           bottom: BorderSide(
             color: Color(0xff4e4965),
             width: 4,
           ),
           left: BorderSide(
-            color: Colors.transparent,
+            color: R.color.transparent,
           ),
           right: BorderSide(
-            color: Colors.transparent,
+            color: R.color.transparent,
           ),
           top: BorderSide(
-            color: Colors.transparent,
+            color: R.color.transparent,
           ),
         ),
       ),
@@ -309,19 +310,19 @@ class LineChartSample1State extends State<LineChartSample1> {
       ),
       borderData: FlBorderData(
           show: true,
-          border: const Border(
+          border: Border(
             bottom: BorderSide(
               color: Color(0xff4e4965),
               width: 4,
             ),
             left: BorderSide(
-              color: Colors.transparent,
+              color: R.color.transparent,
             ),
             right: BorderSide(
-              color: Colors.transparent,
+              color: R.color.transparent,
             ),
             top: BorderSide(
-              color: Colors.transparent,
+              color: R.color.transparent,
             ),
           )),
       minX: 0,

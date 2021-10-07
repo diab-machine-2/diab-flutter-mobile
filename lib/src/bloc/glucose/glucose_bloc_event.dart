@@ -8,20 +8,20 @@ class FetchGlucoseTimeFrame extends GlucoseEvent {
 }
 
 class FetchGlucoseDistribution extends GlucoseEvent {
-  final String currentDateTime;
-  final String periodFilterType;
-  final String page;
+  final String? currentDateTime;
+  final String? periodFilterType;
+  final String? page;
 
   FetchGlucoseDistribution(
       {this.currentDateTime, this.periodFilterType, this.page});
 }
 
 class FetchInputGlucose extends GlucoseEvent {
-  final String currentDateTime;
-  final String periodFilterType;
-  final int page;
-  final String timeFrameType;
-  final String glucoseDistributionType;
+  final String? currentDateTime;
+  final String? periodFilterType;
+  final int? page;
+  final String? timeFrameType;
+  final String? glucoseDistributionType;
 
   FetchInputGlucose(
       {this.currentDateTime,
@@ -32,10 +32,10 @@ class FetchInputGlucose extends GlucoseEvent {
 }
 
 class FetchComparerGlucose extends GlucoseEvent {
-  final String currentDateTime;
-  final String periodFilterType;
-  final String page;
-  final String comparerType;
+  final String? currentDateTime;
+  final String? periodFilterType;
+  final String? page;
+  final String? comparerType;
 
   FetchComparerGlucose(
       {this.currentDateTime,
@@ -45,10 +45,10 @@ class FetchComparerGlucose extends GlucoseEvent {
 }
 
 class FetchTrendGlucose extends GlucoseEvent {
-  final String trendType;
-  final String currentDateTime;
-  final String periodFilterType;
-  final String page;
+  final String? trendType;
+  final String? currentDateTime;
+  final String? periodFilterType;
+  final String? page;
 
   FetchTrendGlucose(
       {this.trendType, this.currentDateTime, this.periodFilterType, this.page});

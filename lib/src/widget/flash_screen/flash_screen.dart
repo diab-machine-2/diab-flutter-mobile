@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/widget/helper/http_helper.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FlashScreenController extends StatefulWidget {
   @override
@@ -32,26 +33,18 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         final user = await UserClient().fetchUser();
         if (user == null) {
           Message.showToastMessage(
-              context, 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại');
+              context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
           AppSettings.logout();
-          Navigator.pushReplacementNamed(context, '/step_list');
+          Navigator.pushReplacementNamed(context, NavigatorName.step_list);
         } else {
-          Navigator.pushReplacementNamed(context, '/tabbar');
+          Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
         }
       } else {
-        Navigator.pushReplacementNamed(context, '/step_list');
+        Navigator.pushReplacementNamed(context, NavigatorName.step_list);
       }
-
-      // Future.delayed(const Duration(milliseconds: 000), () {
-      //   if (token.isEmpty) {
-      //     Navigator.pushNamed(context, '/step_list');
-      //   } else {
-      //     Navigator.pushReplacementNamed(context, '/tabbar');
-      //   }
-      // });
     } catch (e) {
       Message.showToastMessage(
-          context, 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại');
+          context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
       AppSettings.logout();
     }
   }
@@ -59,15 +52,15 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: R.color.white,
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
                 colors: [
-                  Color(0xFFFDC798).withOpacity(0.5),
-                  Color(0xFFE6F6ED).withOpacity(0.5),
-                  Color(0xFFE6F6ED).withOpacity(0.5),
-                  Color(0xFFFDC798).withOpacity(0.5),
+                  R.color.color0xFFFDC798.withOpacity(0.5),
+                  R.color.greenbg.withOpacity(0.5),
+                  R.color.greenbg.withOpacity(0.5),
+                  R.color.color0xFFFDC798.withOpacity(0.5),
                 ],
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft, //FractionalOffset(1.0, 0.0),
@@ -78,21 +71,21 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
             children: [
               SizedBox(),
               Center(
-                  child: Image.asset('assets/images/logo.png',
+                  child: Image.asset(R.drawable.img_logo,
                       width: 190, height: 95)),
               Padding(
                 padding: EdgeInsets.only(bottom: 16),
                 child: RichText(
                   text: TextSpan(
-                    text: 'Công ty cổ phần công nghệ y tế ',
+                    text: '${R.string.cong_ty_co_phan_cong_nghe_y_te.tr()} ',
                     style: TextStyle(
-                        color: mainColor,
+                        color: R.color.mainColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w400),
                     children: <TextSpan>[
                       TextSpan(
                           style: TextStyle(
-                              color: mainColor,
+                              color: R.color.mainColor,
                               fontSize: 14,
                               fontWeight: FontWeight.w700),
                           text: 'dia-B'),

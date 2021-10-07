@@ -8,10 +8,10 @@ class FetchBloodPressureTimeFrame extends BloodPressureEvent {
 }
 
 class FetchInputBloodPressure extends BloodPressureEvent {
-  final String currentDateTime;
-  final String periodFilterType;
-  final String bloodPressureType;
-  final int page;
+  final String? currentDateTime;
+  final String? periodFilterType;
+  final String? bloodPressureType;
+  final int? page;
 
   FetchInputBloodPressure({
     this.currentDateTime,
@@ -22,29 +22,29 @@ class FetchInputBloodPressure extends BloodPressureEvent {
 }
 
 class FetchHeartRateBloodPressure extends BloodPressureEvent {
-  final String currentDateTime;
-  final String periodFilterType;
+  final String? currentDateTime;
+  final String? periodFilterType;
 
   FetchHeartRateBloodPressure({this.currentDateTime, this.periodFilterType});
 }
 
 class FetchDistributionBloodPressure extends BloodPressureEvent {
-  final String currentDateTime;
-  final String periodFilterType;
+  final String? currentDateTime;
+  final String? periodFilterType;
 
   FetchDistributionBloodPressure({this.currentDateTime, this.periodFilterType});
 }
 
 class FetchBloodPressureTrend extends BloodPressureEvent {
-  final int currentDateTime;
-  final int periodFilterType;
+  final int? currentDateTime;
+  final int? periodFilterType;
 
   FetchBloodPressureTrend({this.currentDateTime, this.periodFilterType});
 }
 
 class FetchPulseRateTrend extends BloodPressureEvent {
-  final int currentDateTime;
-  final int periodFilterType;
+  final int? currentDateTime;
+  final int? periodFilterType;
 
   FetchPulseRateTrend({this.currentDateTime, this.periodFilterType});
 }

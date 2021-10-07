@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 typedef ActionDescriptionCallback = Function(bool);
 
 class CustomActionDescription extends StatefulWidget {
-  final ActionDescriptionCallback callback;
-  CustomActionDescription({Key key, this.callback}) : super(key: key);
+  final ActionDescriptionCallback? callback;
+  CustomActionDescription({Key? key, this.callback}) : super(key: key);
   @override
   CustomActionDescriptionState createState() => CustomActionDescriptionState();
 }
@@ -22,15 +23,15 @@ class CustomActionDescriptionState extends State<CustomActionDescription> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        widget.callback(!isClicked);
+        widget.callback!(!isClicked);
         setState(() {
           isClicked = !isClicked;
         });
       },
       child: isClicked
-          ? Image.asset('assets/images/help_circle_active.png',
+          ? Image.asset(R.drawable.ic_help_circle_active,
               width: 24, height: 24)
-          : Image.asset('assets/images/help_circle.png', width: 24, height: 24),
+          : Image.asset(R.drawable.ic_help_circle, width: 24, height: 24),
     );
   }
 }

@@ -1,12 +1,12 @@
 import 'package:meta/meta.dart';
 
 class TrendItemWieightModel {
-  final double value;
-  final int date;
+  final double? value;
+  final int? date;
 
   TrendItemWieightModel({
-    @required this.value,
-    @required this.date,
+    required this.value,
+    required this.date,
   });
   @override
   factory TrendItemWieightModel.fromJson(Map<String, dynamic> json) {

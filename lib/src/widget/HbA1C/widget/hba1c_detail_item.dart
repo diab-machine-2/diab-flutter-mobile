@@ -1,11 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
-import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
-import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 
 class HbA1CDetailItem extends StatefulWidget {
   final bool hasNote;

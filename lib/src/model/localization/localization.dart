@@ -10,7 +10,7 @@ class Localization {
   static const Locale defaultLanguage = Locale(Const.VI);
   static const String languageFilePath = 'lib/res/translations/langs.csv';
 
-  static Widget getLocalizationWidget({app}) {
+  static Widget getLocalizationWidget({required app}) {
     return EasyLocalization(
           supportedLocales: supportedLanguage,
           path: languageFilePath,

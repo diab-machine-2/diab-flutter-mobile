@@ -1,14 +1,14 @@
 import 'package:meta/meta.dart';
 
 class CaculateBMIModel {
-  final double bmi;
-  final String note;
-  final String colorCode;
+  final double? bmi;
+  final String? note;
+  final String? colorCode;
 
   CaculateBMIModel({
-    @required this.bmi,
-    @required this.colorCode,
-    @required this.note,
+    required this.bmi,
+    required this.colorCode,
+    required this.note,
   });
   @override
   factory CaculateBMIModel.fromJson(Map<String, dynamic> json) {

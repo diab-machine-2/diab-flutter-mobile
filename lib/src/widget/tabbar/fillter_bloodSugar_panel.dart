@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/res/R.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-typedef TimeCallback = Function(String, int);
+typedef TimeCallback = Function(String, int?);
 
 class FillterBloodPanel extends StatefulWidget {
   final selectedIndex;
-  final List<String> data;
-  final TimeCallback callback;
+  final List<String>? data;
+  final TimeCallback? callback;
   FillterBloodPanel({
-    Key key,
+    Key? key,
     this.selectedIndex,
     this.data,
     this.callback,
@@ -18,9 +19,14 @@ class FillterBloodPanel extends StatefulWidget {
 }
 
 class _FillterBloodPanelState extends State<FillterBloodPanel> {
-  var data = ['7 ngày', '14 ngày', '30 ngày', '90 ngày'];
+  List<String>? data = [
+    R.string.number_of_days.tr(args: ['7']),
+    R.string.number_of_days.tr(args: ['14']),
+    R.string.number_of_days.tr(args: ['30']),
+    R.string.number_of_days.tr(args: ['90']),
+  ];
 
-  int selectedIndex = 0;
+  int? selectedIndex = 0;
   String time = '';
 
   @override
@@ -44,7 +50,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
           child: Container(
             height: 3.86,
             width: 60,
-            decoration: BoxDecoration(color: Color(0xffE5E5E5)),
+            decoration: BoxDecoration(color: R.color.color0xffE5E5E5),
           ),
         ),
         SizedBox(height: 27),
@@ -53,7 +59,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Chọn khung giờ',
+              Text(R.string.chon_khung_gio.tr(),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
               GestureDetector(
                 onTap: () {
@@ -62,7 +68,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
                 child: Container(
                   height: 24,
                   width: 24,
-                  child: Image.asset('assets/images/x_icon.png'),
+                  child: Image.asset(R.drawable.ic_close),
                 ),
               ),
             ],
@@ -73,16 +79,16 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             padding: EdgeInsets.only(left: 10, right: 10, bottom: 8, top: 10),
-            itemCount: data.length,
+            itemCount: data!.length,
             itemBuilder: (BuildContext context, int index) {
-              final name = data[index];
+              final name = data![index];
               return _buildItem(context, index, name);
             }),
         SizedBox(height: 8),
         Center(
           child: GestureDetector(
             onTap: () {
-              widget.callback(data[selectedIndex], selectedIndex);
+              widget.callback!(data![selectedIndex!], selectedIndex);
               Navigator.pop(context);
             },
             child: Container(
@@ -93,12 +99,12 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.centerRight,
-                        colors: [greenGradientTop, greenGradientBottom]),
+                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                     borderRadius: BorderRadius.circular(200)),
                 child: Center(
-                  child: Text('Lưu',
+                  child: Text(R.string.save.tr(),
                       style: TextStyle(
-                          color: Colors.white,
+                          color: R.color.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600)),
                 )),
@@ -119,7 +125,7 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
               });
             },
             child: Container(
-              color: selectedIndex == index ? greenbg : Colors.white,
+              color: selectedIndex == index ? R.color.greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(
@@ -139,9 +145,9 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: mainColor)),
+                                      color: R.color.mainColor)),
                           selectedIndex == index
-                              ? Image.asset('assets/images/check_mark.png',
+                              ? Image.asset(R.drawable.ic_check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],
@@ -149,13 +155,13 @@ class _FillterBloodPanelState extends State<FillterBloodPanel> {
                     ),
                   ),
                   SizedBox(height: 16),
-                  index != data.length - 1
+                  index != data!.length - 1
                       ? Container(
                           height: 1,
                           width: 373,
                           color: selectedIndex == index
-                              ? greenbg
-                              : Color(0xffD6D8E0))
+                              ? R.color.greenbg
+                              : R.color.color0xffD6D8E0)
                       : SizedBox(),
                 ],
               ),

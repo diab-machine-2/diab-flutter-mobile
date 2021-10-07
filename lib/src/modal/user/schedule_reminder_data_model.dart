@@ -5,5 +5,5 @@ class ScheduleReminderDataModel {
   final List<ScheduleReminderModel> models;
   final bool hasMore;
 
-  ScheduleReminderDataModel({@required this.models, @required this.hasMore});
+  ScheduleReminderDataModel({required this.models, required this.hasMore});
 }

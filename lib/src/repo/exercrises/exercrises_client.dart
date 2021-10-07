@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/excercise_rank_model.dart';
 import 'package:medical/src/modal/exercrises/exercrise_Input_data_model.dart';
 import 'package:medical/src/modal/exercrises/exercrise_Input_detail_model.dart';
@@ -10,15 +10,15 @@ import 'package:medical/src/modal/exercrises/exercrise_trend_time.dart';
 import 'package:medical/src/modal/exercrises/exercrise_walk_summary.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/modal/exercrises/exercrises_active.dart';
-import 'package:medical/src/modal/exercrises/exercrises_categogy_request.dart';
 import 'package:medical/src/modal/exercrises/exercrises_data_model.dart';
-import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
+import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ExercrisesClient extends FetchClient {
   // lấy danh sách vận động
-  Future<ExercrisesDataModel> fetchCategory(int page) async {
+  Future<ExercrisesDataModel> fetchCategory(int? page) async {
     try {
       Map<String, String> params = {'takeAll': 'true'};
 
@@ -39,13 +39,13 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
   // lay danh sach cuong do van dong
 
-  Future<List<ExercriseIntensityModel>> fetchIntensity(
-      String exerciseCategoryId) async {
+  Future<List<ExerciseIntensityModel>> fetchIntensity(
+      String? exerciseCategoryId) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/Exercise/Intensity',
@@ -54,7 +54,7 @@ class ExercrisesClient extends FetchClient {
             'exerciseCategoryId': exerciseCategoryId
           });
       if (response.statusCode == 200) {
-        return ExercriseIntensityModel.toList(response.data['data']);
+        return ExerciseIntensityModel.toList(response.data['data']);
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -62,13 +62,13 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lay danh sach hinh thuc van dong
   Future<List<ExercriseActiveModel>> fetchActive(
-      String exerciseCategoryId, String exerciseIntensityId) async {
+      String? exerciseCategoryId, String? exerciseIntensityId) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Exercise', params: {
@@ -85,13 +85,13 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lay luong calories tieu hao
-  Future fetchCalories(String exerciseCategoryId, String exerciseIntensityId,
-      String exerciseId, int duration) async {
+  Future fetchCalories(String? exerciseCategoryId, String? exerciseIntensityId,
+      String? exerciseId, int duration) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Exercise/Calculator', params: {
@@ -109,13 +109,13 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy danh sách vận động
   Future<InputExercrisesDataModel> fetchInput(
-      String currentDateTime, String periodFilterType, int page) async {
+      String? currentDateTime, String? periodFilterType, int? page) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Exercise/Input', params: {
@@ -135,13 +135,13 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //lấy hoạt động trong ngày
   Future<ExercriseSummaryModel> fetchDailyExercrise(
-      String currentDateTime) async {
+      String? currentDateTime) async {
     try {
       final Response response =
           await super.fetchData(url: 'App/Exercise/Summary', params: {
@@ -156,12 +156,12 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<ExercriseWalkSummaryModel> fetchWalkExercrise(
-      String currentDateTime) async {
+  Future<ExercriseWalkSummaryModel?> fetchWalkExercrise(
+      String? currentDateTime) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Exercise/WalkSummary', params: {
@@ -178,15 +178,15 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //nhập chỉ số vận động
-  Future<bool> postIndexExercrises(int date, String timeFrameId, String note,
+  Future<bool> postIndexExercrises(int date, String? timeFrameId, String note,
       List<ExercrisesCategoryModel> exercises, List<String> files) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'date': date.toString(),
         'timeFrameId': timeFrameId,
         'note': note,
@@ -205,17 +205,17 @@ class ExercrisesClient extends FetchClient {
         return true;
       } else {
         print(await response.stream.bytesToString());
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //lấy chi tiết vận động
-  Future<InputDetailExercriseModel> fetchDetail(String id) async {
+  Future<InputDetailExercriseModel> fetchDetail(String? id) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Exercise/Input/$id');
@@ -228,13 +228,13 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //lấy xu hướng thời gian
   Future<ExercriseTrendTimeModel> fetchExercriseTimeTrend(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Exercise/Trend/Duration', params: {
@@ -251,21 +251,21 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //cập nhật chỉ số vận động
 
   Future<bool> updateExercrises(
-      String id,
+      String? id,
       int date,
-      String timeFrameId,
+      String? timeFrameId,
       String note,
       List<ExercrisesCategoryModel> exercises,
-      List<String> removalImageIds,
+      List<String?> removalImageIds,
       List<String> files) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'id': id,
         'date': date.toString(),
         'timeFrameId': timeFrameId,
@@ -287,17 +287,17 @@ class ExercrisesClient extends FetchClient {
         print(await response.stream.bytesToString());
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // xóa chỉ số vận động
-  Future<bool> deleteExercrises(String id) async {
+  Future<bool> deleteExercrises(String? id) async {
     try {
       final Response response =
           await super.delete(url: '/App/Exercise/Input/$id');
@@ -310,13 +310,13 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //lấy xu hướng đốt calo
   Future<ExercriseTrendCaloModel> fetchExercriseCaloTrend(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Exercise/Trend/Calorie', params: {
@@ -333,7 +333,7 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -351,7 +351,7 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -360,9 +360,9 @@ class ExercrisesClient extends FetchClient {
       int targetExerciseType,
       int targetExerciseUnitType,
       double value,
-      String exerciseCategoryId) async {
+      String? exerciseCategoryId) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'targetExerciseType': targetExerciseType.toString(),
         'targetExerciseUnitType': targetExerciseUnitType.toString(),
         'value': value.toString(),
@@ -382,14 +382,14 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy xếp hạng
 
   Future<ExerciseRankModel> fetchRank(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/Exercise/Rank',
@@ -406,7 +406,7 @@ class ExercrisesClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

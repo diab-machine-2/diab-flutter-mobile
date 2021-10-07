@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 class TrendModel {
-  final TrendItemModel trendItems;
-  final List legends;
+  final TrendItemModel? trendItems;
+  final List? legends;
 
   TrendModel({
-    @required this.trendItems,
-    @required this.legends,
+    required this.trendItems,
+    required this.legends,
   });
   @override
   factory TrendModel.fromJson(Map<String, dynamic> json) {
@@ -21,16 +21,16 @@ class TrendModel {
 }
 
 class TrendItemModel {
-  final int total;
-  final int page;
-  final int size;
+  final int? total;
+  final int? page;
+  final int? size;
   final List<HbA1CModel> items;
 
   TrendItemModel({
-    @required this.total,
-    @required this.page,
-    @required this.size,
-    @required this.items,
+    required this.total,
+    required this.page,
+    required this.size,
+    required this.items,
   });
   @override
   factory TrendItemModel.fromJson(Map<String, dynamic> json) {
@@ -43,20 +43,20 @@ class TrendItemModel {
 }
 
 class HbA1CModel {
-  final double hbA1C;
-  final int date;
-  final String type;
-  final String color;
-  final String fontColor;
-  final String backgroundColor;
+  final double? hbA1C;
+  final int? date;
+  final String? type;
+  final String? color;
+  final String? fontColor;
+  final String? backgroundColor;
 
   HbA1CModel({
-    @required this.hbA1C,
-    @required this.date,
-    @required this.type,
-    @required this.color,
-    @required this.fontColor,
-    @required this.backgroundColor,
+    required this.hbA1C,
+    required this.date,
+    required this.type,
+    required this.color,
+    required this.fontColor,
+    required this.backgroundColor,
   });
   @override
   factory HbA1CModel.fromJson(Map<String, dynamic> json) {

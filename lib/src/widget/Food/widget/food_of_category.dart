@@ -2,18 +2,19 @@ import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Food/widget/food_item.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef FoodCallback = Function(String);
 
 class FoodOfCategory extends StatefulWidget {
-  final FoodSubCategoryModel category;
-  final List<FoodModel> foods;
-  final FoodCallback callback;
+  final FoodSubCategoryModel? category;
+  final List<FoodModel?>? foods;
+  final FoodCallback? callback;
   FoodOfCategory({this.category, this.foods, this.callback});
   @override
   _FoodOfCategoryState createState() => _FoodOfCategoryState();
@@ -22,18 +23,18 @@ class FoodOfCategory extends StatefulWidget {
 class _FoodOfCategoryState extends State<FoodOfCategory> {
   DateTime selectedDate = DateTime.now();
   List<FoodModel> foods = [];
-  List<FoodModel> selectedFoods = [];
+  List<FoodModel?> selectedFoods = [];
   @override
   void initState() {
     super.initState();
-    selectedFoods = [...widget.foods];
+    selectedFoods = [...widget.foods!];
     loadData();
   }
 
   loadData() async {
     BotToast.showLoading();
     final result =
-        await FoodClient().fetchFoodCategory(widget.category.id, null, null);
+        await FoodClient().fetchFoodCategory(widget.category!.id, null, null);
     foods = result.foods;
     BotToast.closeAllLoading();
     setState(() {});
@@ -46,7 +47,7 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
@@ -55,7 +56,7 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
+                  color: R.color.white,
                 ),
                 child: Container(
                     height: MediaQuery.of(context).size.height * 3 / 4,
@@ -72,9 +73,9 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                   padding: EdgeInsets.only(
                                       left: 16, right: 16, bottom: 8),
                                   child: Text(
-                                      'Chọn món ${widget.category.name}',
+                                      '${R.string.chon_mon.tr()} ${widget.category!.name}',
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500)),
                                 ),
@@ -87,13 +88,13 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                           (BuildContext context, int index) {
                                         return Container(
                                             height: 1,
-                                            color: Color(0xffE5E5E5));
+                                            color: R.color.color0xffE5E5E5);
                                       },
                                       itemBuilder:
                                           (BuildContext context, int index) {
                                         final selectedIndex = selectedFoods
                                             .lastIndexWhere((element) =>
-                                                element.id == foods[index].id);
+                                                element!.id == foods[index].id);
                                         return FoodItem(
                                           model: foods[index],
                                           selectedModel: selectedIndex != -1
@@ -101,7 +102,7 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                               : null,
                                           index: index,
                                           isCategory: true,
-                                          categoryId: widget.category.id,
+                                          categoryId: widget.category!.id,
                                           callback: (model, index) {
                                             setState(() {
                                               foods[index] = model;
@@ -123,13 +124,13 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                 child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: Color(0xffE2E4E7),
+                                        color: R.color.grayBorder,
                                         borderRadius:
                                             BorderRadius.circular(21.5)),
                                     child: Center(
-                                        child: Text('Huỷ',
+                                        child: Text(R.string.cancel.tr(),
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: R.color.black,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w700)))),
                               ),
@@ -143,20 +144,20 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                 child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: Color(0xff01645A),
+                                        color: R.color.mainColor,
                                         borderRadius:
                                             BorderRadius.circular(21.5),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                        child: Text('Tiếp tục',
+                                        child: Text(R.string.tiep_tuc.tr(),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w700)))),
                               ),

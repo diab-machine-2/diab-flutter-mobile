@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/bmi/bmi_trend.dart';
 import 'package:medical/src/modal/bmi/calculate_bmi.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
@@ -6,13 +7,14 @@ import 'package:medical/src/modal/bmi/weight_input_data_model.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class WeightClient extends FetchClient {
   // nhập chỉ chỉ số cân nặng
   Future<bool> postWeightInput(int date, List<String> files, String weight,
-      String waist, String height, String note, String timeFrameId) async {
+      String? waist, String height, String note, String? timeFrameId) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'date': date.toString(),
         'weight': weight,
         'height': height,
@@ -27,12 +29,12 @@ class WeightClient extends FetchClient {
       if (response.statusCode == 200) {
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
   // //============ lấy danh sách chỉ số Weight =============/
@@ -64,7 +66,7 @@ class WeightClient extends FetchClient {
   //       throw error;
   //     }
   //   } catch (e) {
-  //     throw 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+  //     throw R.string.error_can_not_connect_to_server.tr();
   //   }
   // }
   //============ lấy chi tiết Weight =============/
@@ -80,12 +82,12 @@ class WeightClient extends FetchClient {
   //       throw error;
   //     }
   //   } catch (e) {
-  //     throw 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+  //     throw R.string.error_can_not_connect_to_server.tr();
   //   }
   // }
 
   //============ xóa chỉ số Weight =============/
-  Future<bool> deleteIndexBmi(String bmiId) async {
+  Future<bool> deleteIndexBmi(String? bmiId) async {
     try {
       final Response response =
           await super.delete(url: '/App/Weight/Input/$bmiId');
@@ -100,23 +102,23 @@ class WeightClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //============ cập nhật chỉ số Weight =============/
   Future<bool> putIndexBmi(
-      String id,
+      String? id,
       int date,
       String weight,
       String waist,
       String height,
       String note,
-      String timeFrameId,
-      List<String> removalImageIds,
+      String? timeFrameId,
+      List<String?> removalImageIds,
       List<String> files) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'id': id,
         'date': date.toString(),
         'weight': weight,
@@ -135,18 +137,18 @@ class WeightClient extends FetchClient {
         print(await response.stream.bytesToString());
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //============ lấy xu hướng =============/
   Future<TrendWeightModel> fetchWeightTrend(
-      String currentDateTime, String periodFilterType, String page) async {
+      String? currentDateTime, String? periodFilterType, String? page) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Weight/Statistic/Weight', params: {
@@ -163,13 +165,13 @@ class WeightClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //============ lấy xu hướng =============/
   Future<TrendWeightModel> fetchHipTrend(
-      String currentDateTime, String periodFilterType, String page) async {
+      String? currentDateTime, String? periodFilterType, String? page) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Weight/Statistic/Waist', params: {
@@ -186,15 +188,15 @@ class WeightClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ lấy tất cả chỉ số Đường huyết theo chu kỳ =============/
 
   Future<InputWeightDataModel> fetchInput(
-    String currentDateTime,
-    String periodFilterType,
-    int page,
+    String? currentDateTime,
+    String? periodFilterType,
+    int? page,
   ) async {
     try {
       Map<String, String> params = {
@@ -220,12 +222,12 @@ class WeightClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ lấy chi tiết chỉ số Cân nặng =============/
 
-  Future<InputWeightModel> fetchDetail(String id) async {
+  Future<InputWeightModel> fetchDetail(String? id) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Weight/Input/$id');
@@ -238,7 +240,7 @@ class WeightClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ calculate BMI =============/
@@ -265,12 +267,12 @@ class WeightClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   Future<TrendBmiModel> fetchTrendBMI(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       Map<String, String> params = {
         'currentDateTime': '$currentDateTime',
@@ -288,7 +290,7 @@ class WeightClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -299,12 +301,12 @@ class WeightClient extends FetchClient {
       if (response.statusCode == 200) {
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -315,12 +317,12 @@ class WeightClient extends FetchClient {
       if (response.statusCode == 200) {
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

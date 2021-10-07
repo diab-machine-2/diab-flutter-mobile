@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/glucose/Glucose_Input_data_model.dart';
@@ -8,9 +9,10 @@ import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class GlucoseClient extends FetchClient {
-  Future<List<TimeFrameModel>> fetchFlucoseTimeFrame({int time}) async {
+  Future<List<TimeFrameModel>> fetchFlucoseTimeFrame({int? time}) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/TimeFrame',
@@ -24,14 +26,14 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
 //============ lấy tần suất phân bổ =============/
 
   Future<DistributionModel> fetchFlucoseDistribution(
-      String currentDateTime, String periodFilterType, String page) async {
+      String? currentDateTime, String? periodFilterType, String? page) async {
     // Map<String, String> params = {'page': '$page', 'size': '10'};
     // if (currentDateTime != null && periodFilterType != null) {
     //   params['currentDateTime'] = '$currentDateTime';
@@ -53,17 +55,17 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ lấy tất cả chỉ số Đường huyết theo chu kỳ =============/
 
   Future<InputGlucoseDataModel> fetchInput(
-    String currentDateTime,
-    String periodFilterType,
-    int page,
-    String timeFrameType,
-    String glucoseDistributionType,
+    String? currentDateTime,
+    String? periodFilterType,
+    int? page,
+    String? timeFrameType,
+    String? glucoseDistributionType,
   ) async {
     try {
       Map<String, String> params = {
@@ -95,12 +97,12 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 //============ lấy chi tiết chỉ số Đường huyết =============/
 
-  Future<InputGlucoseModel> fetchDetail(String id) async {
+  Future<InputGlucoseModel> fetchDetail(String? id) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Glucose/Input/$id');
@@ -113,24 +115,24 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //============ nhập chỉ số Đường huyết =============/
 
   Future<bool> postIndexGlucose(
-      String timeFrameId,
+      String? timeFrameId,
       int date,
       String glucoseInput,
-      String reason,
+      String? reason,
       String note,
       List<String> files) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'timeFrameId': timeFrameId,
         'createDate': date.toString(),
-        'unitType': AppSettings.userInfo.glucoseUnit.toString(),
+        'unitType': AppSettings.userInfo!.glucoseUnit.toString(),
         'glucoseInput': glucoseInput,
         'note': note
       };
@@ -144,18 +146,18 @@ class GlucoseClient extends FetchClient {
         print(await response.stream.bytesToString());
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //============ xóa chỉ số Đường huyết =============/
 
-  Future<bool> deleteIndexGlucose(String glucoseId) async {
+  Future<bool> deleteIndexGlucose(String? glucoseId) async {
     try {
       final Response response =
           await super.delete(url: '/App/Glucose/Input/$glucoseId');
@@ -170,13 +172,13 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //============ lấy xu hướng =============/
-  Future<TrendDataModel> fetchGlucoseTrend(String timeFrameId,
-      String currentDateTime, String periodFilterType, String page) async {
+  Future<TrendDataModel> fetchGlucoseTrend(String? timeFrameId,
+      String? currentDateTime, String? periodFilterType, String? page) async {
     // Map<String, String> params = {'page': '$page', 'size': '10'};
     // if (currentDateTime != null && periodFilterType != null) {
     //   params['currentDateTime'] = '$currentDateTime';
@@ -206,14 +208,14 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //============ lấy so sánh =============/
 
-  Future<List<ComparerModel>> fetchFlucoseComparer(String currentDateTime,
-      String periodFilterType, String page, String comparerType) async {
+  Future<List<ComparerModel>> fetchFlucoseComparer(String? currentDateTime,
+      String? periodFilterType, String? page, String? comparerType) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Glucose/Comparer', params: {
@@ -231,27 +233,27 @@ class GlucoseClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //============ update chỉ số đường huyết =============/
 
   Future<bool> putIndexGlucose(
-      String id,
-      String timeFrameId,
+      String? id,
+      String? timeFrameId,
       int date,
       String glucoseInput,
-      String reason,
+      String? reason,
       String note,
-      List<String> removalImageIds,
+      List<String?> removalImageIds,
       List<String> files) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'id': id,
         'timeFrameId': timeFrameId,
         'createDate': date.toString(),
         'glucoseInput': glucoseInput,
-        'unitType': AppSettings.userInfo.glucoseUnit.toString(),
+        'unitType': AppSettings.userInfo!.glucoseUnit.toString(),
         'note': note,
         'removalImageIdsStr': removalImageIds.join(';')
       };
@@ -265,12 +267,12 @@ class GlucoseClient extends FetchClient {
         print(await response.stream.bytesToString());
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

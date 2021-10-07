@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodPressureTableController extends StatefulWidget {
-  final String title;
-  final int bloodPressureType;
-  final int periodFilterType;
-  final bool isPulseRate;
+  final String? title;
+  final int? bloodPressureType;
+  final int? periodFilterType;
+  final bool? isPulseRate;
   BloodPressureTableController(
-      {@required this.title,
-      @required this.bloodPressureType,
-      @required this.periodFilterType,
-      @required this.isPulseRate});
+      {required this.title,
+      required this.bloodPressureType,
+      required this.periodFilterType,
+      required this.isPulseRate});
   @override
   _BloodPressureTableControllerState createState() =>
       _BloodPressureTableControllerState();
@@ -24,7 +25,7 @@ class BloodPressureTableController extends StatefulWidget {
 
 class _BloodPressureTableControllerState
     extends State<BloodPressureTableController> {
-  BuildContext currentContext;
+  BuildContext? currentContext;
 
   int periodFilterType = 1;
   @override
@@ -35,7 +36,7 @@ class _BloodPressureTableControllerState
         child: BlocBuilder<BloodPressureBloc, BloodPressureState>(
             builder: (BuildContext context, BloodPressureState state) {
           currentContext = context;
-          List<BloodPressureModel> model;
+          List<BloodPressureModel>? model;
           if (state is BloodPressureInitial) {
             BlocProvider.of<BloodPressureBloc>(context).add(
                 FetchInputBloodPressure(
@@ -60,11 +61,11 @@ class _BloodPressureTableControllerState
             },
             child: Scaffold(
               resizeToAvoidBottomInset: false,
-              backgroundColor: Colors.white,
+              backgroundColor: R.color.white,
               body: Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.bg_splash),
                     fit: BoxFit.cover,
                   )),
                   child: Column(
@@ -72,26 +73,26 @@ class _BloodPressureTableControllerState
                       CustomAppBar(
                         // leading: SizedBox(),
                         leadingIcon: IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            icon: Icon(Icons.close, color: textDark),
+                            splashColor: R.color.transparent,
+                            highlightColor: R.color.transparent,
+                            icon: Icon(Icons.close, color: R.color.textDark),
                             onPressed: () {
                               Navigator.pop(context);
                             }),
-                        backgroundColor: Colors.transparent, //No more green
+                        backgroundColor: R.color.transparent, //No more green
                         title: Text(
                             widget.isPulseRate == null
-                                ? widget.title
-                                : widget.isPulseRate
-                                    ? 'Nhịp tim'
-                                    : 'Huyết áp',
+                                ? widget.title!
+                                : widget.isPulseRate!
+                                    ? R.string.heart_rate.tr()
+                                    : R.string.huyet_ap.tr(),
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
-                                color: textDark)),
+                                color: R.color.textDark)),
                       ),
                       Container(
-                        color: Color(0xffB1DDDB),
+                        color: R.color.color0xffB1DDDB,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Row(
@@ -99,24 +100,24 @@ class _BloodPressureTableControllerState
                             children: [
                               Container(
                                   width: width + width / 4,
-                                  child: Text('Thời gian',
+                                  child: Text(R.string.thoi_gian.tr(),
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
                                   width: width,
-                                  child: Text('Khung giờ',
+                                  child: Text(R.string.khung_gio.tr(),
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
                                   width: width - width / 4,
                                   child: Center(
-                                      child: Text('Chỉ số',
+                                      child: Text(R.string.chi_so.tr(),
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600)))),
                             ],
@@ -134,18 +135,18 @@ class _BloodPressureTableControllerState
                                   separatorBuilder:
                                       (BuildContext context, int index) {
                                     return Container(
-                                        height: 1, color: Color(0xffE5E5E5));
+                                        height: 1, color: R.color.color0xffE5E5E5);
                                   },
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    final time = model[index].date;
-                                    final timeFrame = model[index].timeFrame;
+                                    final time = model![index].date!;
+                                    final timeFrame = model[index].timeFrame!;
                                     final systolic =
-                                        model[index].systolic.toInt();
+                                        model[index].systolic!.toInt();
                                     final diastolic =
-                                        model[index].diastolic.toInt();
+                                        model[index].diastolic!.toInt();
                                     final pulseRate =
-                                        model[index].pulseRate.toInt();
+                                        model[index].pulseRate!.toInt();
                                     return _buildItem(
                                         context,
                                         index,
@@ -165,13 +166,13 @@ class _BloodPressureTableControllerState
   }
 
   Widget _buildItem(BuildContext context, int index, int time, String timeFrame,
-      int systolic, int diastolic, int pulseRate, String color) {
+      int systolic, int diastolic, int pulseRate, String? color) {
     final width = (MediaQuery.of(context).size.width - 32) / 3;
     return Container(
       child: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: R.color.white,
             child: Column(
               children: [
                 Padding(
@@ -196,7 +197,7 @@ class _BloodPressureTableControllerState
                         width: width - width / 4,
                         child: Center(
                           child: Text(
-                              widget.isPulseRate == null || !widget.isPulseRate
+                              widget.isPulseRate == null || !widget.isPulseRate!
                                   ? '$systolic/$diastolic'
                                   : pulseRate.toString(),
                               textAlign: TextAlign.right,
@@ -204,17 +205,14 @@ class _BloodPressureTableControllerState
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   color: widget.isPulseRate == null ||
-                                          !widget.isPulseRate
+                                          !widget.isPulseRate!
                                       ? toColor(color)
-                                      : Colors.black)),
+                                      : R.color.black)),
                         ),
                       )
                     ],
                   ),
                 ),
-                // index != data.length - 1
-                //     ? Container(height: 1, width: 380, color: Color(0xffD6D8E0))
-                //     : SizedBox()
               ],
             ),
           ),

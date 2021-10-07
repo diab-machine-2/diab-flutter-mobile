@@ -1,20 +1,20 @@
 import 'package:meta/meta.dart';
 
 class ExercriseActiveModel {
-  final String id;
-  final String name;
-  final double mets;
-  final double defaultMets;
-  final String intensityId;
-  final String intensityName;
+  final String? id;
+  final String? name;
+  final double? mets;
+  final double? defaultMets;
+  final String? intensityId;
+  final String? intensityName;
 
   ExercriseActiveModel({
-    @required this.id,
-    @required this.name,
-    @required this.mets,
-    @required this.defaultMets,
-    @required this.intensityId,
-    @required this.intensityName,
+    required this.id,
+    required this.name,
+    required this.mets,
+    required this.defaultMets,
+    required this.intensityId,
+    required this.intensityName,
   });
   @override
   factory ExercriseActiveModel.fromJson(Map<String, dynamic> json) {

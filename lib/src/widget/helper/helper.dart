@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/res/R.dart';
 
 String convertToUTC(int timeStamp, String fotmat) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
@@ -78,14 +76,14 @@ String toWeek(int timeStamp) {
   }
 }
 
-Color toColor(String hex) {
+Color toColor(String? hex) {
   if (hex == null) {
-    return mainColor;
+    return R.color.mainColor;
   } else {
     if (hex.length == 7) {
       return Color(int.parse('0xff${hex.split('#').join()}'));
     } else {
-      return mainColor;
+      return R.color.mainColor;
     }
   }
 }
@@ -115,11 +113,6 @@ double roundAsFixed(double number) {
   return double.parse(data);
 }
 
-String formatNumber(double number, {String separator = '.', String unit = ''}) {
-  final lowPrice = MoneyMaskedTextController(
-      rightSymbol: unit, precision: 0, thousandSeparator: separator);
-  lowPrice.updateValue(number);
-  final text = lowPrice.text.substring(lowPrice.text.length - 1);
-
-  return text == ',' ? lowPrice.text.split(',').join() : lowPrice.text;
+String formatNumber(double? number) {
+  return NumberFormat.decimalPattern().format(number);
 }

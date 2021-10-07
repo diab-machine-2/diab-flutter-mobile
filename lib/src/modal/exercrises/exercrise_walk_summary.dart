@@ -1,20 +1,20 @@
 import 'package:meta/meta.dart';
 
 class ExercriseWalkSummaryModel {
-  final String id;
-  final double targetDuration;
-  final double factDuration;
-  final double burnedCalories;
-  final ImagesUrlModel targetIconUrl;
-  final String targetDescription;
+  final String? id;
+  final double? targetDuration;
+  final double? factDuration;
+  final double? burnedCalories;
+  final ImagesUrlModel? targetIconUrl;
+  final String? targetDescription;
 
   ExercriseWalkSummaryModel({
-    @required this.id,
-    @required this.targetDuration,
-    @required this.factDuration,
-    @required this.burnedCalories,
-    @required this.targetIconUrl,
-    @required this.targetDescription,
+    required this.id,
+    required this.targetDuration,
+    required this.factDuration,
+    required this.burnedCalories,
+    required this.targetIconUrl,
+    required this.targetDescription,
   });
   @override
   factory ExercriseWalkSummaryModel.fromJson(Map<String, dynamic> json) {
@@ -38,10 +38,10 @@ class ExercriseWalkSummaryModel {
 }
 
 class ImagesUrlModel {
-  final String id;
-  final String url;
+  final String? id;
+  final String? url;
 
-  ImagesUrlModel({@required this.id, @required this.url});
+  ImagesUrlModel({required this.id, required this.url});
   @override
   factory ImagesUrlModel.fromJson(Map<String, dynamic> json) {
     return ImagesUrlModel(

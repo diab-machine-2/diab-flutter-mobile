@@ -1,14 +1,14 @@
 import 'package:meta/meta.dart';
 
 class HomeMediaModel {
-  final String id;
-  final String mimeType;
-  final String mediaLink;
+  final String? id;
+  final String? mimeType;
+  final String? mediaLink;
 
   HomeMediaModel({
-    @required this.id,
-    @required this.mimeType,
-    @required this.mediaLink,
+    required this.id,
+    required this.mimeType,
+    required this.mediaLink,
   });
   @override
   factory HomeMediaModel.fromJson(Map<String, dynamic> json) {

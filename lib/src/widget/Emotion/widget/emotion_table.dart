@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/emotion/emotion_bloc.dart';
-import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/emotion/input_emotion_model.dart';
-import 'package:medical/src/modal/glucose/glucose_input.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EmotionTableController extends StatefulWidget {
-  final String title;
-  final String emotionId;
-  final int periodFilterType;
+  final String? title;
+  final String? emotionId;
+  final int? periodFilterType;
   EmotionTableController(
-      {@required this.title,
-      @required this.emotionId,
-      @required this.periodFilterType});
+      {required this.title,
+      required this.emotionId,
+      required this.periodFilterType});
   @override
   _EmotionTableControllerState createState() => _EmotionTableControllerState();
 }
 
-BuildContext currentContext;
+BuildContext? currentContext;
 
 int periodFilterType = 1;
 
@@ -35,7 +33,7 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
         child: BlocBuilder<EmotionBloc, EmotionState>(
             builder: (BuildContext context, EmotionState state) {
           currentContext = context;
-          List<InputEmotionModel> model;
+          List<InputEmotionModel>? model;
           if (state is EmotionInitial) {
             BlocProvider.of<EmotionBloc>(context).add(FetchInputEmotion(
                 currentDateTime:
@@ -59,11 +57,11 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
             },
             child: Scaffold(
               resizeToAvoidBottomInset: false,
-              backgroundColor: Colors.white,
+              backgroundColor: R.color.white,
               body: Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.bg_splash),
                     fit: BoxFit.cover,
                   )),
                   child: Column(
@@ -71,21 +69,21 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
                       CustomAppBar(
                         // leading: SizedBox(),
                         leadingIcon: IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            icon: Icon(Icons.close, color: textDark),
+                            splashColor: R.color.transparent,
+                            highlightColor: R.color.transparent,
+                            icon: Icon(Icons.close, color: R.color.textDark),
                             onPressed: () {
                               Navigator.pop(context);
                             }),
-                        backgroundColor: Colors.transparent, //No more green
-                        title: Text(widget.title,
+                        backgroundColor: R.color.transparent, //No more green
+                        title: Text(widget.title!,
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
-                                color: textDark)),
+                                color: R.color.textDark)),
                       ),
                       Container(
-                        color: Color(0xffB1DDDB),
+                        color: R.color.color0xffB1DDDB,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Row(
@@ -93,24 +91,24 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
                             children: [
                               Container(
                                   width: width + width / 4,
-                                  child: Text('Thời gian',
+                                  child: Text(R.string.thoi_gian.tr(),
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
                                   width: width,
-                                  child: Text('Khung giờ',
+                                  child: Text(R.string.khung_gio.tr(),
                                       style: TextStyle(
-                                          color: Colors.black,
+                                          color: R.color.black,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600))),
                               Container(
                                   width: width - width / 4,
                                   child: Center(
-                                      child: Text('Cảm xúc',
+                                      child: Text(R.string.cam_xuc.tr(),
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600)))),
                             ],
@@ -128,13 +126,13 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
                                   separatorBuilder:
                                       (BuildContext context, int index) {
                                     return Container(
-                                        height: 1, color: Color(0xffE5E5E5));
+                                        height: 1, color: R.color.color0xffE5E5E5);
                                   },
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    final time = model[index].date;
+                                    final time = model![index].date!;
                                     final timeFrame =
-                                        model[index].timeFrameText;
+                                        model[index].timeFrameText!;
                                     final icon =
                                         model[index].emotionIcon.url ?? '';
 
@@ -156,7 +154,7 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
       child: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: R.color.white,
             child: Column(
               children: [
                 Padding(
@@ -186,7 +184,7 @@ class _EmotionTableControllerState extends State<EmotionTableController> {
                   ),
                 ),
                 // index != data.length - 1
-                //     ? Container(height: 1, width: 380, color: Color(0xffD6D8E0))
+                //     ? Container(height: 1, width: 380, color: R.color.color0xffD6D8E0)
                 //     : SizedBox()
               ],
             ),

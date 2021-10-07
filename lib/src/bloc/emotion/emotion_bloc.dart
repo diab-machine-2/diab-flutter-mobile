@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_item_model.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_model.dart';
 import 'package:medical/src/modal/emotion/input_emotion_data_model.dart';
 import 'package:medical/src/repo/emotion/emotion_client.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 part 'emotion_bloc_event.dart';
 part 'emotion_bloc_state.dart';
 
 class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
-  @override
-  EmotionState get initialState => EmotionInitial();
+  EmotionBloc() : super(EmotionInitial());
 
   @override
   Stream<EmotionState> mapEventToState(EmotionEvent event) async* {
@@ -33,11 +34,11 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
     }
   }
 
-  Stream<EmotionState> fetchInputEmotion(String currentDateTime,
-      String periodFilterType, String emotionId, int page) async* {
+  Stream<EmotionState> fetchInputEmotion(String? currentDateTime,
+      String? periodFilterType, String? emotionId, int? page) async* {
     try {
       final client = EmotionClient();
-      final currenState = state;
+      final EmotionState currenState = state;
       var model = await client.fetchInput(
           currentDateTime, periodFilterType, emotionId, page);
 
@@ -53,13 +54,13 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<EmotionState> fetchEmotionStatistic(
-      String currentDateTime, String periodFilterType) async* {
+      String? currentDateTime, String? periodFilterType) async* {
     try {
       yield EmotionLoading();
       yield EmotionStatisticLoaded(
@@ -71,13 +72,13 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<EmotionState> fetchSymptomStatistic(
-      String currentDateTime, String periodFilterType) async* {
+      String? currentDateTime, String? periodFilterType) async* {
     try {
       yield EmotionLoading();
       yield SymptomStatisticLoaded(
@@ -89,13 +90,13 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<EmotionState> fetchActivityStatistic(
-      String currentDateTime, String periodFilterType) async* {
+      String? currentDateTime, String? periodFilterType) async* {
     try {
       yield EmotionLoading();
       yield ActivityStatisticLoaded(
@@ -107,7 +108,7 @@ class EmotionBloc extends Bloc<EmotionEvent, EmotionState> {
       } else {
         yield EmotionError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

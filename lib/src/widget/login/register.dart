@@ -1,17 +1,20 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
+import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:http/http.dart' as http;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'dart:io' show Platform;
+import 'package:easy_localization/easy_localization.dart';
 
 class RegisterController extends StatefulWidget {
   @override
@@ -37,12 +40,12 @@ class _RegisterControllerState extends State<RegisterController> {
       },
       child: Scaffold(
           resizeToAvoidBottomInset: false,
-          backgroundColor: Colors.lightBlue[100],
+          backgroundColor: R.color.lightBlue100,
           body: Stack(children: [
             Container(
               decoration: BoxDecoration(
                   image: DecorationImage(
-                image: AssetImage('assets/images/background_splash.png'),
+                image: AssetImage(R.drawable.bg_splash),
                 fit: BoxFit.cover,
               )),
               child: Column(
@@ -61,8 +64,8 @@ class _RegisterControllerState extends State<RegisterController> {
                             Column(children: [
                               TextFieldCustom(
                                   key: phoneKey,
-                                  title: 'Số điện thoại',
-                                  placeholder: 'Nhập số điện thoại',
+                                  title: R.string.so_dien_thoai.tr(),
+                                  placeholder: R.string.nhap_so_dien_thoai.tr(),
                                   autoFocus: true,
                                   onChanged: (value) {
                                     phone = value;
@@ -70,8 +73,8 @@ class _RegisterControllerState extends State<RegisterController> {
                               SizedBox(height: 20),
                               TextFieldCustom(
                                   key: passwordKey,
-                                  title: 'Mật khẩu',
-                                  placeholder: 'Mật khẩu ít nhất 6 ký tự',
+                                  title: R.string.password.tr(),
+                                  placeholder: R.string.password_least_character.tr(),
                                   isPassword: true,
                                   onChanged: (value) {
                                     password = value;
@@ -79,8 +82,8 @@ class _RegisterControllerState extends State<RegisterController> {
                               SizedBox(height: 20),
                               TextFieldCustom(
                                   key: confirmPasswordKey,
-                                  title: 'Xác nhận mật khẩu',
-                                  placeholder: 'Nhập lại mật khẩu',
+                                  title: R.string.xac_nhan_mat_khau.tr(),
+                                  placeholder: R.string.nhap_lai_mat_khau.tr(),
                                   isPassword: true,
                                   onChanged: (value) {
                                     confirmPassword = value;
@@ -88,7 +91,7 @@ class _RegisterControllerState extends State<RegisterController> {
                               SizedBox(height: 20),
                               GestureDetector(
                                 onTap: () {
-                                  phoneKey.currentState.focusNode
+                                  phoneKey.currentState!.focusNode
                                       .requestFocus();
 
                                   verify();
@@ -98,26 +101,26 @@ class _RegisterControllerState extends State<RegisterController> {
                                       height: 48,
                                       width: 195,
                                       decoration: BoxDecoration(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           gradient: LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.centerRight,
                                               colors: [
-                                                greenGradientTop,
-                                                greenGradientBottom
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Tiếp tục',
+                                        child: Text(R.string.tiep_tuc.tr(),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
                                   // Positioned.fill(
                                   //     child: Container(
-                                  //         color: Colors.white.withOpacity(0.5)))
+                                  //         color: R.color.white.withOpacity(0.5)))
                                 ]),
                               )
                             ])
@@ -126,9 +129,9 @@ class _RegisterControllerState extends State<RegisterController> {
                     SafeArea(
                       child: Column(
                         children: [
-                          Text('Hoặc đăng nhập bằng',
+                          Text(R.string.hoac_dang_nhap_bang.tr(),
                               style: TextStyle(
-                                  color: textDark,
+                                  color: R.color.textDark,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400)),
                           SizedBox(height: 16),
@@ -147,7 +150,7 @@ class _RegisterControllerState extends State<RegisterController> {
                                               height: 50,
                                               width: 50,
                                               decoration: BoxDecoration(
-                                                  color: Colors.white,
+                                                  color: R.color.white,
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           25)),
@@ -156,39 +159,13 @@ class _RegisterControllerState extends State<RegisterController> {
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     Image.asset(
-                                                        'assets/images/icon_login_apple.png',
+                                                        R.drawable.ic_login_apple,
                                                         width: 26,
                                                         height: 26),
                                                   ])),
                                         ),
                                       )
                                     : SizedBox(),
-
-                                // GestureDetector(
-                                //   onTap: () {
-                                //     loginFB();
-                                //   },
-                                //   child: Padding(
-                                //     padding: EdgeInsets.only(left: 8, right: 8),
-                                //     child: Container(
-                                //         height: 50,
-                                //         width: 50,
-                                //         decoration: BoxDecoration(
-                                //           borderRadius: BorderRadius.circular(25),
-                                //           color: Colors.white,
-                                //         ),
-                                //         child: Row(
-                                //             mainAxisAlignment:
-                                //                 MainAxisAlignment.center,
-                                //             children: [
-                                //               Image.asset(
-                                //                   'assets/images/icon_fb.png',
-                                //                   width: 26,
-                                //                   height: 26),
-                                //             ])),
-                                //   ),
-                                // ),
-
                                 GestureDetector(
                                   onTap: () {
                                     loginGG();
@@ -199,7 +176,7 @@ class _RegisterControllerState extends State<RegisterController> {
                                         height: 50,
                                         width: 50,
                                         decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             borderRadius:
                                                 BorderRadius.circular(25)),
                                         child: Row(
@@ -207,7 +184,7 @@ class _RegisterControllerState extends State<RegisterController> {
                                                 MainAxisAlignment.center,
                                             children: [
                                               Image.asset(
-                                                  'assets/images/icon_gg.png',
+                                                  R.drawable.ic_google,
                                                   width: 26,
                                                   height: 26),
                                             ])),
@@ -227,12 +204,12 @@ class _RegisterControllerState extends State<RegisterController> {
             //   right: 0,
             //   child: AppBar(
             //       leading: SizedBox(),
-            //       backgroundColor: Colors.transparent, //No more green
+            //       backgroundColor: R.color.transparent, //No more green
             //       elevation: 0.0, //Shadow gone
             //       actions: [
             //         IconButton(
             //             padding: EdgeInsets.only(right: 30),
-            //             icon: Icon(Icons.close, color: Colors.black),
+            //             icon: Icon(Icons.close, color: R.color.black),
             //             onPressed: () {
             //               Navigator.pop(context);
             //             })
@@ -245,23 +222,23 @@ class _RegisterControllerState extends State<RegisterController> {
                 right: 0,
                 child: AppBar(
                   leading: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: Colors.black),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.black),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
                   title: Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      "Tạo tài khoản",
+                      R.string.tao_tai_khoan.tr(),
                       style: TextStyle(
-                          color: textDark,
+                          color: R.color.textDark,
                           fontSize: 24,
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-                  backgroundColor: Colors.transparent, //No more green
+                  backgroundColor: R.color.transparent, //No more green
                   elevation: 0.0, //Shadow gone
                 )),
           ])),
@@ -270,28 +247,28 @@ class _RegisterControllerState extends State<RegisterController> {
 
   verify() async {
     if (phone.isEmpty) {
-      phoneKey.currentState.validate('Bạn chưa nhập số điện thoại');
+      phoneKey.currentState!.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
     if (password.isEmpty) {
-      passwordKey.currentState.validate('Bạn chưa nhập mật khẩu');
+      passwordKey.currentState!.validate(R.string.ban_chua_nhap_mat_khau.tr());
       return;
     }
     if (password.contains(' ')) {
-      passwordKey.currentState.validate('Mật khẩu không chứa khoảng trắng');
+      passwordKey.currentState!.validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
       return;
     }
     if (password.length < 6) {
-      passwordKey.currentState.validate('Mật khẩu ít nhất 06 ký tự');
+      passwordKey.currentState!.validate(R.string.password_least_character.tr());
       return;
     }
     if (confirmPassword.isEmpty) {
-      confirmPasswordKey.currentState.validate('Bạn chưa nhập lại mật khẩu');
+      confirmPasswordKey.currentState!.validate(R.string.ban_chua_nhap_lai_mat_khau.tr());
       return;
     }
     if (confirmPassword != password) {
-      confirmPasswordKey.currentState
-          .validate('Nhập lại mật khẩu không chính xác');
+      confirmPasswordKey.currentState!
+          .validate(R.string.nhap_lai_mat_khau_khong_chinh_xac.tr());
       return;
     }
 
@@ -299,7 +276,7 @@ class _RegisterControllerState extends State<RegisterController> {
     RegExp regExp = new RegExp(pattern);
     final isCorrect = regExp.hasMatch(phone);
     if (!isCorrect) {
-      phoneKey.currentState.validate('Số điện thoại không hợp lệ');
+      phoneKey.currentState!.validate(R.string.phone_not_valid.tr());
       return;
     }
 
@@ -309,11 +286,11 @@ class _RegisterControllerState extends State<RegisterController> {
       final result = await LoginClient()
           .requestOTP({"password": password, "phoneNumber": phone});
       BotToast.closeAllLoading();
-      if (result.remainingRequestCount <= 0) {
+      if (result.remainingRequestCount! <= 0) {
         _showDialogError();
         return;
       }
-      Navigator.pushNamed(context, '/verify', arguments: {
+      Navigator.pushNamed(context, NavigatorName.verify, arguments: {
         'type': 'register',
         'otp': result.token,
         'phone': phone,
@@ -324,8 +301,8 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == 'USER002') {
-          phoneKey.currentState.validate(
-              'Số điện thoại đã tồn tại. Vui lòng đăng nhập hoặc dùng số điện thoại khác để đăng ký!');
+          phoneKey.currentState!.validate(
+              R.string.so_dien_thoai_da_ton_tai.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }
@@ -345,14 +322,14 @@ class _RegisterControllerState extends State<RegisterController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/checkError.png',
+              Image.asset(R.drawable.ic_check_error,
                   width: 64, height: 64),
               SizedBox(height: 8),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: 'Đã gửi OTP 5 lần cho số điện thoại ',
-                  style: TextStyle(color: Color(0xff172823), fontSize: 16),
+                  text: R.string.da_gui_otp_5_lan_cho_so_dien_thoai.tr(),
+                  style: TextStyle(color: R.color.textDark, fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(
                         text: phone,
@@ -360,9 +337,9 @@ class _RegisterControllerState extends State<RegisterController> {
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
                         text:
-                            '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
+                            R.string.dang_ky_lai_hom_sau.tr(),
                         style:
-                            TextStyle(color: Color(0xff172823), fontSize: 16)),
+                            TextStyle(color: R.color.textDark, fontSize: 16)),
                   ],
                 ),
               )
@@ -375,13 +352,13 @@ class _RegisterControllerState extends State<RegisterController> {
 
   loginFB() async {
     final facebookLogin = FacebookLogin();
-    final result = await facebookLogin.logIn(['email']);
+    final result = await facebookLogin.logIn([R.string.email.tr()]);
     dynamic profile;
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
         try {
           BotToast.showLoading();
-          final token = result.accessToken.token;
+          final token = result.accessToken?.token;
           final graphResponse = await http.get(Uri.parse(
               'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token'));
           profile = jsonDecode(graphResponse.body);
@@ -389,34 +366,34 @@ class _RegisterControllerState extends State<RegisterController> {
             "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
             "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
             "grant_type": "external",
-            "external_token": result.accessToken.token,
+            "external_token": token,
             "provider": 'Facebook'
           });
           final user = await UserClient().fetchUser();
           BotToast.closeAllLoading();
           if (user == null) {
-            registerAccount(result.accessToken.userId, result.accessToken.token,
-                'Facebook', profile['name'] ?? 'Tài khoản nguời dùng', true);
-            // Navigator.pushReplacementNamed(context, '/update_info', arguments: {
+            registerAccount(result.accessToken?.userId, result.accessToken?.token,
+                'Facebook', profile['name'] ?? R.string.user_name_default.tr(), true);
+            // Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
             //   'type': 'facebook',
             //   'facebookAccount': result,
             //   'userInfo': profile
             // });
           } else {
             Navigator.popUntil(context, (route) => route.isFirst);
-            Navigator.pushReplacementNamed(context, '/tabbar');
+            Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
           }
         } catch (error) {
           BotToast.closeAllLoading();
           if (error is Error) {
             if (error.code == '5' && profile != null) {
               registerAccount(
-                  result.accessToken.userId,
-                  result.accessToken.token,
+                  result.accessToken?.userId,
+                  result.accessToken?.token,
                   'Facebook',
-                  profile['name'] ?? 'Tài khoản nguời dùng',
+                  profile['name'] ?? R.string.user_name_default.tr(),
                   false);
-              // Navigator.pushReplacementNamed(context, '/update_info',
+              // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
               //     arguments: {
               //       'type': 'facebook',
               //       'facebookAccount': result,
@@ -440,15 +417,15 @@ class _RegisterControllerState extends State<RegisterController> {
   loginGG() async {
     GoogleSignIn _googleSignIn = GoogleSignIn(
       scopes: [
-        'email',
+        R.string.email.tr(),
         'profile',
       ],
     );
-    GoogleSignInAccount account;
-    GoogleSignInAuthentication authen;
+    GoogleSignInAccount? account;
+    late GoogleSignInAuthentication authen;
     try {
       account = await _googleSignIn.signIn();
-      authen = await account.authentication;
+      authen = await account!.authentication;
       print(authen.accessToken);
       BotToast.showLoading();
 
@@ -463,21 +440,21 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.closeAllLoading();
       if (user == null) {
         registerAccount(account.id, authen.accessToken, 'Google',
-            account.displayName ?? 'Tài khoản nguời dùng', true);
-        // Navigator.pushReplacementNamed(context, '/update_info',
+            account.displayName ?? R.string.user_name_default.tr(), true);
+        // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, '/tabbar');
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }
     } catch (error) {
       if (error is Error) {
         if (error.code == '5' && account != null) {
-          // Navigator.pushReplacementNamed(context, '/update_info',
+          // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
           //     arguments: {'type': 'google', 'googleAccount': account});
 
           registerAccount(account.id, authen.accessToken, 'Google',
-              account.displayName ?? 'Tài khoản nguời dùng', false);
+              account.displayName ?? R.string.user_name_default.tr(), false);
         }
       } else {
         BotToast.closeAllLoading();
@@ -487,7 +464,7 @@ class _RegisterControllerState extends State<RegisterController> {
   }
 
   loginApple() async {
-    AuthorizationCredentialAppleID credential;
+    AuthorizationCredentialAppleID? credential;
     try {
       credential = await SignInWithApple.getAppleIDCredential(
         webAuthenticationOptions: WebAuthenticationOptions(
@@ -516,22 +493,22 @@ class _RegisterControllerState extends State<RegisterController> {
       final user = await UserClient().fetchUser();
       BotToast.closeAllLoading();
       if (user == null) {
-        // Navigator.pushReplacementNamed(context, '/update_info',
+        // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'apple', 'appleAccount': credential});
         registerAccount(credential.userIdentifier, credential.identityToken,
-            'Apple', credential.givenName ?? 'Tài khoản nguời dùng', true);
+            'Apple', credential.givenName ?? R.string.user_name_default.tr(), true);
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacementNamed(context, '/tabbar');
+        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }
     } catch (error) {
       BotToast.closeAllLoading();
       if (error is Error) {
         if (error.code == '5' && credential != null) {
-          // Navigator.pushReplacementNamed(context, '/update_info',
+          // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
           //     arguments: {'type': 'apple', 'appleAccount': credential});
           registerAccount(credential.userIdentifier, credential.identityToken,
-              'Apple', credential.givenName ?? 'Tài khoản nguời dùng', false);
+              'Apple', credential.givenName ?? R.string.user_name_default.tr(), false);
         }
       } else {
         Message.showToastMessage(context, error.toString());
@@ -539,7 +516,7 @@ class _RegisterControllerState extends State<RegisterController> {
     }
   }
 
-  registerAccount(String providerKey, String externalToken, String provider,
+  registerAccount(String? providerKey, String? externalToken, String provider,
       String userName, bool update) async {
     try {
       BotToast.showLoading();
@@ -556,7 +533,7 @@ class _RegisterControllerState extends State<RegisterController> {
         });
       }
 
-      final diabeteStates = await UserClient().fetchDiabeteStates();
+      final diabeteStates = await (UserClient().fetchDiabeteStates() as Future<List<dynamic>>);
 
       final result = await LoginClient().createPatient({
         'fullName': userName,
@@ -569,7 +546,7 @@ class _RegisterControllerState extends State<RegisterController> {
             (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
       });
       if (result == true) {
-        Navigator.pushReplacementNamed(context, '/rules');
+        Navigator.pushReplacementNamed(context, NavigatorName.rules);
       }
       BotToast.closeAllLoading();
     } catch (error) {

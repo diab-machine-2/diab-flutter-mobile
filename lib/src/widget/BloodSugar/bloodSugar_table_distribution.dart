@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarDistribuitonTableController extends StatefulWidget {
-  final String title;
-  final int timeFrameType;
-  final int periodFilterType;
-  final int glucoseDistributionType;
+  final String? title;
+  final int? timeFrameType;
+  final int? periodFilterType;
+  final int? glucoseDistributionType;
   BloodSugarDistribuitonTableController(
-      {@required this.title,
-      @required this.timeFrameType,
-      @required this.periodFilterType,
-      @required this.glucoseDistributionType});
+      {required this.title,
+      required this.timeFrameType,
+      required this.periodFilterType,
+      required this.glucoseDistributionType});
   @override
   _BloodSugarDistribuitonTableControllerState createState() =>
       _BloodSugarDistribuitonTableControllerState();
 }
 
-BuildContext currentContext;
+BuildContext? currentContext;
 
 int periodFilterType = 1;
 
@@ -37,7 +37,7 @@ class _BloodSugarDistribuitonTableControllerState
         child: BlocBuilder<GlucoseBloc, GlucoseState>(
             builder: (BuildContext context, GlucoseState state) {
           currentContext = context;
-          List<InputGlucoseModel> model;
+          List<InputGlucoseModel>? model;
           if (state is GlucoseInitial) {
             BlocProvider.of<GlucoseBloc>(context).add(FetchInputGlucose(
                 currentDateTime:
@@ -61,11 +61,11 @@ class _BloodSugarDistribuitonTableControllerState
             },
             child: Scaffold(
               resizeToAvoidBottomInset: false,
-              backgroundColor: Colors.white,
+              backgroundColor: R.color.white,
               body: Container(
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.bg_splash),
                     fit: BoxFit.cover,
                   )),
                   child: Column(
@@ -73,19 +73,18 @@ class _BloodSugarDistribuitonTableControllerState
                       CustomAppBar(
                         // leading: SizedBox(),
                         leadingIcon: IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            icon: Icon(Icons.close, color: textDark),
+                            splashColor: R.color.transparent,
+                            highlightColor: R.color.transparent,
+                            icon: Icon(Icons.close, color: R.color.textDark),
                             onPressed: () {
                               Navigator.pop(context);
                             }),
-                        backgroundColor: Colors.transparent, //No more green
-                        title: Text(
-                            'Nhóm đường huyết ' + widget.title.toLowerCase(),
+                        backgroundColor: R.color.transparent, //No more green
+                        title: Text('${R.string.blood_sugar_group.tr()} ' + widget.title!.toLowerCase(),
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
-                                color: textDark)),
+                                color: R.color.textDark)),
                       ),
                       model == null
                           ? Padding(
@@ -101,13 +100,14 @@ class _BloodSugarDistribuitonTableControllerState
                                   separatorBuilder:
                                       (BuildContext context, int index) {
                                     return Container(
-                                        height: 1, color: Color(0xffE5E5E5));
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5);
                                   },
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     if (index == 0) {
                                       return Container(
-                                        color: Color(0xffB1DDDB),
+                                        color: R.color.color0xffB1DDDB,
                                         child: Padding(
                                           padding: EdgeInsets.all(16),
                                           child: Row(
@@ -116,18 +116,20 @@ class _BloodSugarDistribuitonTableControllerState
                                             children: [
                                               Container(
                                                 width: width + width / 4,
-                                                child: Text('Thời gian',
+                                                child: Text(
+                                                    R.string.thoi_gian.tr(),
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w600)),
                                               ),
                                               Container(
                                                 width: width,
-                                                child: Text('Khung giờ',
+                                                child: Text(
+                                                    R.string.khung_gio.tr(),
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w600)),
@@ -135,9 +137,10 @@ class _BloodSugarDistribuitonTableControllerState
                                               Container(
                                                 width: width - width / 4,
                                                 child: Center(
-                                                  child: Text('Chỉ số',
+                                                  child: Text(
+                                                      R.string.chi_so.tr(),
                                                       style: TextStyle(
-                                                          color: Colors.black,
+                                                          color: R.color.black,
                                                           fontSize: 14,
                                                           fontWeight:
                                                               FontWeight.w600)),
@@ -148,11 +151,11 @@ class _BloodSugarDistribuitonTableControllerState
                                         ),
                                       );
                                     } else {
-                                      final time = model[index - 1].createDate;
+                                      final time = model![index - 1].createDate!;
                                       final timeFrame =
-                                          model[index - 1].timeFrame;
+                                          model[index - 1].timeFrame!;
                                       final glucose =
-                                          roundNumber(model[index - 1].glucose);
+                                          roundNumber(model[index - 1].glucose!);
                                       final color =
                                           model[index - 1].backgroundColor;
                                       return _buildItem(context, time,
@@ -168,13 +171,13 @@ class _BloodSugarDistribuitonTableControllerState
   }
 
   Widget _buildItem(BuildContext context, int time, String timeFrame,
-      String glucose, String color) {
+      String glucose, String? color) {
     final width = (MediaQuery.of(context).size.width - 45) / 3;
     return Container(
       child: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: R.color.white,
             child: Column(
               children: [
                 Padding(
@@ -213,7 +216,7 @@ class _BloodSugarDistribuitonTableControllerState
                   ),
                 ),
                 // index != data.length - 1
-                //     ? Container(height: 1, width: 380, color: Color(0xffD6D8E0))
+                //     ? Container(height: 1, width: 380, color: R.color.color0xffD6D8E0)
                 //     : SizedBox()
               ],
             ),

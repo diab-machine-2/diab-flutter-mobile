@@ -4,18 +4,20 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_filter_trend.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/glucose/glucose_trend.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BloodSugarChart extends StatefulWidget {
-  BloodSugarChart({Key key}) : super(key: key);
+  BloodSugarChart({Key? key}) : super(key: key);
   @override
   BloodSugarChartState createState() => BloodSugarChartState();
 }
@@ -24,16 +26,17 @@ class BloodSugarChartState extends State<BloodSugarChart>
     with AutomaticKeepAliveClientMixin<BloodSugarChart> {
   @override
   bool get wantKeepAlive => true;
-  BuildContext currentContext;
+  late BuildContext currentContext;
   int value = 0;
   int touchIndex = -1;
-  String trendType = 'Tất cả';
+  String trendType = R.string.all.tr();
   int trendTypeIndex = 1;
   int periodFilterType = 1;
 
+  @override
   void initState() {
     periodFilterType =
-        BloodSugarDetailTabbarController.of(context).periodFilterType;
+        BloodSugarDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -47,7 +50,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
         child: BlocBuilder<GlucoseBloc, GlucoseState>(
             builder: (BuildContext context, GlucoseState state) {
           currentContext = context;
-          TrendDataModel model;
+          TrendDataModel? model;
 
           if (state is GlucoseInitial) {
             BlocProvider.of<GlucoseBloc>(context).add(FetchTrendGlucose(
@@ -77,7 +80,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                         children: [
                           Row(
                             children: [
-                              Text('Xu hướng đường huyết',
+                              Text(R.string.blood_sugar_trend.tr(),
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600)),
@@ -85,9 +88,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
                           ),
                           Container(
                               decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   borderRadius: BorderRadius.circular(200.0),
-                                  border: Border.all(color: grayBorder)),
+                                  border: Border.all(color: R.color.grayBorder)),
                               child: GestureDetector(
                                 onTap: () {
                                   showActionTrendFilter(context);
@@ -95,7 +98,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 child: Align(
                                     alignment: Alignment.center,
                                     child: Container(
-                                      color: Colors.transparent,
+                                      color: R.color.transparent,
                                       padding: const EdgeInsets.only(
                                           top: 4,
                                           bottom: 4,
@@ -105,10 +108,10 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                         children: [
                                           Text(trendType != null
                                               ? trendType
-                                              : 'Tất cả'),
+                                              : R.string.all.tr()),
                                           SizedBox(width: 4),
                                           Image.asset(
-                                              'assets/images/chevron_down.png',
+                                              R.drawable.ic_chevron_down,
                                               width: 24,
                                               height: 24)
                                         ],
@@ -121,19 +124,19 @@ class BloodSugarChartState extends State<BloodSugarChart>
                       model.trendItems.items.length == 0
                           ? GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, '/add_bloodSugar',
+                                Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
                                     arguments: {'type': 'input', 'id': null});
                               },
                               child: Image.asset(
-                                  'assets/images/glucose_trend.png'),
+                                  R.drawable.img_glucose_trend),
                             )
                           : Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(16),
-                                color: Colors.white,
+                                color: R.color.white,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
+                                    color: R.color.grey.withOpacity(0.5),
                                     spreadRadius: 1,
                                     blurRadius: 7,
                                     offset: Offset(
@@ -149,7 +152,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 GestureDetector(
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, '/bloodSugarTable',
+                                        context, NavigatorName.blood_sugar_table,
                                         arguments: {
                                           'title': trendType,
                                           'timeFrameType': trendTypeIndex,
@@ -158,16 +161,16 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                         });
                                   },
                                   child: Container(
-                                    color: Colors.transparent,
+                                    color: R.color.transparent,
                                     child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Text('Xem chi tiết',
+                                          Text(R.string.xem_chi_tiet.tr(),
                                               style:
-                                                  TextStyle(color: mainColor)),
+                                                  TextStyle(color: R.color.mainColor)),
                                           Image.asset(
-                                              'assets/images/icon_arrow_right.png',
+                                              R.drawable.ic_arrow_right,
                                               width: 20,
                                               height: 20)
                                         ]),
@@ -187,7 +190,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
     final width = (MediaQuery.of(context).size.width - 200) / 5;
 
     int length = 0;
-    List<int> dates = [];
+    List<int?> dates = [];
     List<TrendModel> trends = [];
     model.trendItems.items.forEach((element) {
       length += element.subTrends.length;
@@ -196,9 +199,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
       List.generate(element.subTrends.length - 1, (index) => dates.add(null));
     });
 
-    double minY = trends.map<double>((e) => e.glucose).reduce(min);
+    double minY = trends.map<double>((e) => e.glucose ?? 0).reduce(min);
     minY = (minY * (trends.length == 1 ? 0.5 : 0.8)).roundToDouble();
-    double maxY = trends.map<double>((e) => e.glucose).reduce(max);
+    double maxY = trends.map<double>((e) => e.glucose ?? 0).reduce(max);
     maxY = (maxY * (trends.length == 1 ? 1.5 : 1.2)).roundToDouble();
     final jumpValue = (maxY - minY) / 4;
     List<int> number =
@@ -220,7 +223,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 return Text(number[index].toString(),
                     style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black,
+                        color: R.color.black,
                         fontWeight: FontWeight.normal));
               })),
         ),
@@ -245,14 +248,14 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                                 (width + 20))
                                             .toDouble() -
                                         36,
-                                    color: Color(0xffDDDDDD),
+                                    color: R.color.grayComponentBorder,
                                   ),
                                 )))),
                 trendTypeIndex == 1 ||
                         (model.goodRange.value == 0 &&
                             model.goodRange.key == 0) ||
-                        model.goodRange.value > maxY ||
-                        model.goodRange.key < minY
+                        model.goodRange.value! > maxY ||
+                        model.goodRange.key! < minY
                     ? Container()
                     : Container(
                         height: 300,
@@ -262,7 +265,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                             SizedBox(
                                 height: 284 -
                                     (284 *
-                                        (model.goodRange.value - minY) /
+                                        (model.goodRange.value! - minY) /
                                         (maxY - minY))),
                             Container(
                                 width:
@@ -270,23 +273,23 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                             .toDouble() -
                                         36,
                                 height: 0.75,
-                                color: Color(0xff21A567)),
+                                color: R.color.green),
                             Container(
                                 width:
                                     ((length < 5 ? 5 : length) * (width + 20))
                                             .toDouble() -
                                         36,
-                                height: ((model.goodRange.value -
-                                        model.goodRange.key) *
+                                height: ((model.goodRange.value! -
+                                        model.goodRange.key!) *
                                     (284 / (maxY - minY))),
-                                color: Color(0xff21A567).withOpacity(0.1)),
+                                color: R.color.green.withOpacity(0.1)),
                             Container(
                                 width:
                                     ((length < 5 ? 5 : length) * (width + 20))
                                             .toDouble() -
                                         36,
                                 height: 0.75,
-                                color: Color(0xff21A567)),
+                                color: R.color.green),
                           ],
                         ),
                       ),
@@ -327,7 +330,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                               fitInsideHorizontally: true,
                               fitInsideVertically: true,
                               tooltipBgColor: touchIndex == -1
-                                  ? Colors.transparent
+                                  ? R.color.transparent
                                   : toColor(trends[touchIndex].color)
                                       .withOpacity(0.2),
                               tooltipRoundedRadius: 8,
@@ -347,11 +350,11 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 }).toList();
                               },
                             ),
-                            touchCallback: (FlTouchEvent event, LineTouchResponse lineTouch) {
-                              if (lineTouch.lineBarSpots.length == 1 &&
+                            touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
+                              if (lineTouch!.lineBarSpots!.length == 1 &&
                                   event is! FlLongPressEnd &&
                                   event is! FlPanEndEvent) {
-                                final value = lineTouch.lineBarSpots[0].x;
+                                final value = lineTouch.lineBarSpots![0].x;
                                 setState(() {
                                   touchIndex = value.toInt();
                                 });
@@ -370,8 +373,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
                             getTextStyles: (context, value) {
                               return TextStyle(
                                   color: touchIndex == value.toInt()
-                                      ? Colors.black
-                                      : Color(0xffC0C2C5),
+                                      ? R.color.black
+                                      : R.color.color0xffC0C2C5,
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal);
                             },
@@ -422,11 +425,11 @@ class BloodSugarChartState extends State<BloodSugarChart>
         : [
             LineChartBarData(
               spots: List.generate(trends.length, (index) {
-                return FlSpot((index).toDouble(), trends[index].glucose);
+                return FlSpot((index).toDouble(), trends[index].glucose!);
               }),
               isCurved: false,
               colors:
-                  trendTypeIndex == 1 ? [Colors.transparent] : [Colors.black],
+                  trendTypeIndex == 1 ? [R.color.transparent] : [R.color.black],
               barWidth: 0.75,
               isStrokeCapRound: true,
               dotData: FlDotData(
@@ -450,7 +453,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
   }
 
   showDialog(BuildContext context) {
-    //Navigator.pushNamed(context, '/hba1c_tabble');
+    //Navigator.pushNamed(context, NavigatorName.hba1c_tabble);
     Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
         pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
@@ -463,7 +466,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => ActionListFilterTrend(

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:medical/src/modal/exercrises/exercrises_intensity.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
 import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_data_model.dart';
@@ -12,10 +13,11 @@ import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FoodClient extends FetchClient {
 // Lấy danh sách time frame
-  Future<List<TimeFrameModel>> fetchFoodTimeFrame({int time}) async {
+  Future<List<TimeFrameModel>> fetchFoodTimeFrame({int? time}) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/Diet/MealTimeFrame',
@@ -29,7 +31,7 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -55,12 +57,12 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
 //   lấy chi tiết input thức ăn
-  Future<FoodInputModel> fetchDetailInput(String id) async {
+  Future<FoodInputModel> fetchDetailInput(String? id) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Diet/Input/$id');
@@ -73,7 +75,7 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -92,7 +94,7 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -113,7 +115,7 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -133,7 +135,7 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -151,13 +153,13 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lay danh sach thức ăn theo nhóm
   Future<FoodCategoryDataModel> fetchFoodCategory(
-      String foodCategoryId, String keyword, int page) async {
+      String? foodCategoryId, String? keyword, int? page) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/Diet/Food',
@@ -175,11 +177,11 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> addFoodToFavorite(String foodId) async {
+  Future<bool> addFoodToFavorite(String? foodId) async {
     try {
       final Response response = await super.postUri(
           baseOption: true,
@@ -194,11 +196,11 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> romoveFoodFromFavorite(String foodId) async {
+  Future<bool> romoveFoodFromFavorite(String? foodId) async {
     try {
       final Response response =
           await super.delete(url: '/App/Diet/FoodFavorite/$foodId');
@@ -211,21 +213,21 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //nhập chỉ số dinh duỡng
-  Future<bool> postIndexFood(int date, String timeFrameId, String note,
+  Future<bool> postIndexFood(int date, String? timeFrameId, String note,
       List<FoodModel> foods, List<String> files) async {
     try {
       Map<String, String> params = {
         'date': date.toString(),
-        'mealId': timeFrameId,
+        'mealId': timeFrameId ?? '',
         'note': note,
       };
       for (int i = 0; i < foods.length; i++) {
-        params['foods[$i].id'] = foods[i].id;
+        params['foods[$i].id'] = foods[i].id ?? '';
         params['foods[$i].portion'] = foods[i].quantity.toString();
       }
       final response = await super
@@ -234,27 +236,27 @@ class FoodClient extends FetchClient {
         return true;
       } else {
         print(await response.stream.bytesToString());
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //cập nhật chỉ số vận động
 
   Future<bool> updateIndexFood(
-      String id,
+      String? id,
       int date,
-      String timeFrameId,
+      String? timeFrameId,
       String note,
       List<FoodModel> foods,
-      List<String> removalImageIds,
+      List<String?> removalImageIds,
       List<String> files) async {
     try {
-      Map<String, String> params = {
+      Map<String, String?> params = {
         'id': id,
         'date': date.toString(),
         'mealId': timeFrameId,
@@ -272,17 +274,17 @@ class FoodClient extends FetchClient {
         print(await response.stream.bytesToString());
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // xóa chỉ số vận động
-  Future<bool> deleteInputFood(String id) async {
+  Future<bool> deleteInputFood(String? id) async {
     try {
       final Response response = await super.delete(url: '/App/Diet/Input/$id');
       if (response.statusCode == 200) {
@@ -294,7 +296,7 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -312,7 +314,7 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -330,13 +332,13 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy biểu đồ dinh duỡng đã nạp theo ngày
   Future<FoodDietModel> fetchStatisticDetail(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Diet/Statistic/detail', params: {
@@ -353,13 +355,13 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy biểu đồ xu huớng dinh duỡng
   Future<FoodTrendModel> fetchStatisticTrend(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Diet/Statistic/trend', params: {
@@ -376,13 +378,13 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy biểu đồ năng luợng phân bổ
   Future<FoodDistributeModel> fetchStatisticDistribute(
-      String currentDateTime, String periodFilterType) async {
+      String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Diet/Statistic/distribute', params: {
@@ -399,18 +401,18 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lay danh sach cuong do van dong
 
-  Future<List<ExercriseIntensityModel>> fetchIntensity() async {
+  Future<List<ExerciseIntensityModel>> fetchIntensity() async {
     try {
       final Response response =
           await super.fetchData(url: '/App/ActivityLevel');
       if (response.statusCode == 200) {
-        return ExercriseIntensityModel.toList(response.data['data']);
+        return ExerciseIntensityModel.toList(response.data['data']);
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -418,12 +420,12 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<double> fetchTDEE(
-      int weight, int height, int yearOfBirth, String activityLevelId) async {
+  Future<double?> fetchTDEE(
+      int weight, int height, int yearOfBirth, String? activityLevelId) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Diet/TDEE', params: {
@@ -441,7 +443,7 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -452,12 +454,12 @@ class FoodClient extends FetchClient {
       if (response.statusCode == 200) {
         return true;
       } else {
-        throw response.reasonPhrase;
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

@@ -1,26 +1,28 @@
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomeModel {
   final GloucoseIndexModel glucoseIndex;
   final BloodPressureIndexModel bloodPressureIndex;
-  final ExerciseIndexModel exercise;
+  final ExerciseIndexModel? exercise;
   final HbA1CIndexModel hbA1CIndex;
-  final WeightCardModel weightCard;
-  final EmotionCardModel emotionCard;
-  final EnergyCardModel energyCard;
-  final EnergyExerciseCardModel energyExerciseCard;
+  final WeightCardModel? weightCard;
+  final EmotionCardModel? emotionCard;
+  final EnergyCardModel? energyCard;
+  final EnergyExerciseCardModel? energyExerciseCard;
 
   HomeModel(
-      {@required this.glucoseIndex,
-      @required this.bloodPressureIndex,
-      @required this.exercise,
-      @required this.hbA1CIndex,
-      @required this.weightCard,
-      @required this.emotionCard,
-      @required this.energyCard,
-      @required this.energyExerciseCard});
+      {required this.glucoseIndex,
+      required this.bloodPressureIndex,
+      required this.exercise,
+      required this.hbA1CIndex,
+      required this.weightCard,
+      required this.emotionCard,
+      required this.energyCard,
+      required this.energyExerciseCard});
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
     return HomeModel(
@@ -51,28 +53,28 @@ class HomeModel {
 }
 
 class GloucoseIndexModel {
-  final double index;
-  final double indexChange;
+  final double? index;
+  final double? indexChange;
   final String unit;
-  final int createDateTime;
-  final String color;
-  final ImagesModel icon;
+  final int? createDateTime;
+  final String? color;
+  final ImagesModel? icon;
 
   GloucoseIndexModel(
-      {@required this.index,
-      @required this.indexChange,
-      @required this.unit,
-      @required this.createDateTime,
-      @required this.color,
-      @required this.icon});
+      {required this.index,
+      required this.indexChange,
+      required this.unit,
+      required this.createDateTime,
+      required this.color,
+      required this.icon});
 
   factory GloucoseIndexModel.fromJson(Map<String, dynamic> json) {
-    final unit = AppSettings.userInfo.glucoseUnit == 1 ? 'mg/dL' : 'mmol/L';
+    final unit = AppSettings.userInfo!.glucoseUnit == 1 ? R.string.mg_dl.tr() : R.string.mmol_l.tr();
     return GloucoseIndexModel(
-      index: AppSettings.userInfo.glucoseUnit == 1
+      index: AppSettings.userInfo!.glucoseUnit == 1
           ? json['index']
           : json['indexMmoll'],
-      indexChange: AppSettings.userInfo.glucoseUnit == 1
+      indexChange: AppSettings.userInfo!.glucoseUnit == 1
           ? json['indexChange']
           : json['indexChangeMmoll'],
       unit: unit,
@@ -88,22 +90,22 @@ class GloucoseIndexModel {
 }
 
 class BloodPressureIndexModel {
-  final double systolic;
-  final double systolicChange;
-  final double diastolic;
-  final double diastolicChange;
-  final String color;
-  final ImagesModel icon;
-  final int createDateTime;
+  final double? systolic;
+  final double? systolicChange;
+  final double? diastolic;
+  final double? diastolicChange;
+  final String? color;
+  final ImagesModel? icon;
+  final int? createDateTime;
 
   BloodPressureIndexModel(
-      {@required this.systolic,
-      @required this.systolicChange,
-      @required this.diastolic,
-      @required this.diastolicChange,
-      @required this.color,
-      @required this.icon,
-      @required this.createDateTime});
+      {required this.systolic,
+      required this.systolicChange,
+      required this.diastolic,
+      required this.diastolicChange,
+      required this.color,
+      required this.icon,
+      required this.createDateTime});
 
   factory BloodPressureIndexModel.fromJson(Map<String, dynamic> json) {
     return BloodPressureIndexModel(
@@ -123,20 +125,20 @@ class BloodPressureIndexModel {
 }
 
 class ExerciseIndexModel {
-  final double index;
-  final double indexChange;
-  final String unit;
-  final int createDateTime;
-  final String color;
-  final ImagesModel icon;
+  final double? index;
+  final double? indexChange;
+  final String? unit;
+  final int? createDateTime;
+  final String? color;
+  final ImagesModel? icon;
 
   ExerciseIndexModel(
-      {@required this.index,
-      @required this.indexChange,
-      @required this.unit,
-      @required this.createDateTime,
-      @required this.color,
-      @required this.icon});
+      {required this.index,
+      required this.indexChange,
+      required this.unit,
+      required this.createDateTime,
+      required this.color,
+      required this.icon});
 
   factory ExerciseIndexModel.fromJson(Map<String, dynamic> json) {
     return ExerciseIndexModel(
@@ -155,18 +157,18 @@ class ExerciseIndexModel {
 }
 
 class HbA1CIndexModel {
-  final double index;
-  final double indexChange;
-  final int createDateTime;
-  final String color;
-  final ImagesModel icon;
+  final double? index;
+  final double? indexChange;
+  final int? createDateTime;
+  final String? color;
+  final ImagesModel? icon;
 
   HbA1CIndexModel(
-      {@required this.index,
-      @required this.indexChange,
-      @required this.createDateTime,
-      @required this.color,
-      @required this.icon});
+      {required this.index,
+      required this.indexChange,
+      required this.createDateTime,
+      required this.color,
+      required this.icon});
 
   factory HbA1CIndexModel.fromJson(Map<String, dynamic> json) {
     return HbA1CIndexModel(
@@ -184,16 +186,16 @@ class HbA1CIndexModel {
 }
 
 class WeightCardModel {
-  final double weight;
-  final double goalWeight;
-  final int weightDateTime;
-  final String weightColorCode;
+  final double? weight;
+  final double? goalWeight;
+  final int? weightDateTime;
+  final String? weightColorCode;
 
   WeightCardModel(
-      {@required this.weight,
-      @required this.goalWeight,
-      @required this.weightDateTime,
-      @required this.weightColorCode});
+      {required this.weight,
+      required this.goalWeight,
+      required this.weightDateTime,
+      required this.weightColorCode});
 
   factory WeightCardModel.fromJson(Map<String, dynamic> json) {
     return WeightCardModel(
@@ -209,10 +211,10 @@ class WeightCardModel {
 }
 
 class EmotionCardModel {
-  final int emotionDateTime;
-  final List<EmotionCardItemModel> details;
+  final int? emotionDateTime;
+  final List<EmotionCardItemModel>? details;
 
-  EmotionCardModel({@required this.emotionDateTime, @required this.details});
+  EmotionCardModel({required this.emotionDateTime, required this.details});
 
   factory EmotionCardModel.fromJson(Map<String, dynamic> json) {
     return EmotionCardModel(
@@ -229,10 +231,10 @@ class EmotionCardModel {
 }
 
 class EmotionCardItemModel {
-  final String text;
-  final ImagesModel icon;
+  final String? text;
+  final ImagesModel? icon;
 
-  EmotionCardItemModel({@required this.text, @required this.icon});
+  EmotionCardItemModel({required this.text, required this.icon});
 
   factory EmotionCardItemModel.fromJson(Map<String, dynamic> json) {
     return EmotionCardItemModel(
@@ -247,14 +249,14 @@ class EmotionCardItemModel {
 }
 
 class EnergyCardModel {
-  final int consumedEnergyDateTime;
-  final double consumedEnergy;
-  final ImagesModel energyIcon;
+  final int? consumedEnergyDateTime;
+  final double? consumedEnergy;
+  final ImagesModel? energyIcon;
 
   EnergyCardModel(
-      {@required this.consumedEnergyDateTime,
-      @required this.consumedEnergy,
-      @required this.energyIcon});
+      {required this.consumedEnergyDateTime,
+      required this.consumedEnergy,
+      required this.energyIcon});
 
   factory EnergyCardModel.fromJson(Map<String, dynamic> json) {
     return EnergyCardModel(
@@ -272,16 +274,16 @@ class EnergyCardModel {
 }
 
 class EnergyExerciseCardModel {
-  final double value;
-  final double energyGoal;
-  final String text;
-  final String corlorCode;
+  final double? value;
+  final double? energyGoal;
+  final String? text;
+  final String? corlorCode;
 
   EnergyExerciseCardModel(
-      {@required this.value,
-      @required this.energyGoal,
-      @required this.text,
-      @required this.corlorCode});
+      {required this.value,
+      required this.energyGoal,
+      required this.text,
+      required this.corlorCode});
 
   factory EnergyExerciseCardModel.fromJson(Map<String, dynamic> json) {
     return EnergyExerciseCardModel(

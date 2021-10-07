@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/user_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/address_list.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-typedef AddresCallback = Function(String address, ProvinceModel province,
-    ProvinceModel district, ProvinceModel ward);
+typedef AddresCallback = Function(String address, ProvinceModel? province,
+    ProvinceModel? district, ProvinceModel? ward);
 
 class AddressController extends StatefulWidget {
-  final String address;
-  final ProvinceModel province;
-  final ProvinceModel district;
-  final ProvinceModel ward;
-  final AddresCallback callback;
+  final String? address;
+  final ProvinceModel? province;
+  final ProvinceModel? district;
+  final ProvinceModel? ward;
+  final AddresCallback? callback;
   AddressController(
       {this.address, this.province, this.district, this.ward, this.callback});
   @override
@@ -21,9 +22,9 @@ class AddressController extends StatefulWidget {
 
 class _AddressControllerState extends State<AddressController> {
   TextEditingController _textEditingController = TextEditingController();
-  ProvinceModel selectedProvince;
-  ProvinceModel selectedDistrict;
-  ProvinceModel selectedWard;
+  ProvinceModel? selectedProvince;
+  ProvinceModel? selectedDistrict;
+  ProvinceModel? selectedWard;
 
   @override
   void initState() {
@@ -42,19 +43,19 @@ class _AddressControllerState extends State<AddressController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('Địa chỉ',
+          Text(R.string.address.tr(),
               style: TextStyle(
-                  color: textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                  color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
           GestureDetector(
-              child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+              child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
               onTap: () {
                 Navigator.pop(context);
               })
         ]),
         SizedBox(height: 26),
-        Text('Địa chỉ cụ thể',
+        Text(R.string.specific_address.tr(),
             style: TextStyle(
-                color: textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
         SizedBox(height: 8),
         Container(
             height: 54,
@@ -65,24 +66,24 @@ class _AddressControllerState extends State<AddressController> {
                 maxLines: 1,
                 obscureText: false,
                 decoration: InputDecoration(
-                  fillColor: textDark,
+                  fillColor: R.color.textDark,
                   enabledBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Color(0xffDDDDDD), width: 1.0),
+                        BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: mainColor, width: 1.0),
+                    borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   contentPadding: EdgeInsets.only(top: 0, left: 16, right: 16),
-                  hintText: 'Nhập địa chỉ của bạn',
+                  hintText: R.string.enter_your_address.tr(),
                 ),
                 onChanged: (value) {})),
         SizedBox(height: 8),
-        Text('Tỉnh thành',
+        Text(R.string.province.tr(),
             style: TextStyle(
-                color: textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
         SizedBox(height: 8),
         GestureDetector(
           onTap: () {
@@ -110,21 +111,21 @@ class _AddressControllerState extends State<AddressController> {
               height: 48,
               padding: EdgeInsets.only(left: 16, right: 16),
               decoration: BoxDecoration(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(width: 1, color: Color(0xffDDDDDD))),
+                  border: Border.all(width: 1, color: R.color.grayComponentBorder)),
               child: Center(
                   child: Row(
                 children: [
                   Expanded(
                     child: Text(
                         selectedProvince == null
-                            ? 'Chọn'
-                            : selectedProvince.name,
+                            ? R.string.choose.tr()
+                            : selectedProvince!.name!,
                         style: TextStyle(
                             color: selectedProvince == null
-                                ? Color(0xff9C9C9C)
-                                : textDark),
+                                ? R.color.captionColorGray
+                                : R.color.textDark),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
                   ),
@@ -137,7 +138,7 @@ class _AddressControllerState extends State<AddressController> {
             child: GestureDetector(
               onTap: () {
                 if (selectedProvince == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn tỉnh thành');
+                  Message.showToastMessage(context, R.string.mes_province_empty.tr());
                   return;
                 }
                 showDialog(
@@ -148,7 +149,7 @@ class _AddressControllerState extends State<AddressController> {
                           contentPadding: EdgeInsets.all(0),
                           content: AddressListController(
                             type: 1,
-                            id: selectedProvince.id,
+                            id: selectedProvince!.id,
                             selected: selectedDistrict,
                             callback: (item) {
                               setState(() {
@@ -162,13 +163,13 @@ class _AddressControllerState extends State<AddressController> {
                 );
               },
               child: Container(
-                color: Colors.transparent,
+                color: R.color.transparent,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Quận/Huyện',
+                      Text(R.string.district.tr(),
                           style: TextStyle(
-                              color: textDark,
+                              color: R.color.textDark,
                               fontSize: 16,
                               fontWeight: FontWeight.w600)),
                       SizedBox(height: 8),
@@ -177,22 +178,22 @@ class _AddressControllerState extends State<AddressController> {
                           //width: 200,
                           padding: EdgeInsets.only(left: 16, right: 16),
                           decoration: BoxDecoration(
-                              color: Colors.transparent,
+                              color: R.color.transparent,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                  width: 1, color: Color(0xffDDDDDD))),
+                                  width: 1, color: R.color.grayComponentBorder)),
                           child: Center(
                               child: Row(
                             children: [
                               Expanded(
                                 child: Text(
                                     selectedDistrict == null
-                                        ? 'Chọn'
-                                        : selectedDistrict.name,
+                                        ? R.string.choose.tr()
+                                        : selectedDistrict!.name!,
                                     style: TextStyle(
                                         color: selectedDistrict == null
-                                            ? Color(0xff9C9C9C)
-                                            : textDark),
+                                            ? R.color.captionColorGray
+                                            : R.color.textDark),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis),
                               ),
@@ -207,11 +208,11 @@ class _AddressControllerState extends State<AddressController> {
             child: GestureDetector(
               onTap: () {
                 if (selectedProvince == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn tỉnh thành');
+                  Message.showToastMessage(context, R.string.mes_province_empty.tr());
                   return;
                 }
                 if (selectedDistrict == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn quận/huyện');
+                  Message.showToastMessage(context, R.string.mes_district_empty.tr());
                   return;
                 }
                 showDialog(
@@ -222,7 +223,7 @@ class _AddressControllerState extends State<AddressController> {
                           contentPadding: EdgeInsets.all(0),
                           content: AddressListController(
                             type: 2,
-                            id: selectedDistrict.id,
+                            id: selectedDistrict!.id,
                             selected: selectedWard,
                             callback: (item) {
                               setState(() {
@@ -236,13 +237,13 @@ class _AddressControllerState extends State<AddressController> {
                 );
               },
               child: Container(
-                color: Colors.transparent,
+                color: R.color.transparent,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Phường/Xã',
+                      Text(R.string.wards.tr(),
                           style: TextStyle(
-                              color: textDark,
+                              color: R.color.textDark,
                               fontSize: 16,
                               fontWeight: FontWeight.w600)),
                       SizedBox(height: 8),
@@ -251,22 +252,22 @@ class _AddressControllerState extends State<AddressController> {
                           //width: 200,
                           padding: EdgeInsets.only(left: 16, right: 16),
                           decoration: BoxDecoration(
-                              color: Colors.transparent,
+                              color: R.color.transparent,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                  width: 1, color: Color(0xffDDDDDD))),
+                                  width: 1, color: R.color.grayComponentBorder)),
                           child: Center(
                               child: Row(
                             children: [
                               Expanded(
                                 child: Text(
                                     selectedWard == null
-                                        ? 'Chọn'
-                                        : selectedWard.name,
+                                        ? R.string.choose.tr()
+                                        : selectedWard!.name!,
                                     style: TextStyle(
                                         color: selectedWard == null
-                                            ? Color(0xff9C9C9C)
-                                            : textDark),
+                                            ? R.color.captionColorGray
+                                            : R.color.textDark),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis),
                               ),
@@ -290,53 +291,53 @@ class _AddressControllerState extends State<AddressController> {
                   width: 119,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(200),
-                      color: grayBorder),
+                      color: R.color.grayBorder),
                   child: Center(
-                    child: Text('Huỷ',
+                    child: Text(R.string.cancel.tr(),
                         style: TextStyle(
-                            color: textDark,
+                            color: R.color.textDark,
                             fontSize: 16,
                             fontWeight: FontWeight.w600)),
                   )),
             ),
             GestureDetector(
               onTap: () {
-                final addess = _textEditingController.text ?? '';
-                if (addess.isEmpty) {
-                  Message.showToastMessage(context, 'Bạn chưa nhập địa chỉ');
+                final address = _textEditingController.text;
+                if (address.isEmpty) {
+                  Message.showToastMessage(context, R.string.mes_address_empty.tr());
                   return;
                 }
                 if (selectedProvince == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn tỉnh thành');
+                  Message.showToastMessage(context, R.string.mes_province_empty.tr());
                   return;
                 }
                 if (selectedDistrict == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn quận/huyện');
+                  Message.showToastMessage(context, R.string.mes_district_empty.tr());
                   return;
                 }
                 if (selectedWard == null) {
-                  Message.showToastMessage(context, 'Bạn chưa chọn phuờng/xã');
+                  Message.showToastMessage(context, R.string.mes_wards_empty.tr());
                   return;
                 }
 
-                widget.callback(
-                    addess, selectedProvince, selectedDistrict, selectedWard);
+                widget.callback!(
+                    address, selectedProvince, selectedDistrict, selectedWard);
                 Navigator.pop(context);
               },
               child: Container(
                 height: 48,
                 width: 119,
                 decoration: BoxDecoration(
-                    color: red,
+                    color: R.color.red,
                     borderRadius: BorderRadius.circular(200),
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.centerRight,
-                        colors: [greenGradientTop, greenGradientBottom])),
+                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                 child: Center(
-                  child: Text('Lưu',
+                  child: Text(R.string.save.tr(),
                       style: TextStyle(
-                          color: Colors.white,
+                          color: R.color.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600)),
                 ),

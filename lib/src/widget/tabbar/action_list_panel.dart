@@ -1,38 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ActionListPanel extends StatelessWidget {
-  ActionListPanel({@required this.selectedIndex});
+  ActionListPanel({required this.selectedIndex});
   final int selectedIndex;
 
   final data = [
     {
-      'name': 'HbA1C',
-      'icon': 'assets/images/ic_hba1c.png',
+      'name': R.string.hba1c.tr(),
+      'icon': R.drawable.ic_hba1c,
     },
     {
-      'name': 'Đường huyết',
-      'icon': 'assets/images/ic_glucose.png',
+      'name': R.string.duong_huyet.tr(),
+      'icon': R.drawable.ic_glucose,
     },
     {
-      'name': 'Huyết áp',
-      'icon': 'assets/images/ic_blood_pressure.png',
+      'name': R.string.huyet_ap.tr(),
+      'icon': R.drawable.ic_blood_pressure,
     },
     {
-      'name': 'Vận động',
-      'icon': 'assets/images/ic_excersire.png',
+      'name': R.string.van_dong.tr(),
+      'icon': R.drawable.ic_excersire,
     },
     {
-      'name': 'Dinh dưỡng',
-      'icon': 'assets/images/ic_food_action.png',
+      'name': R.string.dinh_duong.tr(),
+      'icon': R.drawable.ic_food_action,
     },
     {
-      'name': 'Cân nặng',
-      'icon': 'assets/images/ic_weight.png',
+      'name': R.string.can_nang.tr(),
+      'icon': R.drawable.ic_weight,
     },
     {
-      'name': 'Cảm xúc',
-      'icon': 'assets/images/ic_emotion.png',
+      'name': R.string.cam_xuc.tr(),
+      'icon': R.drawable.ic_emotion,
     },
   ];
 
@@ -43,14 +45,14 @@ class ActionListPanel extends StatelessWidget {
           Navigator.pop(context);
         },
         child: Scaffold(
-            backgroundColor: Colors.transparent,
+            backgroundColor: R.color.transparent,
             body: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   clipBehavior: Clip.hardEdge,
                   decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: R.color.white,
                       borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(16),
                           bottomRight: Radius.circular(16))),
@@ -62,12 +64,12 @@ class ActionListPanel extends StatelessWidget {
                           padding: EdgeInsets.only(
                               left: 16, right: 16, top: 16, bottom: 16),
                           child: Row(children: [
-                            Icon(Icons.close, color: Colors.black),
+                            Icon(Icons.close, color: R.color.black),
                             SizedBox(width: 16),
-                            Text('Chọn chỉ số khác',
+                            Text(R.string.choose_other_info.tr(),
                                 style: TextStyle(
                                     fontSize: 16,
-                                    color: Colors.black,
+                                    color: R.color.black,
                                     fontWeight: FontWeight.w700))
                           ]),
                         ),
@@ -77,7 +79,7 @@ class ActionListPanel extends StatelessWidget {
                             itemCount: data.length,
                             itemBuilder: (BuildContext context, int index) {
                               return buildItem(context, index,
-                                  data[index]['name'], data[index]['icon']);
+                                  data[index]['name']!, data[index]['icon']!);
                             })
                       ],
                     ),
@@ -95,24 +97,24 @@ class ActionListPanel extends StatelessWidget {
           return;
         }
         if (index == 0) {
-          Navigator.pushReplacementNamed(context, '/detail_hba1c');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_hba1c);
         } else if (index == 1) {
-          Navigator.pushReplacementNamed(context, '/detail_bloodSugar');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_blood_sugar);
         } else if (index == 2) {
-          Navigator.pushReplacementNamed(context, '/detail_bloodPressure');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_blood_pressure);
         } else if (index == 3) {
-          Navigator.pushReplacementNamed(context, '/detail_exercrises');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_exercrises);
         } else if (index == 4) {
-          Navigator.pushReplacementNamed(context, '/detail_food');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_food);
         } else if (index == 5) {
-          Navigator.pushReplacementNamed(context, '/detail_bmi');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_bmi);
         } else if (index == 6) {
-          Navigator.pushReplacementNamed(context, '/detail_emotion');
+          Navigator.pushReplacementNamed(context, NavigatorName.detail_emotion);
         }
       },
       child: Container(
           height: 74,
-          color: selectedIndex == index ? Color(0xffE4F5F5) : Colors.white,
+          color: selectedIndex == index ? R.color.main_6 : R.color.white,
           padding: EdgeInsets.only(left: 16, right: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -128,12 +130,12 @@ class ActionListPanel extends StatelessWidget {
                               ? FontWeight.w600
                               : FontWeight.w400,
                           color: selectedIndex == index
-                              ? mainColor
-                              : Color(0xff454649))),
+                              ? R.color.mainColor
+                              : R.color.color0xff454649)),
                 ],
               ),
               selectedIndex == index
-                  ? Image.asset('assets/images/check_mark_bg.png',
+                  ? Image.asset(R.drawable.ic_check_mark_bg,
                       width: 20, height: 20)
                   : SizedBox(),
             ],

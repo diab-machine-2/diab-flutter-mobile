@@ -1,13 +1,15 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/notification/notification_data_model.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class NotificationClient extends FetchClient {
-  Future<NotificationDataModel> fetchNotifications(
-      bool isRead, int page) async {
+  Future<NotificationDataModel?> fetchNotifications(
+      bool? isRead, int page) async {
     try {
       Map<String, String> params = {'page': page.toString(), 'size': '20'};
       if (isRead != null) {
@@ -30,11 +32,11 @@ class NotificationClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<NotificationModel> fetchNotificationDetail(String id) async {
+  Future<NotificationModel> fetchNotificationDetail(String? id) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Communication/$id');
@@ -47,11 +49,11 @@ class NotificationClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<int> fetchNotificationCount() async {
+  Future<int?> fetchNotificationCount() async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Communication/CountUnread');
@@ -64,12 +66,12 @@ class NotificationClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> readNotification(String communicationId, String patientId,
-      int notificationType, bool isRead) async {
+  Future<bool?> readNotification(String? communicationId, String? patientId,
+      int? notificationType, bool isRead) async {
     try {
       final Response response = await super
           .putData(url: '/App/Communication/MarkReadUnread', params: {
@@ -79,7 +81,8 @@ class NotificationClient extends FetchClient {
         'isRead': isRead
       });
       if (response.statusCode == 200) {
-        DartNotificationCenter.post(channel: 'read_notification_success');
+        Observable.instance.notifyObservers([], notifyName : "read_notification_success");
+        // DartNotificationCenter.post(channel: 'read_notification_success');
         return response.data['data'];
       } else {
         final error = Error.fromJson(response);
@@ -88,11 +91,11 @@ class NotificationClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<bool> deleteNotification(String id) async {
+  Future<bool> deleteNotification(String? id) async {
     try {
       final Response response =
           await super.delete(url: '/App/Communication/Notification/$id');
@@ -107,7 +110,7 @@ class NotificationClient extends FetchClient {
     } catch (e) {
       throw e is Error
           ? e
-          : 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+          : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

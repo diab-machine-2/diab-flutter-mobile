@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker2.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_year_picker.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
@@ -13,12 +14,13 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class UpdateInfoController extends StatefulWidget {
-  final String type;
-  final GoogleSignInAccount googleAccount;
-  final FacebookLoginResult facebookAccount;
-  final AuthorizationCredentialAppleID appleAccount;
+  final String? type;
+  final GoogleSignInAccount? googleAccount;
+  final FacebookLoginResult? facebookAccount;
+  final AuthorizationCredentialAppleID? appleAccount;
   final dynamic userInfo;
   UpdateInfoController(
       {this.type,
@@ -36,19 +38,19 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
   FocusNode nameFocus = FocusNode();
 
   String phone = '';
-  DateTime selectedDate;
-  DateTime selectedYear;
+  DateTime? selectedDate;
+  DateTime? selectedYear;
   dynamic diabetesStatus;
-  int _choosenGender;
+  int? _choosenGender;
   void initState() {
     super.initState();
     nameController.text = widget.type == 'phone'
         ? ''
         : (widget.type == 'google'
-            ? (widget.googleAccount.displayName ?? '')
+            ? (widget.googleAccount!.displayName ?? '')
             : widget.type == 'facebook'
                 ? widget.userInfo['name']
-                : widget.appleAccount.givenName);
+                : widget.appleAccount!.givenName!);
   }
 
   void dispose() {
@@ -66,11 +68,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: Container(
-              // color: Colors.red,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.bg_splash),
                     fit: BoxFit.fill,
                   )),
               child: Column(
@@ -88,7 +89,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                           children: [
                             Align(
                                 alignment: Alignment.topRight,
-                                child: Image.asset('assets/images/Parent.png',
+                                child: Image.asset(R.drawable.img_parent,
                                     height: 175)),
                             SizedBox(height: 8),
                             Padding(
@@ -98,11 +99,11 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                 alignment: Alignment.topLeft,
                                 child: Text(
                                     widget.type == 'phone'
-                                        ? 'Hãy để DiaB \nthấu hiểu bạn hơn!'
-                                        : 'Chào mừng ${widget.type == 'google' ? widget.googleAccount.displayName.split(' ').last : widget.type == 'facebook' ? widget.userInfo['name'].split(' ').last : widget.appleAccount.givenName ?? 'Bạn'},\nHãy để DiaB thấu hiểu bạn hơn!',
+                                        ? R.string.hay_de_diab_thau_hieu_ban_hon.tr()
+                                        : '${R.string.chao_mung.tr()} ${widget.type == 'google' ? widget.googleAccount!.displayName!.split(' ').last : widget.type == 'facebook' ? widget.userInfo['name'].split(' ').last : widget.appleAccount!.givenName ?? R.string.ban.tr()},\n${R.string.hay_de_diab_thau_hieu_ban_hon_single_line.tr()}',
                                     style: TextStyle(
                                         height: 1.5,
-                                        color: mainColor,
+                                        color: R.color.mainColor,
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -121,9 +122,9 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                     EdgeInsets.only(bottom: 24),
                                                 child: TextFieldCustom(
                                                     key: phoneKey,
-                                                    title: 'Số điện thoại',
+                                                    title: R.string.so_dien_thoai.tr(),
                                                     placeholder:
-                                                        'Nhập số điện thoại',
+                                                        R.string.nhap_so_dien_thoai.tr(),
                                                     autoFocus: false,
                                                     showStar: true,
                                                     onChanged: (value) {
@@ -134,19 +135,19 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             alignment: Alignment.topLeft,
                                             child: Row(
                                               children: [
-                                                Text('Họ & tên',
+                                                Text(R.string.ho_va_ten.tr(),
                                                     style: TextStyle(
-                                                        color: textDark)),
+                                                        color: R.color.textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
-                                                        color: Colors.red))
+                                                        color: R.color.red))
                                               ],
                                             )),
                                         SizedBox(height: 12),
                                         Container(
                                           height: 52,
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             borderRadius:
                                                 BorderRadius.circular(10),
                                           ),
@@ -173,8 +174,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                         controller:
                                                             nameController,
                                                         style: TextStyle(
-                                                            color: Color(
-                                                                0xff232527)),
+                                                            color: R.color.color0xff232527),
                                                         decoration: InputDecoration(
                                                             border: InputBorder
                                                                 .none,
@@ -182,11 +182,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                                 EdgeInsets.only(
                                                                     top: -16),
                                                             hintText:
-                                                                'Nhập họ tên',
+                                                                R.string.nhap_ho_ten.tr(),
                                                             counterText: '',
                                                             hintStyle: TextStyle(
-                                                                color: Color(
-                                                                    0xff232527))),
+                                                                color: R.color.color0xff232527)),
                                                       ),
                                                     ),
                                                   ],
@@ -206,12 +205,12 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             alignment: Alignment.topLeft,
                                             child: Row(
                                               children: [
-                                                Text('Ngày sinh',
+                                                Text(R.string.ngay_sinh.tr(),
                                                     style: TextStyle(
-                                                        color: textDark)),
+                                                        color: R.color.textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
-                                                        color: Colors.red))
+                                                        color: R.color.red))
                                               ],
                                             )),
                                         SizedBox(height: 12),
@@ -223,13 +222,13 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                           child: Container(
                                             height: 52,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                             ),
                                             padding: EdgeInsets.all(12),
                                             child: Container(
-                                              color: Colors.transparent,
+                                              color: R.color.transparent,
                                               child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
@@ -238,19 +237,19 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                     Text(
                                                         selectedDate != null
                                                             ? convertToUTC(
-                                                                selectedDate
+                                                                selectedDate!
                                                                         .millisecondsSinceEpoch ~/
                                                                     1000,
                                                                 'dd/MM/yyyy')
-                                                            : 'Chọn ngày sinh',
+                                                            : R.string.chon_ngay_sinh.tr(),
                                                         style: TextStyle(
-                                                            color: textDark,
+                                                            color: R.color.textDark,
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .w400)),
                                                     Image.asset(
-                                                        'assets/images/icon_calendar.png',
+                                                        R.drawable.ic_calendar,
                                                         width: 24,
                                                         height: 24),
                                                   ]),
@@ -266,12 +265,12 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             alignment: Alignment.topLeft,
                                             child: Row(
                                               children: [
-                                                Text('Giới tính',
+                                                Text(R.string.gioi_tinh.tr(),
                                                     style: TextStyle(
-                                                        color: textDark)),
+                                                        color: R.color.textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
-                                                        color: Colors.red))
+                                                        color: R.color.red))
                                               ],
                                             )),
                                         SizedBox(height: 12),
@@ -283,7 +282,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                           child: Container(
                                             height: 52,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                             ),
@@ -296,19 +295,19 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                 children: [
                                                   Text(
                                                       _choosenGender == null
-                                                          ? 'Chọn giới tính'
+                                                          ? R.string.chon_gioi_tinh.tr()
                                                           : _choosenGender == 1
-                                                              ? 'Nam'
-                                                              : 'Nữ',
+                                                              ? R.string.nam.tr()
+                                                              : R.string.nu.tr(),
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 16,
                                                           fontWeight:
                                                               FontWeight.w400)),
                                                   Icon(
                                                     Icons
                                                         .keyboard_arrow_down_rounded,
-                                                    color: mainColor,
+                                                    color: R.color.mainColor,
                                                     size: 24,
                                                   ),
                                                 ]),
@@ -324,12 +323,12 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             child: Row(
                                               children: [
                                                 Text(
-                                                    'Tình trạng bệnh tiểu đường',
+                                                    R.string.tinh_trang_benh_tieu_duong.tr(),
                                                     style: TextStyle(
-                                                        color: textDark)),
+                                                        color: R.color.textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
-                                                        color: Colors.red))
+                                                        color: R.color.red))
                                               ],
                                             )),
                                         SizedBox(height: 12),
@@ -341,7 +340,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                           child: Container(
                                             height: 52,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                             ),
@@ -354,18 +353,18 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                 children: [
                                                   Text(
                                                       diabetesStatus == null
-                                                          ? 'Chọn tình trạng bệnh'
+                                                          ? R.string.chon_tinh_trang_benh.tr()
                                                           : diabetesStatus[
                                                               'value'],
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 16,
                                                           fontWeight:
                                                               FontWeight.w400)),
                                                   Icon(
                                                     Icons
                                                         .keyboard_arrow_down_rounded,
-                                                    color: mainColor,
+                                                    color: R.color.mainColor,
                                                     size: 24,
                                                   ),
                                                 ]),
@@ -380,12 +379,12 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             alignment: Alignment.topLeft,
                                             child: Row(
                                               children: [
-                                                Text('Năm phát hiện bệnh',
+                                                Text(R.string.nam_phat_hien_benh.tr(),
                                                     style: TextStyle(
-                                                        color: textDark)),
+                                                        color: R.color.textDark)),
                                                 Text(" *",
                                                     style: TextStyle(
-                                                        color: Colors.red))
+                                                        color: R.color.red))
                                               ],
                                             )),
                                         SizedBox(height: 12),
@@ -397,7 +396,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                           child: Container(
                                             height: 52,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                             ),
@@ -411,20 +410,20 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                   Text(
                                                       selectedYear != null
                                                           ? convertToUTC(
-                                                              selectedYear
+                                                              selectedYear!
                                                                       .millisecondsSinceEpoch ~/
                                                                   1000,
                                                               'yyyy')
-                                                          : 'Chọn năm',
+                                                          : R.string.chon_nam.tr(),
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontSize: 16,
                                                           fontWeight:
                                                               FontWeight.w400)),
                                                   Icon(
                                                     Icons
                                                         .keyboard_arrow_down_rounded,
-                                                    color: mainColor,
+                                                    color: R.color.mainColor,
                                                     size: 24,
                                                   ),
                                                 ]),
@@ -449,15 +448,15 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ]),
                                         borderRadius:
                                             BorderRadius.circular(200)),
                                     child: Center(
-                                        child: Text('Lưu thông tin',
+                                        child: Text(R.string.luu_thong_tin.tr(),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w500)))),
                               ),
@@ -485,13 +484,13 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Loại bệnh',
+                Text(R.string.loai_benh.tr(),
                     style: TextStyle(
-                        color: textDark,
+                        color: R.color.textDark,
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 GestureDetector(
-                    child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                    child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                     onTap: () {
                       Navigator.pop(context);
                     })
@@ -520,11 +519,11 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                             width: 119,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(200),
-                                color: grayBorder),
+                                color: R.color.grayBorder),
                             child: Center(
-                              child: Text('Huỷ',
+                              child: Text(R.string.cancel.tr(),
                                   style: TextStyle(
-                                      color: textDark,
+                                      color: R.color.textDark,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                             )),
@@ -540,19 +539,19 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                           height: 48,
                           width: 119,
                           decoration: BoxDecoration(
-                              color: red,
+                              color: R.color.red,
                               borderRadius: BorderRadius.circular(200),
                               gradient: LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.centerRight,
                                   colors: [
-                                    greenGradientTop,
-                                    greenGradientBottom
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
                                   ])),
                           child: Center(
-                            child: Text('Đồng ý',
+                            child: Text(R.string.yes.tr(),
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                           ),
@@ -585,13 +584,13 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('Giới tính',
+                Text(R.string.gioi_tinh.tr(),
                     style: TextStyle(
-                        color: textDark,
+                        color: R.color.textDark,
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 GestureDetector(
-                    child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                    child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                     onTap: () {
                       Navigator.pop(context);
                     })
@@ -615,11 +614,11 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                             width: 119,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(200),
-                                color: grayBorder),
+                                color: R.color.grayBorder),
                             child: Center(
-                              child: Text('Huỷ',
+                              child: Text(R.string.cancel.tr(),
                                   style: TextStyle(
-                                      color: textDark,
+                                      color: R.color.textDark,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600)),
                             )),
@@ -636,19 +635,19 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                           height: 48,
                           width: 119,
                           decoration: BoxDecoration(
-                              color: red,
+                              color: R.color.red,
                               borderRadius: BorderRadius.circular(200),
                               gradient: LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.centerRight,
                                   colors: [
-                                    greenGradientTop,
-                                    greenGradientBottom
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
                                   ])),
                           child: Center(
-                            child: Text('Đồng ý',
+                            child: Text(R.string.yes.tr(),
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                           ),
@@ -693,33 +692,33 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
   }
 
   _submitData() async {
-    final name = nameController.text ?? '';
+    final name = nameController.text;
     if (phone.isEmpty && widget.type != 'phone') {
-      phoneKey.currentState.validate('Bạn chưa nhập số điện thoại');
+      phoneKey.currentState!.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
     if (name.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập họ tên');
+      Message.showToastMessage(context, R.string.ban_chua_nhap_ho_ten.tr());
       return;
     }
     if (selectedDate == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn ngày sinh');
+      Message.showToastMessage(context, R.string.ban_chua_chon_ngay_sinh.tr());
       return;
     }
 
     if (_choosenGender == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn giới tính');
+      Message.showToastMessage(context, R.string.ban_chua_chon_gioi_tinh.tr());
       return;
     }
 
     if (diabetesStatus == null) {
       Message.showToastMessage(
-          context, 'Bạn chưa chọn tình trạng bệnh tiểu đường');
+          context, R.string.ban_chua_chon_tinh_trang_benh_tieu_duong.tr());
       return;
     }
 
     if (selectedYear == null) {
-      Message.showToastMessage(context, 'Bạn chưa chọn năm phát hiện bệnh');
+      Message.showToastMessage(context, R.string.ban_chua_chon_nam_phat_hien_benh.tr());
       return;
     }
 
@@ -728,15 +727,15 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
     try {
       Map<String, String> params = {
         'fullName': name,
-        'dateOfBirth': selectedDate.millisecondsSinceEpoch == 0
+        'dateOfBirth': selectedDate!.millisecondsSinceEpoch == 0
             ? '0'
-            : (selectedDate.millisecondsSinceEpoch ~/ 1000).toString(),
+            : (selectedDate!.millisecondsSinceEpoch ~/ 1000).toString(),
         'gender': _choosenGender.toString(),
         'diabetesStatus': diabetesStatus['key'].toString()
       };
       if (selectedYear != null) {
         params['diabetesDate'] =
-            (selectedYear.millisecondsSinceEpoch ~/ 1000).toString();
+            (selectedYear!.millisecondsSinceEpoch ~/ 1000).toString();
       }
       if (phone != null) {
         params['phoneNumber'] = phone;
@@ -745,10 +744,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       if (widget.type == 'google') {
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Google',
-          'providerKey': widget.googleAccount.id,
+          'providerKey': widget.googleAccount!.id,
           'phoneNumber': phone
         });
-        Navigator.pushNamed(context, '/verify', arguments: {
+        Navigator.pushNamed(context, NavigatorName.verify, arguments: {
           'type': 'google',
           'otp': result.token,
           'phone': phone,
@@ -759,10 +758,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       } else if (widget.type == 'facebook') {
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount.accessToken.userId,
+          'providerKey': widget.facebookAccount!.accessToken?.userId,
           'phoneNumber': phone
         });
-        Navigator.pushNamed(context, '/verify', arguments: {
+        Navigator.pushNamed(context, NavigatorName.verify, arguments: {
           'type': 'facebook',
           'otp': result.token,
           'phone': phone,
@@ -773,10 +772,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       } else if (widget.type == 'apple') {
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Apple',
-          'providerKey': widget.appleAccount.userIdentifier,
+          'providerKey': widget.appleAccount!.userIdentifier,
           'phoneNumber': phone
         });
-        Navigator.pushNamed(context, '/verify', arguments: {
+        Navigator.pushNamed(context, NavigatorName.verify, arguments: {
           'type': 'apple',
           'otp': result.token,
           'phone': phone,
@@ -787,7 +786,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       } else {
         final result = await LoginClient().createPatient(params);
         if (result == true) {
-          Navigator.pushReplacementNamed(context, '/rules');
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
       }
       BotToast.closeAllLoading();
@@ -795,8 +794,8 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == 'USER004') {
-          phoneKey.currentState.validate(
-              'Số điện thoại này đã tồn tại trong hệ thống, vui lòng kiểm tra lại');
+          phoneKey.currentState!.validate(
+              R.string.so_dien_thoai_da_ton_tai_trong_he_thong.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }

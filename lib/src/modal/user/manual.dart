@@ -1,12 +1,12 @@
 import 'package:meta/meta.dart';
 
 class ManualModel {
-  final String id;
-  final String question;
-  final String answer;
+  final String? id;
+  final String? question;
+  final String? answer;
 
   ManualModel(
-      {@required this.id, @required this.question, @required this.answer});
+      {required this.id, required this.question, required this.answer});
 
   factory ManualModel.fromJson(Map<String, dynamic> json) {
     return ManualModel(

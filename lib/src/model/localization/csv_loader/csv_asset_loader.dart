@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:csv/csv_settings_autodetection.dart';
 import 'package:flutter/services.dart';
+import 'package:medical/src/utils/logger.dart';
 
 import 'asset_loader.dart';
 import 'package:csv/csv.dart';
@@ -11,7 +12,7 @@ import 'package:csv/csv.dart';
 // load example/resources/langs/langs.csv
 //
 class CsvAssetLoader extends AssetLoader {
-  CSVParser csvParser;
+  CSVParser? csvParser;
 
   @override
   Future<Map<String, dynamic>> load(String path, Locale locale) async {
@@ -21,7 +22,13 @@ class CsvAssetLoader extends AssetLoader {
     } else {
       log('easy localization loader: CSV parser already loaded, read cache');
     }
-    return csvParser.getLanguageMap(locale.toString());
+    Map<String, dynamic> parser = Map.from({});
+    try {
+      parser =  csvParser!.getLanguageMap(locale.toString());
+    } catch (e) {
+      logger.e(e);
+    }
+    return parser;
   }
 }
 
@@ -30,11 +37,12 @@ class CSVParser {
   final String strings;
   final List<List<dynamic>> lines;
 
-  static final csvSettingsDetector = FirstOccurrenceSettingsDetector(eols: ['\r\n', '\n']);
+  static final csvSettingsDetector =
+      FirstOccurrenceSettingsDetector(eols: ['\r\n', '\n']);
 
   CSVParser(this.strings, {this.fieldDelimiter = ','})
       : lines = CsvToListConverter(csvSettingsDetector: csvSettingsDetector)
-            .convert(strings, fieldDelimiter: fieldDelimiter);
+            .convert(strings);
 
   List getLanguages() {
     return lines.first.sublist(1, lines.first.length);
@@ -45,7 +53,8 @@ class CSVParser {
 
     var translations = <String, dynamic>{};
     for (var i = 1; i < lines.length; i++) {
-      translations.addAll({lines[i][0]: lines[i][indexLocale].replaceAll('\\n', '\n')});
+      translations
+          .addAll({lines[i][0]: lines[i][indexLocale].replaceAll('\\n', '\n')});
     }
     return translations;
   }

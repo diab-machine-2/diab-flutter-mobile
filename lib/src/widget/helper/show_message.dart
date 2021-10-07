@@ -1,13 +1,14 @@
 import 'dart:ui';
 
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 
 class Message {
-  static showToastMessage(BuildContext context, String title) {
+  static showToastMessage(BuildContext context, String? title) {
     FToast fToast = FToast();
     fToast.init(context);
     Future.delayed(Duration.zero, () async {
@@ -20,7 +21,7 @@ class Message {
   }
 
   static showNotificationMessage(
-      {NotificationModel model, NotificationCallback callback}) {
+      {NotificationModel? model, NotificationCallback? callback}) {
     BotToast.showCustomNotification(
         animationDuration: Duration(milliseconds: 200),
         animationReverseDuration: Duration(milliseconds: 200),
@@ -30,7 +31,7 @@ class Message {
             model: model,
             callback: (model) {
               cancel();
-              callback(model);
+              callback!(model);
             },
           );
         });
@@ -38,7 +39,7 @@ class Message {
 }
 
 class ToastMessage extends StatelessWidget {
-  final String title;
+  final String? title;
   ToastMessage({this.title});
   @override
   Widget build(BuildContext context) {
@@ -47,11 +48,11 @@ class ToastMessage extends StatelessWidget {
       child: Container(
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-              color: mainColor,
+              color: R.color.mainColor,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black,
+                  color: R.color.black,
                   blurRadius: 3,
                   offset: Offset(0, 0),
                 )
@@ -63,15 +64,15 @@ class ToastMessage extends StatelessWidget {
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.circular(8)),
                 child: Image.asset(
-                  'assets/images/icon_app.png',
+                  R.drawable.ic_app,
                   width: 40,
                   height: 40,
                 ),
               ),
               SizedBox(width: 16),
               Expanded(
-                child: Text(title,
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
+                child: Text(title!,
+                    style: TextStyle(color: R.color.white, fontSize: 16)),
               ),
             ],
           )),
@@ -79,13 +80,13 @@ class ToastMessage extends StatelessWidget {
   }
 }
 
-typedef NotificationCallback = Function(NotificationModel);
+typedef NotificationCallback = Function(NotificationModel?);
 
 class NotificationMessage extends StatefulWidget {
-  final NotificationCallback callback;
-  final NotificationModel model;
+  final NotificationCallback? callback;
+  final NotificationModel? model;
 
-  const NotificationMessage({Key key, this.model, this.callback})
+  const NotificationMessage({Key? key, this.model, this.callback})
       : super(key: key);
 
   @override
@@ -93,8 +94,6 @@ class NotificationMessage extends StatefulWidget {
 }
 
 class _NotificationMessage extends State<NotificationMessage> {
-  String icon = 'assets/images/icon_app.png';
-
   @override
   void initState() {
     super.initState();
@@ -106,18 +105,18 @@ class _NotificationMessage extends State<NotificationMessage> {
       padding: EdgeInsets.only(left: 18, right: 18),
       child: GestureDetector(
         onTap: () {
-          widget.callback(widget.model);
+          widget.callback!(widget.model);
         },
         child: Column(
           children: [
             Container(
               padding: EdgeInsets.all(18),
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: R.color.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
+                      color: R.color.grey.withOpacity(0.5),
                       blurRadius: 1,
                       offset: Offset(0, 2),
                     )
@@ -131,7 +130,7 @@ class _NotificationMessage extends State<NotificationMessage> {
                     decoration:
                         BoxDecoration(borderRadius: BorderRadius.circular(8)),
                     child: Image.asset(
-                      icon,
+                      R.drawable.ic_app,
                       width: 40,
                       height: 40,
                     ),
@@ -141,13 +140,13 @@ class _NotificationMessage extends State<NotificationMessage> {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children: widget.model.body.isEmpty
+                        children: widget.model!.body!.isEmpty
                             ? [
                                 Text(
-                                  widget.model.title,
+                                  widget.model!.title!,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500),
                                   maxLines: 2,
@@ -155,20 +154,20 @@ class _NotificationMessage extends State<NotificationMessage> {
                               ]
                             : [
                                 Text(
-                                  widget.model.title,
+                                  widget.model!.title!,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500),
                                   maxLines: 2,
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  widget.model.body,
+                                  widget.model!.body!,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400),
                                   maxLines: 2,

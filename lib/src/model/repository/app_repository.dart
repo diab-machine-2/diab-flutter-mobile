@@ -1,13 +1,199 @@
+import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
+import 'package:medical/src/model/request/food_change_request.dart';
+import 'package:medical/src/model/request/send_interest_request.dart';
+import 'package:medical/src/model/response/common_response.dart';
+import 'package:medical/src/model/response/blood_sugar_template_category_response.dart';
+import 'package:medical/src/model/response/blood_sugar_template_detail_response.dart';
+import 'package:medical/src/model/response/detail_package_response.dart';
+import 'package:medical/src/model/response/diabetes_status_response.dart';
+import 'package:medical/src/model/response/food_suggest_response.dart';
+import 'package:medical/src/model/response/get_own_package_code_response.dart';
+import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
+import 'package:medical/src/model/response/list_activity_response.dart';
+import 'package:medical/src/model/response/list_package_response.dart';
+import 'package:medical/src/model/response/list_transaction_response.dart';
+import 'package:medical/src/model/response/menu_response.dart';
+import 'package:medical/src/model/response/tdee_response.dart';
+import 'package:medical/src/model/response/upgrade_account_response.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
 
 import '../service/app_client.dart';
 
 class AppRepository {
-  // Future<ApiResult<LoginResponse>> register(RegisterRequest request) async {
-  //   try {
-  //     LoginResponse response = await appClient.register(request);
-  //     return ApiResult.success(data: response);
-  //   } catch (e) {
-  //     return ApiResult.failure(error: NetworkExceptions.getDioException(e));
-  //   }
-  // }
+  /**
+   * Package flow
+   */
+
+  Future<ApiResult<ListPackageResponse>> getListPackage() async {
+    try {
+      ListPackageResponse response = await appClient.getListPackage();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<DetailPackageResponse>> getDetailPackage(String type) async {
+    try {
+      DetailPackageResponse response = await appClient.getDetailPackage(type);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<UpgradeAccountResponse>> getUpgradeAccount() async {
+    try {
+      UpgradeAccountResponse response = await appClient.getUpgradeAccount();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> sendInterestFeedback(
+      SendInterestRequest request) async {
+    try {
+      CommonResponse response = await appClient.sendInterestFeedback(request);
+      if (response.error == null)
+        return ApiResult.success(data: response);
+      else
+        return ApiResult.failure(
+            error:
+                NetworkExceptions.defaultError(response.error!.message ?? ""));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ListTransactionResponse>> getListTransaction(
+      {bool? isExpired, int? page, int? size}) async {
+    try {
+      ListTransactionResponse response =
+      await appClient.getListTransaction(isExpired, page, size);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<String>> getOwnPackageCode() async {
+    try {
+      GetOwnPackageCodeResponse response = await appClient.getOwnPackageCode();
+      return ApiResult.success(data: response.data ?? "");
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /**
+   * Blood sugar
+   */
+
+  Future<ApiResult<BloodSugarTemplateCategoryResponse>>
+      getListTemplateByCategory(
+    int category,
+  ) async {
+    try {
+      final BloodSugarTemplateCategoryResponse response =
+          await appClient.getListTemplateByCategory(category);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<BloodSugarTemplateDetailResponse>> getListTemplateDetail(
+    int type,
+  ) async {
+    try {
+      final BloodSugarTemplateDetailResponse response =
+          await appClient.getTemplateDetail(type);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<DiabetesStatusResponse>> getDiabetesStatus() async {
+    try {
+      final DiabetesStatusResponse response =
+          await appClient.getDiabetesStatus();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<LatestHba1cInputResponse>> getLatestHbA1CInput() async {
+    try {
+      final LatestHba1cInputResponse response =
+          await appClient.getLatestHbA1CInput();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /**
+   * Sample menu
+   */
+
+  Future<ApiResult<List<ExerciseIntensityModel>>> getListActivity() async {
+    try {
+      ListActivityResponse response = await appClient.getListActivity();
+      return ApiResult.success(data: response.data ?? []);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<TDEEResponse>> getTDEE(
+      {int? weight, int? height, int? yearOfBirth, String? activityLevelId}) async {
+    try {
+      TDEEResponse response = await appClient.getTDEE(activityLevelId, weight, height, yearOfBirth);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /**
+   * Food Menu
+   */
+
+  Future<ApiResult<MenuResponse>> getGetUserFoodMenu() async {
+    try {
+      final MenuResponse response = await appClient.getGetUserFoodMenu();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<FoodSuggestResponse>> getSuggestionFood(String id) async {
+    try {
+      final FoodSuggestResponse response = await appClient.getSuggestionFood(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> changeFood(
+      FoodChangeRequest request) async {
+    try {
+      final CommonResponse response = await appClient.changeFood(request);
+      if (response.error == null)
+        return ApiResult.success(data: response);
+      else
+        return ApiResult.failure(
+            error:
+                NetworkExceptions.defaultError(response.error!.message ?? ""));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+  
 }

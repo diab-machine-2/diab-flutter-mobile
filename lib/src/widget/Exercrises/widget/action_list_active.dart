@@ -1,32 +1,33 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercrises_active.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-typedef TimeCallback = Function(ExercriseActiveModel);
+typedef TimeCallback = Function(ExercriseActiveModel?);
 
 class ActionListActive extends StatefulWidget {
-  final String exerciseCategoryId;
-  final String exerciseIntensityId;
-  final ExercriseActiveModel selected;
-  final String title;
+  final String? exerciseCategoryId;
+  final String? exerciseIntensityId;
+  final ExercriseActiveModel? selected;
+  final String? title;
 
-  final TimeCallback callback;
+  final TimeCallback? callback;
   ActionListActive({
     this.callback,
-    @required this.exerciseCategoryId,
-    @required this.exerciseIntensityId,
-    @required this.selected,
-    @required this.title,
+    required this.exerciseCategoryId,
+    required this.exerciseIntensityId,
+    required this.selected,
+    required this.title,
   });
   @override
   ActionListActiveState createState() => ActionListActiveState();
 }
 
 class ActionListActiveState extends State<ActionListActive> {
-  ExercriseActiveModel selected;
+  ExercriseActiveModel? selected;
 
   List<ExercriseActiveModel> active = [];
 
@@ -51,7 +52,7 @@ class ActionListActiveState extends State<ActionListActive> {
     final double contentHeight = active.length * 51.0 + 170;
     final double height = contentHeight > maxHeight ? maxHeight : contentHeight;
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: R.color.transparent,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 16.0, right: 16),
@@ -59,7 +60,7 @@ class ActionListActiveState extends State<ActionListActive> {
             height: height,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
+              color: R.color.white,
             ),
             child: Padding(
               padding: const EdgeInsets.only(top: 16, bottom: 16),
@@ -69,7 +70,7 @@ class ActionListActiveState extends State<ActionListActive> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text('Chọn hình thức ${widget.title}',
+                    child: Text('${R.string.chon_hinh_thuc} ${widget.title}',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w700)),
                   ),
@@ -87,7 +88,7 @@ class ActionListActiveState extends State<ActionListActive> {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        widget.callback(selected);
+                        widget.callback!(selected);
                         Navigator.pop(context);
                       },
                       child: Container(
@@ -105,18 +106,18 @@ class ActionListActiveState extends State<ActionListActive> {
                                     decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(200),
-                                        color: grayBorder),
+                                        color: R.color.grayBorder),
                                     child: Center(
-                                      child: Text('Huỷ',
+                                      child: Text(R.string.cancel.tr(),
                                           style: TextStyle(
-                                              color: textDark,
+                                              color: R.color.textDark,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     )),
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  widget.callback(selected);
+                                  widget.callback!(selected);
                                   Navigator.pop(context);
                                 },
                                 child: Container(
@@ -127,15 +128,15 @@ class ActionListActiveState extends State<ActionListActive> {
                                         begin: Alignment.topLeft,
                                         end: Alignment.centerRight,
                                         colors: [
-                                          greenGradientTop,
-                                          greenGradientBottom
+                                          R.color.greenGradientTop,
+                                          R.color.greenGradientBottom
                                         ]),
                                     borderRadius: BorderRadius.circular(200),
                                   ),
                                   child: Center(
-                                    child: Text('Tiếp tục',
+                                    child: Text(R.string.tiep_tuc.tr(),
                                         style: TextStyle(
-                                            color: Colors.white,
+                                            color: R.color.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600)),
                                   ),
@@ -165,7 +166,7 @@ class ActionListActiveState extends State<ActionListActive> {
               });
             },
             child: Container(
-              color: selected.id == model.id ? greenbg : Colors.white,
+              color: selected!.id == model.id ? R.color.greenbg : R.color.white,
               child: Column(
                 children: [
                   Padding(
@@ -176,9 +177,9 @@ class ActionListActiveState extends State<ActionListActive> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          selected.id != model.id
+                          selected!.id != model.id
                               ? Expanded(
-                                  child: Text(model.name,
+                                  child: Text(model.name!,
                                       style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
@@ -186,16 +187,16 @@ class ActionListActiveState extends State<ActionListActive> {
                                       overflow: TextOverflow.ellipsis),
                                 )
                               : Expanded(
-                                  child: Text(model.name,
+                                  child: Text(model.name!,
                                       style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
-                                          color: mainColor),
+                                          color: R.color.mainColor),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis),
                                 ),
-                          selected.id == model.id
-                              ? Image.asset('assets/images/check_mark.png',
+                          selected!.id == model.id
+                              ? Image.asset(R.drawable.ic_check_mark,
                                   width: 24, height: 24)
                               : SizedBox()
                         ],
@@ -209,9 +210,9 @@ class ActionListActiveState extends State<ActionListActive> {
                           child: Container(
                               height: 1,
                               width: 373,
-                              color: selected.id == model.id
-                                  ? greenbg
-                                  : Color(0xffD6D8E0)),
+                              color: selected!.id == model.id
+                                  ? R.color.greenbg
+                                  : R.color.color0xffD6D8E0),
                         )
                       : SizedBox(),
                 ],

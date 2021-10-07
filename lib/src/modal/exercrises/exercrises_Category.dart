@@ -7,9 +7,9 @@ class ExercrisesListCategoryModel {
   final List<ExercrisesCategoryModel> exerciseCategoryRegularlies;
 
   ExercrisesListCategoryModel(
-      {@required this.exerciseCategories,
-      @required this.exerciseCategoryCommons,
-      @required this.exerciseCategoryRegularlies});
+      {required this.exerciseCategories,
+      required this.exerciseCategoryCommons,
+      required this.exerciseCategoryRegularlies});
   @override
   factory ExercrisesListCategoryModel.fromJson(Map<String, dynamic> json) {
     return ExercrisesListCategoryModel(
@@ -27,30 +27,30 @@ class ExercrisesListCategoryModel {
 }
 
 class ExercrisesCategoryModel {
-  final String categoryId;
-  final String category;
-  final String exerciseId;
-  final String code;
-  final double duration;
-  final double burnedCalorie;
-  final String exerciseIntensityId;
-  final String unit;
-  final String description;
-  final int order;
-  final ImagesModel cover;
+  final String? categoryId;
+  final String? category;
+  final String? exerciseId;
+  final String? code;
+  final double? duration;
+  final double? burnedCalorie;
+  final String? exerciseIntensityId;
+  final String? unit;
+  final String? description;
+  final int? order;
+  final ImagesModel? cover;
 
   ExercrisesCategoryModel({
-    @required this.categoryId,
-    @required this.category,
-    @required this.exerciseId,
-    @required this.code,
-    @required this.duration,
-    @required this.burnedCalorie,
-    @required this.exerciseIntensityId,
-    @required this.unit,
-    @required this.description,
-    @required this.order,
-    @required this.cover,
+    required this.categoryId,
+    required this.category,
+    required this.exerciseId,
+    required this.code,
+    required this.duration,
+    required this.burnedCalorie,
+    required this.exerciseIntensityId,
+    required this.unit,
+    required this.description,
+    required this.order,
+    required this.cover,
   });
   @override
   factory ExercrisesCategoryModel.fromJson(Map<String, dynamic> json) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
 import 'package:medical/src/widget/HbA1C/widget/hba1c_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/hba1c_contain_detail.dart';
@@ -6,7 +7,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class HbA1COverviewController extends StatefulWidget {
   HbA1COverviewController({
-    Key key,
+    Key? key,
   }) : super(key: key);
   @override
   HbA1COverviewControllerState createState() => HbA1COverviewControllerState();
@@ -30,10 +31,10 @@ class HbA1COverviewControllerState extends State<HbA1COverviewController>
   reloadData(int periodFilterType) {
     _scrollController.jumpTo(0);
     if (detailKey.currentState != null) {
-      detailKey.currentState.reloadData(periodFilterType);
+      detailKey.currentState!.reloadData(periodFilterType);
     }
     if (chartKey.currentState != null) {
-      chartKey.currentState.reloadData(periodFilterType);
+      chartKey.currentState!.reloadData(periodFilterType);
     }
   }
 
@@ -45,17 +46,14 @@ class HbA1COverviewControllerState extends State<HbA1COverviewController>
       decoration: BoxDecoration(
           gradient: LinearGradient(
               colors: [
-                Color(0xFFFDC798).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFFDC798).withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
               ],
               begin: Alignment.topRight,
               end: Alignment.bottomLeft, //FractionalOffset(1.0, 0.0),
               stops: [0.0, 0.3, 0.8, 1.0])
-          // image: DecorationImage(
-          //     image: AssetImage('assets/images/HbA1c_high.png'),
-          //     fit: BoxFit.cover)
           ),
       child: ListView(
           controller: _scrollController,

@@ -1,11 +1,13 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Food/widget/food_item.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
@@ -13,20 +15,20 @@ import 'package:medical/src/widget/helper/show_message.dart';
 
 class SearchFood extends StatefulWidget {
   final List<FoodModel> foods;
-  SearchFood({@required this.foods});
+  SearchFood({required this.foods});
   @override
   _SearchFoodState createState() => _SearchFoodState();
 }
 
-class _SearchFoodState extends State<SearchFood> {
-  BuildContext currentContext;
+class _SearchFoodState extends State<SearchFood> with Observer {
+  late BuildContext currentContext;
 
   TextEditingController controller = TextEditingController();
 
   List<FoodModel> selectedFoods = [];
 
   int page = 1;
-  bool hasMore = false;
+  bool? hasMore = false;
   bool isLoading = false;
 
   @override
@@ -34,39 +36,34 @@ class _SearchFoodState extends State<SearchFood> {
     super.initState();
     controller.text = '';
     selectedFoods = [...widget.foods];
-    // DartNotificationCenter.subscribe(
-    //     channel: 'add_food_to_favorite',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       refresh();
-    //     });
+    Observable.instance.addObserver(this);
+  }
 
-    DartNotificationCenter.subscribe(
-        channel: 'add_food_to_cart',
-        observer: this,
-        onNotification: (food) {
-          setState(() {
-            this.selectedFoods.add(food);
-          });
-        });
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    final FoodModel foodModel = map?['food'];
+    if (foodModel != null) {
+      if (notifyName == 'add_food_to_cart') {
+        this.selectedFoods.add(foodModel);
+        setState(() {});
+      }
+    }
   }
 
   @override
   void dispose() {
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'add_food_to_favorite', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'add_food_to_cart', observer: this);
+    Observable.instance.removeObserver(this);
     super.dispose();
   }
 
   Future<bool> _loadMore() async {
-    if (isLoading || !hasMore) {
+    if (isLoading || !hasMore!) {
       return true;
     } else {
       isLoading = true;
       BlocProvider.of<FoodBloc>(currentContext)
-          .add(FetchSearchFood(keyword: controller.text ?? '', page: page));
+          .add(FetchSearchFood(keyword: controller.text, page: page));
     }
     return true;
   }
@@ -74,7 +71,7 @@ class _SearchFoodState extends State<SearchFood> {
   Future<bool> refresh() async {
     page = 1;
     BlocProvider.of<FoodBloc>(currentContext)
-        .add(FetchSearchFood(keyword: controller.text ?? '', page: page));
+        .add(FetchSearchFood(keyword: controller.text, page: page));
     return true;
   }
 
@@ -90,24 +87,24 @@ class _SearchFoodState extends State<SearchFood> {
       body: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/images/background_splash.png'),
+                  image: AssetImage(R.drawable.bg_splash),
                   fit: BoxFit.cover)),
           child: SafeArea(
             top: false,
             child: Column(children: [
               CustomAppBar(
                   title: Text(
-                    'Nhập món ăn',
+                    R.string.nhap_mon_an.tr(),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark),
+                        color: R.color.textDark),
                   ),
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.close, color: textDark),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.close, color: R.color.textDark),
                       onPressed: () {
                         Navigator.pop(context);
                       })),
@@ -119,9 +116,9 @@ class _SearchFoodState extends State<SearchFood> {
                   child: Container(
                       height: 48,
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: Color(0xffDDDDDD))),
+                          border: Border.all(color: R.color.grayComponentBorder)),
                       child: Padding(
                         padding: EdgeInsets.only(left: 16, right: 8),
                         child: Row(
@@ -131,7 +128,7 @@ class _SearchFoodState extends State<SearchFood> {
                                 child: CupertinoTextField(
                                     autofocus: true,
                                     controller: controller,
-                                    placeholder: 'Tìm kiếm món ăn',
+                                    placeholder: R.string.tim_kiem_mon_an.tr(),
                                     decoration: BoxDecoration(border: null),
                                     onChanged: (value) {
                                       refresh();
@@ -144,7 +141,7 @@ class _SearchFoodState extends State<SearchFood> {
                               onTap: () {
                                 Navigator.pop(context);
                               },
-                              child: Image.asset('assets/images/icon_clear.png',
+                              child: Image.asset(R.drawable.ic_clear,
                                   width: 35, height: 35),
                             )
                           ],
@@ -157,19 +154,19 @@ class _SearchFoodState extends State<SearchFood> {
                   child: BlocBuilder<FoodBloc, FoodState>(
                       builder: (BuildContext context, FoodState state) {
                     currentContext = context;
-                    List<FoodModel> model;
+                    List<FoodModel>? model;
                     if (state is FoodInitial) {
                       BlocProvider.of<FoodBloc>(currentContext).add(
                           FetchSearchFood(
-                              keyword: controller.text ?? '', page: 1));
+                              keyword: controller.text, page: 1));
                     }
                     if (state is FoodError) {
                       Message.showToastMessage(context, state.message);
                     }
                     if (state is FoodSearchLoaded) {
-                      model = state.searchModel.foods;
-                      hasMore = state.searchModel.hasMore;
-                      if (hasMore) {
+                      model = state.searchModel!.foods;
+                      hasMore = state.searchModel!.hasMore;
+                      if (hasMore!) {
                         page += 1;
                       }
                       isLoading = false;
@@ -182,7 +179,7 @@ class _SearchFoodState extends State<SearchFood> {
                                 onRefresh: refresh,
                                 child: LoadMore(
                                     onLoadMore: _loadMore,
-                                    isFinish: !hasMore,
+                                    isFinish: !hasMore!,
                                     whenEmptyLoad: false,
                                     delegate: CustomLoadMoreDelegate(),
                                     textBuilder:
@@ -200,24 +197,24 @@ class _SearchFoodState extends State<SearchFood> {
                                             (BuildContext context, int index) {
                                           return Container(
                                               height: 1,
-                                              color: Color(0xffE5E5E5));
+                                              color: R.color.color0xffE5E5E5);
                                         },
                                         itemBuilder:
                                             (BuildContext context, int index) {
-                                          if (model.length == 0) {
+                                          if (model!.length == 0) {
                                             return Padding(
                                               padding: EdgeInsets.only(
                                                   left: 64,
                                                   right: 64,
                                                   top: 100),
                                               child: Image.asset(
-                                                  'assets/images/near_food_empty.png'),
+                                                  R.drawable.img_near_food_empty),
                                             );
                                           } else {
                                             final selectedIndex = selectedFoods
                                                 .lastIndexWhere((element) =>
                                                     element.id ==
-                                                    model[index].id);
+                                                    model![index].id);
                                             return FoodItem(
                                               model: model[index],
                                               selectedModel: selectedIndex != -1

@@ -3,30 +3,31 @@ import 'package:meta/meta.dart';
 import 'dart:convert';
 
 class NotificationModel {
-  final String id;
-  final String title;
-  final String body;
-  final String topic;
-  final String imageUrl;
-  final int sentDateTime;
-  final bool isRead;
-  final String hyperText;
-  final String hyperLink;
-  final NotificationData data;
-  final int notificationType;
+  final String? id;
+  final String? title;
+  final String? body;
+  final String? topic;
+  final String? imageUrl;
+  final int? sentDateTime;
+  final bool? isRead;
+  final String? hyperText;
+  final String? hyperLink;
+  final NotificationData? data;
+  final int? notificationType;
 
   NotificationModel(
-      {@required this.id,
-      @required this.title,
-      @required this.body,
-      @required this.topic,
-      @required this.imageUrl,
-      @required this.sentDateTime,
-      @required this.isRead,
-      @required this.hyperText,
-      @required this.hyperLink,
-      @required this.data,
-      @required this.notificationType});
+      {this.id,
+      required this.title,
+      required this.body,
+      this.topic,
+      this.imageUrl,
+      this.sentDateTime,
+      this.isRead,
+      this.hyperText,
+      this.hyperLink,
+      this.data,
+      this.notificationType});
+
   @override
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     final notification =
@@ -54,14 +55,15 @@ class NotificationModel {
 }
 
 class NotificationData {
-  final String communicationId;
-  final String remindId;
+  final String? communicationId;
+  final String? remindId;
   final int notificationType;
 
   NotificationData(
-      {@required this.communicationId,
-      @required this.remindId,
-      @required this.notificationType});
+      {required this.communicationId,
+      required this.remindId,
+      required this.notificationType});
+
   @override
   factory NotificationData.fromJson(dynamic json) {
     return NotificationData(

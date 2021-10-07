@@ -1,20 +1,20 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_summary.dart';
 import 'package:medical/src/modal/exercrises/exercrise_walk_summary.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ExercrisesDetail extends StatefulWidget {
-  ExercrisesDetail({Key key}) : super(key: key);
+  ExercrisesDetail({Key? key}) : super(key: key);
 
   @override
   ExercrisesDetailState createState() => ExercrisesDetailState();
@@ -25,7 +25,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
   @override
   bool get wantKeepAlive => true;
 
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   @override
   void initState() {
@@ -58,8 +58,8 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
         child: BlocBuilder<ExercrisesBloc, ExercrisesState>(
             builder: (BuildContext context, ExercrisesState state) {
           currentContext = context;
-          ExercriseSummaryModel exercriseSummaryModel;
-          ExercriseWalkSummaryModel exercriseWalkSummaryModel;
+          ExercriseSummaryModel? exercriseSummaryModel;
+          ExercriseWalkSummaryModel? exercriseWalkSummaryModel;
           if (state is ExercrisesInitial) {
             BlocProvider.of<ExercrisesBloc>(context).add(FetchDataDaily(
               currentDateTime:
@@ -88,9 +88,9 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Hoạt động trong ngày',
+                        Text(R.string.hoat_dong_trong_ngay.tr(),
                             style: TextStyle(
-                                color: Colors.black,
+                                color: R.color.black,
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700)),
                         Container(
@@ -99,8 +99,8 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                               borderRadius: BorderRadius.circular(16),
                               gradient: LinearGradient(
                                   colors: [
-                                    Color(0xFFB1DDDB).withAlpha(90),
-                                    Color(0xFFFED31B).withAlpha(40),
+                                    R.color.color0xffB1DDDB.withAlpha(90),
+                                    R.color.color0xFFFED31B.withAlpha(40),
                                   ],
                                   begin: FractionalOffset(0.3, 0.0),
                                   end: FractionalOffset(0.0, 1),
@@ -122,8 +122,8 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                               child: CustomPaint(
                                                   painter: GradientArcPainter(
                                                 progress: 1,
-                                                startColor: Colors.white,
-                                                endColor: Colors.white,
+                                                startColor: R.color.white,
+                                                endColor: R.color.white,
                                                 width: 8.0,
                                               ))),
                                           SizedBox(
@@ -131,12 +131,12 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                               height: 130.0,
                                               child: CustomPaint(
                                                   painter: GradientArcPainter(
-                                                progress: exercriseSummaryModel
-                                                        .factDuration /
+                                                progress: exercriseSummaryModel!
+                                                        .factDuration! /
                                                     exercriseSummaryModel
-                                                        .targetDuration,
-                                                startColor: Color(0xff21A567),
-                                                endColor: Color(0xff21A567)
+                                                        .targetDuration!,
+                                                startColor: R.color.green,
+                                                endColor: R.color.green
                                                     .withOpacity(0.8),
                                                 width: 8.0,
                                               ))),
@@ -145,16 +145,16 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                 MainAxisAlignment.center,
                                             children: [
                                               Text(
-                                                "${exercriseSummaryModel.factDuration.toInt().toString()}",
+                                                "${exercriseSummaryModel.factDuration!.toInt().toString()}",
                                                 style: TextStyle(
                                                     fontFamily: 'Viga',
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 40.0),
                                               ),
                                               Text(
-                                                "/${exercriseSummaryModel.targetDuration.toInt().toString()} phút",
+                                                "/${exercriseSummaryModel.targetDuration!.toInt().toString()} phút",
                                                 style: TextStyle(
-                                                    color: primaryGreyColor,
+                                                    color: R.color.primaryGreyColor,
                                                     fontWeight: FontWeight.w300,
                                                     fontSize: 14.0),
                                               ),
@@ -170,7 +170,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                           Row(
                                             children: [
                                               Image.asset(
-                                                'assets/images/clock_exe.png',
+                                                R.drawable.ic_clock_exe,
                                                 width: 24,
                                                 height: 24,
                                               ),
@@ -179,12 +179,12 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                               ),
                                               Text(
                                                 exercriseSummaryModel
-                                                    .durationRatio
+                                                    .durationRatio!
                                                     .toInt()
                                                     .toString(),
                                                 style: TextStyle(
                                                     fontFamily: 'Viga',
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 32.0),
                                               ),
@@ -197,7 +197,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                 child: Text(
                                                   '%',
                                                   style: TextStyle(
-                                                      color: primaryGreyColor,
+                                                      color: R.color.primaryGreyColor,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 16.0),
@@ -211,7 +211,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                           Row(
                                             children: [
                                               Image.asset(
-                                                'assets/images/fire_exe.png',
+                                                R.drawable.ic_fire_exe,
                                                 width: 24,
                                                 height: 24,
                                               ),
@@ -220,12 +220,12 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                               ),
                                               Text(
                                                 exercriseSummaryModel
-                                                    .burnedCalories
+                                                    .burnedCalories!
                                                     .toInt()
                                                     .toString(),
                                                 style: TextStyle(
                                                     fontFamily: 'Viga',
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 32.0),
                                               ),
@@ -236,9 +236,9 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                 padding: const EdgeInsets.only(
                                                     top: 8.0),
                                                 child: Text(
-                                                  'kcal',
+                                                  R.string.kcal.tr(),
                                                   style: TextStyle(
-                                                      color: primaryGreyColor,
+                                                      color: R.color.primaryGreyColor,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 16.0),
@@ -255,7 +255,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                               Padding(
                                 padding: EdgeInsets.only(top: 16),
                                 child:
-                                    Container(height: 1, color: Colors.white),
+                                    Container(height: 1, color: R.color.white),
                               ),
                               Row(
                                 mainAxisAlignment:
@@ -272,7 +272,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                     null
                                                 ? ''
                                                 : exercriseSummaryModel
-                                                        .mainExerciseIconUrl
+                                                        .mainExerciseIconUrl!
                                                         .url ??
                                                     '',
                                             width: 24,
@@ -287,9 +287,9 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                             children: [
                                               Text(
                                                   exercriseSummaryModel
-                                                      .mainExerciseName,
+                                                      .mainExerciseName!,
                                                   style: TextStyle(
-                                                      color: primaryGreyColor,
+                                                      color: R.color.primaryGreyColor,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 14.0)),
@@ -302,11 +302,11 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                               0
                                                           ? '--'
                                                           : exercriseSummaryModel
-                                                              .mainExerciseDuration
+                                                              .mainExerciseDuration!
                                                               .toInt()
                                                               .toString(),
                                                       style: TextStyle(
-                                                          color: textDark,
+                                                          color: R.color.textDark,
                                                           fontWeight:
                                                               FontWeight.w700,
                                                           fontSize: 20.0)),
@@ -315,10 +315,10 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                     padding:
                                                         const EdgeInsets.only(
                                                             top: 2.0),
-                                                    child: Text('phút',
+                                                    child: Text(R.string.minute.tr(),
                                                         style: TextStyle(
                                                             color:
-                                                                primaryGreyColor,
+                                                                R.color.primaryGreyColor,
                                                             fontWeight:
                                                                 FontWeight.w400,
                                                             fontSize: 14.0)),
@@ -334,7 +334,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                   Container(
                                       width: 1,
                                       height: 60,
-                                      color: Colors.white),
+                                      color: R.color.white),
                                   Expanded(
                                     child: Padding(
                                       padding: EdgeInsets.only(left: 32),
@@ -346,7 +346,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                     null
                                                 ? ''
                                                 : exercriseSummaryModel
-                                                        .otherExerciseIconUrl
+                                                        .otherExerciseIconUrl!
                                                         .url ??
                                                     '',
                                             width: 24,
@@ -362,9 +362,9 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                               children: [
                                                 Text(
                                                   exercriseSummaryModel
-                                                      .otherExerciseName,
+                                                      .otherExerciseName!,
                                                   style: TextStyle(
-                                                      color: primaryGreyColor,
+                                                      color:  R.color.primaryGreyColor,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 14.0),
@@ -381,11 +381,11 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                                 0
                                                             ? '--'
                                                             : exercriseSummaryModel
-                                                                .otherExerciseDuration
+                                                                .otherExerciseDuration!
                                                                 .toInt()
                                                                 .toString(),
                                                         style: TextStyle(
-                                                            color: textDark,
+                                                            color: R.color.textDark,
                                                             fontWeight:
                                                                 FontWeight.w700,
                                                             fontSize: 20.0)),
@@ -394,10 +394,10 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                       padding:
                                                           const EdgeInsets.only(
                                                               top: 2.0),
-                                                      child: Text('phút',
+                                                      child: Text(R.string.minute.tr(),
                                                           style: TextStyle(
                                                               color:
-                                                                  primaryGreyColor,
+                                                                   R.color.primaryGreyColor,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w400,
@@ -427,44 +427,44 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text('Đi bộ trong ngày',
+                                        Text(R.string.di_bo_trong_ngay.tr(),
                                             style: TextStyle(
-                                                color: Colors.black,
+                                                color: R.color.black,
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.w700)),
                                         GestureDetector(
                                           onTap: () {
                                             showDialog(
-                                                barrierColor: Color(0xff003F38)
+                                                barrierColor: R.color.color0xff003F38
                                                     .withOpacity(0.5),
                                                 context: context,
                                                 builder: (_) =>
                                                     CustomInputTimePicker(
                                                         title:
-                                                            'Số phút đi bộ mỗi ngày',
+                                                            R.string.so_phut_di_bo_moi_ngay.tr(),
                                                         time: 60,
                                                         callback:
                                                             (hour, minute) {
                                                           submitTarget(
                                                               hour * 60.0 +
                                                                   minute,
-                                                              exercriseWalkSummaryModel
+                                                              exercriseWalkSummaryModel!
                                                                   .id);
                                                         }));
                                           },
                                           child: Container(
-                                            color: Colors.transparent,
+                                            color: R.color.transparent,
                                             child: Row(
                                               children: [
                                                 Image.asset(
-                                                  'assets/images/circle_plus_exe.png',
+                                                  R.drawable.ic_circle_plus_exe,
                                                   width: 24,
                                                   height: 24,
                                                 ),
                                                 SizedBox(width: 4),
-                                                Text('Mục tiêu mới',
+                                                Text(R.string.muc_tieu_moi.tr(),
                                                     style: TextStyle(
-                                                        color: mainColor,
+                                                        color: R.color.mainColor,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w700)),
@@ -478,7 +478,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                         margin: EdgeInsets.only(top: 16),
                                         padding: EdgeInsets.only(left: 16),
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: R.color.white,
                                           borderRadius:
                                               BorderRadius.circular(16),
                                         ),
@@ -488,9 +488,9 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                           children: [
                                             // Padding(
                                             //   padding: const EdgeInsets.only(top: 0.0),
-                                            //   child: Text('Chi tiết',
+                                            //   child: Text(R.string.detail.tr(),
                                             //       style: TextStyle(
-                                            //           color: Colors.black,
+                                            //           color: R.color.black,
                                             //           fontSize: 16,
                                             //           fontWeight: FontWeight.w700)),
                                             // ),
@@ -505,7 +505,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                         Row(
                                                           children: [
                                                             Image.asset(
-                                                              'assets/images/shoe_exe.png',
+                                                              R.drawable.ic_shoe_exe,
                                                               width: 24,
                                                               height: 24,
                                                             ),
@@ -514,14 +514,14 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                             ),
                                                             Text(
                                                                 exercriseWalkSummaryModel
-                                                                    .factDuration
+                                                                    .factDuration!
                                                                     .toInt()
                                                                     .toString(),
                                                                 style: TextStyle(
                                                                     fontFamily:
                                                                         'Viga',
                                                                     color:
-                                                                        textDark,
+                                                                        R.color.textDark,
                                                                     fontSize:
                                                                         24,
                                                                     fontWeight:
@@ -534,10 +534,10 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                                       top: 4.0,
                                                                       left: 2),
                                                               child: Text(
-                                                                "/ ${exercriseWalkSummaryModel.targetDuration.toInt().toString()} phút",
+                                                                "/ ${exercriseWalkSummaryModel.targetDuration!.toInt().toString()} ${R.string.minute.tr()}",
                                                                 style: TextStyle(
                                                                     color:
-                                                                        primaryGreyColor,
+                                                                         R.color.primaryGreyColor,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w400,
@@ -553,7 +553,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                         Row(
                                                           children: [
                                                             Image.asset(
-                                                              'assets/images/fire_exe.png',
+                                                              R.drawable.ic_fire_exe,
                                                               width: 24,
                                                               height: 24,
                                                             ),
@@ -562,14 +562,14 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                             ),
                                                             Text(
                                                                 exercriseWalkSummaryModel
-                                                                    .burnedCalories
+                                                                    .burnedCalories!
                                                                     .toInt()
                                                                     .toString(),
                                                                 style: TextStyle(
                                                                     fontFamily:
                                                                         'Viga',
                                                                     color:
-                                                                        textDark,
+                                                                        R.color.textDark,
                                                                     fontSize:
                                                                         24,
                                                                     fontWeight:
@@ -582,10 +582,10 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                                       top: 2.0,
                                                                       left: 2),
                                                               child: Text(
-                                                                'kcal',
+                                                                R.string.kcal.tr(),
                                                                 style: TextStyle(
                                                                     color:
-                                                                        primaryGreyColor,
+                                                                         R.color.primaryGreyColor,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w400,
@@ -601,8 +601,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                         Container(
                                                             height: 1,
                                                             width: 375,
-                                                            color: Color(
-                                                                0xffD6D8E0)),
+                                                            color: R.color.color0xffD6D8E0),
                                                         SizedBox(
                                                           height: 16,
                                                         ),
@@ -613,7 +612,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                           children: [
                                                             Image.network(
                                                               exercriseWalkSummaryModel
-                                                                      .targetIconUrl
+                                                                      .targetIconUrl!
                                                                       .url ??
                                                                   '',
                                                               width: 24,
@@ -625,10 +624,10 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                             Expanded(
                                                               child: Text(
                                                                   exercriseWalkSummaryModel
-                                                                      .targetDescription,
+                                                                      .targetDescription!,
                                                                   style: TextStyle(
                                                                       color:
-                                                                          textDark,
+                                                                          R.color.textDark,
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w400,
@@ -642,7 +641,7 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
                                                   ),
                                                 ),
                                                 Image.asset(
-                                                  'assets/images/runner.png',
+                                                  R.drawable.img_runner,
                                                   width: 109,
                                                   height: 178,
                                                 )
@@ -659,21 +658,21 @@ class ExercrisesDetailState extends State<ExercrisesDetail>
   }
 
   handlePercent(ExercriseSummaryModel exercriseSummaryModel) {
-    final percent = exercriseSummaryModel.factDuration /
-        exercriseSummaryModel.targetDuration;
+    final percent = exercriseSummaryModel.factDuration! /
+        exercriseSummaryModel.targetDuration!;
     if (percent > 1) {
       return 1.0;
     }
     return percent;
   }
 
-  submitTarget(double time, String exerciseCategoryId) async {
+  submitTarget(double time, String? exerciseCategoryId) async {
     try {
       BotToast.showLoading();
       await ExercrisesClient()
           .addExercriseTarget(1, 1, time, exerciseCategoryId);
       UserClient().fetchUser();
-      Message.showToastMessage(context, 'Thêm mục tiêu thành công');
+      Message.showToastMessage(context, R.string.them_muc_tieu_thanh_cong.tr());
       _refresh();
       BotToast.closeAllLoading();
     } catch (e, _) {

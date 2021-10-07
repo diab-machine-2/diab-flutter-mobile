@@ -1,16 +1,16 @@
 import 'package:meta/meta.dart';
 
 class SecureModel {
-  final String email;
-  final String support;
-  final String hotline;
-  final String security;
+  final String? email;
+  final String? support;
+  final String? hotline;
+  final String? security;
 
   SecureModel(
-      {@required this.email,
-      @required this.support,
-      @required this.hotline,
-      @required this.security});
+      {required this.email,
+      required this.support,
+      required this.hotline,
+      required this.security});
 
   factory SecureModel.fromJson(Map<String, dynamic> json) {
     return SecureModel(

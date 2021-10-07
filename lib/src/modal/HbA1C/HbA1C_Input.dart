@@ -2,34 +2,34 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 class InputHbA1CModel {
-  final String id;
-  final int date;
-  final String type;
-  final double hbA1C;
-  final double glucose;
-  final String unit;
-  final String description;
-  final String color;
-  final String fontColor;
-  final String backgroundColor;
-  final String borderColor;
-  final String percentColor;
+  final String? id;
+  final int? date;
+  final String? type;
+  final double? hbA1C;
+  final double? glucose;
+  final String? unit;
+  final String? description;
+  final String? color;
+  final String? fontColor;
+  final String? backgroundColor;
+  final String? borderColor;
+  final String? percentColor;
   final List<ImagesModel> images;
 
   InputHbA1CModel({
-    @required this.id,
-    @required this.date,
-    @required this.type,
-    @required this.hbA1C,
-    @required this.glucose,
-    @required this.unit,
-    @required this.description,
-    @required this.color,
-    @required this.fontColor,
-    @required this.backgroundColor,
-    @required this.borderColor,
-    @required this.percentColor,
-    @required this.images,
+    required this.id,
+    required this.date,
+    required this.type,
+    required this.hbA1C,
+    required this.glucose,
+    required this.unit,
+    required this.description,
+    required this.color,
+    required this.fontColor,
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.percentColor,
+    required this.images,
   });
   @override
   factory InputHbA1CModel.fromJson(Map<String, dynamic> json) {

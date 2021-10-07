@@ -2,13 +2,13 @@ import 'package:meta/meta.dart';
 
 class BloodPressureTrendModel {
   final TrendModel trendItems;
-  final List<String> legends;
-  final List<String> colors;
+  final List<String>? legends;
+  final List<String>? colors;
 
   BloodPressureTrendModel(
-      {@required this.trendItems,
-      @required this.legends,
-      @required this.colors});
+      {required this.trendItems,
+      required this.legends,
+      required this.colors});
   @override
   factory BloodPressureTrendModel.fromJson(Map<String, dynamic> json) {
     return BloodPressureTrendModel(
@@ -23,16 +23,16 @@ class BloodPressureTrendModel {
 }
 
 class TrendModel {
-  final int total;
-  final int page;
-  final int size;
+  final int? total;
+  final int? page;
+  final int? size;
   final List<TrendItemModel> items;
 
   TrendModel(
-      {@required this.total,
-      @required this.page,
-      @required this.size,
-      @required this.items});
+      {required this.total,
+      required this.page,
+      required this.size,
+      required this.items});
   @override
   factory TrendModel.fromJson(Map<String, dynamic> json) {
     return TrendModel(
@@ -44,10 +44,10 @@ class TrendModel {
 }
 
 class TrendItemModel {
-  final int date;
+  final int? date;
   final List<SubTrendItemModel> subTrendItems;
 
-  TrendItemModel({@required this.date, @required this.subTrendItems});
+  TrendItemModel({required this.date, required this.subTrendItems});
   @override
   factory TrendItemModel.fromJson(Map<String, dynamic> json) {
     return TrendItemModel(
@@ -62,14 +62,14 @@ class TrendItemModel {
 }
 
 class SubTrendItemModel {
-  final double systolic;
-  final double diastolic;
-  final double pulseRate;
+  final double? systolic;
+  final double? diastolic;
+  final double? pulseRate;
 
   SubTrendItemModel(
-      {@required this.systolic,
-      @required this.diastolic,
-      @required this.pulseRate});
+      {required this.systolic,
+      required this.diastolic,
+      required this.pulseRate});
   @override
   factory SubTrendItemModel.fromJson(Map<String, dynamic> json) {
     return SubTrendItemModel(

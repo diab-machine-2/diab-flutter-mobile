@@ -6,21 +6,21 @@ abstract class HomeState {}
 class HomeInitial extends HomeState {}
 
 class HomeError extends HomeState {
-  final String message;
+  final String? message;
 
   HomeError({
-    @required this.message,
+    required this.message,
   });
 }
 
 class HomeLoading extends HomeState {
-  final HomeModel model;
+  final HomeModel? model;
 
-  HomeLoading({@required this.model});
+  HomeLoading({required this.model});
 }
 
 class HomeLoaded extends HomeState {
   final HomeModel model;
 
-  HomeLoaded({@required this.model});
+  HomeLoaded({required this.model});
 }

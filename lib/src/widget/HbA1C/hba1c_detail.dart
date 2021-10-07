@@ -1,18 +1,19 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:loadmore/loadmore.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/res/R.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HbA1CDetailController extends StatefulWidget {
-  HbA1CDetailController({Key key}) : super(key: key);
+  HbA1CDetailController({Key? key}) : super(key: key);
   @override
   HbA1CDetailControllerState createState() => HbA1CDetailControllerState();
 }
@@ -24,17 +25,17 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
 
   ScrollController _scrollController = ScrollController();
 
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   int periodFilterType = 1;
 
   int page = 1;
-  bool hasMore = false;
+  bool? hasMore = false;
   bool isLoading = false;
 
   @override
   void initState() {
-    periodFilterType = Hba1cDetailTabbarController.of(context).periodFilterType;
+    periodFilterType = Hba1cDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
     TrackingManager.analytics.setCurrentScreen(screenName: 'HbA1C Detail');
   }
@@ -46,7 +47,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
   }
 
   Future<bool> _loadMore() async {
-    if (isLoading || !hasMore) {
+    if (isLoading || !hasMore!) {
       return true;
     } else {
       isLoading = true;
@@ -75,7 +76,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
         child: BlocBuilder<HbA1CBloc, HbA1CState>(
             builder: (BuildContext context, HbA1CState state) {
           currentContext = context;
-          List<InputHbA1CModel> model;
+          List<InputHbA1CModel>? model;
           if (state is HbA1CInitial) {
             BlocProvider.of<HbA1CBloc>(context).add(FetchInputHbA1C(
                 currentDateTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
@@ -88,7 +89,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
           if (state is HbA1CDetailLoaded) {
             model = state.inputHbA1CModel;
             hasMore = state.hasMore;
-            if (hasMore) {
+            if (hasMore!) {
               page += 1;
             }
             isLoading = false;
@@ -96,19 +97,19 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
           return RefreshIndicator(
               onRefresh: refresh,
               child: Scaffold(
-                backgroundColor: backgroundColor,
+                backgroundColor: R.color.backgroundColor,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
                     : Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
                           image:
-                              AssetImage('assets/images/detail_Background.png'),
+                              AssetImage(R.drawable.bg_detail),
                           fit: BoxFit.cover,
                         )),
                         child: LoadMore(
                             onLoadMore: _loadMore,
-                            isFinish: !hasMore,
+                            isFinish: !hasMore!,
                             whenEmptyLoad: false,
                             delegate: CustomLoadMoreDelegate(),
                             textBuilder: DefaultLoadMoreTextBuilder.english,
@@ -120,8 +121,8 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    print(model[index]);
-                                    Navigator.pushNamed(context, '/add_hba1c',
+                                    print(model![index]);
+                                    Navigator.pushNamed(context, NavigatorName.add_hba1c,
                                         arguments: {
                                           'type': 'update',
                                           'id': model[index].id
@@ -134,7 +135,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(16),
-                                            color: Colors.white),
+                                            color: R.color.white),
                                         child: Padding(
                                           padding: const EdgeInsets.all(16.0),
                                           child: Column(children: [
@@ -145,11 +146,11 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                               children: [
                                                 Text(
                                                     convertToUTC(
-                                                        model[index].date,
+                                                        model![index].date!,
                                                         'dd/MM/yyyy'),
                                                     style: TextStyle(
                                                         fontFamily: 'Viga',
-                                                        color: textDark,
+                                                        color: R.color.textDark,
                                                         fontSize: 20,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -163,7 +164,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                         border: Border.all(
                                                             color: model[index].borderColor ==
                                                                     'None'
-                                                                ? Colors
+                                                                ? R.color
                                                                     .transparent
                                                                 : toColor(model[index]
                                                                     .borderColor),
@@ -178,7 +179,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                             bottomLeft: Radius.circular(13))),
                                                     child: Center(
                                                       child: Text(
-                                                          model[index].type,
+                                                          model[index].type!,
                                                           style: TextStyle(
                                                               color: toColor(
                                                                   model[index]
@@ -196,9 +197,9 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                Text('HbA1C',
+                                                Text(R.string.hba1c.tr(),
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -238,9 +239,9 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                Text('Đuờng huyết',
+                                                Text(R.string.duong_huyet.tr(),
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.w400)),
@@ -248,12 +249,12 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                   children: [
                                                     Text(
                                                         model[index]
-                                                            .glucose
+                                                            .glucose!
                                                             .round()
                                                             .toString(),
                                                         style: TextStyle(
                                                             fontFamily: 'Viga',
-                                                            color: Colors.black,
+                                                            color: R.color.black,
                                                             fontSize: 20,
                                                             fontWeight:
                                                                 FontWeight
@@ -273,7 +274,7 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                               ')',
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.black,
+                                                                  R.color.black,
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
@@ -292,18 +293,17 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                       SizedBox(height: 16),
                                                       Container(
                                                           height: 1,
-                                                          color: Color(
-                                                              0xffEEEFF3)),
+                                                          color: R.color.color0xffEEEFF3),
                                                       SizedBox(height: 16),
                                                       Row(
                                                         crossAxisAlignment:
                                                             CrossAxisAlignment
                                                                 .start,
                                                         children: [
-                                                          Text('Ghi chú: ',
+                                                          Text('${R.string.ghi_chu.tr()}: ',
                                                               style: TextStyle(
                                                                   color:
-                                                                      textDark,
+                                                                      R.color.textDark,
                                                                   fontSize: 16,
                                                                   fontWeight:
                                                                       FontWeight
@@ -311,9 +311,9 @@ class HbA1CDetailControllerState extends State<HbA1CDetailController>
                                                           Expanded(
                                                             child: Text(
                                                                 model[index]
-                                                                    .description,
+                                                                    .description!,
                                                                 style: TextStyle(
-                                                                    color: Colors
+                                                                    color: R.color
                                                                         .black,
                                                                     fontSize:
                                                                         16,

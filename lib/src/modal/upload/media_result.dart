@@ -1,16 +1,16 @@
 import 'package:meta/meta.dart';
 
 class MediaResultModel {
-  final String fileName;
-  final String mimeType;
-  final int size;
-  final String link;
+  final String? fileName;
+  final String? mimeType;
+  final int? size;
+  final String? link;
 
   MediaResultModel(
-      {@required this.fileName,
-      @required this.mimeType,
-      @required this.size,
-      @required this.link});
+      {required this.fileName,
+      required this.mimeType,
+      required this.size,
+      required this.link});
 
   factory MediaResultModel.fromJson(Map<String, dynamic> json) {
     return MediaResultModel(

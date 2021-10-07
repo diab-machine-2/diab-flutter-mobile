@@ -1,12 +1,12 @@
 import 'package:meta/meta.dart';
 
 class ImagesModel {
-  final String id;
-  final String url;
+  final String? id;
+  final String? url;
 
   ImagesModel({
-    @required this.id,
-    @required this.url,
+    required this.id,
+    required this.url,
   });
   @override
   factory ImagesModel.fromJson(Map<String, dynamic> json) {

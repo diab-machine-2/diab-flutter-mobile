@@ -1,21 +1,17 @@
 import 'dart:ui';
 
-import 'package:dart_notification_center/dart_notification_center.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
-import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
 import 'package:medical/src/modal/exercrises/excercise_rank_model.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
-import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 class ExercrisesRankingChart extends StatefulWidget {
-  ExercrisesRankingChart({Key key}) : super(key: key);
+  ExercrisesRankingChart({Key? key}) : super(key: key);
   @override
   ExercrisesRankingChartState createState() => ExercrisesRankingChartState();
 }
@@ -24,47 +20,45 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
     with AutomaticKeepAliveClientMixin<ExercrisesRankingChart> {
   @override
   bool get wantKeepAlive => true;
-  BuildContext currentContext;
+  late BuildContext currentContext;
   int type = 1;
 
   int periodFilterType = 1;
 
   final List<List<Color>> colors = [
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xff96d7b4), Color(0xffadd89e)],
-    [Color(0xffC1D98B).withOpacity(0.5), Color(0xffaad8a2)],
-    // [Color(0xffC1D98B).withOpacity(0.8), Color(0xffC1D98B)],
-    // [Color(0xffFFB913), Color(0xff86D087)],
-    [Color(0xffC1D98B).withOpacity(0.8), Color(0xffC1D98B)],
-    [Color(0xffDADA72).withOpacity(0.8), Color(0xffDADA72)],
-    [Color(0xffDADA72).withOpacity(0.8), Color(0xffDADA72)],
-    [Color(0xffDADA72).withOpacity(0.8), Color(0xffDADA72)],
-    [Color(0xffDADA72).withOpacity(0.8), Color(0xffDADA72)],
-    [Color(0xffE2DB6B).withOpacity(0.8), Color(0xffE2DB6B)],
-    [Color(0xffE2DB6B).withOpacity(0.8), Color(0xffE2DB6B)],
-    [Color(0xffE2DB6B).withOpacity(0.8), Color(0xffE2DB6B)],
-    [Color(0xffE2DB6B).withOpacity(0.8), Color(0xffE2DB6B)],
-    [Color(0xffE2DB6B).withOpacity(0.8), Color(0xffE2DB6B)],
-    [Color(0xE2DB6B), Color(0xE2DB6B)]
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xff96d7b4, R.color.color0xffadd89e],
+    [R.color.color0xffC1D98B.withOpacity(0.5), R.color.color0xffaad8a2],
+    [R.color.color0xffC1D98B.withOpacity(0.8), R.color.color0xffC1D98B],
+    [R.color.color0xffDADA72.withOpacity(0.8), R.color.color0xffDADA72],
+    [R.color.color0xffDADA72.withOpacity(0.8), R.color.color0xffDADA72],
+    [R.color.color0xffDADA72.withOpacity(0.8), R.color.color0xffDADA72],
+    [R.color.color0xffDADA72.withOpacity(0.8), R.color.color0xffDADA72],
+    [R.color.color0xffE2DB6B.withOpacity(0.8), R.color.color0xffE2DB6B],
+    [R.color.color0xffE2DB6B.withOpacity(0.8), R.color.color0xffE2DB6B],
+    [R.color.color0xffE2DB6B.withOpacity(0.8), R.color.color0xffE2DB6B],
+    [R.color.color0xffE2DB6B.withOpacity(0.8), R.color.color0xffE2DB6B],
+    [R.color.color0xffE2DB6B.withOpacity(0.8), R.color.color0xffE2DB6B],
+    [R.color.color0xE2DB6B, R.color.color0xE2DB6B]
   ];
 
   @override
   void initState() {
     periodFilterType =
-        ExercrisesDetailTabbarController.of(context).periodFilterType;
+        ExercrisesDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'active_change_data', observer: this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'active_change_data', observer: this);
     super.dispose();
   }
 
@@ -92,7 +86,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
         child: BlocBuilder<ExercrisesBloc, ExercrisesState>(
             builder: (BuildContext context, ExercrisesState state) {
           currentContext = context;
-          ExerciseRankModel model;
+          ExerciseRankModel? model;
           if (state is ExercrisesInitial) {
             BlocProvider.of<ExercrisesBloc>(context).add(FetchRank(
               currentDateTime:
@@ -111,7 +105,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                   height: 491.5,
                   child: Center(child: CircularProgressIndicator()))
               : Container(
-                  color: Colors.transparent,
+                  color: R.color.transparent,
                   padding: EdgeInsets.all(18),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +113,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Xếp hạng thời gian vận động',
+                            Text(R.string.xep_hang_thoi_gian_van_dong.tr(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w700)),
                           ],
@@ -129,13 +123,13 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                             ? GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, '/add_exercrises',
+                                      context, NavigatorName.add_exercrises,
                                       arguments: {
                                         'type': 'input',
                                       });
                                 },
                                 child: Image.asset(
-                                  'assets/images/nothing.png',
+                                  R.drawable.img_nothing,
                                 ),
                               )
                             : Container(
@@ -143,8 +137,8 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                 decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                         colors: [
-                                          Color(0xFFE6F6ED),
-                                          Color(0xFFFFF7C0),
+                                          R.color.greenbg,
+                                          R.color.color0xFFFFF7C0,
                                         ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
@@ -163,7 +157,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                             CrossAxisAlignment.start,
                                         children: [
                                           Image.asset(
-                                            'assets/images/badge_exe.png',
+                                            R.drawable.ic_badge_exe,
                                             width: 24,
                                             height: 24,
                                           ),
@@ -181,7 +175,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                               children: List.generate(
                                                   colors.length, (index) {
                                                 return buildItem(
-                                                    model,
+                                                    model!,
                                                     130 - (index * 6.3),
                                                     colors[index].first,
                                                     colors[index].last,
@@ -220,7 +214,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                                   width: 8,
                                                   height: 8,
                                                   decoration: BoxDecoration(
-                                                    color: Color(0xff72CB9C),
+                                                    color: R.color.color0xff72CB9C,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             4),
@@ -229,19 +223,19 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                                 width: 8,
                                               ),
                                               Text(
-                                                  'Bình quân trong nhóm tuổi của tôi: ',
+                                                  '${R.string.binh_quan_trong_nhom_tuoi_cua_toi}: ',
                                                   style: TextStyle(
-                                                      color: textDark,
+                                                      color: R.color.textDark,
                                                       fontWeight:
                                                           FontWeight.w400,
                                                       fontSize: 14.0)),
                                               Text(
-                                                  model.averagePercent
+                                                  model.averagePercent!
                                                           .round()
                                                           .toString() +
                                                       '%',
                                                   style: TextStyle(
-                                                      color: Color(0xff72CB9C),
+                                                      color: R.color.color0xff72CB9C,
                                                       fontWeight:
                                                           FontWeight.w600,
                                                       fontSize: 14.0)),
@@ -251,7 +245,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                       ),
                                     ),
                                     Container(
-                                        height: 0.5, color: Color(0xff01645A)),
+                                        height: 0.5, color: R.color.mainColor),
                                     Padding(
                                       padding: EdgeInsets.only(
                                           top: 16,
@@ -261,9 +255,9 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                       child: Row(
                                         children: [
                                           Expanded(
-                                            child: Text(model.description,
+                                            child: Text(model.description!,
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14.0)),
                                           ),
@@ -290,24 +284,24 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
 
   Widget buildItem(ExerciseRankModel model, double height, Color startColor,
       Color endColor, int index) {
-    final avarageIndex = getIndex(model.averagePercent);
+    final avarageIndex = getIndex(model.averagePercent!);
 
-    final partientIndex = getIndex(model.partientPercent);
+    final partientIndex = getIndex(model.partientPercent!);
     return Column(
       children: [
         Container(
           width: 8,
           height: height,
           decoration: BoxDecoration(
-              color: Colors.white,
+              color: R.color.white,
               borderRadius: BorderRadius.circular(16),
               gradient: LinearGradient(
                   begin: Alignment(0, 0.5),
                   end: Alignment(0, 0.5),
                   colors: partientIndex == index
-                      ? [mainColor, mainColor]
+                      ? [R.color.mainColor, R.color.mainColor]
                       : index == avarageIndex
-                          ? [Color(0xff72CB9C), Color(0xff72CB9C)]
+                          ? [R.color.color0xff72CB9C, R.color.color0xff72CB9C]
                           : [
                               startColor,
                               endColor.withOpacity(0.8),
@@ -319,10 +313,10 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
             height: 8,
             decoration: BoxDecoration(
               color: partientIndex == index
-                  ? mainColor
+                  ? R.color.mainColor
                   : index == avarageIndex
-                      ? Color(0xff72CB9C)
-                      : Colors.transparent,
+                      ? R.color.color0xff72CB9C
+                      : R.color.transparent,
               borderRadius: BorderRadius.circular(4),
             )),
       ],

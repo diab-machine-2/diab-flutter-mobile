@@ -1,10 +1,12 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ManualController extends StatefulWidget {
   @override
@@ -12,8 +14,8 @@ class ManualController extends StatefulWidget {
 }
 
 class _ManualControllerState extends State<ManualController> {
-  List<ManualModel> manuals = [];
-  List<ManualModel> manualsSearch = [];
+  List<ManualModel>? manuals = [];
+  List<ManualModel>? manualsSearch = [];
 
   void initState() {
     super.initState();
@@ -40,8 +42,8 @@ class _ManualControllerState extends State<ManualController> {
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                       colors: [
-                        Color(0xFFFDC798).withOpacity(0.3),
-                        Color(0xFFE6F6ED).withOpacity(0.9),
+                        R.color.color0xFFFDC798.withOpacity(0.3),
+                        R.color.greenbg.withOpacity(0.9),
                       ],
                       begin: FractionalOffset(1, 1),
                       end: FractionalOffset(0.9, 0.5),
@@ -49,16 +51,16 @@ class _ManualControllerState extends State<ManualController> {
               child: Column(
                 children: [
                   CustomAppBar(
-                    backgroundColor: Colors.transparent,
-                    title: Text('Hướng dẫn sử dụng',
+                    backgroundColor: R.color.transparent,
+                    title: Text(R.string.user_manual.tr(),
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: textDark)),
+                            color: R.color.textDark)),
                     leadingIcon: IconButton(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        icon: Icon(Icons.arrow_back, color: textDark),
+                        splashColor: R.color.transparent,
+                        highlightColor: R.color.transparent,
+                        icon: Icon(Icons.arrow_back, color: R.color.textDark),
                         onPressed: () {
                           Navigator.pop(context);
                         }),
@@ -68,9 +70,9 @@ class _ManualControllerState extends State<ManualController> {
                       margin: EdgeInsets.only(left: 16, right: 16),
                       padding: EdgeInsets.only(left: 16, right: 16),
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: R.color.white,
                           borderRadius: BorderRadius.circular(30),
-                          border: Border.all(color: grayComponentBorder)),
+                          border: Border.all(color: R.color.grayComponentBorder)),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -80,13 +82,13 @@ class _ManualControllerState extends State<ManualController> {
                                   child: TextField(
                                     onChanged: (value) {
                                       setState(() {
-                                        manualsSearch = manuals
+                                        manualsSearch = manuals!
                                             .where((element) =>
-                                                element.answer
+                                                element.answer!
                                                     .toLowerCase()
                                                     .contains(
                                                         value.toLowerCase()) ||
-                                                element.question
+                                                element.question!
                                                     .toLowerCase()
                                                     .contains(
                                                         value.toLowerCase()))
@@ -97,37 +99,37 @@ class _ManualControllerState extends State<ManualController> {
                                         border: InputBorder.none,
                                         contentPadding:
                                             EdgeInsets.only(top: -20),
-                                        hintText: 'Tìm kiếm hoạt động',
-                                        fillColor: textDark),
+                                        hintText: R.string.tim_kiem_hoat_dong.tr(),
+                                        fillColor: R.color.textDark),
                                   )),
                             ),
-                            Image.asset('assets/images/search.png',
-                                width: 24, height: 24, color: mainColor),
+                            Image.asset(R.drawable.ic_search,
+                                width: 24, height: 24, color: R.color.mainColor),
                           ])),
                   Expanded(
                     child: ListView.separated(
                       padding: EdgeInsets.all(16),
-                      itemCount: manualsSearch.length,
+                      itemCount: manualsSearch!.length,
                       separatorBuilder: (context, index) {
-                        return Container(height: 1, color: Color(0xffE2E4E7));
+                        return Container(height: 1, color: R.color.grayBorder);
                       },
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, '/manual_detail',
-                                arguments: {'manual': manualsSearch[index]});
+                            Navigator.pushNamed(context, NavigatorName.manual_detail,
+                                arguments: {'manual': manualsSearch![index]});
                           },
                           child: Container(
                               padding: EdgeInsets.only(top: 16, bottom: 16),
-                              color: Colors.transparent,
+                              color: R.color.transparent,
                               child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
-                                      child: Text(manualsSearch[index].question,
+                                      child: Text(manualsSearch![index].question!,
                                           style: TextStyle(
-                                              color: Colors.black,
+                                              color: R.color.black,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -135,7 +137,7 @@ class _ManualControllerState extends State<ManualController> {
                                     Icon(
                                       Icons.arrow_forward_ios_outlined,
                                       size: 16,
-                                      color: Colors.black,
+                                      color: R.color.black,
                                     )
                                   ])),
                         );

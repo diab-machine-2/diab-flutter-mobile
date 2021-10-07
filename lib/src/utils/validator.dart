@@ -9,7 +9,7 @@ class Validators {
   static final RegExp _emailRegex = RegExp(
       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
 
-  String checkPhoneNumber(String phoneNumber) {
+  String? checkPhoneNumber(String phoneNumber) {
     if (Utils.isEmpty(phoneNumber)) {
       return R.string.please_input_phone_number;
     } else if (!_phoneRegex.hasMatch(phoneNumber)) {
@@ -19,7 +19,7 @@ class Validators {
     }
   }
 
-  String checkPhoneNumber2(String phoneNumber) {
+  String? checkPhoneNumber2(String phoneNumber) {
     if (Utils.isEmpty(phoneNumber)) return null;
     if (!_phoneRegex.hasMatch(phoneNumber)) {
       return R.string.phone_not_valid;
@@ -28,7 +28,7 @@ class Validators {
     }
   }
 
-  String checkEmail(String email) {
+  String? checkEmail(String email) {
     if (Utils.isEmpty(email)) {
       return R.string.please_input_email;
     } else if (!_emailRegex.hasMatch(email)) {
@@ -38,7 +38,7 @@ class Validators {
     }
   }
 
-  String checkEmail2(String email) {
+  String? checkEmail2(String email) {
     if (Utils.isEmpty(email)) return null;
     if (!_emailRegex.hasMatch(email)) {
       return R.string.email_not_valid;
@@ -47,7 +47,7 @@ class Validators {
     }
   }
 
-  String checkPass(String password) {
+  String? checkPass(String password) {
     if (Utils.isEmpty(password)) {
       return R.string.please_enter_password;
     } else if (password.length < 4) {
@@ -94,7 +94,7 @@ class Validators {
 //     }
 //   }
 //
-  String checkRePass(String password, String rePassword) {
+  String? checkRePass(String password, String rePassword) {
     if (Utils.isEmpty(rePassword)) {
       return R.string.please_input_re_password;
     } else if (rePassword.length < 4) {
@@ -117,7 +117,7 @@ class Validators {
 //     }
 //   }
 //
-  String checkName(String name) {
+  String? checkName(String name) {
     if (Utils.isEmpty(name)) return R.string.please_input_username;
 //    else if (name.length < 5)
 //      return R.string.name_least_character;
@@ -125,7 +125,7 @@ class Validators {
     return null;
   }
 
-  int checkTypeId(String id) {
+  int? checkTypeId(String id) {
     if (Utils.isEmpty(id)) return null;
     if (_phoneRegex.hasMatch(id)) return Const.TYPE_PHONE;
     if (_emailRegex.hasMatch(id)) return Const.TYPE_EMAIL;

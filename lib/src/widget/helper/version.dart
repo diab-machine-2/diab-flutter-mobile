@@ -14,16 +14,16 @@ import 'dart:io' show Platform;
 /// available in the Apple App Store or Google Play Store.
 class VersionStatus {
   /// True if the there is a more recent version of the app in the store.
-  bool canUpdate;
+  bool? canUpdate;
 
   /// The current version of the app.
-  String localVersion;
+  String? localVersion;
 
   /// The most recent version of the app in the store.
-  String storeVersion;
+  String? storeVersion;
 
   /// A link to the app store page where the app can be updated.
-  String appStoreLink;
+  String? appStoreLink;
 
   VersionStatus({this.canUpdate, this.localVersion, this.storeVersion});
 }
@@ -35,20 +35,20 @@ class NewVersion {
   /// An optional value that can override the default packageName when
   /// attempting to reach the Google Play Store. This is useful if your app has
   /// a different package name in the Play Store for some reason.
-  String androidId;
+  String? androidId;
 
   /// An optional value that can override the default packageName when
   /// attempting to reach the Apple App Store. This is useful if your app has
   /// a different package name in the App Store for some reason.
-  String iOSId;
+  String? iOSId;
 
   /// An optional value that can override the default callback to dismiss button
-  VoidCallback dismissAction;
+  VoidCallback? dismissAction;
 
   /// An optional value that can override the default text to alert,
   /// you can ${versionStatus.localVersion} to ${versionStatus.storeVersion}
   /// to determinate in the text a versions.
-  String dialogText;
+  String? dialogText;
 
   /// An optional value that can override the default title of alert dialog
   String dialogTitle;
@@ -62,7 +62,7 @@ class NewVersion {
   NewVersion({
     this.androidId,
     this.iOSId,
-    @required this.context,
+    required this.context,
     this.dismissAction,
     this.dismissText: 'Maybe Later',
     this.updateText: 'Update',
@@ -73,8 +73,8 @@ class NewVersion {
   /// This checks the version status, then displays a platform-specific alert
   /// with buttons to dismiss the update alert, or go to the app store.
   showAlertIfNecessary() async {
-    VersionStatus versionStatus = await getVersionStatus();
-    if (versionStatus != null && versionStatus.canUpdate) {
+    VersionStatus? versionStatus = await getVersionStatus();
+    if (versionStatus != null && versionStatus.canUpdate!) {
       showUpdateDialog(versionStatus);
     }
   }
@@ -82,7 +82,7 @@ class NewVersion {
   /// This checks the version status and returns the information. This is useful
   /// if you want to display a custom alert, or use the information in a different
   /// way.
-  Future<VersionStatus> getVersionStatus() async {
+  Future<VersionStatus?> getVersionStatus() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     VersionStatus versionStatus = VersionStatus(
       localVersion: packageInfo.version,
@@ -127,9 +127,9 @@ class NewVersion {
     final document = parse(response.body);
     final elements = document.getElementsByClassName('hAyfc');
     final versionElement = elements.firstWhere(
-      (elm) => elm.querySelector('.BgcNfc').text == 'Current Version',
+      (elm) => elm.querySelector('.BgcNfc')!.text == 'Current Version',
     );
-    versionStatus.storeVersion = versionElement.querySelector('.htlgb').text;
+    versionStatus.storeVersion = versionElement.querySelector('.htlgb')!.text;
     versionStatus.appStoreLink = url;
     return versionStatus;
   }
@@ -147,7 +147,7 @@ class NewVersion {
         () => Navigator.of(context, rootNavigator: true).pop();
     final updateText = Text(this.updateText);
     final updateAction = () {
-      _launchAppStore(versionStatus.appStoreLink);
+      _launchAppStore(versionStatus.appStoreLink!);
       Navigator.of(context, rootNavigator: true).pop();
     };
     final platform = Theme.of(context).platform;

@@ -1,22 +1,22 @@
 import 'package:meta/meta.dart';
 
 class ScheduleGlucoseModel {
-  final ScheduleModel monday;
-  final ScheduleModel tuesday;
-  final ScheduleModel wednesday;
-  final ScheduleModel thursday;
-  final ScheduleModel friday;
-  final ScheduleModel saturday;
-  final ScheduleModel sunday;
+  final ScheduleModel? monday;
+  final ScheduleModel? tuesday;
+  final ScheduleModel? wednesday;
+  final ScheduleModel? thursday;
+  final ScheduleModel? friday;
+  final ScheduleModel? saturday;
+  final ScheduleModel? sunday;
 
   ScheduleGlucoseModel(
-      {@required this.monday,
-      @required this.tuesday,
-      @required this.wednesday,
-      @required this.thursday,
-      @required this.friday,
-      @required this.saturday,
-      @required this.sunday});
+      {required this.monday,
+      required this.tuesday,
+      required this.wednesday,
+      required this.thursday,
+      required this.friday,
+      required this.saturday,
+      required this.sunday});
 
   factory ScheduleGlucoseModel.fromJson(Map<String, dynamic> json) {
     return ScheduleGlucoseModel(
@@ -35,33 +35,33 @@ class ScheduleGlucoseModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'monday': monday.toJson(),
-        'tuesday': tuesday.toJson(),
-        'wednesday': wednesday.toJson(),
-        'thursday': thursday.toJson(),
-        'friday': friday.toJson(),
-        'saturday': saturday.toJson(),
-        'sunday': sunday.toJson()
+        'monday': monday!.toJson(),
+        'tuesday': tuesday!.toJson(),
+        'wednesday': wednesday!.toJson(),
+        'thursday': thursday!.toJson(),
+        'friday': friday!.toJson(),
+        'saturday': saturday!.toJson(),
+        'sunday': sunday!.toJson()
       };
 }
 
 class ScheduleModel {
-  final bool isBeforeBreakfast;
-  final bool isAfterBreakfast;
-  final bool isBeforeLunch;
-  final bool isAfterLunch;
-  final bool isBeforeDinner;
-  final bool isAfterDinner;
-  final bool isBeforeSleeping;
+  final bool? isBeforeBreakfast;
+  final bool? isAfterBreakfast;
+  final bool? isBeforeLunch;
+  final bool? isAfterLunch;
+  final bool? isBeforeDinner;
+  final bool? isAfterDinner;
+  final bool? isBeforeSleeping;
 
   ScheduleModel(
-      {@required this.isBeforeBreakfast,
-      @required this.isAfterBreakfast,
-      @required this.isBeforeLunch,
-      @required this.isAfterLunch,
-      @required this.isBeforeDinner,
-      @required this.isAfterDinner,
-      @required this.isBeforeSleeping});
+      {required this.isBeforeBreakfast,
+      required this.isAfterBreakfast,
+      required this.isBeforeLunch,
+      required this.isAfterLunch,
+      required this.isBeforeDinner,
+      required this.isAfterDinner,
+      required this.isBeforeSleeping});
 
   factory ScheduleModel.fromJson(Map<String, dynamic> json) {
     return ScheduleModel(

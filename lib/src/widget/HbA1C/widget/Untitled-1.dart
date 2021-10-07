@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HbA1CDetailItem extends StatelessWidget {
   final bool hasNote;
@@ -10,7 +12,7 @@ class HbA1CDetailItem extends StatelessWidget {
       child: Container(
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: R.color.white,
             borderRadius: BorderRadius.circular(16),
           ),
           child:
@@ -20,23 +22,23 @@ class HbA1CDetailItem extends StatelessWidget {
               children: [
                 Text('30/08/2020',
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 20,
                         fontWeight: FontWeight.w700)),
                 Container(
                     height: 26,
                     padding: EdgeInsets.only(left: 14, right: 14),
                     decoration: BoxDecoration(
-                        color: hasNote ? Color(0xffFF5756) : Color(0xff4AAF05),
+                        color: hasNote ? R.color.color0xffFF5756 : R.color.color0xff4AAF05,
                         // borderRadius: BorderRadius.circular(13))
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(13),
                             topRight: Radius.circular(13),
                             bottomLeft: Radius.circular(13))),
                     child: Center(
-                      child: Text(hasNote ? 'Rất cao' : 'Tuyệt vời',
+                      child: Text(hasNote ? R.string.very_high.tr() : R.string.great.tr(),
                           style: TextStyle(
-                              color: Colors.white,
+                              color: R.color.white,
                               fontSize: 14,
                               fontWeight: FontWeight.w600)),
                     ))
@@ -46,14 +48,14 @@ class HbA1CDetailItem extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('HbA1C',
+                Text(R.string.hba1c.tr(),
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w400)),
                 Text(hasNote ? '9.0%' : '6.2%',
                     style: TextStyle(
-                        color: hasNote ? Color(0xffFF5756) : Color(0xff4AAF05),
+                        color: hasNote ? R.color.color0xffFF5756 : R.color.color0xff4AAF05,
                         fontSize: 24,
                         fontWeight: FontWeight.w700))
               ],
@@ -62,14 +64,14 @@ class HbA1CDetailItem extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Đuờng huyết',
+                Text(R.string.duong_huyet.tr(),
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w400)),
                 Text(hasNote ? '243 (ml/dL)' : '136 (ml/dL)',
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w600))
               ],
@@ -79,12 +81,12 @@ class HbA1CDetailItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 16),
-                      Container(height: 1, color: Color(0xffEEEFF3)),
+                      Container(height: 1, color: R.color.color0xffEEEFF3),
                       SizedBox(height: 16),
                       Text(
                           'Ghi chú: Tôi đi khám và đo chỉ số này tại bệnh viện Nguyễn Tri Phương',
                           style: TextStyle(
-                              color: Colors.black,
+                              color: R.color.black,
                               fontSize: 16,
                               fontWeight: FontWeight.w400)),
                     ],

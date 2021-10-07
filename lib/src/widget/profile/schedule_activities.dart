@@ -1,16 +1,16 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/patient_time_frame.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/components/horizontal_picker/horizontal_numberpicker_wrapper.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ScheduleActivityController extends StatefulWidget {
   @override
@@ -20,15 +20,15 @@ class ScheduleActivityController extends StatefulWidget {
 
 class _ScheduleActivityControllerState
     extends State<ScheduleActivityController> {
-  List<PatientTimeFrameModel> model = [];
+  List<PatientTimeFrameModel>? model = [];
   List<PatientTimeFrameModel> tempModel = [];
 
   List<String> icons = [
-    'assets/images/icon_activity_1.png',
-    'assets/images/icon_activity_2.png',
-    'assets/images/icon_activity_3.png',
-    'assets/images/icon_activity_4.png',
-    'assets/images/icon_activity_5.png'
+    R.drawable.ic_activity_1,
+    R.drawable.ic_activity_2,
+    R.drawable.ic_activity_3,
+    R.drawable.ic_activity_4,
+    R.drawable.ic_activity_5,
   ];
 
   @override
@@ -41,7 +41,7 @@ class _ScheduleActivityControllerState
   loadData() async {
     BotToast.showLoading();
     model = await UserClient().fetchPatientTimeFrame();
-    tempModel = [...model];
+    tempModel = [...model!];
     BotToast.closeAllLoading();
     setState(() {});
   }
@@ -57,24 +57,24 @@ class _ScheduleActivityControllerState
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                       colors: [
-                        Color(0xFFFDC798).withOpacity(0.3),
-                        Color(0xFFE6F6ED).withOpacity(0.9),
+                        R.color.color0xFFFDC798.withOpacity(0.3),
+                        R.color.greenbg.withOpacity(0.9),
                       ],
                       begin: FractionalOffset(1, 1),
                       end: FractionalOffset(0.9, 0.5),
                       stops: [0.0, 1.0])),
               child: Column(children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
-                  title: Text('Lịch sinh hoạt cá nhân',
+                  backgroundColor: R.color.transparent,
+                  title: Text(R.string.personal_schedule_single_line.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
                       }),
@@ -83,14 +83,14 @@ class _ScheduleActivityControllerState
                   padding:
                       EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
                   child: Text(
-                      'Thiết lập lại thời gian cho phù hợp với lịch sinh hoạt cá nhân trong ngày của bạn'),
+                      R.string.setup_personal_schedule.tr()),
                 ),
                 Expanded(
                   child: ListView.builder(
                     padding: EdgeInsets.all(0),
-                    itemCount: model.length,
+                    itemCount: model!.length,
                     itemBuilder: (context, index) {
-                      return buildItem('Thức giấc', 'sáng', index);
+                      return buildItem(R.string.wake_up.tr(), R.string.morning.tr(), index);
                     },
                   ),
                 ),
@@ -105,19 +105,19 @@ class _ScheduleActivityControllerState
                         height: 48,
                         width: 195,
                         decoration: BoxDecoration(
-                            color: mainColor,
+                            color: R.color.mainColor,
                             borderRadius: BorderRadius.circular(200),
                             gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.centerRight,
                                 colors: [
-                                  greenGradientTop,
-                                  greenGradientBottom
+                                  R.color.greenGradientTop,
+                                  R.color.greenGradientBottom
                                 ])),
                         child: Center(
-                            child: Text('Lưu',
+                            child: Text(R.string.save.tr(),
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16)))),
                   ),
@@ -137,9 +137,9 @@ class _ScheduleActivityControllerState
               children: [
                 Image.asset(icons[index], width: 30, height: 30),
                 SizedBox(width: 16),
-                Text(model[index].timeFrameName,
+                Text(model![index].timeFrameName!,
                     style: TextStyle(
-                        color: Colors.black,
+                        color: R.color.black,
                         fontSize: 14,
                         fontWeight: FontWeight.w700)),
               ],
@@ -147,20 +147,20 @@ class _ScheduleActivityControllerState
             GestureDetector(
               onTap: () {
                 showDialog(
-                    barrierColor: Color(0xff003F38).withOpacity(0.5),
+                    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                     context: context,
                     builder: (_) => CustomInputTimePicker(
-                        title: 'Thời gian ' +
-                            model[index].timeFrameName.toLowerCase(),
-                        time: (model[index].time == null ||
-                                model[index].time == 0)
+                        title: '${R.string.thoi_gian.tr()} ' +
+                            model![index].timeFrameName!.toLowerCase(),
+                        time: (model![index].time == null ||
+                                model![index].time == 0)
                             ? 0
                             : (DateTime.fromMillisecondsSinceEpoch(
-                                                model[index].time * 1000)
+                                                model![index].time! * 1000)
                                             .hour *
                                         60 +
                                     DateTime.fromMillisecondsSinceEpoch(
-                                            model[index].time * 1000)
+                                            model![index].time! * 1000)
                                         .minute)
                                 .toDouble(),
                         maxHour: 24,
@@ -168,8 +168,8 @@ class _ScheduleActivityControllerState
                           setState(() {
                             final date =
                                 DateTime(2020, 1, 1, hour, minute, 0, 0);
-                            final data = model[index];
-                            model[index] = PatientTimeFrameModel(
+                            final data = model![index];
+                            model![index] = PatientTimeFrameModel(
                                 time: date.millisecondsSinceEpoch ~/ 1000,
                                 timeFrameId: data.timeFrameId,
                                 timeFrameName: data.timeFrameName);
@@ -177,21 +177,21 @@ class _ScheduleActivityControllerState
                         }));
               },
               child: Container(
-                color: Colors.transparent,
+                color: R.color.transparent,
                 padding: EdgeInsets.all(8.0),
                 child:
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   SizedBox(width: 20),
                   Column(children: [
                     Text(
-                        model[index].time == null || model[index].time == 0
+                        model![index].time == null || model![index].time == 0
                             ? '--'
-                            : convertToUTC(model[index].time, 'HH:mm'),
+                            : convertToUTC(model![index].time!, 'HH:mm'),
                         style: TextStyle(
-                            color: Colors.black,
+                            color: R.color.black,
                             fontSize: 40,
                             fontWeight: FontWeight.w700)),
-                    Container(height: 1, width: 120, color: Color(0xffDDDDDD))
+                    Container(height: 1, width: 120, color: R.color.grayComponentBorder)
                   ])
                 ]),
               ),
@@ -201,10 +201,10 @@ class _ScheduleActivityControllerState
   }
 
   _showDialogSave() {
-    for (int i = 0; i < model.length; i++) {
-      print(model[i].time);
+    for (int i = 0; i < model!.length; i++) {
+      print(model![i].time);
       print(tempModel[i].time);
-      if (model[i].time != tempModel[i].time) {
+      if (model![i].time != tempModel[i].time) {
         showDialog(
           context: context,
           builder: (context) {
@@ -217,24 +217,24 @@ class _ScheduleActivityControllerState
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset('assets/images/backIcon.png',
+                          Image.asset(R.drawable.ic_back_icon,
                               width: 64, height: 64),
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
-                            child: Text('Bạn muốn quay lại ?',
+                            child: Text(R.string.ban_muon_quay_lai.tr(),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
                             child: Text(
-                                'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                                R.string.confirm_to_back.tr(),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
                           ),
@@ -252,11 +252,11 @@ class _ScheduleActivityControllerState
                                           decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(200),
-                                              color: grayBorder),
+                                              color: R.color.grayBorder),
                                           child: Center(
-                                            child: Text('Vẫn ở lại',
+                                            child: Text(R.string.van_o_lai.tr(),
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.w600)),
@@ -272,20 +272,20 @@ class _ScheduleActivityControllerState
                                       child: Container(
                                         height: 43,
                                         decoration: BoxDecoration(
-                                            color: red,
+                                            color: R.color.red,
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             gradient: LinearGradient(
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.centerRight,
                                                 colors: [
-                                                  greenGradientTop,
-                                                  greenGradientBottom
+                                                  R.color.greenGradientTop,
+                                                  R.color.greenGradientBottom
                                                 ])),
                                         child: Center(
-                                          child: Text('Thoát',
+                                          child: Text(R.string.exit.tr(),
                                               style: TextStyle(
-                                                  color: Colors.white,
+                                                  color: R.color.white,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         ),
@@ -299,7 +299,7 @@ class _ScheduleActivityControllerState
                       top: 0,
                       right: 0,
                       child: IconButton(
-                          icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                          icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                           onPressed: () {
                             Navigator.pop(context);
                           }),
@@ -318,17 +318,17 @@ class _ScheduleActivityControllerState
 
   submitData() async {
     int total = 0;
-    model.forEach((element) {
+    model!.forEach((element) {
       total += (element.time != 0 && element.time != null) ? 1 : 0;
     });
-    if (total != model.length) {
+    if (total != model!.length) {
       Message.showToastMessage(
-          context, 'Bạn phải thiết lập thời gian tất cả khung giờ');
+          context, R.string.mes_set_all_time_frame.tr());
       return;
     }
     try {
       BotToast.showLoading();
-      await UserClient().updatePatientTimeFrame(model);
+      await UserClient().updatePatientTimeFrame(model!);
       BotToast.closeAllLoading();
       Navigator.pop(context);
     } catch (e, _) {

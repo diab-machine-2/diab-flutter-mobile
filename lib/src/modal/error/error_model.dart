@@ -1,18 +1,13 @@
 import 'dart:convert';
 
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/modal/base/base_model.dart';
-import 'package:medical/src/widget/helper/notification_manager.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:meta/meta.dart';
 
 class ErrorModel extends BaseModel {
-  String code;
-  String message;
-  String error;
+  String? code;
+  String? message;
+  String? error;
 
   ErrorModel({this.code, this.message});
   @override
@@ -24,11 +19,11 @@ class ErrorModel extends BaseModel {
 }
 
 class Error {
-  final String code;
-  final String message;
-  final String error;
+  final String? code;
+  final String? message;
+  final String? error;
 
-  Error({@required this.code, @required this.message, @required this.error});
+  Error({required this.code, required this.message, required this.error});
 
   // factory Error.fromJson(Map<String, dynamic> json) {
   //   return Error(
@@ -36,7 +31,8 @@ class Error {
   // }
   factory Error.fromJson(Response<dynamic> response) {
     if (response.statusMessage == 'Unauthorized') {
-      DartNotificationCenter.post(channel: 'unauthorized');
+      Observable.instance.notifyObservers([], notifyName : "unauthorized");
+      // DartNotificationCenter.post(channel: 'unauthorized');
     }
     final json = response.data['error'];
     return Error(

@@ -7,9 +7,9 @@ class FoodDistributeModel {
   final List<EnergyItemModel> carbChart;
 
   FoodDistributeModel(
-      {@required this.legends,
-      @required this.energyChart,
-      @required this.carbChart});
+      {required this.legends,
+      required this.energyChart,
+      required this.carbChart});
   @override
   factory FoodDistributeModel.fromJson(Map<String, dynamic> json) {
     return FoodDistributeModel(
@@ -24,16 +24,16 @@ class FoodDistributeModel {
 }
 
 class EnergyItemModel {
-  final String text;
-  final double value;
-  final double percentValue;
-  final String colorCode;
+  final String? text;
+  final double? value;
+  final double? percentValue;
+  final String? colorCode;
 
   EnergyItemModel(
-      {@required this.text,
-      @required this.value,
-      @required this.percentValue,
-      @required this.colorCode});
+      {required this.text,
+      required this.value,
+      required this.percentValue,
+      required this.colorCode});
   @override
   factory EnergyItemModel.fromJson(Map<String, dynamic> json) {
     return EnergyItemModel(

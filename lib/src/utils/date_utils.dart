@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 import 'logger.dart';
 
 class DateUtil {
-  static DateTime parseStringToDate(String dateStr, String format) {
-    DateTime date;
+  static DateTime? parseStringToDate(String dateStr, String format) {
+    DateTime? date;
     if (dateStr != null)
       try {
         date = DateFormat(format).parse(dateStr);
@@ -25,12 +25,12 @@ class DateUtil {
     return date;
   }
 
-  static String parseStringDateToString(
-      String dateSv, String fromFormat, String toFormat) {
-    String date = dateSv;
+  static String? parseStringDateToString(
+      String? dateSv, String fromFormat, String toFormat) {
+    String? date = dateSv;
     if (dateSv != null)
       try {
-        date = DateFormat(toFormat, "en_US")
+        date = DateFormat(toFormat)
             .format(DateFormat(fromFormat).parse(dateSv));
       } on FormatException catch (e) {
         logger.d(e.toString());
@@ -38,8 +38,8 @@ class DateUtil {
     return date;
   }
 
-  static String parseDateDefault(String dateSv, String toFormat) {
-    String date = dateSv;
+  static String? parseDateDefault(String? dateSv, String? toFormat) {
+    String? date = dateSv;
     if (dateSv != null)
       try {
         date = DateFormat(toFormat).format(DateTime.parse(dateSv));

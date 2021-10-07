@@ -1,8 +1,11 @@
 import 'dart:ui';
 
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
@@ -13,17 +16,17 @@ import 'package:medical/src/widget/helper/show_message.dart';
 
 class CategoryFood extends StatefulWidget {
   final List<FoodModel> foods;
-  CategoryFood({@required this.foods});
+  CategoryFood({required this.foods});
   @override
   _CategoryFoodState createState() => _CategoryFoodState();
 }
 
 class _CategoryFoodState extends State<CategoryFood>
-    with AutomaticKeepAliveClientMixin<CategoryFood> {
+    with AutomaticKeepAliveClientMixin<CategoryFood>, Observer {
   @override
   bool get wantKeepAlive => true;
 
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   List<FoodModel> selectedFoods = [];
 
@@ -31,36 +34,32 @@ class _CategoryFoodState extends State<CategoryFood>
   void initState() {
     super.initState();
 
-    selectedFoods = [...SearchFoodController.of(context).selectedFoods];
+    selectedFoods = [...SearchFoodController.of(context)!.selectedFoods];
+    Observable.instance.addObserver(this);
+  }
 
-    DartNotificationCenter.subscribe(
-        channel: 'add_food_to_cart',
-        observer: this,
-        onNotification: (food) {
-          setState(() {
-            this.selectedFoods.removeWhere((element) => food.id == element.id);
-            this.selectedFoods.add(food);
-          });
-        });
-
-    DartNotificationCenter.subscribe(
-        channel: 'remove_food_from_cart',
-        observer: this,
-        onNotification: (food) {
-          if (food is FoodModel) {
-            setState(() {
-              selectedFoods.removeWhere((element) => element.id == food.id);
-            });
-          }
-        });
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    final FoodModel? selectedModel = map?['food'];
+    if (selectedModel != null) {
+      if (notifyName == 'add_food_to_cart') {
+        this
+            .selectedFoods
+            .removeWhere((element) => selectedModel.id == element.id);
+        this.selectedFoods.add(selectedModel);
+        setState(() {});
+      }
+      if (notifyName == 'remove_food_from_cart') {
+        selectedFoods.removeWhere((element) => selectedModel.id == element.id);
+        setState(() {});
+      }
+    }
   }
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'add_food_to_cart', observer: this);
-    DartNotificationCenter.unsubscribe(
-        channel: 'remove_food_from_cart', observer: this);
+    Observable.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -77,7 +76,7 @@ class _CategoryFoodState extends State<CategoryFood>
         child: BlocBuilder<FoodBloc, FoodState>(
             builder: (BuildContext context, FoodState state) {
           currentContext = context;
-          List<FoodCategoryModel> model;
+          List<FoodCategoryModel>? model;
           if (state is FoodInitial) {
             BlocProvider.of<FoodBloc>(context).add(FetchFoodCategory(page: 1));
           }
@@ -95,15 +94,15 @@ class _CategoryFoodState extends State<CategoryFood>
                       itemCount: model.length,
                       padding: EdgeInsets.all(0),
                       itemBuilder: (BuildContext context, int index) {
-                        final category = model[index];
+                        final category = model![index];
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
                               padding: EdgeInsets.all(16),
-                              child: Text(category.name,
+                              child: Text(category.name!,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: R.color.black,
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600)),
                             ),
@@ -115,7 +114,8 @@ class _CategoryFoodState extends State<CategoryFood>
                                 separatorBuilder:
                                     (BuildContext context, int index) {
                                   return Container(
-                                      height: 1, color: Color(0xffE5E5E5));
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5);
                                 },
                                 itemBuilder: (BuildContext context, int index) {
                                   // final selectedIndex =
@@ -131,7 +131,7 @@ class _CategoryFoodState extends State<CategoryFood>
                                   double number = 0;
                                   foodOfCategory.forEach((element) {
                                     totalCalo +=
-                                        element.quantity * element.calorie;
+                                        element.quantity * element.calorie!;
                                     number += element.quantity;
                                   });
                                   return GestureDetector(
@@ -142,13 +142,13 @@ class _CategoryFoodState extends State<CategoryFood>
                                     child: Container(
                                         decoration: BoxDecoration(
                                             color: foodOfCategory.length != 0
-                                                ? Color(0xffC3E8D3)
-                                                : Colors.transparent,
+                                                ? R.color.color0xFFC3E8D3
+                                                : R.color.transparent,
                                             border: Border.all(
-                                                color:
-                                                    foodOfCategory.length != 0
-                                                        ? Color(0xff72CB9C)
-                                                        : Colors.transparent)),
+                                                color: foodOfCategory.length !=
+                                                        0
+                                                    ? R.color.color0xff72CB9C
+                                                    : R.color.transparent)),
                                         padding: EdgeInsets.only(
                                             left: 16,
                                             right: 16,
@@ -170,9 +170,9 @@ class _CategoryFoodState extends State<CategoryFood>
                                                 Text(
                                                     category
                                                         .subCategories[index]
-                                                        .name,
+                                                        .name!,
                                                     style: TextStyle(
-                                                        color: Colors.black,
+                                                        color: R.color.black,
                                                         fontWeight:
                                                             FontWeight.w500)),
                                                 foodOfCategory.length == 0
@@ -182,9 +182,9 @@ class _CategoryFoodState extends State<CategoryFood>
                                                             EdgeInsets.only(
                                                                 top: 4),
                                                         child: Text(
-                                                            'Đã chọn $number món, ${formatNumber(totalCalo)} kcal',
+                                                            '${R.string.da_chon.tr()} $number ${R.string.mon.tr()}, ${formatNumber(totalCalo)} ${R.string.kcal.tr()}',
                                                             style: TextStyle(
-                                                                color: Colors
+                                                                color: R.color
                                                                     .black,
                                                                 fontWeight:
                                                                     FontWeight
@@ -204,7 +204,7 @@ class _CategoryFoodState extends State<CategoryFood>
 
   showListFood(FoodSubCategoryModel category) {
     showDialog(
-      barrierColor: Color(0xff003F38).withOpacity(0.5),
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => FoodOfCategory(
           category: category, foods: selectedFoods, callback: (value) {}),

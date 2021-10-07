@@ -2,27 +2,27 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
 class InputBmiModel {
-  final int date;
-  final double weight;
-  final double waits;
-  final double height;
-  final String note;
-  final String timeFrameId;
-  final String bmiId;
-  final String waistId;
+  final int? date;
+  final double? weight;
+  final double? waits;
+  final double? height;
+  final String? note;
+  final String? timeFrameId;
+  final String? bmiId;
+  final String? waistId;
 
   final List<ImagesModel> images;
 
   InputBmiModel({
-    @required this.date,
-    @required this.weight,
-    @required this.waits,
-    @required this.height,
-    @required this.note,
-    @required this.timeFrameId,
-    @required this.bmiId,
-    @required this.waistId,
-    @required this.images,
+    required this.date,
+    required this.weight,
+    required this.waits,
+    required this.height,
+    required this.note,
+    required this.timeFrameId,
+    required this.bmiId,
+    required this.waistId,
+    required this.images,
   });
   @override
   factory InputBmiModel.fromJson(Map<String, dynamic> json) {

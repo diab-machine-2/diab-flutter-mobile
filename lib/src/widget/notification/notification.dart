@@ -1,67 +1,82 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loadmore/loadmore.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/notification/notification_bloc.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
-import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 
 class NotificationController extends StatefulWidget {
-  final bool isRead;
-  NotificationController({Key key, @required this.isRead}) : super(key: key);
+  final bool? isRead;
+  NotificationController({Key? key, required this.isRead}) : super(key: key);
   @override
   NotificationControllerState createState() => NotificationControllerState();
 }
 
 class NotificationControllerState extends State<NotificationController>
-    with AutomaticKeepAliveClientMixin<NotificationController> {
+    with AutomaticKeepAliveClientMixin<NotificationController>, Observer {
   @override
   bool get wantKeepAlive => true;
 
-  BuildContext currentContext;
+  late BuildContext currentContext;
 
   int page = 1;
-  bool hasMore = false;
+  bool? hasMore = false;
   bool isLoading = false;
 
-  List<String> readIds = [];
+  List<String?> readIds = [];
 
   @override
   void initState() {
     super.initState();
-    if (widget.isRead == null || !widget.isRead) {
-      DartNotificationCenter.subscribe(
-        channel: 'read_notification',
-        observer: this,
-        onNotification: (data) {
-          setState(() {
-            readIds.add(data);
-          });
-        },
-      );
+    if (widget.isRead == null || !widget.isRead!) {
+      Observable.instance.addObserver(this);
+      // DartNotificationCenter.subscribe(
+      //   channel: 'read_notification',
+      //   observer: this,
+      //   onNotification: (data) {
+      //     setState(() {
+      //       readIds.add(data);
+      //     });
+      //   },
+      // );
+    }
+  }
+
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'read_notification') {
+      var firstValue = map?.values.first;
+      setState(() {
+        readIds.add(firstValue);
+      });
     }
   }
 
   @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'read_notification', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'read_notification', observer: this);
     super.dispose();
   }
 
   Future<bool> _loadMore() async {
-    if (isLoading || !hasMore) {
+    if (isLoading || !hasMore!) {
       return true;
     } else {
       isLoading = true;
@@ -86,7 +101,7 @@ class NotificationControllerState extends State<NotificationController>
         child: BlocBuilder<NotificationBloc, NotificationState>(
             builder: (BuildContext context, NotificationState state) {
           currentContext = context;
-          List<NotificationModel> model;
+          List<NotificationModel>? model;
           if (state is NotificationInitial) {
             BlocProvider.of<NotificationBloc>(context)
                 .add(FetchNotification(isRead: widget.isRead, page: page));
@@ -95,9 +110,9 @@ class NotificationControllerState extends State<NotificationController>
             Message.showToastMessage(context, state.message);
           }
           if (state is NotificationLoaded) {
-            model = state.model.models;
-            hasMore = state.model.hasMore;
-            if (hasMore) {
+            model = state.model!.models;
+            hasMore = state.model!.hasMore;
+            if (hasMore!) {
               page += 1;
             }
             isLoading = false;
@@ -110,7 +125,7 @@ class NotificationControllerState extends State<NotificationController>
                     : Container(
                         child: LoadMore(
                             onLoadMore: _loadMore,
-                            isFinish: !hasMore,
+                            isFinish: !hasMore!,
                             whenEmptyLoad: false,
                             delegate: CustomLoadMoreDelegate(),
                             textBuilder: DefaultLoadMoreTextBuilder.english,
@@ -124,10 +139,10 @@ class NotificationControllerState extends State<NotificationController>
                                     padding:
                                         EdgeInsets.only(left: 16, right: 16),
                                     child: Container(
-                                        color: Color(0xffE5E5E5), height: 1));
+                                        color: R.color.color0xffE5E5E5, height: 1));
                               },
                               itemBuilder: (BuildContext context, int index) {
-                                if (model.length == 0) {
+                                if (model!.length == 0) {
                                   return Container(
                                     height: MediaQuery.of(context).size.height -
                                         190,
@@ -136,23 +151,23 @@ class NotificationControllerState extends State<NotificationController>
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Image.asset(
-                                                'assets/images/notification_empty.png',
+                                                R.drawable.img_notification_empty,
                                                 width: 235,
                                                 height: 172),
                                             SizedBox(height: 24),
-                                            Text('Không có thông báo nào')
+                                            Text(R.string.no_notification.tr())
                                           ]),
                                     ),
                                   );
                                 } else {
-                                  bool isRead = model[index].isRead;
+                                  bool? isRead = model[index].isRead;
 
-                                  if (!model[index].isRead &&
+                                  if (!model[index].isRead! &&
                                       (widget.isRead == null ||
-                                          !widget.isRead)) {
+                                          !widget.isRead!)) {
                                     final selected = readIds.indexWhere(
                                         (element) =>
-                                            element == model[index].id);
+                                            element == model![index].id);
                                     if (selected != -1) {
                                       isRead = true;
                                     }
@@ -161,27 +176,28 @@ class NotificationControllerState extends State<NotificationController>
                                   return GestureDetector(
                                     onTap: () {
                                       if ((widget.isRead == null ||
-                                              !widget.isRead) &&
-                                          !model[index].isRead) {
-                                        DartNotificationCenter.post(
-                                            channel: 'read_notification',
-                                            options: model[index].id);
+                                              !widget.isRead!) &&
+                                          !model![index].isRead!) {
+                                        Observable.instance.notifyObservers([], notifyName : "read_notification", map: {'id': model[index].id});
+                                        // DartNotificationCenter.post(
+                                        //     channel: 'read_notification',
+                                        //     options: model[index].id);
                                         NotificationClient().readNotification(
                                             model[index].id,
-                                            AppSettings.userInfo.id,
+                                            AppSettings.userInfo!.id,
                                             model[index].notificationType,
                                             true);
                                       }
 
-                                      if (model[index].notificationType == 1) {
+                                      if (model![index].notificationType == 1) {
                                         Navigator.pushNamed(
-                                            context, '/notification_detail',
+                                            context, NavigatorName.notification_detail,
                                             arguments: {'id': model[index].id});
                                       } else if (model[index]
                                               .notificationType ==
                                           2) {
                                         Navigator.pushNamed(
-                                            context, '/add_reminder',
+                                            context, NavigatorName.add_reminder,
                                             arguments: {
                                               'type': 'update',
                                               'id': model[index].id
@@ -190,7 +206,7 @@ class NotificationControllerState extends State<NotificationController>
                                               .notificationType ==
                                           3) {
                                         Navigator.pushNamed(
-                                            context, '/add_bloodSugar',
+                                            context, NavigatorName.add_blood_sugar,
                                             arguments: {
                                               'type': 'input',
                                               'id': null
@@ -201,24 +217,24 @@ class NotificationControllerState extends State<NotificationController>
                                         actionPane: SlidableDrawerActionPane(),
                                         secondaryActions: widget.isRead ==
                                                     null ||
-                                                !widget.isRead
+                                                !widget.isRead!
                                             ? []
                                             : [
                                                 IconSlideAction(
-                                                  color: Color(0xffFF5552),
+                                                  color: R.color.color0xffFF5552,
                                                   iconWidget: Column(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
                                                               .center,
                                                       children: [
                                                         Image.asset(
-                                                            'assets/images/icon_trash2.png',
+                                                            R.drawable.ic_trash2,
                                                             width: 24,
                                                             height: 24),
                                                         SizedBox(height: 4),
-                                                        Text('Xoá\nthông báo',
+                                                        Text(R.string.detele_notificaiton.tr(),
                                                             style: TextStyle(
-                                                                color: Colors
+                                                                color: R.color
                                                                     .white,
                                                                 fontWeight:
                                                                     FontWeight
@@ -228,12 +244,12 @@ class NotificationControllerState extends State<NotificationController>
                                                       ]),
                                                   onTap: () {
                                                     _showDialogDelete(
-                                                        context, model[index]);
+                                                        context, model![index]);
                                                   },
                                                 ),
                                               ],
                                         child: Container(
-                                          color: Colors.transparent,
+                                          color: R.color.transparent,
                                           child: Padding(
                                               padding: EdgeInsets.all(16),
                                               child: Row(
@@ -245,7 +261,7 @@ class NotificationControllerState extends State<NotificationController>
                                                           BorderRadius.circular(
                                                               20),
                                                       child: Image.network(
-                                                          model[index].imageUrl,
+                                                          model[index].imageUrl!,
                                                           width: 40,
                                                           height: 40,
                                                           fit: BoxFit.fill),
@@ -272,15 +288,15 @@ class NotificationControllerState extends State<NotificationController>
                                                                   Expanded(
                                                                     child: Text(
                                                                         model[index]
-                                                                            .title,
+                                                                            .title!,
                                                                         style: TextStyle(
                                                                             fontSize:
                                                                                 16,
                                                                             fontWeight:
                                                                                 FontWeight.w700,
-                                                                            color: Colors.black)),
+                                                                            color: R.color.black)),
                                                                   ),
-                                                                  isRead
+                                                                  isRead!
                                                                       ? SizedBox()
                                                                       : Container(
                                                                           width:
@@ -288,7 +304,7 @@ class NotificationControllerState extends State<NotificationController>
                                                                           height:
                                                                               10,
                                                                           decoration: BoxDecoration(
-                                                                              color: Color(0xff4BB2AB),
+                                                                              color: R.color.greenGradientTop,
                                                                               borderRadius: BorderRadius.circular(5)))
                                                                 ],
                                                               ),
@@ -304,7 +320,7 @@ class NotificationControllerState extends State<NotificationController>
                                                               child: Text(
                                                                   convertToUTC(
                                                                       model[index]
-                                                                          .sentDateTime,
+                                                                          .sentDateTime!,
                                                                       'HH:mm - dd/MM/yyyy'),
                                                                   style: TextStyle(
                                                                       fontSize:
@@ -312,8 +328,7 @@ class NotificationControllerState extends State<NotificationController>
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w400,
-                                                                      color: Color(
-                                                                          0xffA1A3A6))),
+                                                                      color: R.color.gray)),
                                                             )
                                                           ]),
                                                     )
@@ -340,23 +355,23 @@ class NotificationControllerState extends State<NotificationController>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/earseIcon.png',
+                      Image.asset(R.drawable.ic_earse,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Xoá thông báo?',
+                        child: Text(R.string.mes_detele_notificaiton.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn chắc chắn muốn xoá thông báo này?',
+                        child: Text(R.string.mes_detele_notificaiton.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -375,11 +390,11 @@ class NotificationControllerState extends State<NotificationController>
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Để sau',
+                                        child: Text(R.string.later.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
@@ -395,13 +410,13 @@ class NotificationControllerState extends State<NotificationController>
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color: red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text('Xoá',
+                                      child: Text(R.string.delete.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -417,7 +432,7 @@ class NotificationControllerState extends State<NotificationController>
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),

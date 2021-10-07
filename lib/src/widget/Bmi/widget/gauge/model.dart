@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:medical/res/R.dart';
 
 /// Local import
 
@@ -25,20 +26,20 @@ class WidgetCategory {
   }
 
   /// Name of the category
-  String categoryName;
+  String? categoryName;
 
   /// Control collection under the particular category
-  List<dynamic> controlList;
+  List<dynamic>? controlList;
 
   /// Sorting the categories based on this id in mobile.
-  final int mobileCategoryId;
+  final int? mobileCategoryId;
 
   /// Sorting the categories based on this id in web.
-  final int webCategoryId;
+  final int? webCategoryId;
 
   /// Specify false if the category need not to show in web
   /// (as Viewer - not supported in web).
-  final bool showInWeb;
+  final bool? showInWeb;
 
   /// Selected control in the controllist under the particular category
   int selectedIndex = 0;
@@ -64,36 +65,36 @@ class Control {
   }
 
   /// Contains title of the control, display in the home page
-  final String title;
+  final String? title;
 
   /// Contains description of the control, display in the home page
-  final String description;
+  final String? description;
 
   /// Contains image relates to the control, display in the home page
-  final String image;
+  final String? image;
 
   /// Conatins status of the control New/Updated/Preview
-  final String status;
+  final String? status;
 
   /// Display the controls based on this order.
-  final int controlId;
+  final int? controlId;
 
   /// Need to mention this when samples directly given without any sub category
   /// Mention as card/fullView, by default it will taken as "fullView".
-  final String displayType;
+  final String? displayType;
 
   /// Specify false if the control need not to show in web
   /// (as pdf viewer - not supported in web).
-  final bool showInWeb;
+  final bool? showInWeb;
 
   /// Contains the subItem list which comes under sample type
-  List<SubItem> sampleList;
+  List<SubItem>? sampleList;
 
   /// Contains the subItem list which comes under [child] type
-  List<SubItem> childList;
+  List<SubItem>? childList;
 
   /// Contains the sample details collection
-  List<dynamic> subItems;
+  List<dynamic>? subItems;
 }
 
 /// Contains the detail of sample in different hierarchy levels
@@ -139,64 +140,64 @@ class SubItem {
   /// by default it taken as "sample".
   /// Note: In all cases displayType is given as "fullView",
   /// additionally sample's tab will come.
-  final String type;
+  final String? type;
 
   /// Mention the samples layout.
   /// displayType given as card/fullView.
   /// by default it taken as "fullView".
   /// Note: Need to mention this when on display type is child.
-  final String displayType;
+  final String? displayType;
 
   /// Need to mention in all type.
-  final String title;
+  final String? title;
 
   /// Below values need to give when type is "sample".
-  final String key;
+  final String? key;
 
   /// Contains Github sample link
-  final String codeLink;
+  final String? codeLink;
 
   /// Contains the description of the sample
   /// to be displayed in the sample backpanel
-  final String description;
+  final String? description;
 
   /// Status of the sample, displays above the sample
-  final String status;
+  final String? status;
 
   /// Specify false if the sample need not to show in web
   /// (as sample with dash array).
-  final bool showInWeb;
+  final bool? showInWeb;
 
   /// SourceLink which will launch a url of the sample's source
   /// on tapping source text present under the sample.
-  final String sourceLink;
+  final String? sourceLink;
 
   /// Short form of the source link which will displays under the sample.
-  final String sourceText;
+  final String? sourceText;
 
   /// No need to give when type is "sample".
-  List<dynamic> subItems;
+  List<dynamic>? subItems;
 
   /// If current sample has property panel mention true.
-  final bool needsPropertyPanel;
+  final bool? needsPropertyPanel;
 
   /// Contains appropriate category name
-  String categoryName;
+  String? categoryName;
 
   ///Holds the URL text
-  String breadCrumbText;
+  String? breadCrumbText;
 
   ///Current parent subItem index
-  int parentIndex;
+  int? parentIndex;
 
   ///Current child subItem index
-  int childIndex;
+  int? childIndex;
 
   ///Current child subItem index
-  int sampleIndex;
+  int? sampleIndex;
 
   /// Holds appropriate control
-  Control control;
+  Control? control;
 }
 
 /// SampleModel class is the base of the Sample browser
@@ -206,44 +207,44 @@ class SampleModel extends Listenable {
   SampleModel() {
     searchControlItems = <Control>[];
     sampleList = <SubItem>[];
-    searchResults = <SubItem>[];
-    searchSampleItems = <SubItem>[];
+    searchResults = <SubItem?>[];
+    searchSampleItems = <SubItem?>[];
     categoryList = SampleModel._categoryList;
     controlList = SampleModel._controlList;
     routes = SampleModel._routes;
     searchControlItems.addAll(controlList);
     for (int index = 0; index < controlList.length; index++) {
       if (controlList[index].sampleList != null) {
-        for (int i = 0; i < controlList[index].sampleList.length; i++) {
-          searchSampleItems.add(controlList[index].sampleList[i]);
+        for (int i = 0; i < controlList[index].sampleList!.length; i++) {
+          searchSampleItems.add(controlList[index].sampleList![i]);
         }
       } else if (controlList[index].childList != null) {
-        for (int i = 0; i < controlList[index].childList.length; i++) {
+        for (int i = 0; i < controlList[index].childList!.length; i++) {
           for (int j = 0;
-              j < controlList[index].childList[i].subItems.length;
+              j < controlList[index].childList![i].subItems!.length;
               j++) {
-            if (controlList[index].childList[i].subItems[j].type != 'child') {
+            if (controlList[index].childList![i].subItems![j].type != 'child') {
               searchSampleItems
-                  .add(controlList[index].childList[i].subItems[j]);
+                  .add(controlList[index].childList![i].subItems![j]);
             } else {
               //ignore: prefer_foreach
               for (final SubItem sample
-                  in controlList[index].childList[i].subItems[j].subItems) {
+                  in controlList[index].childList![i].subItems![j].subItems) {
                 searchSampleItems.add(sample);
               }
             }
           }
         }
       } else {
-        for (int i = 0; i < controlList[index].subItems.length; i++) {
+        for (int i = 0; i < controlList[index].subItems!.length; i++) {
           for (int j = 0;
-              j < controlList[index].subItems[i].subItems.length;
+              j < controlList[index].subItems![i].subItems.length;
               j++) {
             for (int k = 0;
-                k < controlList[index].subItems[i].subItems[j].subItems.length;
+                k < controlList[index].subItems![i].subItems[j].subItems.length;
                 k++) {
               searchSampleItems
-                  .add(controlList[index].subItems[i].subItems[j].subItems[k]);
+                  .add(controlList[index].subItems![i].subItems[j].subItems[k]);
             }
           }
         }
@@ -262,16 +263,16 @@ class SampleModel extends Listenable {
   static List<WidgetCategory> _categoryList = <WidgetCategory>[];
 
   /// Holds the category list
-  List<WidgetCategory> categoryList;
+  List<WidgetCategory>? categoryList;
 
   /// Holds the sorted control list
-  List<Control> controlList, searchControlItems;
+  List<Control> controlList = [], searchControlItems = [];
 
   ///List of all the samples
-  List<SubItem> sampleList;
+  List<SubItem>? sampleList;
 
   /// To handle search
-  List<SubItem> searchSampleItems, searchResults;
+  List<SubItem?> searchSampleItems = [], searchResults = [];
 
   /// holds theme based current palette color
   Color backgroundColor = const Color.fromRGBO(0, 116, 227, 1);
@@ -284,19 +285,19 @@ class SampleModel extends Listenable {
   Color currentPrimaryColor = const Color.fromRGBO(0, 116, 227, 1);
 
   /// holds the current theme data
-  ThemeData themeData;
+  ThemeData? themeData;
 
   /// Holds theme baased color of web outputcontainer
   Color textColor = const Color.fromRGBO(51, 51, 51, 1);
 
   /// Holds theme based drawer text color
-  Color drawerTextIconColor = Colors.black;
+  Color drawerTextIconColor = R.color.black;
 
   /// Holds theme based bottom sheet color
-  Color bottomSheetBackgroundColor = Colors.white;
+  Color bottomSheetBackgroundColor = R.color.white;
 
   /// Holds theme based card color
-  Color cardThemeColor = Colors.white;
+  Color cardThemeColor = R.color.white;
 
   /// Holds theme based web page background color
   Color webBackgroundColor = const Color.fromRGBO(246, 246, 246, 1);
@@ -311,38 +312,38 @@ class SampleModel extends Listenable {
   Color webInputColor = const Color.fromRGBO(242, 242, 242, 1);
 
   /// Holds theme based web outputcontainer color
-  Color webOutputContainerColor = Colors.white;
+  Color webOutputContainerColor = R.color.white;
 
   /// Holds the theme based card's color
-  Color cardColor = Colors.white;
+  Color cardColor = R.color.white;
 
   /// Holds the theme based divider color
   Color dividerColor = const Color.fromRGBO(204, 204, 204, 1);
 
   /// Holds the old and current browser window's height and width
-  Size oldWindowSize, currentWindowSize;
-  static List<SampleRoute> _routes;
+  Size? oldWindowSize, currentWindowSize;
+  static List<SampleRoute>? _routes;
 
   /// List of navigation routes text and appropriate subitem
-  List<SampleRoute> routes;
+  List<SampleRoute>? routes;
 
   /// Holds the current visible sample, only for web
   dynamic currentRenderSample;
 
   /// Holds the current rendered sample's key, only for web
-  String currentSampleKey;
+  String? currentSampleKey;
 
   /// Contains the light theme pallete colors
-  List<Color> paletteColors;
+  List<Color>? paletteColors;
 
   /// Contains the pallete's border colors
-  List<Color> paletteBorderColors;
+  List<Color>? paletteBorderColors;
 
   /// Contains dark theme theme palatte colors
-  List<Color> darkPaletteColors;
+  List<Color>? darkPaletteColors;
 
   /// Holds current theme data
-  ThemeData currentThemeData;
+  ThemeData? currentThemeData;
 
   /// Holds current pallete color
   Color currentPaletteColor = const Color.fromRGBO(0, 116, 227, 1);
@@ -356,16 +357,16 @@ class SampleModel extends Listenable {
 
   /// Holds the information of isMobileResolution or not
   /// To render the appbar and search bar based on it
-  bool isMobileResolution;
+  bool? isMobileResolution;
 
   /// Holds the current system theme
-  ThemeData systemTheme;
+  ThemeData? systemTheme;
 
   /// Editing controller which used in the search text field
   TextEditingController editingController = TextEditingController();
 
   /// Key of the property panel widget
-  GlobalKey<State> propertyPanelKey;
+  GlobalKey<State>? propertyPanelKey;
 
   /// Holds the information of to be maximize or not
   bool needToMaximize = false;
@@ -385,7 +386,7 @@ class SampleModel extends Listenable {
           webOutputContainerColor = const Color.fromRGBO(23, 23, 23, 1);
           webInputColor = const Color.fromRGBO(44, 44, 44, 1);
           webBackgroundColor = const Color.fromRGBO(33, 33, 33, 1);
-          drawerTextIconColor = Colors.white;
+          drawerTextIconColor = R.color.white;
           bottomSheetBackgroundColor = const Color.fromRGBO(34, 39, 51, 1);
           textColor = const Color.fromRGBO(242, 242, 242, 1);
           cardThemeColor = const Color.fromRGBO(33, 33, 33, 1);
@@ -394,15 +395,15 @@ class SampleModel extends Listenable {
       default:
         {
           dividerColor = const Color.fromRGBO(204, 204, 204, 1);
-          cardColor = Colors.white;
+          cardColor = R.color.white;
           webIconColor = const Color.fromRGBO(55, 55, 55, 1);
-          webOutputContainerColor = Colors.white;
+          webOutputContainerColor = R.color.white;
           webInputColor = const Color.fromRGBO(242, 242, 242, 1);
           webBackgroundColor = const Color.fromRGBO(246, 246, 246, 1);
-          drawerTextIconColor = Colors.black;
-          bottomSheetBackgroundColor = Colors.white;
+          drawerTextIconColor = R.color.black;
+          bottomSheetBackgroundColor = R.color.white;
           textColor = const Color.fromRGBO(51, 51, 51, 1);
-          cardThemeColor = Colors.white;
+          cardThemeColor = R.color.white;
           break;
         }
     }
@@ -451,37 +452,37 @@ Future<void> updateControlItems() async {
     List<Control> controlList = <Control>[];
     if (!_isWeb || SampleModel._categoryList[index].showInWeb != false) {
       for (int i = 0;
-          i < SampleModel._categoryList[index].controlList.length;
+          i < SampleModel._categoryList[index].controlList!.length;
           i++) {
         controlList.add(
-            Control.fromJson(SampleModel._categoryList[index].controlList[i]));
+            Control.fromJson(SampleModel._categoryList[index].controlList![i]));
         if (!_isWeb || controlList[i].showInWeb != false) {
-          for (int j = 0; j < controlList[i].subItems.length; j++) {
+          for (int j = 0; j < controlList[i].subItems!.length; j++) {
             _firstLevelSubItems
-                .add(SubItem.fromJson(controlList[i].subItems[j]));
+                .add(SubItem.fromJson(controlList[i].subItems![j]));
             if (_firstLevelSubItems[j].type == 'parent') {
-              for (int k = 0; k < _firstLevelSubItems[j].subItems.length; k++) {
+              for (int k = 0; k < _firstLevelSubItems[j].subItems!.length; k++) {
                 if (!_isWeb ||
-                    SubItem.fromJson(_firstLevelSubItems[j].subItems[k])
+                    SubItem.fromJson(_firstLevelSubItems[j].subItems![k])
                             .showInWeb !=
                         false) {
                   _secondLevelSubItems.add(
-                      SubItem.fromJson(_firstLevelSubItems[j].subItems[k]));
+                      SubItem.fromJson(_firstLevelSubItems[j].subItems![k]));
                   for (int l = 0;
                       l <
                           _secondLevelSubItems[_secondLevelSubItems.length - 1]
-                              .subItems
+                              .subItems!
                               .length;
                       l++) {
                     if (!_isWeb ||
                         SubItem.fromJson(_secondLevelSubItems[
                                         _secondLevelSubItems.length - 1]
-                                    .subItems[l])
+                                    .subItems![l])
                                 .showInWeb !=
                             false) {
                       _thirdLevelSubItems.add(SubItem.fromJson(
                           _secondLevelSubItems[_secondLevelSubItems.length - 1]
-                              .subItems[l]));
+                              .subItems![l]));
                     }
                     _thirdLevelSubItems[_thirdLevelSubItems.length - 1]
                         .parentIndex = j;
@@ -492,16 +493,16 @@ Future<void> updateControlItems() async {
                     _thirdLevelSubItems[_thirdLevelSubItems.length - 1]
                         .control = controlList[i];
                     final String breadCrumbText = ('/' +
-                            controlList[i].title +
+                            controlList[i].title! +
                             '/' +
-                            _firstLevelSubItems[j].title +
+                            _firstLevelSubItems[j].title! +
                             '/' +
                             _secondLevelSubItems[
                                     _secondLevelSubItems.length - 1]
-                                .title +
+                                .title! +
                             '/' +
                             _thirdLevelSubItems[_thirdLevelSubItems.length - 1]
-                                .title)
+                                .title!)
                         .replaceAll(' ', '-')
                         .toLowerCase();
                     _thirdLevelSubItems[_thirdLevelSubItems.length - 1]
@@ -525,14 +526,14 @@ Future<void> updateControlItems() async {
               if (!_isWeb || _firstLevelSubItems[j].showInWeb != false) {
                 _isChild = true;
                 for (int k = 0;
-                    k < _firstLevelSubItems[j].subItems.length;
+                    k < _firstLevelSubItems[j].subItems!.length;
                     k++) {
                   if (!_isWeb ||
-                      SubItem.fromJson(_firstLevelSubItems[j].subItems[k])
+                      SubItem.fromJson(_firstLevelSubItems[j].subItems![k])
                               .showInWeb !=
                           false) {
                     _secondLevelSubItems.add(
-                        SubItem.fromJson(_firstLevelSubItems[j].subItems[k]));
+                        SubItem.fromJson(_firstLevelSubItems[j].subItems![k]));
                     _secondLevelSubItems[_secondLevelSubItems.length - 1]
                         .childIndex = j;
                     _secondLevelSubItems[_secondLevelSubItems.length - 1]
@@ -540,13 +541,13 @@ Future<void> updateControlItems() async {
                     _secondLevelSubItems[_secondLevelSubItems.length - 1]
                         .control = controlList[i];
                     final String breadCrumbText = ('/' +
-                            controlList[i].title +
+                            controlList[i].title! +
                             '/' +
-                            _firstLevelSubItems[j].title +
+                            _firstLevelSubItems[j].title! +
                             '/' +
                             _secondLevelSubItems[
                                     _secondLevelSubItems.length - 1]
-                                .title)
+                                .title!)
                         .replaceAll(' ', '-')
                         .toLowerCase();
                     _secondLevelSubItems[_secondLevelSubItems.length - 1]
@@ -564,7 +565,7 @@ Future<void> updateControlItems() async {
                 _secondLevelSubItems = <SubItem>[];
               } else {
                 _firstLevelSubItems.removeAt(j);
-                controlList[i].subItems.removeAt(j);
+                controlList[i].subItems!.removeAt(j);
                 j--;
               }
             } else {
@@ -572,9 +573,9 @@ Future<void> updateControlItems() async {
               _firstLevelSubItems[j].sampleIndex ??= j;
               if (!_isWeb || _firstLevelSubItems[j].showInWeb != false) {
                 final String breadCrumbText = ('/' +
-                        controlList[i].title +
+                        controlList[i].title! +
                         '/' +
-                        _firstLevelSubItems[j].title)
+                        _firstLevelSubItems[j].title!)
                     .replaceAll(' ', '-')
                     .toLowerCase();
                 _firstLevelSubItems[j].breadCrumbText = breadCrumbText;
@@ -604,7 +605,7 @@ Future<void> updateControlItems() async {
           _firstLevelSubItems = <SubItem>[];
         } else {
           controlList.removeAt(i);
-          SampleModel._categoryList[index].controlList.removeAt(i);
+          SampleModel._categoryList[index].controlList!.removeAt(i);
           i--;
         }
       }
@@ -622,18 +623,18 @@ Future<void> updateControlItems() async {
 
   /// Sorting the controls based on control id category wise.
   for (int i = 0; i < SampleModel._categoryList.length; i++) {
-    SampleModel._categoryList[i].controlList
+    SampleModel._categoryList[i].controlList!
         .sort((dynamic a, dynamic b) => a.controlId.compareTo(b.controlId));
   }
 
   if (_isWeb) {
     /// Sorting categories based on [webCategoryId]
     SampleModel._categoryList.sort((WidgetCategory a, WidgetCategory b) =>
-        a.webCategoryId.compareTo(b.webCategoryId));
+        a.webCategoryId!.compareTo(b.webCategoryId!));
   } else {
     /// Sorting categories based on [mobileCategoryId]
     SampleModel._categoryList.sort((WidgetCategory a, WidgetCategory b) =>
-        a.mobileCategoryId.compareTo(b.mobileCategoryId));
+        a.mobileCategoryId!.compareTo(b.mobileCategoryId!));
   }
 }
 
@@ -643,8 +644,8 @@ class SampleRoute {
   SampleRoute({this.routeName, this.subItem});
 
   ///Holds the text which show in the URL
-  final String routeName;
+  final String? routeName;
 
   ///Holds the sample details
-  final SubItem subItem;
+  final SubItem? subItem;
 }

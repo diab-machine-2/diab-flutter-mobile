@@ -4,24 +4,26 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class VerifyPhoneController extends StatefulWidget {
-  final String type;
-  final String otp;
-  final String phone;
-  final String password;
-  final int remainingRequestCount;
-  final GoogleSignInAccount googleAccount;
-  final FacebookLoginResult facebookAccount;
-  final AuthorizationCredentialAppleID appleAccount;
+  final String? type;
+  final String? otp;
+  final String? phone;
+  final String? password;
+  final int? remainingRequestCount;
+  final GoogleSignInAccount? googleAccount;
+  final FacebookLoginResult? facebookAccount;
+  final AuthorizationCredentialAppleID? appleAccount;
   final dynamic userInfo;
   VerifyPhoneController(
       {this.type = 'forgot_password',
@@ -38,14 +40,14 @@ class VerifyPhoneController extends StatefulWidget {
 }
 
 class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
-  String otpTemp = '';
+  String? otpTemp = '';
   String otpCode = '';
   bool error = false;
-  int otpCount = 0;
+  int? otpCount = 0;
 
   int timeCount = 60;
 
-  Timer timer;
+  Timer? timer;
 
   @override
   void initState() {
@@ -57,13 +59,13 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
 
   void startTimer() {
     timeCount = 60;
-    timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
+    timer = Timer.periodic(Duration(seconds: 1), (Timer? timer) {
       if (timeCount > 0) {
         setState(() {
           timeCount -= 1;
         });
       } else {
-        timer.cancel();
+        timer!.cancel();
         timer = null;
       }
     });
@@ -71,7 +73,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
 
   @override
   void dispose() {
-    timer.cancel();
+    timer!.cancel();
     timer = null;
     super.dispose();
   }
@@ -88,7 +90,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
             Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                  image: AssetImage('assets/images/background_splash.png'),
+                  image: AssetImage(R.drawable.bg_splash),
                   fit: BoxFit.cover,
                 )),
                 child: Padding(
@@ -97,15 +99,15 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(children: [
-                          Image.asset('assets/images/checkPhone.png',
+                          Image.asset(R.drawable.img_check_phone,
                               width: 90, height: 74),
                           SizedBox(height: 20),
-                          Text('Nhập 4 số trong tin nhắn văn bản đã gửi đến',
+                          Text(R.string.nhap_otp.tr(),
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w400),
                               textAlign: TextAlign.center),
                           SizedBox(height: 8),
-                          Text('+84 ${widget.phone.split('+84').join()}',
+                          Text('+84 ${widget.phone!.split('+84').join()}',
                               style: TextStyle(
                                   fontFamily: 'Viga',
                                   fontSize: 20,
@@ -131,17 +133,17 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                   borderRadius: BorderRadius.circular(8),
                                   fieldHeight: 44,
                                   fieldWidth: 44,
-                                  activeFillColor: Colors.white,
-                                  inactiveFillColor: Colors.white,
-                                  selectedFillColor: Colors.white,
+                                  activeFillColor: R.color.white,
+                                  inactiveFillColor: R.color.white,
+                                  selectedFillColor: R.color.white,
                                   activeColor:
-                                      error ? Colors.red : Color(0xff7EC8C3),
-                                  selectedColor: mainColor,
+                                      error ? R.color.red : R.color.notActiveGreen,
+                                  selectedColor: R.color.mainColor,
                                   disabledColor:
-                                      error ? Colors.red : Color(0xff7EC8C3),
+                                      error ? R.color.red : R.color.notActiveGreen,
                                   inactiveColor:
-                                      error ? Colors.red : Color(0xff7EC8C3)),
-                              backgroundColor: Colors.transparent,
+                                      error ? R.color.red : R.color.notActiveGreen),
+                              backgroundColor: R.color.transparent,
                               enableActiveFill: true,
                               onCompleted: (value) {
                                 setState(() {
@@ -166,8 +168,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                               ? Padding(
                                   padding: EdgeInsets.only(left: 32, right: 32),
                                   child: Text(
-                                    'Mã xác nhận không chính xác. Vui lòng kiểm tra lại',
-                                    style: TextStyle(color: Colors.red),
+                                    R.string.otp_khong_chinh_xac.tr(),
+                                    style: TextStyle(color: R.color.red),
                                     textAlign: TextAlign.center,
                                   ),
                                 )
@@ -193,22 +195,22 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                   height: 48,
                                   width: 227,
                                   decoration: BoxDecoration(
-                                      color: Color(0xff01645A),
+                                      color: R.color.mainColor,
                                       borderRadius: BorderRadius.circular(21.5),
                                       gradient: LinearGradient(
                                           begin: Alignment.topLeft,
                                           end: Alignment.centerRight,
                                           colors: [
-                                            greenGradientTop,
-                                            greenGradientBottom
+                                            R.color.greenGradientTop,
+                                            R.color.greenGradientBottom
                                           ])),
                                   child: Center(
                                       child: Text(
-                                          'Gửi lại mã (Còn ${timeCount}s)',
+                                          '${R.string.gui_lai_ma.tr()} (Còn ${timeCount}s)',
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
-                                              color: Colors.white))),
+                                              color: R.color.white))),
                                 ),
                               ),
                               SizedBox(height: 8),
@@ -218,16 +220,16 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                     Container(
                                         height: 1,
                                         width: 36,
-                                        color: Color(0xffD6D8E0)),
+                                        color: R.color.color0xffD6D8E0),
                                     SizedBox(width: 8),
-                                    Text('Hoặc',
+                                    Text(R.string.or.tr(),
                                         style: TextStyle(
-                                            color: Color(0xff232527))),
+                                            color: R.color.color0xff232527)),
                                     SizedBox(width: 8),
                                     Container(
                                         height: 1,
                                         width: 36,
-                                        color: Color(0xffD6D8E0))
+                                        color: R.color.color0xffD6D8E0)
                                   ]),
                               SizedBox(height: 8),
                               GestureDetector(
@@ -240,13 +242,13 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(200),
                                       border: Border.all(
-                                          color: mainColor, width: 1)),
+                                          color: R.color.mainColor, width: 1)),
                                   child: Center(
-                                      child: Text('Thay đổi số điện thoại',
+                                      child: Text(R.string.thay_doi_so_dien_thoai.tr(),
                                           style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
-                                              color: mainColor))),
+                                              color: R.color.mainColor))),
                                 ),
                               ),
                               SizedBox(
@@ -263,7 +265,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                               //           style: TextStyle(
                               //               fontSize: 16,
                               //               fontWeight: FontWeight.w500,
-                              //               color: Colors.white))),
+                              //               color: R.color.white))),
                               // ),
                             ],
                           ),
@@ -277,20 +279,20 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                 right: 0,
                 child: AppBar(
                   leading: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: Colors.black),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.black),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
                   title: Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      "Xác nhận số điện thoại",
-                      style: TextStyle(fontSize: 20, color: textDark),
+                      R.string.xac_nhan_so_dien_thoai.tr(),
+                      style: TextStyle(fontSize: 20, color: R.color.textDark),
                     ),
                   ),
-                  backgroundColor: Colors.transparent, //No more green
+                  backgroundColor: R.color.transparent, //No more green
                   elevation: 0.0, //Shadow gone
                 )),
           ])),
@@ -304,7 +306,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       if (widget.type == 'google') {
         await LoginClient().verifyOTP(widget.phone, otpCode);
 
-        final authen = await widget.googleAccount.authentication;
+        final authen = await widget.googleAccount!.authentication;
         await LoginClient().login({
           "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
           "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
@@ -315,7 +317,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
 
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          Navigator.pushReplacementNamed(context, '/rules');
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
         BotToast.closeAllLoading();
       } else if (widget.type == 'facebook') {
@@ -324,12 +326,12 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
           "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
           "grant_type": "external",
-          "external_token": widget.facebookAccount.accessToken.token,
+          "external_token": widget.facebookAccount!.accessToken?.token,
           "provider": 'Facebook'
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          Navigator.pushReplacementNamed(context, '/rules');
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
         BotToast.closeAllLoading();
       } else if (widget.type == 'apple') {
@@ -338,18 +340,18 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
           "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
           "grant_type": "external",
-          "external_token": widget.appleAccount.identityToken,
+          "external_token": widget.appleAccount!.identityToken,
           "provider": 'Apple'
         });
         final result = await LoginClient().createPatient(widget.userInfo);
         if (result == true) {
-          Navigator.pushReplacementNamed(context, '/rules');
+          Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
         BotToast.closeAllLoading();
       } else if (widget.type == 'linked_google') {
         final result = await LoginClient().linkedAccount({
           'providerName': 'Google',
-          'providerKey': widget.googleAccount.id,
+          'providerKey': widget.googleAccount!.id,
           'phoneNumber': widget.phone,
           'token': otpCode
         });
@@ -366,7 +368,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       } else if (widget.type == 'linked_facebook') {
         final result = await LoginClient().linkedAccount({
           'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount.accessToken.userId,
+          'providerKey': widget.facebookAccount!.accessToken?.userId,
           'phoneNumber': widget.phone,
           'token': otpCode
         });
@@ -384,13 +386,13 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         final result =
             await LoginClient().verifyOTPRecover(widget.phone, otpCode);
         print(result);
-        Navigator.pushReplacementNamed(context, '/new_password',
+        Navigator.pushReplacementNamed(context, NavigatorName.new_password,
             arguments: {'phone': widget.phone, 'token': otpCode});
         BotToast.closeAllLoading();
       } else {
         final result = await LoginClient().verifyOTP(widget.phone, otpCode);
         print(result);
-        Navigator.pushReplacementNamed(context, '/register_success',
+        Navigator.pushReplacementNamed(context, NavigatorName.register_success,
             arguments: {'phone': widget.phone, 'password': widget.password});
         BotToast.closeAllLoading();
       }
@@ -408,21 +410,21 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
   }
 
   resendOTP() async {
-    if (timeCount > 0) {
+    if (timeCount > 0 || otpCount == null) {
       return;
     }
-    if (otpCount <= 0) {
+    if (otpCount! <= 0) {
       _showDialogError();
       return;
     }
-    otpCount -= 1;
+    otpCount = otpCount! - 1;
     startTimer();
     BotToast.showLoading();
     try {
       if (widget.type == 'google') {
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Google',
-          'providerKey': widget.googleAccount.id,
+          'providerKey': widget.googleAccount!.id,
           'phoneNumber': widget.phone
         });
         otpCount = result.remainingRequestCount;
@@ -430,7 +432,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       } else if (widget.type == 'facebook') {
         final result = await LoginClient().registerWithSocial({
           'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount.accessToken.userId,
+          'providerKey': widget.facebookAccount!.accessToken?.userId,
           'phoneNumber': widget.phone
         });
         otpCount = result.remainingRequestCount;
@@ -438,7 +440,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       } else if (widget.type == 'linked_google') {
         final result = await LoginClient().linkedAccountOTP({
           'providerName': 'Google',
-          'providerKey': widget.googleAccount.id,
+          'providerKey': widget.googleAccount!.id,
           'phoneNumber': widget.phone
         });
         otpCount = result.remainingRequestCount;
@@ -446,7 +448,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       } else if (widget.type == 'linked_facebook') {
         final result = await LoginClient().linkedAccountOTP({
           'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount.accessToken.userId,
+          'providerKey': widget.facebookAccount!.accessToken?.userId,
           'phoneNumber': widget.phone
         });
         otpCount = result.remainingRequestCount;
@@ -480,9 +482,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/checkSuccess.png',
+              Image.asset(R.drawable.ic_check_success,
                   width: 64, height: 64),
-              Text('Đã gửi lại mã OTP.\nVui lòng kiểm tra tin nhắn',
+              Text(R.string.da_gui_lai_otp.tr(),
                   textAlign: TextAlign.center)
             ],
           ),
@@ -501,14 +503,14 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/images/checkError.png',
+              Image.asset(R.drawable.ic_check_error,
                   width: 64, height: 64),
               SizedBox(height: 8),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: 'Đã gửi OTP 5 lần cho số điện thoại ',
-                  style: TextStyle(color: Color(0xff172823), fontSize: 16),
+                  text: R.string.da_gui_otp_5_lan_cho_so_dien_thoai.tr(),
+                  style: TextStyle(color: R.color.textDark, fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(
                         text: widget.phone,
@@ -516,9 +518,9 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
                         text:
-                            '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
+                            R.string.dang_ky_lai_hom_sau.tr(),
                         style:
-                            TextStyle(color: Color(0xff172823), fontSize: 16)),
+                            TextStyle(color: R.color.textDark, fontSize: 16)),
                   ],
                 ),
               )

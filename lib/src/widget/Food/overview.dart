@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_distribution_chart.dart';
@@ -9,7 +10,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class FoodOverviewController extends StatefulWidget {
   FoodOverviewController({
-    Key key,
+    Key? key,
   }) : super(key: key);
   @override
   FoodOverviewControllerState createState() => FoodOverviewControllerState();
@@ -34,22 +35,23 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
 
   reloadData(int periodFilterType) {
     if (energyKey.currentState != null) {
-      energyKey.currentState.reloadData(periodFilterType);
+      energyKey.currentState!.reloadData(periodFilterType);
     }
     if (starchKey.currentState != null) {
-      starchKey.currentState.reloadData(periodFilterType);
+      starchKey.currentState!.reloadData(periodFilterType);
     }
     if (distributionKey.currentState != null) {
-      distributionKey.currentState.reloadData(periodFilterType);
+      distributionKey.currentState!.reloadData(periodFilterType);
     }
     if (trendKey.currentState != null) {
-      trendKey.currentState.reloadData(periodFilterType);
+      trendKey.currentState!.reloadData(periodFilterType);
     }
     if (foodKey.currentState != null) {
-      foodKey.currentState.reloadData(periodFilterType);
+      foodKey.currentState!.reloadData(periodFilterType);
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
@@ -58,15 +60,15 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
       decoration: BoxDecoration(
           gradient: LinearGradient(
               colors: [
-                Color(0xFFFDC798).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFE6F6ED).withOpacity(0.3),
-                Color(0xFFFDC798).withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.greenbg.withOpacity(0.3),
+                R.color.color0xFFFDC798.withOpacity(0.3),
               ],
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
-              stops: [0.0, 0.3, 0.8, 1.0])),
-      child: ListView(physics: ClampingScrollPhysics(), children: [
+              stops: const [0.0, 0.3, 0.8, 1.0])),
+      child: ListView(physics: const ClampingScrollPhysics(), children: [
         EnergyChart(key: energyKey),
         StarchChart(key: starchKey),
         FoodChart(key: foodKey),

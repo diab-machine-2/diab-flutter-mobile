@@ -1,18 +1,18 @@
 import 'package:meta/meta.dart';
 
 class ExercriseTrendCaloModel {
-  final double total;
-  final double target;
-  final String targetTitle;
-  final String targetUnit;
+  final double? total;
+  final double? target;
+  final String? targetTitle;
+  final String? targetUnit;
   final TrendItemModel trendItems;
 
   ExercriseTrendCaloModel({
-    @required this.total,
-    @required this.target,
-    @required this.targetTitle,
-    @required this.targetUnit,
-    @required this.trendItems,
+    required this.total,
+    required this.target,
+    required this.targetTitle,
+    required this.targetUnit,
+    required this.trendItems,
   });
   @override
   factory ExercriseTrendCaloModel.fromJson(Map<String, dynamic> json) {
@@ -26,16 +26,16 @@ class ExercriseTrendCaloModel {
 }
 
 class TrendItemModel {
-  final int total;
-  final int page;
-  final int size;
+  final int? total;
+  final int? page;
+  final int? size;
   final List<SubTrendItemModel> items;
 
   TrendItemModel(
-      {@required this.total,
-      @required this.page,
-      @required this.size,
-      @required this.items});
+      {required this.total,
+      required this.page,
+      required this.size,
+      required this.items});
   @override
   factory TrendItemModel.fromJson(Map<String, dynamic> json) {
     return TrendItemModel(
@@ -49,22 +49,22 @@ class TrendItemModel {
 }
 
 class SubTrendItemModel {
-  final double burnedCalories;
-  final int date;
-  final int firstDateOfWeek;
-  final int lastDateOfWeek;
-  final String targetDescription;
-  final String targetColor;
-  final TargetIconModel targetIconUrl;
+  final double? burnedCalories;
+  final int? date;
+  final int? firstDateOfWeek;
+  final int? lastDateOfWeek;
+  final String? targetDescription;
+  final String? targetColor;
+  final TargetIconModel? targetIconUrl;
 
   SubTrendItemModel({
-    @required this.burnedCalories,
-    @required this.date,
-    @required this.firstDateOfWeek,
-    @required this.lastDateOfWeek,
-    @required this.targetDescription,
-    @required this.targetColor,
-    @required this.targetIconUrl,
+    required this.burnedCalories,
+    required this.date,
+    required this.firstDateOfWeek,
+    required this.lastDateOfWeek,
+    required this.targetDescription,
+    required this.targetColor,
+    required this.targetIconUrl,
   });
   @override
   factory SubTrendItemModel.fromJson(Map<String, dynamic> json) {
@@ -86,12 +86,12 @@ class SubTrendItemModel {
 }
 
 class TargetIconModel {
-  final String id;
-  final String url;
+  final String? id;
+  final String? url;
 
   TargetIconModel({
-    @required this.id,
-    @required this.url,
+    required this.id,
+    required this.url,
   });
   @override
   factory TargetIconModel.fromJson(Map<String, dynamic> json) {

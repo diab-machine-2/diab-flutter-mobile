@@ -66,10 +66,10 @@ import 'package:meta/meta.dart';
 // }
 
 class ImagesUrlModel {
-  final String id;
-  final String url;
+  final String? id;
+  final String? url;
 
-  ImagesUrlModel({@required this.id, @required this.url});
+  ImagesUrlModel({required this.id, required this.url});
   @override
   factory ImagesUrlModel.fromJson(Map<String, dynamic> json) {
     return ImagesUrlModel(

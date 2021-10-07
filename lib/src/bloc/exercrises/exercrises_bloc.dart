@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/excercise_rank_model.dart';
 import 'package:medical/src/modal/exercrises/exercrise_input.dart';
 import 'package:medical/src/modal/exercrises/exercrise_summary.dart';
@@ -8,18 +9,17 @@ import 'package:medical/src/modal/exercrises/exercrise_trend_calo.dart';
 import 'package:medical/src/modal/exercrises/exercrise_trend_time.dart';
 import 'package:medical/src/modal/exercrises/exercrise_walk_summary.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
-import 'package:medical/src/modal/exercrises/exercrises_categogy_request.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 part 'exercrises_bloc_event.dart';
 part 'exercrises_bloc_state.dart';
 
 class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
-  @override
-  ExercrisesState get initialState => ExercrisesInitial();
+  ExercrisesBloc() : super(ExercrisesInitial());
 
   @override
   Stream<ExercrisesState> mapEventToState(ExercrisesEvent event) async* {
@@ -51,7 +51,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
   }
 
   Stream<ExercrisesState> fetchCategory(
-      int page, List<ExercrisesCategoryModel> selectedModel) async* {
+      int? page, List<ExercrisesCategoryModel>? selectedModel) async* {
     try {
       final client = ExercrisesClient();
       var model = await client.fetchCategory(page);
@@ -63,7 +63,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       } else {
         yield ExercrisesError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -71,10 +71,10 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
   Stream<ExercrisesState> addCategory(
       ExercrisesCategoryModel selectedModel) async* {
     try {
-      final currenState = state;
-      ExercrisesListCategoryModel categories;
+      final ExercrisesState currenState = state;
+      ExercrisesListCategoryModel? categories;
       List<ExercrisesCategoryModel> selectedCategories = [];
-      ExercrisesListCategoryModel categorySearch;
+      ExercrisesListCategoryModel? categorySearch;
       bool hasMore = false;
       if (currenState is ExercrisesCategoryModelLoaded) {
         selectedCategories = currenState.selectedModel ?? [];
@@ -104,34 +104,34 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       } else {
         yield ExercrisesError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
-  Stream<ExercrisesState> searchCategory(String key) async* {
+  Stream<ExercrisesState> searchCategory(String? key) async* {
     try {
-      final currenState = state;
-      ExercrisesListCategoryModel categories;
-      ExercrisesListCategoryModel categorySearch;
+      final ExercrisesState currenState = state;
+      ExercrisesListCategoryModel? categories;
+      ExercrisesListCategoryModel? categorySearch;
       List<ExercrisesCategoryModel> selectedCategories = [];
       if (currenState is ExercrisesCategoryModelLoaded) {
         selectedCategories = currenState.selectedModel ?? [];
         categories = currenState.category;
         categorySearch = ExercrisesListCategoryModel(
-            exerciseCategories: currenState.category.exerciseCategories
+            exerciseCategories: currenState.category!.exerciseCategories
                 .where((element) =>
-                    element.category.toLowerCase().contains(key.toLowerCase()))
+                    element.category!.toLowerCase().contains(key!.toLowerCase()))
                 .toList(),
             exerciseCategoryCommons: currenState
-                .category.exerciseCategoryCommons
+                .category!.exerciseCategoryCommons
                 .where((element) =>
-                    element.category.toLowerCase().contains(key.toLowerCase()))
+                    element.category!.toLowerCase().contains(key!.toLowerCase()))
                 .toList(),
             exerciseCategoryRegularlies: currenState
-                .category.exerciseCategoryRegularlies
+                .category!.exerciseCategoryRegularlies
                 .where((element) =>
-                    element.category.toLowerCase().contains(key.toLowerCase()))
+                    element.category!.toLowerCase().contains(key!.toLowerCase()))
                 .toList());
       }
 
@@ -145,16 +145,16 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       } else {
         yield ExercrisesError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<ExercrisesState> fetchInputExercrises(
-      String currentDateTime, String periodFilterType, int page) async* {
+      String? currentDateTime, String? periodFilterType, int? page) async* {
     try {
       final client = ExercrisesClient();
-      final currenState = state;
+      final ExercrisesState currenState = state;
       var model =
           await client.fetchInput(currentDateTime, periodFilterType, page);
 
@@ -171,13 +171,13 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       } else {
         yield ExercrisesError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<ExercrisesState> fetchDataDaily(
-    String currentDateTime,
+    String? currentDateTime,
   ) async* {
     try {
       final client = ExercrisesClient();
@@ -193,14 +193,14 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       } else {
         yield ExercrisesError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<ExercrisesState> fetchTimeTrend(
-    String currentDateTime,
-    String periodFilterType,
+    String? currentDateTime,
+    String? periodFilterType,
   ) async* {
     try {
       final client = ExercrisesClient();
@@ -214,14 +214,14 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       } else {
         yield ExercrisesError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<ExercrisesState> fetchCaloTrend(
-    String currentDateTime,
-    String periodFilterType,
+    String? currentDateTime,
+    String? periodFilterType,
   ) async* {
     try {
       final client = ExercrisesClient();
@@ -235,14 +235,14 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       } else {
         yield ExercrisesError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<ExercrisesState> fetchRank(
-    String currentDateTime,
-    String periodFilterType,
+    String? currentDateTime,
+    String? periodFilterType,
   ) async* {
     try {
       final client = ExercrisesClient();
@@ -255,7 +255,7 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       } else {
         yield ExercrisesError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

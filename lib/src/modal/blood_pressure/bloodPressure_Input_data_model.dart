@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 class BloodPressureDataModel {
   final List<BloodPressureModel> inputs;
-  final bool hasMore;
+  final bool? hasMore;
 
-  BloodPressureDataModel({@required this.inputs, @required this.hasMore});
+  BloodPressureDataModel({required this.inputs, required this.hasMore});
 }

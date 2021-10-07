@@ -1,14 +1,14 @@
 import 'package:meta/meta.dart';
 
 class PatientTimeFrameModel {
-  final String timeFrameId;
-  final String timeFrameName;
-  final int time;
+  final String? timeFrameId;
+  final String? timeFrameName;
+  final int? time;
 
   PatientTimeFrameModel(
-      {@required this.timeFrameId,
-      @required this.timeFrameName,
-      @required this.time});
+      {required this.timeFrameId,
+      required this.timeFrameName,
+      required this.time});
 
   factory PatientTimeFrameModel.fromJson(Map<String, dynamic> json) {
     return PatientTimeFrameModel(

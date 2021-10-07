@@ -1,22 +1,27 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -28,17 +33,18 @@ class ProfileInfoController extends StatefulWidget {
   _ProfileInfoControllerState createState() => _ProfileInfoControllerState();
 }
 
-class _ProfileInfoControllerState extends State<ProfileInfoController> {
-  MotivationModel motivation;
+class _ProfileInfoControllerState extends State<ProfileInfoController> with Observer {
+  MotivationModel? motivation;
 
   void initState() {
     super.initState();
-    DartNotificationCenter.subscribe(
-        channel: 'user_info_change',
-        observer: this,
-        onNotification: (_) {
-          setState(() {});
-        });
+    Observable.instance.addObserver(this);
+    // DartNotificationCenter.subscribe(
+    //     channel: 'user_info_change',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       setState(() {});
+    //     });
 
     loadMotivation();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Update Profile');
@@ -46,21 +52,35 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
   loadMotivation() async {
     final result = await UserClient().fetchMotivationDiary(1);
-    DartNotificationCenter.post(channel: 'motivation_change');
+    Observable.instance.notifyObservers([], notifyName : "motivation_change");
+    // DartNotificationCenter.post(channel: 'motivation_change');
     motivation = result.models.length == 0 ? null : result.models.first;
     setState(() {});
   }
 
   @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    // TODO: implement update
+    if (notifyName == 'motivation_change') {
+      loadMotivation();
+    }
+    if (notifyName == 'user_info_change') {
+      setState(() {});
+    }
+  }
+
+  @override
   void dispose() {
-    DartNotificationCenter.unsubscribe(
-        channel: 'user_info_change', observer: this);
+    Observable.instance.removeObserver(this);
+    // DartNotificationCenter.unsubscribe(
+    //     channel: 'user_info_change', observer: this);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = AppSettings.userInfo;
+    final user = AppSettings.userInfo!;
     return GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -70,26 +90,26 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
           decoration: BoxDecoration(
               gradient: LinearGradient(
                   colors: [
-                    Color(0xFFFDC798).withOpacity(0.3),
-                    Color(0xFFE6F6ED).withOpacity(0.9),
+                    R.color.color0xFFFDC798.withOpacity(0.3),
+                    R.color.greenbg.withOpacity(0.9),
                   ],
                   begin: FractionalOffset(1, 1),
                   end: FractionalOffset(0.9, 0.5),
                   stops: [0.0, 1.0])),
           child: Stack(children: [
-            Image.asset('assets/images/profile_bg.png'),
+            Image.asset(R.drawable.bg_profile),
             Column(children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
-                title: Text('Thông tin cá nhân',
+                backgroundColor: R.color.transparent,
+                title: Text(R.string.personal_info.tr(),
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark)),
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    icon: Icon(Icons.arrow_back, color: textDark),
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -110,7 +130,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 showActionSheet(context);
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Stack(
                                     alignment: AlignmentDirectional.bottomEnd,
                                     children: [
@@ -119,19 +139,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                         child: Container(
                                           clipBehavior: Clip.hardEdge,
                                           decoration: BoxDecoration(
-                                              color: mainColor,
+                                              color: R.color.mainColor,
                                               borderRadius:
                                                   BorderRadius.circular(80)),
-                                          child: user.imageUrl.url == null
+                                          child: user.imageUrl!.url == null
                                               ? Icon(Icons.person,
                                                   size: 160,
-                                                  color: Colors.white)
-                                              : Image.network(user.imageUrl.url,
+                                                  color: R.color.white)
+                                              : Image.network(user.imageUrl!.url!,
                                                   width: 160, height: 160),
                                         ),
                                       ),
                                       Image.asset(
-                                          'assets/images/icon_camera_picker.png',
+                                          R.drawable.ic_camera_picker,
                                           width: 50,
                                           height: 50)
                                     ]),
@@ -143,7 +163,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                         motivation != null
                             ? Container(
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: Column(
                                   children: [
@@ -159,9 +179,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Text('Động lực của tôi',
+                                                  Text(R.string.my_motivation.tr(),
                                                       style: TextStyle(
-                                                          color: Colors.black,
+                                                          color: R.color.black,
                                                           fontWeight:
                                                               FontWeight.w700,
                                                           fontSize: 16)),
@@ -171,33 +191,33 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                           motivation);
                                                     },
                                                     child: Container(
-                                                      color: Colors.transparent,
+                                                      color: R.color.transparent,
                                                       child: Row(children: [
                                                         Image.asset(
-                                                            'assets/images/icon_edit.png',
+                                                            R.drawable.ic_edit,
                                                             width: 16,
                                                             height: 16),
                                                         SizedBox(width: 4),
-                                                        Text('Chỉnh sửa',
+                                                        Text(R.string.chinh_sua.tr(),
                                                             style: TextStyle(
                                                                 color:
-                                                                    mainColor,
+                                                                    R.color.mainColor,
                                                                 fontSize: 16))
                                                       ]),
                                                     ),
                                                   )
                                                 ]),
                                             SizedBox(height: 16),
-                                            Text('“${motivation.content}”',
+                                            Text('“${motivation!.content}”',
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 16)),
                                           ]),
                                     ),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: Color(0xffe5e5e5)),
+                                        height: 1, color: R.color.color0xffE5E5E5),
                                     Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
@@ -206,14 +226,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                             child: GestureDetector(
                                               onTap: () {
                                                 Navigator.pushNamed(
-                                                    context, '/motivation');
+                                                    context, NavigatorName.motivation);
                                               },
                                               child: Container(
-                                                color: Colors.transparent,
+                                                color: R.color.transparent,
                                                 child: Center(
-                                                  child: Text('Xem nhật ký',
+                                                  child: Text(R.string.view_log.tr(),
                                                       style: TextStyle(
-                                                          color: mainColor,
+                                                          color: R.color.mainColor,
                                                           fontSize: 16)),
                                                 ),
                                               ),
@@ -222,7 +242,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                           Container(
                                               height: 46,
                                               width: 1,
-                                              color: Color(0xffe5e5e5)),
+                                              color: R.color.color0xffE5E5E5),
                                           Expanded(
                                             child: GestureDetector(
                                               onTap: () {
@@ -230,11 +250,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                     null);
                                               },
                                               child: Container(
-                                                color: Colors.transparent,
+                                                color: R.color.transparent,
                                                 child: Center(
-                                                  child: Text('Động lực mới',
+                                                  child: Text(R.string.new_motivation.tr(),
                                                       style: TextStyle(
-                                                          color: mainColor,
+                                                          color: R.color.mainColor,
                                                           fontSize: 16)),
                                                 ),
                                               ),
@@ -249,10 +269,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.transparent,
+                                    color: R.color.transparent,
                                     image: DecorationImage(
                                         image: AssetImage(
-                                            'assets/images/bg_dongluc.png'),
+                                            R.drawable.bg_dong_luc),
                                         fit: BoxFit.fill),
                                   ),
                                   padding: EdgeInsets.all(16),
@@ -260,16 +280,16 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text('Động lực của tôi',
+                                        Text(R.string.my_motivation.tr(),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 16)),
                                         SizedBox(height: 8),
                                         Text(
-                                            'Điều gì tạo động lực sống khoẻ cho bạn?',
+                                            R.string.new_motivaiton_suggest.tr(),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 16)),
                                         Padding(
@@ -285,7 +305,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                       left: 16, right: 16),
                                                   decoration: BoxDecoration(
                                                       border: Border.all(
-                                                          color: Colors.white,
+                                                          color: R.color.white,
                                                           width: 2),
                                                       borderRadius:
                                                           BorderRadius.circular(
@@ -293,13 +313,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                   child: Row(
                                                     children: [
                                                       Icon(Icons.add,
-                                                          color: Colors.white,
+                                                          color: R.color.white,
                                                           size: 28),
                                                       SizedBox(width: 8),
-                                                      Text('Viết động lực  ',
+                                                      Text('${R.string.enter_motivation.tr()}  ',
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.white,
+                                                                  R.color.white,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700,
@@ -315,22 +335,22 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                         SizedBox(height: 16),
                         Container(
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Thông tin chung',
+                                Text(R.string.general_info.tr(),
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                  'assets/images/icon_person.png',
-                                  user.fullName,
-                                  'Họ và tên',
-                                  Image.asset('assets/images/icon_right.png',
+                                  R.drawable.ic_person,
+                                  user.fullName!,
+                                  R.string.last_name_and_first_name.tr(),
+                                  Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   0,
                                   callback: () {
@@ -338,10 +358,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  'assets/images/icon_birthday.png',
-                                  convertToUTC(user.dateOfBirth, 'dd/MM/yyyy'),
-                                  'Ngày sinh',
-                                  Image.asset('assets/images/icon_right.png',
+                                  R.drawable.ic_birthday,
+                                  convertToUTC(user.dateOfBirth!, 'dd/MM/yyyy'),
+                                  R.string.ngay_sinh.tr(),
+                                  Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   1,
                                   callback: () {
@@ -349,12 +369,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  'assets/images/icon_gender.png',
-                                  user.gender == null || user.gender.isEmpty
-                                      ? 'Đang cập nhật'
-                                      : user.gender,
-                                  'Giới tính',
-                                  Image.asset('assets/images/icon_right.png',
+                                  R.drawable.ic_gender,
+                                  user.gender == null || user.gender!.isEmpty
+                                      ? R.string.updating.tr()
+                                      : user.gender!,
+                                  R.string.gioi_tinh.tr(),
+                                  Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   2,
                                   callback: () {
@@ -366,21 +386,21 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                         SizedBox(height: 16),
                         Container(
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Thông tin bệnh lý',
+                                Text(R.string.pathological_info.tr(),
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                  'assets/images/icon_folder.png',
-                                  user.diabetesName ?? 'Đang cập nhật',
-                                  'Loại bệnh',
+                                  R.drawable.ic_folder,
+                                  user.diabetesName ?? R.string.updating.tr(),
+                                  R.string.loai_benh.tr(),
                                   null,
                                   3,
                                   callback: () {
@@ -388,9 +408,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  'assets/images/icon_year.png',
-                                  convertToUTC(user.diabetesDate, 'yyyy'),
-                                  'Năm phát bệnh',
+                                  R.drawable.ic_year,
+                                  convertToUTC(user.diabetesDate!, 'yyyy'),
+                                  R.string.year_illness_start.tr(),
                                   null,
                                   4,
                                   callback: () {
@@ -402,23 +422,23 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                         SizedBox(height: 16),
                         Container(
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Chỉ số cơ thể',
+                                Text(R.string.body_info.tr(),
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                  'assets/images/icon_kg.png',
+                                  R.drawable.ic_kg,
                                   user.weight == null
-                                      ? 'Chưa cập nhật'
-                                      : '${user.weight.round()} kg',
-                                  'Cân nặng',
+                                      ? R.string.not_updated_yet.tr()
+                                      : '${user.weight!.round()} kg',
+                                  R.string.can_nang.tr(),
                                   null,
                                   5,
                                   callback: () {
@@ -426,11 +446,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  'assets/images/icon_ruler.png',
+                                  R.drawable.ic_ruler_fill,
                                   user.height == null
-                                      ? 'Chưa cập nhật'
-                                      : '${user.height.round()} cm',
-                                  'Chiều cao',
+                                      ? R.string.not_updated_yet.tr()
+                                      : '${user.height!.round()} cm',
+                                  R.string.chieu_cao.tr(),
                                   null,
                                   6,
                                   callback: () {
@@ -442,31 +462,31 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                         SizedBox(height: 16),
                         Container(
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Thông liên lạc',
+                                Text(R.string.contact_info.tr(),
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontWeight: FontWeight.w600)),
                                 SizedBox(height: 8),
                                 buildItem(
-                                    'assets/images/icon_phone_info.png',
-                                    user.phoneNumber,
-                                    'Số điện thoại 1',
-                                    Image.asset('assets/images/icon_ok.png',
+                                    R.drawable.ic_phone_info,
+                                    user.phoneNumber!,
+                                    R.string.phone_number_1.tr(),
+                                    Image.asset(R.drawable.ic_ok,
                                         width: 24, height: 24),
                                     7),
                                 buildItem(
-                                  'assets/images/icon_phone_info.png',
+                                  R.drawable.ic_phone_info,
                                   user.secondPhoneNumber == null ||
-                                          user.secondPhoneNumber.isEmpty
-                                      ? 'Chưa cập nhật'
-                                      : user.secondPhoneNumber,
-                                  'Số điện thoại 2',
+                                          user.secondPhoneNumber!.isEmpty
+                                      ? R.string.not_updated_yet.tr()
+                                      : user.secondPhoneNumber!,
+                                  R.string.phone_number_2.tr(),
                                   null,
                                   8,
                                   callback: () {
@@ -474,11 +494,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                  'assets/images/icon_email.png',
-                                  user.email == null || user.email.isEmpty
-                                      ? 'Chưa cập nhật'
-                                      : user.email,
-                                  'Email',
+                                  R.drawable.ic_email,
+                                  user.email == null || user.email!.isEmpty
+                                      ? R.string.not_updated_yet.tr()
+                                      : user.email!,
+                                  R.string.email.tr(),
                                   null,
                                   9,
                                   callback: () {
@@ -486,33 +506,33 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   },
                                 ),
                                 buildItem(
-                                    'assets/images/icon_location.png',
+                                    R.drawable.ic_location,
                                     ((user.address ?? '') +
                                                 (user.address ==
                                                             null ||
-                                                        user.address.isEmpty
+                                                        user.address!.isEmpty
                                                     ? ''
                                                     : ', ') +
                                                 (user
                                                             .ward ==
                                                         null
                                                     ? ''
-                                                    : user.ward.name) +
+                                                    : user.ward!.name!) +
                                                 (user
                                                                 .ward ==
                                                             null ||
-                                                        user.ward.name.isEmpty
+                                                        user.ward!.name!.isEmpty
                                                     ? ''
                                                     : ', ') +
                                                 (user
                                                             .district ==
                                                         null
                                                     ? ''
-                                                    : user.district.name) +
+                                                    : user.district!.name!) +
                                                 (user
                                                                 .district ==
                                                             null ||
-                                                        user.district.name
+                                                        user.district!.name!
                                                             .isEmpty
                                                     ? ''
                                                     : ', ') +
@@ -520,47 +540,47 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                                             .province ==
                                                         null
                                                     ? ''
-                                                    : user.province.name))
+                                                    : user.province!.name!))
                                             .isEmpty
-                                        ? 'Chưa cập nhật'
+                                        ? R.string.not_updated_yet.tr()
                                         : ((user
                                                     .address ??
                                                 '') +
                                             (user.address == null ||
-                                                    user.address.isEmpty
+                                                    user.address!.isEmpty
                                                 ? ''
                                                 : ', ') +
                                             (user.ward == null
                                                 ? ''
-                                                : user.ward.name) +
+                                                : user.ward!.name!) +
                                             (user.ward == null ||
-                                                    user.ward.name.isEmpty
+                                                    user.ward!.name!.isEmpty
                                                 ? ''
                                                 : ', ') +
                                             (user.district == null
                                                 ? ''
-                                                : user.district.name) +
+                                                : user.district!.name!) +
                                             (user.district == null ||
-                                                    user.district.name.isEmpty
+                                                    user.district!.name!.isEmpty
                                                 ? ''
                                                 : ', ') +
                                             (user.province == null
                                                 ? ''
-                                                : user.province.name)),
-                                    'Địa chỉ',
+                                                : user.province!.name!)),
+                                    R.string.address.tr(),
                                     null,
                                     10, callback: () {
                                   _showDialogUpdateAddress();
                                 }),
                                 buildItem(
-                                    'assets/images/icon_google.png',
+                                    R.drawable.ic_google,
                                     user.isLinkedGoogle == null ||
-                                            !user.isLinkedGoogle
-                                        ? 'Chưa kết nối'
-                                        : user.fullName,
+                                            !user.isLinkedGoogle!
+                                        ? R.string.not_connected_yet.tr()
+                                        : user.fullName!,
                                     'Google',
                                     CupertinoSwitch(
-                                      activeColor: mainColor,
+                                      activeColor: R.color.mainColor,
                                       value: user.isLinkedGoogle ?? false,
                                       onChanged: (value) {
                                         print(value);
@@ -568,22 +588,6 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                       },
                                     ),
                                     11),
-                                // buildItem(
-                                //     'assets/images/icon_fb_info.png',
-                                //     user.isLinkedFacebook == null ||
-                                //             !user.isLinkedFacebook
-                                //         ? 'Chưa kết nối'
-                                //         : user.fullName,
-                                //     'Facebook',
-                                //     CupertinoSwitch(
-                                //       activeColor: mainColor,
-                                //       value: user.isLinkedFacebook ?? false,
-                                //       onChanged: (value) {
-                                //         print(value);
-                                //         linkedFacebook();
-                                //       },
-                                //     ),
-                                //     12)
                               ]),
                         ),
                         SizedBox(height: 16),
@@ -593,15 +597,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           },
                           child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: R.color.white,
                                   borderRadius: BorderRadius.circular(10)),
                               padding: EdgeInsets.all(16),
                               child: Row(children: [
-                                Image.asset('assets/images/icon_logout.png',
+                                Image.asset(R.drawable.ic_logout,
                                     width: 33, height: 33),
                                 SizedBox(width: 12),
-                                Text('Đăng xuất',
-                                    style: TextStyle(color: Colors.black))
+                                Text(R.string.logout.tr(),
+                                    style: TextStyle(color: R.color.black))
                               ])),
                         )
                       ]),
@@ -613,14 +617,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   }
 
   Widget buildItem(
-      String image, String title, String subTitle, Widget subIcon, int index,
-      {VoidCallback callback}) {
+      String image, String title, String subTitle, Widget? subIcon, int index,
+      {VoidCallback? callback}) {
     return GestureDetector(
       onTap: () {
-        callback();
+        callback!();
       },
       child: Container(
-        color: Colors.transparent,
+        color: R.color.transparent,
         padding: EdgeInsets.only(top: 8, bottom: 8),
         child:
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -632,9 +636,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: TextStyle(color: Colors.black)),
+                      Text(title, style: TextStyle(color: R.color.black)),
                       SizedBox(height: 2),
-                      Text(subTitle, style: TextStyle(color: Color(0xff9c9c9c)))
+                      Text(subTitle, style: TextStyle(color: R.color.captionColorGray))
                     ]),
               )
             ]),
@@ -653,11 +657,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
             padding: EdgeInsets.only(left: 8, right: 8),
             child: Row(
               children: [
-                Image.asset('assets/images/icon_photo.png',
+                Image.asset(R.drawable.ic_photo,
                     width: 24, height: 24),
                 SizedBox(width: 16),
-                Text("Chọn trong thư viện",
-                    style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                Text(R.string.chon_trong_thu_vien.tr(),
+                    style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
           ),
@@ -671,11 +675,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
             padding: EdgeInsets.only(left: 8, right: 8),
             child: Row(
               children: [
-                Image.asset('assets/images/icon_camera_black.png',
+                Image.asset(R.drawable.ic_camera_black,
                     width: 24, height: 24),
                 SizedBox(width: 16),
-                Text("Chụp ảnh",
-                    style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                Text(R.string.chup_anh.tr(),
+                    style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
           ),
@@ -686,8 +690,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
         )
       ],
       cancelButton: CupertinoActionSheetAction(
-        child: Text("Huỷ",
-            style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+        child: Text(R.string.cancel.tr(),
+            style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
         onPressed: () {
           Navigator.pop(context);
         },
@@ -728,7 +732,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   _cropImage(String url) async {
     try {
       BotToast.showLoading();
-      final imageFile = await ImageCropper.cropImage(
+      final imageFile = await (ImageCropper.cropImage(
           maxWidth: 320,
           maxHeight: 320,
           aspectRatioPresets: [CropAspectRatioPreset.square],
@@ -742,7 +746,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
               lockAspectRatio: false),
           iosUiSettings: IOSUiSettings(
             minimumAspectRatio: 1.0,
-          ));
+          )) as FutureOr<File>);
 
       final path = imageFile.path;
       await uploadAvatar(path);
@@ -753,13 +757,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = FlatButton(
-      child: Text("Huỷ"),
+      child: Text(R.string.cancel.tr()),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text("Cấp quyền"),
+      child: Text(R.string.allowed.tr()),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -767,8 +771,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text("Thông báo"),
-      content: Text("Bạn cần cấp quyền truy cập để sử dụng tính năng này"),
+      title: Text(R.string.notification.tr()),
+      content: Text(R.string.ask_for_permission.tr()),
       actions: [
         cancelButton,
         continueButton,
@@ -785,7 +789,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   uploadAvatar(String url) async {
     try {
       BotToast.showLoading();
-      await UserClient().updateAvatar(AppSettings.userInfo.id, url);
+      await UserClient().updateAvatar(AppSettings.userInfo!.id, url);
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -801,7 +805,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   updateUserInfo(UserModel user) async {
     try {
       BotToast.showLoading();
-      await UserClient().updateUserInfo(AppSettings.userInfo.id, user);
+      await UserClient().updateUserInfo(AppSettings.userInfo!.id, user);
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -847,8 +851,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   }
 
   linkedGoogle() async {
-    final user = AppSettings.userInfo;
-    if (user.isLinkedGoogle) {
+    final user = AppSettings.userInfo!;
+    if (user.isLinkedGoogle!) {
       if (user.firstLinkedAccount != 'Google') {
         unlinkedGoogle();
       }
@@ -858,19 +862,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
       BotToast.showLoading();
       GoogleSignIn _googleSignIn = GoogleSignIn(
         scopes: [
-          'email',
+          R.string.email.tr(),
           'profile',
         ],
       );
       await _googleSignIn.signOut();
-      GoogleSignInAccount account = await _googleSignIn.signIn();
+      GoogleSignInAccount account = await (_googleSignIn.signIn() as FutureOr<GoogleSignInAccount>);
       final result = await LoginClient().linkedAccountOTP({
         'providerName': 'Google',
         'providerKey': account.id,
         'phoneNumber': user.phoneNumber
       });
       BotToast.closeAllLoading();
-      Navigator.pushNamed(context, '/verify', arguments: {
+      Navigator.pushNamed(context, NavigatorName.verify, arguments: {
         'type': 'linked_google',
         'otp': result.token,
         'phone': user.phoneNumber,
@@ -882,7 +886,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
       if (e is Error) {
         if (e.code == 'USER002') {
           Message.showToastMessage(context,
-              'Tài khoản này đã được liên kết, vui lòng sử dụng tài khoản khác');
+              R.string.account_already_used.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }
@@ -891,9 +895,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   }
 
   linkedFacebook() async {
-    final user = AppSettings.userInfo;
+    final user = AppSettings.userInfo!;
 
-    if (user.isLinkedFacebook) {
+    if (user.isLinkedFacebook!) {
       if (user.firstLinkedAccount != 'Facebook') {
         unlinkedFacebook();
       }
@@ -901,7 +905,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
     }
     final facebookLogin = FacebookLogin();
     await facebookLogin.logOut();
-    final resultFacebook = await facebookLogin.logIn(['email']);
+    final resultFacebook = await facebookLogin.logIn([R.string.email.tr()]);
     switch (resultFacebook.status) {
       case FacebookLoginStatus.loggedIn:
         try {
@@ -909,11 +913,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
           final result = await LoginClient().linkedAccountOTP({
             'providerName': 'Facebook',
-            'providerKey': resultFacebook.accessToken.userId,
+            'providerKey': resultFacebook.accessToken?.userId,
             'phoneNumber': user.phoneNumber
           });
           BotToast.closeAllLoading();
-          Navigator.pushNamed(context, '/verify', arguments: {
+          Navigator.pushNamed(context, NavigatorName.verify, arguments: {
             'type': 'linked_facebook',
             'otp': result.token,
             'phone': user.phoneNumber,
@@ -925,7 +929,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
           if (e is Error) {
             if (e.code == 'USER002') {
               Message.showToastMessage(context,
-                  'Tài khoản này đã được liên kết, vui lòng sử dụng tài khoản khác');
+                  R.string.account_already_used.tr());
             } else {
               Message.showToastMessage(context, e.message);
             }
@@ -953,7 +957,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
       });
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
-      Message.showToastMessage(context, 'Đã huỷ liên kết');
+      Message.showToastMessage(context, R.string.unlinked.tr());
     } catch (e, _) {
       BotToast.closeAllLoading();
       if (e is Error) {
@@ -977,7 +981,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
       });
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
-      Message.showToastMessage(context, 'Đã huỷ liên kết');
+      Message.showToastMessage(context, R.string.unlinked.tr());
     } catch (e, _) {
       BotToast.closeAllLoading();
       if (e is Error) {
@@ -988,7 +992,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
     }
   }
 
-  _showDialogUpdateMotivation(MotivationModel model) {
+  _showDialogUpdateMotivation(MotivationModel? model) {
     showDialog(
         context: context,
         builder: (context) => Container(
@@ -1018,24 +1022,24 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset('assets/images/icon_logout.png',
+                          Image.asset(R.drawable.ic_logout,
                               width: 64, height: 64),
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
-                            child: Text('Bạn muốn đăng xuất?',
+                            child: Text(R.string.confirm_logout.tr(),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
                             child: Text(
-                                'Bạn sẽ không thể theo dõi sức khoẻ của mình sau khi thoát. Bạn vẫn muốn đăng xuất khỏi DiaB?',
+                                R.string.confirm_logout_description.tr(),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    color: textDark,
+                                    color: R.color.textDark,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
                           ),
@@ -1055,11 +1059,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                           decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(200),
-                                              color: grayBorder),
+                                              color: R.color.grayBorder),
                                           child: Center(
-                                            child: Text('Vẫn ở lại',
+                                            child: Text(R.string.van_o_lai.tr(),
                                                 style: TextStyle(
-                                                    color: textDark,
+                                                    color: R.color.textDark,
                                                     fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.w600)),
@@ -1075,20 +1079,20 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                       child: Container(
                                         height: 43,
                                         decoration: BoxDecoration(
-                                            color: red,
+                                            color: R.color.red,
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             gradient: LinearGradient(
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.centerRight,
                                                 colors: [
-                                                  greenGradientTop,
-                                                  greenGradientBottom
+                                                  R.color.greenGradientTop,
+                                                  R.color.greenGradientBottom
                                                 ])),
                                         child: Center(
-                                          child: Text('Đăng xuất',
+                                          child: Text(R.string.logout.tr(),
                                               style: TextStyle(
-                                                  color: Colors.white,
+                                                  color: R.color.white,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         ),
@@ -1107,7 +1111,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   _showDialogUpdateName() {
     final width = MediaQuery.of(context).size.width;
     TextEditingController textEditingController = TextEditingController();
-    textEditingController.text = AppSettings.userInfo.fullName;
+    textEditingController.text = AppSettings.userInfo!.fullName!;
     showDialog(
         context: context,
         builder: (context) => Container(
@@ -1119,13 +1123,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Họ và tên',
+                        Text(R.string.last_name_and_first_name.tr(),
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1144,20 +1148,20 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           ],
                           obscureText: false,
                           decoration: InputDecoration(
-                              fillColor: textDark,
+                              fillColor: R.color.textDark,
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: Color(0xffDDDDDD), width: 1.0),
+                                    color: R.color.grayComponentBorder, width: 1.0),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide:
-                                    BorderSide(color: mainColor, width: 1.0),
+                                    BorderSide(color: R.color.mainColor, width: 1.0),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               contentPadding:
                                   EdgeInsets.only(top: 0, left: 16, right: 16),
-                              hintText: 'Nhập họ và tên'),
+                              hintText: R.string.enter_first_name_and_last_name.tr()),
                           onChanged: (value) {})),
                   Container(
                     margin: EdgeInsets.only(top: 16),
@@ -1173,24 +1177,24 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
                           ),
                           GestureDetector(
                             onTap: () {
-                              final name = textEditingController.text ?? '';
+                              final name = textEditingController.text;
                               if (name.isEmpty) {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập tên');
+                                    context, R.string.mes_name_empty.tr());
                                 return;
                               } else {
-                                UserModel userInfo = AppSettings.userInfo;
+                                UserModel userInfo = AppSettings.userInfo!;
                                 userInfo = UserModel(
                                     id: userInfo.id,
                                     username: userInfo.username,
@@ -1232,19 +1236,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Lưu',
+                                child: Text(R.string.save.tr(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -1260,7 +1264,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   _showDialogUpdateBirthday() {
     final width = MediaQuery.of(context).size.width;
     DateTime selectedDate = DateTime.fromMillisecondsSinceEpoch(
-        AppSettings.userInfo.dateOfBirth * 1000);
+        AppSettings.userInfo!.dateOfBirth! * 1000);
     showDialog(
         context: context,
         builder: (context) => Container(
@@ -1272,13 +1276,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Ngày sinh',
+                        Text(R.string.ngay_sinh.tr(),
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1289,7 +1293,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                       width: width - 36,
                       child: BirthDayPicker(
                         selectedDate: DateTime.fromMillisecondsSinceEpoch(
-                            AppSettings.userInfo.dateOfBirth * 1000),
+                            AppSettings.userInfo!.dateOfBirth! * 1000),
                         onChanged: (date) {
                           selectedDate = date;
                         },
@@ -1308,18 +1312,18 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
                           ),
                           GestureDetector(
                             onTap: () {
-                              UserModel userInfo = AppSettings.userInfo;
+                              UserModel userInfo = AppSettings.userInfo!;
                               userInfo = UserModel(
                                   id: userInfo.id,
                                   username: userInfo.username,
@@ -1361,19 +1365,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Đồng ý',
+                                child: Text(R.string.yes.tr(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -1389,7 +1393,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   _showDialogUpdateGender() {
     final width = MediaQuery.of(context).size.width;
     FixedExtentScrollController controller = FixedExtentScrollController(
-        initialItem: AppSettings.userInfo.genderType == 1 ? 0 : 1);
+        initialItem: AppSettings.userInfo!.genderType == 1 ? 0 : 1);
     showDialog(
         context: context,
         builder: (context) => Container(
@@ -1401,13 +1405,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Giới tính',
+                        Text(R.string.gioi_tinh.tr(),
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1431,18 +1435,18 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
                           ),
                           GestureDetector(
                             onTap: () {
-                              UserModel userInfo = AppSettings.userInfo;
+                              UserModel userInfo = AppSettings.userInfo!;
                               userInfo = UserModel(
                                   id: userInfo.id,
                                   username: userInfo.username,
@@ -1483,19 +1487,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Đồng ý',
+                                child: Text(R.string.yes.tr(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -1510,7 +1514,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
   _showDialogUpdateDiabetesStatus() {
     final width = MediaQuery.of(context).size.width;
-    int diabetesStatus = AppSettings.userInfo.diabetesStatus;
+    int? diabetesStatus = AppSettings.userInfo!.diabetesStatus;
     showDialog(
         context: context,
         builder: (context) => Container(
@@ -1522,13 +1526,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Loại bệnh',
+                        Text(R.string.loai_benh.tr(),
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1557,18 +1561,18 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
                           ),
                           GestureDetector(
                             onTap: () {
-                              UserModel userInfo = AppSettings.userInfo;
+                              UserModel userInfo = AppSettings.userInfo!;
                               userInfo = UserModel(
                                   id: userInfo.id,
                                   username: userInfo.username,
@@ -1608,19 +1612,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Đồng ý',
+                                child: Text(R.string.yes.tr(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -1635,7 +1639,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
   _showDialogUpdateDiabetesStatusDate() {
     final width = MediaQuery.of(context).size.width;
-    int year = AppSettings.userInfo.diabetesDate;
+    int? year = AppSettings.userInfo!.diabetesDate;
     showDialog(
         context: context,
         builder: (context) => Container(
@@ -1647,13 +1651,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Năm phát hiện bệnh',
+                        Text(R.string.nam_phat_hien_benh.tr(),
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1663,7 +1667,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                       height: 150,
                       width: width - 36,
                       child: DiabetesStatusDatePicker(
-                        year: DateTime.fromMillisecondsSinceEpoch(year * 1000)
+                        year: DateTime.fromMillisecondsSinceEpoch(year! * 1000)
                             .year,
                         onChanged: (data) {
                           year = data;
@@ -1683,18 +1687,18 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
                           ),
                           GestureDetector(
                             onTap: () {
-                              UserModel userInfo = AppSettings.userInfo;
+                              UserModel userInfo = AppSettings.userInfo!;
                               userInfo = UserModel(
                                   id: userInfo.id,
                                   username: userInfo.username,
@@ -1714,7 +1718,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                   dateOfBirth: userInfo.dateOfBirth,
                                   diabetesStatus: userInfo.diabetesStatus,
                                   diabetesName: userInfo.diabetesName,
-                                  diabetesDate: DateTime.utc(year)
+                                  diabetesDate: DateTime.utc(year!)
                                           .millisecondsSinceEpoch ~/
                                       1000,
                                   imageUrl: userInfo.imageUrl,
@@ -1736,19 +1740,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Đồng ý',
+                                child: Text(R.string.yes.tr(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -1763,15 +1767,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
   showDialogWeight() {
     showDialog(
-      barrierColor: Color(0xff003F38).withOpacity(0.5),
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => CustomNumPicker(
           callback: (number) {
-            if (number <= 0) {
-              Message.showToastMessage(context, 'Cân nặng phải lớn hơn 0');
+            if (number == null || number <= 0) {
+              Message.showToastMessage(context, R.string.mes_weight_must_greater_than_zero.tr());
               return;
             }
-            UserModel userInfo = AppSettings.userInfo;
+            UserModel userInfo = AppSettings.userInfo!;
             userInfo = UserModel(
                 id: userInfo.id,
                 username: userInfo.username,
@@ -1786,7 +1790,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                 province: userInfo.province,
                 district: userInfo.district,
                 height: userInfo.height,
-                weight: number * 1.0,
+                weight: number.toDouble(),
                 ward: userInfo.ward,
                 dateOfBirth: userInfo.dateOfBirth,
                 diabetesStatus: userInfo.diabetesStatus,
@@ -1805,12 +1809,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                 glucoseUnit: userInfo.glucoseUnit);
             updateUserInfo(userInfo);
           },
-          title: 'Nhập cân nặng',
+          title: R.string.enter_weight.tr(),
           max: 180,
-          numberDefault: (AppSettings.userInfo.weight == null ||
-                      AppSettings.userInfo.weight == 0
+          numberDefault: (AppSettings.userInfo!.weight == null ||
+                      AppSettings.userInfo!.weight == 0
                   ? 50
-                  : AppSettings.userInfo.weight)
+                  : AppSettings.userInfo!.weight)!
               .toInt(),
           unit: ''),
     );
@@ -1818,15 +1822,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 
   showDialogHeight() {
     showDialog(
-      barrierColor: Color(0xff003F38).withOpacity(0.5),
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => CustomNumPicker(
           callback: (data) {
-            if (data <= 0) {
-              Message.showToastMessage(context, 'Chiều cao phải lớn hơn 0');
+            if (data == null || data <= 0) {
+              Message.showToastMessage(context, R.string.mes_height_must_greater_than_zero.tr());
               return;
             }
-            UserModel userInfo = AppSettings.userInfo;
+            UserModel userInfo = AppSettings.userInfo!;
             userInfo = UserModel(
                 id: userInfo.id,
                 username: userInfo.username,
@@ -1860,12 +1864,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                 glucoseUnit: userInfo.glucoseUnit);
             updateUserInfo(userInfo);
           },
-          title: 'Nhập chiều cao',
+          title: R.string.enter_height.tr(),
           max: 250,
-          numberDefault: (AppSettings.userInfo.height == null ||
-                      AppSettings.userInfo.height == 0
+          numberDefault: (AppSettings.userInfo!.height == null ||
+                      AppSettings.userInfo!.height == 0
                   ? 150
-                  : AppSettings.userInfo.height)
+                  : AppSettings.userInfo!.height)!
               .toInt(),
           unit: ''),
     );
@@ -1874,7 +1878,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   _showDialogUpdatePhone2() {
     final width = MediaQuery.of(context).size.width;
     TextEditingController textEditingController = TextEditingController();
-    textEditingController.text = AppSettings.userInfo.secondPhoneNumber;
+    textEditingController.text = AppSettings.userInfo!.secondPhoneNumber!;
     showDialog(
         context: context,
         builder: (context) => Container(
@@ -1886,13 +1890,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Số điện thoại 2',
+                        Text(R.string.phone_number_2.tr(),
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                             onTap: () {
                               Navigator.pop(context);
                             })
@@ -1908,20 +1912,20 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                           maxLines: 1,
                           obscureText: false,
                           decoration: InputDecoration(
-                            fillColor: textDark,
+                            fillColor: R.color.textDark,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Color(0xffDDDDDD), width: 1.0),
+                                  color: R.color.grayComponentBorder, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide:
-                                  BorderSide(color: mainColor, width: 1.0),
+                                  BorderSide(color: R.color.mainColor, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             contentPadding:
                                 EdgeInsets.only(top: 0, left: 16, right: 16),
-                            hintText: 'Nhập số điện thoại 2',
+                            hintText: R.string.enter_phone_number_2.tr(),
                           ),
                           onChanged: (value) {})),
                   Container(
@@ -1938,24 +1942,24 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                                 width: 119,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(200),
-                                    color: grayBorder),
+                                    color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text('Huỷ',
+                                  child: Text(R.string.cancel.tr(),
                                       style: TextStyle(
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600)),
                                 )),
                           ),
                           GestureDetector(
                             onTap: () {
-                              final phone = textEditingController.text ?? '';
+                              final phone = textEditingController.text;
                               if (phone.isEmpty) {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập số điện thoại');
+                                    context, R.string.ban_chua_nhap_so_dien_thoai.tr());
                                 return;
                               } else {
-                                UserModel userInfo = AppSettings.userInfo;
+                                UserModel userInfo = AppSettings.userInfo!;
                                 userInfo = UserModel(
                                     id: userInfo.id,
                                     username: userInfo.username,
@@ -1996,19 +2000,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: red,
+                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
                                   gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        greenGradientTop,
-                                        greenGradientBottom
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                child: Text('Lưu',
+                                child: Text(R.string.save.tr(),
                                     style: TextStyle(
-                                        color: Colors.white,
+                                        color: R.color.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),
@@ -2024,13 +2028,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   _showDialogUpdateEmail() {
     final width = MediaQuery.of(context).size.width;
     TextEditingController textEditingController = TextEditingController();
-    textEditingController.text = AppSettings.userInfo.email ?? '';
+    textEditingController.text = AppSettings.userInfo!.email ?? '';
     showDialog(
         context: context,
         builder: (context) => EmailValidate(
               controller: textEditingController,
               completion: (email) {
-                UserModel userInfo = AppSettings.userInfo;
+                UserModel userInfo = AppSettings.userInfo!;
                 userInfo = UserModel(
                     id: userInfo.id,
                     username: userInfo.username,
@@ -2069,49 +2073,49 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
   }
 
   _showDialogUpdateAddress() {
-    UserModel userInfo = AppSettings.userInfo;
+    UserModel? userInfo = AppSettings.userInfo;
     showDialog(
       context: context,
       builder: (context) => Container(
         child: AlertDialog(
             content: AddressController(
-          address: userInfo.address,
-          province: userInfo.province,
-          district: userInfo.district,
-          ward: userInfo.ward,
+          address: userInfo!.address,
+          province: userInfo!.province,
+          district: userInfo!.district,
+          ward: userInfo!.ward,
           callback: (address, province, district, ward) {
             userInfo = UserModel(
-                id: userInfo.id,
-                username: userInfo.username,
-                fullName: userInfo.fullName,
-                age: userInfo.age,
-                phoneNumber: userInfo.phoneNumber,
-                secondPhoneNumber: userInfo.secondPhoneNumber,
-                gender: userInfo.gender,
-                genderType: userInfo.genderType,
-                createDatetime: userInfo.createDatetime,
-                isActive: userInfo.isActive,
+                id: userInfo!.id,
+                username: userInfo!.username,
+                fullName: userInfo!.fullName,
+                age: userInfo!.age,
+                phoneNumber: userInfo!.phoneNumber,
+                secondPhoneNumber: userInfo!.secondPhoneNumber,
+                gender: userInfo!.gender,
+                genderType: userInfo!.genderType,
+                createDatetime: userInfo!.createDatetime,
+                isActive: userInfo!.isActive,
                 province: province,
                 district: district,
-                height: userInfo.height,
-                weight: userInfo.weight,
+                height: userInfo!.height,
+                weight: userInfo!.weight,
                 ward: ward,
-                dateOfBirth: userInfo.dateOfBirth,
-                diabetesStatus: userInfo.diabetesStatus,
-                diabetesName: userInfo.diabetesName,
-                diabetesDate: userInfo.diabetesDate,
-                imageUrl: userInfo.imageUrl,
-                code: userInfo.code,
-                email: userInfo.email,
+                dateOfBirth: userInfo!.dateOfBirth,
+                diabetesStatus: userInfo!.diabetesStatus,
+                diabetesName: userInfo!.diabetesName,
+                diabetesDate: userInfo!.diabetesDate,
+                imageUrl: userInfo!.imageUrl,
+                code: userInfo!.code,
+                email: userInfo!.email,
                 address: address,
-                goalWaist: userInfo.goalWaist,
-                goalWeight: userInfo.goalWeight,
-                isLinkedFacebook: userInfo.isLinkedFacebook,
-                isLinkedGoogle: userInfo.isLinkedGoogle,
-                isMobileAccount: userInfo.isMobileAccount,
-                firstLinkedAccount: userInfo.firstLinkedAccount,
-                glucoseUnit: userInfo.glucoseUnit);
-            updateUserInfo(userInfo);
+                goalWaist: userInfo!.goalWaist,
+                goalWeight: userInfo!.goalWeight,
+                isLinkedFacebook: userInfo!.isLinkedFacebook,
+                isLinkedGoogle: userInfo!.isLinkedGoogle,
+                isMobileAccount: userInfo!.isMobileAccount,
+                firstLinkedAccount: userInfo!.firstLinkedAccount,
+                glucoseUnit: userInfo!.glucoseUnit);
+            updateUserInfo(userInfo!);
           },
         )),
       ),
@@ -2122,8 +2126,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> {
 typedef EmailValidateCallback = Function(String);
 
 class EmailValidate extends StatefulWidget {
-  final TextEditingController controller;
-  final EmailValidateCallback completion;
+  final TextEditingController? controller;
+  final EmailValidateCallback? completion;
   EmailValidate({this.controller, this.completion});
   @override
   _EmailValidateState createState() => _EmailValidateState();
@@ -2142,13 +2146,13 @@ class _EmailValidateState extends State<EmailValidate> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('Email',
+            Text(R.string.email.tr(),
                 style: TextStyle(
-                    color: textDark,
+                    color: R.color.textDark,
                     fontSize: 16,
                     fontWeight: FontWeight.w600)),
             GestureDetector(
-                child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                 onTap: () {
                   Navigator.pop(context);
                 })
@@ -2164,19 +2168,19 @@ class _EmailValidateState extends State<EmailValidate> {
                   maxLines: 1,
                   obscureText: false,
                   decoration: InputDecoration(
-                    fillColor: textDark,
+                    fillColor: R.color.textDark,
                     enabledBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Color(0xffDDDDDD), width: 1.0),
+                          BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: mainColor, width: 1.0),
+                      borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     contentPadding:
                         EdgeInsets.only(top: 0, left: 16, right: 16),
-                    hintText: 'Nhập email của bạn',
+                    hintText: R.string.enter_your_email.tr(),
                   ),
                   onChanged: (email) {
                     String pattern =
@@ -2197,9 +2201,9 @@ class _EmailValidateState extends State<EmailValidate> {
           showValidate
               ? Padding(
                   padding: EdgeInsets.only(top: 4),
-                  child: Text('Email không hợp lệ',
+                  child: Text(R.string.mes_invalid_email.tr(),
                       style: TextStyle(
-                          color: Color(0xffFF5756),
+                          color: R.color.color0xffFF5756,
                           fontSize: 14,
                           fontWeight: FontWeight.w400)),
                 )
@@ -2218,11 +2222,11 @@ class _EmailValidateState extends State<EmailValidate> {
                         width: 119,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(200),
-                            color: grayBorder),
+                            color: R.color.grayBorder),
                         child: Center(
-                          child: Text('Huỷ',
+                          child: Text(R.string.cancel.tr(),
                               style: TextStyle(
-                                  color: textDark,
+                                  color: R.color.textDark,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600)),
                         )),
@@ -2230,7 +2234,7 @@ class _EmailValidateState extends State<EmailValidate> {
                   GestureDetector(
                     onTap: () {
                       FocusScope.of(context).unfocus();
-                      final email = widget.controller.text ?? '';
+                      final email = widget.controller!.text;
                       if (email.isEmpty) {
                         Message.showToastMessage(
                             context, 'Bạn chưa nhập email');
@@ -2242,26 +2246,26 @@ class _EmailValidateState extends State<EmailValidate> {
                       RegExp regExp = new RegExp(pattern);
                       final isCorrect = regExp.hasMatch(email);
                       if (!isCorrect) {
-                        Message.showToastMessage(context, 'Email không hợp lệ');
+                        Message.showToastMessage(context, R.string.mes_invalid_email.tr());
                         return;
                       }
 
-                      widget.completion(email);
+                      widget.completion!(email);
                     },
                     child: Container(
                       height: 48,
                       width: 119,
                       decoration: BoxDecoration(
-                          color: red,
+                          color: R.color.red,
                           borderRadius: BorderRadius.circular(200),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [greenGradientTop, greenGradientBottom])),
+                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                       child: Center(
-                        child: Text('Lưu',
+                        child: Text(R.string.save.tr(),
                             style: TextStyle(
-                                color: Colors.white,
+                                color: R.color.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -2278,15 +2282,15 @@ class _EmailValidateState extends State<EmailValidate> {
 typedef BirthDayPickerCallback = Function(DateTime);
 
 class BirthDayPicker extends StatefulWidget {
-  final DateTime selectedDate;
-  final BirthDayPickerCallback onChanged;
+  final DateTime? selectedDate;
+  final BirthDayPickerCallback? onChanged;
   BirthDayPicker({this.selectedDate, this.onChanged});
   @override
   _BirthDayPickerState createState() => _BirthDayPickerState();
 }
 
 class _BirthDayPickerState extends State<BirthDayPicker> {
-  DateTime selectedDate;
+  DateTime? selectedDate;
   @override
   void initState() {
     super.initState();
@@ -2301,7 +2305,7 @@ class _BirthDayPickerState extends State<BirthDayPicker> {
         minimumYear: 1900,
         mode: CupertinoDatePickerMode.date,
         onDateTimeChanged: (value) {
-          widget.onChanged(value);
+          widget.onChanged!(value);
           setState(() {
             selectedDate = value;
           });
@@ -2310,7 +2314,7 @@ class _BirthDayPickerState extends State<BirthDayPicker> {
 }
 
 class GenderPicker extends StatefulWidget {
-  final FixedExtentScrollController controller;
+  final FixedExtentScrollController? controller;
   GenderPicker({this.controller});
 
   @override
@@ -2322,7 +2326,7 @@ class _GenderPickerState extends State<GenderPicker> {
   @override
   void initState() {
     super.initState();
-    selectedItem = widget.controller.initialItem;
+    selectedItem = widget.controller!.initialItem;
   }
 
   @override
@@ -2338,11 +2342,11 @@ class _GenderPickerState extends State<GenderPicker> {
         itemExtent: 47.0,
         children: List<int>.generate(2, (i) => i)
             .map((e) => Center(
-                  child: Text(e == 0 ? 'Nam' : 'Nữ',
+                  child: Text(e == 0 ? R.string.nam.tr() : R.string.nu.tr(),
                       style: TextStyle(
                           color: selectedItem == e
-                              ? Color(0xff01645A)
-                              : Color(0xffC0C2C5),
+                              ? R.color.mainColor
+                              : R.color.color0xffC0C2C5,
                           fontSize: 24,
                           fontWeight: FontWeight.bold)),
                 ))
@@ -2353,8 +2357,8 @@ class _GenderPickerState extends State<GenderPicker> {
 typedef DiabetesStatusCallback = Function(dynamic);
 
 class DiabetesStatusPicker extends StatefulWidget {
-  final int state;
-  final DiabetesStatusCallback onChanged;
+  final int? state;
+  final DiabetesStatusCallback? onChanged;
   DiabetesStatusPicker({this.state, this.onChanged});
 
   @override
@@ -2362,16 +2366,16 @@ class DiabetesStatusPicker extends StatefulWidget {
 }
 
 class _DiabetesStatusPickerState extends State<DiabetesStatusPicker> {
-  FixedExtentScrollController scrollController;
+  FixedExtentScrollController? scrollController;
   int selectedItem = 0;
 
-  List<dynamic> diabeteStates = [];
+  List<dynamic>? diabeteStates = [];
   @override
   void initState() {
     super.initState();
     scrollController = FixedExtentScrollController(
-        initialItem: widget.state == null ? 0 : (widget.state - 1));
-    selectedItem = widget.state == null ? 0 : (widget.state - 1);
+        initialItem: widget.state == null ? 0 : (widget.state! - 1));
+    selectedItem = widget.state == null ? 0 : (widget.state! - 1);
     loadData();
   }
 
@@ -2379,7 +2383,7 @@ class _DiabetesStatusPickerState extends State<DiabetesStatusPicker> {
     BotToast.showLoading();
     diabeteStates = await UserClient().fetchDiabeteStates();
     if (widget.state == null) {
-      widget.onChanged(diabeteStates[0]);
+      widget.onChanged!(diabeteStates![0]);
       selectedItem = 0;
     }
 
@@ -2389,25 +2393,25 @@ class _DiabetesStatusPickerState extends State<DiabetesStatusPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return diabeteStates.length == 0
+    return diabeteStates!.length == 0
         ? SizedBox()
         : CupertinoPicker(
             scrollController: scrollController,
             selectionOverlay: null,
             onSelectedItemChanged: (value) {
-              widget.onChanged(diabeteStates[value]);
+              widget.onChanged!(diabeteStates![value]);
               setState(() {
                 selectedItem = value;
               });
             },
             itemExtent: 47.0,
-            children: List<int>.generate(diabeteStates.length, (i) => i)
+            children: List<int>.generate(diabeteStates!.length, (i) => i)
                 .map((e) => Center(
-                      child: Text(diabeteStates[e]['value'],
+                      child: Text(diabeteStates![e]['value'],
                           style: TextStyle(
                               color: selectedItem == e
-                                  ? Color(0xff01645A)
-                                  : Color(0xffC0C2C5),
+                                  ? R.color.mainColor
+                                  : R.color.color0xffC0C2C5,
                               fontSize: 20,
                               fontWeight: FontWeight.bold)),
                     ))
@@ -2418,8 +2422,8 @@ class _DiabetesStatusPickerState extends State<DiabetesStatusPicker> {
 typedef DiabetesStatusDateCallback = Function(int);
 
 class DiabetesStatusDatePicker extends StatefulWidget {
-  final int year;
-  final DiabetesStatusDateCallback onChanged;
+  final int? year;
+  final DiabetesStatusDateCallback? onChanged;
   DiabetesStatusDatePicker({this.year, this.onChanged});
 
   @override
@@ -2428,14 +2432,14 @@ class DiabetesStatusDatePicker extends StatefulWidget {
 }
 
 class _DiabetesStatusDatePickerState extends State<DiabetesStatusDatePicker> {
-  FixedExtentScrollController scrollController;
+  FixedExtentScrollController? scrollController;
   int selectedYear = 0;
   @override
   void initState() {
     super.initState();
     scrollController =
-        FixedExtentScrollController(initialItem: widget.year - 1900);
-    selectedYear = widget.year - 1900;
+        FixedExtentScrollController(initialItem: widget.year! - 1900);
+    selectedYear = widget.year! - 1900;
   }
 
   @override
@@ -2444,7 +2448,7 @@ class _DiabetesStatusDatePickerState extends State<DiabetesStatusDatePicker> {
         scrollController: scrollController,
         selectionOverlay: null,
         onSelectedItemChanged: (value) {
-          widget.onChanged(value + 1900);
+          widget.onChanged!(value + 1900);
           setState(() {
             selectedYear = value;
           });
@@ -2455,8 +2459,8 @@ class _DiabetesStatusDatePickerState extends State<DiabetesStatusDatePicker> {
                   child: Text((e + 1900).toString(),
                       style: TextStyle(
                           color: (selectedYear) == e
-                              ? Color(0xff01645A)
-                              : Color(0xffC0C2C5),
+                              ? R.color.mainColor
+                              : R.color.color0xffC0C2C5,
                           fontSize: 24,
                           fontWeight: FontWeight.bold)),
                 ))
@@ -2467,8 +2471,8 @@ class _DiabetesStatusDatePickerState extends State<DiabetesStatusDatePicker> {
 typedef MotivationCallback = Function(MotivationModel model);
 
 class MotivationPopup extends StatefulWidget {
-  final MotivationModel model;
-  final MotivationCallback callback;
+  final MotivationModel? model;
+  final MotivationCallback? callback;
   MotivationPopup({this.model, this.callback});
   @override
   _MotivationPopupState createState() => _MotivationPopupState();
@@ -2481,7 +2485,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
   void initState() {
     super.initState();
     textEditingController.text =
-        widget.model == null ? '' : widget.model.content;
+        widget.model == null ? '' : widget.model!.content!;
   }
 
   @override
@@ -2497,21 +2501,21 @@ class _MotivationPopupState extends State<MotivationPopup> {
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(
                     widget.model == null
-                        ? 'Động lực mới'
-                        : 'Chỉnh sửa động lực',
+                        ? R.string.new_motivation.tr()
+                        : R.string.edit_motivation.tr(),
                     style: TextStyle(
-                        color: textDark,
+                        color: R.color.textDark,
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 SizedBox(height: 8),
-                Text('Còn ${100 - textEditingController.text.length} ký tự',
+                Text(R.string.letters_left_count.tr(args: ['${100 - textEditingController.text.length}']),
                     style: TextStyle(
-                        color: Color(0xff666666),
+                        color: R.color.primaryGreyColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w400))
               ]),
               GestureDetector(
-                  child: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                  child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                   onTap: () {
                     Navigator.pop(context);
                   })
@@ -2529,17 +2533,17 @@ class _MotivationPopupState extends State<MotivationPopup> {
                 ],
                 obscureText: false,
                 decoration: InputDecoration(
-                    fillColor: textDark,
+                    fillColor: R.color.textDark,
                     enabledBorder: OutlineInputBorder(
                       borderSide:
-                          BorderSide(color: Color(0xffDDDDDD), width: 1.0),
+                          BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: mainColor, width: 1.0),
+                      borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    hintText: 'Nhập động lực mới',
+                    hintText: R.string.add_new_motivation.tr(),
                     counterText: '',
                     contentPadding: EdgeInsets.all(16)),
                 onChanged: (value) {
@@ -2558,11 +2562,11 @@ class _MotivationPopupState extends State<MotivationPopup> {
                   width: 119,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(200),
-                      color: grayBorder),
+                      color: R.color.grayBorder),
                   child: Center(
-                    child: Text('Huỷ',
+                    child: Text(R.string.cancel.tr(),
                         style: TextStyle(
-                            color: textDark,
+                            color: R.color.textDark,
                             fontSize: 16,
                             fontWeight: FontWeight.w600)),
                   )),
@@ -2570,18 +2574,18 @@ class _MotivationPopupState extends State<MotivationPopup> {
             GestureDetector(
               onTap: () {
                 FocusScope.of(context).unfocus();
-                final content = textEditingController.text ?? '';
+                final content = textEditingController.text;
                 if (content.isEmpty) {
-                  Message.showToastMessage(context, 'Bạn chưa nhập nội dung');
+                  Message.showToastMessage(context, R.string.mes_motivation_content_empty.tr());
                   return;
                 } else {
-                  widget.callback(widget.model == null
+                  widget.callback!(widget.model == null
                       ? MotivationModel(
                           content: content, id: null, createDateTime: null)
                       : MotivationModel(
                           content: content,
-                          id: widget.model.id,
-                          createDateTime: widget.model.createDateTime));
+                          id: widget.model!.id,
+                          createDateTime: widget.model!.createDateTime));
                   Navigator.pop(context);
                 }
               },
@@ -2589,16 +2593,16 @@ class _MotivationPopupState extends State<MotivationPopup> {
                 height: 48,
                 width: 119,
                 decoration: BoxDecoration(
-                    color: red,
+                    color: R.color.red,
                     borderRadius: BorderRadius.circular(200),
                     gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.centerRight,
-                        colors: [greenGradientTop, greenGradientBottom])),
+                        colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                 child: Center(
-                  child: Text('Lưu',
+                  child: Text(R.string.save.tr(),
                       style: TextStyle(
-                          color: Colors.white,
+                          color: R.color.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600)),
                 ),
@@ -2621,15 +2625,15 @@ class LengthLimitingTextFieldFormatterFixed
     TextEditingValue newValue,
   ) {
     if (maxLength != null &&
-        maxLength > 0 &&
-        newValue.text.characters.length > maxLength) {
+        maxLength! > 0 &&
+        newValue.text.characters.length > maxLength!) {
       // If already at the maximum and tried to enter even more, keep the old
       // value.
       if (oldValue.text.characters.length == maxLength) {
         return oldValue;
       }
       // ignore: invalid_use_of_visible_for_testing_member
-      return LengthLimitingTextInputFormatter.truncate(newValue, maxLength);
+      return LengthLimitingTextInputFormatter.truncate(newValue, maxLength!);
     }
     return newValue;
   }

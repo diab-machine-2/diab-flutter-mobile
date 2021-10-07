@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/manual.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ManualDetailController extends StatelessWidget {
-  final ManualModel model;
+  final ManualModel? model;
   ManualDetailController({this.model});
   @override
   Widget build(BuildContext context) {
@@ -15,24 +15,24 @@ class ManualDetailController extends StatelessWidget {
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                     colors: [
-                      Color(0xFFFDC798).withOpacity(0.3),
-                      Color(0xFFE6F6ED).withOpacity(0.9),
+                      R.color.color0xFFFDC798.withOpacity(0.3),
+                      R.color.greenbg.withOpacity(0.9),
                     ],
                     begin: FractionalOffset(1, 1),
                     end: FractionalOffset(0.9, 0.5),
                     stops: [0.0, 1.0])),
             child: Column(children: [
               CustomAppBar(
-                backgroundColor: Colors.transparent,
-                title: Text(model.question,
+                backgroundColor: R.color.transparent,
+                title: Text(model!.question!,
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: textDark)),
+                        color: R.color.textDark)),
                 leadingIcon: IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    icon: Icon(Icons.arrow_back, color: textDark),
+                    splashColor: R.color.transparent,
+                    highlightColor: R.color.transparent,
+                    icon: Icon(Icons.arrow_back, color: R.color.textDark),
                     onPressed: () {
                       Navigator.pop(context);
                     }),
@@ -40,9 +40,9 @@ class ManualDetailController extends StatelessWidget {
               Expanded(
                 child: ListView(padding: EdgeInsets.all(0), children: [
                   Html(
-                      data: model.answer,
+                      data: model!.answer,
                       onLinkTap: (url, context, attributes, element) async {
-                        await canLaunch(url)
+                        await canLaunch(url!)
                             ? await launch(url,
                                 forceSafariVC: false, forceWebView: false)
                             : throw 'Could not launch $url';

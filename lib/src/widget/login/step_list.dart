@@ -2,13 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medical/src/modal/user/motivation_model.dart';
-import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
-import 'package:medical/src/widget/helper/version.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 // ignore: must_be_immutable
 class StepListController extends StatefulWidget {
@@ -25,26 +23,26 @@ class _StepListControllerState extends State<StepListController> {
 
   var data = [
     {
-      'name': 'Đồng hành & sẻ chia',
-      'image': 'assets/images/step1.png',
+      'name': R.string.dong_hanh_va_se_chia.tr(),
+      'image': R.drawable.img_step1,
       'text':
-          'Hướng đến những thay đổi lành mạnh cùng đội ngũ huấn luyện sức khỏe (Health Coach)',
+          R.string.dong_hanh_va_se_chia_description.tr(),
     },
     {
-      'name': 'Hiểu để yêu bản thân hơn',
-      'image': 'assets/images/step2.png',
+      'name': R.string.hieu_de_yeu_ban_than_hon.tr(),
+      'image': R.drawable.img_step2,
       'text':
-          'Theo dõi sức khỏe dễ dàng, học cách yêu thương bản thân hơn chỉ trên một ứng dụng ',
+          R.string.hieu_de_yeu_ban_than_hon_description.tr(),
     },
     {
-      'name': 'Và không chỉ có bạn...',
-      'image': 'assets/images/step3.png',
+      'name': R.string.va_khong_chi_co_ban.tr(),
+      'image': R.drawable.img_step3,
       'text':
-          'Kết nối bạn với gia đình, cộng đồng người mắc Đái tháo đường suốt hành trình dài phía trước',
+          R.string.va_khong_chi_co_ban_description.tr(),
     }
   ];
 
-  Timer _timer;
+  Timer? _timer;
 
   String version = '';
   String buildNumber = '';
@@ -77,7 +75,7 @@ class _StepListControllerState extends State<StepListController> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer!.cancel();
     _timer = null;
     super.dispose();
   }
@@ -89,7 +87,7 @@ class _StepListControllerState extends State<StepListController> {
       body: Container(
         decoration: BoxDecoration(
             image: DecorationImage(
-          image: AssetImage('assets/images/background_splash.png'),
+          image: AssetImage(R.drawable.bg_splash),
           fit: BoxFit.cover,
         )),
         child: SafeArea(
@@ -105,9 +103,9 @@ class _StepListControllerState extends State<StepListController> {
                       controller: pageController,
                       itemCount: data.length,
                       itemBuilder: (BuildContext context, int index) {
-                        final name = data[index]['name'];
-                        final image = data[index]['image'];
-                        final text = data[index]['text'];
+                        final name = data[index]['name']!;
+                        final image = data[index]['image']!;
+                        final text = data[index]['text']!;
                         return builtItem(context, name, image, text);
                       }),
                 ),
@@ -121,8 +119,8 @@ class _StepListControllerState extends State<StepListController> {
                         effect: ExpandingDotsEffect(
                             dotWidth: 5,
                             dotHeight: 5,
-                            dotColor: notActiveGreen,
-                            activeDotColor: mainColor),
+                            dotColor: R.color.notActiveGreen,
+                            activeDotColor: R.color.mainColor),
                       ),
                       SizedBox(height: 32),
                       Container(
@@ -134,33 +132,33 @@ class _StepListControllerState extends State<StepListController> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    Navigator.pushNamed(context, '/register');
+                                    Navigator.pushNamed(context, NavigatorName.register);
                                   },
                                   child: Container(
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
-                                          color: mainColor,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           gradient: LinearGradient(
                                               begin: Alignment.topLeft,
                                               end: Alignment.centerRight,
                                               colors: [
-                                                greenGradientTop,
-                                                greenGradientBottom
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text('Tạo tài khoản',
+                                        child: Text(R.string.tao_tai_khoan.tr(),
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       )),
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    Navigator.pushNamed(context, '/login');
+                                    Navigator.pushNamed(context, NavigatorName.login);
                                   },
                                   child: Container(
                                     height: 48,
@@ -169,11 +167,11 @@ class _StepListControllerState extends State<StepListController> {
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         border: Border.all(
-                                            color: mainColor, width: 2)),
+                                            color: R.color.mainColor, width: 2)),
                                     child: Center(
-                                      child: Text('Đã có tài khoản',
+                                      child: Text(R.string.da_co_tai_khoan.tr(),
                                           style: TextStyle(
-                                              color: mainColor,
+                                              color: R.color.mainColor,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -182,8 +180,8 @@ class _StepListControllerState extends State<StepListController> {
                               ]),
                         ),
                       ),
-                      Text('Version $version ($buildNumber)',
-                          style: TextStyle(color: Colors.grey)),
+                      Text('${R.string.version.tr()} $version ($buildNumber)',
+                          style: TextStyle(color: R.color.grey)),
                       SizedBox(height: 16)
                     ],
                   )
@@ -203,7 +201,7 @@ class _StepListControllerState extends State<StepListController> {
         Expanded(child: Image.asset(image)),
         Text(name,
             style: TextStyle(
-                color: mainColor, fontSize: 20, fontWeight: FontWeight.w700),
+                color: R.color.mainColor, fontSize: 20, fontWeight: FontWeight.w700),
             textAlign: TextAlign.center),
         SizedBox(
           height: 20,
@@ -212,7 +210,7 @@ class _StepListControllerState extends State<StepListController> {
           padding: const EdgeInsets.only(left: 16, right: 16),
           child: Text(text,
               style: TextStyle(
-                  color: textDark, fontSize: 16, fontWeight: FontWeight.w400),
+                  color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
               textAlign: TextAlign.center),
         ),
       ],

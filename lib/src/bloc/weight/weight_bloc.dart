@@ -1,18 +1,20 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/bmi/bmi_trend.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
 import 'package:medical/src/modal/bmi/weight_trend.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 part 'weight_bloc_event.dart';
 part 'weight_bloc_state.dart';
 
 class WeightBloc extends Bloc<WeightEvent, WeightState> {
-  @override
-  WeightState get initialState => WeightInitial();
+
+  WeightBloc() : super(WeightInitial());
 
   @override
   Stream<WeightState> mapEventToState(WeightEvent event) async* {
@@ -58,13 +60,13 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
   //     if (e is Error) {
   //       yield WeightError(message: e.message);
   //     } else {
-  //       yield WeightError(message: 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+  //       yield WeightError(message: R.string.error_can_not_connect_to_server.tr());
   //     }
   //   }
   // }
 
   Stream<WeightState> fetchTrendWeight(
-      String currentDateTime, String periodFilterType, String page) async* {
+      String? currentDateTime, String? periodFilterType, String? page) async* {
     try {
       final client = WeightClient();
       yield WeightLoading();
@@ -77,13 +79,13 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
       } else {
         yield WeightError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<WeightState> fetchTrendHip(
-      String currentDateTime, String periodFilterType, String page) async* {
+      String? currentDateTime, String? periodFilterType, String? page) async* {
     try {
       final client = WeightClient();
       yield WeightLoading();
@@ -96,19 +98,19 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
       } else {
         yield WeightError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<WeightState> fetchInputWeight(
-    String currentDateTime,
-    String periodFilterType,
-    int page,
+    String? currentDateTime,
+    String? periodFilterType,
+    int? page,
   ) async* {
     try {
       final client = WeightClient();
-      final currenState = state;
+      final WeightState currenState = state;
       var model =
           await client.fetchInput(currentDateTime, periodFilterType, page);
 
@@ -125,13 +127,13 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
       } else {
         yield WeightError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
 
   Stream<WeightState> fetchTrendBMI(
-      String currentDateTime, String periodFilterType) async* {
+      String? currentDateTime, String? periodFilterType) async* {
     try {
       final client = WeightClient();
       yield WeightLoading();
@@ -143,7 +145,7 @@ class WeightBloc extends Bloc<WeightEvent, WeightState> {
       } else {
         yield WeightError(
             message:
-                'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi');
+                R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

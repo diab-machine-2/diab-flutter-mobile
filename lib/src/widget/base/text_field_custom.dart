@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/res/R.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 typedef OnChangeCallback = Function(String);
 
@@ -9,10 +10,10 @@ class TextFieldCustom extends StatefulWidget {
   final bool isPassword;
   final bool autoFocus;
   final bool showStar;
-  final OnChangeCallback onChanged;
+  final OnChangeCallback? onChanged;
 
   TextFieldCustom(
-      {Key key,
+      {Key? key,
       this.title = '',
       this.placeholder = '',
       this.isPassword = false,
@@ -51,9 +52,9 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           Row(
             children: [
               Text(widget.title,
-                  style: TextStyle(color: textDark, fontSize: 16)),
+                  style: TextStyle(color: R.color.textDark, fontSize: 16)),
               widget.showStar
-                  ? Text(" *", style: TextStyle(color: Colors.red))
+                  ? Text(" *", style: TextStyle(color: R.color.red))
                   : SizedBox()
             ],
           ),
@@ -63,33 +64,22 @@ class TextFieldCustomState extends State<TextFieldCustom> {
             height: 54,
             padding: EdgeInsets.only(left: 16, right: 8),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: R.color.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                   width: 2,
                   color: isCorrect
-                      ? Color(0xff008479)
-                      : (showValidate ? Color(0xffFF5756) : Colors.white)),
-              // boxShadow: [
-              //   BoxShadow(
-              //     color: Colors.white,
-              //     blurRadius: 4.0, // soften the shadow
-              //     spreadRadius: 1.0, //extend the shadow
-              //     offset: Offset(
-              //       1.0, // Move to right 10  horizontally
-              //       1.0, // Move to bottom 10 Vertically
-              //     ),
-              //   )
-              // ],
+                      ? R.color.greenGradientBottom
+                      : (showValidate ? R.color.color0xffFF5756 : R.color.white)),
             ),
             child: Row(children: [
               Image.asset(
                   widget.isPassword
-                      ? 'assets/images/icon_lock.png'
-                      : 'assets/images/icon_phone.png',
+                      ? R.drawable.ic_lock
+                      : R.drawable.ic_phone,
                   width: 20,
                   height: 20,
-                  color: mainColor),
+                  color: R.color.mainColor),
               SizedBox(width: 16),
               Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -107,17 +97,17 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                   obscureText: !showPassword,
                                   style: TextStyle(
                                       fontFamily: 'Viga',
-                                      color: textDark,
+                                      color: R.color.textDark,
                                       fontSize: 18,
                                       fontWeight: FontWeight.w500),
                                   decoration: InputDecoration(
-                                      fillColor: textDark,
+                                      fillColor: R.color.textDark,
                                       border: InputBorder.none,
                                       contentPadding: EdgeInsets.only(top: -22),
                                       hintText: widget.placeholder,
                                       hintStyle: TextStyle(
                                           fontFamily: 'roboto',
-                                          color: textDark,
+                                          color: R.color.textDark,
                                           fontSize: 15,
                                           fontWeight: FontWeight.w300)),
                                   onChanged: (value) {
@@ -126,13 +116,13 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                     if (value.length < 6) {
                                       showValidate = true;
                                       validateText =
-                                          'Mật khẩu ít nhất 06 ký tự';
+                                          R.string.password_least_character.tr();
                                     } else if (value.length != 0 &&
                                         showValidate) {
                                       showValidate = false;
                                     }
                                     setState(() {});
-                                    widget.onChanged(value);
+                                    widget.onChanged!(value);
                                   }),
                             ),
                           )
@@ -142,12 +132,12 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                 Text('+84',
                                     style: TextStyle(
                                         fontFamily: 'Viga',
-                                        color: textDark,
+                                        color: R.color.textDark,
                                         fontSize: 18,
                                         fontWeight: FontWeight.w500)),
                                 SizedBox(width: 8),
                                 Container(
-                                    height: 20, width: 1, color: textDark),
+                                    height: 20, width: 1, color: R.color.textDark),
                                 SizedBox(width: 8),
                                 Container(
                                   height: 25,
@@ -159,7 +149,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                         autofocus: widget.autoFocus,
                                         style: TextStyle(
                                             fontFamily: 'Viga',
-                                            color: textDark,
+                                            color: R.color.textDark,
                                             fontSize: 18,
                                             fontWeight: FontWeight.w500),
                                         decoration: InputDecoration(
@@ -169,10 +159,10 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                             hintText: widget.placeholder,
                                             hintStyle: TextStyle(
                                                 fontFamily: 'roboto',
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w300),
-                                            fillColor: textDark),
+                                            fillColor: R.color.textDark),
                                         onChanged: (value) {
                                           String pattern =
                                               r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
@@ -182,13 +172,13 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                               value.length != 10) {
                                             showValidate = true;
                                             validateText =
-                                                'Số điện thoại không đúng định dạng';
+                                                R.string.phone_not_valid.tr();
                                           } else if (value.length != 0 &&
                                               showValidate) {
                                             showValidate = false;
                                           }
                                           setState(() {});
-                                          widget.onChanged(value);
+                                          widget.onChanged!(value);
                                         }),
                                   ),
                                 )
@@ -205,21 +195,21 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                             });
                           },
                           child: Container(
-                              color: Colors.transparent,
-                              child: Text(!showPassword ? 'Hiện' : 'Ẩn',
-                                  style: TextStyle(color: Color(0xff787A7D)))))
+                              color: R.color.transparent,
+                              child: Text(!showPassword ? R.string.show.tr() : R.string.hide.tr(),
+                                  style: TextStyle(color: R.color.grey_2))))
                       : SizedBox(),
                   isCorrect
                       ? Padding(
                           padding: EdgeInsets.only(left: 8),
-                          child: Image.asset('assets/images/icon_correct.png',
+                          child: Image.asset(R.drawable.ic_correct,
                               width: 24, height: 24),
                         )
                       : showValidate
                           ? Padding(
                               padding: EdgeInsets.only(left: 8),
                               child: Image.asset(
-                                  'assets/images/icon_warning.png',
+                                  R.drawable.ic_warning,
                                   width: 24,
                                   height: 24),
                             )
@@ -232,7 +222,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                 padding: EdgeInsets.only(top: 4),
                 child: Text(validateText,
                     style: TextStyle(
-                        color: Color(0xffFF5756),
+                        color: R.color.color0xffFF5756,
                         fontSize: 14,
                         fontWeight: FontWeight.w400)),
               )

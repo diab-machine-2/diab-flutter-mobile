@@ -3,20 +3,26 @@ import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FetchClient {
   static String get identifyBaseURL {
-    return 'is.diab.com.vn';
-    return 'is.stg.diab.cptech.vn';
-    return 'is.dev.diab.cptech.vn';
+    // return 'is.diab.com.vn';
+    return '139.162.21.142:6001';
+    // return 'is.stg.diab.cptech.vn';
+    // return 'is.dev.diab.cptech.vn';
+    // return '139.162.21.142:6001';
   }
 
   static String get baseURL {
-    return 'api.diab.com.vn';
-    return 'api.stg.diab.cptech.vn';
-    return 'api.mobile.dev.diab.cptech.vn';
+    // return 'api.diab.com.vn';
+    return 'diab-api-dev.savvycom.vn';
+    // return 'api.stg.diab.cptech.vn';
+    // return 'api.mobile.dev.diab.cptech.vn';
+    // return '139.162.21.142:6002';
   }
 
   Future<Options> options() async {
@@ -70,19 +76,19 @@ class FetchClient {
 
   Future<Response> fetchData(
       {bool baseIdentify = false,
-      @required String url,
-      Map<String, String> params}) async {
+      required String url,
+      Map<String, String?>? params}) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     Dio dio = Dio();
     logRequest(dio);
-    return await dio.getUri(Uri.https(domain, url, params), options: option);
+    return await dio.getUri(Uri.http(domain, url, params), options: option);
   }
 
   Future<Response> postData({
     bool baseIdentify = false,
-    String url,
-    FormData params,
+    required String url,
+    FormData? params,
     bool baseOption = false,
   }) async {
     final option = await options2();
@@ -90,7 +96,7 @@ class FetchClient {
     Dio dio = Dio();
     logRequest(dio);
     return await dio.postUri(
-        Uri.https(
+        Uri.http(
           domain,
           url,
         ),
@@ -101,14 +107,14 @@ class FetchClient {
   Future<Response> postUri(
       {bool baseIdentify = false,
       bool baseOption = false,
-      String url,
-      Map<String, dynamic> params}) async {
+      required String url,
+      Map<String, dynamic>? params}) async {
     final option = baseOption ? await options() : await options1();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     Dio dio = Dio();
     logRequest(dio);
     return await dio.postUri(
-        Uri.https(
+        Uri.http(
           domain,
           url,
         ),
@@ -118,18 +124,17 @@ class FetchClient {
 
   Future<http.StreamedResponse> postHttp(
       {bool baseIdentify = false,
-      String path,
-      dynamic params,
-      List<String> files}) async {
+      required String path,
+      required dynamic params, List<String>? files}) async {
     final token = await AppSettings.getToken();
     var headers = {'Authorization': 'Bearer $token'};
     var request = http.MultipartRequest(
         'POST',
         Uri.parse(
-            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+            'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.fields.addAll(params);
 
-    for (var file in files) {
+    for (var file in files ?? []) {
       final value = await http.MultipartFile.fromPath('images', file);
       request.files.add(value);
     }
@@ -140,7 +145,7 @@ class FetchClient {
   }
 
   Future<http.StreamedResponse> postHttp2(
-      {bool baseIdentify = false, String path, dynamic params}) async {
+      {bool baseIdentify = false, required String path, required dynamic params}) async {
     final token = await AppSettings.getToken();
     var headers = {
       'Authorization': 'Bearer $token',
@@ -149,7 +154,7 @@ class FetchClient {
     var request = http.Request(
         'POST',
         Uri.parse(
-            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+            'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.body = params;
     request.headers.addAll(headers);
 
@@ -158,16 +163,16 @@ class FetchClient {
 
   Future<http.StreamedResponse> putHttp(
       {bool baseIdentify = false,
-      String path,
-      dynamic params,
-      List<String> files,
-      String fileName}) async {
+      required String path,
+      required dynamic params,
+      required List<String> files,
+      String? fileName}) async {
     final token = await AppSettings.getToken();
     var headers = {'Authorization': 'Bearer $token'};
     var request = http.MultipartRequest(
         'PUT',
         Uri.parse(
-            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+            'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.fields.addAll(params);
 
     for (var file in files) {
@@ -183,14 +188,14 @@ class FetchClient {
 
   Future<Response> putData(
       {bool baseIdentify = false,
-      String url,
-      Map<String, dynamic> params}) async {
+      required String url,
+      Map<String, dynamic>? params}) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     Dio dio = Dio();
     logRequest(dio);
     return await dio.putUri(
-        Uri.https(
+        Uri.http(
           domain,
           url,
         ),
@@ -200,14 +205,14 @@ class FetchClient {
 
   Future<Response> delete(
       {bool baseIdentify = false,
-      String url,
-      Map<String, dynamic> params}) async {
+      required String url,
+      Map<String, dynamic>? params}) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     Dio dio = Dio();
     logRequest(dio);
     return await dio.deleteUri(
-        Uri.https(
+        Uri.http(
           domain,
           url,
         ),
@@ -220,8 +225,9 @@ class FetchClient {
       requestHeader: true,
       requestBody: true,
       responseBody: true,
-      responseHeader: false,
-      compact: false,
+      responseHeader: true,
+      compact: true,
+      error: true
     ));
   }
 
@@ -232,7 +238,7 @@ class FetchClient {
         print('connected');
       }
     } on SocketException catch (_) {
-      throw 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+      throw R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -253,14 +259,16 @@ class FetchClient {
 // class FetchClient {
 //   static String get identifyBaseURL {
 //     return 'is.diab.com.vn';
-//     return 'is.stg.diab.cptech.vn';
-//     return 'is.dev.diab.cptech.vn';
+//     // return 'is.stg.diab.cptech.vn';
+//     // return 'is.dev.diab.cptech.vn';
+//     // return '139.162.21.142:6001';
 //   }
 
 //   static String get baseURL {
 //     return 'api.diab.com.vn';
-//     return 'api.stg.diab.cptech.vn';
-//     return 'api.mobile.dev.diab.cptech.vn';
+//     // return 'api.stg.diab.cptech.vn';
+//     // return 'api.mobile.dev.diab.cptech.vn';
+//     // return '139.162.21.142:6002';
 //   }
 
 //   Future<Options> options() async {
@@ -274,7 +282,7 @@ class FetchClient {
 //         },
 //         followRedirects: false,
 //         validateStatus: (status) {
-//           return status < 500;
+//           return true; //status < 500;
 //         });
 //     print(option);
 //     return option;
@@ -290,7 +298,7 @@ class FetchClient {
 //         },
 //         followRedirects: false,
 //         validateStatus: (status) {
-//           return status < 500;
+//           return true; //status < 500;
 //         });
 //     return option;
 //   }
@@ -307,26 +315,26 @@ class FetchClient {
 //         },
 //         followRedirects: false,
 //         validateStatus: (status) {
-//           return status < 500;
+//           return true; //status < 500;
 //         });
 //     return option;
 //   }
 
 //   Future<Response> fetchData(
 //       {bool baseIdentify = false,
-//       @required String url,
-//       Map<String, String> params}) async {
+//       required String url,
+//       Map<String, String?>? params}) async {
 //     final option = await options();
 //     final domain = baseIdentify ? identifyBaseURL : baseURL;
 //     Dio dio = Dio();
 //     logRequest(dio);
-//     return await dio.getUri(Uri.http(domain, url, params), options: option);
+//     return await dio.getUri(Uri.https(domain, url, params), options: option);
 //   }
 
 //   Future<Response> postData({
 //     bool baseIdentify = false,
-//     String url,
-//     FormData params,
+//     required String url,
+//     FormData? params,
 //     bool baseOption = false,
 //   }) async {
 //     final option = await options2();
@@ -334,7 +342,7 @@ class FetchClient {
 //     Dio dio = Dio();
 //     logRequest(dio);
 //     return await dio.postUri(
-//         Uri.http(
+//         Uri.https(
 //           domain,
 //           url,
 //         ),
@@ -345,14 +353,14 @@ class FetchClient {
 //   Future<Response> postUri(
 //       {bool baseIdentify = false,
 //       bool baseOption = false,
-//       String url,
-//       Map<String, dynamic> params}) async {
+//       required String url,
+//       Map<String, dynamic>? params}) async {
 //     final option = baseOption ? await options() : await options1();
 //     final domain = baseIdentify ? identifyBaseURL : baseURL;
 //     Dio dio = Dio();
 //     logRequest(dio);
 //     return await dio.postUri(
-//         Uri.http(
+//         Uri.https(
 //           domain,
 //           url,
 //         ),
@@ -362,18 +370,17 @@ class FetchClient {
 
 //   Future<http.StreamedResponse> postHttp(
 //       {bool baseIdentify = false,
-//       String path,
-//       dynamic params,
-//       List<String> files}) async {
+//       required String path,
+//       required dynamic params, List<String>? files}) async {
 //     final token = await AppSettings.getToken();
 //     var headers = {'Authorization': 'Bearer $token'};
 //     var request = http.MultipartRequest(
 //         'POST',
 //         Uri.parse(
-//             'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+//             'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
 //     request.fields.addAll(params);
 
-//     for (var file in files) {
+//     for (var file in files ?? []) {
 //       final value = await http.MultipartFile.fromPath('images', file);
 //       request.files.add(value);
 //     }
@@ -384,7 +391,7 @@ class FetchClient {
 //   }
 
 //   Future<http.StreamedResponse> postHttp2(
-//       {bool baseIdentify = false, String path, dynamic params}) async {
+//       {bool baseIdentify = false, required String path, required dynamic params}) async {
 //     final token = await AppSettings.getToken();
 //     var headers = {
 //       'Authorization': 'Bearer $token',
@@ -393,7 +400,7 @@ class FetchClient {
 //     var request = http.Request(
 //         'POST',
 //         Uri.parse(
-//             'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+//             'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
 //     request.body = params;
 //     request.headers.addAll(headers);
 
@@ -402,16 +409,16 @@ class FetchClient {
 
 //   Future<http.StreamedResponse> putHttp(
 //       {bool baseIdentify = false,
-//       String path,
-//       dynamic params,
-//       List<String> files,
-//       String fileName}) async {
+//       required String path,
+//       required dynamic params,
+//       required List<String> files,
+//       String? fileName}) async {
 //     final token = await AppSettings.getToken();
 //     var headers = {'Authorization': 'Bearer $token'};
 //     var request = http.MultipartRequest(
 //         'PUT',
 //         Uri.parse(
-//             'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+//             'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
 //     request.fields.addAll(params);
 
 //     for (var file in files) {
@@ -427,14 +434,14 @@ class FetchClient {
 
 //   Future<Response> putData(
 //       {bool baseIdentify = false,
-//       String url,
-//       Map<String, dynamic> params}) async {
+//       required String url,
+//       Map<String, dynamic>? params}) async {
 //     final option = await options();
 //     final domain = baseIdentify ? identifyBaseURL : baseURL;
 //     Dio dio = Dio();
 //     logRequest(dio);
 //     return await dio.putUri(
-//         Uri.http(
+//         Uri.https(
 //           domain,
 //           url,
 //         ),
@@ -444,14 +451,14 @@ class FetchClient {
 
 //   Future<Response> delete(
 //       {bool baseIdentify = false,
-//       String url,
-//       Map<String, dynamic> params}) async {
+//       required String url,
+//       Map<String, dynamic>? params}) async {
 //     final option = await options();
 //     final domain = baseIdentify ? identifyBaseURL : baseURL;
 //     Dio dio = Dio();
 //     logRequest(dio);
 //     return await dio.deleteUri(
-//         Uri.http(
+//         Uri.https(
 //           domain,
 //           url,
 //         ),
@@ -464,8 +471,9 @@ class FetchClient {
 //       requestHeader: true,
 //       requestBody: true,
 //       responseBody: true,
-//       responseHeader: false,
-//       compact: false,
+//       responseHeader: true,
+//       compact: true,
+//       error: true
 //     ));
 //   }
 
@@ -476,7 +484,20 @@ class FetchClient {
 //         print('connected');
 //       }
 //     } on SocketException catch (_) {
-//       throw 'diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi';
+//       throw R.string.error_can_not_connect_to_server.tr();
+//     }
+//   }
+
+//   Future<bool> hasNetwork() async {
+//     try {
+//       final result = await InternetAddress.lookup('google.com');
+//       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+//         return true;
+//       } else {
+//         return false;
+//       }
+//     } on SocketException catch (_) {
+//       return false;
 //     }
 //   }
 // }

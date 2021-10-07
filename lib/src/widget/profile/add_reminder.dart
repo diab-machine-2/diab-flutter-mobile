@@ -1,10 +1,10 @@
 import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/schedule_reminder_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -12,10 +12,11 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AddReminderController extends StatefulWidget {
-  final String type;
-  final String id;
+  final String? type;
+  final String? id;
 
   AddReminderController({this.type, this.id});
   @override
@@ -29,12 +30,12 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
   int selectedHour = 0;
 
   int selectedTimeFrame = 0;
-  String name = 'Hàng ngày';
+  String name = R.string.every_day.tr();
 
-  bool status = true;
-  bool tempStatus = true;
+  bool? status = true;
+  bool? tempStatus = true;
 
-  ScheduleReminderModel model;
+  ScheduleReminderModel? model;
 
   void initState() {
     super.initState();
@@ -48,26 +49,26 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     model = await UserClient().fetchScheduleReminderDetail(widget.id);
     BotToast.closeAllLoading();
 
-    status = model.isActive;
-    tempStatus = model.isActive;
-    final date = DateTime.fromMillisecondsSinceEpoch(model.time * 1000);
+    status = model!.isActive;
+    tempStatus = model!.isActive;
+    final date = DateTime.fromMillisecondsSinceEpoch(model!.time! * 1000);
     selectedHour = date.hour;
     selectedMinute = date.minute;
-    selectedTimeFrame = model.remindType - 1;
+    selectedTimeFrame = model!.remindType! - 1;
     getTimeName();
-    titleController.text = model.name ?? '';
-    descriptionController.text = model.content ?? '';
+    titleController.text = model!.name ?? '';
+    descriptionController.text = model!.content ?? '';
     setState(() {});
   }
 
   getTimeName() {
     name = selectedTimeFrame == 0
-        ? 'Hàng ngày'
+        ? R.string.every_day.tr()
         : selectedTimeFrame == 1
-            ? 'Hàng tuần'
+            ? R.string.every_week.tr()
             : selectedTimeFrame == 2
-                ? 'Hàng ngày trừ Chủ Nhật'
-                : 'Mỗi 30 phút';
+                ? R.string.every_day_except_sunday.tr()
+                : R.string.every_30_minutes.tr();
   }
 
   @override
@@ -85,24 +86,24 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('assets/images/background_splash.png'),
+                    image: AssetImage(R.drawable.bg_splash),
                     fit: BoxFit.cover)),
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: R.color.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? 'Chỉnh sửa lịch nhắc nhở'
-                          : 'Thêm lịch nhắc nhở',
+                          ? R.string.edit_reminder_calendar.tr()
+                          : R.string.add_reminder_calendar.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: textDark)),
+                          color: R.color.textDark)),
                   leadingIcon: IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      icon: Icon(Icons.arrow_back, color: textDark),
+                      splashColor: R.color.transparent,
+                      highlightColor: R.color.transparent,
+                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
                       }),
@@ -113,7 +114,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: R.color.white,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           padding: EdgeInsets.all(16),
@@ -121,17 +122,17 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(children: [
-                                Image.asset('assets/images/icon_clock.png',
+                                Image.asset(R.drawable.ic_clock,
                                     width: 24, height: 24),
                                 SizedBox(width: 8),
-                                Text('Trạng thái',
+                                Text(R.string.status.tr(),
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500))
                               ]),
                               CupertinoSwitch(
-                                activeColor: Color(0xff008479),
-                                value: status,
+                                activeColor: R.color.greenGradientBottom,
+                                value: status!,
                                 onChanged: (value) {
                                   setState(() {
                                     status = value;
@@ -144,16 +145,16 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                         SizedBox(height: 8),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: R.color.white,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           padding: EdgeInsets.all(16),
                           child: Column(children: [
                             Row(children: [
-                              Image.asset('assets/images/stopwatch.png',
+                              Image.asset(R.drawable.ic_stopwatch,
                                   width: 24, height: 24),
                               SizedBox(width: 8),
-                              Text('Thời gian nhắc nhở',
+                              Text(R.string.time_reminder.tr(),
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500))
@@ -164,14 +165,14 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                 int minute = selectedMinute;
                                 showDialog(
                                     barrierColor:
-                                        Color(0xff003F38).withOpacity(0.5),
+                                        R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,
                                     builder: (_) => GestureDetector(
                                           onTap: () {
                                             Navigator.pop(context);
                                           },
                                           child: Scaffold(
-                                            backgroundColor: Colors.transparent,
+                                            backgroundColor: R.color.transparent,
                                             body: Center(
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.min,
@@ -182,7 +183,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                       onTap: () {},
                                                       child: Container(
                                                         decoration: BoxDecoration(
-                                                            color: Colors.white,
+                                                            color: R.color.white,
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
@@ -195,7 +196,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                   .start,
                                                           children: [
                                                             Text(
-                                                                'Nhập thời gian',
+                                                                R.string.nhap_thoi_gian.tr(),
                                                                 style: TextStyle(
                                                                     fontSize:
                                                                         16,
@@ -210,8 +211,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                     minute,
                                                                 callback:
                                                                     (h, m) {
-                                                                  hour = h;
-                                                                  minute = m;
+                                                                  hour = h ?? DateTime.now().hour;
+                                                                  minute = m ?? DateTime.now().hour;
                                                                 }),
                                                             SizedBox(
                                                                 height: 20),
@@ -229,14 +230,13 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                       height:
                                                                           43,
                                                                       decoration: BoxDecoration(
-                                                                          color: Color(
-                                                                              0xffE2E4E7),
+                                                                          color: R.color.grayBorder,
                                                                           borderRadius: BorderRadius.circular(
                                                                               21.5)),
                                                                       child: Center(
                                                                           child: Text(
-                                                                              'Huỷ',
-                                                                              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w700)))),
+                                                                              R.string.cancel.tr(),
+                                                                              style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)))),
                                                                 ),
                                                               ),
                                                               SizedBox(
@@ -251,7 +251,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                             0) {
                                                                       Message.showToastMessage(
                                                                           context,
-                                                                          'Bạn chưa chọn thời gian');
+                                                                          R.string.ban_chua_chon_thoi_gian.tr());
                                                                       return;
                                                                     }
                                                                     selectedHour =
@@ -268,20 +268,20 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                                           43,
                                                                       decoration: BoxDecoration(
                                                                           color:
-                                                                              mainColor,
+                                                                              R.color.mainColor,
                                                                           borderRadius: BorderRadius.circular(
                                                                               200),
                                                                           gradient: LinearGradient(
                                                                               begin: Alignment.topLeft,
                                                                               end: Alignment.centerRight,
                                                                               colors: [
-                                                                                greenGradientTop,
-                                                                                greenGradientBottom
+                                                                                R.color.greenGradientTop,
+                                                                                R.color.greenGradientBottom
                                                                               ])),
                                                                       child: Center(
                                                                           child: Text(
-                                                                              'Đồng ý',
-                                                                              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)))),
+                                                                              R.string.yes.tr(),
+                                                                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w700)))),
                                                                 ),
                                                               ),
                                                               SizedBox(
@@ -299,7 +299,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                         ));
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -315,17 +315,17 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                       ? '--'
                                                       : selectedHour.toString(),
                                                   style: TextStyle(
-                                                      color: Colors.black,
+                                                      color: R.color.black,
                                                       fontFamily: 'Viga',
                                                       fontSize: 40)),
                                               Container(
                                                   height: 1,
-                                                  color: Color(0xffDDDDDD))
+                                                  color: R.color.grayComponentBorder)
                                             ],
                                           ),
                                         ),
                                       ),
-                                      Text('Giờ'),
+                                      Text(R.string.hour_upper_case_first.tr()),
                                       Expanded(
                                         child: Container(
                                           padding: EdgeInsets.only(
@@ -338,17 +338,17 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                                       : selectedMinute
                                                           .toString(),
                                                   style: TextStyle(
-                                                      color: Colors.black,
+                                                      color: R.color.black,
                                                       fontFamily: 'Viga',
                                                       fontSize: 40)),
                                               Container(
                                                   height: 1,
-                                                  color: Color(0xffDDDDDD))
+                                                  color: R.color.grayComponentBorder)
                                             ],
                                           ),
                                         ),
                                       ),
-                                      Text('Phút'),
+                                      Text(R.string.minute_upper_case_first.tr()),
                                       SizedBox(width: 32)
                                     ]),
                               ),
@@ -358,7 +358,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                         SizedBox(height: 8),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: R.color.white,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           padding: EdgeInsets.all(16),
@@ -368,7 +368,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                 showTimeFrame(context);
                               },
                               child: Container(
-                                color: Colors.transparent,
+                                color: R.color.transparent,
                                 child: Column(children: [
                                   Row(
                                     mainAxisAlignment:
@@ -376,11 +376,11 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                     children: [
                                       Row(children: [
                                         Image.asset(
-                                            'assets/images/icon_clock.png',
+                                            R.drawable.ic_clock,
                                             width: 24,
                                             height: 24),
                                         SizedBox(width: 8),
-                                        Text('Lặp lại',
+                                        Text(R.string.repeat.tr(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w500))
@@ -393,7 +393,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                   ),
                                   SizedBox(height: 16),
                                   Container(
-                                      height: 1, color: Color(0xffE5E5E5)),
+                                      height: 1, color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                 ]),
                               ),
@@ -403,16 +403,16 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                         SizedBox(height: 8),
                         Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: R.color.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
                             child: Column(children: [
                               Row(children: [
-                                Image.asset('assets/images/comment_checked.png',
+                                Image.asset(R.drawable.ic_comment_checked,
                                     width: 24, height: 24),
                                 SizedBox(width: 8),
-                                Text('Tên nhắc nhở',
+                                Text(R.string.reminder_name.tr(),
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500))
@@ -423,15 +423,15 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                 child: CupertinoTextField(
                                     controller: titleController,
                                     decoration: BoxDecoration(),
-                                    placeholder: 'Nhập tên nhắc nhở'),
+                                    placeholder: R.string.enter_reminder_name.tr()),
                               ),
-                              Container(height: 1, color: Color(0xffE5E5E5)),
+                              Container(height: 1, color: R.color.color0xffE5E5E5),
                               SizedBox(height: 32),
                               Row(children: [
-                                Image.asset('assets/images/note_text.png',
+                                Image.asset(R.drawable.ic_note_text,
                                     width: 24, height: 24),
                                 SizedBox(width: 8),
-                                Text('Nội dung nhắc nhở',
+                                Text(R.string.content_reminder.tr(),
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500))
@@ -440,10 +440,10 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                               CupertinoTextField(
                                   controller: descriptionController,
                                   decoration: BoxDecoration(),
-                                  placeholder: 'Nhập nội dung nhắc nhở',
+                                  placeholder: R.string.enter_content_reminder.tr(),
                                   maxLines: null,
                                   maxLength: 1000),
-                              Container(height: 1, color: Color(0xffE5E5E5)),
+                              Container(height: 1, color: R.color.color0xffE5E5E5),
                               SizedBox(height: 8),
                             ]))
                       ]),
@@ -463,19 +463,19 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                         height: 48,
                         width: 195,
                         decoration: BoxDecoration(
-                            color: mainColor,
+                            color: R.color.mainColor,
                             borderRadius: BorderRadius.circular(200),
                             gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.centerRight,
                                 colors: [
-                                  greenGradientTop,
-                                  greenGradientBottom
+                                  R.color.greenGradientTop,
+                                  R.color.greenGradientBottom
                                 ])),
                         child: Center(
-                            child: Text('Lưu',
+                            child: Text(R.string.save.tr(),
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: R.color.white,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16)))),
                   ),
@@ -489,15 +489,15 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
   }
 
   _showDialogSave() {
-    final title = titleController.text ?? '';
-    final des = descriptionController.text ?? '';
+    final title = titleController.text;
+    final des = descriptionController.text;
 
     if (model != null) {
-      final name = model.name ?? '';
-      final content = model.content ?? '';
+      final name = model!.name ?? '';
+      final content = model!.content ?? '';
       if (name == title &&
           content == des &&
-          selectedTimeFrame + 1 == model.remindType &&
+          selectedTimeFrame + 1 == model!.remindType &&
           status == tempStatus) {
         Navigator.pop(context);
         return;
@@ -524,24 +524,24 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset('assets/images/backIcon.png',
+                      Image.asset(R.drawable.ic_back_icon,
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text('Bạn muốn quay lại ?',
+                        child: Text(R.string.ban_muon_quay_lai.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
+                            R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: textDark,
+                                color: R.color.textDark,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400)),
                       ),
@@ -559,11 +559,11 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          color: grayBorder),
+                                          color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text('Vẫn ở lại',
+                                        child: Text(R.string.van_o_lai.tr(),
                                             style: TextStyle(
-                                                color: textDark,
+                                                color: R.color.textDark,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ))),
@@ -578,20 +578,20 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color: red,
+                                        color: R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
                                             begin: Alignment.topLeft,
                                             end: Alignment.centerRight,
                                             colors: [
-                                              greenGradientTop,
-                                              greenGradientBottom
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text('Thoát',
+                                      child: Text(R.string.exit.tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: R.color.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -605,7 +605,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -620,35 +620,37 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: Colors.white,
+        backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
         builder: (context) => FillterBloodPanel(
             selectedIndex: selectedTimeFrame,
             data: [
-              'Hàng ngày',
-              'Hàng tuần',
-              'Hàng ngày trừ Chủ Nhật',
-              'Mỗi 30 phút'
+              R.string.every_day.tr(),
+              R.string.every_week.tr(),
+              R.string.every_day_except_sunday.tr(),
+              R.string.every_30_minutes.tr()
             ],
             callback: (value, index) {
-              setState(() {
-                name = value;
-                selectedTimeFrame = index;
-              });
+              if (index != null) {
+                setState(() {
+                  name = value;
+                  selectedTimeFrame = index;
+                });
+              }
             }));
   }
 
   submit() async {
-    final title = titleController.text ?? '';
-    final des = descriptionController.text ?? '';
+    final title = titleController.text;
+    final des = descriptionController.text;
     if (title.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập tên nhắc nhở');
+      Message.showToastMessage(context, R.string.mes_reminder_name_empty.tr());
       return;
     }
 
     if (selectedHour == 0 && selectedMinute == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian nhắc nhở');
+      Message.showToastMessage(context, R.string.mes_time_reminder_empty.tr());
       return;
     }
 
@@ -662,7 +664,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
               1000,
           des,
           status);
-      DartNotificationCenter.post(channel: 'schedule_change');
+      Observable.instance.notifyObservers([], notifyName : "schedule_change");
+      // DartNotificationCenter.post(channel: 'schedule_change');
       Navigator.pop(context);
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -676,15 +679,15 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
   }
 
   edit() async {
-    final title = titleController.text ?? '';
-    final des = descriptionController.text ?? '';
+    final title = titleController.text;
+    final des = descriptionController.text;
     if (title.isEmpty) {
-      Message.showToastMessage(context, 'Bạn chưa nhập tên nhắc nhở');
+      Message.showToastMessage(context, R.string.mes_reminder_name_empty.tr());
       return;
     }
 
     if (selectedHour == 0 && selectedMinute == 0) {
-      Message.showToastMessage(context, 'Bạn chưa nhập thời gian nhắc nhở');
+      Message.showToastMessage(context, R.string.mes_time_reminder_empty.tr());
       return;
     }
     try {
@@ -698,7 +701,8 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
               1000,
           des,
           status);
-      DartNotificationCenter.post(channel: 'schedule_change');
+      Observable.instance.notifyObservers([], notifyName : "schedule_change");
+      // DartNotificationCenter.post(channel: 'schedule_change');
       Navigator.pop(context);
       BotToast.closeAllLoading();
     } catch (e, _) {
