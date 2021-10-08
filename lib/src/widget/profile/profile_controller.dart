@@ -29,7 +29,7 @@ class ProfileController extends StatefulWidget {
 }
 
 class _ProfileControllerState extends State<ProfileController> with Observer {
-  bool isPro = true;
+  bool isPro = false;
   SecureModel? secureModel;
   final AppRepository _appRepository = AppRepository();
 
