@@ -3,13 +3,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/expandable_rich_text.dart';
 
 class BloodSugarSurveyEmpty extends StatelessWidget {
-  const BloodSugarSurveyEmpty({Key? key}) : super(key: key);
+  const BloodSugarSurveyEmpty({required this.templateDetail});
+  final BloodSugarTemplateResponseData? templateDetail;
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +64,7 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
                   color: R.color.main_6,
                   borderRadius: BorderRadius.circular(8)),
               child: ExpandableRichText(
-                //TODO: Tuyen add long text into this
-                'Description text',
+                templateDetail?.description ?? '',
                 maxLines: 3,
                 trimExpandedText: R.string.show_less.tr(),
                 trimCollapsedText: R.string.show_more.tr(),
