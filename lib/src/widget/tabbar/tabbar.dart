@@ -122,8 +122,8 @@ class _TabbarControllerState extends State<TabbarController>
   getNewVersion() async {
     try {
       final newVersion = NewVersion(context: context);
-      final status = await (newVersion.getVersionStatus() as Future<VersionStatus>);
-
+      final status = await newVersion.getVersionStatus();
+      if (status == null) return;
       final localVersion = status.localVersion!.split('.');
       final storeVersion = status.storeVersion!.split('.');
       if (localVersion.length == 3 && storeVersion.length == 3) {

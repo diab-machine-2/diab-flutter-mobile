@@ -4,20 +4,19 @@ import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
-import 'package:medical/src/model/response/blood_sugar_template_category_response.dart';
-import 'package:medical/src/model/response/blood_sugar_template_detail_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
 import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
-import 'package:medical/src/model/response/get_own_package_code_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
+import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
+import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
@@ -81,15 +80,6 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<String>> getOwnPackageCode() async {
-    try {
-      GetOwnPackageCodeResponse response = await appClient.getOwnPackageCode();
-      return ApiResult.success(data: response.data ?? "");
-    } catch (e) {
-      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
-    }
-  }
-
   /**
    * Blood sugar
    */
@@ -125,6 +115,22 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<SaveSurveyResultResponse>> saveSurveyResult(
+      String templateId) async {
+    try {
+      final SaveSurveyResultResponse response =
+          await appClient.saveSurveyResult(templateId);
+      if (response.statusCode == 200) {
+        return ApiResult.success(data: response);
+      } else {
+        return const ApiResult.failure(
+            error: NetworkExceptions.defaultError("Save schedule failed"));
+      }
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   /**
    * Sample menu
    */
@@ -152,9 +158,9 @@ class AppRepository {
    * Food Menu
    */
 
-  Future<ApiResult<MenuResponse>> getGetUserFoodMenu() async {
+  Future<ApiResult<MenuResponse>> getUserFoodMenu() async {
     try {
-      final MenuResponse response = await appClient.getGetUserFoodMenu();
+      final MenuResponse response = await appClient.getUserFoodMenu();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -195,6 +201,24 @@ class AppRepository {
         return const ApiResult.failure(
             error:
                 NetworkExceptions.defaultError("Can't find a matching menu"));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /**
+   * Account
+   */
+
+  Future<ApiResult<UserInfoResponse>> getCurrentUserInfo() async {
+    try {
+      final UserInfoResponse response = await appClient.getCurrentUserInfo();
+      if (response.data != null) {
+        return ApiResult.success(data: response);
+      } else
+        return const ApiResult.failure(
+            error:
+                NetworkExceptions.defaultError("Can't not get UserInfo"));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -25,7 +24,7 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
 
   List<Question> questions = [];
 
-  double? hba1c;
+  double hba1c = -1;
 
   bool get isFirstQuestionScreen => questions.contains(question1);
 
@@ -40,6 +39,7 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
   }
 
   Future<void> selectDefaultAnswerForQuestion1() async {
+    await Future.delayed(Duration.zero);
     emit(const BloodSugarSurveyLoading());
     final ApiResult<DiabetesStatusResponse> apiResult =
         await repository.getDiabetesStatus();
@@ -62,21 +62,20 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
   }
 
   Future<void> selectDefaultAnswerForQuestion2() async {
+    await Future.delayed(Duration.zero);
     emit(const BloodSugarSurveyLoading());
     final ApiResult<LatestHba1cInputResponse> apiResult =
         await repository.getLatestHbA1CInput();
     apiResult.when(success: (LatestHba1cInputResponse response) {
-      if (response.data != null) {
-        final LatestHba1cInputResponseData data = response.data!;
-        hba1c = data.hbA1C?.toDouble();
-        if (data.hbA1C == null) return;
-        if (data.hbA1C! <= 7) {
-          question2.selectedAnswer = 1;
-        } else {
-          question2.selectedAnswer = 0;
-        }
-        onSelectedAnswer(question2.questionKey);
+      if (response.data == null || response.data == -1) return;
+      hba1c = response.data!;
+      if (hba1c < 7) {
+        question2.selectedAnswer = 0;
+      } else {
+        question2.selectedAnswer = 1;
       }
+      onSelectedAnswer(question2.questionKey);
+      emit(const BloodSugarSurveySuccess());
     }, failure: (NetworkExceptions error) {
       emit(BloodSugarSurveyFailure(NetworkExceptions.getErrorMessage(error)));
     });
@@ -117,7 +116,7 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
         }
         if (question1.selectedAnswer == 3) {
           //No Template
-          showTemplate();
+          showTemplate(templateCode: 'NONE');
         }
       } else {
         //Continue Survey from question 2
@@ -232,21 +231,8 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
     canSurveyDone = true;
   }
 
-  Future<void> showTemplate({String? templateCode}) async {
-    if (templateCode == null) {
-      emit(const BloodSugarSurveyNavigate());
-      return;
-    }
-    emit(const BloodSugarSurveyLoading());
-    final ApiResult<BloodSugarTemplateResponse> apiResult =
-        await repository.getTemplateDetail(templateCode);
-    apiResult.when(success: (BloodSugarTemplateResponse response) {
-      if (response.data != null) {
-        emit(BloodSugarSurveyNavigate(templateDetail: response.data));
-        refreshState();
-      }
-    }, failure: (NetworkExceptions error) {
-      emit(BloodSugarSurveyFailure(NetworkExceptions.getErrorMessage(error)));
-    });
+  void showTemplate({required String templateCode}) {
+    emit(BloodSugarSurveyNavigate(templateCode: templateCode));
+    refreshState();
   }
 }

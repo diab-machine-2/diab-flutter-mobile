@@ -357,7 +357,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                 ),
                 Text(
                   R.string.total_kcals
-                      .tr(args: ['${mealData?.totalKcal ?? 0.0}']),
+                      .tr(args: ['${num.parse(mealData?.totalKcal?.toStringAsFixed(3) ?? '0')}']),
                   style: TextStyle(
                     color: R.color.textDark,
                     fontSize: 16.sp,
@@ -371,7 +371,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                 ),
                 Text(
                   R.string.total_starch
-                      .tr(args: ['${mealData?.totalGlucose ?? 0.0}']),
+                      .tr(args: ['${num.parse(mealData?.totalGlucose?.toStringAsFixed(3) ?? '0')}']),
                   style: TextStyle(
                     color: R.color.textDark,
                     fontSize: 16.sp,

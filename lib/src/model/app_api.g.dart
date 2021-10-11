@@ -75,21 +75,6 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<GetOwnPackageCodeResponse> getOwnPackageCode() async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<GetOwnPackageCodeResponse>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, 'App/PackageAccount/GetOwnPackageCode',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = GetOwnPackageCodeResponse.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
   Future<ListTransactionResponse> getListTransaction(
       isExpired, page, size) async {
     const _extra = <String, dynamic>{};
@@ -157,6 +142,22 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<SaveSurveyResultResponse> saveSurveyResult(templateId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SaveSurveyResultResponse>(Options(
+                method: 'PUT', headers: <String, dynamic>{}, extra: _extra)
+            .compose(
+                _dio.options, 'App/Patient/SaveBloodSugarTemplate/$templateId',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SaveSurveyResultResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<ListActivityResponse> getListActivity() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -194,7 +195,7 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<MenuResponse> getGetUserFoodMenu() async {
+  Future<MenuResponse> getUserFoodMenu() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
@@ -231,7 +232,7 @@ class _AppApi implements AppApi {
     _data.addAll(request.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<CommonResponse>(
-            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'PUT', headers: <String, dynamic>{}, extra: _extra)
                 .compose(_dio.options, 'App/PatientFoodMenu/Input',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
@@ -252,6 +253,21 @@ class _AppApi implements AppApi {
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = CreateMenuResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<UserInfoResponse> getCurrentUserInfo() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<UserInfoResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/Account/GetCurrentUserInfo',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = UserInfoResponse.fromJson(_result.data!);
     return value;
   }
 

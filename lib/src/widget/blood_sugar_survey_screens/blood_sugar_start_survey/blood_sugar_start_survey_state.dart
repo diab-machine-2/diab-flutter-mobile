@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 abstract class BloodSugarStartSurveyState extends Equatable {
-  const BloodSugarStartSurveyState([List props = const []]) : super();
+  const BloodSugarStartSurveyState() : super();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 

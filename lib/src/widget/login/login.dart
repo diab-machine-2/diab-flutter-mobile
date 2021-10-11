@@ -424,7 +424,7 @@ class _LoginControllerState extends State<LoginController> {
   loginGG() async {
     GoogleSignIn _googleSignIn = GoogleSignIn(
       scopes: [
-        R.string.email.tr(),
+        'email',
         'profile',
       ],
     );
@@ -432,7 +432,8 @@ class _LoginControllerState extends State<LoginController> {
     late GoogleSignInAuthentication authen;
     try {
       account = await _googleSignIn.signIn();
-      authen = await account!.authentication;
+      if (account == null) return;
+      authen = await account.authentication;
       print(authen.accessToken);
       BotToast.showLoading();
 
@@ -540,15 +541,15 @@ class _LoginControllerState extends State<LoginController> {
         });
       }
 
-      final diabeteStates = await (UserClient().fetchDiabeteStates() as Future<List<dynamic>>);
+      final diabeteStates = await UserClient().fetchDiabeteStates();
 
       final result = await LoginClient().createPatient({
         'fullName': userName,
         'dateOfBirth': '0',
         'gender': '1',
-        'diabetesStatus': diabeteStates.length == 0
+        'diabetesStatus': diabeteStates?.isEmpty ?? true
             ? '1'
-            : diabeteStates.first['key'].toString(),
+            : diabeteStates?.first['key'].toString() ?? '',
         'diabetesDate':
             (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
       });

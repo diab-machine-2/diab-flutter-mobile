@@ -8,18 +8,17 @@ import 'request/food_change_request.dart';
 import 'request/send_interest_request.dart';
 import 'response/diabetes_status_response.dart';
 import 'response/food_suggest_response.dart';
-import 'response/get_own_package_code_response.dart';
 import 'response/latest_hba1c_input_response.dart';
 import 'response/list_transaction_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 import 'response/common_response.dart';
-import 'response/blood_sugar_template_category_response.dart';
-import 'response/blood_sugar_template_detail_response.dart';
 import 'response/detail_package_response.dart';
 import 'response/list_package_response.dart';
+import 'response/save_survey_result_response.dart';
 import 'response/tdee_response.dart';
 import 'response/upgrade_account_response.dart';
+import 'response/user_info_response.dart';
 
 part 'app_api.g.dart';
 
@@ -44,9 +43,6 @@ abstract class AppApi {
   Future<CommonResponse> sendInterestFeedback(
       @Body() SendInterestRequest request);
 
-  @GET("App/PackageAccount/GetOwnPackageCode")
-  Future<GetOwnPackageCodeResponse> getOwnPackageCode();
-
   // Transaction
 
   @GET("App/PackageTransaction")
@@ -68,6 +64,11 @@ abstract class AppApi {
     @Path("code") String code,
   );
 
+  @PUT("App/Patient/SaveBloodSugarTemplate/{templateId}")
+  Future<SaveSurveyResultResponse> saveSurveyResult(
+    @Path("templateId") String templateId,
+  );
+
   // Sample menu
 
   @GET("App/ActivityLevel")
@@ -84,14 +85,14 @@ abstract class AppApi {
   //Food Menu
 
   @GET("App/PatientFoodMenu/GetUserFoodMenu")
-  Future<MenuResponse> getGetUserFoodMenu();
+  Future<MenuResponse> getUserFoodMenu();
 
   @GET("App/PatientFoodMenu/SuggestionFood/{id}")
   Future<FoodSuggestResponse> getSuggestionFood(
     @Path("id") String id,
   );
 
-  @POST("App/PatientFoodMenu/Input")
+  @PUT("App/PatientFoodMenu/Input")
   Future<CommonResponse> changeFood(
     @Body() FoodChangeRequest request,
   );
@@ -100,4 +101,8 @@ abstract class AppApi {
   Future<CreateMenuResponse> createMenu(
     @Body() CreateMenuRequest request,
   );
+
+  //Acount
+  @GET("App/Account/GetCurrentUserInfo")
+  Future<UserInfoResponse> getCurrentUserInfo();
 }

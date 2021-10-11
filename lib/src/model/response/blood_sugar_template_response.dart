@@ -6,7 +6,7 @@ import 'package:medical/src/modal/user/schedule_glucose_model.dart';
 class BloodSugarTemplateResponseDataSchedules {
 /*
 {
-  "day": 0,
+  "day": 6,
   "isBeforeBreakfast": true,
   "isAfterBreakfast": false,
   "isBeforeLunch": true,
@@ -36,16 +36,6 @@ class BloodSugarTemplateResponseDataSchedules {
     this.isAfterDinner,
     this.isBeforeSleeping,
   });
-  BloodSugarTemplateResponseDataSchedules.fromJson(Map<String, dynamic> json) {
-    day = json["day"]?.toInt();
-    isBeforeBreakfast = json["isBeforeBreakfast"];
-    isAfterBreakfast = json["isAfterBreakfast"];
-    isBeforeLunch = json["isBeforeLunch"];
-    isAfterLunch = json["isAfterLunch"];
-    isBeforeDinner = json["isBeforeDinner"];
-    isAfterDinner = json["isAfterDinner"];
-    isBeforeSleeping = json["isBeforeSleeping"];
-  }
 
   ScheduleModel get scheduleModel => ScheduleModel(
         isBeforeBreakfast: this.isBeforeBreakfast,
@@ -56,7 +46,17 @@ class BloodSugarTemplateResponseDataSchedules {
         isAfterDinner: this.isAfterDinner,
         isBeforeSleeping: this.isBeforeSleeping,
       );
-  
+
+  BloodSugarTemplateResponseDataSchedules.fromJson(Map<String, dynamic> json) {
+    day = json["day"]?.toInt();
+    isBeforeBreakfast = json["isBeforeBreakfast"];
+    isAfterBreakfast = json["isAfterBreakfast"];
+    isBeforeLunch = json["isBeforeLunch"];
+    isAfterLunch = json["isAfterLunch"];
+    isBeforeDinner = json["isBeforeDinner"];
+    isAfterDinner = json["isAfterDinner"];
+    isBeforeSleeping = json["isBeforeSleeping"];
+  }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data["day"] = day;
@@ -74,15 +74,16 @@ class BloodSugarTemplateResponseDataSchedules {
 class BloodSugarTemplateResponseData {
 /*
 {
-  "code": "OP",
-  "name": "Mẫu OP",
+  "id": "e89a508e-1c6b-48ca-99c0-2e9b22af5014",
+  "code": "K",
+  "name": "Mẫu K",
   "isWeekTemplate": true,
-  "timePerDay": 5,
+  "timePerDay": 6,
   "description": "Chúng tôi khuyến nghị bạn đo đường huyết 4 lần/ngày ",
   "note": "",
   "schedules": [
     {
-      "day": 0,
+      "day": 6,
       "isBeforeBreakfast": true,
       "isAfterBreakfast": false,
       "isBeforeLunch": true,
@@ -95,6 +96,7 @@ class BloodSugarTemplateResponseData {
 } 
 */
 
+  String? id;
   String? code;
   String? name;
   bool? isWeekTemplate;
@@ -104,6 +106,7 @@ class BloodSugarTemplateResponseData {
   List<BloodSugarTemplateResponseDataSchedules?>? schedules;
 
   BloodSugarTemplateResponseData({
+    this.id,
     this.code,
     this.name,
     this.isWeekTemplate,
@@ -123,9 +126,8 @@ class BloodSugarTemplateResponseData {
         friday: getScheduleModelByIndex(4),
         saturday: getScheduleModelByIndex(5),
         sunday: getScheduleModelByIndex(6),
-        );
-    }
-    else {
+      );
+    } else {
       final ScheduleModel? scheduleModel = this.schedules?.first?.scheduleModel;
       return ScheduleGlucoseModel(
         monday: scheduleModel,
@@ -143,26 +145,28 @@ class BloodSugarTemplateResponseData {
     final BloodSugarTemplateResponseDataSchedules? data =
         this.schedules?.firstWhere((schedule) => dayIndex == schedule?.day);
     return data?.scheduleModel;
-  } 
+  }
 
   BloodSugarTemplateResponseData.fromJson(Map<String, dynamic> json) {
+    id = json["id"]?.toString();
     code = json["code"]?.toString();
     name = json["name"]?.toString();
     isWeekTemplate = json["isWeekTemplate"];
     timePerDay = json["timePerDay"]?.toInt();
     description = json["description"]?.toString();
     note = json["note"]?.toString();
-  if (json["schedules"] != null) {
-  final v = json["schedules"];
-  final arr0 = <BloodSugarTemplateResponseDataSchedules>[];
-  v.forEach((v) {
-  arr0.add(BloodSugarTemplateResponseDataSchedules.fromJson(v));
-  });
-    schedules = arr0;
+    if (json["schedules"] != null) {
+      final v = json["schedules"];
+      final arr0 = <BloodSugarTemplateResponseDataSchedules>[];
+      v.forEach((v) {
+        arr0.add(BloodSugarTemplateResponseDataSchedules.fromJson(v));
+      });
+      schedules = arr0;
     }
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
+    data["id"] = id;
     data["code"] = code;
     data["name"] = name;
     data["isWeekTemplate"] = isWeekTemplate;
@@ -172,9 +176,9 @@ class BloodSugarTemplateResponseData {
     if (schedules != null) {
       final v = schedules;
       final arr0 = [];
-  v!.forEach((v) {
-  arr0.add(v!.toJson());
-  });
+      v!.forEach((v) {
+        arr0.add(v!.toJson());
+      });
       data["schedules"] = arr0;
     }
     return data;
@@ -188,15 +192,16 @@ class BloodSugarTemplateResponse {
   "statusCode": 200,
   "message": "Success",
   "data": {
-    "code": "OP",
-    "name": "Mẫu OP",
+    "id": "e89a508e-1c6b-48ca-99c0-2e9b22af5014",
+    "code": "K",
+    "name": "Mẫu K",
     "isWeekTemplate": true,
-    "timePerDay": 5,
+    "timePerDay": 6,
     "description": "Chúng tôi khuyến nghị bạn đo đường huyết 4 lần/ngày ",
     "note": "",
     "schedules": [
       {
-        "day": 0,
+        "day": 6,
         "isBeforeBreakfast": true,
         "isAfterBreakfast": false,
         "isBeforeLunch": true,
@@ -225,7 +230,9 @@ class BloodSugarTemplateResponse {
     id = json["id"]?.toString();
     statusCode = json["statusCode"]?.toInt();
     message = json["message"]?.toString();
-    data = (json["data"] != null) ? BloodSugarTemplateResponseData.fromJson(json["data"]) : null;
+    data = (json["data"] != null)
+        ? BloodSugarTemplateResponseData.fromJson(json["data"])
+        : null;
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
@@ -238,4 +245,3 @@ class BloodSugarTemplateResponse {
     return data;
   }
 }
-

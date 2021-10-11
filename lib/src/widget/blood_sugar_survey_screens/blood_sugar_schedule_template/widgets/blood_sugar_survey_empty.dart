@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/expandable_rich_text.dart';
@@ -62,7 +63,7 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8)),
               child: ExpandableRichText(
                 //TODO: Tuyen add long text into this
-                'Long text',
+                'Description text',
                 maxLines: 3,
                 trimExpandedText: R.string.show_less.tr(),
                 trimCollapsedText: R.string.show_more.tr(),
@@ -89,9 +90,10 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
               child: Container(
                 width: 208.w,
                 child: ButtonWidget(
-                    title: 'Trở về lịch của tôi',
+                    title: R.string.back_to_schedule.tr(),
                     onPressed: () {
-                      //TODO: Tuyen navigate to Blood sugar schedule
+                      Navigator.popUntil(
+                context, ModalRoute.withName(NavigatorName.schedule_glucose));
                     }),
               ),
             ),

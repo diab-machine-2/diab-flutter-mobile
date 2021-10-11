@@ -5,6 +5,7 @@ import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/detail_package_data.dart';
 import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
+import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/logger.dart';
@@ -27,9 +28,9 @@ class UpgradeAccountCubit extends Cubit<UpgradeAccountState> {
   UpgradeAccountCubit(this.appRepository) : super(UpgradeAccountInitial());
 
   void getOwnPackageCode() async {
-    ApiResult<String> apiResult = await appRepository.getOwnPackageCode();
-    apiResult.when(success: (String response) {
-      ownCode = response;
+    ApiResult<UserInfoResponse> apiResult = await appRepository.getCurrentUserInfo();
+    apiResult.when(success: (UserInfoResponse response) {
+      ownCode = response.data?.packageCode;
     }, failure: (NetworkExceptions error) {
       logger.e(NetworkExceptions.getErrorMessage(error));
     });

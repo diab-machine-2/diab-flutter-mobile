@@ -6,8 +6,13 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/modal/user/secure.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/user_info_response.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -25,8 +30,9 @@ class ProfileController extends StatefulWidget {
 }
 
 class _ProfileControllerState extends State<ProfileController> with Observer {
-  bool isPro = true;
+  bool isPro = false;
   SecureModel? secureModel;
+  final AppRepository _appRepository = AppRepository();
 
   void initState() {
     super.initState();
@@ -51,14 +57,27 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   }
 
   loadData() async {
+    await checkPackage();
     try {
       BotToast.showLoading();
       secureModel = await UserClient().fetchInfoSecure();
+      await checkPackage();
       BotToast.closeAllLoading();
       setState(() {});
     } catch (_) {
       BotToast.closeAllLoading();
     }
+  }
+
+  Future<void> checkPackage() async {
+    final ApiResult<UserInfoResponse> apiResult =
+        await _appRepository.getCurrentUserInfo();
+    apiResult.when(success: (UserInfoResponse response) {
+      final String packageCode = response.data?.packageCode ?? '';
+      isPro = packageCode.isNotEmpty && packageCode != Const.BASIC;
+    }, failure: (NetworkExceptions error) {
+      isPro = false;
+    });
   }
 
   @override
@@ -237,7 +256,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                       }),
                   const SizedBox(height: 16),
                   buildAction(
-                      R.string.personal_info.tr(), R.drawable.ic_user, 0),
+                      R.string.profile_information.tr(), R.drawable.ic_user, 0),
                   buildAction(
                       R.string.user_manual.tr(), R.drawable.ic_question, 1),
                   buildAction(R.string.information_security.tr(),
@@ -303,8 +322,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
     return GestureDetector(
       onTap: () {
         if (index == 0) {
-          if (AppSettings.userInfo!.phoneNumber!.contains('User') ||
-              AppSettings.userInfo!.phoneNumber!.isEmpty) {
+          String phoneNumber = AppSettings.userInfo?.phoneNumber ?? '';
+          if (phoneNumber.isEmpty || phoneNumber.contains('User')) {
             showPopupUpdatePhone();
           } else {
             Navigator.pushNamed(context, NavigatorName.profile_info);
@@ -350,7 +369,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
     FocusScope.of(context).unfocus();
     final width = MediaQuery.of(context).size.width;
     TextEditingController textEditingController = TextEditingController();
-    textEditingController.text = AppSettings.userInfo!.secondPhoneNumber!;
+    textEditingController.text = AppSettings.userInfo?.secondPhoneNumber ?? '';
     showDialog(
         context: context,
         builder: (context) => Container(

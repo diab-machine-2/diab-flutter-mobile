@@ -188,6 +188,7 @@ set_as_my_schedule,Đặt làm lịch của tôi,
 reset_schedule,Đặt lại lịch gợi ý,
 before_go_to_sleep,Trước khi đi ngủ,
 latest_hba1c_is,diaB ghi nhận chỉ số HbA1C của bạn lần gần nhất là
+back_to_schedule,Trở về lịch của tôi,
 blood_sugar_survey_description,Khuyến nghị lịch đo đường huyết được khảo sát theo tiêu chuẩn quốc tế và nhiều chuyên gia khuyên dùng.,
 blood_sugar_survey_done_description,Khuyến nghị lịch đo đường huyết được khảo sát theo tiêu chuẩn quốc tế và nhiều chuyên gia khuyên dùng.,
 blood_sugar_survey_update_require,Chức năng dành riêng cho gói Đồng hành. Vui lòng nâng cấp tài khoản để sử dụng tính năng này!,
