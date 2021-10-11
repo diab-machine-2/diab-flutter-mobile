@@ -434,7 +434,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: CachedNetworkImage(
-                    imageUrl: foodDetail?.foodImgUrl ?? '',
+                    imageUrl: foodDetail?.image?.url ?? '',
                     width: 50,
                     height: 50,
                     placeholder: (_, __) {

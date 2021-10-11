@@ -8,6 +8,7 @@ class ImagesModel {
     required this.id,
     required this.url,
   });
+  
   @override
   factory ImagesModel.fromJson(Map<String, dynamic> json) {
     return ImagesModel(
@@ -15,6 +16,14 @@ class ImagesModel {
       url: json['url'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data["id"] = id;
+    data["url"] = url;
+    return data;
+  }
+
   static List<ImagesModel> toList(List<dynamic> items) {
     return items.map((item) => ImagesModel.fromJson(item)).toList();
   }
