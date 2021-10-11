@@ -257,10 +257,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
                                   if (event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
-                                    final value = lineTouch!.lineBarSpots![0].x;
-                                    setState(() {
-                                      touchIndex = value.toInt();
-                                    });
+                                    final value = lineTouch?.lineBarSpots?[0].x;
+                                    if (value != null) {
+                                      setState(() {
+                                        touchIndex = value.toInt();
+                                      });
+                                    }
                                   } else {
                                     touchIndex = -1;
                                   }

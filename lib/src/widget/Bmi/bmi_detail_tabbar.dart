@@ -60,8 +60,8 @@ class _BmiDetailTabbarControllerState extends State<BmiDetailTabbarController>
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     // TODO: implement update
     if (notifyName == 'Weight_change_data') {
-      overViewKey.currentState!.reloadData(periodFilterType);
-      detailKey.currentState!.reloadData(periodFilterType);
+      overViewKey.currentState?.reloadData(periodFilterType);
+      detailKey.currentState?.reloadData(periodFilterType);
     }
   }
 

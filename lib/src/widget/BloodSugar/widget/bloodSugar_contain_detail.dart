@@ -349,47 +349,33 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                           sectionsSpace: 0,
                           centerSpaceRadius: (width / 4) / 2,
                           sections: List.generate(5, (i) {
-                            final double radius = 28;
-                            switch (i) {
-                              case 0:
-                                return PieChartSectionData(
-                                  color: toColor(model.veryHighColor),
-                                  value: model.veryHighCount! / total * 100,
-                                  showTitle: false,
-                                  radius: radius,
-                                );
-                              case 1:
-                                return PieChartSectionData(
-                                  color: toColor(model.highColor),
-                                  value: model.highCount! / total * 100,
-                                  showTitle: false,
-                                  radius: radius,
-                                );
-                              case 2:
-                                return PieChartSectionData(
-                                  color: toColor(model.goodColor),
-                                  value: model.goodCount! / total * 100,
-                                  showTitle: false,
-                                  radius: radius,
-                                );
-                              case 3:
-                                return PieChartSectionData(
-                                  color: toColor(model.lowColor),
-                                  value: model.lowCount! / total * 100,
-                                  showTitle: false,
-                                  radius: radius,
-                                );
-                              case 4:
-                                return PieChartSectionData(
-                                  color: toColor(model.veryLowColor),
-                                  value: model.veryLowCount! / total * 100,
-                                  showTitle: false,
-                                  radius: radius,
-                                );
-                              default:
-                                return null;
+                            const double radius = 28;
+                            const bool showTitle = false;
+                            late final double value;
+                            late final Color color;
+                            if (i == 0) {
+                              color = toColor(model.veryHighColor);
+                              value = model.veryHighCount! / total * 100;
+                            } else if (i == 1) {
+                              color = toColor(model.highColor);
+                              value = model.highCount! / total * 100;
+                            } else if (i == 2) {
+                              color = toColor(model.goodColor);
+                              value = model.goodCount! / total * 100;
+                            } else if (i == 3) {
+                              color = toColor(model.lowColor);
+                              value = model.lowCount! / total * 100;
+                            } else {
+                              color = toColor(model.lowColor);
+                              value = model.veryLowCount! / total * 100;
                             }
-                          } as PieChartSectionData Function(int))),
+                            return PieChartSectionData(
+                              color: color,
+                              value: value,
+                              showTitle: showTitle,
+                              radius: radius,
+                            );
+                          })),
                     ))),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

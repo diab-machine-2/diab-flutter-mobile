@@ -14,11 +14,11 @@ class WeightClient extends FetchClient {
   Future<bool> postWeightInput(int date, List<String> files, String weight,
       String? waist, String height, String note, String? timeFrameId) async {
     try {
-      Map<String, String?> params = {
+      Map<String, String> params = {
         'date': date.toString(),
         'weight': weight,
         'height': height,
-        'timeFrameId': timeFrameId,
+        'timeFrameId': timeFrameId ?? '',
         'note': note,
       };
       if (waist != null) {
@@ -118,17 +118,17 @@ class WeightClient extends FetchClient {
       List<String?> removalImageIds,
       List<String> files) async {
     try {
-      Map<String, String?> params = {
-        'id': id,
+      final Map<String, String> params = {
+        'id': id ?? '',
         'date': date.toString(),
         'weight': weight,
         'waist': waist,
         'height': height,
-        'timeFrameId': timeFrameId,
+        'timeFrameId': timeFrameId ?? '',
         'note': note,
       };
       for (int i = 0; i < removalImageIds.length; i++) {
-        params['removalImageIds[$i]'] = removalImageIds[i];
+        params['removalImageIds[$i]'] = removalImageIds[i] ?? '';
       }
       final response = await super
           .putHttp(path: '/App/Weight/Input', params: params, files: files);

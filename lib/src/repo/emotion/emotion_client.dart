@@ -132,17 +132,17 @@ class EmotionClient extends FetchClient {
       String note,
       List<String> files) async {
     try {
-      Map<String, String?> params = {
-        'emotionId': emotionId,
+      Map<String, String> params = {
+        'emotionId': emotionId ?? '',
         'date': date.toString(),
-        'timeFrameId': timeFrameId,
+        'timeFrameId': timeFrameId ?? '',
         'note': note,
       };
       for (int i = 0; i < symptomIds.length; i++) {
-        params['symptomIds[$i]'] = symptomIds[i];
+        params['symptomIds[$i]'] = symptomIds[i] ?? '';
       }
       for (int i = 0; i < activityIds.length; i++) {
-        params['activityIds[$i]'] = activityIds[i];
+        params['activityIds[$i]'] = activityIds[i] ?? '';
       }
       if (otherSymptom != null) {
         params['otherSymptom'] = otherSymptom;
@@ -178,25 +178,25 @@ class EmotionClient extends FetchClient {
       List<String?> removalImageIds,
       List<String> files) async {
     try {
-      Map<String, String?> params = {
-        'id': id,
-        'emotionId': emotionId,
+      Map<String, String> params = {
+        'id': id ?? '',
+        'emotionId': emotionId ?? '',
         'date': date.toString(),
-        'timeFrameId': timeFrameId,
+        'timeFrameId': timeFrameId ?? '',
         'note': note,
         'removalImageIdsStr': removalImageIds.join(';')
       };
       for (int i = 0; i < symptomIds.length; i++) {
-        params['symptomIds[$i]'] = symptomIds[i];
+        params['symptomIds[$i]'] = symptomIds[i] ?? '';
       }
       for (int i = 0; i < activityIds.length; i++) {
-        params['activityIds[$i]'] = activityIds[i];
+        params['activityIds[$i]'] = activityIds[i] ?? '';
       }
       if (otherSymptom != null) {
         params['otherSymptom'] = otherSymptom;
       }
       if (otherSymptom != null) {
-        params['otherActivity'] = otherActivity;
+        params['otherActivity'] = otherActivity ?? '';
       }
       final response = await super
           .putHttp(path: '/App/Emotion/Input', params: params, files: files);

@@ -103,7 +103,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   BloodPressureDetailTabbarController.of(
                                           context)!
                                       .loadInputWithId(
-                                          1, model!.diastolicLowestId);
+                                          1, model?.diastolicLowestId);
                                 },
                                 child: Container(
                                   padding: EdgeInsets.only(
@@ -219,7 +219,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   BloodPressureDetailTabbarController.of(
                                           context)!
                                       .loadInputWithId(
-                                          1, model!.diastolicHighestId);
+                                          1, model?.diastolicHighestId);
                                 },
                                 child: Container(
                                   padding: EdgeInsets.only(
@@ -297,7 +297,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   BloodPressureDetailTabbarController.of(
                                           context)!
                                       .loadInputWithId(
-                                          1, model!.pulseRateLowestId);
+                                          1, model?.pulseRateLowestId);
                                 },
                                 child: Container(
                                     padding: EdgeInsets.only(
@@ -409,7 +409,7 @@ class BloodPressureDetailState extends State<BloodPressureDetail>
                                   BloodPressureDetailTabbarController.of(
                                           context)!
                                       .loadInputWithId(
-                                          1, model!.pulseRateHighestId);
+                                          1, model?.pulseRateHighestId);
                                 },
                                 child: Container(
                                   padding: EdgeInsets.only(

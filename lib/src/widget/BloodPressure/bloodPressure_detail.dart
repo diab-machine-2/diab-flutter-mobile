@@ -83,6 +83,7 @@ class BloodPressureDetailControllerState
     Observable.instance.removeObserver(this);
     // DartNotificationCenter.unsubscribe(
     //     channel: 'BloodPressure_change_data', observer: this);
+    BloodPressureDetailTabbarController.of(context)?.dispose();
     super.dispose();
   }
 

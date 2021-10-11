@@ -880,8 +880,6 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         Observable.instance.notifyObservers([], notifyName : "Weight_change_data");
-        // DartNotificationCenter.post(channel: 'Weight_change_data');
-        Navigator.pop(context);
       }
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -940,15 +938,13 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           selectedHip.toString(),
           selectedHeight.toString(),
           note,
-          selectedTimeFrame!.id,
+          selectedTimeFrame?.id,
           removeIDs,
           paths);
       if (result == true) {
         updateHeightProfile();
         Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
         Observable.instance.notifyObservers([], notifyName : "Weight_change_data");
-        // DartNotificationCenter.post(channel: 'Weight_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -1008,8 +1004,6 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       if (result == true) {
         updateHeightProfile();
         Observable.instance.notifyObservers([], notifyName : "Weight_change_data");
-        // DartNotificationCenter.post(channel: 'Weight_change_data');
-        Navigator.pop(context);
       }
     } catch (e, _) {
       BotToast.closeAllLoading();

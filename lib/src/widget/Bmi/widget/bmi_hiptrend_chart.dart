@@ -497,13 +497,15 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                   },
                                 ),
                                 touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
-                                  if (lineTouch!.lineBarSpots!.length == 1 &&
+                                  if (lineTouch?.lineBarSpots?.length == 1 &&
                                       event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
-                                    final value = lineTouch.lineBarSpots![0].x;
+                                    final value = lineTouch?.lineBarSpots?[0].x;
+                                    if (value != null) {
                                     setState(() {
                                       touchIndex = value.toInt();
                                     });
+                                    }
                                   } else {
                                     touchIndex = -1;
                                   }

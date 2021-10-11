@@ -677,8 +677,6 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
-        // DartNotificationCenter.post(channel: 'glucose_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -739,8 +737,6 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           paths);
       if (result == true) {
         Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
-        // DartNotificationCenter.post(channel: 'glucose_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -791,8 +787,6 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           paths);
       if (result == true) {
         Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
-        // DartNotificationCenter.post(channel: 'glucose_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
