@@ -620,9 +620,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       String image, String title, String subTitle, Widget? subIcon, int index,
       {VoidCallback? callback}) {
     return GestureDetector(
-      onTap: () {
-        callback!();
-      },
+      onTap: callback,
       child: Container(
         color: R.color.transparent,
         padding: EdgeInsets.only(top: 8, bottom: 8),
@@ -1877,8 +1875,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   _showDialogUpdatePhone2() {
     final width = MediaQuery.of(context).size.width;
-    TextEditingController textEditingController = TextEditingController();
-    textEditingController.text = AppSettings.userInfo!.secondPhoneNumber!;
+    final TextEditingController textEditingController = TextEditingController();
+    textEditingController.text = AppSettings.userInfo?.secondPhoneNumber ?? '';
     showDialog(
         context: context,
         builder: (context) => Container(

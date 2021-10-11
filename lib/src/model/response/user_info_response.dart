@@ -6,29 +6,34 @@ class UserInfoResponseData {
 {
   "packageCode": "basic",
   "packageTimeExpired": "",
-  "bloodSugarTemplates": ""
+  "bloodSugarTemplates": "NONE",
+  "hasFoodMenu": false
 } 
 */
 
   String? packageCode;
   String? packageTimeExpired;
   String? bloodSugarTemplates;
+  bool? hasFoodMenu;
 
   UserInfoResponseData({
     this.packageCode,
     this.packageTimeExpired,
     this.bloodSugarTemplates,
+    this.hasFoodMenu,
   });
   UserInfoResponseData.fromJson(Map<String, dynamic> json) {
     packageCode = json["packageCode"]?.toString();
     packageTimeExpired = json["packageTimeExpired"]?.toString();
     bloodSugarTemplates = json["bloodSugarTemplates"]?.toString();
+    hasFoodMenu = json["hasFoodMenu"];
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data["packageCode"] = packageCode;
     data["packageTimeExpired"] = packageTimeExpired;
     data["bloodSugarTemplates"] = bloodSugarTemplates;
+    data["hasFoodMenu"] = hasFoodMenu;
     return data;
   }
 }
@@ -42,7 +47,8 @@ class UserInfoResponse {
   "data": {
     "packageCode": "basic",
     "packageTimeExpired": "",
-    "bloodSugarTemplates": ""
+    "bloodSugarTemplates": "NONE",
+    "hasFoodMenu": false
   }
 } 
 */

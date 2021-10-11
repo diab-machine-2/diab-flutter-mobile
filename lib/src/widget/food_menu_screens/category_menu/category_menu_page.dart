@@ -14,13 +14,13 @@ import 'category_menu.dart';
 
 class CategoryMenuPage extends StatefulWidget {
   const CategoryMenuPage({
-    required this.selectedFood,
+    required this.preFoodModel,
     required this.category,
     required this.onTapYes,
     required this.hasSelectQuantity,
   });
 
-  final FoodModel? selectedFood;
+  final FoodModel? preFoodModel;
   final FoodSubCategoryModel category;
   final Function(FoodModel foodModel) onTapYes;
   final bool hasSelectQuantity;
@@ -105,9 +105,10 @@ class _CategoryMenuPageState extends State<CategoryMenuPage> {
                           },
                           itemBuilder: (BuildContext context, int index) {
                             return FoodItemWidget(
-                              foodModel: _cubit.foods[index],
+                              preFoodModel: widget.preFoodModel,
+                              newFoodModel: _cubit.foods[index],
                               isSelected: _cubit.foods[index] ==
-                                  widget.selectedFood?.id,
+                                  widget.preFoodModel?.id,
                               onFavorite: () {
                                 _cubit.toogleFavorite(
                                   index,

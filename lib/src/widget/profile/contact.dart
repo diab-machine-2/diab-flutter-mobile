@@ -59,9 +59,10 @@ class _ContactControllerState extends State<ContactController> {
                   GestureDetector(
                       onTap: () async {
                         BotToast.showLoading();
-                        final deviceInfor = await (NotificationManager.instance
-                            .getDeviceInformation() as FutureOr<Map<String, dynamic>>);
-                        PackageInfo packageInfo =
+                        final deviceInfor = await NotificationManager.instance
+                            .getDeviceInformation();
+                        if (deviceInfor == null) return;
+                        final PackageInfo packageInfo =
                             await PackageInfo.fromPlatform();
                         BotToast.closeAllLoading();
 
@@ -76,15 +77,12 @@ class _ContactControllerState extends State<ContactController> {
                           scheme: 'mailto',
                           path: widget.model!.email,
                           query:
-                              'subject=Hỗ trợ diaB&body=Version app: $appVersion\nModel: $model\nVersion OS: ${systemVersion}\n',
-                          // queryParameters: {
-                          //   'subject': 'Hỗ trợ diaB',
-                          //   'body':
-                          //       'app version: $appVersion; model máy: $model; OS version: $systemVersion'
-                          // }
+                              'subject=Hỗ trợ diaB&body=Version app: $appVersion\nModel: $model\nVersion OS: $systemVersion\n',
                         );
-
-                        launch(_emailLaunchUri.toString());
+                        final String _url = _emailLaunchUri.toString();
+                        await canLaunch(_url)
+                            ? await launch(_url)
+                            : throw 'Could not launch $_url';
                       },
                       child: Image.asset(R.drawable.img_email_support))
                 ]),
@@ -118,8 +116,7 @@ class _ContactControllerState extends State<ContactController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.mes_call_diab.tr(),
+                        child: Text(R.string.mes_call_diab.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,

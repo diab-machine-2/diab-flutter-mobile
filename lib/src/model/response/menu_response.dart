@@ -196,7 +196,7 @@ class MenuResponseListdayfoodTimeGroups {
   int? timeCode;
   String? timeName;
   double? totalKcal;
-  int? totalGlucose;
+  double? totalGlucose;
   List<MenuResponseListdayfoodTimeGroupsDefaultFood?>? defaultFood;
 
   MenuResponseListdayfoodTimeGroups({
@@ -218,7 +218,7 @@ class MenuResponseListdayfoodTimeGroups {
     timeCode = json["timeCode"]?.toInt();
     timeName = json["timeName"]?.toString();
     totalKcal = json["totalKcal"]?.toDouble();
-    totalGlucose = json["totalGlucose"]?.toInt();
+    totalGlucose = json["totalGlucose"]?.toDouble();
     if (json["defaultFood"] != null) {
       final v = json["defaultFood"];
       final arr0 = <MenuResponseListdayfoodTimeGroupsDefaultFood>[];
