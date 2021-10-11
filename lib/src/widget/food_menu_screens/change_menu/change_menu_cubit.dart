@@ -66,8 +66,7 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
         await repository.getSuggestionFood(initFood?.id ?? '');
     apiResult.when(success: (response) {
       if (response.data != null) {
-        final List<FoodSuggestResponseData?>? data = response.data;
-        //TODO: Convert data to List<FoodModel> and save it into suggestFoods
+        suggestFoods = response.foodModelList;
         emit(const ChangeMenuSuccess());
       }
     }, failure: (NetworkExceptions error) {

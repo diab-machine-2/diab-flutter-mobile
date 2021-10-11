@@ -12,6 +12,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/blood_sugar_result_layout_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/expandable_rich_text.dart';
 
 import 'blood_sugar_schedule_template.dart';
 import 'widgets/blood_sugar_survey_empty.dart';
@@ -55,7 +56,8 @@ class _BloodSugarScheduleTemplatePageState
                 context, ModalRoute.withName(NavigatorName.schedule_glucose));
           }
           if (state is BloodSugarScheduleTemplateNone) {
-            NavigationUtil.replace(context, const BloodSugarSurveyEmpty());
+            NavigationUtil.replace(context,
+                BloodSugarSurveyEmpty(templateDetail: _cubit.templateDetail));
           }
         },
         builder: (context, state) {
@@ -75,9 +77,45 @@ class _BloodSugarScheduleTemplatePageState
                 top: false,
                 child: state is BloodSugarScheduleTemplateLoading
                     ? const SizedBox()
-                    : _cubit.isWeekTemplate
-                        ? _buildTemplateWeekSchedule()
-                        : _buildTemplateDaySchedule(),
+                    : SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              margin: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 0),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                  color: R.color.main_6,
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: ExpandableRichText(
+                                _cubit.templateDetail?.description ?? '',
+                                maxLines: 3,
+                                trimExpandedText: R.string.show_less.tr(),
+                                trimCollapsedText: R.string.show_more.tr(),
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: R.color.textDark,
+                                ),
+                                moreStyle: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: R.color.greenGradientBottom,
+                                ),
+                                lessStyle: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: R.color.greenGradientBottom,
+                                ),
+                              ),
+                            ),
+                            if (_cubit.isWeekTemplate)
+                              _buildTemplateWeekSchedule()
+                            else
+                              _buildTemplateDaySchedule(),
+                          ],
+                        ),
+                      ),
               ),
             ),
           );
@@ -87,83 +125,81 @@ class _BloodSugarScheduleTemplatePageState
   }
 
   Widget _buildTemplateWeekSchedule() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.only(right: 16.w),
-        child: Column(
-          children: [
-            //Part of the day
-            Padding(
-              padding: EdgeInsets.only(top: 19.h, bottom: 7.h),
-              child: Row(
-                children: [
-                  SizedBox(width: 68.w),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        R.string.morning_first_upper_case.tr(),
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                          color: R.color.textDark,
-                        ),
+    return Padding(
+      padding: EdgeInsets.only(right: 16.w),
+      child: Column(
+        children: [
+          //Part of the day
+          Padding(
+            padding: EdgeInsets.only(top: 19.h, bottom: 7.h),
+            child: Row(
+              children: [
+                SizedBox(width: 68.w),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      R.string.morning_first_upper_case.tr(),
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.textDark,
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        R.string.noon_first_upper_case.tr(),
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                          color: R.color.textDark,
-                        ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      R.string.noon_first_upper_case.tr(),
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.textDark,
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        R.string.evening_first_upper_case.tr(),
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                          color: R.color.textDark,
-                        ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      R.string.evening_first_upper_case.tr(),
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.textDark,
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        R.string.sleep_time.tr(),
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                          color: R.color.textDark,
-                        ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      R.string.sleep_time.tr(),
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.textDark,
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            //Schedule
-            Column(
-              children: List.generate(
-                7,
-                (index) {
-                  return _buildDayInWeekSchedule(
-                    index: index,
-                    templateDetail: _cubit.getDayInWeek(index),
-                  );
-                },
-              ),
+          ),
+          //Schedule
+          Column(
+            children: List.generate(
+              7,
+              (index) {
+                return _buildDayInWeekSchedule(
+                  index: index,
+                  templateDetail: _cubit.getDayInWeek(index),
+                );
+              },
             ),
-            _buildButtons(),
-          ],
-        ),
+          ),
+          _buildButtons(),
+        ],
       ),
     );
   }

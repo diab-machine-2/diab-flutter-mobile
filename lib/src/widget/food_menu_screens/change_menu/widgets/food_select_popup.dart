@@ -7,11 +7,13 @@ import 'package:medical/src/utils/navigation_util.dart';
 
 class FoodSelectPopup extends StatefulWidget {
   const FoodSelectPopup({
-    this.model,
+    required this.preFoodModel,
+    required this.newFoodModel,
     required this.hasSelectQuantity,
   });
 
-  final FoodModel? model;
+  final FoodModel? preFoodModel;
+  final FoodModel? newFoodModel;
   final bool hasSelectQuantity;
 
   @override
@@ -29,12 +31,12 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
   @override
   void initState() {
     super.initState();
-    foodModel = widget.model;
-    isFavorite = widget.model?.liked ?? false;
-    if (widget.model != null) {
-      selectedQuantity = widget.model!.quantity.floor();
+    foodModel = widget.newFoodModel;
+    isFavorite = widget.newFoodModel?.liked ?? false;
+    if (widget.newFoodModel != null) {
+      selectedQuantity = widget.newFoodModel!.quantity.floor();
       selectedPercent =
-          ((widget.model!.quantity - selectedQuantity) * 10).round();
+          ((widget.newFoodModel!.quantity - selectedQuantity) * 10).round();
     }
     hourController = FixedExtentScrollController(
       initialItem: selectedQuantity,
@@ -87,7 +89,7 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
                                 child: const Icon(Icons.arrow_back)),
                             const SizedBox(width: 12),
                             Text(
-                              widget.model?.name ?? '',
+                              widget.newFoodModel?.name ?? '',
                               style: TextStyle(
                                   color: R.color.black,
                                   fontSize: 16,
@@ -114,7 +116,7 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       child: Text(
-                        widget.model?.description ?? '',
+                        widget.newFoodModel?.description ?? '',
                         style: TextStyle(
                             color: R.color.black,
                             fontSize: 14,
@@ -122,7 +124,7 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
                       ),
                     ),
                     Text(
-                        '${R.string.khau_phan.tr()} ${widget.model!.portion.round()} ${widget.model!.unit} ${R.string.bao_gom.tr()}:',
+                        '${R.string.khau_phan.tr()} ${widget.newFoodModel!.portion.round()} ${widget.newFoodModel!.unit} ${R.string.bao_gom.tr()}:',
                         style: TextStyle(
                             color: R.color.black,
                             fontSize: 14,
@@ -131,34 +133,34 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        if (widget.model?.calorie != null)
+                        if (widget.newFoodModel?.calorie != null)
                           _buildItem(
                             title: R.string.calo.tr(),
-                            number: widget.model?.calorie,
+                            number: widget.newFoodModel?.calorie,
                             unit: R.string.kcal.tr(),
                           ),
-                        if (widget.model?.lipid != null)
+                        if (widget.newFoodModel?.lipid != null)
                           _buildItem(
                             title: R.string.beo.tr(),
-                            number: widget.model?.lipid,
+                            number: widget.newFoodModel?.lipid,
                             unit: R.string.gram.tr(),
                           ),
-                        if (widget.model?.glucose != null)
+                        if (widget.newFoodModel?.glucose != null)
                           _buildItem(
                             title: R.string.duong.tr(),
-                            number: widget.model?.glucose,
+                            number: widget.newFoodModel?.glucose,
                             unit: R.string.gram.tr(),
                           ),
-                        if (widget.model?.protein != null)
+                        if (widget.newFoodModel?.protein != null)
                           _buildItem(
                             title: R.string.dam.tr(),
-                            number: widget.model?.protein,
+                            number: widget.newFoodModel?.protein,
                             unit: R.string.gram.tr(),
                           ),
-                        if (widget.model?.fibre != null)
+                        if (widget.newFoodModel?.fibre != null)
                           _buildItem(
                             title: R.string.xo.tr(),
-                            number: widget.model?.fibre,
+                            number: widget.newFoodModel?.fibre,
                             unit: R.string.gram.tr(),
                           ),
                       ],
@@ -179,7 +181,7 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
                     children: [
                       TextSpan(
                         text:
-                            ' ${widget.model?.quantity.round()} ${widget.model?.unit} ',
+                            ' $recommendedQuantity ${widget.newFoodModel?.unit} ',
                         style: TextStyle(
                             color: R.color.black,
                             fontSize: 16,
@@ -351,8 +353,15 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
   void onPop(BuildContext context, {required bool agree}) {
     foodModel = foodModel?.copyWith(
       liked: isFavorite,
-      quantity: selectedQuantity + (selectedPercent / 10),
+      quantity: widget.hasSelectQuantity
+          ? selectedQuantity + (selectedPercent / 10)
+          : recommendedQuantity.toDouble(),
     );
     NavigationUtil.pop(context, result: [agree, foodModel]);
   }
+
+  int get recommendedQuantity =>
+      ((widget.preFoodModel?.calorie ?? 0) *
+          (widget.preFoodModel?.portion ?? 0.0)) ~/
+      (widget.newFoodModel?.calorie ?? 1);
 }

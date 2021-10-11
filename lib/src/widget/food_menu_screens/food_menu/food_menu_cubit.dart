@@ -21,7 +21,12 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
   MenuResponseFood? menuResponseFood;
   List<MenuResponseListdayfood?> listDayFood = [];
   int currentDayInWeek = 0;
-  bool isBasicUser = true;
+  UserInfoResponseData? userInfo;
+
+  bool get isBasicUser {
+    final String packageCode = userInfo?.packageCode ?? '';
+    return packageCode.isEmpty || packageCode == Const.BASIC;
+  }
 
   MenuResponseListdayfood? get currentDayData {
     if (currentDayInWeek < 0 || currentDayInWeek >= listDayFood.length)
@@ -52,7 +57,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
       });
       emit(const FoodMenuInitial());
     }
-    getOwnPackageCode();
+    getCurrentUserInfo();
     getTemplateDetail();
   }
 
@@ -62,6 +67,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
         await repository.getUserFoodMenu();
     apiResult.when(success: (MenuResponse response) {
       if (response.listdayfood == null || response.food == null) {
+        listDayFood = [];
         emit(const FoodMenuEmpty());
       } else {
         response.sortListDayFood();
@@ -81,7 +87,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     final FoodChangeRequest request = FoodChangeRequest(
       id: foodId,
       foodId: newFoodModel.id,
-      portion: newFoodModel.portion.toInt(),
+      portion: newFoodModel.quantity.toInt(),
     );
     final ApiResult<CommonResponse> apiResult =
         await repository.changeFood(request);
@@ -94,12 +100,12 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     emit(const FoodMenuInitial());
   }
 
-  Future<void> getOwnPackageCode() async {
+  Future<void> getCurrentUserInfo() async {
     emit(const FoodMenuLoading());
-    final ApiResult<UserInfoResponse> apiResult = await repository.getCurrentUserInfo();
+    final ApiResult<UserInfoResponse> apiResult =
+        await repository.getCurrentUserInfo();
     apiResult.when(success: (UserInfoResponse response) {
-      final String packageCode = response.data?.packageCode ?? '';
-      isBasicUser = packageCode.isEmpty || packageCode == Const.BASIC;
+      userInfo = response.data;
       emit(const FoodMenuSuccess());
     }, failure: (NetworkExceptions error) {
       emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));

@@ -129,8 +129,8 @@ class GlucoseClient extends FetchClient {
       String note,
       List<String> files) async {
     try {
-      Map<String, String?> params = {
-        'timeFrameId': timeFrameId,
+      Map<String, String> params = {
+        'timeFrameId': timeFrameId ?? '',
         'createDate': date.toString(),
         'unitType': AppSettings.userInfo!.glucoseUnit.toString(),
         'glucoseInput': glucoseInput,
@@ -248,9 +248,9 @@ class GlucoseClient extends FetchClient {
       List<String?> removalImageIds,
       List<String> files) async {
     try {
-      Map<String, String?> params = {
-        'id': id,
-        'timeFrameId': timeFrameId,
+      Map<String, String> params = {
+        'id': id ?? '',
+        'timeFrameId': timeFrameId ?? '',
         'createDate': date.toString(),
         'glucoseInput': glucoseInput,
         'unitType': AppSettings.userInfo!.glucoseUnit.toString(),

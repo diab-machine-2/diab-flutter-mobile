@@ -350,14 +350,17 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 }).toList();
                               },
                             ),
-                            touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
-                              if (lineTouch!.lineBarSpots!.length == 1 &&
+                            touchCallback: (FlTouchEvent event,
+                                LineTouchResponse? lineTouch) {
+                              if (lineTouch?.lineBarSpots?.length == 1 &&
                                   event is! FlLongPressEnd &&
                                   event is! FlPanEndEvent) {
-                                final value = lineTouch.lineBarSpots![0].x;
-                                setState(() {
-                                  touchIndex = value.toInt();
-                                });
+                                final value = lineTouch?.lineBarSpots?[0].x;
+                                if (value != null) {
+                                  setState(() {
+                                    touchIndex = value.toInt();
+                                  });
+                                }
                               } else {
                                 touchIndex = -1;
                               }

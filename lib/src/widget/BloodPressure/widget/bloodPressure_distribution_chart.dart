@@ -156,54 +156,36 @@ class BloodPressureDistributionChartState
                     sectionsSpace: 0,
                     centerSpaceRadius: (width / 4) / 2 - 5,
                     sections: List.generate(6, (i) {
-                      final double radius = 20;
-                      switch (i) {
-                        case 0:
-                          return PieChartSectionData(
-                            color: toColor(model.increaseLevelThreeColor),
-                            value: model.increaseLevelThree! / total * 100,
-                            showTitle: false,
-                            radius: radius,
-                          );
-                        case 1:
-                          return PieChartSectionData(
-                            color: toColor(model.increaseLevelTwoColor),
-                            value: model.increaseLevelTwo! / total * 100,
-                            showTitle: false,
-                            radius: radius,
-                          );
-                        case 2:
-                          return PieChartSectionData(
-                            color: toColor(model.increaseLevelOneColor),
-                            value: model.increaseLevelOne! / total * 100,
-                            showTitle: false,
-                            radius: radius,
-                          );
-                        case 3:
-                          return PieChartSectionData(
-                            color: toColor(model.preIncreaseColor),
-                            value: model.preIncrease! / total * 100,
-                            showTitle: false,
-                            radius: radius,
-                          );
-                        case 4:
-                          return PieChartSectionData(
-                            color: toColor(model.normalColor),
-                            value: model.normal! / total * 100,
-                            showTitle: false,
-                            radius: radius,
-                          );
-                        case 5:
-                          return PieChartSectionData(
-                            color: toColor(model.lowColor),
-                            value: model.low! / total * 100,
-                            showTitle: false,
-                            radius: radius,
-                          );
-                        default:
-                          return null;
+                      late final Color color;
+                      late final value;
+                      const bool showTitle = false;
+                      const double radius = 20;
+                      if (i == 0) {
+                        color = toColor(model.increaseLevelThreeColor);
+                        value = model.increaseLevelThree! / total * 100;
+                      } else if (i == 1) {
+                        color = toColor(model.increaseLevelTwoColor);
+                        value = model.increaseLevelTwo! / total * 100;
+                      } else if (i == 2) {
+                        color = toColor(model.increaseLevelOneColor);
+                        value = model.increaseLevelOne! / total * 100;
+                      } else if (i == 3) {
+                        color = toColor(model.preIncreaseColor);
+                        value = model.preIncrease! / total * 100;
+                      } else if (i == 4) {
+                        color = toColor(model.normalColor);
+                        value = model.normal! / total * 100;
+                      } else {
+                        color = toColor(model.lowColor);
+                        value = model.low! / total * 100;
                       }
-                    } as PieChartSectionData Function(int))),
+                      return PieChartSectionData(
+                        color: color,
+                        value: value,
+                        showTitle: false,
+                        radius: radius,
+                      );
+                    })),
               ),
             ),
           ),

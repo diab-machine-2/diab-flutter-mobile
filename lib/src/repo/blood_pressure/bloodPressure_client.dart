@@ -165,27 +165,24 @@ class BloodPressureClient extends FetchClient {
       String reason,
       List<String> files) async {
     try {
+      final Map<String, String> params = {
+        'systolic': systolic,
+        'diastolic': diastolic,
+        'pulseRate': pulseRate,
+        'date': date.toString(),
+        'timeFrameId': timeFrameId ?? '',
+        'reason': reason,
+        'note': note,
+      };
       final response = await super.postHttp(
-          path: '/App/BloodPressure/Input',
-          params: {
-            'systolic': systolic,
-            'diastolic': diastolic,
-            'pulseRate': pulseRate,
-            'date': date.toString(),
-            'timeFrameId': timeFrameId,
-            'reason': reason,
-            'note': note,
-          },
-          files: files);
+          path: '/App/BloodPressure/Input', params: params, files: files);
       if (response.statusCode == 200) {
         return true;
       } else {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -202,20 +199,19 @@ class BloodPressureClient extends FetchClient {
       List<String?> removalImageIds,
       List<String> files) async {
     try {
+      final Map<String, String> params = {
+        'id': id ?? '',
+        'systolic': systolic,
+        'diastolic': diastolic,
+        'pulseRate': pulseRate,
+        'date': date.toString(),
+        'timeFrameId': timeFrameId ?? '',
+        'note': note,
+        'reason': reason,
+        'removalImageIdsStr': removalImageIds.join(';')
+      };
       final response = await super.putHttp(
-          path: '/App/BloodPressure/Input',
-          params: {
-            'id': id,
-            'systolic': systolic,
-            'diastolic': diastolic,
-            'pulseRate': pulseRate,
-            'date': date.toString(),
-            'timeFrameId': timeFrameId,
-            'note': note,
-            'reason': reason,
-            'removalImageIdsStr': removalImageIds.join(';')
-          },
-          files: files);
+          path: '/App/BloodPressure/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
         print(await response.stream.bytesToString());

@@ -9,26 +9,30 @@ import 'package:medical/src/modal/food/food_model.dart';
 class MenuResponseListdayfoodTimeGroupsDefaultFood {
 /*
 {
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "foodMenuCode": "string",
-  "dateCode": "string",
+  "id": "16b1ea16-f607-4073-8b8c-08d98bb8e489",
+  "foodMenuCode": "TD26",
+  "dateCode": "T2",
   "timeCode": 1,
-  "foodId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "foodCategoryId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "foodUnitId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "foodUnitName": "string",
-  "foodName": "string",
-  "portion": 12.3,
-  "calorie": 13.2,
-  "glucose": 1.4,
-  "lipid": 3.6,
-  "protein": 2.5,
-  "fibre": 1.3,
-  "note": "string",
+  "foodId": "02821a58-50cb-4290-7797-08d945b50f3d",
+  "foodCategoryId": "8eff87be-cecd-43e2-300d-08d945b3544f",
+  "foodUnitId": "4fd993d2-ebf1-4b5b-ad89-5e0058ab5896",
+  "foodUnitName": "Phần",
+  "foodName": "Ức gà nướng ớt chuông",
+  "portion": 2,
+  "calorie": 150.9,
+  "glucose": 2.6,
+  "lipid": 4.6,
+  "protein": 23.2,
+  "fibre": 0.8,
+  "note": "Món chính b?a sáng",
   "foodType": 0,
-  "foodTemplateId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "accountId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "foodImgUrl": "string"
+  "foodTemplateId": "4ad4a446-edb6-467d-aba3-08d9818e3467",
+  "accountId": "5ccfcf0a-b0b6-4edc-b71f-affa666283ff",
+  "image": {
+    "id": "7acf6d9b-700a-4573-b5ce-08d945b50f35",
+    "url": "http://diab-api-dev.savvycom.vn/App/Image/7acf6d9b-700a-4573-b5ce-08d945b50f35?expires=1633923882&signature=74884512306e7ef8742fe307512d397889c6cd922b4b024fcd21dde854987f2c"
+  },
+  "liked": false
 } 
 */
 
@@ -41,7 +45,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
   String? foodUnitId;
   String? foodUnitName;
   String? foodName;
-  double? portion;
+  int? portion;
   double? calorie;
   double? glucose;
   double? lipid;
@@ -51,7 +55,8 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
   int? foodType;
   String? foodTemplateId;
   String? accountId;
-  String? foodImgUrl;
+  ImagesModel? image;
+  bool? liked;
 
   MenuResponseListdayfoodTimeGroupsDefaultFood({
     this.id,
@@ -73,7 +78,8 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
     this.foodType,
     this.foodTemplateId,
     this.accountId,
-    this.foodImgUrl,
+    this.image,
+    this.liked,
   });
 
   bool get isDessert => foodType != null && 4 <= foodType! && foodType! <= 6;
@@ -81,24 +87,22 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
   FoodModel get foodModel => FoodModel(
       id: this.id,
       name: this.foodName,
-      portion: this.portion ?? 0.0,
+      portion: this.portion?.toDouble() ?? 0.0,
       unit: this.foodUnitName,
       calorie: this.calorie,
       glucose: this.glucose,
       lipid: this.lipid,
       protein: this.protein,
       fibre: this.fibre,
-      image: ImagesModel(
-        id: '',
-        url: this.foodImgUrl,
-      ),
+      image: this.image,
       liked: false,
       text: null,
       description: null,
       foodCategoryId: this.foodCategoryId,
       quantity: 0.0);
 
-  MenuResponseListdayfoodTimeGroupsDefaultFood.fromJson(Map<String, dynamic> json) {
+  MenuResponseListdayfoodTimeGroupsDefaultFood.fromJson(
+      Map<String, dynamic> json) {
     id = json["id"]?.toString();
     foodMenuCode = json["foodMenuCode"]?.toString();
     dateCode = json["dateCode"]?.toString();
@@ -108,7 +112,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
     foodUnitId = json["foodUnitId"]?.toString();
     foodUnitName = json["foodUnitName"]?.toString();
     foodName = json["foodName"]?.toString();
-    portion = json["portion"]?.toDouble();
+    portion = json["portion"]?.toInt();
     calorie = json["calorie"]?.toDouble();
     glucose = json["glucose"]?.toDouble();
     lipid = json["lipid"]?.toDouble();
@@ -118,7 +122,9 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
     foodType = json["foodType"]?.toInt();
     foodTemplateId = json["foodTemplateId"]?.toString();
     accountId = json["accountId"]?.toString();
-    foodImgUrl = json["foodImgUrl"]?.toString();
+    image =
+        (json["image"] != null) ? ImagesModel.fromJson(json["image"]) : null;
+    liked = json["liked"];
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
@@ -141,7 +147,10 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
     data["foodType"] = foodType;
     data["foodTemplateId"] = foodTemplateId;
     data["accountId"] = accountId;
-    data["foodImgUrl"] = foodImgUrl;
+    if (image != null) {
+      data["image"] = image!.toJson();
+    }
+    data["liked"] = liked;
     return data;
   }
 }
@@ -150,31 +159,35 @@ class MenuResponseListdayfoodTimeGroups {
 /*
 {
   "timeCode": 1,
-  "timeName": "string",
-  "totalKcal": 2.5,
-  "totalGlucose": 2.4,
+  "timeName": "Bữa Sáng",
+  "totalKcal": 150.9,
+  "totalGlucose": 0,
   "defaultFood": [
     {
-      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "foodMenuCode": "string",
-      "dateCode": "string",
+      "id": "16b1ea16-f607-4073-8b8c-08d98bb8e489",
+      "foodMenuCode": "TD26",
+      "dateCode": "T2",
       "timeCode": 1,
-      "foodId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "foodCategoryId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "foodUnitId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "foodUnitName": "string",
-      "foodName": "string",
-      "portion": 12.3,
-      "calorie": 13.2,
-      "glucose": 1.4,
-      "lipid": 3.6,
-      "protein": 2.5,
-      "fibre": 1.3,
-      "note": "string",
+      "foodId": "02821a58-50cb-4290-7797-08d945b50f3d",
+      "foodCategoryId": "8eff87be-cecd-43e2-300d-08d945b3544f",
+      "foodUnitId": "4fd993d2-ebf1-4b5b-ad89-5e0058ab5896",
+      "foodUnitName": "Phần",
+      "foodName": "Ức gà nướng ớt chuông",
+      "portion": 2,
+      "calorie": 150.9,
+      "glucose": 2.6,
+      "lipid": 4.6,
+      "protein": 23.2,
+      "fibre": 0.8,
+      "note": "Món chính b?a sáng",
       "foodType": 0,
-      "foodTemplateId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "accountId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "foodImgUrl": "string"
+      "foodTemplateId": "4ad4a446-edb6-467d-aba3-08d9818e3467",
+      "accountId": "5ccfcf0a-b0b6-4edc-b71f-affa666283ff",
+      "image": {
+        "id": "7acf6d9b-700a-4573-b5ce-08d945b50f35",
+        "url": "http://diab-api-dev.savvycom.vn/App/Image/7acf6d9b-700a-4573-b5ce-08d945b50f35?expires=1633923882&signature=74884512306e7ef8742fe307512d397889c6cd922b4b024fcd21dde854987f2c"
+      },
+      "liked": false
     }
   ]
 } 
@@ -200,18 +213,19 @@ class MenuResponseListdayfoodTimeGroups {
     if (timeCode == 6) return R.string.dinner_sub_meal.tr();
     return this.timeName;
   }
+
   MenuResponseListdayfoodTimeGroups.fromJson(Map<String, dynamic> json) {
     timeCode = json["timeCode"]?.toInt();
     timeName = json["timeName"]?.toString();
     totalKcal = json["totalKcal"]?.toDouble();
     totalGlucose = json["totalGlucose"]?.toDouble();
-  if (json["defaultFood"] != null) {
-  final v = json["defaultFood"];
-  final arr0 = <MenuResponseListdayfoodTimeGroupsDefaultFood>[];
-  v.forEach((v) {
-  arr0.add(MenuResponseListdayfoodTimeGroupsDefaultFood.fromJson(v));
-  });
-    defaultFood = arr0;
+    if (json["defaultFood"] != null) {
+      final v = json["defaultFood"];
+      final arr0 = <MenuResponseListdayfoodTimeGroupsDefaultFood>[];
+      v.forEach((v) {
+        arr0.add(MenuResponseListdayfoodTimeGroupsDefaultFood.fromJson(v));
+      });
+      defaultFood = arr0;
     }
   }
   Map<String, dynamic> toJson() {
@@ -223,9 +237,9 @@ class MenuResponseListdayfoodTimeGroups {
     if (defaultFood != null) {
       final v = defaultFood;
       final arr0 = [];
-  v!.forEach((v) {
-  arr0.add(v!.toJson());
-  });
+      v!.forEach((v) {
+        arr0.add(v!.toJson());
+      });
       data["defaultFood"] = arr0;
     }
     return data;
@@ -235,37 +249,41 @@ class MenuResponseListdayfoodTimeGroups {
 class MenuResponseListdayfood {
 /*
 {
-  "dateCode": "string",
-  "totalKcal": 1.7,
-  "totalGlucose": 2.8,
+  "dateCode": "T2",
+  "totalKcal": 256.9,
+  "totalGlucose": 26.6,
   "timeGroups": [
     {
       "timeCode": 1,
-      "timeName": "string",
-      "totalKcal": 2.5,
-      "totalGlucose": 2.4,
+      "timeName": "Bữa Sáng",
+      "totalKcal": 150.9,
+      "totalGlucose": 0,
       "defaultFood": [
         {
-          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-          "foodMenuCode": "string",
-          "dateCode": "string",
+          "id": "16b1ea16-f607-4073-8b8c-08d98bb8e489",
+          "foodMenuCode": "TD26",
+          "dateCode": "T2",
           "timeCode": 1,
-          "foodId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-          "foodCategoryId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-          "foodUnitId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-          "foodUnitName": "string",
-          "foodName": "string",
-          "portion": 12.3,
-          "calorie": 13.2,
-          "glucose": 1.4,
-          "lipid": 3.6,
-          "protein": 2.5,
-          "fibre": 1.3,
-          "note": "string",
+          "foodId": "02821a58-50cb-4290-7797-08d945b50f3d",
+          "foodCategoryId": "8eff87be-cecd-43e2-300d-08d945b3544f",
+          "foodUnitId": "4fd993d2-ebf1-4b5b-ad89-5e0058ab5896",
+          "foodUnitName": "Phần",
+          "foodName": "Ức gà nướng ớt chuông",
+          "portion": 2,
+          "calorie": 150.9,
+          "glucose": 2.6,
+          "lipid": 4.6,
+          "protein": 23.2,
+          "fibre": 0.8,
+          "note": "Món chính b?a sáng",
           "foodType": 0,
-          "foodTemplateId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-          "accountId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-          "foodImgUrl": "string"
+          "foodTemplateId": "4ad4a446-edb6-467d-aba3-08d9818e3467",
+          "accountId": "5ccfcf0a-b0b6-4edc-b71f-affa666283ff",
+          "image": {
+            "id": "7acf6d9b-700a-4573-b5ce-08d945b50f35",
+            "url": "http://diab-api-dev.savvycom.vn/App/Image/7acf6d9b-700a-4573-b5ce-08d945b50f35?expires=1633923882&signature=74884512306e7ef8742fe307512d397889c6cd922b4b024fcd21dde854987f2c"
+          },
+          "liked": false
         }
       ]
     }
@@ -284,18 +302,17 @@ class MenuResponseListdayfood {
     this.totalGlucose,
     this.timeGroups,
   });
-
   MenuResponseListdayfood.fromJson(Map<String, dynamic> json) {
     dateCode = json["dateCode"]?.toString();
     totalKcal = json["totalKcal"]?.toDouble();
     totalGlucose = json["totalGlucose"]?.toDouble();
-  if (json["timeGroups"] != null) {
-  final v = json["timeGroups"];
-  final arr0 = <MenuResponseListdayfoodTimeGroups>[];
-  v.forEach((v) {
-  arr0.add(MenuResponseListdayfoodTimeGroups.fromJson(v));
-  });
-    timeGroups = arr0;
+    if (json["timeGroups"] != null) {
+      final v = json["timeGroups"];
+      final arr0 = <MenuResponseListdayfoodTimeGroups>[];
+      v.forEach((v) {
+        arr0.add(MenuResponseListdayfoodTimeGroups.fromJson(v));
+      });
+      timeGroups = arr0;
     }
   }
   Map<String, dynamic> toJson() {
@@ -306,9 +323,9 @@ class MenuResponseListdayfood {
     if (timeGroups != null) {
       final v = timeGroups;
       final arr0 = [];
-  v!.forEach((v) {
-  arr0.add(v!.toJson());
-  });
+      v!.forEach((v) {
+        arr0.add(v!.toJson());
+      });
       data["timeGroups"] = arr0;
     }
     return data;
@@ -318,35 +335,30 @@ class MenuResponseListdayfood {
 class MenuResponseFood {
 /*
 {
-  "menuTitle": "string",
-  "kCal": 6.1,
-  "status": 1,
-  "note": "string"
+  "menuTitle": "Thuc don 26",
+  "kCal": 1200,
+  "note": ""
 } 
 */
 
   String? menuTitle;
-  double? kCal;
-  int? status;
+  int? kCal;
   String? note;
 
   MenuResponseFood({
     this.menuTitle,
     this.kCal,
-    this.status,
     this.note,
   });
   MenuResponseFood.fromJson(Map<String, dynamic> json) {
     menuTitle = json["menuTitle"]?.toString();
-    kCal = json["kCal"]?.toDouble();
-    status = json["status"]?.toInt();
+    kCal = json["kCal"]?.toInt();
     note = json["note"]?.toString();
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data["menuTitle"] = menuTitle;
     data["kCal"] = kCal;
-    data["status"] = status;
     data["note"] = note;
     return data;
   }
@@ -355,54 +367,57 @@ class MenuResponseFood {
 class MenuResponse {
 /*
 {
-  "totalKcal": 130.5,
-  "totalGlucose": 6.7,
+  "totalKcal": 404.9,
+  "totalGlucose": 56.6,
   "food": {
-    "menuTitle": "string",
-    "kCal": 6.1,
-    "status": 1,
-    "note": "string"
+    "menuTitle": "Thuc don 26",
+    "kCal": 1200,
+    "note": ""
   },
   "listdayfood": [
     {
-      "dateCode": "string",
-      "totalKcal": 1.7,
-      "totalGlucose": 2.8,
+      "dateCode": "T2",
+      "totalKcal": 256.9,
+      "totalGlucose": 26.6,
       "timeGroups": [
         {
           "timeCode": 1,
-          "timeName": "string",
-          "totalKcal": 2.5,
-          "totalGlucose": 2.4,
+          "timeName": "Bữa Sáng",
+          "totalKcal": 150.9,
+          "totalGlucose": 0,
           "defaultFood": [
             {
-              "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-              "foodMenuCode": "string",
-              "dateCode": "string",
+              "id": "16b1ea16-f607-4073-8b8c-08d98bb8e489",
+              "foodMenuCode": "TD26",
+              "dateCode": "T2",
               "timeCode": 1,
-              "foodId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-              "foodCategoryId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-              "foodUnitId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-              "foodUnitName": "string",
-              "foodName": "string",
-              "portion": 12.3,
-              "calorie": 13.2,
-              "glucose": 1.4,
-              "lipid": 3.6,
-              "protein": 2.5,
-              "fibre": 1.3,
-              "note": "string",
+              "foodId": "02821a58-50cb-4290-7797-08d945b50f3d",
+              "foodCategoryId": "8eff87be-cecd-43e2-300d-08d945b3544f",
+              "foodUnitId": "4fd993d2-ebf1-4b5b-ad89-5e0058ab5896",
+              "foodUnitName": "Phần",
+              "foodName": "Ức gà nướng ớt chuông",
+              "portion": 2,
+              "calorie": 150.9,
+              "glucose": 2.6,
+              "lipid": 4.6,
+              "protein": 23.2,
+              "fibre": 0.8,
+              "note": "Món chính b?a sáng",
               "foodType": 0,
-              "foodTemplateId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-              "accountId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-              "foodImgUrl": "string"
+              "foodTemplateId": "4ad4a446-edb6-467d-aba3-08d9818e3467",
+              "accountId": "5ccfcf0a-b0b6-4edc-b71f-affa666283ff",
+              "image": {
+                "id": "7acf6d9b-700a-4573-b5ce-08d945b50f35",
+                "url": "http://diab-api-dev.savvycom.vn/App/Image/7acf6d9b-700a-4573-b5ce-08d945b50f35?expires=1633923882&signature=74884512306e7ef8742fe307512d397889c6cd922b4b024fcd21dde854987f2c"
+              },
+              "liked": false
             }
           ]
         }
       ]
     }
   ],
-  "message": "string"
+  "message": ""
 } 
 */
 
@@ -429,7 +444,7 @@ class MenuResponse {
     }
   }
 
-List<MenuResponseListdayfoodTimeGroups?>? _sortSingleTimeGroup(
+  List<MenuResponseListdayfoodTimeGroups?>? _sortSingleTimeGroup(
       List<MenuResponseListdayfoodTimeGroups?>? mealList) {
     if (mealList == null) return null;
     final List<MenuResponseListdayfoodTimeGroups?> newMealList = [];
@@ -445,14 +460,15 @@ List<MenuResponseListdayfoodTimeGroups?>? _sortSingleTimeGroup(
   MenuResponse.fromJson(Map<String, dynamic> json) {
     totalKcal = json["totalKcal"]?.toDouble();
     totalGlucose = json["totalGlucose"]?.toDouble();
-    food = (json["food"] != null) ? MenuResponseFood.fromJson(json["food"]) : null;
-  if (json["listdayfood"] != null) {
-  final v = json["listdayfood"];
-  final arr0 = <MenuResponseListdayfood>[];
-  v.forEach((v) {
-  arr0.add(MenuResponseListdayfood.fromJson(v));
-  });
-    listdayfood = arr0;
+    food =
+        (json["food"] != null) ? MenuResponseFood.fromJson(json["food"]) : null;
+    if (json["listdayfood"] != null) {
+      final v = json["listdayfood"];
+      final arr0 = <MenuResponseListdayfood>[];
+      v.forEach((v) {
+        arr0.add(MenuResponseListdayfood.fromJson(v));
+      });
+      listdayfood = arr0;
     }
     message = json["message"]?.toString();
   }
@@ -466,9 +482,9 @@ List<MenuResponseListdayfoodTimeGroups?>? _sortSingleTimeGroup(
     if (listdayfood != null) {
       final v = listdayfood;
       final arr0 = [];
-  v!.forEach((v) {
-  arr0.add(v!.toJson());
-  });
+      v!.forEach((v) {
+        arr0.add(v!.toJson());
+      });
       data["listdayfood"] = arr0;
     }
     data["message"] = message;

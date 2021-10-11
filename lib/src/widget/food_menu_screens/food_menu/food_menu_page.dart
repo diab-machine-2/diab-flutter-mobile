@@ -14,7 +14,6 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/intro_sample_menu/intro_sample_menu.dart';
 import 'package:medical/src/widget/kcal_parameter/kcal_parameter.dart';
-import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -66,7 +65,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             if (state is FoodMenuFailure) {
               Message.showToastMessage(context, state.error);
             }
-            if (state is FoodMenuEmpty) {
+            if (state is FoodMenuEmpty &&
+                _cubit.userInfo?.hasFoodMenu != true) {
               NavigationUtil.replace(context, IntroSampleMenuPage());
             }
           },
@@ -189,7 +189,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                             await NavigationUtil.navigatePage(
                                           context,
                                           ChangeMenuPage(
-                                            selectedFood: foodDetail?.foodModel,
+                                            preFoodModel: foodDetail?.foodModel,
                                             hasSelectQuantity: false,
                                           ),
                                         );
@@ -245,22 +245,6 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                 ),
                                 SizedBox(height: 33.h),
                               ],
-                            ),
-                          ),
-                          Visibility(
-                            visible: false,
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 15.h),
-                              child: SafeArea(
-                                top: false,
-                                child: Container(
-                                  width: 242.w,
-                                  child: ButtonWidget(
-                                    title: 'Đặt làm thực đơn của tôi',
-                                    onPressed: () {},
-                                  ),
-                                ),
-                              ),
                             ),
                           ),
                         ],
@@ -356,8 +340,9 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                   ),
                 ),
                 Text(
-                  R.string.total_kcals
-                      .tr(args: ['${num.parse(mealData?.totalKcal?.toStringAsFixed(3) ?? '0')}']),
+                  R.string.total_kcals.tr(args: [
+                    '${num.parse(mealData?.totalKcal?.toStringAsFixed(3) ?? '0')}'
+                  ]),
                   style: TextStyle(
                     color: R.color.textDark,
                     fontSize: 16.sp,
@@ -370,8 +355,9 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                       size: 4.w, color: R.color.greenGradientBottom),
                 ),
                 Text(
-                  R.string.total_starch
-                      .tr(args: ['${num.parse(mealData?.totalGlucose?.toStringAsFixed(3) ?? '0')}']),
+                  R.string.total_starch.tr(args: [
+                    '${num.parse(mealData?.totalGlucose?.toStringAsFixed(3) ?? '0')}'
+                  ]),
                   style: TextStyle(
                     color: R.color.textDark,
                     fontSize: 16.sp,
@@ -434,7 +420,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: CachedNetworkImage(
-                    imageUrl: foodDetail?.foodImgUrl ?? '',
+                    imageUrl: foodDetail?.image?.url ?? '',
                     width: 50,
                     height: 50,
                     placeholder: (_, __) {
@@ -524,7 +510,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                   ),
                   Text(
                     R.string.total_kcals
-                        .tr(args: ['${foodDetail?.calorie ?? 0.0}']),
+                        .tr(args: ['${(foodDetail?.calorie ?? 0.0) * (foodDetail?.portion ?? 0)}']),
                     style: TextStyle(
                       color: R.color.color0xff454649,
                       fontSize: 16.sp,
@@ -538,7 +524,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                   ),
                   Text(
                     R.string.total_starch
-                        .tr(args: ['${foodDetail?.glucose ?? 0.0}']),
+                        .tr(args: ['${(foodDetail?.glucose ?? 0.0) * (foodDetail?.portion ?? 0)}']),
                     style: TextStyle(
                       color: R.color.color0xff454649,
                       fontSize: 16.sp,

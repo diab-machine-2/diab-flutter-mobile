@@ -58,6 +58,7 @@ class _AddBloodPressureControllerState
 
   ShortGuiModel? des;
 
+  @override
   void initState() {
     super.initState();
     if (widget.type == 'update') {
@@ -70,13 +71,14 @@ class _AddBloodPressureControllerState
         .setCurrentScreen(screenName: 'Blood Pressure Input');
   }
 
+  @override
   void dispose() {
     super.dispose();
   }
 
   loadDataDetail() async {
     BotToast.showLoading();
-    model = await (BloodPressureClient().fetchBloodPressureDetail(widget.id) as Future<BloodPressureModel?>);
+    model = await BloodPressureClient().fetchBloodPressureDetail(widget.id);
     BotToast.closeAllLoading();
     print(model);
     _controllerSystolic.text = model!.systolic!.toInt().toString();
@@ -813,8 +815,6 @@ class _AddBloodPressureControllerState
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         Observable.instance.notifyObservers([], notifyName : "BloodPressure_change_data");
-        // DartNotificationCenter.post(channel: 'BloodPressure_change_data');
-        Navigator.pop(context);
       }
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -885,8 +885,6 @@ class _AddBloodPressureControllerState
           paths);
       if (result == true) {
         Observable.instance.notifyObservers([], notifyName : "BloodPressure_change_data");
-        // DartNotificationCenter.post(channel: 'BloodPressure_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -959,8 +957,6 @@ class _AddBloodPressureControllerState
           paths);
       if (result == true) {
         Observable.instance.notifyObservers([], notifyName : "BloodPressure_change_data");
-        // DartNotificationCenter.post(channel: 'BloodPressure_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();

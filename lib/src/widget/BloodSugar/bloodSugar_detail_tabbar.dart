@@ -65,8 +65,8 @@ class _BloodSugarDetailTabbarControllerState
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     // TODO: implement update
     if (notifyName == 'glucose_change_data') {
-      overViewKey.currentState!.reloadData(periodFilterType);
-      detailKey.currentState!.reloadData(periodFilterType);
+      overViewKey.currentState?.reloadData(periodFilterType);
+      detailKey.currentState?.reloadData(periodFilterType);
     }
   }
 

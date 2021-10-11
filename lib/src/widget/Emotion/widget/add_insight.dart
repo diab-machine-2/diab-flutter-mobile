@@ -881,8 +881,6 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
       final result = await EmotionClient().deleteIndexEmotion(widget.id);
       if (result == true) {
         Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
-        // DartNotificationCenter.post(channel: 'Emotion_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -948,8 +946,6 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           paths);
       if (result == true) {
         Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
-        // DartNotificationCenter.post(channel: 'Emotion_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -1011,8 +1007,6 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           paths);
       if (result == true) {
         Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
-        // DartNotificationCenter.post(channel: 'Emotion_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();

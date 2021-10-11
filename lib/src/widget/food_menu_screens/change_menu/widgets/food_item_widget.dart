@@ -9,14 +9,16 @@ import 'food_select_popup.dart';
 
 class FoodItemWidget extends StatelessWidget {
   const FoodItemWidget({
-    required this.foodModel,
+    required this.preFoodModel,
+    required this.newFoodModel,
     required this.isSelected,
     required this.onFavorite,
     required this.onConfirm,
     required this.hasSelectQuantity,
   });
 
-  final FoodModel foodModel;
+  final FoodModel? preFoodModel;
+  final FoodModel newFoodModel;
   final bool isSelected;
   final VoidCallback onFavorite;
   final Function(FoodModel foodModel) onConfirm;
@@ -47,7 +49,7 @@ class FoodItemWidget extends StatelessWidget {
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
               child: CachedNetworkImage(
                 imageUrl:
-                    foodModel.image == null ? '' : foodModel.image!.url ?? '',
+                    newFoodModel.image == null ? '' : newFoodModel.image!.url ?? '',
                 width: 50,
                 height: 50,
                 placeholder: (_, __) {
@@ -64,7 +66,7 @@ class FoodItemWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    foodModel.name!,
+                    newFoodModel.name!,
                     style: TextStyle(
                       color: R.color.black,
                       fontWeight: FontWeight.w500,
@@ -74,7 +76,7 @@ class FoodItemWidget extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        '${R.string.da_an.tr()} ${roundAsFixed(foodModel.portion * foodModel.quantity)} ${foodModel.unit}, ${formatNumber(foodModel.quantity * foodModel.calorie!)} ${R.string.kcal.tr()}',
+                        '${R.string.da_an.tr()} ${roundAsFixed(newFoodModel.portion * newFoodModel.quantity)} ${newFoodModel.unit}, ${formatNumber(newFoodModel.quantity * newFoodModel.calorie!)} ${R.string.kcal.tr()}',
                         style: TextStyle(
                           color: R.color.black,
                           fontWeight: FontWeight.w400,
@@ -88,7 +90,7 @@ class FoodItemWidget extends StatelessWidget {
             GestureDetector(
               onTap: onFavorite,
               child: Image.asset(
-                  foodModel.liked!
+                  newFoodModel.liked!
                       ? R.drawable.ic_heart_fill
                       : R.drawable.ic_heart_line,
                   width: 24,
@@ -103,13 +105,14 @@ class FoodItemWidget extends StatelessWidget {
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => FoodSelectPopup(
-        model: foodModel,
+        preFoodModel: preFoodModel,
+        newFoodModel: newFoodModel,
         hasSelectQuantity: hasSelectQuantity,
       ),
     );
     if (response.first is bool && response.last is FoodModel) {
       //Check if favorite is toggle
-      final bool isFavorite = foodModel.liked ?? false;
+      final bool isFavorite = newFoodModel.liked ?? false;
       if (response.last != null &&
           response.last.liked != null &&
           response.last.liked != isFavorite) {
