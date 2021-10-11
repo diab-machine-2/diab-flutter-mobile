@@ -10,6 +10,7 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/update_required_widget.dart';
 
+import '../blood_sugar_schedule_template/blood_sugar_schedule_template.dart';
 import '../blood_sugar_survey/blood_sugar_survey.dart';
 import 'blood_sugar_start_survey.dart';
 
@@ -29,7 +30,7 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
     super.initState();
     final AppRepository repository = AppRepository();
     _cubit = BloodSugarStartSurveyCubit(repository);
-    _cubit.getOwnPackageCode();
+    _cubit.getCurrentUserInfo();
   }
 
   @override
@@ -64,11 +65,11 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
                             Padding(
                               padding: EdgeInsets.only(top: 51.h, bottom: 24.h),
                               child: Text(
-                                _cubit.didSurvey
-                                    ? R.string
-                                        .blood_sugar_survey_done_description
+                                _cubit.surveyCode.isEmpty
+                                    ? R.string.blood_sugar_survey_description
                                         .tr()
-                                    : R.string.blood_sugar_survey_description
+                                    : R.string
+                                        .blood_sugar_survey_done_description
                                         .tr(),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -83,7 +84,12 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
                                     context, const BloodSugarSurveyPage());
                               },
                               onShowResult: () {
-                                //TODO: Tuyen show survey result
+                                NavigationUtil.navigatePage(
+                                  context,
+                                  BloodSugarScheduleTemplatePage(
+                                    templateCode: _cubit.surveyCode,
+                                  ),
+                                );
                               },
                             ),
                           ],
@@ -99,7 +105,7 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
 
   Widget _buildButton(
       {VoidCallback? onTakeSurvey, VoidCallback? onShowResult}) {
-    return !_cubit.didSurvey
+    return _cubit.surveyCode.isEmpty
         ? Container(
             width: 195.w,
             child: ButtonWidget(

@@ -13,7 +13,6 @@ import 'package:medical/src/widgets/common_page.dart';
 import '../blood_sugar_schedule_template/blood_sugar_schedule_template.dart';
 import '../models/question_data.dart';
 import 'blood_sugar_survey.dart';
-import 'widgets/blood_sugar_survey_result_empty.dart';
 
 class BloodSugarSurveyPage extends StatefulWidget {
   const BloodSugarSurveyPage();
@@ -44,25 +43,26 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
           create: (context) => _cubit,
           child: BlocConsumer<BloodSugarSurveyCubit, BloodSugarSurveyState>(
             listener: (context, state) {
+              if (state is BloodSugarSurveyLoading) {
+                BotToast.showLoading();
+              }
               if (state is BloodSugarSurveyFailure) {
                 Message.showToastMessage(context, state.error ?? '');
+                BotToast.closeAllLoading();
+              }
+              if (state is BloodSugarSurveySuccess) {
+                BotToast.closeAllLoading();
               }
               if (state is BloodSugarSurveyNavigate) {
-                if (state.templateDetail == null) {
-                  NavigationUtil.navigatePage(
-                      context, const BloodSugarSurveyEmpty());
-                } else {
-                  NavigationUtil.navigatePage(context,
-                      BloodSugarScheduleTemplatePage(state.templateDetail!));
-                }
+                NavigationUtil.navigatePage(
+                  context,
+                  BloodSugarScheduleTemplatePage(
+                    templateCode: state.templateCode!,
+                  ),
+                );
               }
             },
             builder: (context, state) {
-              if (state is BloodSugarSurveyLoading) {
-                BotToast.showLoading();
-              } else {
-                BotToast.closeAllLoading();
-              }
               return CommonPage(
                 title: R.string.blood_sugar_testing_schedule_suggest.tr(),
                 background: R.drawable.bg_detail_pro,
@@ -161,8 +161,8 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: answerList,
             ),
-          if (question.hasExtendDetail && _cubit.hba1c != null)
-            _builddExtendDetail(_cubit.hba1c!)
+          if (question.hasExtendDetail && _cubit.hba1c != -1)
+            _builddExtendDetail(_cubit.hba1c)
         ],
       ),
     );
@@ -323,7 +323,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                 ),
                 children: [
                   TextSpan(
-                    text: ' ${R.string.unit_percent.tr(args: ['${hba1c}'])}',
+                    text: ' ${R.string.unit_percent.tr(args: ['$hba1c'])}',
                     style: TextStyle(
                       color: R.color.textDark,
                       fontSize: 14,

@@ -52,7 +52,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   loadMotivation() async {
     final result = await UserClient().fetchMotivationDiary(1);
-    Observable.instance.notifyObservers([], notifyName : "motivation_change");
+    // Observable.instance.notifyObservers([], notifyName : "motivation_change");
     // DartNotificationCenter.post(channel: 'motivation_change');
     motivation = result.models.length == 0 ? null : result.models.first;
     setState(() {});

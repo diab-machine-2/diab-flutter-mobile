@@ -91,4 +91,6 @@ class Const {
   static const String PRO = "pro";
   static const String BASIC = "basic";
   static const String PREMIUM = "premium";
+
+  static const String TEMPLATE_NONE = 'NONE';
 }

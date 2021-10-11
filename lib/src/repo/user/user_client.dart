@@ -181,16 +181,16 @@ class UserClient extends FetchClient {
 
   Future<bool> updateUserInfo(String? patientId, UserModel userInfo) async {
     try {
-      Map<String, String?> params = {
-        'patientId': patientId,
-        'fullName': userInfo.fullName,
+      Map<String, String> params = {
+        'patientId': patientId ?? '',
+        'fullName': userInfo.fullName ?? '',
         'dateOfBirth': userInfo.dateOfBirth.toString(),
         'gender': userInfo.genderType == null || userInfo.genderType == 0
             ? '1'
             : userInfo.genderType.toString(),
-        'provinceId': userInfo.province == null ? '' : userInfo.province!.id,
-        'districtId': userInfo.district == null ? '' : userInfo.district!.id,
-        'wardId': userInfo.ward == null ? '' : userInfo.ward!.id,
+        'provinceId': userInfo.province == null ? '' : userInfo.province!.id ?? '',
+        'districtId': userInfo.district == null ? '' : userInfo.district!.id ?? '',
+        'wardId': userInfo.ward == null ? '' : userInfo.ward!.id ?? '',
         'address': userInfo.address ?? '',
         'diabetesStatus': userInfo.diabetesStatus == null
             ? ''

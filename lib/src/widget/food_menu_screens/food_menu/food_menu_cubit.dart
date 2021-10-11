@@ -6,6 +6,7 @@ import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
+import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
@@ -58,7 +59,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
   Future<void> getTemplateDetail({bool isRefresh = false}) async {
     if (!isRefresh) emit(const FoodMenuLoading());
     final ApiResult<MenuResponse> apiResult =
-        await repository.getGetUserFoodMenu();
+        await repository.getUserFoodMenu();
     apiResult.when(success: (MenuResponse response) {
       if (response.listdayfood == null || response.food == null) {
         emit(const FoodMenuEmpty());
@@ -80,10 +81,11 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     final FoodChangeRequest request = FoodChangeRequest(
       id: foodId,
       foodId: newFoodModel.id,
+      portion: newFoodModel.portion.toInt(),
     );
     final ApiResult<CommonResponse> apiResult =
         await repository.changeFood(request);
-    apiResult.when(success: (CommonResponse response) {
+    apiResult.when(success: (CommonResponse response) async {
       getTemplateDetail();
       emit(const FoodMenuSuccess());
     }, failure: (NetworkExceptions error) {
@@ -94,9 +96,10 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
 
   Future<void> getOwnPackageCode() async {
     emit(const FoodMenuLoading());
-    final ApiResult<String> apiResult = await repository.getOwnPackageCode();
-    apiResult.when(success: (String response) {
-      isBasicUser = response.isEmpty || response == Const.BASIC;
+    final ApiResult<UserInfoResponse> apiResult = await repository.getCurrentUserInfo();
+    apiResult.when(success: (UserInfoResponse response) {
+      final String packageCode = response.data?.packageCode ?? '';
+      isBasicUser = packageCode.isEmpty || packageCode == Const.BASIC;
       emit(const FoodMenuSuccess());
     }, failure: (NetworkExceptions error) {
       emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));
