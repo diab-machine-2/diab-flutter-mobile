@@ -75,7 +75,7 @@ class _StepListControllerState extends State<StepListController> {
 
   @override
   void dispose() {
-    _timer!.cancel();
+    _timer?.cancel();
     _timer = null;
     super.dispose();
   }

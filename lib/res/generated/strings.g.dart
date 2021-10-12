@@ -584,6 +584,11 @@ class Strings {
 	String get food_menu_empty => 'food_menu_empty';
 	String get food_menu_update_required => 'food_menu_update_required';
 	String get energy_use_per_day => 'energy_use_per_day';
+	String get myplanscreen => 'MyPlanScreen';
+	String get activity => 'activity';
+	String get title_goal => 'title_goal';
+	String get title_lesson => 'title_lesson';
+	String get title_activity => 'title_activity';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';

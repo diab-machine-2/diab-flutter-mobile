@@ -390,7 +390,7 @@ class EmotionDetailControllerState extends State<EmotionDetailController>
                                                                     top: 16,
                                                                     bottom: 8),
                                                             child: Text(
-                                                              R.string.hoat_dong.tr(),
+                                                              R.string.activity.tr(),
                                                               style: TextStyle(
                                                                   color: R.color
                                                                       .black,

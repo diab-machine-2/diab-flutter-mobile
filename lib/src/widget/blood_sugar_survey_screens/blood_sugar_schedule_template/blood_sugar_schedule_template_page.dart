@@ -199,6 +199,7 @@ class _BloodSugarScheduleTemplatePageState
             ),
           ),
           _buildButtons(),
+          SizedBox(height: 24.h),
         ],
       ),
     );
@@ -259,6 +260,7 @@ class _BloodSugarScheduleTemplatePageState
                 _cubit.refreshState();
               }),
           _buildButtons(),
+          SizedBox(height: 24.h),
         ],
       ),
     );

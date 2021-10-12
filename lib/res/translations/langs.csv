@@ -208,7 +208,7 @@ survey_answer_3_b,Thuốc uống,
 survey_answer_3_c,Ăn kiêng,
 survey_answer_4_1_a,1 lần / ngày,
 survey_answer_4_1_b,2 lần / ngày,
-survey_answer_4_1_c,3 lần / ngày,
+survey_answer_4_1_c,4 lần / ngày,
 survey_answer_4_2_a,Có,
 survey_answer_4_2_b,Không,
 BMIScreen,============================================BMI screen====================================================
@@ -582,6 +582,11 @@ suggest_food_empty,"Rất tiếc! Chúng tôi chưa tìm được món ăn phù 
 food_menu_empty,"Rất tiếc! Chúng tôi chưa có thực đơn mẫu nằm trong khung năng lượng của bạn.",
 food_menu_update_required,Vui lòng nâng cấp tài khoản lên gói Đồng hành để xem đầy đủ thực đơn mẫu cho cả tuần!,
 energy_use_per_day,Mức tiêu hao năng lượng/ngày của bạn,
+MyPlanScreen,============================================MyPlan screen====================================================
+activity,Hoạt động,
+title_goal,Mục tiêu,
+title_lesson,Bài học,
+title_activity,Hoạt động,
 Common,============================================Common====================================================
 huyet_ap,Huyết áp,
 duong_huyet,Đường huyết,
