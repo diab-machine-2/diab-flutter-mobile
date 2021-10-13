@@ -110,14 +110,24 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                       Container(
                         width: 195.w,
                         child: ButtonWidget(
-                          title: _cubit.canSurveyDone
-                              ? R.string.show_result.tr()
-                              : R.string.text_continue.tr(),
+                          title: !_cubit.canSurveyDone &&
+                                  _cubit.isFirstQuestionScreen
+                              ? R.string.text_continue.tr()
+                              : R.string.show_result.tr(),
                           onPressed: () {
                             _cubit.onSubmitAnswer();
                           },
+                          backgroundColor:
+                              _cubit.buttonEnabled ? null : R.color.white,
+                          borderColor: _cubit.buttonEnabled
+                              ? R.color.greenGradientBottom
+                              : R.color.gray,
+                          textColor: _cubit.buttonEnabled
+                              ? R.color.white
+                              : R.color.gray,
                         ),
                       ),
+                      SizedBox(height: 24.h),
                     ],
                   ),
                 ),

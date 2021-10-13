@@ -4,6 +4,7 @@ import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/const.dart';
 import '../models/question_data.dart';
 
 import 'blood_sugar_survey_state.dart';
@@ -27,6 +28,8 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
   double hba1c = -1;
 
   bool get isFirstQuestionScreen => questions.contains(question1);
+  bool get buttonEnabled =>
+      isFirstQuestionScreen || !isFirstQuestionScreen && canSurveyDone;
 
   void initSurvey() {
     questions.add(question1);
@@ -67,7 +70,10 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
     final ApiResult<LatestHba1cInputResponse> apiResult =
         await repository.getLatestHbA1CInput();
     apiResult.when(success: (LatestHba1cInputResponse response) {
-      if (response.data == null || response.data == -1) return;
+      if (response.data == null || response.data == -1) {
+        emit(const BloodSugarSurveySuccess());
+        return;
+      }
       hba1c = response.data!;
       if (hba1c < 7) {
         question2.selectedAnswer = 0;
@@ -108,15 +114,15 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
       if (canSurveyDone) {
         if (question1.selectedAnswer == 0) {
           //Template D
-          showTemplate(templateCode: 'D');
+          showTemplate(templateCode: Const.TEMPLATE_D);
         }
         if (question1.selectedAnswer == 2) {
           //Template OP
-          showTemplate(templateCode: 'OP');
+          showTemplate(templateCode: Const.TEMPLATE_OP);
         }
         if (question1.selectedAnswer == 3) {
           //No Template
-          showTemplate(templateCode: 'NONE');
+          showTemplate(templateCode: Const.TEMPLATE_NONE);
         }
       } else {
         //Continue Survey from question 2
@@ -129,24 +135,24 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
         if (question3.selectedAnswer == 0) {
           if (question4_1.selectedAnswer == 0) {
             //Template A1
-            showTemplate(templateCode: 'A1');
+            showTemplate(templateCode: Const.TEMPLATE_A1);
           }
           if (question4_1.selectedAnswer == 1) {
             //Template B
-            showTemplate(templateCode: 'B');
+            showTemplate(templateCode: Const.TEMPLATE_B);
           }
           if (question4_1.selectedAnswer == 2) {
             //Template D
-            showTemplate(templateCode: 'D');
+            showTemplate(templateCode: Const.TEMPLATE_D);
           }
         } else {
           if (question4_2.selectedAnswer == 0) {
             //Template FGHI
-            showTemplate(templateCode: 'FGHI');
+            showTemplate(templateCode: Const.TEMPLATE_FGHI);
           }
           if (question4_2.selectedAnswer == 1) {
             //Template K
-            showTemplate(templateCode: 'K');
+            showTemplate(templateCode: Const.TEMPLATE_K);
           }
         }
       }
@@ -154,21 +160,21 @@ class BloodSugarSurveyCubit extends Cubit<BloodSugarSurveyState> {
         if (question3.selectedAnswer == 0) {
           if (question4_1.selectedAnswer == 0) {
             //Template A2
-            showTemplate(templateCode: 'A2');
+            showTemplate(templateCode: Const.TEMPLATE_A2);
           }
           if (question4_1.selectedAnswer == 1) {
             //Template B
-            showTemplate(templateCode: 'B');
+            showTemplate(templateCode: Const.TEMPLATE_B);
           }
           if (question4_1.selectedAnswer == 2) {
             //Template D
-            showTemplate(templateCode: 'D');
+            showTemplate(templateCode: Const.TEMPLATE_D);
           }
         } else {
           if (question4_2.selectedAnswer == 0 ||
               question4_2.selectedAnswer == 1) {
             //Template FGHI
-            showTemplate(templateCode: 'FGHI');
+            showTemplate(templateCode: Const.TEMPLATE_FGHI);
           }
         }
       }

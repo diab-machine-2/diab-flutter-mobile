@@ -93,4 +93,11 @@ class Const {
   static const String PREMIUM = "premium";
 
   static const String TEMPLATE_NONE = 'NONE';
+  static const String TEMPLATE_D = 'D';
+  static const String TEMPLATE_OP = 'OP';
+  static const String TEMPLATE_A1 = 'A1';
+  static const String TEMPLATE_A2 = 'A2';
+  static const String TEMPLATE_B = 'B';
+  static const String TEMPLATE_K = 'K';
+  static const String TEMPLATE_FGHI = 'FGHI';
 }
