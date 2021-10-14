@@ -19,7 +19,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
   final AppRepository repository;
 
   MenuResponseFood? menuResponseFood;
-  List<MenuResponseListdayfood?> listDayFood = [];
+  List<MenuResponseListdayfood?>? listDayFood;
   int currentDayInWeek = 0;
   UserInfoResponseData? userInfo;
 
@@ -29,9 +29,9 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
   }
 
   MenuResponseListdayfood? get currentDayData {
-    if (currentDayInWeek < 0 || currentDayInWeek >= listDayFood.length)
+    if (currentDayInWeek < 0 || currentDayInWeek >= (listDayFood?.length ?? 0))
       return null;
-    return listDayFood[currentDayInWeek];
+    return listDayFood?[currentDayInWeek];
   }
 
   void onChangeDay(int newDay) {
@@ -71,7 +71,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
         emit(const FoodMenuEmpty());
       } else {
         response.sortListDayFood();
-        listDayFood = response.listdayfood!;
+        listDayFood = response.listdayfood;
         menuResponseFood = response.food;
       }
       emit(const FoodMenuSuccess());
