@@ -83,6 +83,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
 
   Future<void> changeFood(
       {required String? foodId, required FoodModel newFoodModel}) async {
+    await Future.delayed(Duration.zero);
     emit(const FoodMenuLoading());
     final FoodChangeRequest request = FoodChangeRequest(
       id: foodId,
