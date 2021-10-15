@@ -83,7 +83,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               child: state is FoodMenuLoading || _cubit.listDayFood == null
                   ? Center(
                       child: (state is FoodMenuLoading)
-                          ? const SizedBox.shrink()
+                          ? const SizedBox()
                           : const CircularProgressIndicator(),
                     )
                   : SmartRefresher(
