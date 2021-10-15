@@ -81,8 +81,10 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               title: R.string.food_menu.tr(),
               background: R.drawable.bg_detail_pro,
               child: state is FoodMenuLoading || _cubit.listDayFood == null
-                  ? const Center(
-                      child: CircularProgressIndicator(),
+                  ? Center(
+                      child: (state is FoodMenuLoading)
+                          ? const SizedBox.shrink()
+                          : const CircularProgressIndicator(),
                     )
                   : SmartRefresher(
                       controller: _controller,
