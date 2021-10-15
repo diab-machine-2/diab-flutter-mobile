@@ -14,6 +14,7 @@ import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/version.dart';
+import 'package:medical/src/widget/my_plan_screens/list_plan/list_plan_page.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:medical/src/widget/home/home.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -38,6 +39,9 @@ class _TabbarControllerState extends State<TabbarController>
 
   final List<Widget> tabs = [
     HomeController(),
+    Container(color: Colors.red),
+    const ListPlanPage(),
+    Container(color: Colors.green)
   ];
 
   @override

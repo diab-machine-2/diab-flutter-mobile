@@ -589,6 +589,9 @@ class Strings {
 	String get title_goal => 'title_goal';
 	String get title_lesson => 'title_lesson';
 	String get title_activity => 'title_activity';
+	String get title_route => 'title_route';
+	String get title_suggest => 'title_suggest';
+	String get search_by_key => 'search_by_key';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';
