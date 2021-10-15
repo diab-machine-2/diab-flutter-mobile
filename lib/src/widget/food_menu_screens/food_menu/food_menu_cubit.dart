@@ -57,7 +57,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
       });
       emit(const FoodMenuInitial());
     }
-    getCurrentUserInfo();
+    await getCurrentUserInfo();
     getTemplateDetail();
   }
 
