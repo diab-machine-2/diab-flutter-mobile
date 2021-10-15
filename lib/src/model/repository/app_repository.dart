@@ -195,7 +195,7 @@ class AppRepository {
       CreateMenuRequest request) async {
     try {
       final CreateMenuResponse response = await appClient.createMenu(request);
-      if (response.data != null) {
+      if (response.statusCode == 200) {
         return ApiResult.success(data: response);
       } else
         return ApiResult.failure(

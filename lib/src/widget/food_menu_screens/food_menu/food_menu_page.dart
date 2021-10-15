@@ -80,176 +80,199 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             return CommonPage(
               title: R.string.food_menu.tr(),
               background: R.drawable.bg_detail_pro,
-              child: SmartRefresher(
-                controller: _controller,
-                onRefresh: () => _cubit.getTemplateDetail(isRefresh: true),
-                child: _cubit.listDayFood.isEmpty
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding:
-                                EdgeInsets.fromLTRB(67.w, 100.h, 67.w, 52.h),
-                            child: Image.asset(R.drawable.img_cooking),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 28.w),
-                            child: Text(
-                              R.string.food_menu_empty.tr(),
-                              style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              updateKcal(context);
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(top: 24.h),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 16.w, vertical: 8.h),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(200),
-                                border: Border.all(
-                                  width: 2,
-                                  color: R.color.greenGradientBottom,
-                                ),
-                              ),
-                              child: Text(
-                                R.string.change_food_info.tr(),
-                                style: TextStyle(
-                                  color: R.color.greenGradientBottom,
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        children: [
-                          _buildTitle(
-                              title: _cubit.menuResponseFood?.menuTitle ?? '',
-                              onUpdateKcal: () {
-                                updateKcal(context);
-                              }),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: List.generate(7, (index) {
-                                return _buildDayOfTheWeekSingleButton(
-                                    dayTitle: Utils.getDayInWeekTitle(index),
-                                    isSelected:
-                                        index == _cubit.currentDayInWeek,
-                                    isEnable: !_cubit.isBasicUser || index <= 1,
-                                    onTapEnabled: () {
-                                      _cubit.onChangeDay(index);
-                                    },
-                                    onTapDisable: () {
-                                      NavigationUtil.navigatePage(
-                                        context,
-                                        UpdateRequiredWidget(
-                                          title: R.string.food_menu.tr(),
-                                          description: R
-                                              .string.food_menu_update_required
-                                              .tr(),
-                                        ),
-                                      );
-                                    });
-                              }),
-                            ),
-                          ),
-                          //Divider
-                          Container(
-                            margin: EdgeInsets.only(top: 10.h),
-                            color: R.color.color0xffE5E5E5,
-                            height: 1,
-                            width: double.infinity,
-                          ),
-                          Expanded(
-                            child: ListView(
-                              padding: EdgeInsets.fromLTRB(16.w, 0, 16.h, 32.h),
+              child: state is FoodMenuLoading || _cubit.listDayFood == null
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : SmartRefresher(
+                      controller: _controller,
+                      onRefresh: () =>
+                          _cubit.getTemplateDetail(isRefresh: true),
+                      child: _cubit.listDayFood?.isEmpty == true
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                ...List.generate(
-                                    _cubit.listDayFood[_cubit.currentDayInWeek]
-                                            ?.timeGroups?.length ??
-                                        0, (index) {
-                                  return _buildMealWidget(
-                                      mealData: _cubit
-                                          .listDayFood[_cubit.currentDayInWeek]
-                                          ?.timeGroups?[index],
-                                      onChangeFood: (foodDetail) async {
-                                        final dynamic result =
-                                            await NavigationUtil.navigatePage(
-                                          context,
-                                          ChangeMenuPage(
-                                            preFoodModel: foodDetail?.foodModel,
-                                            hasSelectQuantity: false,
-                                          ),
-                                        );
-                                        if (result is FoodModel) {
-                                          _cubit.changeFood(
-                                              foodId: foodDetail?.id,
-                                              newFoodModel: result);
-                                        }
-                                      });
-                                }).toList(),
-                                Visibility(
-                                  visible: _cubit
-                                          .menuResponseFood?.note?.isNotEmpty ??
-                                      false,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                      top: 33.h,
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(
+                                      67.w, 100.h, 67.w, 52.h),
+                                  child: Image.asset(R.drawable.img_cooking),
+                                ),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 28.w),
+                                  child: Text(
+                                    R.string.food_menu_empty.tr(),
+                                    style: TextStyle(
+                                      color: R.color.textDark,
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w400,
                                     ),
-                                    child: Row(
-                                      children: [
-                                        Image.asset(
-                                          R.drawable.ic_info,
-                                          width: 24,
-                                          height: 24,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: RichText(
-                                            text: TextSpan(
-                                              text: '${R.string.note.tr()} ',
-                                              style: TextStyle(
-                                                  color: R.color.textDark,
-                                                  fontSize: 16.sp,
-                                                  fontWeight: FontWeight.w700),
-                                              children: [
-                                                TextSpan(
-                                                  text: _cubit.menuResponseFood
-                                                          ?.note ??
-                                                      '',
-                                                  style: TextStyle(
-                                                      color: R.color.textDark,
-                                                      fontSize: 16.sp,
-                                                      fontWeight:
-                                                          FontWeight.w400),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    updateKcal(context);
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(top: 24.h),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 16.w, vertical: 8.h),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(200),
+                                      border: Border.all(
+                                        width: 2,
+                                        color: R.color.greenGradientBottom,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      R.string.change_food_info.tr(),
+                                      style: TextStyle(
+                                        color: R.color.greenGradientBottom,
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 33.h),
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                _buildTitle(
+                                    title: _cubit.menuResponseFood?.menuTitle ??
+                                        '',
+                                    onUpdateKcal: () {
+                                      updateKcal(context);
+                                    }),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16.w),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: List.generate(7, (index) {
+                                      return _buildDayOfTheWeekSingleButton(
+                                          dayTitle:
+                                              Utils.getDayInWeekTitle(index),
+                                          isSelected:
+                                              index == _cubit.currentDayInWeek,
+                                          isEnable:
+                                              !_cubit.isBasicUser || index <= 1,
+                                          onTapEnabled: () {
+                                            _cubit.onChangeDay(index);
+                                          },
+                                          onTapDisable: () {
+                                            NavigationUtil.navigatePage(
+                                              context,
+                                              UpdateRequiredWidget(
+                                                title: R.string.food_menu.tr(),
+                                                description: R.string
+                                                    .food_menu_update_required
+                                                    .tr(),
+                                              ),
+                                            );
+                                          });
+                                    }),
+                                  ),
+                                ),
+                                //Divider
+                                Container(
+                                  margin: EdgeInsets.only(top: 10.h),
+                                  color: R.color.color0xffE5E5E5,
+                                  height: 1,
+                                  width: double.infinity,
+                                ),
+                                Expanded(
+                                  child: ListView(
+                                    padding: EdgeInsets.fromLTRB(
+                                        16.w, 0, 16.h, 32.h),
+                                    children: [
+                                      ...List.generate(
+                                          _cubit
+                                                  .listDayFood?[
+                                                      _cubit.currentDayInWeek]
+                                                  ?.timeGroups
+                                                  ?.length ??
+                                              0, (index) {
+                                        return _buildMealWidget(
+                                            mealData: _cubit
+                                                .listDayFood?[
+                                                    _cubit.currentDayInWeek]
+                                                ?.timeGroups?[index],
+                                            onChangeFood: (foodDetail) async {
+                                              final dynamic result =
+                                                  await NavigationUtil
+                                                      .navigatePage(
+                                                context,
+                                                ChangeMenuPage(
+                                                  preFoodModel:
+                                                      foodDetail?.foodModel,
+                                                  hasSelectQuantity: false,
+                                                ),
+                                              );
+                                              if (result is FoodModel) {
+                                                _cubit.changeFood(
+                                                    foodId: foodDetail?.id,
+                                                    newFoodModel: result);
+                                              }
+                                            });
+                                      }).toList(),
+                                      Visibility(
+                                        visible: _cubit.menuResponseFood?.note
+                                                ?.isNotEmpty ??
+                                            false,
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                            top: 33.h,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Image.asset(
+                                                R.drawable.ic_info,
+                                                width: 24,
+                                                height: 24,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    text:
+                                                        '${R.string.note.tr()} ',
+                                                    style: TextStyle(
+                                                        color: R.color.textDark,
+                                                        fontSize: 16.sp,
+                                                        fontWeight:
+                                                            FontWeight.w700),
+                                                    children: [
+                                                      TextSpan(
+                                                        text: _cubit
+                                                                .menuResponseFood
+                                                                ?.note ??
+                                                            '',
+                                                        style: TextStyle(
+                                                            color: R
+                                                                .color.textDark,
+                                                            fontSize: 16.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 33.h),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-              ),
+                    ),
             );
           },
         ),
@@ -509,8 +532,9 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                         size: 4, color: R.color.greenGradientBottom),
                   ),
                   Text(
-                    R.string.total_kcals
-                        .tr(args: ['${(foodDetail?.calorie ?? 0.0) * (foodDetail?.portion ?? 0)}']),
+                    R.string.total_kcals.tr(args: [
+                      '${(foodDetail?.calorie ?? 0.0) * (foodDetail?.portion ?? 0)}'
+                    ]),
                     style: TextStyle(
                       color: R.color.color0xff454649,
                       fontSize: 16.sp,
@@ -523,8 +547,9 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                         size: 4.w, color: R.color.greenGradientBottom),
                   ),
                   Text(
-                    R.string.total_starch
-                        .tr(args: ['${(foodDetail?.glucose ?? 0.0) * (foodDetail?.portion ?? 0)}']),
+                    R.string.total_starch.tr(args: [
+                      '${(foodDetail?.glucose ?? 0.0) * (foodDetail?.portion ?? 0)}'
+                    ]),
                     style: TextStyle(
                       color: R.color.color0xff454649,
                       fontSize: 16.sp,
