@@ -53,7 +53,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
         }
         emit(const FoodMenuSuccess());
       }, failure: (NetworkExceptions error) {
-        emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));
+        // emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));
       });
       emit(const FoodMenuInitial());
     }
