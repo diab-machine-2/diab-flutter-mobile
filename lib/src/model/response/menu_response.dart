@@ -85,7 +85,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
   bool get isDessert => foodType != null && 4 <= foodType! && foodType! <= 6;
 
   FoodModel get foodModel => FoodModel(
-      id: this.id,
+      id: this.foodId,
       name: this.foodName,
       portion: this.portion?.toDouble() ?? 0.0,
       unit: this.foodUnitName,
@@ -99,7 +99,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
       text: null,
       description: null,
       foodCategoryId: this.foodCategoryId,
-      quantity: 0.0);
+      );
 
   MenuResponseListdayfoodTimeGroupsDefaultFood.fromJson(
       Map<String, dynamic> json) {
@@ -206,6 +206,14 @@ class MenuResponseListdayfoodTimeGroups {
     this.totalGlucose,
     this.defaultFood,
   });
+
+  List<FoodModel> get listFoods {
+    final List<FoodModel> foods = [];
+    for (final defaultFood in defaultFood ?? []) {
+      foods.add(defaultFood.foodModel);
+    }
+    return foods;
+  }
 
   String? get mealName {
     if (timeCode == 4) return R.string.breakfast_sub_meal.tr();
@@ -434,6 +442,20 @@ class MenuResponse {
     this.listdayfood,
     this.message,
   });
+
+  List<FoodModel>? foodListInTime({required DateTime time, required  int timeCode}) {
+    final String dateCode = 'T${time.weekday + 1}';
+    if (listdayfood != null) {
+      for (int index = 0; index < listdayfood!.length; index++) {
+        if (listdayfood![index]?.dateCode == dateCode) {
+          final MenuResponseListdayfoodTimeGroups? foods = listdayfood![index]
+              ?.timeGroups
+              ?.firstWhere((mealDetail) => mealDetail?.timeCode == timeCode);
+          return foods?.listFoods;
+        }
+      }
+    }
+  } 
 
   void sortListDayFood() {
     if (listdayfood != null) {

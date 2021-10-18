@@ -1,7 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
@@ -54,8 +54,17 @@ class FoodItem extends StatelessWidget {
                       : R.color.transparent)),
           padding: EdgeInsets.only(left: 16, right: 16, top: 11, bottom: 11),
           child: Row(children: [
-            Image.network(model.image == null ? '' : model.image!.url ?? '',
-                width: 50, height: 50),
+            CachedNetworkImage(
+              imageUrl: model.image == null ? '' : model.image!.url ?? '',
+              width: 50,
+              height: 50,
+              placeholder: (_, __) {
+                return const Center(child: CircularProgressIndicator());
+              },
+              errorWidget: (_, __, ___) {
+                return Image.asset(R.drawable.ic_food_default);
+              },
+            ),
             SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -69,7 +78,7 @@ class FoodItem extends StatelessWidget {
                       : Padding(
                           padding: EdgeInsets.only(top: 4),
                           child: Text(
-                              '${R.string.da_an.tr()} ${roundAsFixed(selectedModel!.portion * selectedModel!.quantity)} ${selectedModel!.unit}, ${formatNumber(selectedModel!.quantity * selectedModel!.calorie!)} ${R.string.kcal.tr()}',
+                              '${R.string.da_an.tr()} ${roundAsFixed(selectedModel!.portion)} ${selectedModel!.unit}, ${formatNumber(selectedModel!.portion * selectedModel!.calorie!)} ${R.string.kcal.tr()}',
                               style: TextStyle(
                                   color: R.color.black,
                                   fontWeight: FontWeight.w400)),
@@ -81,21 +90,21 @@ class FoodItem extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 final newModel = FoodModel(
-                    id: model.id,
-                    name: model.name,
-                    portion: model.portion,
-                    unit: model.unit,
-                    calorie: model.calorie,
-                    glucose: model.glucose,
-                    lipid: model.lipid,
-                    protein: model.protein,
-                    fibre: model.fibre,
-                    image: model.image,
-                    liked: !model.liked!,
-                    text: model.text,
-                    description: model.description,
-                    foodCategoryId: model.foodCategoryId,
-                    quantity: model.quantity);
+                  id: model.id,
+                  name: model.name,
+                  portion: model.portion,
+                  unit: model.unit,
+                  calorie: model.calorie,
+                  glucose: model.glucose,
+                  lipid: model.lipid,
+                  protein: model.protein,
+                  fibre: model.fibre,
+                  image: model.image,
+                  liked: !model.liked!,
+                  text: model.text,
+                  description: model.description,
+                  foodCategoryId: model.foodCategoryId,
+                );
                 callback(newModel, index);
                 likeFood(context);
               },
@@ -127,12 +136,8 @@ class FoodItem extends StatelessWidget {
     try {
       if (!model.liked!) {
         await FoodClient().addFoodToFavorite(model.id);
-        Observable.instance.notifyObservers([], notifyName : "add_food_to_favorite");
-        // DartNotificationCenter.post(channel: 'add_food_to_favorite');
       } else {
         await FoodClient().romoveFoodFromFavorite(model.id);
-        Observable.instance.notifyObservers([], notifyName : "add_food_to_favorite");
-        // DartNotificationCenter.post(channel: 'add_food_to_favorite');
       }
       BotToast.closeAllLoading();
     } catch (e, _) {

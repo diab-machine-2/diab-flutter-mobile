@@ -34,9 +34,10 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
     foodModel = widget.newFoodModel;
     isFavorite = widget.newFoodModel?.liked ?? false;
     if (widget.newFoodModel != null) {
-      selectedQuantity = widget.newFoodModel!.quantity.floor();
+      final double quantity = recommendedQuantity;
+      selectedQuantity = quantity.floor();
       selectedPercent =
-          ((widget.newFoodModel!.quantity - selectedQuantity) * 10).round();
+          ((quantity - selectedQuantity) * 10).round();
     }
     hourController = FixedExtentScrollController(
       initialItem: selectedQuantity,
@@ -181,7 +182,7 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
                     children: [
                       TextSpan(
                         text:
-                            ' $recommendedQuantity ${widget.newFoodModel?.unit} ',
+                            ' ${recommendedQuantity.toStringAsFixed(1)} ${widget.newFoodModel?.unit} ',
                         style: TextStyle(
                             color: R.color.black,
                             fontSize: 16,
@@ -353,15 +354,15 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
   void onPop(BuildContext context, {required bool agree}) {
     foodModel = foodModel?.copyWith(
       liked: isFavorite,
-      quantity: widget.hasSelectQuantity
+      portion: widget.hasSelectQuantity
           ? selectedQuantity + (selectedPercent / 10)
           : recommendedQuantity.toDouble(),
     );
     NavigationUtil.pop(context, result: [agree, foodModel]);
   }
 
-  int get recommendedQuantity =>
+  double get recommendedQuantity =>
       ((widget.preFoodModel?.calorie ?? 0) *
-          (widget.preFoodModel?.portion ?? 0.0)) ~/
+          (widget.preFoodModel?.portion ?? 0.0)) /
       (widget.newFoodModel?.calorie ?? 1);
 }

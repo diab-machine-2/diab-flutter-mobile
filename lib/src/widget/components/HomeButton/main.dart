@@ -1,11 +1,13 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu_item.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class FunkyOverlay extends StatefulWidget {
   @override
@@ -116,8 +118,13 @@ class FunkyOverlayState extends State<FunkyOverlay>
                     color: R.color.white,
                     onTap: () async {
                       await onClose();
-                      Navigator.pushNamed(context, NavigatorName.add_food,
-                          arguments: {'type': 'input', 'id': null});
+                      NavigationUtil.navigatePage(
+                        context,
+                        const DailyNutritionPage(
+                          type: 'input',
+                          id: null,
+                        ),
+                      );
                     }),
                 CircularMenuItem(
                     bottom: bottom,
