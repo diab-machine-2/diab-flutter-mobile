@@ -115,9 +115,10 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                     decoration: BoxDecoration(color: R.color.white),
                     textAlign: TextAlign.center,
                     enableInteractiveSelection: false,
+                    maxLength: 5,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
-                      FilteringTextInputFormatter.deny(RegExp(r'[-.]'))
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                     ],
                     style: TextStyle(
                         color: R.color.textDark,
