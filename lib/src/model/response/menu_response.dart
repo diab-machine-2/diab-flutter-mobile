@@ -443,7 +443,20 @@ class MenuResponse {
     this.message,
   });
 
+  String idInTime({required DateTime time, required int timeCode}) {
+    final MenuResponseListdayfoodTimeGroups? timeGroups =
+        _timeGroupsFromDateTime(time: time, timeCode: timeCode);
+    final MenuResponseListdayfoodTimeGroupsDefaultFood? food = timeGroups
+        ?.defaultFood
+        ?.firstWhere((element) => element?.timeCode == timeCode);
+    return food?.id ?? '';
+  }
+
   List<FoodModel>? foodListInTime({required DateTime time, required  int timeCode}) {
+    return _timeGroupsFromDateTime(time: time, timeCode: timeCode)?.listFoods;
+  } 
+
+  MenuResponseListdayfoodTimeGroups? _timeGroupsFromDateTime({required DateTime time, required  int timeCode}) {
     final String dateCode = 'T${time.weekday + 1}';
     if (listdayfood != null) {
       for (int index = 0; index < listdayfood!.length; index++) {
@@ -451,11 +464,11 @@ class MenuResponse {
           final MenuResponseListdayfoodTimeGroups? foods = listdayfood![index]
               ?.timeGroups
               ?.firstWhere((mealDetail) => mealDetail?.timeCode == timeCode);
-          return foods?.listFoods;
+          return foods;
         }
       }
     }
-  } 
+  }
 
   void sortListDayFood() {
     if (listdayfood != null) {

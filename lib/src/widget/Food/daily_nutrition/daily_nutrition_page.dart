@@ -388,10 +388,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                         ),
                                                       );
                                                       if (result is FoodModel) {
+                                                        await _cubit.changeFood(newFoodModel: result);
                                                         _cubit.selectedFoods[
                                                             index] = result;
-                                                        _cubit.calculatorCalo();
-                                                        _cubit.refresh();
                                                       }
                                                     },
                                                     child: Image.asset(

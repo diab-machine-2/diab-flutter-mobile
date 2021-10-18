@@ -8,6 +8,8 @@ import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/food_change_request.dart';
+import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -43,6 +45,8 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   List<dynamic> files = [];
 
   String notes = '';
+
+  String foodId = '';
 
   double totalKcal = 0;
 
@@ -131,9 +135,32 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
       if (response.listdayfood == null || response.food == null) {
         selectedFoods = [];
       } else {
+        foodId = response.idInTime(time: selectedDate, timeCode: timeCode ?? 1);
         selectedFoods =
             response.foodListInTime(time: selectedDate, timeCode: timeCode ?? 1) ?? [];
       }
+      calculatorCalo();
+      emit(const DailyNutritionSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(DailyNutritionFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    emit(const DailyNutritionInitial());
+  }
+
+  Future<void> changeFood({
+    required FoodModel newFoodModel,
+  }) async {
+    if (foodId.isEmpty) return;
+    await Future.delayed(Duration.zero);
+    emit(const DailyNutritionLoading());
+    final FoodChangeRequest request = FoodChangeRequest(
+      id: foodId,
+      foodId: newFoodModel.id,
+      portion: newFoodModel.portion.toInt(),
+    );
+    final ApiResult<CommonResponse> apiResult =
+        await repository.changeFood(request);
+    apiResult.when(success: (CommonResponse response) async {
       calculatorCalo();
       emit(const DailyNutritionSuccess());
     }, failure: (NetworkExceptions error) {
