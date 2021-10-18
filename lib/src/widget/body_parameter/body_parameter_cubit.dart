@@ -1,11 +1,14 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
+import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/repo/user/user_client.dart';
+
 import 'body_parameter.dart';
 
 class BodyParameterCubit extends Cubit<BodyParameterState> {
@@ -20,8 +23,23 @@ class BodyParameterCubit extends Cubit<BodyParameterState> {
 
   BodyParameterCubit(this.repository) : super(InitialBodyParameterState());
 
+  Future<void> getUserProfile() async {
+    try {
+      final UserModel? user = await UserClient().fetchUser();
+      selectedWeight = user?.weight?.toInt();
+      selectedHeight = user?.height?.toInt();
+      if (user?.age != null) {
+        selectedYear = DateTime.now().year - user!.age!;
+      }
+      emit(BodyParameterSuccess());
+    } catch (error) {
+      emit(BodyParameterFailure(error.toString()));
+    }
+  }
+
   void getListActivity() async {
     emit(BodyParameterLoading());
+    await getUserProfile();
     ApiResult<List<ExerciseIntensityModel>> apiResult =
         await repository.getListActivity();
     apiResult.when(success: (List<ExerciseIntensityModel> response) {
@@ -50,7 +68,8 @@ class BodyParameterCubit extends Cubit<BodyParameterState> {
       return;
     }
     if (intensity == null) {
-      emit(BodyParameterFailure(R.string.ban_chua_chon_cuong_do_tap_luyen.tr()));
+      emit(
+          BodyParameterFailure(R.string.ban_chua_chon_cuong_do_tap_luyen.tr()));
       return;
     }
     ApiResult<TDEEResponse> apiResult = await repository.getTDEE(

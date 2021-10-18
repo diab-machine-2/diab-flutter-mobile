@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 
 import 'kcal_parameter.dart';
 
@@ -16,7 +18,7 @@ class KcalParameterCubit extends Cubit<KcalParameterState> {
       createMenuRequest.includeDinner != true;
 
   void onCheckedNoSubMeal() {
-    emit(KcalParameterLoading());
+    emit(const KcalParameterLoading());
     createMenuRequest =
         CreateMenuRequest.emptyRequest().copyWith(kcal: createMenuRequest.kcal);
     emit(
@@ -25,7 +27,19 @@ class KcalParameterCubit extends Cubit<KcalParameterState> {
   }
 
   void refresh() {
-    emit(KcalParameterLoading());
+    emit(const KcalParameterSuccess());
+    emit(InitialKcalParameterState());
+  }
+
+  Future<void> getUserTarget() async {
+    await Future.delayed(Duration.zero);
+    emit(const KcalParameterLoading());
+    try {
+      final GoalInfoModel? data = await UserClient().fetchGoalInfo();
+      emit(KcalParameterKcalChanged(data?.dailyEnergyGoal?.toInt()));
+    } catch (error) {
+      emit(KcalParameterFailure(error.toString()));
+    }
     emit(InitialKcalParameterState());
   }
 }
