@@ -18,10 +18,9 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'kcal_parameter.dart';
 
 class KcalParameterPage extends StatefulWidget {
-  final bool isUpdate;
   final Function(CreateMenuRequest request)? callback;
 
-  const KcalParameterPage({Key? key, this.callback, this.isUpdate = false})
+  const KcalParameterPage({Key? key, this.callback})
       : super(key: key);
 
   @override
@@ -31,6 +30,7 @@ class KcalParameterPage extends StatefulWidget {
 class _KcalParameterPageState extends State<KcalParameterPage> {
   final TextEditingController _controller = TextEditingController();
   late KcalParameterCubit _cubit;
+  bool showExpandedText = false;
 
   @override
   void initState() {
@@ -155,14 +155,16 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
             height: 25.h,
           ),
           GestureDetector(
-            onTap: () {
-              showDialog(
+            onTap: () async {
+              await showDialog(
                 barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                 context: context,
                 builder: (_) => BodyParameterPage(callback: (number) {
                   _controller.text = (number?.round() ?? "--").toString();
                 }),
               );
+              showExpandedText = true;
+              _cubit.refresh();
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -187,7 +189,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
             ),
           ),
           Visibility(
-            visible: widget.isUpdate,
+            visible: showExpandedText,
             child: Padding(
               padding: EdgeInsets.only(top: 17.h),
               child: Stack(
