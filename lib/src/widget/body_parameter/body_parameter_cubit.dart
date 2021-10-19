@@ -20,6 +20,7 @@ class BodyParameterCubit extends Cubit<BodyParameterState> {
   int? selectedWeight;
   int? selectedHeight;
   int? selectedYear;
+  double? activityLevelRate;
 
   BodyParameterCubit(this.repository) : super(InitialBodyParameterState());
 
@@ -31,13 +32,14 @@ class BodyParameterCubit extends Cubit<BodyParameterState> {
       if (user?.age != null) {
         selectedYear = DateTime.now().year - user!.age!;
       }
+      activityLevelRate = user?.activityLevelRate;
       emit(BodyParameterSuccess());
     } catch (error) {
       emit(BodyParameterFailure(error.toString()));
     }
   }
 
-  void getListActivity() async {
+  Future<void> getListActivity() async {
     emit(BodyParameterLoading());
     await getUserProfile();
     ApiResult<List<ExerciseIntensityModel>> apiResult =
@@ -45,12 +47,18 @@ class BodyParameterCubit extends Cubit<BodyParameterState> {
     apiResult.when(success: (List<ExerciseIntensityModel> response) {
       listData = response;
       if (listData.isNotEmpty) {
-        intensity = listData.first;
+        for (final data in listData) {
+          if ((activityLevelRate ?? 0) <= (data.rate ?? 0)) {
+            intensity = data;
+            break;
+          }
+        }
       }
       emit(BodyParameterSuccess());
     }, failure: (NetworkExceptions error) {
       emit(BodyParameterFailure(NetworkExceptions.getErrorMessage(error)));
     });
+    emit(InitialBodyParameterState());
   }
 
   void getTDEE() async {
