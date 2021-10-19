@@ -13,6 +13,7 @@ import 'package:medical/src/model/response/list_activity_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
+import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
@@ -219,6 +220,18 @@ class AppRepository {
         return const ApiResult.failure(
             error:
                 NetworkExceptions.defaultError("Can't not get UserInfo"));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /**
+   * My Plan
+   */
+  Future<ApiResult<MyLessonResponse>> getLessonsList(int type) async {
+    try {
+      final MyLessonResponse response = await appClient.getLessonsList(type);
+      return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

@@ -15,6 +15,7 @@ import 'package:retrofit/retrofit.dart';
 import 'response/common_response.dart';
 import 'response/detail_package_response.dart';
 import 'response/list_package_response.dart';
+import 'response/my_lesson_response.dart';
 import 'response/save_survey_result_response.dart';
 import 'response/tdee_response.dart';
 import 'response/upgrade_account_response.dart';
@@ -105,4 +106,10 @@ abstract class AppApi {
   //Acount
   @GET("App/Account/GetCurrentUserInfo")
   Future<UserInfoResponse> getCurrentUserInfo();
+
+  //My Plan
+  @GET("App/Lesson/MyLessons")
+  Future<MyLessonResponse> getLessonsList(
+    @Path("type") int type,
+  );
 }

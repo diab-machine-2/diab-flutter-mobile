@@ -145,6 +145,8 @@ class Drawables {
 	String get ic_info => "lib/res/drawables/ic_info.png";
 	String get ic_kg => "lib/res/drawables/ic_kg.png";
 	String get ic_laughing => "lib/res/drawables/ic_laughing.png";
+	String get ic_lesson_lock => "lib/res/drawables/ic_lesson_lock.png";
+	String get ic_lesson_not_learn => "lib/res/drawables/ic_lesson_not_learn.png";
 	String get ic_line_average => "lib/res/drawables/ic_line_average.png";
 	String get ic_line_high => "lib/res/drawables/ic_line_high.png";
 	String get ic_line_low => "lib/res/drawables/ic_line_low.png";
