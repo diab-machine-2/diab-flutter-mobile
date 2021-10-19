@@ -15,6 +15,7 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String description = templateDetail?.description ?? '';
     return Scaffold(
       body: CommonPage(
         title: R.string.result.tr(),
@@ -56,32 +57,35 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
-              width: double.infinity,
-              margin: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 0),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                  color: R.color.main_6,
-                  borderRadius: BorderRadius.circular(8)),
-              child: ExpandableRichText(
-                templateDetail?.description ?? '',
-                maxLines: 3,
-                trimExpandedText: R.string.show_less.tr(),
-                trimCollapsedText: R.string.show_more.tr(),
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  color: R.color.textDark,
-                ),
-                moreStyle: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w700,
-                  color: R.color.greenGradientBottom,
-                ),
-                lessStyle: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w700,
-                  color: R.color.greenGradientBottom,
+            Visibility(
+              visible: description.isNotEmpty,
+              child: Container(
+                width: double.infinity,
+                margin: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 0),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                    color: R.color.main_6,
+                    borderRadius: BorderRadius.circular(8)),
+                child: ExpandableRichText(
+                  description,
+                  maxLines: 3,
+                  trimExpandedText: R.string.show_less.tr(),
+                  trimCollapsedText: R.string.show_more.tr(),
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.textDark,
+                  ),
+                  moreStyle: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.greenGradientBottom,
+                  ),
+                  lessStyle: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.greenGradientBottom,
+                  ),
                 ),
               ),
             ),
@@ -94,7 +98,11 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
                     title: R.string.back_to_schedule.tr(),
                     onPressed: () {
                       Navigator.popUntil(
-                context, ModalRoute.withName(NavigatorName.schedule_glucose));
+                        context,
+                        ModalRoute.withName(
+                          NavigatorName.schedule_glucose,
+                        ),
+                      );
                     }),
               ),
             ),

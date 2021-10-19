@@ -107,7 +107,7 @@ class _CategoryMenuPageState extends State<CategoryMenuPage> {
                             return FoodItemWidget(
                               preFoodModel: widget.preFoodModel,
                               newFoodModel: _cubit.foods[index],
-                              isSelected: _cubit.foods[index] ==
+                              isSelected: _cubit.foods[index].id ==
                                   widget.preFoodModel?.id,
                               onFavorite: () {
                                 _cubit.toogleFavorite(

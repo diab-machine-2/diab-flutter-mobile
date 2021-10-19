@@ -9,6 +9,7 @@ class CommonPage extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTapBack;
   final IconData? icon;
+  final Widget? appBarAction;
 
   const CommonPage(
       {Key? key,
@@ -17,7 +18,8 @@ class CommonPage extends StatelessWidget {
       this.title,
       this.textColor,
       this.onTapBack,
-      this.icon})
+      this.icon,
+      this.appBarAction})
       : super(key: key);
 
   @override
@@ -34,6 +36,7 @@ class CommonPage extends StatelessWidget {
               textColor: textColor,
               backCallback: onTapBack,
               icon: icon,
+              rightWidget: appBarAction,
             ),
             Expanded(child: child)
           ],

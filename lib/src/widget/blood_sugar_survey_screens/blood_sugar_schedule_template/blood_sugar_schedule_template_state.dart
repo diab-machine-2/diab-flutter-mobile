@@ -53,11 +53,3 @@ class BloodSugarScheduleSaveSuccess extends BloodSugarScheduleTemplateState {
     return 'BloodSugarScheduleTemplateLoading{}';
   }
 }
-
-class BloodSugarScheduleTemplateNone extends BloodSugarScheduleTemplateState {
-  const BloodSugarScheduleTemplateNone();
-  @override
-  String toString() {
-    return 'BloodSugarScheduleTemplateNone{}';
-  }
-}

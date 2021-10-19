@@ -32,6 +32,7 @@ class UserModel {
   final bool? isMobileAccount;
   final String? firstLinkedAccount;
   final int? glucoseUnit;
+  final double? activityLevelRate;
 
   UserModel(
       {required this.id,
@@ -63,7 +64,9 @@ class UserModel {
       required this.isLinkedGoogle,
       required this.isMobileAccount,
       required this.firstLinkedAccount,
-      required this.glucoseUnit});
+      required this.glucoseUnit,
+      required this.activityLevelRate,
+      });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -113,7 +116,9 @@ class UserModel {
         isLinkedGoogle: json['isLinkedGoogle'],
         isMobileAccount: json['isMobileAccount'],
         firstLinkedAccount: json['firstLinkedAccount'],
-        glucoseUnit: json['glucoseUnit']);
+        glucoseUnit: json['glucoseUnit'],
+        activityLevelRate: json['activityLevelRate'],
+        );
   }
 
   static List<UserModel> toList(List<dynamic> items) {

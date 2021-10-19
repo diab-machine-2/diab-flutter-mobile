@@ -38,10 +38,9 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     super.initState();
     isLike = widget.model!.liked;
     if (widget.selectedModel != null) {
-      selectedQuantity = widget.selectedModel!.quantity.floor();
+      selectedQuantity = widget.selectedModel!.portion.floor();
       selectedPercent =
-          ((widget.selectedModel!.quantity - selectedQuantity) * 10).round();
-      //selectedPercent = selectedPercent == 0 ? 0 : (selectedPercent + 1);
+          ((widget.selectedModel!.portion - selectedQuantity) * 10).round();
     }
     hourController = FixedExtentScrollController(initialItem: selectedQuantity);
     minuteController =
@@ -277,7 +276,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                     "food": FoodModel(
                                         id: widget.model!.id,
                                         name: widget.model!.name,
-                                        portion: widget.model!.portion,
+                                        portion: quantity,
                                         unit: widget.model!.unit,
                                         calorie: widget.model!.calorie,
                                         glucose: widget.model!.glucose,
@@ -289,8 +288,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                         text: widget.model!.text,
                                         description: widget.model!.description,
                                         foodCategoryId:
-                                            widget.model!.foodCategoryId,
-                                        quantity: quantity)
+                                            widget.model!.foodCategoryId,)
                                   });
                               Navigator.pop(context);
                             },
@@ -344,12 +342,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     try {
       if (isLike!) {
         await FoodClient().addFoodToFavorite(widget.model!.id);
-        Observable.instance.notifyObservers([], notifyName : "add_food_to_favorite");
-        // DartNotificationCenter.post(channel: 'add_food_to_favorite');
       } else {
         await FoodClient().romoveFoodFromFavorite(widget.model!.id);
-        Observable.instance.notifyObservers([], notifyName : "add_food_to_favorite");
-        // DartNotificationCenter.post(channel: 'add_food_to_favorite');
       }
 
       BotToast.closeAllLoading();

@@ -228,7 +228,7 @@ class FoodClient extends FetchClient {
       };
       for (int i = 0; i < foods.length; i++) {
         params['foods[$i].id'] = foods[i].id ?? '';
-        params['foods[$i].portion'] = foods[i].quantity.toString();
+        params['foods[$i].portion'] = foods[i].portion.toString();
       }
       final response = await super
           .postHttp(path: '/App/Diet/Input', params: params, files: files);
@@ -256,16 +256,16 @@ class FoodClient extends FetchClient {
       List<String?> removalImageIds,
       List<String> files) async {
     try {
-      Map<String, String?> params = {
-        'id': id,
+      final Map<String, String> params = {
+        'id': id ?? '',
         'date': date.toString(),
-        'mealId': timeFrameId,
+        'mealId': timeFrameId ?? '',
         'note': note,
         'removalImageIdsStr': removalImageIds.join(';')
       };
       for (int i = 0; i < foods.length; i++) {
-        params['foods[$i].id'] = foods[i].id;
-        params['foods[$i].portion'] = foods[i].quantity.toString();
+        params['foods[$i].id'] = foods[i].id ?? '';
+        params['foods[$i].portion'] = foods[i].portion.toString();
       }
       final response = await super
           .putHttp(path: '/App/Diet/Input', params: params, files: files);

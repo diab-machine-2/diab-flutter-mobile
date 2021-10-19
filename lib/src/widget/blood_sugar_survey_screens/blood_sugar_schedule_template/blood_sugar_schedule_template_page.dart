@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -55,10 +56,6 @@ class _BloodSugarScheduleTemplatePageState
             Navigator.popUntil(
                 context, ModalRoute.withName(NavigatorName.schedule_glucose));
           }
-          if (state is BloodSugarScheduleTemplateNone) {
-            NavigationUtil.replace(context,
-                BloodSugarSurveyEmpty(templateDetail: _cubit.templateDetail));
-          }
         },
         builder: (context, state) {
           if (state is BloodSugarScheduleTemplateLoading) {
@@ -66,59 +63,63 @@ class _BloodSugarScheduleTemplatePageState
           } else {
             BotToast.closeAllLoading();
           }
-          return BloodSugarResultLayoutWidget(
-            title: R.string.result.tr(),
-            timeToTestPerDay: _cubit.templateDetail?.timePerDay,
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: R.color.white,
-              child: SafeArea(
-                top: false,
-                child: state is BloodSugarScheduleTemplateLoading
-                    ? const SizedBox()
-                    : SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              margin: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 0),
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                  color: R.color.main_6,
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: ExpandableRichText(
-                                _cubit.templateDetail?.description ?? '',
-                                maxLines: 3,
-                                trimExpandedText: R.string.show_less.tr(),
-                                trimCollapsedText: R.string.show_more.tr(),
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w400,
-                                  color: R.color.textDark,
-                                ),
-                                moreStyle: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: R.color.greenGradientBottom,
-                                ),
-                                lessStyle: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: R.color.greenGradientBottom,
-                                ),
+          return widget.templateCode == Const.TEMPLATE_NONE
+              ? BloodSugarSurveyEmpty(templateDetail: _cubit.templateDetail)
+              : BloodSugarResultLayoutWidget(
+                  title: R.string.result.tr(),
+                  timeToTestPerDay: _cubit.templateDetail?.timePerDay,
+                  child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: R.color.white,
+                    child: SafeArea(
+                      top: false,
+                      child: state is BloodSugarScheduleTemplateLoading
+                          ? const SizedBox()
+                          : SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    margin: EdgeInsets.fromLTRB(
+                                        16.w, 24.h, 16.w, 0),
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                        color: R.color.main_6,
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: ExpandableRichText(
+                                      _cubit.templateDetail?.description ?? '',
+                                      maxLines: 3,
+                                      trimExpandedText: R.string.show_less.tr(),
+                                      trimCollapsedText:
+                                          R.string.show_more.tr(),
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w400,
+                                        color: R.color.textDark,
+                                      ),
+                                      moreStyle: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: R.color.greenGradientBottom,
+                                      ),
+                                      lessStyle: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: R.color.greenGradientBottom,
+                                      ),
+                                    ),
+                                  ),
+                                  if (_cubit.isWeekTemplate)
+                                    _buildTemplateWeekSchedule()
+                                  else
+                                    _buildTemplateDaySchedule(),
+                                ],
                               ),
                             ),
-                            if (_cubit.isWeekTemplate)
-                              _buildTemplateWeekSchedule()
-                            else
-                              _buildTemplateDaySchedule(),
-                          ],
-                        ),
-                      ),
-              ),
-            ),
-          );
+                    ),
+                  ),
+                );
         },
       ),
     );

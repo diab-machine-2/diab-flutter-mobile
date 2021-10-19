@@ -6,7 +6,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -16,6 +15,8 @@ import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.da
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'daily_nutrition/daily_nutrition.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
   @override
@@ -144,8 +145,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
               ]),
           body: Column(children: [
             GestureDetector(
-              onTap: (){
-                //TODO: Tuyen navigate to IntroSampleMenuPage
+              onTap: () {
                 NavigationUtil.navigatePage(context, const FoodMenuPage());
               },
               child: Container(
@@ -154,8 +154,9 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Image.asset(R.drawable.ic_bowl_of_food,
-                    width: 24,
+                    Image.asset(
+                      R.drawable.ic_bowl_of_food,
+                      width: 24,
                       height: 20,
                     ),
                     const SizedBox(width: 8),
@@ -190,23 +191,13 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
           ]),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              _showMaterialDialog();
+              NavigationUtil.navigatePage(
+        context, const DailyNutritionPage(type: 'input', id: null));
             },
             child:
                 Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
           )),
     );
-  }
-
-  _showMaterialDialog() {
-    Navigator.pushNamed(context, NavigatorName.add_food,
-        arguments: {'type': 'input', 'id': null});
-    // showDialog(
-    //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
-    //   useSafeArea: false,
-    //   context: context,
-    //   builder: (_) => FunkyOverlay(),
-    // );
   }
 }
 

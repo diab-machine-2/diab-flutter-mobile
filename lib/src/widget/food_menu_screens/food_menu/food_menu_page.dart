@@ -47,7 +47,6 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => KcalParameterPage(
-        isUpdate: true,
         callback: (request) {
           _cubit.createMenu(request: request);
         },

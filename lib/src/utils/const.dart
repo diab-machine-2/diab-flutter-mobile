@@ -73,6 +73,8 @@ class Const {
 
   static const int DEFAULT_SIZE = 10;
 
+  static const int maxMedia = 5;
+
   static const String EN = "en";
   static const String VI = "vi";
 

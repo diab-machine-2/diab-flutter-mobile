@@ -53,7 +53,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
         }
         emit(const FoodMenuSuccess());
       }, failure: (NetworkExceptions error) {
-        emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));
+        // emit(FoodMenuFailure(NetworkExceptions.getErrorMessage(error)));
       });
       emit(const FoodMenuInitial());
     }
@@ -88,7 +88,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     final FoodChangeRequest request = FoodChangeRequest(
       id: foodId,
       foodId: newFoodModel.id,
-      portion: newFoodModel.quantity.toInt(),
+      portion: newFoodModel.portion.toInt(),
     );
     final ApiResult<CommonResponse> apiResult =
         await repository.changeFood(request);
