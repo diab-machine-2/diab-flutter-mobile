@@ -16,48 +16,46 @@ class FoodModel {
   final String? text;
   final String? description;
   final String? foodCategoryId;
-  final double quantity;
 
-  FoodModel(
-      {required this.id,
-      required this.name,
-      required this.portion,
-      required this.unit,
-      required this.calorie,
-      required this.glucose,
-      required this.lipid,
-      required this.protein,
-      required this.fibre,
-      required this.image,
-      required this.liked,
-      required this.text,
-      required this.description,
-      required this.foodCategoryId,
-      required this.quantity});
+  FoodModel({
+    required this.id,
+    required this.name,
+    required this.portion,
+    required this.unit,
+    required this.calorie,
+    required this.glucose,
+    required this.lipid,
+    required this.protein,
+    required this.fibre,
+    required this.image,
+    required this.liked,
+    required this.text,
+    required this.description,
+    required this.foodCategoryId,
+  });
 
   @override
   factory FoodModel.fromJson(Map<String, dynamic> json) {
     return FoodModel(
-        id: json['id'],
-        name: json['name'],
-        portion: json['portion'] == null ? 1 : json['portion'].toDouble() ?? 1,
-        unit: json['unit'],
-        calorie: json['calorie'] == null
-            ? (json['caloValue'] == null
-                ? json['caloriesPerUnit']
-                : json['caloValue'])
-            : json['calorie'],
-        glucose: json['glucose'],
-        lipid: json['lipid'],
-        protein: json['protein'],
-        fibre: json['fibre'],
-        image:
-            json['image'] == null ? null : ImagesModel.fromJson(json['image']),
-        liked: json['liked'],
-        text: json['text'],
-        description: json['description'],
-        foodCategoryId: json['foodCategoryId'],
-        quantity: json['inputPortion'] ?? 1);
+      id: json['id'],
+      name: json['name'],
+      portion: json['portion'] == null ? 1 : json['portion'].toDouble() ?? 1,
+      unit: json['unit'],
+      calorie: json['calorie'] == null
+          ? (json['caloValue'] == null
+              ? json['caloriesPerUnit']
+              : json['caloValue'])
+          : json['calorie'],
+      glucose: json['glucose'],
+      lipid: json['lipid'],
+      protein: json['protein'],
+      fibre: json['fibre'],
+      image: json['image'] == null ? null : ImagesModel.fromJson(json['image']),
+      liked: json['liked'],
+      text: json['text'],
+      description: json['description'],
+      foodCategoryId: json['foodCategoryId'],
+    );
   }
 
   static List<FoodModel> toList(List<dynamic> items) {
@@ -79,7 +77,6 @@ class FoodModel {
     String? text,
     String? description,
     String? foodCategoryId,
-    double? quantity,
   }) {
     return FoodModel(
       id: id ?? this.id,
@@ -96,10 +93,8 @@ class FoodModel {
       text: text ?? this.text,
       description: description ?? this.description,
       foodCategoryId: foodCategoryId ?? this.foodCategoryId,
-      quantity: quantity ?? this.quantity,
     );
   }
-  
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -116,6 +111,5 @@ class FoodModel {
         'text': text,
         'description': description,
         'foodCategoryId': foodCategoryId,
-        'quantity': quantity
       };
 }

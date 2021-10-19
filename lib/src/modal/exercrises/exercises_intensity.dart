@@ -4,11 +4,13 @@ class ExerciseIntensityModel {
   final String? id;
   final String? name;
   final String? note;
+  final double? rate;
 
   ExerciseIntensityModel({
     required this.id,
     required this.name,
     required this.note,
+    required this.rate,
   });
   @override
   factory ExerciseIntensityModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +18,7 @@ class ExerciseIntensityModel {
       id: json['id'],
       name: json['name'],
       note: json['note'],
+      rate: json['rate'],
     );
   }
 
@@ -24,6 +27,7 @@ class ExerciseIntensityModel {
     map['id'] = id;
     map['name'] = name;
     map['note'] = note;
+    map['rate'] = rate;
     return map;
   }
 

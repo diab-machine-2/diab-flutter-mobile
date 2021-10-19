@@ -1260,8 +1260,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
                         callback: (hour, minute) {
-                          selectedHour = DateTime.now().hour;
-                          selectedMinute = DateTime.now().minute;
+                          selectedHour = hour ?? selectedHour;
+                          selectedMinute = minute ?? selectedMinute;
                         }),
                     SizedBox(height: 20),
                     Row(children: [

@@ -94,9 +94,6 @@ class FoodChartState extends State<FoodChart>
                                 : model.carbChart.length == 0)
                             ? GestureDetector(
                                 onTap: () {
-                                  // Navigator.pushNamed(
-                                  //     context, NavigatorName.add_food,
-                                  //     arguments: {'type': 'input', 'id': null});
                                   showDialog(
                                     barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                                     context: context,

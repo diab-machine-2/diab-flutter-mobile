@@ -1225,7 +1225,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                     isMobileAccount: userInfo.isMobileAccount,
                                     firstLinkedAccount:
                                         userInfo.firstLinkedAccount,
-                                    glucoseUnit: userInfo.glucoseUnit);
+                                    glucoseUnit: userInfo.glucoseUnit,
+                                    activityLevelRate: userInfo.activityLevelRate);
                                 updateUserInfo(userInfo);
                                 Navigator.pop(context);
                               }
@@ -1355,7 +1356,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                   isMobileAccount: userInfo.isMobileAccount,
                                   firstLinkedAccount:
                                       userInfo.firstLinkedAccount,
-                                  glucoseUnit: userInfo.glucoseUnit);
+                                  glucoseUnit: userInfo.glucoseUnit,
+                                  activityLevelRate: userInfo.activityLevelRate);
                               updateUserInfo(userInfo);
                               Navigator.pop(context);
                             },
@@ -1477,7 +1479,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                   isMobileAccount: userInfo.isMobileAccount,
                                   firstLinkedAccount:
                                       userInfo.firstLinkedAccount,
-                                  glucoseUnit: userInfo.glucoseUnit);
+                                  glucoseUnit: userInfo.glucoseUnit,
+                                  activityLevelRate: userInfo.activityLevelRate);
                               updateUserInfo(userInfo);
                               Navigator.pop(context);
                             },
@@ -1602,7 +1605,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                   isMobileAccount: userInfo.isMobileAccount,
                                   firstLinkedAccount:
                                       userInfo.firstLinkedAccount,
-                                  glucoseUnit: userInfo.glucoseUnit);
+                                  glucoseUnit: userInfo.glucoseUnit,
+                                  activityLevelRate: userInfo.activityLevelRate);
                               updateUserInfo(userInfo);
                               Navigator.pop(context);
                             },
@@ -1730,7 +1734,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                   isMobileAccount: userInfo.isMobileAccount,
                                   firstLinkedAccount:
                                       userInfo.firstLinkedAccount,
-                                  glucoseUnit: userInfo.glucoseUnit);
+                                  glucoseUnit: userInfo.glucoseUnit,
+                                  activityLevelRate: userInfo.activityLevelRate);
                               updateUserInfo(userInfo);
                               Navigator.pop(context);
                             },
@@ -1804,7 +1809,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 isLinkedGoogle: userInfo.isLinkedGoogle,
                 isMobileAccount: userInfo.isMobileAccount,
                 firstLinkedAccount: userInfo.firstLinkedAccount,
-                glucoseUnit: userInfo.glucoseUnit);
+                glucoseUnit: userInfo.glucoseUnit,
+                activityLevelRate: userInfo.activityLevelRate);
             updateUserInfo(userInfo);
           },
           title: R.string.enter_weight.tr(),
@@ -1859,7 +1865,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 isLinkedGoogle: userInfo.isLinkedGoogle,
                 isMobileAccount: userInfo.isMobileAccount,
                 firstLinkedAccount: userInfo.firstLinkedAccount,
-                glucoseUnit: userInfo.glucoseUnit);
+                glucoseUnit: userInfo.glucoseUnit,
+                activityLevelRate: userInfo.activityLevelRate);
             updateUserInfo(userInfo);
           },
           title: R.string.enter_height.tr(),
@@ -1989,7 +1996,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                     isMobileAccount: userInfo.isMobileAccount,
                                     firstLinkedAccount:
                                         userInfo.firstLinkedAccount,
-                                    glucoseUnit: userInfo.glucoseUnit);
+                                    glucoseUnit: userInfo.glucoseUnit,
+                                    activityLevelRate: userInfo.activityLevelRate);
                                 updateUserInfo(userInfo);
                                 Navigator.pop(context);
                               }
@@ -2063,7 +2071,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                     isLinkedGoogle: userInfo.isLinkedGoogle,
                     isMobileAccount: userInfo.isMobileAccount,
                     firstLinkedAccount: userInfo.firstLinkedAccount,
-                    glucoseUnit: userInfo.glucoseUnit);
+                    glucoseUnit: userInfo.glucoseUnit,
+                    activityLevelRate: userInfo.activityLevelRate);
                 updateUserInfo(userInfo);
                 Navigator.pop(context);
               },
@@ -2112,7 +2121,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 isLinkedGoogle: userInfo!.isLinkedGoogle,
                 isMobileAccount: userInfo!.isMobileAccount,
                 firstLinkedAccount: userInfo!.firstLinkedAccount,
-                glucoseUnit: userInfo!.glucoseUnit);
+                glucoseUnit: userInfo!.glucoseUnit,
+                activityLevelRate: userInfo!.activityLevelRate);
             updateUserInfo(userInfo!);
           },
         )),

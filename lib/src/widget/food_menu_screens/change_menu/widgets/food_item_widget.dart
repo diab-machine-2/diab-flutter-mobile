@@ -34,8 +34,8 @@ class FoodItemWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: isSelected ? R.color.color0xFFC3E8D3 : R.color.transparent,
             border: Border.all(
-                color:
-                    isSelected ? R.color.color0xff72CB9C : R.color.transparent),
+              color: isSelected ? R.color.color0xff72CB9C : R.color.transparent,
+            ),
           ),
           padding: const EdgeInsets.only(
             left: 16,
@@ -48,8 +48,9 @@ class FoodItemWidget extends StatelessWidget {
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
               child: CachedNetworkImage(
-                imageUrl:
-                    newFoodModel.image == null ? '' : newFoodModel.image!.url ?? '',
+                imageUrl: newFoodModel.image == null
+                    ? ''
+                    : newFoodModel.image!.url ?? '',
                 width: 50,
                 height: 50,
                 placeholder: (_, __) {
@@ -76,7 +77,7 @@ class FoodItemWidget extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        '${R.string.da_an.tr()} ${roundAsFixed(newFoodModel.portion * newFoodModel.quantity)} ${newFoodModel.unit}, ${formatNumber(newFoodModel.quantity * newFoodModel.calorie!)} ${R.string.kcal.tr()}',
+                        '${R.string.da_an.tr()} ${roundAsFixed(newFoodModel.portion)} ${newFoodModel.unit}, ${formatNumber(newFoodModel.portion * newFoodModel.calorie!)} ${R.string.kcal.tr()}',
                         style: TextStyle(
                           color: R.color.black,
                           fontWeight: FontWeight.w400,

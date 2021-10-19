@@ -1047,7 +1047,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
         isLinkedGoogle: userInfo.isLinkedGoogle,
         isMobileAccount: userInfo.isMobileAccount,
         glucoseUnit: userInfo.glucoseUnit,
-        firstLinkedAccount: userInfo.firstLinkedAccount);
+        firstLinkedAccount: userInfo.firstLinkedAccount,
+        activityLevelRate: userInfo.activityLevelRate,);
     try {
       BotToast.showLoading();
       await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);

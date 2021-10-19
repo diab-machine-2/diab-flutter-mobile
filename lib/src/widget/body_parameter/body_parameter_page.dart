@@ -100,31 +100,31 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
           ),
           SizedBox(height: 14.h),
           parameterWidget(
-              R.string.can_nang.tr(),
-              R.string.kg.tr(),
-              R.string.enter_weight.tr(),
-              _cubit.selectedWeight,
-              50,
-              200,
-              _cubit.selectWeight),
+              title: R.string.can_nang.tr(),
+              unit: R.string.kg.tr(),
+              dialogTitle: R.string.enter_weight.tr(),
+              defaultValue: _cubit.selectedWeight,
+              defaultNumber: 50,
+              maxNumber: 200,
+              valueChange: _cubit.selectWeight),
           SizedBox(height: 16.h),
           parameterWidget(
-              R.string.chieu_cao.tr(),
-              R.string.cm.tr(),
-              R.string.enter_height.tr(),
-              _cubit.selectedHeight,
-              160,
-              300,
-              _cubit.selectHeight),
+              title: R.string.chieu_cao.tr(),
+              unit: R.string.cm.tr(),
+              dialogTitle: R.string.enter_height.tr(),
+              defaultValue: _cubit.selectedHeight,
+              defaultNumber: 160,
+              maxNumber: 300,
+              valueChange: _cubit.selectHeight),
           SizedBox(height: 16.h),
           parameterWidget(
-              R.string.nam_sinh.tr(),
-              "",
-              R.string.nhap_nam_sinh.tr(),
-              _cubit.selectedYear,
-              1970,
-              DateTime.now().year,
-              _cubit.selectYear),
+              title: R.string.nam_sinh.tr(),
+              unit: "",
+              dialogTitle: R.string.nhap_nam_sinh.tr(),
+              defaultValue: _cubit.selectedYear,
+              defaultNumber: 1970,
+              maxNumber: DateTime.now().year,
+              valueChange: _cubit.selectYear),
           SizedBox(height: 20.h),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,8 +209,15 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
         ]);
   }
 
-  Widget parameterWidget(String title, String unit, String dialogTitle,
-      int? defaultValue, int defaultNumber, int maxNumber, ValueChanged<int?> valueChange) {
+  Widget parameterWidget({
+    required String title,
+    required String unit,
+    required String dialogTitle,
+    required int? defaultValue,
+    required int defaultNumber,
+    required int maxNumber,
+    required ValueChanged<int?> valueChange,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -240,17 +247,17 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
                                 callback: valueChange,
                                 title: dialogTitle,
                                 max: maxNumber,
-                                numberDefault: defaultNumber,
+                                numberDefault: defaultValue ?? defaultNumber,
                                 unit: unit),
                           );
                         },
                         child: Center(
                           child: Text((defaultValue ?? "--").toString(),
                               style: TextStyle(
-                                  color: defaultValue == null ||
-                                          defaultValue == 0
-                                      ? R.color.captionColorGray
-                                      : R.color.textDark,
+                                  color:
+                                      defaultValue == null || defaultValue == 0
+                                          ? R.color.captionColorGray
+                                          : R.color.textDark,
                                   fontSize: 24.sp,
                                   fontWeight: FontWeight.w500)),
                         ),

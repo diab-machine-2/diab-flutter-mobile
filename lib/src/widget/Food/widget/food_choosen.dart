@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -53,7 +54,7 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
   calculatorCalo() {
     totalKcal = 0;
     foods.forEach((element) {
-      totalKcal += element.calorie! * element.quantity;
+      totalKcal += element.calorie! * element.portion;
     });
   }
 
@@ -154,8 +155,19 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                                 padding: EdgeInsets.only(
                                     left: 16, right: 16, top: 11, bottom: 11),
                                 child: Row(children: [
-                                  Image.network(foods[index].image!.url ?? '',
-                                      width: 50, height: 50),
+                                  CachedNetworkImage(
+                                    imageUrl: foods[index].image!.url ?? '',
+                                    width: 50,
+                                    height: 50,
+                                    placeholder: (_, __) {
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    },
+                                    errorWidget: (_, __, ___) {
+                                      return Image.asset(
+                                          R.drawable.ic_food_default);
+                                    },
+                                  ),
                                   SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
@@ -167,7 +179,7 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                                                 color: R.color.black,
                                                 fontWeight: FontWeight.w500)),
                                         Text(
-                                            '${R.string.da_an.tr()} ${roundAsFixed(foods[index].portion * foods[index].quantity)} ${foods[index].unit}, ${formatNumber(foods[index].quantity * foods[index].calorie!)} ${R.string.kcal.tr()}',
+                                            '${R.string.da_an.tr()} ${roundAsFixed(foods[index].portion)} ${foods[index].unit}, ${formatNumber(foods[index].portion * foods[index].calorie!)} ${R.string.kcal.tr()}',
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontWeight: FontWeight.w400))
