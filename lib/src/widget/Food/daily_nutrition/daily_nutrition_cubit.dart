@@ -156,7 +156,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     final FoodChangeRequest request = FoodChangeRequest(
       id: foodId,
       foodId: newFoodModel.id,
-      portion: newFoodModel.portion.toInt(),
+      portion: newFoodModel.portion,
     );
     final ApiResult<CommonResponse> apiResult =
         await repository.changeFood(request);

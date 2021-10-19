@@ -45,7 +45,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
   String? foodUnitId;
   String? foodUnitName;
   String? foodName;
-  int? portion;
+  double? portion;
   double? calorie;
   double? glucose;
   double? lipid;
@@ -112,7 +112,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
     foodUnitId = json["foodUnitId"]?.toString();
     foodUnitName = json["foodUnitName"]?.toString();
     foodName = json["foodName"]?.toString();
-    portion = json["portion"]?.toInt();
+    portion = json["portion"]?.toDouble();
     calorie = json["calorie"]?.toDouble();
     glucose = json["glucose"]?.toDouble();
     lipid = json["lipid"]?.toDouble();

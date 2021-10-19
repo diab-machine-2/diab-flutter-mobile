@@ -73,6 +73,7 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 27),
                     child: TabBarWidget(
+                      showOnlySuggestTab: true,
                       initTab: TabItem.suggest,
                       onSelect: (TabItem tab) {
                         _cubit.refreshTab(newTab: tab);

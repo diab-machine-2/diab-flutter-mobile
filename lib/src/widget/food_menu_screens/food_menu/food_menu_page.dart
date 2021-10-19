@@ -365,7 +365,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                 ),
                 Text(
                   R.string.total_kcals.tr(args: [
-                    '${num.parse(mealData?.totalKcal?.toStringAsFixed(3) ?? '0')}'
+                    '${num.parse(mealData?.totalKcal?.toStringAsFixed(1) ?? '0')}'
                   ]),
                   style: TextStyle(
                     color: R.color.textDark,
@@ -380,7 +380,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                 ),
                 Text(
                   R.string.total_starch.tr(args: [
-                    '${num.parse(mealData?.totalGlucose?.toStringAsFixed(3) ?? '0')}'
+                    '${num.parse(mealData?.totalGlucose?.toStringAsFixed(1) ?? '0')}'
                   ]),
                   style: TextStyle(
                     color: R.color.textDark,
@@ -486,7 +486,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                       child: Padding(
                         padding: EdgeInsets.only(top: 4.h),
                         child: Text(
-                          '${foodDetail?.portion} ${foodDetail?.foodUnitName}',
+                          '${foodDetail?.portion?.toStringAsFixed(1)} ${foodDetail?.foodUnitName}',
                           style: TextStyle(
                             color: R.color.color0xff454649,
                             fontSize: 16.sp,
@@ -520,7 +520,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               child: Row(
                 children: [
                   Text(
-                    '${foodDetail?.portion} ${foodDetail?.foodUnitName}',
+                    '${foodDetail?.portion?.toStringAsFixed(1)} ${foodDetail?.foodUnitName}',
                     style: TextStyle(
                       color: R.color.color0xff454649,
                       fontSize: 16.sp,
