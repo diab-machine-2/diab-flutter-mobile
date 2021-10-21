@@ -291,11 +291,13 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                       if (!Utils.isEmpty(text)) {
                         number = int.parse(text);
                         showDialog(
-                          barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+                          barrierColor:
+                              R.color.color0xff003F38.withOpacity(0.5),
                           context: context,
                           builder: (_) => NoticeChangePage(onClick: () {
                             NavigationUtil.pop(context);
-                            Future.delayed(const Duration(milliseconds: 200), () {
+                            Future.delayed(const Duration(milliseconds: 200),
+                                () {
                               if (widget.callback != null && number != null) {
                                 _cubit.createMenuRequest.setKcal = number;
                                 widget.callback!(_cubit.createMenuRequest);
