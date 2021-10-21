@@ -18,11 +18,9 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'kcal_parameter.dart';
 
 class KcalParameterPage extends StatefulWidget {
-  final bool isUpdate;
   final Function(CreateMenuRequest request)? callback;
 
-  const KcalParameterPage({Key? key, this.callback, this.isUpdate = false})
-      : super(key: key);
+  const KcalParameterPage({Key? key, this.callback}) : super(key: key);
 
   @override
   _KcalParameterPageState createState() => _KcalParameterPageState();
@@ -31,11 +29,13 @@ class KcalParameterPage extends StatefulWidget {
 class _KcalParameterPageState extends State<KcalParameterPage> {
   final TextEditingController _controller = TextEditingController();
   late KcalParameterCubit _cubit;
+  bool showExpandedText = false;
 
   @override
   void initState() {
     final AppRepository repository = AppRepository();
     _cubit = KcalParameterCubit(repository);
+    _cubit.getUserTarget();
     super.initState();
   }
 
@@ -44,35 +44,42 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
     return Scaffold(
       backgroundColor: R.color.transparent,
       body: Center(
-          child: Container(
-              width: double.infinity,
-              margin: EdgeInsets.symmetric(horizontal: 24.h),
-              padding: EdgeInsets.all(20.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.h),
-                color: R.color.white,
-              ),
-              child: BlocProvider(
-                create: (context) => _cubit,
-                child: BlocConsumer<KcalParameterCubit, KcalParameterState>(
-                  listener: (context, state) {
-                    if (state is KcalParameterFailure) {
-                      Message.showToastMessage(context, state.error);
-                    }
-                    if (state is KcalParameterLoading) {
-                      BotToast.showLoading();
-                    } else {
-                      BotToast.closeAllLoading();
-                    }
-                  },
-                  builder: (
-                    BuildContext context,
-                    KcalParameterState state,
-                  ) {
-                    return buildPage(context, state);
-                  },
-                ),
-              ))),
+        child: Container(
+          width: double.infinity,
+          margin: EdgeInsets.symmetric(horizontal: 24.h),
+          padding: EdgeInsets.all(20.h),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.h),
+            color: R.color.white,
+          ),
+          child: BlocProvider(
+            create: (context) => _cubit,
+            child: BlocConsumer<KcalParameterCubit, KcalParameterState>(
+              listener: (context, state) {
+                if (state is KcalParameterFailure) {
+                  Message.showToastMessage(context, state.error);
+                }
+                if (state is KcalParameterLoading) {
+                  BotToast.showLoading();
+                } else {
+                  BotToast.closeAllLoading();
+                }
+                if (state is KcalParameterKcalChanged) {
+                  if (state.kcal != null) {
+                    _controller.text = '${state.kcal}';
+                  }
+                }
+              },
+              builder: (
+                BuildContext context,
+                KcalParameterState state,
+              ) {
+                return buildPage(context, state);
+              },
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -115,9 +122,12 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                     decoration: BoxDecoration(color: R.color.white),
                     textAlign: TextAlign.center,
                     enableInteractiveSelection: false,
+                    maxLength: 5,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
-                      FilteringTextInputFormatter.deny(RegExp(r'[-.]'))
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[0-9]'),
+                      ),
                     ],
                     style: TextStyle(
                         color: R.color.textDark,
@@ -128,25 +138,20 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                         color: R.color.textDark,
                         fontSize: 50.sp,
                         fontWeight: FontWeight.bold),
-                    onChanged: (value) {
-                      // setState(() {
-                      //   selectedCalo = (value == null ||
-                      //       value.isEmpty)
-                      //       ? 0
-                      //       : int.parse(value);
-                      // });
-                    },
+                    onChanged: (value) {},
                   ),
                 ),
                 Container(height: 1, width: 130.h, color: R.color.gray)
               ]),
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
-                child: Text(R.string.kcal.tr(),
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: R.color.textDark,
-                    )),
+                child: Text(
+                  R.string.kcal.tr(),
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: R.color.textDark,
+                  ),
+                ),
               ),
             ],
           ),
@@ -154,14 +159,16 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
             height: 25.h,
           ),
           GestureDetector(
-            onTap: () {
-              showDialog(
+            onTap: () async {
+              await showDialog(
                 barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                 context: context,
                 builder: (_) => BodyParameterPage(callback: (number) {
                   _controller.text = (number?.round() ?? "--").toString();
                 }),
               );
+              showExpandedText = true;
+              _cubit.refresh();
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -186,7 +193,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
             ),
           ),
           Visibility(
-            visible: widget.isUpdate,
+            visible: showExpandedText,
             child: Padding(
               padding: EdgeInsets.only(top: 17.h),
               child: Stack(
@@ -271,46 +278,46 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                  flex: 1,
-                  child: ButtonWidget(
-                    title: R.string.cancel.tr(),
-                    backgroundColor: R.color.grayBorder,
-                    textColor: R.color.textDark,
-                    height: 43.h,
-                    onPressed: () => NavigationUtil.pop(context),
-                  )),
+                flex: 1,
+                child: ButtonWidget(
+                  title: R.string.cancel.tr(),
+                  backgroundColor: R.color.grayBorder,
+                  textColor: R.color.textDark,
+                  height: 43.h,
+                  onPressed: () => NavigationUtil.pop(context),
+                ),
+              ),
               SizedBox(width: 15.w),
               Expanded(
-                  flex: 1,
-                  child: ButtonWidget(
-                    title: R.string.agree.tr(),
-                    height: 43.h,
-                    onPressed: () {
-                      final String text = _controller.text.trim();
-                      int? number;
-                      if (!Utils.isEmpty(text)) {
-                        number = int.parse(text);
-                        showDialog(
-                          barrierColor:
-                              R.color.color0xff003F38.withOpacity(0.5),
-                          context: context,
-                          builder: (_) => NoticeChangePage(onClick: () {
-                            NavigationUtil.pop(context);
-                            Future.delayed(const Duration(milliseconds: 200),
-                                () {
-                              if (widget.callback != null && number != null) {
-                                _cubit.createMenuRequest.setKcal = number;
-                                widget.callback!(_cubit.createMenuRequest);
-                              }
-                            });
-                          }),
-                        );
-                      } else {
-                        Message.showToastMessage(
-                            context, R.string.ban_chua_nhap_gia_tri.tr());
-                      }
-                    },
-                  )),
+                flex: 1,
+                child: ButtonWidget(
+                  title: R.string.agree.tr(),
+                  height: 43.h,
+                  onPressed: () {
+                    final String text = _controller.text.trim();
+                    int? number;
+                    if (!Utils.isEmpty(text)) {
+                      number = int.parse(text);
+                      showDialog(
+                        barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+                        context: context,
+                        builder: (_) => NoticeChangePage(onClick: () {
+                          NavigationUtil.pop(context);
+                          Future.delayed(const Duration(milliseconds: 200), () {
+                            if (widget.callback != null && number != null) {
+                              _cubit.createMenuRequest.setKcal = number;
+                              widget.callback!(_cubit.createMenuRequest);
+                            }
+                          });
+                        }),
+                      );
+                    } else {
+                      Message.showToastMessage(
+                          context, R.string.ban_chua_nhap_gia_tri.tr());
+                    }
+                  },
+                ),
+              ),
             ],
           ),
         ],

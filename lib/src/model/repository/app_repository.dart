@@ -208,12 +208,12 @@ class AppRepository {
       CreateMenuRequest request) async {
     try {
       final CreateMenuResponse response = await appClient.createMenu(request);
-      if (response.meta?.success == true) {
+      if (response.statusCode == 200) {
         return ApiResult.success(data: response);
       } else
-        return const ApiResult.failure(
+        return ApiResult.failure(
             error:
-                NetworkExceptions.defaultError("Can't find a matching menu"));
+                NetworkExceptions.defaultError(response.message ?? ''));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

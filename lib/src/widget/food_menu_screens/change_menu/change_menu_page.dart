@@ -264,14 +264,21 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
                   return Container(height: 1, color: R.color.color0xffE5E5E5);
                 },
                 itemBuilder: (BuildContext context, int index) {
+                  final bool isSelected = category.subCategories[index].id ==
+                      _cubit.initFood?.foodCategoryId;
                   return GestureDetector(
                     onTap: () {
                       showListFood(category.subCategories[index]);
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: R.color.transparent,
-                        border: Border.all(color: R.color.transparent),
+                        color: isSelected
+                            ? R.color.color0xFFC3E8D3
+                            : R.color.transparent,
+                        border: Border.all(
+                            color: isSelected
+                                ? R.color.color0xff72CB9C
+                                : R.color.transparent),
                       ),
                       padding: const EdgeInsets.only(
                         left: 16,

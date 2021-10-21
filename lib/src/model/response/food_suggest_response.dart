@@ -86,7 +86,6 @@ class FoodSuggestResponseData {
         text: '',
         description: '',
         foodCategoryId: this.foodCategoryId,
-        quantity: this.portion?.toDouble() ?? 0.0,
       );
 
   FoodSuggestResponseData.fromJson(Map<String, dynamic> json) {

@@ -25,7 +25,6 @@ import 'package:medical/src/widget/Exercrises/add_exercrises.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Exercrises/search_exercrises.dart';
-import 'package:medical/src/widget/Food/add_food.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/course_feedback/course_feedback_page.dart';
@@ -330,14 +329,6 @@ class _AppState extends State<App> {
                   case NavigatorName.detail_emotion:
                     return _buildRoute(settings, EmotionDetailTabbarController(),
                         isPresent: true);
-                  case NavigatorName.add_food:
-                    final data = settings.arguments as Map<String, dynamic>;
-                    return _buildRoute(
-                        settings,
-                        AddFoodController(
-                          type: data['type'],
-                          id: data['id'],
-                        ));
                   case NavigatorName.emotion_table:
                     final data = settings.arguments as Map<String, dynamic>;
                     return _buildRoute(

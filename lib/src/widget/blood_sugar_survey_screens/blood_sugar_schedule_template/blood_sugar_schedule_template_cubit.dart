@@ -51,7 +51,6 @@ class BloodSugarScheduleTemplateCubit
         isChanged = false;
         if (templateDetail?.code == Const.TEMPLATE_NONE) {
           saveSurveyResult();
-          emit(const BloodSugarScheduleTemplateNone());
         }
         emit(const BloodSugarScheduleTemplateSuccess());
       }

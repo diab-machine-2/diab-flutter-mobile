@@ -1,11 +1,14 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
+import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/repo/user/user_client.dart';
+
 import 'body_parameter.dart';
 
 class BodyParameterCubit extends Cubit<BodyParameterState> {
@@ -17,22 +20,45 @@ class BodyParameterCubit extends Cubit<BodyParameterState> {
   int? selectedWeight;
   int? selectedHeight;
   int? selectedYear;
+  double? activityLevelRate;
 
   BodyParameterCubit(this.repository) : super(InitialBodyParameterState());
 
-  void getListActivity() async {
+  Future<void> getUserProfile() async {
+    try {
+      final UserModel? user = await UserClient().fetchUser();
+      selectedWeight = user?.weight?.toInt();
+      selectedHeight = user?.height?.toInt();
+      if (user?.age != null) {
+        selectedYear = DateTime.now().year - user!.age!;
+      }
+      activityLevelRate = user?.activityLevelRate;
+      emit(BodyParameterSuccess());
+    } catch (error) {
+      emit(BodyParameterFailure(error.toString()));
+    }
+  }
+
+  Future<void> getListActivity() async {
     emit(BodyParameterLoading());
+    await getUserProfile();
     ApiResult<List<ExerciseIntensityModel>> apiResult =
         await repository.getListActivity();
     apiResult.when(success: (List<ExerciseIntensityModel> response) {
       listData = response;
       if (listData.isNotEmpty) {
-        intensity = listData.first;
+        for (final data in listData) {
+          if ((activityLevelRate ?? 0) <= (data.rate ?? 0)) {
+            intensity = data;
+            break;
+          }
+        }
       }
       emit(BodyParameterSuccess());
     }, failure: (NetworkExceptions error) {
       emit(BodyParameterFailure(NetworkExceptions.getErrorMessage(error)));
     });
+    emit(InitialBodyParameterState());
   }
 
   void getTDEE() async {
@@ -50,7 +76,8 @@ class BodyParameterCubit extends Cubit<BodyParameterState> {
       return;
     }
     if (intensity == null) {
-      emit(BodyParameterFailure(R.string.ban_chua_chon_cuong_do_tap_luyen.tr()));
+      emit(
+          BodyParameterFailure(R.string.ban_chua_chon_cuong_do_tap_luyen.tr()));
       return;
     }
     ApiResult<TDEEResponse> apiResult = await repository.getTDEE(

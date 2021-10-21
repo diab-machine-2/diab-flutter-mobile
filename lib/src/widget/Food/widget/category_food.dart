@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -131,8 +132,8 @@ class _CategoryFoodState extends State<CategoryFood>
                                   double number = 0;
                                   foodOfCategory.forEach((element) {
                                     totalCalo +=
-                                        element.quantity * element.calorie!;
-                                    number += element.quantity;
+                                        element.portion * element.calorie!;
+                                    number += element.portion;
                                   });
                                   return GestureDetector(
                                     onTap: () {
@@ -155,12 +156,24 @@ class _CategoryFoodState extends State<CategoryFood>
                                             top: 11,
                                             bottom: 11),
                                         child: Row(children: [
-                                          Image.network(
-                                              category.subCategories[index]
-                                                      .image.url ??
-                                                  '',
-                                              width: 50,
-                                              height: 50),
+                                          CachedNetworkImage(
+                                            imageUrl: category
+                                                    .subCategories[index]
+                                                    .image
+                                                    .url ??
+                                                '',
+                                            width: 50,
+                                            height: 50,
+                                            placeholder: (_, __) {
+                                              return const Center(
+                                                  child:
+                                                      CircularProgressIndicator());
+                                            },
+                                            errorWidget: (_, __, ___) {
+                                              return Image.asset(
+                                                  R.drawable.ic_food_default);
+                                            },
+                                          ),
                                           SizedBox(width: 16),
                                           Expanded(
                                             child: Column(

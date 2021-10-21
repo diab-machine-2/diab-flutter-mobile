@@ -157,7 +157,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
     }
     if (notifyName == 'food_change_data') {
       _refresh();
-      checkScreen(NavigatorName.detail_food);
+      // checkScreen(NavigatorName.detail_food);
     }
     if (notifyName == 'hba1c_change_data') {
       _refresh();
