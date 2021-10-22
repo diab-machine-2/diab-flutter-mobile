@@ -243,7 +243,9 @@ class CustomSegmentState extends State<CustomSegment> {
         child: Text(
           title,
           style: TextStyle(
-            color: R.color.greenGradientBottom,
+            color: isSelected
+                ? R.color.greenGradientBottom
+                : R.color.captionColorGray,
             fontSize: 14.sp,
             fontWeight: FontWeight.w700,
           ),

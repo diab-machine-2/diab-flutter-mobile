@@ -391,6 +391,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                         await _cubit.changeFood(newFoodModel: result);
                                                         _cubit.selectedFoods[
                                                             index] = result;
+                                                        _cubit.refresh();
                                                       }
                                                     },
                                                     child: Image.asset(
