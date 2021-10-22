@@ -124,6 +124,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   Future<void> getSuggestFood() async {
     if (timeCode == null || isBasicUser && selectedDate.weekday > 2) {
       selectedFoods = [];
+      refresh();
       return;
     }
     emit(const DailyNutritionLoading());
