@@ -2,6 +2,7 @@ import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
+import 'package:medical/src/model/request/update_lesson_section_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
@@ -9,6 +10,7 @@ import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
@@ -16,6 +18,7 @@ import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
+import 'package:medical/src/model/response/update_lesson_section_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -232,6 +235,45 @@ class AppRepository {
     try {
       final MyLessonResponse response = await appClient.getLessonsList(type);
       return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<LessonSectionListResponse>> getListLessonSection(String lessonId) async {
+    try {
+      final LessonSectionListResponse response = await appClient.getListLessonSection(lessonId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<UpdateLessonSectionResponse>> insertLearningLessonAccount(
+      UpdateLessonSectionRequest request) async {
+    try {
+      final UpdateLessonSectionResponse response =
+          await appClient.insertLearningLessonAccount(request);
+      if (response.statusCode == 200) {
+        return ApiResult.success(data: response);
+      } else
+        return ApiResult.failure(
+            error: NetworkExceptions.defaultError(response.message ?? ''));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<UpdateLessonSectionResponse>> setCompletedLessonAccount(
+      UpdateLessonSectionRequest request) async {
+    try {
+      final UpdateLessonSectionResponse response =
+          await appClient.setCompletedLessonAccount(request);
+      if (response.statusCode == 200) {
+        return ApiResult.success(data: response);
+      } else
+        return ApiResult.failure(
+            error: NetworkExceptions.defaultError(response.message ?? ''));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

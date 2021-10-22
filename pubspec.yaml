@@ -70,6 +70,7 @@ dependencies:
   # url_launcher: ^5.5.0
   url_launcher: ^6.0.11
   flutter_html: ^2.1.4
+  simple_html_css: ^3.0.1
   image_cropper: ^1.4.1
   flutter_facebook_login:
     git:
@@ -94,6 +95,10 @@ dependencies:
   avatars: ^2.2.0
   cached_network_image: ^3.1.0
   flutter_inapp_purchase: ^5.0.3
+  #video player
+  better_player: ^0.0.77
+  #audio player
+  audioplayers: ^0.20.1
 
 dev_dependencies:
   flutter_test:

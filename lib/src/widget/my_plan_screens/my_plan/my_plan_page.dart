@@ -175,96 +175,95 @@ class _MyPlanPageState extends State<MyPlanPage> {
             title: R.string.search_by_key.tr(),
             onPressed: () {
               showDialog(
-                  barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-                  barrierDismissible: true,
-                  context: context,
-                  builder: (_) => GestureDetector(
-                        onTap: () {
-                          NavigationUtil.pop(context);
-                        },
-                        child: Scaffold(
-                          backgroundColor: R.color.transparent,
-                          body: Center(
-                            child: GestureDetector(
-                              child: Container(
-                                width: 344.w,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 16.w, vertical: 24.h),
-                                decoration: BoxDecoration(
-                                  color: R.color.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.centerLeft,
-                                      child: Wrap(
-                                        spacing: 8.w,
-                                        runSpacing: 10.h,
-                                        children: List.generate(
-                                          _cubit.keyWordList.length,
-                                          (index) => GestureDetector(
-                                            onTap: () {},
-                                            child: Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 15.w,
-                                                  vertical: 5.h),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(36),
-                                                border: Border.all(
-                                                    color: R
-                                                        .color.color0xffB1DDDB),
-                                              ),
-                                              child: Text(
-                                                _cubit.keyWordList[index],
-                                                style: TextStyle(
-                                                  color: R.color.textDark,
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ),
+                barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+                barrierDismissible: true,
+                context: context,
+                builder: (_) => GestureDetector(
+                  onTap: () {
+                    NavigationUtil.pop(context);
+                  },
+                  child: Scaffold(
+                    backgroundColor: R.color.transparent,
+                    body: Center(
+                      child: GestureDetector(
+                        child: Container(
+                          width: 344.w,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16.w, vertical: 24.h),
+                          decoration: BoxDecoration(
+                            color: R.color.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                child: Wrap(
+                                  spacing: 8.w,
+                                  runSpacing: 10.h,
+                                  children: List.generate(
+                                    _cubit.keyWordList.length,
+                                    (index) => GestureDetector(
+                                      onTap: () {},
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15.w, vertical: 5.h),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(36),
+                                          border: Border.all(
+                                              color: R.color.color0xffB1DDDB),
+                                        ),
+                                        child: Text(
+                                          _cubit.keyWordList[index],
+                                          style: TextStyle(
+                                            color: R.color.textDark,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 20.h),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        SizedBox(
-                                          width: 150.w,
-                                          child: ButtonWidget(
-                                            height: 43.h,
-                                            title: 'Huỷ',
-                                            onPressed: () {
-                                              NavigationUtil.pop(context);
-                                            },
-                                            textColor: R.color.textDark,
-                                            backgroundColor: R.color.grayBorder,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 150.w,
-                                          child: ButtonWidget(
-                                              height: 43.h,
-                                              title: 'Xác nhận',
-                                              onPressed: () {
-                                                NavigationUtil.pop(context);
-                                              }),
-                                        )
-                                      ],
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
+                              SizedBox(height: 20.h),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: 150.w,
+                                    child: ButtonWidget(
+                                      height: 43.h,
+                                      title: 'Huỷ',
+                                      onPressed: () {
+                                        NavigationUtil.pop(context);
+                                      },
+                                      textColor: R.color.textDark,
+                                      backgroundColor: R.color.grayBorder,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 150.w,
+                                    child: ButtonWidget(
+                                        height: 43.h,
+                                        title: 'Xác nhận',
+                                        onPressed: () {
+                                          NavigationUtil.pop(context);
+                                        }),
+                                  )
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                      ));
+                      ),
+                    ),
+                  ),
+                ),
+              );
             },
             textSize: 14,
             radius: 8,
@@ -298,7 +297,7 @@ class _MyPlanPageState extends State<MyPlanPage> {
                       top: (127.h) / 2 + 20.h,
                       left: 19.5.w,
                       child: Container(
-                        height: max((6 - 1) * 127.h, 0),
+                        height: max((_cubit.lessonsList.length - 1) * 127.h, 0),
                         width: 1,
                         child: const DashedVerticalLine(),
                       ),
@@ -310,8 +309,15 @@ class _MyPlanPageState extends State<MyPlanPage> {
                       (index) => _buildLessonWidget(
                           lessonDetail: _cubit.lessonsList[index],
                           onTap: () {
-                            NavigationUtil.navigatePage(
-                                context, const LessonDetailPage());
+                            if (_cubit.lessonsList[index]?.id?.isNotEmpty ==
+                                true) {
+                              NavigationUtil.navigatePage(
+                                  context,
+                                  LessonDetailPage(
+                                      _cubit.lessonsList[index]!.id!,
+                                ),
+                              );
+                            }
                           }),
                     )
                       ..insert(0, SizedBox(height: 20.h))
@@ -353,53 +359,56 @@ class _MyPlanPageState extends State<MyPlanPage> {
             ),
           ),
           SizedBox(width: 16.w),
-          Container(
-            height: 87.w,
-            width: 87.w,
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
           Expanded(
-            child: GestureDetector(
+            child: InkWell(
               onTap: onTap,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 14.w),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      lessonDetail?.module ?? '',
-                      style: TextStyle(
-                        color: R.color.greenGradientBottom,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w400,
+              child: Row(
+                children: [
+                  Container(
+                    height: 87.w,
+                    width: 87.w,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 14.w),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            lessonDetail?.module ?? '',
+                            style: TextStyle(
+                              color: R.color.greenGradientBottom,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          Text(
+                            lessonDetail?.name ?? '',
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          _buildLessonStatusWidget(lessonDetail: lessonDetail),
+                        ],
                       ),
                     ),
-                    Text(
-                      lessonDetail?.name ?? '',
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    _buildLessonStatusWidget(lessonDetail: lessonDetail),
-                  ],
-                ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 24.w,
+                    color: R.color.greenGradientBottom,
+                  ),
+                ],
               ),
-            ),
-          ),
-          GestureDetector(
-            onTap: onTap,
-            child: Icon(
-              Icons.chevron_right_rounded,
-              size: 24.w,
-              color: R.color.greenGradientBottom,
             ),
           ),
           SizedBox(width: 16.w),

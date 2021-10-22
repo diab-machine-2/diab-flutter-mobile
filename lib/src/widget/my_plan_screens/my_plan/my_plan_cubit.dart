@@ -75,7 +75,7 @@ class MyPlanCubit extends Cubit<MyPlanState> {
     } else {
       planTypeList = [
         PlanType.goal,
-        PlanType.activity,
+        PlanType.lesson,
       ];
     }
     emit(const MyPlanChangeType());
