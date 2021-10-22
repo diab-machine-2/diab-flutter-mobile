@@ -12,7 +12,7 @@ class FoodChangeRequest {
 
   String? id;
   String? foodId;
-  int? portion;
+  double? portion;
 
   FoodChangeRequest({
     this.id,
@@ -22,7 +22,7 @@ class FoodChangeRequest {
   FoodChangeRequest.fromJson(Map<String, dynamic> json) {
     id = json["id"]?.toString();
     foodId = json["foodId"]?.toString();
-    portion = json["portion"]?.toInt();
+    portion = json["portion"]?.toDouble();
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();

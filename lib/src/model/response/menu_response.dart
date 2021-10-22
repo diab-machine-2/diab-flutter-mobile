@@ -45,7 +45,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
   String? foodUnitId;
   String? foodUnitName;
   String? foodName;
-  int? portion;
+  double? portion;
   double? calorie;
   double? glucose;
   double? lipid;
@@ -85,22 +85,23 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
   bool get isDessert => foodType != null && 4 <= foodType! && foodType! <= 6;
 
   FoodModel get foodModel => FoodModel(
-      id: this.foodId,
-      code: this.foodMenuCode,
-      name: this.foodName,
-      portion: this.portion?.toDouble() ?? 0.0,
-      unit: this.foodUnitName,
-      calorie: this.calorie,
-      glucose: this.glucose,
-      lipid: this.lipid,
-      protein: this.protein,
-      fibre: this.fibre,
-      image: this.image,
-      liked: false,
-      text: null,
-      description: null,
-      foodCategoryId: this.foodCategoryId,
-    quantity: 0.0
+        id: this.foodId,
+        code: this.foodMenuCode,
+        name: this.foodName,
+        portion: this.portion?.toDouble() ?? 0.0,
+        unit: this.foodUnitName,
+        calorie: this.calorie,
+        glucose: this.glucose,
+        lipid: this.lipid,
+        protein: this.protein,
+        fibre: this.fibre,
+        image: this.image,
+        liked: false,
+        text: null,
+        description: null,
+        foodCategoryId: this.foodCategoryId,
+        quantity: 0.0,
+        mealId: this.id,
       );
 
   MenuResponseListdayfoodTimeGroupsDefaultFood.fromJson(
@@ -114,7 +115,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
     foodUnitId = json["foodUnitId"]?.toString();
     foodUnitName = json["foodUnitName"]?.toString();
     foodName = json["foodName"]?.toString();
-    portion = json["portion"]?.toInt();
+    portion = json["portion"]?.toDouble();
     calorie = json["calorie"]?.toDouble();
     glucose = json["glucose"]?.toDouble();
     lipid = json["lipid"]?.toDouble();
@@ -445,20 +446,50 @@ class MenuResponse {
     this.message,
   });
 
-  String idInTime({required DateTime time, required int timeCode}) {
-    final MenuResponseListdayfoodTimeGroups? timeGroups =
-        _timeGroupsFromDateTime(time: time, timeCode: timeCode);
-    final MenuResponseListdayfoodTimeGroupsDefaultFood? food = timeGroups
-        ?.defaultFood
-        ?.firstWhere((element) => element?.timeCode == timeCode);
-    return food?.id ?? '';
+  List<FoodModel>? foodListInTime(
+      {required DateTime time, required int timeCode}) {
+    if (timeCode == 0) {
+      final List<FoodModel> foods = [];
+      int indexOfFood(FoodModel food) {
+        for (int index = 0; index < foods.length; index++) {
+          if (foods[index].id == food.id) return index;
+        }
+        return -1;
+      }
+
+      void addFood(FoodModel food) {
+        final int index = indexOfFood(food);
+        if (index != -1) {
+          foods[index] = foods[index].copyWith(
+              portion: (foods[index].portion ?? 0) + (food.portion ?? 0));
+          return;
+        }
+        foods.add(food);
+      }
+
+      final List<FoodModel> listFood_4 =
+          _timeGroupsFromDateTime(time: time, timeCode: 4)?.listFoods ?? [];
+      final List<FoodModel> listFood_5 =
+          _timeGroupsFromDateTime(time: time, timeCode: 5)?.listFoods ?? [];
+      final List<FoodModel> listFood_6 =
+          _timeGroupsFromDateTime(time: time, timeCode: 6)?.listFoods ?? [];
+
+      listFood_4.forEach((food) {
+        addFood(food);
+      });
+      listFood_5.forEach((food) {
+        addFood(food);
+      });
+      listFood_6.forEach((food) {
+        addFood(food);
+      });
+      return foods;
+    }
+    return _timeGroupsFromDateTime(time: time, timeCode: timeCode)?.listFoods;
   }
 
-  List<FoodModel>? foodListInTime({required DateTime time, required  int timeCode}) {
-    return _timeGroupsFromDateTime(time: time, timeCode: timeCode)?.listFoods;
-  } 
-
-  MenuResponseListdayfoodTimeGroups? _timeGroupsFromDateTime({required DateTime time, required  int timeCode}) {
+  MenuResponseListdayfoodTimeGroups? _timeGroupsFromDateTime(
+      {required DateTime time, required int timeCode}) {
     final String dateCode = 'T${time.weekday + 1}';
     if (listdayfood != null) {
       for (int index = 0; index < listdayfood!.length; index++) {

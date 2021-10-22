@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 
 class FoodSelectPopup extends StatefulWidget {
   const FoodSelectPopup({
@@ -33,12 +34,16 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
     super.initState();
     foodModel = widget.newFoodModel;
     isFavorite = widget.newFoodModel?.liked ?? false;
-    if (widget.newFoodModel != null) {
-      final double quantity = recommendedQuantity;
-      selectedQuantity = quantity.floor();
-      selectedPercent =
-          ((quantity - selectedQuantity) * 10).round();
-    }
+
+    /// Init value in DatePicker
+    /// 
+    // if (widget.newFoodModel != null) {
+    //   final double quantity = recommendedQuantity;
+    //   selectedQuantity = quantity.floor();
+    //   selectedPercent =
+    //       ((quantity - selectedQuantity) * 10).round();
+    // }
+
     hourController = FixedExtentScrollController(
       initialItem: selectedQuantity,
     );
@@ -352,11 +357,16 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
   }
 
   void onPop(BuildContext context, {required bool agree}) {
+    if (agree && selectedQuantity == 0 && selectedPercent == 0) {
+      Message.showToastMessage(context, R.string.ban_chua_nhap_du_lieu.tr());
+      return;
+    }
     foodModel = foodModel?.copyWith(
       liked: isFavorite,
       portion: widget.hasSelectQuantity
           ? selectedQuantity + (selectedPercent / 10)
           : recommendedQuantity.toDouble(),
+      mealId: widget.preFoodModel?.mealId ?? '',
     );
     NavigationUtil.pop(context, result: [agree, foodModel]);
   }

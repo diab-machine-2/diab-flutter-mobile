@@ -65,6 +65,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
     required TabItem selectedTab,
     required Function(TabItem tabItem) onSelect,
   }) {
+    final bool isSelected = tab == selectedTab;
     return GestureDetector(
       onTap: () {
         onSelect(tab);
@@ -75,12 +76,14 @@ class _TabBarWidgetState extends State<TabBarWidget> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(200),
-          color: tab == selectedTab ? R.color.blue_6 : R.color.transparent,
+          color: isSelected ? R.color.blue_6 : R.color.transparent,
         ),
         child: Text(
           tab.title,
           style: TextStyle(
-            color: R.color.greenGradientBottom,
+            color: isSelected
+                ? R.color.greenGradientBottom
+                : R.color.captionColorGray,
             fontSize: 14,
             fontWeight: FontWeight.w700,
           ),

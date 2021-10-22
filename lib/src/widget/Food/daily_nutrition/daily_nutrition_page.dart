@@ -305,7 +305,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                           },
                                           itemBuilder: (BuildContext context,
                                               int index) {
-                                                final String quantity = '${roundAsFixed((_cubit.selectedFoods[index].portion ?? 0))}';
+                                                final String quantity = '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0)}';
                                                 final String kcal = formatNumber((_cubit.selectedFoods[index].portion ?? 0) * _cubit.selectedFoods[index].calorie!);
                                                 final String detail = '${R.string.da_an.tr()} $quantity ${_cubit.selectedFoods[index].unit}, $kcal ${R.string.kcal.tr()}';
                                             return Container(
@@ -391,6 +391,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                         await _cubit.changeFood(newFoodModel: result);
                                                         _cubit.selectedFoods[
                                                             index] = result;
+                                                        _cubit.refresh();
                                                       }
                                                     },
                                                     child: Image.asset(
