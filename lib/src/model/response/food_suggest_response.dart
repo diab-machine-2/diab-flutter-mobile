@@ -73,6 +73,7 @@ class FoodSuggestResponseData {
 
   FoodModel get foodModel => FoodModel(
         id: this.id,
+        code: this.foodMenuCode,
         name: this.foodName,
         portion: this.portion?.toDouble() ?? 0.0,
         unit: this.foodUnitName,
@@ -85,7 +86,7 @@ class FoodSuggestResponseData {
         liked: this.liked,
         text: '',
         description: '',
-        foodCategoryId: this.foodCategoryId,
+        foodCategoryId: this.foodCategoryId, quantity: 0.0,
       );
 
   FoodSuggestResponseData.fromJson(Map<String, dynamic> json) {

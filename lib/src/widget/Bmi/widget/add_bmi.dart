@@ -33,6 +33,7 @@ class AddBmiController extends StatefulWidget {
   final String? id;
 
   AddBmiController({this.type, this.id});
+
   @override
   _AddBmiControllerState createState() => _AddBmiControllerState();
 }
@@ -122,7 +123,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
           return false;
         },
         child: Scaffold(
-          backgroundColor:  R.color.backgroundColor,
+          backgroundColor: R.color.backgroundColor,
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
@@ -157,10 +158,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
-                            ? Image.asset(
-                                R.drawable.ic_help_circle_active,
-                                width: 24,
-                                height: 24)
+                            ? Image.asset(R.drawable.ic_help_circle_active,
+                                width: 24, height: 24)
                             : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
@@ -196,8 +195,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                 Container(
                                   margin: const EdgeInsets.only(
                                       left: 16, right: 32, top: 9),
-                                  child: Image.asset(
-                                      R.drawable.img_male_weight,
+                                  child: Image.asset(R.drawable.img_male_weight,
                                       height: 131),
                                 ),
                                 Expanded(
@@ -277,30 +275,36 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     GestureDetector(
                                                       onTap: () {
                                                         showDialog(
-                                                          barrierColor: R.color.color0xff003F38
+                                                          barrierColor: R.color
+                                                              .color0xff003F38
                                                               .withOpacity(0.5),
                                                           context: context,
                                                           builder: (_) =>
-                                                              CustomNumPicker(
+                                                              CustomWeightPicker(
                                                                   callback:
                                                                       (number) {
                                                                     setState(
                                                                         () {
-                                                                          if (number != null)
-                                                                      selectedWeight =
-                                                                          number;
+                                                                      if (number !=
+                                                                          null)
+                                                                        selectedWeight =
+                                                                            number.toInt();
                                                                     });
                                                                     handleBMI();
                                                                   },
-                                                                  title:
-                                                                      R.string.enter_weight.tr(),
+                                                                  title: R
+                                                                      .string
+                                                                      .enter_weight
+                                                                      .tr(),
                                                                   max: 180,
                                                                   numberDefault:
                                                                       selectedWeight ==
                                                                               0
                                                                           ? 50
                                                                           : selectedWeight,
-                                                                  unit: R.string.kg.tr()),
+                                                                  unit: R
+                                                                      .string.kg
+                                                                      .tr()),
                                                         );
                                                       },
                                                       child: Container(
@@ -315,8 +319,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                                 style: TextStyle(
                                                                     color: selectedWeight ==
                                                                             0
-                                                                        ? R.color.captionColorGray
-                                                                        : R.color.textDark,
+                                                                        ? R.color
+                                                                            .captionColorGray
+                                                                        : R.color
+                                                                            .textDark,
                                                                     fontSize:
                                                                         34,
                                                                     fontWeight:
@@ -327,8 +333,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     Container(
                                                         height: 1,
                                                         width: 54,
-                                                        color:
-                                                            R.color.color0xffE5E5E5)
+                                                        color: R.color
+                                                            .color0xffE5E5E5)
                                                   ],
                                                 ),
                                                 Text(R.string.kg.tr(),
@@ -340,7 +346,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                 )
                                               ],
                                             ),
-                                            (AppSettings.userInfo!.height == 0 ||
+                                            (AppSettings.userInfo!.height ==
+                                                        0 ||
                                                     AppSettings
                                                             .userInfo!.height ==
                                                         null)
@@ -366,17 +373,19 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                               GestureDetector(
                                                                   onTap: () {
                                                                     showDialog(
-                                                                      barrierColor: R.color.color0xff003F38
+                                                                      barrierColor: R
+                                                                          .color
+                                                                          .color0xff003F38
                                                                           .withOpacity(
                                                                               0.5),
                                                                       context:
                                                                           context,
                                                                       builder: (_) => CustomNumPicker(
                                                                           callback: (num) {
-                                                                            if (num != null) {
+                                                                            if (num !=
+                                                                                null) {
                                                                               setState(() {
-                                                                                selectedHeight =
-                                                                                    num;
+                                                                                selectedHeight = num;
                                                                               });
                                                                               handleBMI();
                                                                             }
@@ -406,7 +415,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                               Container(
                                                                   height: 1,
                                                                   width: 54,
-                                                                  color: R.color.color0xffE5E5E5)
+                                                                  color: R.color
+                                                                      .color0xffE5E5E5)
                                                             ],
                                                           ),
                                                           Text(R.string.cm.tr(),
@@ -431,7 +441,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         fontSize: 14,
-                                                        color:R.color.red,
+                                                        color: R.color.red,
                                                         fontWeight:
                                                             FontWeight.w400)),
                                               ],
@@ -466,30 +476,36 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     GestureDetector(
                                                       onTap: () {
                                                         showDialog(
-                                                          barrierColor: R.color.color0xff003F38
+                                                          barrierColor: R.color
+                                                              .color0xff003F38
                                                               .withOpacity(0.5),
                                                           context: context,
                                                           builder: (_) =>
                                                               CustomNumPicker(
                                                                   callback:
                                                                       (num) {
-                                                                        if (num != null) {
-                                                                          setState(
-                                                                                  () {
-                                                                                selectedHip =
-                                                                                    num;
-                                                                              });
-                                                                        }
+                                                                    if (num !=
+                                                                        null) {
+                                                                      setState(
+                                                                          () {
+                                                                        selectedHip =
+                                                                            num;
+                                                                      });
+                                                                    }
                                                                   },
-                                                                  title:
-                                                                      R.string.enter_waist.tr(),
+                                                                  title: R
+                                                                      .string
+                                                                      .enter_waist
+                                                                      .tr(),
                                                                   max: 180,
                                                                   numberDefault:
                                                                       selectedHip ==
                                                                               0
                                                                           ? 60
                                                                           : selectedHip,
-                                                                  unit: R.string.cm.tr()),
+                                                                  unit: R
+                                                                      .string.cm
+                                                                      .tr()),
                                                         );
                                                       },
                                                       child: Container(
@@ -503,8 +519,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                               style: TextStyle(
                                                                   color: selectedHip ==
                                                                           0
-                                                                      ? R.color.captionColorGray
-                                                                      : R.color.textDark,
+                                                                      ? R.color
+                                                                          .captionColorGray
+                                                                      : R.color
+                                                                          .textDark,
                                                                   fontSize: 34,
                                                                   fontWeight:
                                                                       FontWeight
@@ -515,8 +533,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     Container(
                                                         height: 1,
                                                         width: 54,
-                                                        color:
-                                                            R.color.color0xffE5E5E5)
+                                                        color: R.color
+                                                            .color0xffE5E5E5)
                                                   ],
                                                 ),
                                                 Text(R.string.cm.tr(),
@@ -538,7 +556,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                         fontSize: 14,
-                                                        color:R.color.red,
+                                                        color: R.color.red,
                                                         fontWeight:
                                                             FontWeight.w400)),
                                               ],
@@ -562,18 +580,18 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                               GestureDetector(
                                 onTap: () {
                                   showDialog(
-                                    barrierColor:
-                                        R.color.color0xff003F38.withOpacity(0.5),
+                                    barrierColor: R.color.color0xff003F38
+                                        .withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                       initDate: selectedDate,
                                       callback: (date) {
-                          if (date != null) {
-                            setState(() {
-                              selectedDate = date;
-                            });
-                            loadTimeFrame();
-                          }
+                                        if (date != null) {
+                                          setState(() {
+                                            selectedDate = date;
+                                          });
+                                          loadTimeFrame();
+                                        }
                                       },
                                       // selectedHour: (hour) {
                                       //   setState(() {
@@ -595,10 +613,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Image.asset(
-                                              R.drawable.ic_calendar,
-                                              width: 24,
-                                              height: 24),
+                                          Image.asset(R.drawable.ic_calendar,
+                                              width: 24, height: 24),
                                           SizedBox(width: 8),
                                           Row(
                                             children: [
@@ -618,7 +634,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -647,10 +664,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Image.asset(
-                                              R.drawable.ic_clock,
-                                              width: 24,
-                                              height: 24),
+                                          Image.asset(R.drawable.ic_clock,
+                                              width: 24, height: 24),
                                           SizedBox(width: 8),
                                           Text(
                                               selectedTimeFrame == null
@@ -662,7 +677,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -700,16 +716,20 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+                                          hintText: R
+                                              .string.nhap_ghi_chu_cua_ban
+                                              .tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: R.color.primaryGreyColor))),
+                                              color:
+                                                  R.color.primaryGreyColor))),
                                   Container(
-                                      height: 1, color: R.color.color0xffE5E5E5),
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -731,48 +751,61 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                             },
                                             child: index == files.length
                                                 ? Container(
-                                                    child: Image.asset(
-                                                        R.drawable.ic_add_photo))
-                                                : Stack(
-                                                    alignment:
-                                                        AlignmentDirectional
-                                                            .topEnd,
-                                                    children: [
-                                                        Positioned.fill(
-                                                          child: files[index]
-                                                                  is PickedFile
-                                                              ? Image.file(
-                                                                  File(files[
+                                                    child: Image.asset(R
+                                                        .drawable.ic_add_photo))
+                                                : GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          '/photo_view',
+                                                          arguments: {
+                                                            'files': files,
+                                                            'index': index
+                                                          });
+                                                    },
+                                                    child: Stack(
+                                                        alignment:
+                                                            AlignmentDirectional
+                                                                .topEnd,
+                                                        children: [
+                                                          Positioned.fill(
+                                                            child: files[index]
+                                                                    is PickedFile
+                                                                ? Image.file(
+                                                                    File(files[
+                                                                            index]
+                                                                        .path),
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  )
+                                                                : Image.network(
+                                                                    files[index]
+                                                                        .url,
+                                                                    fit: BoxFit
+                                                                        .cover),
+                                                          ),
+                                                          IconButton(
+                                                              icon: Image.asset(R
+                                                                  .drawable
+                                                                  .ic_trash),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  if (files[
                                                                           index]
-                                                                      .path),
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                )
-                                                              : Image.network(
-                                                                  files[index]
-                                                                      .url,
-                                                                  fit: BoxFit
-                                                                      .cover),
-                                                        ),
-                                                        IconButton(
-                                                            icon: Image.asset(
-                                                                R.drawable.ic_trash),
-                                                            onPressed: () {
-                                                              setState(() {
-                                                                if (files[index]
-                                                                    is PickedFile) {
-                                                                  files.removeAt(
-                                                                      index);
-                                                                } else {
-                                                                  removeIDs.add(
-                                                                      files[index]
-                                                                          .id);
-                                                                  files.removeAt(
-                                                                      index);
-                                                                }
-                                                              });
-                                                            })
-                                                      ]));
+                                                                      is PickedFile) {
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  } else {
+                                                                    removeIDs.add(
+                                                                        files[index]
+                                                                            .id);
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  }
+                                                                });
+                                                              })
+                                                        ]),
+                                                  ));
                                       })
                                 ]),
                           ),
@@ -827,7 +860,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             border: Border.all(
-                                                color:R.color.red, width: 2)),
+                                                color: R.color.red, width: 2)),
                                         child: Center(
                                           child: Text(R.string.xoa_du_lieu.tr(),
                                               style: TextStyle(
@@ -879,7 +912,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       final result = await WeightClient().deleteIndexBmi(widget.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        Observable.instance.notifyObservers([], notifyName : "Weight_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "Weight_change_data");
+        // DartNotificationCenter.post(channel: 'Weight_change_data');
+        Navigator.pop(context);
       }
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -944,7 +980,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       if (result == true) {
         updateHeightProfile();
         Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
-        Observable.instance.notifyObservers([], notifyName : "Weight_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "Weight_change_data");
+        // DartNotificationCenter.post(channel: 'Weight_change_data');
+        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -1003,7 +1042,10 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       BotToast.closeAllLoading();
       if (result == true) {
         updateHeightProfile();
-        Observable.instance.notifyObservers([], notifyName : "Weight_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "Weight_change_data");
+        // DartNotificationCenter.post(channel: 'Weight_change_data');
+        Navigator.pop(context);
       }
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -1018,37 +1060,39 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   updateHeightProfile() async {
     UserModel userInfo = AppSettings.userInfo!;
     userInfo = UserModel(
-        id: userInfo.id,
-        username: userInfo.username,
-        fullName: userInfo.fullName,
-        age: userInfo.age,
-        phoneNumber: userInfo.phoneNumber,
-        secondPhoneNumber: userInfo.secondPhoneNumber,
-        gender: userInfo.gender,
-        genderType: userInfo.genderType,
-        createDatetime: userInfo.createDatetime,
-        isActive: userInfo.isActive,
-        province: userInfo.province,
-        district: userInfo.district,
-        height: selectedHeight * 1.0,
-        weight: selectedWeight * 1.0,
-        ward: userInfo.ward,
-        dateOfBirth: userInfo.dateOfBirth,
-        diabetesStatus: userInfo.diabetesStatus,
-        diabetesName: userInfo.diabetesName,
-        diabetesDate: userInfo.diabetesDate,
-        imageUrl: userInfo.imageUrl,
-        code: userInfo.code,
-        email: userInfo.email,
-        address: userInfo.address,
-        goalWaist: userInfo.goalWaist,
-        goalWeight: userInfo.goalWeight,
-        isLinkedFacebook: userInfo.isLinkedFacebook,
-        isLinkedGoogle: userInfo.isLinkedGoogle,
-        isMobileAccount: userInfo.isMobileAccount,
-        glucoseUnit: userInfo.glucoseUnit,
-        firstLinkedAccount: userInfo.firstLinkedAccount,
-        activityLevelRate: userInfo.activityLevelRate,);
+      id: userInfo.id,
+      username: userInfo.username,
+      fullName: userInfo.fullName,
+      age: userInfo.age,
+      phoneNumber: userInfo.phoneNumber,
+      secondPhoneNumber: userInfo.secondPhoneNumber,
+      gender: userInfo.gender,
+      genderType: userInfo.genderType,
+      createDatetime: userInfo.createDatetime,
+      isActive: userInfo.isActive,
+      province: userInfo.province,
+      district: userInfo.district,
+      height: selectedHeight * 1.0,
+      weight: selectedWeight * 1.0,
+      ward: userInfo.ward,
+      dateOfBirth: userInfo.dateOfBirth,
+      diabetesStatus: userInfo.diabetesStatus,
+      diabetesName: userInfo.diabetesName,
+      diabetesDate: userInfo.diabetesDate,
+      imageUrl: userInfo.imageUrl,
+      code: userInfo.code,
+      email: userInfo.email,
+      address: userInfo.address,
+      goalWaist: userInfo.goalWaist,
+      goalWeight: userInfo.goalWeight,
+      isLinkedFacebook: userInfo.isLinkedFacebook,
+      isLinkedGoogle: userInfo.isLinkedGoogle,
+      isMobileAccount: userInfo.isMobileAccount,
+      googleEmail: userInfo.googleEmail,
+      glucoseUnit: userInfo.glucoseUnit,
+      firstLinkedAccount: userInfo.firstLinkedAccount,
+      activityLevelRate: userInfo.activityLevelRate,
+    );
     try {
       BotToast.showLoading();
       await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);
@@ -1077,8 +1121,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_earse,
-                          width: 64, height: 64),
+                      Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
@@ -1090,8 +1133,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_remove_data.tr(),
+                        child: Text(R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1133,7 +1175,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color:R.color.red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
@@ -1214,8 +1256,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_back.tr(),
+                        child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1255,7 +1296,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color:R.color.red,
+                                        color: R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
@@ -1324,7 +1365,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chon_trong_thu_vien.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1338,11 +1380,11 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset(R.drawable.ic_photo,
-                      width: 24, height: 24),
+                  Image.asset(R.drawable.ic_photo, width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chup_anh.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1448,7 +1490,9 @@ typedef TimeCallback = Function(DateTime?);
 class DateMultiPicker extends StatefulWidget {
   final DateTime? initDate;
   final TimeCallback? callback;
+
   DateMultiPicker({this.initDate, this.callback});
+
   @override
   _DateMultiPickerState createState() => _DateMultiPickerState();
 }
@@ -1500,8 +1544,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
-                                icon:
-                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                                icon: Icon(Icons.close,
+                                    color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
@@ -1605,7 +1649,9 @@ class CustomTimePicker extends StatefulWidget {
   final int? selectedHour;
   final int? selectedMinute;
   final TimeHourCallback? callback;
+
   CustomTimePicker({this.selectedHour, this.selectedMinute, this.callback});
+
   @override
   _CustomTimePickerState createState() => _CustomTimePickerState();
 }
@@ -1629,7 +1675,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       selectedMinute = widget.selectedMinute;
     }
     hourController = FixedExtentScrollController(initialItem: selectedHour!);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
+    minuteController =
+        FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   @override
@@ -1706,6 +1753,7 @@ class CustomNumPicker extends StatefulWidget {
   final int? max;
   final int? numberDefault;
   final String? unit;
+
   CustomNumPicker(
       {this.callback,
       this.title,
@@ -1713,6 +1761,7 @@ class CustomNumPicker extends StatefulWidget {
       this.max,
       this.numberDefault,
       this.unit});
+
   @override
   CustomNumPickerState createState() => CustomNumPickerState();
 }
@@ -1720,6 +1769,7 @@ class CustomNumPicker extends StatefulWidget {
 class CustomNumPickerState extends State<CustomNumPicker> {
   FixedExtentScrollController? numController;
   int? selectedNum;
+
   @override
   void initState() {
     selectedNum = widget.numberDefault;
@@ -1795,19 +1845,18 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                                 });
                               },
                               itemExtent: 47.0,
-                              children:
-                                  List<int>.generate(widget.max! + 1, (i) => i)
-                                      .map((e) => Center(
-                                            child: Text('$e',
-                                                style: TextStyle(
-                                                    color: selectedNum == e
-                                                        ? R.color.mainColor
-                                                        : R.color.color0xffC0C2C5,
-                                                    fontSize: 24,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                          ))
-                                      .toList())),
+                              children: List<int>.generate(
+                                      widget.max! + 1, (i) => i)
+                                  .map((e) => Center(
+                                        child: Text('$e',
+                                            style: TextStyle(
+                                                color: selectedNum == e
+                                                    ? R.color.mainColor
+                                                    : R.color.color0xffC0C2C5,
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold)),
+                                      ))
+                                  .toList())),
                       SizedBox(width: 8),
                       Text(widget.unit!)
                     ],
@@ -1857,6 +1906,219 @@ class CustomNumPickerState extends State<CustomNumPicker> {
                                 child: Text(R.string.tiep_tuc.tr(),
                                     style: TextStyle(
                                         color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+                            ),
+                          ),
+                        ]),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+typedef WeightCallback = Function(double);
+
+class CustomWeightPicker extends StatefulWidget {
+  final WeightCallback callback;
+  final String title;
+  final String? subTitle;
+  final int max;
+  final num numberDefault;
+  final String unit;
+
+  CustomWeightPicker(
+      {required this.callback,
+      required this.title,
+      this.subTitle,
+      required this.max,
+      required this.numberDefault,
+      required this.unit});
+
+  @override
+  CustomWeightPickerState createState() => CustomWeightPickerState();
+}
+
+class CustomWeightPickerState extends State<CustomWeightPicker> {
+  late FixedExtentScrollController numController;
+  late FixedExtentScrollController num2Controller;
+  late int selectedNum;
+  late int selectedNum2;
+
+  @override
+  void initState() {
+    selectedNum = widget.numberDefault.floor();
+    selectedNum2 =
+        ((widget.numberDefault - widget.numberDefault.floor()) * 10).toInt();
+    super.initState();
+    numController = FixedExtentScrollController(initialItem: selectedNum);
+    num2Controller =
+        FixedExtentScrollController(initialItem: selectedNum2 == 0 ? 0 : 1);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.white,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8, bottom: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(widget.title.toString(),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700)),
+                                widget.subTitle == null
+                                    ? SizedBox()
+                                    : Padding(
+                                        padding:
+                                            EdgeInsets.only(top: 8, right: 8),
+                                        child: Text(widget.subTitle ?? '',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400)),
+                                      )
+                              ]),
+                        ),
+                        IconButton(
+                            // padding: EdgeInsets.only(right: 30),
+                            icon: Icon(Icons.close, color: Colors.grey),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            })
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                          height: 150,
+                          width: 106,
+                          child: CupertinoPicker(
+                              scrollController: numController,
+                              selectionOverlay: null,
+                              onSelectedItemChanged: (value) {
+                                setState(() {
+                                  selectedNum = value;
+                                });
+                              },
+                              itemExtent: 47.0,
+                              children:
+                                  List<int>.generate(widget.max + 1, (i) => i)
+                                      .map((e) => Center(
+                                            child: Text('$e',
+                                                style: TextStyle(
+                                                    color: selectedNum == e
+                                                        ? Color(0xff01645A)
+                                                        : Color(0xffC0C2C5),
+                                                    fontSize: 24,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          ))
+                                      .toList())),
+                      Text(',',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      Container(
+                          height: 150,
+                          width: 106,
+                          child: CupertinoPicker(
+                              scrollController: num2Controller,
+                              selectionOverlay: null,
+                              onSelectedItemChanged: (value) {
+                                setState(() {
+                                  selectedNum2 = value == 0 ? 0 : 5;
+                                });
+                              },
+                              itemExtent: 47.0,
+                              children: List<int>.generate(2, (i) => i * 5)
+                                  .map((e) => Center(
+                                        child: Text('$e',
+                                            style: TextStyle(
+                                                color: selectedNum2 == e
+                                                    ? Color(0xff01645A)
+                                                    : Color(0xffC0C2C5),
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold)),
+                                      ))
+                                  .toList())),
+                      SizedBox(width: 8),
+                      Text(widget.unit)
+                    ],
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 16, bottom: 16),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 43,
+                                width: 150,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text('Huỷ',
+                                      style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                )),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              widget
+                                  .callback(selectedNum + (selectedNum2 / 10));
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 43,
+                              width: 150,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
+                                    ]),
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              child: Center(
+                                child: Text('Tiếp tục',
+                                    style: TextStyle(
+                                        color: Colors.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
                               ),

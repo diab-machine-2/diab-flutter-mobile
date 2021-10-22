@@ -125,7 +125,7 @@ class _FoodSelectPopupState extends State<FoodSelectPopup> {
                       ),
                     ),
                     Text(
-                        '${R.string.khau_phan.tr()} ${widget.newFoodModel!.portion.round()} ${widget.newFoodModel!.unit} ${R.string.bao_gom.tr()}:',
+                        '${R.string.khau_phan.tr()} ${(widget.newFoodModel!.portion ?? 0).round()} ${widget.newFoodModel!.unit} ${R.string.bao_gom.tr()}:',
                         style: TextStyle(
                             color: R.color.black,
                             fontSize: 14,

@@ -642,46 +642,57 @@ class _AddBloodPressureControllerState
                                                 ? Container(
                                                     child: Image.asset(
                                                         R.drawable.ic_add_photo))
-                                                : Stack(
-                                                    alignment:
-                                                        AlignmentDirectional
-                                                            .topEnd,
-                                                    children: [
-                                                        Positioned.fill(
-                                                          child: files[index]
-                                                                  is PickedFile
-                                                              ? Image.file(
-                                                                  File(files[
-                                                                          index]
-                                                                      .path),
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                )
-                                                              : Image.network(
-                                                                  files[index]
-                                                                      .url,
-                                                                  fit: BoxFit
-                                                                      .cover),
-                                                        ),
-                                                        IconButton(
-                                                            icon: Image.asset(
-                                                                R.drawable.ic_trash),
-                                                            onPressed: () {
-                                                              setState(() {
-                                                                if (files[index]
-                                                                    is PickedFile) {
-                                                                  files.removeAt(
-                                                                      index);
-                                                                } else {
-                                                                  removeIDs.add(
-                                                                      files[index]
-                                                                          .id);
-                                                                  files.removeAt(
-                                                                      index);
-                                                                }
-                                                              });
-                                                            })
-                                                      ]));
+                                                : GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pushNamed(
+                                                      context,
+                                                      '/photo_view',
+                                                      arguments: {
+                                                        'files': files,
+                                                        'index': index
+                                                      });
+                                                },
+                                                child: Stack(
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .topEnd,
+                                                      children: [
+                                                          Positioned.fill(
+                                                            child: files[index]
+                                                                    is PickedFile
+                                                                ? Image.file(
+                                                                    File(files[
+                                                                            index]
+                                                                        .path),
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  )
+                                                                : Image.network(
+                                                                    files[index]
+                                                                        .url,
+                                                                    fit: BoxFit
+                                                                        .cover),
+                                                          ),
+                                                          IconButton(
+                                                              icon: Image.asset(
+                                                                  R.drawable.ic_trash),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  if (files[index]
+                                                                      is PickedFile) {
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  } else {
+                                                                    removeIDs.add(
+                                                                        files[index]
+                                                                            .id);
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  }
+                                                                });
+                                                              })
+                                                        ]),
+                                                ));
                                       })
                                 ]),
                           ),

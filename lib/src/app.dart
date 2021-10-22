@@ -68,6 +68,8 @@ import 'package:medical/src/widget/welcome_service/welcome_service_page.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'model/service/app_client.dart';
+import 'widget/Food/add_food.dart';
+import 'widget/helper/photo_view.dart';
 import 'widget/list_service/list_service_page.dart';
 import 'utils/navigator_name.dart';
 import 'widget/profile/profile_controller.dart';
@@ -329,6 +331,14 @@ class _AppState extends State<App> {
                   case NavigatorName.detail_emotion:
                     return _buildRoute(settings, EmotionDetailTabbarController(),
                         isPresent: true);
+                  case '/add_food':
+                    final data = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                        settings,
+                        AddFoodController(
+                          type: data['type'],
+                          id: data['id'],
+                        ));
                   case NavigatorName.emotion_table:
                     final data = settings.arguments as Map<String, dynamic>;
                     return _buildRoute(
@@ -374,6 +384,11 @@ class _AppState extends State<App> {
                     return _buildRoute(settings, ScheduleGlucoseController());
                   case NavigatorName.setting_schedule_glucose:
                     return _buildRoute(settings, SettingScheduleGlucoseController());
+                  case '/photo_view':
+                    final data = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                        settings, PhotoView(files: data['files'], index: data['index']),
+                        isPresent: true);
                   default:
                     return null;
                 }

@@ -90,6 +90,8 @@ class Drawables {
 	String get ic_check_mark => "lib/res/drawables/ic_check_mark.png";
 	String get ic_check_mark_bg => "lib/res/drawables/ic_check_mark_bg.png";
 	String get ic_check_success => "lib/res/drawables/ic_check_success.png";
+	String get ic_checkbox => "lib/res/drawables/ic_checkbox.png";
+	String get ic_checkbox_green => "lib/res/drawables/ic_checkbox_green.png";
 	String get ic_chevron_down => "lib/res/drawables/ic_chevron_down.png";
 	String get ic_circle_plus_exe => "lib/res/drawables/ic_circle_plus_exe.png";
 	String get ic_clear => "lib/res/drawables/ic_clear.png";
@@ -177,6 +179,8 @@ class Drawables {
 	String get ic_question => "lib/res/drawables/ic_question.png";
 	String get ic_question_circle => "lib/res/drawables/ic_question_circle.png";
 	String get ic_question_circle_fill => "lib/res/drawables/ic_question_circle_fill.png";
+	String get ic_radio => "lib/res/drawables/ic_radio.png";
+	String get ic_radio_green => "lib/res/drawables/ic_radio_green.png";
 	String get ic_refresh => "lib/res/drawables/ic_refresh.png";
 	String get ic_regret => "lib/res/drawables/ic_regret.png";
 	String get ic_remind => "lib/res/drawables/ic_remind.png";

@@ -54,7 +54,7 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
   calculatorCalo() {
     totalKcal = 0;
     foods.forEach((element) {
-      totalKcal += element.calorie! * element.portion;
+      totalKcal += element.calorie! * (element.portion ?? 0);
     });
   }
 
@@ -155,18 +155,13 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                                 padding: EdgeInsets.only(
                                     left: 16, right: 16, top: 11, bottom: 11),
                                 child: Row(children: [
-                                  CachedNetworkImage(
-                                    imageUrl: foods[index].image!.url ?? '',
+                                  SizedBox(
                                     width: 50,
                                     height: 50,
-                                    placeholder: (_, __) {
-                                      return const Center(
-                                          child: CircularProgressIndicator());
-                                    },
-                                    errorWidget: (_, __, ___) {
-                                      return Image.asset(
-                                          R.drawable.ic_food_default);
-                                    },
+                                    child: Image.network(
+                                        foods[index].image!.url ?? '',
+                                        width: 50,
+                                        height: 50),
                                   ),
                                   SizedBox(width: 16),
                                   Expanded(
@@ -179,7 +174,10 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                                                 color: R.color.black,
                                                 fontWeight: FontWeight.w500)),
                                         Text(
-                                            '${R.string.da_an.tr()} ${roundAsFixed(foods[index].portion)} ${foods[index].unit}, ${formatNumber(foods[index].portion * foods[index].calorie!)} ${R.string.kcal.tr()}',
+                                            foods[index].code ==
+                                                    'OtherUneditable'
+                                                ? '${R.string.da_an.tr()} ${formatNumber((foods[index].quantity ?? 0) * (foods[index].calorie ?? 0))} kcal'
+                                                : '${R.string.da_an.tr()} ${roundAsFixed((foods[index].portion ?? 0) * (foods[index].quantity ?? 0))} ${foods[index].unit}, ${formatNumber((foods[index].quantity ?? 0) * (foods[index].calorie ?? 0))} kcal',
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontWeight: FontWeight.w400))
