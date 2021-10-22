@@ -85,22 +85,23 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
   bool get isDessert => foodType != null && 4 <= foodType! && foodType! <= 6;
 
   FoodModel get foodModel => FoodModel(
-      id: this.foodId,
-      code: this.foodMenuCode,
-      name: this.foodName,
-      portion: this.portion?.toDouble() ?? 0.0,
-      unit: this.foodUnitName,
-      calorie: this.calorie,
-      glucose: this.glucose,
-      lipid: this.lipid,
-      protein: this.protein,
-      fibre: this.fibre,
-      image: this.image,
-      liked: false,
-      text: null,
-      description: null,
-      foodCategoryId: this.foodCategoryId,
-    quantity: 0.0
+        id: this.foodId,
+        code: this.foodMenuCode,
+        name: this.foodName,
+        portion: this.portion?.toDouble() ?? 0.0,
+        unit: this.foodUnitName,
+        calorie: this.calorie,
+        glucose: this.glucose,
+        lipid: this.lipid,
+        protein: this.protein,
+        fibre: this.fibre,
+        image: this.image,
+        liked: false,
+        text: null,
+        description: null,
+        foodCategoryId: this.foodCategoryId,
+        quantity: 0.0,
+        mealId: this.id,
       );
 
   MenuResponseListdayfoodTimeGroupsDefaultFood.fromJson(
@@ -445,20 +446,26 @@ class MenuResponse {
     this.message,
   });
 
-  String idInTime({required DateTime time, required int timeCode}) {
-    final MenuResponseListdayfoodTimeGroups? timeGroups =
-        _timeGroupsFromDateTime(time: time, timeCode: timeCode);
-    final MenuResponseListdayfoodTimeGroupsDefaultFood? food = timeGroups
-        ?.defaultFood
-        ?.firstWhere((element) => element?.timeCode == timeCode);
-    return food?.id ?? '';
+  List<FoodModel>? foodListInTime(
+      {required DateTime time, required int timeCode}) {
+    if (timeCode == 0) {
+      final List<FoodModel> listFood_4 =
+          _timeGroupsFromDateTime(time: time, timeCode: 4)?.listFoods ?? [];
+      final List<FoodModel> listFood_5 =
+          _timeGroupsFromDateTime(time: time, timeCode: 5)?.listFoods ?? [];
+      final List<FoodModel> listFood_6 =
+          _timeGroupsFromDateTime(time: time, timeCode: 6)?.listFoods ?? [];
+      return [
+        ...listFood_4,
+        ...listFood_5,
+        ...listFood_6,
+      ];
+    }
+    return _timeGroupsFromDateTime(time: time, timeCode: timeCode)?.listFoods;
   }
 
-  List<FoodModel>? foodListInTime({required DateTime time, required  int timeCode}) {
-    return _timeGroupsFromDateTime(time: time, timeCode: timeCode)?.listFoods;
-  } 
-
-  MenuResponseListdayfoodTimeGroups? _timeGroupsFromDateTime({required DateTime time, required  int timeCode}) {
+  MenuResponseListdayfoodTimeGroups? _timeGroupsFromDateTime(
+      {required DateTime time, required int timeCode}) {
     final String dateCode = 'T${time.weekday + 1}';
     if (listdayfood != null) {
       for (int index = 0; index < listdayfood!.length; index++) {

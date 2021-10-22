@@ -18,6 +18,7 @@ class FoodModel {
   final String? description;
   final String? foodCategoryId;
   final double? quantity;
+  final String? mealId;
 
   FoodModel({
     required this.id,
@@ -36,6 +37,7 @@ class FoodModel {
      this.description,
      this.foodCategoryId,
      this.quantity,
+     this.mealId,
   });
 
   @override
@@ -60,7 +62,8 @@ class FoodModel {
       text: json['text'],
       description: json['description'],
       foodCategoryId: json['foodCategoryId'],
-        quantity: json['inputPortion'] ?? 1
+      quantity: json['inputPortion'] ?? 1,
+      mealId: json['mealId'],
     );
   }
 
@@ -84,7 +87,9 @@ class FoodModel {
     String? text,
     String? description,
     String? foodCategoryId,
-    double? quantity
+    double? quantity,
+    String? mealId,
+
   }) {
     return FoodModel(
       id: id ?? this.id,
@@ -103,6 +108,7 @@ class FoodModel {
       description: description ?? this.description,
       foodCategoryId: foodCategoryId ?? this.foodCategoryId,
       quantity: quantity ?? this.quantity,
+      mealId: mealId ?? this.mealId,
     );
   }
 
