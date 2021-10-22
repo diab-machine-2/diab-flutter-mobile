@@ -495,13 +495,18 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 ),
                                 buildItem(
                                   R.drawable.ic_email,
-                                  user.email == null || user.email!.isEmpty
+                                  user.isLinkedGoogle == true
+                                      ? (user.googleEmail ?? '')
+                                      : (user.email == null || user.email!.isEmpty
                                       ? R.string.not_updated_yet.tr()
-                                      : user.email!,
+                                      : user.email!),
                                   R.string.email.tr(),
                                   null,
                                   9,
                                   callback: () {
+                                    if (user.isLinkedGoogle == true) {
+                                      return;
+                                    }
                                     _showDialogUpdateEmail();
                                   },
                                 ),
@@ -850,7 +855,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   linkedGoogle() async {
     final user = AppSettings.userInfo!;
-    if (user.isLinkedGoogle!) {
+    if (user.isLinkedGoogle == true) {
       if (user.firstLinkedAccount != 'Google') {
         unlinkedGoogle();
       }
@@ -872,13 +877,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
         'phoneNumber': user.phoneNumber
       });
       BotToast.closeAllLoading();
-      Navigator.pushNamed(context, NavigatorName.verify, arguments: {
-        'type': 'linked_google',
-        'otp': result.token,
-        'phone': user.phoneNumber,
-        'remainingRequestCount': result.remainingRequestCount,
-        'googleAccount': account
-      });
+      if (result.isSuccess != true) {
+        _showDialogError(user.phoneNumber);
+      } else {
+        Navigator.pushNamed(context, NavigatorName.verify, arguments: {
+          'type': 'linked_google',
+          'otp': result.token,
+          'phone': user.phoneNumber,
+          'remainingRequestCount': result.remainingRequestCount,
+          'googleAccount': account
+        });
+      }
     } catch (e, _) {
       BotToast.closeAllLoading();
       if (e is Error) {
@@ -895,7 +904,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   linkedFacebook() async {
     final user = AppSettings.userInfo!;
 
-    if (user.isLinkedFacebook!) {
+    if (user.isLinkedFacebook == true) {
       if (user.firstLinkedAccount != 'Facebook') {
         unlinkedFacebook();
       }
@@ -915,13 +924,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
             'phoneNumber': user.phoneNumber
           });
           BotToast.closeAllLoading();
-          Navigator.pushNamed(context, NavigatorName.verify, arguments: {
-            'type': 'linked_facebook',
-            'otp': result.token,
-            'phone': user.phoneNumber,
-            'remainingRequestCount': result.remainingRequestCount,
-            'facebookAccount': resultFacebook
-          });
+          if (result.isSuccess != true) {
+            _showDialogError(user.phoneNumber);
+          } else {
+            Navigator.pushNamed(context, NavigatorName.verify, arguments: {
+              'type': 'linked_facebook',
+              'otp': result.token,
+              'phone': user.phoneNumber,
+              'remainingRequestCount': result.remainingRequestCount,
+              'facebookAccount': resultFacebook
+            });
+          }
         } catch (e, _) {
           BotToast.closeAllLoading();
           if (e is Error) {
@@ -988,6 +1001,44 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
         Message.showToastMessage(context, e.toString());
       }
     }
+  }
+
+  _showDialogError(String? phone) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+            content: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(R.drawable.ic_check_error,
+                  width: 64, height: 64),
+              SizedBox(height: 8),
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  text: 'Đã gửi OTP 5 lần cho số điện thoại ',
+                  style: TextStyle(color: Color(0xff172823), fontSize: 16),
+                  children: <TextSpan>[
+                    TextSpan(
+                        text: phone,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
+                    TextSpan(
+                        text:
+                            '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
+                        style:
+                            TextStyle(color: Color(0xff172823), fontSize: 16)),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ));
+      },
+    );
   }
 
   _showDialogUpdateMotivation(MotivationModel? model) {
@@ -1225,6 +1276,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                     isMobileAccount: userInfo.isMobileAccount,
                                     firstLinkedAccount:
                                         userInfo.firstLinkedAccount,
+                                    googleEmail: userInfo.googleEmail,
                                     glucoseUnit: userInfo.glucoseUnit,
                                     activityLevelRate: userInfo.activityLevelRate);
                                 updateUserInfo(userInfo);
@@ -1356,6 +1408,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                   isMobileAccount: userInfo.isMobileAccount,
                                   firstLinkedAccount:
                                       userInfo.firstLinkedAccount,
+                                  googleEmail: userInfo.googleEmail,
                                   glucoseUnit: userInfo.glucoseUnit,
                                   activityLevelRate: userInfo.activityLevelRate);
                               updateUserInfo(userInfo);
@@ -1479,6 +1532,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                   isMobileAccount: userInfo.isMobileAccount,
                                   firstLinkedAccount:
                                       userInfo.firstLinkedAccount,
+                                  googleEmail: userInfo.googleEmail,
                                   glucoseUnit: userInfo.glucoseUnit,
                                   activityLevelRate: userInfo.activityLevelRate);
                               updateUserInfo(userInfo);
@@ -1605,6 +1659,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                   isMobileAccount: userInfo.isMobileAccount,
                                   firstLinkedAccount:
                                       userInfo.firstLinkedAccount,
+                                  googleEmail: userInfo.googleEmail,
                                   glucoseUnit: userInfo.glucoseUnit,
                                   activityLevelRate: userInfo.activityLevelRate);
                               updateUserInfo(userInfo);
@@ -1734,6 +1789,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                   isMobileAccount: userInfo.isMobileAccount,
                                   firstLinkedAccount:
                                       userInfo.firstLinkedAccount,
+                                  googleEmail: userInfo.googleEmail,
                                   glucoseUnit: userInfo.glucoseUnit,
                                   activityLevelRate: userInfo.activityLevelRate);
                               updateUserInfo(userInfo);
@@ -1772,7 +1828,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
-      builder: (_) => CustomNumPicker(
+      builder: (_) => CustomWeightPicker(
           callback: (number) {
             if (number == null || number <= 0) {
               Message.showToastMessage(context, R.string.mes_weight_must_greater_than_zero.tr());
@@ -1809,6 +1865,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 isLinkedGoogle: userInfo.isLinkedGoogle,
                 isMobileAccount: userInfo.isMobileAccount,
                 firstLinkedAccount: userInfo.firstLinkedAccount,
+                googleEmail: userInfo.googleEmail,
                 glucoseUnit: userInfo.glucoseUnit,
                 activityLevelRate: userInfo.activityLevelRate);
             updateUserInfo(userInfo);
@@ -1865,6 +1922,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 isLinkedGoogle: userInfo.isLinkedGoogle,
                 isMobileAccount: userInfo.isMobileAccount,
                 firstLinkedAccount: userInfo.firstLinkedAccount,
+                googleEmail: userInfo.googleEmail,
                 glucoseUnit: userInfo.glucoseUnit,
                 activityLevelRate: userInfo.activityLevelRate);
             updateUserInfo(userInfo);
@@ -1996,6 +2054,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                     isMobileAccount: userInfo.isMobileAccount,
                                     firstLinkedAccount:
                                         userInfo.firstLinkedAccount,
+                                    googleEmail: userInfo.googleEmail,
                                     glucoseUnit: userInfo.glucoseUnit,
                                     activityLevelRate: userInfo.activityLevelRate);
                                 updateUserInfo(userInfo);
@@ -2071,6 +2130,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                     isLinkedGoogle: userInfo.isLinkedGoogle,
                     isMobileAccount: userInfo.isMobileAccount,
                     firstLinkedAccount: userInfo.firstLinkedAccount,
+                    googleEmail: userInfo.googleEmail,
                     glucoseUnit: userInfo.glucoseUnit,
                     activityLevelRate: userInfo.activityLevelRate);
                 updateUserInfo(userInfo);
@@ -2121,6 +2181,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 isLinkedGoogle: userInfo!.isLinkedGoogle,
                 isMobileAccount: userInfo!.isMobileAccount,
                 firstLinkedAccount: userInfo!.firstLinkedAccount,
+                googleEmail: userInfo!.googleEmail,
                 glucoseUnit: userInfo!.glucoseUnit,
                 activityLevelRate: userInfo!.activityLevelRate);
             updateUserInfo(userInfo!);

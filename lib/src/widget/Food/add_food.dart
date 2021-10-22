@@ -1,60 +1,65 @@
-import 'dart:io';
-import 'dart:ui';
-
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:medical/main.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
+import 'package:medical/src/modal/food/food_input_model.dart';
+import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/theme/app_theme.dart';
+import 'package:medical/src/widget/BloodSugar/add_bloodSugar.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
-import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
+import 'package:medical/src/widget/Food/food_description.dart';
+import 'package:medical/src/widget/Food/search_food_controller.dart';
+import 'package:medical/src/widget/Food/widget/time_frame_food.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
-
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'dart:io';
+import 'dart:ui';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 
-class AddBloodSugarController extends StatefulWidget {
-  final String? type;
-  final String? id;
-  AddBloodSugarController({this.type, this.id});
+class AddFoodController extends StatefulWidget {
+  final String type;
+  final String id;
+  AddFoodController({required this.type, required this.id});
 
   @override
-  _AddBloodSugarControllerState createState() =>
-      _AddBloodSugarControllerState();
+  _AddFoodControllerState createState() => _AddFoodControllerState();
 }
 
-class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
-  TextEditingController _controller = TextEditingController();
-  TextEditingController _controllerReason = TextEditingController();
-  TextEditingController _controllerNote = TextEditingController();
+class _AddFoodControllerState extends BaseState<AddFoodController> {
+  TextEditingController _controllerNote = TextEditingController(text: '');
+  TextEditingController _controllerKcal = TextEditingController(text: '');
   int maxMedia = 5;
   List<dynamic> files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
   TimeFrameModel? selectedTimeFrame;
 
-  bool showReason = false;
-  double? number = 0;
+  FoodInputModel? model;
+  List<String> removeIDs = [];
 
-  InputGlucoseModel? model;
-  List<String?> removeIDs = [];
+  List<FoodModel> selectedFoods = [];
+  double totalKcal = 0;
 
   ShortGuiModel? des;
 
-  double mmollToMgdlFactor = 18.018;
+  String otherFoodId = '7e8c6d8e-5d34-4c86-b15e-7ffe2e156999';
+
+  bool addTotalCalo = false;
 
   void initState() {
     super.initState();
@@ -64,51 +69,50 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       loadTimeFrame();
     }
     loadDescription();
-    TrackingManager.analytics.setCurrentScreen(screenName: 'Glucose Input');
+    TrackingManager.analytics.setCurrentScreen(screenName: 'Diet Input');
   }
 
   void dispose() {
-    _controller.dispose();
     _controllerNote.dispose();
     super.dispose();
   }
 
   loadDetail() async {
-    try {
-      BotToast.showLoading();
-      model = await GlucoseClient().fetchDetail(widget.id);
-      BotToast.closeAllLoading();
-      _controller.text = model!.glucose!.round() == model!.glucose
-          ? model!.glucose!.round().toString()
-          : model!.glucose.toString();
-      number = model!.glucose!.round() == model!.glucose
-          ? model!.glucose!.round().toDouble()
-          : model!.glucose;
-      _controllerReason.text = model!.reason ?? '';
-      showReason = _controllerReason.text.isNotEmpty;
-      _controllerNote.text = model!.note!;
-      files.addAll(model!.images);
-      selectedDate =
-          DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
-      selectedTimeFrame = TimeFrameModel(
-          id: model!.timeFrameId, code: '', name: model!.timeFrame);
-      setState(() {});
-    } catch (e) {
-      print(e);
+    BotToast.showLoading();
+    model = await FoodClient().fetchDetailInput(widget.id);
+    BotToast.closeAllLoading();
+    selectedDate = DateTime.fromMillisecondsSinceEpoch((model!.date ?? 0) * 1000);
+    _controllerNote.text = model?.note ?? "";
+    files.addAll(model?.images ?? []);
+    selectedTimeFrame =
+        TimeFrameModel(id: model?.mealId, code: '', name: model?.mealText);
+    final index =
+        model!.foods.indexWhere((element) => element.id == otherFoodId);
+    if (index == -1) {
+      selectedFoods = model!.foods;
+    } else {
+      addTotalCalo = true;
+      _controllerKcal.text =
+          ((model!.foods[index].quantity ?? 0) * (model!.foods[index].calorie ?? 0))
+              .round()
+              .toString();
     }
+
+    calculatorCalo();
+    setState(() {});
   }
 
   loadTimeFrame() async {
     BotToast.showLoading();
-    final timeFrames = await GlucoseClient().fetchFlucoseTimeFrame(
-        time: selectedDate.millisecondsSinceEpoch ~/ 1000);
+    final timeFrames = await FoodClient()
+        .fetchFoodTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000);
     selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
     BotToast.closeAllLoading();
     setState(() {});
   }
 
   loadDescription() async {
-    des = await HbA1CClient().fetchShortGuide(1);
+    des = await HbA1CClient().fetchShortGuide(4);
     setState(() {});
   }
 
@@ -133,18 +137,18 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
             child: Column(
               children: [
                 CustomAppBar(
-                  backgroundColor: R.color.transparent,
+                  backgroundColor: Colors.transparent,
                   title: Text(
                       widget.type == 'update'
-                          ? R.string.update_blood_sugar.tr()
-                          : R.string.enter_blood_sugar.tr(),
+                          ? 'Cập nhật chỉ số dinh dưỡng'
+                          : 'Nhập chỉ số dinh dưỡng',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: R.color.textDark)),
                   leadingIcon: IconButton(
-                      splashColor: R.color.transparent,
-                      highlightColor: R.color.transparent,
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.textDark),
                       onPressed: () {
                         _showDialogSave();
@@ -183,183 +187,63 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                     input: true,
                                     data: des,
                                     titleDetail:
-                                        R.string.blood_sugar_for_diabetes.tr())
+                                        'Chế độ dinh dưỡng bệnh tiểu đường')
                                 : SizedBox()),
                         Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 16, left: 16, right: 16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: EdgeInsets.all(20),
-                            child: Column(children: [
-                              Center(
-                                child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 80,
-                                        child: TextField(
-                                            controller: _controller,
-                                            maxLength: 3,
-                                            textAlign: TextAlign.center,
-                                            keyboardType:
-                                                TextInputType.numberWithOptions(
-                                                    decimal: true),
-                                            style: TextStyle(
-                                                color: R.color.black,
-                                                fontSize: 34,
-                                                fontWeight: FontWeight.w500),
-                                            decoration: InputDecoration(
-                                                counterText: '',
-                                                hintText: '0.0',
-                                                contentPadding:
-                                                    EdgeInsets.only(bottom: 8),
-                                                border: InputBorder.none,
-                                                hintStyle: TextStyle(
-                                                    color: R.color.captionColorGray,
-                                                    fontSize: 34,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                            onChanged: (value) {
-                                              final newValue =
-                                                  value.split(',').join('.');
-                                              number = newValue.isEmpty
-                                                  ? 0
-                                                  : double.parse(newValue);
-
-                                              setState(() {
-                                                showReason = (AppSettings
-                                                                .userInfo!
-                                                                .glucoseUnit ==
-                                                            1
-                                                        ? (number! < 55 ||
-                                                            number! > 250)
-                                                        : (number! <
-                                                                55 /
-                                                                    mmollToMgdlFactor ||
-                                                            number! >
-                                                                250 /
-                                                                    mmollToMgdlFactor)) &&
-                                                    number! > 0;
-                                              });
-                                            }),
-                                      ),
-                                      Text(
-                                          AppSettings.userInfo!.glucoseUnit == 1
-                                              ? R.string.mg_dl.tr()
-                                              : R.string.mmol_l.tr(),
-                                          style: TextStyle(fontSize: 16))
-                                    ]),
-                              ),
-                              Center(
-                                  child: Container(
-                                      height: 1,
-                                      width: 74,
-                                      color: R.color.color0xffE5E5E5)),
-                              _controller.text.isEmpty
-                                  ? SizedBox()
-                                  : Padding(
-                                      padding: EdgeInsets.only(top: 16),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(children: [
-                                              Image.asset(
-                                                  R.drawable.ic_repeat,
-                                                  width: 22,
-                                                  height: 22),
-                                              SizedBox(width: 8),
-                                              Text(R.string.corresponding_to.tr(),
-                                                  style:
-                                                      TextStyle(fontSize: 16))
-                                            ]),
-                                            Text(
-                                                roundNumber(roundAsFixed(AppSettings
-                                                                    .userInfo!
-                                                                    .glucoseUnit ==
-                                                                1
-                                                            ? number! /
-                                                                mmollToMgdlFactor
-                                                            : number! *
-                                                                mmollToMgdlFactor))
-                                                        .toString() +
-                                                    (AppSettings.userInfo!
-                                                                .glucoseUnit ==
-                                                            2
-                                                        ? ' ${R.string.mg_dl.tr()}'
-                                                        : ' ${R.string.mmol_l.tr()}'),
-                                                style: TextStyle(fontSize: 16)),
-                                          ]),
-                                    ),
-                              SizedBox(height: 8),
-                              !showReason
-                                  ? SizedBox()
-                                  : Text(
-                                      R.string.mes_unsafe_blood_sugar.tr(),
-                                      style: TextStyle(color: R.color.red),
-                                      textAlign: TextAlign.center)
-                            ]),
-                          ),
-                        ),
-                        !showReason
-                            ? SizedBox()
-                            : Padding(
-                                padding: const EdgeInsets.only(
-                                    bottom: 16, left: 16, right: 16),
+                            padding: const EdgeInsets.only(
+                                bottom: 16, left: 16, right: 16),
+                            child: Stack(children: [
+                              Padding(
+                                padding: EdgeInsets.only(top: 12),
                                 child: Container(
+                                  height: 136,
                                   decoration: BoxDecoration(
-                                    color: R.color.white,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  padding: EdgeInsets.all(16),
-                                  child: Column(
+                                      borderRadius: BorderRadius.circular(16),
+                                      color: Color(0xffF4DBBD)),
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  SizedBox(width: 16),
+                                  Image.asset(
+                                      R.drawable.img_food_person,
+                                      width: 113,
+                                      height: 148),
+                                  SizedBox(width: 16),
+                                  Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Row(children: [
-                                          Image.asset(
-                                              R.drawable.ic_note_text,
-                                              width: 24,
-                                              height: 24),
-                                          SizedBox(width: 8),
-                                          Text(R.string.ly_do.tr(),
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600))
-                                        ]),
-                                        SizedBox(height: 16),
-                                        TextField(
-                                            controller: _controllerReason,
-                                            style: TextStyle(
-                                                color: R.color.black,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400),
-                                            decoration: InputDecoration(
-                                                hintText: R.string.nhap_ly_do.tr(),
-                                                contentPadding:
-                                                    EdgeInsets.only(bottom: 8),
-                                                border: InputBorder.none,
-                                                hintStyle: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w400,
-                                                    color: R.color.primaryGreyColor))),
-                                        Container(
-                                            height: 1,
-                                            color: R.color.color0xffE5E5E5),
+                                        Text('Lượng calo bạn đã nạp:'),
                                         SizedBox(height: 8),
-                                      ]),
-                                ),
-                              ),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            Text(formatNumber(totalKcal),
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 24,
+                                                    fontWeight:
+                                                        FontWeight.w600)),
+                                            SizedBox(width: 4),
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(bottom: 3),
+                                              child: Text('kcal'),
+                                            ),
+                                          ],
+                                        )
+                                      ])
+                                ],
+                              )
+                            ])),
                         Padding(
                           padding: const EdgeInsets.only(
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: R.color.white,
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -368,31 +252,22 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                 onTap: () {
                                   showDialog(
                                     barrierColor:
-                                        R.color.color0xff003F38.withOpacity(0.5),
+                                        Color(0xff003F38).withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                       initDate: selectedDate,
                                       callback: (date) {
+                                        if (date != null)
                                         setState(() {
-                                          selectedDate = date ?? DateTime.now();
+                                          selectedDate = date;
                                         });
                                         loadTimeFrame();
                                       },
-                                      // selectedHour: (hour) {
-                                      //   setState(() {
-                                      //     selectedHour = hour;
-                                      //   });
-                                      // },
-                                      // selectedMinute: (minute) {
-                                      //   setState(() {
-                                      //     selectedMinute = minute;
-                                      //   });
-                                      // },
                                     ),
                                   );
                                 },
                                 child: Container(
-                                  color: R.color.transparent,
+                                  color: Colors.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
@@ -415,7 +290,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
+                                        height: 1, color: Color(0xffE5E5E5)),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -428,7 +303,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                               bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: R.color.white,
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: EdgeInsets.all(16),
@@ -438,7 +313,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   showActionFilter(context);
                                 },
                                 child: Container(
-                                  color: R.color.transparent,
+                                  color: Colors.transparent,
                                   child: Column(children: [
                                     Row(
                                         mainAxisAlignment:
@@ -451,15 +326,15 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                           SizedBox(width: 8),
                                           Text(
                                               selectedTimeFrame == null
-                                                  ? R.string.chon_khung_gio.tr()
-                                                  : selectedTimeFrame!.name!,
+                                                  ? 'Chọn khung giờ'
+                                                  : selectedTimeFrame?.name ?? "",
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w400))
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
+                                        height: 1, color: Color(0xffE5E5E5)),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -470,11 +345,252 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                         Padding(
                           padding: const EdgeInsets.only(
                               bottom: 16, left: 16, right: 16),
+                          child: Row(children: [
+                            CupertinoSwitch(
+                              activeColor: Color(0xff008479),
+                              value: addTotalCalo,
+                              onChanged: (value) {
+                                setState(() {
+                                  totalKcal = 0;
+                                  selectedFoods = [];
+                                  _controllerKcal.text = '';
+                                  addTotalCalo = value;
+                                });
+                              },
+                            ),
+                            SizedBox(width: 8),
+                            Text('Nhập tổng calo',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600))
+                          ]),
+                        ),
+                        addTotalCalo
+                            ? SizedBox()
+                            : Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: 16, left: 16, right: 16),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  padding: EdgeInsets.all(16),
+                                  child: Column(children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        addFood(context);
+                                      },
+                                      child: Container(
+                                        color: Colors.transparent,
+                                        child: Column(children: [
+                                          Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Image.asset(
+                                                    R.drawable.ic_bowl,
+                                                    width: 24,
+                                                    height: 24),
+                                                Row(
+                                                  children: [
+                                                    Image.asset(
+                                                      R.drawable.ic_circle_plus_exe,
+                                                      width: 24,
+                                                      height: 24,
+                                                    ),
+                                                    SizedBox(width: 4),
+                                                    Text('Thêm món ăn',
+                                                        style: TextStyle(
+                                                            color: R.color.mainColor,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400)),
+                                                  ],
+                                                ),
+                                              ]),
+                                          SizedBox(height: 16),
+                                          Container(
+                                              height: 1,
+                                              color: Color(0xffE5E5E5)),
+                                          ListView.separated(
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              shrinkWrap: true,
+                                              padding: EdgeInsets.all(0),
+                                              itemCount: selectedFoods.length,
+                                              separatorBuilder:
+                                                  (context, index) {
+                                                return Container(
+                                                    height: 1,
+                                                    color: Color(0xffD6D8E0));
+                                              },
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                return Container(
+                                                  color: Colors.transparent,
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 12, top: 12),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Expanded(
+                                                        child: Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width: 50,
+                                                              height: 50,
+                                                              child:
+                                                                  Image.network(
+                                                                selectedFoods[
+                                                                            index]
+                                                                        .image!
+                                                                        .url ??
+                                                                    '',
+                                                                width: 50,
+                                                                height: 50,
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 8,
+                                                            ),
+                                                            Expanded(
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                      selectedFoods[
+                                                                              index]
+                                                                          .name ?? "",
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                          R.color.textDark,
+                                                                          fontSize:
+                                                                              16,
+                                                                          fontWeight:
+                                                                              FontWeight.w700)),
+                                                                  SizedBox(
+                                                                    height: 4,
+                                                                  ),
+                                                                  Text(
+                                                                      selectedFoods[index]
+                                                                                  .code ==
+                                                                              'OtherUneditable'
+                                                                          ? 'Đã ăn ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal'
+                                                                          : 'Đã ăn ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal',
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                          R.color.textDark,
+                                                                          fontSize:
+                                                                              16,
+                                                                          fontWeight:
+                                                                              FontWeight.w400))
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 8,
+                                                      ),
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            selectedFoods
+                                                                .removeAt(
+                                                                    index);
+                                                            calculatorCalo();
+                                                          });
+                                                        },
+                                                        child: Image.asset(
+                                                          R.drawable.ic_trash,
+                                                          width: 20,
+                                                          height: 20,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              })
+                                        ]),
+                                      ),
+                                    )
+                                  ]),
+                                ),
+                              ),
+                        !addTotalCalo
+                            ? SizedBox()
+                            : Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: 16, left: 16, right: 16),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  // color: Colors.white,
+                                  padding: EdgeInsets.all(16),
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Lượng calo bạn đã nạp',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                        SizedBox(height: 24),
+                                        TextField(
+                                            controller: _controllerKcal,
+                                            //textAlign: TextAlign.center,
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.deny(
+                                                  RegExp(r'[-.]'))
+                                            ],
+                                            enableInteractiveSelection: false,
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400),
+                                            decoration: InputDecoration(
+                                                hintText:
+                                                    'Nhập lượng calo bạn đã nạp',
+                                                contentPadding:
+                                                    EdgeInsets.only(bottom: 8),
+                                                border: InputBorder.none,
+                                                hintStyle: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Color(0xff666666))),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                calculatorCalo();
+                                              });
+                                            }),
+                                        Container(
+                                            height: 1,
+                                            color: Color(0xffE5E5E5)),
+                                      ]),
+                                ),
+                              ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 16, left: 16, right: 16),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: R.color.white,
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
+                            // color: Colors.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -483,7 +599,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                     Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
                                     SizedBox(width: 8),
-                                    Text(R.string.ghi_chu.tr(),
+                                    Text('Ghi chú',
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600))
@@ -492,20 +608,20 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   TextField(
                                       controller: _controllerNote,
                                       style: TextStyle(
-                                          color: R.color.black,
+                                          color: Colors.black,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+                                          hintText: 'Nhập ghi chú của bạn',
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: R.color.primaryGreyColor))),
+                                              color: Color(0xff666666)))),
                                   Container(
-                                      height: 1, color: R.color.color0xffE5E5E5),
+                                      height: 1, color: Color(0xffE5E5E5)),
                                   SizedBox(height: 8),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -528,22 +644,22 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                             child: index == files.length
                                                 ? Container(
                                                     child: Image.asset(
-                                                        R.drawable.ic_add_photo))
-                                                :GestureDetector(
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    context,
-                                                    '/photo_view',
-                                                    arguments: {
-                                                      'files': files,
-                                                      'index': index
-                                                    });
-                                              },
-                                                  child: Stack(
-                                                      alignment:
-                                                          AlignmentDirectional
-                                                              .topEnd,
-                                                      children: [
+                                                      R.drawable.ic_add_photo))
+                                                : GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          '/photo_view',
+                                                          arguments: {
+                                                            'files': files,
+                                                            'index': index
+                                                          });
+                                                    },
+                                                    child: Stack(
+                                                        alignment:
+                                                            AlignmentDirectional
+                                                                .topEnd,
+                                                        children: [
                                                           Positioned.fill(
                                                             child: files[index]
                                                                     is PickedFile
@@ -561,11 +677,12 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                                         .cover),
                                                           ),
                                                           IconButton(
-                                                              icon: Image.asset(
-                                                                  R.drawable.ic_trash),
+                                                              icon: Image.asset(R.drawable.ic_trash
+                                                                  ),
                                                               onPressed: () {
                                                                 setState(() {
-                                                                  if (files[index]
+                                                                  if (files[
+                                                                          index]
                                                                       is PickedFile) {
                                                                     files.removeAt(
                                                                         index);
@@ -579,7 +696,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                                 });
                                                               })
                                                         ]),
-                                                ));
+                                                  ));
                                       })
                                 ]),
                           ),
@@ -593,11 +710,10 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                         },
                         child: SafeArea(
                           top: false,
-                          //bottom: false,
                           child: Container(
-                              margin: EdgeInsets.only(top: 16, bottom: 16),
                               height: 48,
                               width: 195,
+                              margin: EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                   color: R.color.mainColor,
                                   borderRadius: BorderRadius.circular(200),
@@ -609,9 +725,9 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text(R.string.save.tr(),
+                                  child: Text('Lưu',
                                       style: TextStyle(
-                                          color: R.color.white,
+                                          color: Colors.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)))),
                         ),
@@ -635,11 +751,11 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             border: Border.all(
-                                                color:R.color.red, width: 2)),
+                                                color: R.color.red, width: 2)),
                                         child: Center(
-                                          child: Text(R.string.xoa_du_lieu.tr(),
+                                          child: Text('Xoá dữ liệu',
                                               style: TextStyle(
-                                                  color: R.color.red,
+                                                  color: Colors.red,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600)),
                                         )),
@@ -663,9 +779,9 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                                 R.color.greenGradientBottom
                                               ])),
                                       child: Center(
-                                        child: Text(R.string.save.tr(),
+                                        child: Text('Lưu',
                                             style: TextStyle(
-                                                color: R.color.white,
+                                                color: Colors.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
                                       ),
@@ -681,13 +797,44 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     );
   }
 
+  addFood(BuildContext context) {
+    Navigator.push(
+        context,
+        CupertinoPageRoute(
+            fullscreenDialog: true,
+            builder: (context) {
+              return SearchFoodController(
+                foods: selectedFoods,
+                callback: (foods) {
+                  setState(() {
+                    selectedFoods = foods;
+                    calculatorCalo();
+                  });
+                },
+              );
+            }));
+  }
+
+  calculatorCalo() {
+    if (addTotalCalo) {
+      totalKcal = double.tryParse(_controllerKcal.text) ?? 0;
+    } else {
+      totalKcal = 0;
+      selectedFoods.forEach((element) {
+        totalKcal += (element.calorie ?? 0) * (element.quantity ?? 0);
+      });
+    }
+  }
+
   deleteData() async {
     try {
       BotToast.showLoading();
-      final result = await GlucoseClient().deleteIndexGlucose(widget.id);
+      final result = await FoodClient().deleteInputFood(widget.id);
       if (result == true) {
-        Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
+        Message.showToastMessage(context, 'Xoá thành công');
+        Observable.instance.notifyObservers([], notifyName : "food_change_data");
+        // DartNotificationCenter.post(channel: 'food_change_data');
+        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -704,30 +851,35 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
 
   editData() async {
     FocusScope.of(context).unfocus();
-    final reason = _controllerReason.text;
     final note = _controllerNote.text;
-    final numberInput = _controller.text;
 
-    if (numberInput.isEmpty) {
-      Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
-      return;
-    }
-    if (reason.isEmpty && showReason) {
-      Message.showToastMessage(context, R.string.mes_reason_empty.tr());
-      return;
-    }
     if (selectedDate == null) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
+      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
+      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
       return;
     }
-    // if (note.isEmpty) {
-    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu.tr());
-    //   return;
-    // }
+    if (addTotalCalo) {
+      if (_controllerKcal.text.isEmpty) {
+        Message.showToastMessage(context, 'Bạn chưa nhập tổng calo');
+        return;
+      }
+      if (totalKcal <= 0) {
+        Message.showToastMessage(context, 'Tổng số calo phải lớn hơn 0');
+        return;
+      }
+      if (note.isEmpty) {
+        Message.showToastMessage(context, 'Bạn chưa nhập ghi chú');
+        return;
+      }
+    } else {
+      if (selectedFoods.length == 0) {
+        Message.showToastMessage(context, 'Bạn chưa chọn món ăn');
+        return;
+      }
+    }
     BotToast.showLoading();
 
     try {
@@ -737,17 +889,20 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           paths.add(file.path);
         }
       }
-      final result = await GlucoseClient().putIndexGlucose(
+      final result = await FoodClient().updateIndexFood(
           widget.id,
-          selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          numberInput,
-          showReason ? reason : null,
+          selectedTimeFrame?.id,
           note,
+          addTotalCalo
+              ? [FoodModel(id: otherFoodId, quantity: totalKcal)]
+              : selectedFoods,
           removeIDs,
           paths);
       if (result == true) {
-        Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
+        Observable.instance.notifyObservers([], notifyName : "food_change_data");
+        // DartNotificationCenter.post(channel: 'food_change_data');
+        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -763,25 +918,36 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
 
   _submitData() async {
     FocusScope.of(context).unfocus();
-    final reason = _controllerReason.text;
     final note = _controllerNote.text;
 
-    if (number == 0) {
-      Message.showToastMessage(context, R.string.mes_blood_sugar_empty.tr());
-      return;
-    }
-    if (reason.isEmpty && showReason) {
-      Message.showToastMessage(context, R.string.mes_reason_empty.tr());
-      return;
-    }
     if (selectedDate == null) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
+      Message.showToastMessage(context, 'Bạn chưa nhập thời gian');
       return;
     }
     if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
+      Message.showToastMessage(context, 'Bạn chưa chọn khung giờ');
       return;
     }
+    if (addTotalCalo) {
+      if (_controllerKcal.text.isEmpty) {
+        Message.showToastMessage(context, 'Bạn chưa nhập tổng calo');
+        return;
+      }
+      if (totalKcal <= 0) {
+        Message.showToastMessage(context, 'Tổng số calo phải lớn hơn 0');
+        return;
+      }
+      if (note.isEmpty) {
+        Message.showToastMessage(context, 'Bạn chưa nhập ghi chú');
+        return;
+      }
+    } else {
+      if (selectedFoods.length == 0) {
+        Message.showToastMessage(context, 'Bạn chưa chọn món ăn');
+        return;
+      }
+    }
+
     BotToast.showLoading();
 
     try {
@@ -789,15 +955,18 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       for (var file in files) {
         paths.add(file.path);
       }
-      final result = await GlucoseClient().postIndexGlucose(
-          selectedTimeFrame!.id,
+      final result = await FoodClient().postIndexFood(
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          number.toString(),
-          showReason ? reason : null,
+          selectedTimeFrame?.id,
           note,
+          addTotalCalo
+              ? [FoodModel(id: otherFoodId, quantity: totalKcal)]
+              : selectedFoods,
           paths);
       if (result == true) {
-        Observable.instance.notifyObservers([], notifyName : "glucose_change_data");
+        Observable.instance.notifyObservers([], notifyName : "food_change_data");
+        // DartNotificationCenter.post(channel: 'food_change_data');
+        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -828,7 +997,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
+                        child: Text('Bạn muốn xoá dữ liệu?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -838,7 +1007,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            R.string.confirm_to_remove_data.tr(),
+                            'Các thống kê sẽ thay đổi khi dữ liệu bị xoá, bạn vẫn chắc chắn muốn xoá?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -862,7 +1031,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text(R.string.back.tr(),
+                                        child: Text('Quay lại',
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -880,13 +1049,13 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color:R.color.red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
-                                      child: Text(R.string.delete.tr(),
+                                      child: Text('Xoá',
                                           style: TextStyle(
-                                              color: R.color.white,
+                                              color: Colors.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -902,7 +1071,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -914,27 +1083,20 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
   }
 
   _showDialogSave() {
-    final reason = _controllerReason.text;
     final note = _controllerNote.text;
-    final numberInput = _controller.text;
 
     if (model != null) {
-      final noteText = model!.note ?? '';
-      final reasonText = model!.reason ?? '';
-      final date = DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
+      final noteText = model?.note ?? '';
+      final date = DateTime.fromMillisecondsSinceEpoch((model!.date ?? 0) * 1000);
       if (note == noteText &&
-          numberInput == model!.glucose!.round().toString() &&
-          reason == reasonText &&
+          selectedFoods.length == model!.foods.length &&
           files.length == model!.images.length &&
           removeIDs.length == 0 &&
           date.millisecondsSinceEpoch == selectedDate.millisecondsSinceEpoch) {
         Navigator.pop(context);
         return;
       }
-    } else if (note.isEmpty &&
-        numberInput.isEmpty &&
-        reason.isEmpty &&
-        files.length == 0) {
+    } else if (note.isEmpty && selectedFoods.length == 0 && files.length == 0) {
       Navigator.pop(context);
       return;
     }
@@ -955,7 +1117,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                           width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(R.string.ban_muon_quay_lai.tr(),
+                        child: Text('Bạn muốn quay lại ?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -965,7 +1127,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(
-                            R.string.confirm_to_back.tr(),
+                            'Dữ liệu đang nhập sẽ không được lưu lại, bạn vẫn chắc chắn muốn thoát?',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -988,7 +1150,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                               BorderRadius.circular(200),
                                           color: R.color.grayBorder),
                                       child: Center(
-                                        child: Text(R.string.van_o_lai.tr(),
+                                        child: Text('Vẫn ở lại',
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
@@ -1005,7 +1167,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color:R.color.red,
+                                        color: R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
@@ -1016,9 +1178,9 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                                               R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text(R.string.exit.tr(),
+                                      child: Text('Thoát',
                                           style: TextStyle(
-                                              color: R.color.white,
+                                              color: Colors.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                     ),
@@ -1032,7 +1194,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   top: 0,
                   right: 0,
                   child: IconButton(
-                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
                       onPressed: () {
                         Navigator.pop(context);
                       }),
@@ -1047,10 +1209,10 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: R.color.white,
+        backgroundColor: Colors.white,
         context: context,
         isScrollControlled: true,
-        builder: (context) => ActionListTrend(
+        builder: (context) => FoodTimeFrame(
             selected: selectedTimeFrame,
             callback: (value) {
               print(value);
@@ -1073,8 +1235,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   Image.asset(R.drawable.ic_photo,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text(R.string.chon_trong_thu_vien.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                  Text("Chọn trong thư viện",
+                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
                 ],
               ),
             ),
@@ -1091,8 +1253,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
                   Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
                   SizedBox(width: 16),
-                  Text(R.string.chup_anh.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                  Text("Chụp ảnh",
+                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
                 ],
               ),
             ),
@@ -1103,8 +1265,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
           )
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text(R.string.cancel.tr(),
-              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+          child: Text("Huỷ",
+              style: TextStyle(color: Color(0xff333333), fontSize: 14)),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -1112,7 +1274,7 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       );
       showCupertinoModalPopup(context: context, builder: (context) => action);
     } else {
-      //Message.showToastMessage(context, R.string.max_image_select.tr());
+      //Message.showToastMessage(context, 'Chỉ đuợc chọn tối đa 5 ảnh');
     }
   }
 
@@ -1151,13 +1313,13 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
 
   showAlertDialog(BuildContext context) {
     Widget cancelButton = FlatButton(
-      child: Text(R.string.cancel.tr()),
+      child: Text("Huỷ"),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = FlatButton(
-      child: Text(R.string.allowed.tr()),
+      child: Text("Cấp quyền"),
       onPressed: () {
         Navigator.pop(context);
         openAppSettings();
@@ -1165,8 +1327,8 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
     );
 
     AlertDialog alert = AlertDialog(
-      title: Text(R.string.notification.tr()),
-      content: Text(R.string.ask_for_permission.tr()),
+      title: Text("Thông báo"),
+      content: Text("Bạn cần cấp quyền truy cập để sử dụng tính năng này"),
       actions: [
         cancelButton,
         continueButton,
@@ -1179,258 +1341,4 @@ class _AddBloodSugarControllerState extends BaseState<AddBloodSugarController> {
       },
     );
   }
-}
-
-typedef TimeCallback = Function(DateTime?);
-
-class DateMultiPicker extends StatefulWidget {
-  final DateTime? initDate;
-  final TimeCallback? callback;
-  DateMultiPicker({this.initDate, this.callback});
-  @override
-  _DateMultiPickerState createState() => _DateMultiPickerState();
-}
-
-class _DateMultiPickerState extends State<DateMultiPicker> {
-  DateTime? selectedDate = DateTime.now();
-  int selectedHour = DateTime.now().hour;
-  int selectedMinute = DateTime.now().minute;
-
-  @override
-  void initState() {
-    if (widget.initDate != null) {
-      selectedDate = widget.initDate;
-      selectedHour = widget.initDate!.hour;
-      selectedMinute = widget.initDate!.minute;
-    }
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pop(context);
-      },
-      child: Scaffold(
-        backgroundColor: R.color.transparent,
-        body: Center(
-          child: Padding(
-            padding: EdgeInsets.only(left: 16, right: 16),
-            child: GestureDetector(
-              onTap: () {},
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: R.color.white,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 16, right: 4),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(R.string.pick_date.tr(),
-                                style: TextStyle(
-                                    color: R.color.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700)),
-                            IconButton(
-                                icon:
-                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                })
-                          ]),
-                    ),
-                    CustomCalendarDatePicker(
-                        initialDate: widget.initDate == null
-                            ? DateTime.now()
-                            : widget.initDate!,
-                        firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
-                        lastDate: DateTime.now(),
-                        onDateChanged: (datetime) {
-                          selectedDate = datetime ?? DateTime.now();
-                        }),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: 16,
-                        ),
-                        Text(R.string.pick_time.tr(),
-                            style: TextStyle(
-                                color: R.color.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700)),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    CustomTimePicker(
-                        selectedHour: selectedHour,
-                        selectedMinute: selectedMinute,
-                        callback: (hour, minute) {
-                          selectedHour = hour ?? selectedHour;
-                          selectedMinute = minute ?? selectedMinute;
-                        }),
-                    SizedBox(height: 20),
-                    Row(children: [
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                              height: 43,
-                              decoration: BoxDecoration(
-                                  color: R.color.grayBorder,
-                                  borderRadius: BorderRadius.circular(21.5)),
-                              child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700)))),
-                        ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            selectedDate = DateTime(
-                                selectedDate!.year,
-                                selectedDate!.month,
-                                selectedDate!.day,
-                                selectedHour,
-                                selectedMinute);
-
-                            widget.callback!(selectedDate);
-
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                              height: 43,
-                              decoration: BoxDecoration(
-                                  color: R.color.mainColor,
-                                  borderRadius: BorderRadius.circular(21.5)),
-                              child: Center(
-                                  child: Text(R.string.yes.tr(),
-                                      style: TextStyle(
-                                          color: R.color.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700)))),
-                        ),
-                      ),
-                      SizedBox(width: 16),
-                    ]),
-                    SizedBox(height: 16)
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-typedef TimeHourCallback = Function(int?, int?);
-
-class CustomTimePicker extends StatefulWidget {
-  final int? selectedHour;
-  final int? selectedMinute;
-  final TimeHourCallback? callback;
-  CustomTimePicker({this.selectedHour, this.selectedMinute, this.callback});
-  @override
-  _CustomTimePickerState createState() => _CustomTimePickerState();
-}
-
-class _CustomTimePickerState extends State<CustomTimePicker> {
-  FixedExtentScrollController? hourController;
-  FixedExtentScrollController? minuteController;
-  int? selectedHour = 1;
-  int? selectedMinute = 1;
-
-  @override
-  void initState() {
-    super.initState();
-    final now = DateTime.now();
-    selectedHour = now.hour;
-    selectedMinute = now.minute;
-    if (widget.selectedHour != null) {
-      selectedHour = widget.selectedHour;
-    }
-    if (widget.selectedMinute != null) {
-      selectedMinute = widget.selectedMinute;
-    }
-    hourController = FixedExtentScrollController(initialItem: selectedHour!);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-            height: 150,
-            width: 106,
-            child: CupertinoPicker(
-                scrollController: hourController,
-                selectionOverlay: null,
-                onSelectedItemChanged: (value) {
-                  setState(() {
-                    selectedHour = value;
-                    widget.callback!(selectedHour, selectedMinute);
-                  });
-                },
-                itemExtent: 47.0,
-                children: List<int>.generate(24, (i) => i)
-                    .map((e) => Center(
-                          child: Text(e.toString().length == 1 ? '0$e' : '$e',
-                              style: TextStyle(
-                                  color: selectedHour == e
-                                      ? R.color.mainColor
-                                      : R.color.color0xffC0C2C5,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold)),
-                        ))
-                    .toList())),
-        SizedBox(width: 24),
-        Container(
-            height: 150,
-            width: 106,
-            child: CupertinoPicker(
-                scrollController: minuteController,
-                selectionOverlay: null,
-                onSelectedItemChanged: (value) {
-                  setState(() {
-                    selectedMinute = value;
-                    widget.callback!(selectedHour, selectedMinute);
-                  });
-                },
-                itemExtent: 47.0,
-                children: List<int>.generate(60, (i) => i)
-                    .map((e) => Center(
-                          child: Text(e.toString().length == 1 ? '0$e' : '$e',
-                              style: TextStyle(
-                                  color: selectedMinute == e
-                                      ? R.color.mainColor
-                                      : R.color.color0xffC0C2C5,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold)),
-                        ))
-                    .toList()))
-      ],
-    );
-  }
-}
-
-String formatDate(int timeStamp) {
-  final date = DateTime.fromMillisecondsSinceEpoch(timeStamp);
-
-  return 'Tháng ${date.month}, ${date.year}';
 }

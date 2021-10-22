@@ -96,7 +96,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                   barrierColor:
                                       R.color.color0xff003F38.withOpacity(0.5),
                                   context: context,
-                                  builder: (_) => CustomNumPicker(
+                                  builder: (_) => CustomWeightPicker(
                                       callback: (number) {
                                         if (number != null)
                                         submitTarget(number);
@@ -106,8 +106,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                       numberDefault:
                                           (model!.goal == null || model.goal == 0
                                                   ? 50
-                                                  : model.goal)!
-                                              .toInt(),
+                                                  : model.goal ?? 0),
                                       unit: R.string.kg.tr()),
                                 );
                               },
@@ -656,7 +655,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
           ];
   }
 
-  submitTarget(int value) async {
+  submitTarget(double value) async {
     try {
       BotToast.showLoading();
       await WeightClient().addWeightTarget(value);

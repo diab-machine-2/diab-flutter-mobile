@@ -165,7 +165,7 @@ class StarchChartState extends State<StarchChart>
                         top: 38,
                         right: 43,
                         child: SizedBox(
-                          height: 200,
+                          height: 170,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

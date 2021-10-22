@@ -156,7 +156,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     final FoodChangeRequest request = FoodChangeRequest(
       id: foodId,
       foodId: newFoodModel.id,
-      portion: newFoodModel.portion.toInt(),
+      portion: (newFoodModel.portion ?? 0).toInt(),
     );
     final ApiResult<CommonResponse> apiResult =
         await repository.changeFood(request);
@@ -179,7 +179,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   void calculatorCalo() {
     totalKcal = 0;
     for (final food in selectedFoods) {
-      totalKcal += food.calorie! * food.portion;
+      totalKcal += food.calorie! * (food.portion ?? 0);
     }
     refresh();
   }
