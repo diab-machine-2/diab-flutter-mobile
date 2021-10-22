@@ -304,10 +304,10 @@ class _RegisterControllerState extends State<RegisterController> {
           phoneKey.currentState!.validate(
               R.string.so_dien_thoai_da_ton_tai.tr());
         } else {
-          Message.showToastMessage(context, e.message);
+          Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
         }
       } else {
-        Message.showToastMessage(context, e.toString());
+        Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       }
     }
   }

@@ -443,19 +443,12 @@ class UserClient extends FetchClient {
     }
   }
 
-  Future<bool> inputScheduleReminder(String name, int remindType, int time,
-      String content, bool? isActive) async {
+  Future<bool> inputScheduleReminder(ScheduleReminderModel model) async {
     try {
       final Response response = await super.postUri(
           baseOption: true,
           url: '/App/Patient/PatientRemind/Input',
-          params: {
-            'name': name,
-            'remindType': remindType,
-            'time': time,
-            'content': content,
-            'isActive': isActive.toString()
-          });
+          params: model.toJson());
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -469,18 +462,10 @@ class UserClient extends FetchClient {
     }
   }
 
-  Future<bool> editScheduleReminder(String? id, String? name, int? remindType,
-      int? time, String? content, bool? isActive) async {
+  Future<bool> editScheduleReminder(ScheduleReminderModel model) async {
     try {
       final Response response =
-          await super.putData(url: '/App/Patient/PatientRemind/Input', params: {
-        'id': id,
-        'name': name,
-        'remindType': remindType,
-        'time': time,
-        'content': content,
-        'isActive': isActive.toString()
-      });
+          await super.putData(url: '/App/Patient/PatientRemind/Input', params: model.toJson());
       if (response.statusCode == 200) {
         return true;
       } else {

@@ -14,6 +14,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import 'popup_reminder.dart';
+
 class AddReminderController extends StatefulWidget {
   final String? type;
   final String? id;
@@ -32,10 +34,15 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
   int selectedTimeFrame = 0;
   String name = R.string.every_day.tr();
 
-  bool? status = true;
-  bool? tempStatus = true;
-
-  ScheduleReminderModel? model;
+  List<String> timeFrame = [
+    'Thức giấc',
+    'Ăn sáng',
+    'Ăn trưa',
+    'Ăn tối',
+    'Đi ngủ'
+  ];
+  ScheduleReminderModel model = ScheduleReminderModel();
+  ScheduleReminderModel tempModel = ScheduleReminderModel();
 
   void initState() {
     super.initState();
@@ -46,29 +53,37 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
 
   loadDetail() async {
     BotToast.showLoading();
-    model = await UserClient().fetchScheduleReminderDetail(widget.id);
+    final data = await UserClient().fetchScheduleReminderDetail(widget.id);
     BotToast.closeAllLoading();
+    model = data;
+    tempModel = data;
 
-    status = model!.isActive;
-    tempStatus = model!.isActive;
-    final date = DateTime.fromMillisecondsSinceEpoch(model!.time! * 1000);
-    selectedHour = date.hour;
-    selectedMinute = date.minute;
-    selectedTimeFrame = model!.remindType! - 1;
-    getTimeName();
-    titleController.text = model!.name ?? '';
-    descriptionController.text = model!.content ?? '';
+    getName();
+    titleController.text = model.name ?? '';
+    descriptionController.text = model.content ?? '';
     setState(() {});
   }
 
-  getTimeName() {
-    name = selectedTimeFrame == 0
-        ? R.string.every_day.tr()
-        : selectedTimeFrame == 1
-            ? R.string.every_week.tr()
-            : selectedTimeFrame == 2
-                ? R.string.every_day_except_sunday.tr()
-                : R.string.every_30_minutes.tr();
+  loadTimeFrame() async {
+    BotToast.showLoading();
+    model = await UserClient().fetchScheduleReminderDetail(widget.id);
+    BotToast.closeAllLoading();
+    setState(() {});
+  }
+
+  String getName() {
+    String name = '';
+    if (model.remindType == 1) {
+      name = 'Hàng ngày';
+    } else {
+      List<String> weeks = [];
+      model.days?.forEach((element) {
+        weeks.add(element == 7 ? 'CN' : 'T${(element + 1)}');
+      });
+      name = weeks.join(', ');
+    }
+
+    return name;
   }
 
   @override
@@ -132,10 +147,10 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                               ]),
                               CupertinoSwitch(
                                 activeColor: R.color.greenGradientBottom,
-                                value: status!,
+                                value: model.isActive == true,
                                 onChanged: (value) {
                                   setState(() {
-                                    status = value;
+                                    model.isActive = value;
                                   });
                                 },
                               )
@@ -159,200 +174,73 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500))
                             ]),
-                            GestureDetector(
-                              onTap: () {
-                                int hour = selectedHour;
-                                int minute = selectedMinute;
-                                showDialog(
-                                    barrierColor:
-                                        R.color.color0xff003F38.withOpacity(0.5),
-                                    context: context,
-                                    builder: (_) => GestureDetector(
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Scaffold(
-                                            backgroundColor: R.color.transparent,
-                                            body: Center(
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Padding(
-                                                    padding: EdgeInsets.all(16),
-                                                    child: GestureDetector(
-                                                      onTap: () {},
-                                                      child: Container(
-                                                        decoration: BoxDecoration(
-                                                            color: R.color.white,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8)),
-                                                        padding:
-                                                            EdgeInsets.all(16),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                                R.string.nhap_thoi_gian.tr(),
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600)),
-                                                            SizedBox(height: 8),
-                                                            CustomTimePicker(
-                                                                selectedHour:
-                                                                    hour,
-                                                                selectedMinute:
-                                                                    minute,
-                                                                callback:
-                                                                    (h, m) {
-                                                                  hour = h ?? DateTime.now().hour;
-                                                                  minute = m ?? DateTime.now().hour;
-                                                                }),
-                                                            SizedBox(
-                                                                height: 20),
-                                                            Row(children: [
-                                                              SizedBox(
-                                                                  width: 16),
-                                                              Expanded(
-                                                                child:
-                                                                    GestureDetector(
-                                                                  onTap: () {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  },
-                                                                  child: Container(
-                                                                      height:
-                                                                          43,
-                                                                      decoration: BoxDecoration(
-                                                                          color: R.color.grayBorder,
-                                                                          borderRadius: BorderRadius.circular(
-                                                                              21.5)),
-                                                                      child: Center(
-                                                                          child: Text(
-                                                                              R.string.cancel.tr(),
-                                                                              style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)))),
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                  width: 16),
-                                                              Expanded(
-                                                                child:
-                                                                    GestureDetector(
-                                                                  onTap: () {
-                                                                    if (hour ==
-                                                                            0 &&
-                                                                        minute ==
-                                                                            0) {
-                                                                      Message.showToastMessage(
-                                                                          context,
-                                                                          R.string.ban_chua_chon_thoi_gian.tr());
-                                                                      return;
-                                                                    }
-                                                                    selectedHour =
-                                                                        hour;
-                                                                    selectedMinute =
-                                                                        minute;
-                                                                    setState(
-                                                                        () {});
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  },
-                                                                  child: Container(
-                                                                      height:
-                                                                          43,
-                                                                      decoration: BoxDecoration(
-                                                                          color:
-                                                                              R.color.mainColor,
-                                                                          borderRadius: BorderRadius.circular(
-                                                                              200),
-                                                                          gradient: LinearGradient(
-                                                                              begin: Alignment.topLeft,
-                                                                              end: Alignment.centerRight,
-                                                                              colors: [
-                                                                                R.color.greenGradientTop,
-                                                                                R.color.greenGradientBottom
-                                                                              ])),
-                                                                      child: Center(
-                                                                          child: Text(
-                                                                              R.string.yes.tr(),
-                                                                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w700)))),
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                  width: 16),
-                                                            ])
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ));
-                              },
-                              child: Container(
-                                color: R.color.transparent,
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              top: 32, left: 32, bottom: 16),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                  selectedHour == null
-                                                      ? '--'
-                                                      : selectedHour.toString(),
-                                                  style: TextStyle(
-                                                      color: R.color.black,
-                                                      fontFamily: 'Viga',
-                                                      fontSize: 40)),
-                                              Container(
-                                                  height: 1,
-                                                  color: R.color.grayComponentBorder)
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Text(R.string.hour_upper_case_first.tr()),
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              top: 32, left: 32, bottom: 16),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                  selectedMinute == null
-                                                      ? '--'
-                                                      : selectedMinute
-                                                          .toString(),
-                                                  style: TextStyle(
-                                                      color: R.color.black,
-                                                      fontFamily: 'Viga',
-                                                      fontSize: 40)),
-                                              Container(
-                                                  height: 1,
-                                                  color: R.color.grayComponentBorder)
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Text(R.string.minute_upper_case_first.tr()),
-                                      SizedBox(width: 32)
-                                    ]),
-                              ),
-                            )
+                            SizedBox(height: 12),
+                            ListView.separated(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                padding: EdgeInsets.all(0),
+                                itemCount: timeFrame.length,
+                                separatorBuilder:
+                                    (BuildContext context, int index) {
+                                  return SizedBox(height: 12);
+                                },
+                                itemBuilder: (BuildContext context, int index) {
+                                  bool checked = false;
+                                  if (index == 0) {
+                                    checked = model.isWakeUp == true;
+                                  }
+                                  if (index == 1) {
+                                    checked = model.isBreakfast == true;
+                                  }
+                                  if (index == 2) {
+                                    checked = model.isLunch == true;
+                                  }
+                                  if (index == 3) {
+                                    checked = model.isDinner == true;
+                                  }
+                                  if (index == 4) {
+                                    checked = model.isSleeping == true;
+                                  }
+                                  return GestureDetector(
+                                    onTap: () {
+                                      if (index == 0) {
+                                        model.isWakeUp = !(model.isWakeUp ?? true);
+                                      }
+                                      if (index == 1) {
+                                        model.isBreakfast = !(model.isBreakfast ?? true);
+                                      }
+                                      if (index == 2) {
+                                        model.isLunch = !(model.isLunch ?? true);
+                                      }
+                                      if (index == 3) {
+                                        model.isDinner = !(model.isDinner ?? true);
+                                      }
+                                      if (index == 4) {
+                                        model.isSleeping = !(model.isSleeping ?? true);
+                                      }
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      color: Colors.transparent,
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(timeFrame[index],
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w400)),
+                                            Image.asset(
+                                                checked
+                                                    ? R.drawable.ic_checkbox_green
+                                                    : R.drawable.ic_checkbox,
+                                                width: 24,
+                                                height: 24)
+                                          ]),
+                                    ),
+                                  );
+                                })
                           ]),
                         ),
                         SizedBox(height: 8),
@@ -450,6 +338,17 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                 ),
                 GestureDetector(
                   onTap: () async {
+                    FocusScope.of(context).unfocus();
+
+                    if (model.isWakeUp != true &&
+                        model.isBreakfast  != true &&
+                        model.isLunch  != true &&
+                        model.isDinner != true  &&
+                        model.isSleeping != true ) {
+                      Message.showToastMessage(
+                          context, 'Bạn chưa chọn khung giờ nhắc nhở');
+                      return;
+                    }
                     if (widget.type == 'input') {
                       submit();
                     } else {
@@ -492,22 +391,15 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
     final title = titleController.text;
     final des = descriptionController.text;
 
-    if (model != null) {
-      final name = model!.name ?? '';
-      final content = model!.content ?? '';
-      if (name == title &&
-          content == des &&
-          selectedTimeFrame + 1 == model!.remindType &&
-          status == tempStatus) {
-        Navigator.pop(context);
-        return;
-      }
-    } else if (title.isEmpty &&
-        des.isEmpty &&
-        selectedHour == 0 &&
-        selectedMinute == 0 &&
-        selectedTimeFrame == 0 &&
-        status == tempStatus) {
+    if (model.isActive == tempModel.isActive &&
+        model.content == des &&
+        model.name == title &&
+        model.days == tempModel.days &&
+        model.isBreakfast == tempModel.isBreakfast &&
+        model.isDinner == tempModel.isDinner &&
+        model.isLunch == tempModel.isLunch &&
+        model.isSleeping == tempModel.isSleeping &&
+        model.isWakeUp == tempModel.isWakeUp) {
       Navigator.pop(context);
       return;
     }
@@ -623,21 +515,14 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
         backgroundColor: R.color.white,
         context: context,
         isScrollControlled: true,
-        builder: (context) => FillterBloodPanel(
-            selectedIndex: selectedTimeFrame,
-            data: [
-              R.string.every_day.tr(),
-              R.string.every_week.tr(),
-              R.string.every_day_except_sunday.tr(),
-              R.string.every_30_minutes.tr()
-            ],
-            callback: (value, index) {
-              if (index != null) {
-                setState(() {
-                  name = value;
-                  selectedTimeFrame = index;
-                });
-              }
+        builder: (context) => PopupReminder(
+            selectedIndex: (model.remindType ?? 1) - 1,
+            selectedItems: model.days ?? [],
+            callback: (index, items) {
+              setState(() {
+                model.remindType = index + 1;
+                model.days = items;
+              });
             }));
   }
 
@@ -648,22 +533,11 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
       Message.showToastMessage(context, R.string.mes_reminder_name_empty.tr());
       return;
     }
-
-    if (selectedHour == 0 && selectedMinute == 0) {
-      Message.showToastMessage(context, R.string.mes_time_reminder_empty.tr());
-      return;
-    }
-
+    model.name = title;
+    model.content = des;
     try {
       BotToast.showLoading();
-      await UserClient().inputScheduleReminder(
-          title,
-          selectedTimeFrame + 1,
-          DateTime(DateTime.now().year, 1, 1, selectedHour, selectedMinute)
-                  .millisecondsSinceEpoch ~/
-              1000,
-          des,
-          status);
+      await UserClient().inputScheduleReminder(model);
       Observable.instance.notifyObservers([], notifyName : "schedule_change");
       // DartNotificationCenter.post(channel: 'schedule_change');
       Navigator.pop(context);
@@ -680,27 +554,14 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
 
   edit() async {
     final title = titleController.text;
-    final des = descriptionController.text;
     if (title.isEmpty) {
       Message.showToastMessage(context, R.string.mes_reminder_name_empty.tr());
       return;
     }
 
-    if (selectedHour == 0 && selectedMinute == 0) {
-      Message.showToastMessage(context, R.string.mes_time_reminder_empty.tr());
-      return;
-    }
     try {
       BotToast.showLoading();
-      await UserClient().editScheduleReminder(
-          widget.id,
-          title,
-          selectedTimeFrame + 1,
-          DateTime(DateTime.now().year, 1, 1, selectedHour, selectedMinute)
-                  .millisecondsSinceEpoch ~/
-              1000,
-          des,
-          status);
+      await UserClient().editScheduleReminder(model);
       Observable.instance.notifyObservers([], notifyName : "schedule_change");
       // DartNotificationCenter.post(channel: 'schedule_change');
       Navigator.pop(context);

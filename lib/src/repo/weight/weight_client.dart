@@ -310,7 +310,7 @@ class WeightClient extends FetchClient {
     }
   }
 
-  Future<bool> addWeightTarget(int value) async {
+  Future<bool> addWeightTarget(double value) async {
     try {
       final response = await super
           .postHttp2(path: '/App/Patient/WeightGoal', params: value.toString());

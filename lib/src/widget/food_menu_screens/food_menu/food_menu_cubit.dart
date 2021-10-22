@@ -88,7 +88,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
     final FoodChangeRequest request = FoodChangeRequest(
       id: foodId,
       foodId: newFoodModel.id,
-      portion: newFoodModel.portion.toInt(),
+      portion: (newFoodModel.portion ?? 0).toInt(),
     );
     final ApiResult<CommonResponse> apiResult =
         await repository.changeFood(request);

@@ -215,6 +215,7 @@ showPopupWeight() {
                 isLinkedGoogle: userInfo.isLinkedGoogle,
                 isMobileAccount: userInfo.isMobileAccount,
                 firstLinkedAccount: userInfo.firstLinkedAccount,
+                googleEmail: userInfo.googleEmail,
                 glucoseUnit: userInfo.glucoseUnit,
                 activityLevelRate: userInfo.activityLevelRate);
             await UserClient()

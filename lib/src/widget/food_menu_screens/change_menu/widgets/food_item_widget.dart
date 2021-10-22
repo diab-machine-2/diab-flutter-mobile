@@ -77,7 +77,7 @@ class FoodItemWidget extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        '${R.string.da_an.tr()} ${roundAsFixed(newFoodModel.portion)} ${newFoodModel.unit}, ${formatNumber(newFoodModel.portion * newFoodModel.calorie!)} ${R.string.kcal.tr()}',
+                        '${R.string.da_an.tr()} ${roundAsFixed(newFoodModel.portion ?? 0)} ${newFoodModel.unit}, ${formatNumber((newFoodModel.portion ?? 0) * newFoodModel.calorie!)} ${R.string.kcal.tr()}',
                         style: TextStyle(
                           color: R.color.black,
                           fontWeight: FontWeight.w400,

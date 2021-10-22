@@ -3,8 +3,9 @@ import 'package:meta/meta.dart';
 
 class FoodModel {
   final String? id;
+  final String? code;
   final String? name;
-  final double portion;
+  final double? portion;
   final String? unit;
   final double? calorie;
   final double? glucose;
@@ -16,22 +17,25 @@ class FoodModel {
   final String? text;
   final String? description;
   final String? foodCategoryId;
+  final double? quantity;
 
   FoodModel({
     required this.id,
-    required this.name,
-    required this.portion,
-    required this.unit,
-    required this.calorie,
-    required this.glucose,
-    required this.lipid,
-    required this.protein,
-    required this.fibre,
-    required this.image,
-    required this.liked,
-    required this.text,
-    required this.description,
-    required this.foodCategoryId,
+     this.code,
+     this.name,
+     this.portion,
+     this.unit,
+     this.calorie,
+     this.glucose,
+     this.lipid,
+     this.protein,
+     this.fibre,
+     this.image,
+     this.liked,
+     this.text,
+     this.description,
+     this.foodCategoryId,
+     this.quantity,
   });
 
   @override
@@ -39,6 +43,7 @@ class FoodModel {
     return FoodModel(
       id: json['id'],
       name: json['name'],
+        code: json['code'],
       portion: json['portion'] == null ? 1 : json['portion'].toDouble() ?? 1,
       unit: json['unit'],
       calorie: json['calorie'] == null
@@ -55,6 +60,7 @@ class FoodModel {
       text: json['text'],
       description: json['description'],
       foodCategoryId: json['foodCategoryId'],
+        quantity: json['inputPortion'] ?? 1
     );
   }
 
@@ -64,6 +70,7 @@ class FoodModel {
 
   FoodModel copyWith({
     String? id,
+    String? code,
     String? name,
     double? portion,
     String? unit,
@@ -77,9 +84,11 @@ class FoodModel {
     String? text,
     String? description,
     String? foodCategoryId,
+    double? quantity
   }) {
     return FoodModel(
       id: id ?? this.id,
+      code: code ?? this.code,
       name: name ?? this.name,
       portion: portion ?? this.portion,
       unit: unit ?? this.unit,
@@ -93,11 +102,13 @@ class FoodModel {
       text: text ?? this.text,
       description: description ?? this.description,
       foodCategoryId: foodCategoryId ?? this.foodCategoryId,
+      quantity: quantity ?? this.quantity,
     );
   }
 
   Map<String, dynamic> toJson() => {
         'id': id,
+    'code': code,
         'name': name,
         'portion': portion,
         'unit': unit,
@@ -111,5 +122,6 @@ class FoodModel {
         'text': text,
         'description': description,
         'foodCategoryId': foodCategoryId,
+    'quantity': quantity,
       };
 }

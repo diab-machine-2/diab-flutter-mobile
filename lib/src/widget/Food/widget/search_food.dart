@@ -69,10 +69,15 @@ class _SearchFoodState extends State<SearchFood> with Observer {
   }
 
   Future<bool> refresh() async {
-    page = 1;
-    BlocProvider.of<FoodBloc>(currentContext)
-        .add(FetchSearchFood(keyword: controller.text, page: page));
-    return true;
+    if (isLoading) {
+      return true;
+    } else {
+      isLoading = true;
+      page = 1;
+      BlocProvider.of<FoodBloc>(currentContext)
+          .add(FetchSearchFood(keyword: controller.text, page: page));
+      return true;
+    }
   }
 
   likeFood(FoodModel model, int index) {
@@ -126,12 +131,16 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                           children: [
                             Expanded(
                                 child: CupertinoTextField(
+                                    textInputAction: TextInputAction.search,
                                     autofocus: true,
                                     controller: controller,
                                     placeholder: R.string.tim_kiem_mon_an.tr(),
                                     decoration: BoxDecoration(border: null),
-                                    onChanged: (value) {
+                                    onSubmitted: (value) {
                                       refresh();
+                                    },
+                                    onChanged: (value) async {
+                                      await refresh();
                                       // Future.delayed(
                                       //     Duration(milliseconds: 500), () {
                                       //   refresh();

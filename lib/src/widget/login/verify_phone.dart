@@ -353,6 +353,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           'providerName': 'Google',
           'providerKey': widget.googleAccount!.id,
           'phoneNumber': widget.phone,
+          'email': widget.googleAccount!.email,
           'token': otpCode
         });
         final refreshToken = await AppSettings.getRefreshToken();
@@ -401,11 +402,11 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         error = true;
       });
       BotToast.closeAllLoading();
-      if (e is Error) {
-        Message.showToastMessage(context, e.message);
-      } else {
-        //Message.showToastMessage(context, e.toString());
-      }
+      // if (e is Error) {
+      //   Message.showToastMessage(context, e.message);
+      // } else {
+      //   Message.showToastMessage(context, e.toString());
+      // }
     }
   }
 
@@ -441,7 +442,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         final result = await LoginClient().linkedAccountOTP({
           'providerName': 'Google',
           'providerKey': widget.googleAccount!.id,
-          'phoneNumber': widget.phone
+          'phoneNumber': widget.phone,
+          'email': widget.googleAccount!.email
         });
         otpCount = result.remainingRequestCount;
         otpTemp = result.token;
@@ -451,6 +453,11 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           'providerKey': widget.facebookAccount!.accessToken?.userId,
           'phoneNumber': widget.phone
         });
+        otpCount = result.remainingRequestCount;
+        otpTemp = result.token;
+      } else if (widget.type == 'forgot_password') {
+        final result = await LoginClient()
+            .requestOTPRecover({"phoneNumber": widget.phone});
         otpCount = result.remainingRequestCount;
         otpTemp = result.token;
       } else {
@@ -464,11 +471,11 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       _showDialogSuccess();
     } catch (e, _) {
       BotToast.closeAllLoading();
-      if (e is Error) {
-        Message.showToastMessage(context, e.message);
-      } else {
-        Message.showToastMessage(context, e.toString());
-      }
+      // if (e is Error) {
+      //   Message.showToastMessage(context, e.message);
+      // } else {
+      //   Message.showToastMessage(context, e.toString());
+      // }
     }
   }
 
