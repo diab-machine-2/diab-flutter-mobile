@@ -27,6 +27,8 @@ import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Exercrises/search_exercrises.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/base/base_state.dart';
+import 'package:medical/src/widget/course_feedback/course_feedback_page.dart';
+import 'package:medical/src/widget/course_quiz/course_quiz.dart';
 import 'package:medical/src/widget/detail_package/detail_package_page.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -108,7 +110,7 @@ class _AppState extends State<App> {
               supportedLocales: context.supportedLocales,
               locale: context.locale,
               home: FlashScreenController(),
-              // home: IntroSampleMenuPage(),
+              // home: CourseQuizPage(),
               debugShowCheckedModeBanner: false,
               onGenerateRoute: (settings) {
                 switch (settings.name) {

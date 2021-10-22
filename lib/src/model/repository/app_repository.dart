@@ -1,6 +1,8 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
+import 'package:medical/src/model/request/ios_receipt_request.dart';
+import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
@@ -13,6 +15,7 @@ import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
+import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
@@ -78,6 +81,16 @@ class AppRepository {
     try {
       ListTransactionResponse response =
       await appClient.getListTransaction(isExpired, page, size);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<dynamic>> verifyReceipt({required String? receipt}) async {
+    try {
+      IosReceiptRequest request = IosReceiptRequest(receipt: receipt,);
+      dynamic response = await appClient.verifyReceipt(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -205,6 +218,33 @@ class AppRepository {
         return ApiResult.failure(
             error:
                 NetworkExceptions.defaultError(response.message ?? ''));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /**
+   * Quiz
+   */
+
+  Future<ApiResult<List<QuizData>>> getListQuiz(String lessonId) async {
+    try {
+      ListQuizLessonResponse response = await appClient.getListQuiz(lessonId);
+      return ApiResult.success(data: response.data ?? []);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> sendFeedbackCourse(SendFeedbackCourseRequest request) async {
+    try {
+      final CommonResponse response = await appClient.sendFeedbackCourse(request);
+      if (response.meta?.success == true) {
+        return ApiResult.success(data: response);
+      } else
+        return const ApiResult.failure(
+            error:
+            NetworkExceptions.defaultError("Can't find a matching menu"));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
