@@ -305,7 +305,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                                         children: [
                                                                                           Text(food.name!, style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w500)),
                                                                                           SizedBox(height: 4),
-                                                                                          Text(food.text!, style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal))
+                                                                                          food.code == 'OtherUneditable' ? SizedBox() :Text(food.text!, style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal))
                                                                                         ],
                                                                                       )
                                                                                     ]),

@@ -49,6 +49,7 @@ class AddInsightController extends StatefulWidget {
       this.activities,
       this.otherSymptom,
       this.otherActivity});
+
   @override
   _AddInsightControllerState createState() => _AddInsightControllerState();
 }
@@ -147,7 +148,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           return false;
         },
         child: Scaffold(
-          backgroundColor:  R.color.backgroundColor,
+          backgroundColor: R.color.backgroundColor,
           body: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
@@ -182,10 +183,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 16, right: 16),
                         child: isClicked
-                            ? Image.asset(
-                                R.drawable.ic_help_circle_active,
-                                width: 24,
-                                height: 24)
+                            ? Image.asset(R.drawable.ic_help_circle_active,
+                                width: 24, height: 24)
                             : Image.asset(R.drawable.ic_help_circle,
                                 width: 24, height: 24),
                       ),
@@ -205,8 +204,9 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                 child: Description(
                                     input: true,
                                     data: des,
-                                    titleDetail:
-                                        R.string.kiem_soat_cam_xuc_benh_tieu_duong.tr()),
+                                    titleDetail: R.string
+                                        .kiem_soat_cam_xuc_benh_tieu_duong
+                                        .tr()),
                               )
                             : SizedBox(),
                         GestureDetector(
@@ -268,12 +268,12 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(children: [
-                                            Image.asset(
-                                                R.drawable.ic_chatting,
-                                                width: 24,
-                                                height: 24),
+                                            Image.asset(R.drawable.ic_chatting,
+                                                width: 24, height: 24),
                                             SizedBox(width: 8),
-                                            Text(R.string.trieu_chung_cua_ban.tr(),
+                                            Text(
+                                                R.string.trieu_chung_cua_ban
+                                                    .tr(),
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight:
@@ -354,7 +354,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                               ),
                                               Container(
                                                   height: 1,
-                                                  color: R.color.color0xffE5E5E5),
+                                                  color:
+                                                      R.color.color0xffE5E5E5),
                                               Column(
                                                 children: [
                                                   SizedBox(
@@ -371,7 +372,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                       Text(R.string.khac.tr(),
                                                           style: TextStyle(
                                                               fontSize: 14,
-                                                              color: R.color.textDark,
+                                                              color: R.color
+                                                                  .textDark,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700)),
@@ -381,7 +383,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                             otherSymptom!,
                                                             style: TextStyle(
                                                                 fontSize: 14,
-                                                                color: R.color.textDark,
+                                                                color: R.color
+                                                                    .textDark,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w400)),
@@ -417,12 +420,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row(children: [
-                                            Image.asset(
-                                                R.drawable.ic_pulse,
-                                                width: 24,
-                                                height: 24),
+                                            Image.asset(R.drawable.ic_pulse,
+                                                width: 24, height: 24),
                                             SizedBox(width: 8),
-                                            Text(R.string.hoat_dong_cua_ban.tr(),
+                                            Text(
+                                                R.string.hoat_dong_cua_ban.tr(),
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight:
@@ -504,7 +506,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                               ),
                                               Container(
                                                   height: 1,
-                                                  color: R.color.color0xffE5E5E5),
+                                                  color:
+                                                      R.color.color0xffE5E5E5),
                                               Column(
                                                 children: [
                                                   SizedBox(
@@ -521,7 +524,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                       Text(R.string.khac.tr(),
                                                           style: TextStyle(
                                                               fontSize: 14,
-                                                              color: R.color.textDark,
+                                                              color: R.color
+                                                                  .textDark,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700)),
@@ -531,7 +535,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                             otherActivity!,
                                                             style: TextStyle(
                                                                 fontSize: 14,
-                                                                color: R.color.textDark,
+                                                                color: R.color
+                                                                    .textDark,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w400)),
@@ -559,8 +564,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                               GestureDetector(
                                 onTap: () {
                                   showDialog(
-                                    barrierColor:
-                                        R.color.color0xff003F38.withOpacity(0.5),
+                                    barrierColor: R.color.color0xff003F38
+                                        .withOpacity(0.5),
                                     context: context,
                                     builder: (_) => DateMultiPicker(
                                       initDate: selectedDate,
@@ -592,10 +597,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Image.asset(
-                                              R.drawable.ic_calendar,
-                                              width: 24,
-                                              height: 24),
+                                          Image.asset(R.drawable.ic_calendar,
+                                              width: 24, height: 24),
                                           SizedBox(width: 8),
                                           Row(
                                             children: [
@@ -615,7 +618,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -644,10 +648,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Image.asset(
-                                              R.drawable.ic_clock,
-                                              width: 24,
-                                              height: 24),
+                                          Image.asset(R.drawable.ic_clock,
+                                              width: 24, height: 24),
                                           SizedBox(width: 8),
                                           Text(
                                               selectedTimeFrame == null
@@ -659,7 +661,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         ]),
                                     SizedBox(height: 16),
                                     Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
                                     SizedBox(height: 8),
                                   ]),
                                 ),
@@ -697,16 +700,20 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400),
                                       decoration: InputDecoration(
-                                          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+                                          hintText: R
+                                              .string.nhap_ghi_chu_cua_ban
+                                              .tr(),
                                           contentPadding:
                                               EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
                                           hintStyle: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
-                                              color: R.color.primaryGreyColor))),
+                                              color:
+                                                  R.color.primaryGreyColor))),
                                   Container(
-                                      height: 1, color: R.color.color0xffE5E5E5),
+                                      height: 1,
+                                      color: R.color.color0xffE5E5E5),
                                   SizedBox(height: 8),
                                   GridView.builder(
                                       physics: NeverScrollableScrollPhysics(),
@@ -728,48 +735,61 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                             },
                                             child: index == files.length
                                                 ? Container(
-                                                    child: Image.asset(
-                                                        R.drawable.ic_add_photo))
-                                                : Stack(
-                                                    alignment:
-                                                        AlignmentDirectional
-                                                            .topEnd,
-                                                    children: [
-                                                        Positioned.fill(
-                                                          child: files[index]
-                                                                  is PickedFile
-                                                              ? Image.file(
-                                                                  File(files[
+                                                    child: Image.asset(R
+                                                        .drawable.ic_add_photo))
+                                                : GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          '/photo_view',
+                                                          arguments: {
+                                                            'files': files,
+                                                            'index': index
+                                                          });
+                                                    },
+                                                    child: Stack(
+                                                        alignment:
+                                                            AlignmentDirectional
+                                                                .topEnd,
+                                                        children: [
+                                                          Positioned.fill(
+                                                            child: files[index]
+                                                                    is PickedFile
+                                                                ? Image.file(
+                                                                    File(files[
+                                                                            index]
+                                                                        .path),
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  )
+                                                                : Image.network(
+                                                                    files[index]
+                                                                        .url,
+                                                                    fit: BoxFit
+                                                                        .cover),
+                                                          ),
+                                                          IconButton(
+                                                              icon: Image.asset(R
+                                                                  .drawable
+                                                                  .ic_trash),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  if (files[
                                                                           index]
-                                                                      .path),
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                )
-                                                              : Image.network(
-                                                                  files[index]
-                                                                      .url,
-                                                                  fit: BoxFit
-                                                                      .cover),
-                                                        ),
-                                                        IconButton(
-                                                            icon: Image.asset(
-                                                                R.drawable.ic_trash),
-                                                            onPressed: () {
-                                                              setState(() {
-                                                                if (files[index]
-                                                                    is PickedFile) {
-                                                                  files.removeAt(
-                                                                      index);
-                                                                } else {
-                                                                  removeIDs.add(
-                                                                      files[index]
-                                                                          .id);
-                                                                  files.removeAt(
-                                                                      index);
-                                                                }
-                                                              });
-                                                            })
-                                                      ]));
+                                                                      is PickedFile) {
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  } else {
+                                                                    removeIDs.add(
+                                                                        files[index]
+                                                                            .id);
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  }
+                                                                });
+                                                              })
+                                                        ]),
+                                                  ));
                                       })
                                 ]),
                           ),
@@ -827,7 +847,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                             borderRadius:
                                                 BorderRadius.circular(200),
                                             border: Border.all(
-                                                color:R.color.red, width: 2)),
+                                                color: R.color.red, width: 2)),
                                         child: Center(
                                           child: Text(R.string.xoa_du_lieu.tr(),
                                               style: TextStyle(
@@ -880,7 +900,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
       BotToast.showLoading();
       final result = await EmotionClient().deleteIndexEmotion(widget.id);
       if (result == true) {
-        Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "Emotion_change_data");
       }
 
       BotToast.closeAllLoading();
@@ -945,7 +966,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           removeIDs,
           paths);
       if (result == true) {
-        Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "Emotion_change_data");
       }
 
       BotToast.closeAllLoading();
@@ -1006,7 +1028,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           note,
           paths);
       if (result == true) {
-        Observable.instance.notifyObservers([], notifyName : "Emotion_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "Emotion_change_data");
       }
 
       BotToast.closeAllLoading();
@@ -1033,8 +1056,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_earse,
-                          width: 64, height: 64),
+                      Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
@@ -1046,8 +1068,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_remove_data.tr(),
+                        child: Text(R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1089,7 +1110,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                      color:R.color.red,
+                                      color: R.color.red,
                                       borderRadius: BorderRadius.circular(200),
                                     ),
                                     child: Center(
@@ -1171,8 +1192,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                            R.string.confirm_to_back.tr(),
+                        child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
@@ -1212,7 +1232,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                   child: Container(
                                     height: 43,
                                     decoration: BoxDecoration(
-                                        color:R.color.red,
+                                        color: R.color.red,
                                         borderRadius:
                                             BorderRadius.circular(200),
                                         gradient: LinearGradient(
@@ -1281,7 +1301,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                       width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chon_trong_thu_vien.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1295,11 +1316,11 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset(R.drawable.ic_photo,
-                      width: 24, height: 24),
+                  Image.asset(R.drawable.ic_photo, width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chup_anh.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -1373,8 +1394,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
 
     AlertDialog alert = AlertDialog(
       title: Text(R.string.notification.tr()),
-      content:
-          Text(R.string.camera_permission_required.tr()),
+      content: Text(R.string.camera_permission_required.tr()),
       actions: [
         cancelButton,
         continueButton,
@@ -1394,7 +1414,9 @@ typedef TimeCallback = Function(DateTime?);
 class DateMultiPicker extends StatefulWidget {
   final DateTime? initDate;
   final TimeCallback? callback;
+
   DateMultiPicker({this.initDate, this.callback});
+
   @override
   _DateMultiPickerState createState() => _DateMultiPickerState();
 }
@@ -1446,8 +1468,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700)),
                             IconButton(
-                                icon:
-                                    Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                                icon: Icon(Icons.close,
+                                    color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
@@ -1551,7 +1573,9 @@ class CustomTimePicker extends StatefulWidget {
   final int? selectedHour;
   final int? selectedMinute;
   final TimeHourCallback? callback;
+
   CustomTimePicker({this.selectedHour, this.selectedMinute, this.callback});
+
   @override
   _CustomTimePickerState createState() => _CustomTimePickerState();
 }
@@ -1575,7 +1599,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       selectedMinute = widget.selectedMinute;
     }
     hourController = FixedExtentScrollController(initialItem: selectedHour!);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
+    minuteController =
+        FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   @override

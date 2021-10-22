@@ -23,7 +23,7 @@ class CalculatorTDEEFood extends StatefulWidget {
 }
 
 class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
-  int selectedWeight = 0;
+  double selectedWeight = 0;
   int selectedHeight = 0;
   int selectedYear = 0;
   ExerciseIntensityModel? intensity;
@@ -31,8 +31,8 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
   @override
   void initState() {
     super.initState();
-    selectedWeight = (AppSettings.userInfo!.weight ?? 0).toInt();
-    selectedHeight = (AppSettings.userInfo!.height ?? 0).toInt();
+    selectedWeight = AppSettings.userInfo?.weight ?? 0;
+    selectedHeight = (AppSettings.userInfo?.height ?? 0).toInt();
     selectedYear = DateTime.fromMillisecondsSinceEpoch(
             AppSettings.userInfo!.dateOfBirth! * 1000)
         .year;
@@ -112,7 +112,7 @@ class CalculatorTDEEFoodState extends State<CalculatorTDEEFood> {
                                                       .withOpacity(0.5),
                                                   context: context,
                                                   builder: (_) =>
-                                                      CustomNumPicker(
+                                                      CustomWeightPicker(
                                                           callback: (number) {
                                                             if (number !=
                                                                 null) {

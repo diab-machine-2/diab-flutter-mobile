@@ -32,6 +32,7 @@ class UserModel {
   final bool? isMobileAccount;
   final String? firstLinkedAccount;
   final int? glucoseUnit;
+  final String? googleEmail;
   final double? activityLevelRate;
 
   UserModel(
@@ -64,6 +65,7 @@ class UserModel {
       required this.isLinkedGoogle,
       required this.isMobileAccount,
       required this.firstLinkedAccount,
+        required this.googleEmail,
       required this.glucoseUnit,
       required this.activityLevelRate,
       });
@@ -116,6 +118,7 @@ class UserModel {
         isLinkedGoogle: json['isLinkedGoogle'],
         isMobileAccount: json['isMobileAccount'],
         firstLinkedAccount: json['firstLinkedAccount'],
+        googleEmail: json['googleEmail'],
         glucoseUnit: json['glucoseUnit'],
         activityLevelRate: json['activityLevelRate'],
         );

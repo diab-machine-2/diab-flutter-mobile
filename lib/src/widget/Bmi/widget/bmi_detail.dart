@@ -273,7 +273,9 @@ class BmiDetailControllerState extends State<BmiDetailController>
                                                                           .w400)),
                                                           SizedBox(width: 4),
                                                           Text(
-                                                              '${model[index].weight!.toInt()}',
+                                                              roundNumber(
+                                                                  model[index]
+                                                                      .weight ?? 0),
                                                               style: TextStyle(
                                                                   fontFamily:
                                                                       'Viga',

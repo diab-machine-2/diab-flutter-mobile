@@ -425,7 +425,7 @@ class FoodClient extends FetchClient {
   }
 
   Future<double?> fetchTDEE(
-      int weight, int height, int yearOfBirth, String? activityLevelId) async {
+      double weight, int height, int yearOfBirth, String? activityLevelId) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Diet/TDEE', params: {

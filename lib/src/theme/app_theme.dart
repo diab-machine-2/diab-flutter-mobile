@@ -7,6 +7,7 @@ class AppTheme {
       primaryColor: R.color.white,
       indicatorColor: R.color.mainColor,
       accentColor: R.color.mainColor,
+      colorScheme: ThemeData().colorScheme.copyWith(primary: R.color.mainColor),
       appBarTheme: AppBarTheme(
           elevation: 0,
           centerTitle: true,

@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/logger.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -47,7 +49,8 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
     _purchaseErrorSubscription =
         FlutterInappPurchase.purchaseError.listen((purchaseError) {
           logger.i('purchase-error: $purchaseError');
-          handlePurchase(null, error: purchaseError?.message);
+          String? error = purchaseError?.message;
+          handlePurchase(null, error: error);
     });
   }
 
@@ -61,19 +64,27 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
       int indexSku = listItem.indexWhere((element) => element.productId == skuId);
       if(indexSku >= 0) {
         FlutterInappPurchase.instance.requestSubscription(skuId);
-        emit(PaymentPackageInitial());
       } else {
         emit(PaymentPackageFailure(R.string.not_found_sku.tr()));
       }
     }
   }
 
-  void handlePurchase(PurchasedItem? item, {String? error}) {
+  void handlePurchase(PurchasedItem? item, {String? error}) async{
     emit(PaymentPackageLoading());
     if (!Utils.isEmpty(error)) {
       emit(PaymentPackageFailure(error!));
     } else {
-      emit(PurchaseSuccess());
+      if (Platform.isIOS) {
+        ApiResult<dynamic> apiResult = await appRepository.verifyReceipt(receipt: item!.transactionReceipt);
+        apiResult.when(success: (dynamic response) {
+          emit(PurchaseSuccess());
+        }, failure: (NetworkExceptions error) {
+          logger.e(NetworkExceptions.getErrorMessage(error));
+        });
+      } else {
+        emit(PurchaseSuccess());
+      }
     }
   }
 

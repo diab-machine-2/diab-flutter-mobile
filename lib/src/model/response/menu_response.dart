@@ -86,6 +86,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
 
   FoodModel get foodModel => FoodModel(
       id: this.foodId,
+      code: this.foodMenuCode,
       name: this.foodName,
       portion: this.portion?.toDouble() ?? 0.0,
       unit: this.foodUnitName,
@@ -99,6 +100,7 @@ class MenuResponseListdayfoodTimeGroupsDefaultFood {
       text: null,
       description: null,
       foodCategoryId: this.foodCategoryId,
+    quantity: 0.0
       );
 
   MenuResponseListdayfoodTimeGroupsDefaultFood.fromJson(

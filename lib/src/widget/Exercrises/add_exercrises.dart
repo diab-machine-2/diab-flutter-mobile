@@ -31,6 +31,7 @@ import 'package:permission_handler/permission_handler.dart';
 class AddExercrisesController extends StatefulWidget {
   final String? type;
   final String? id;
+
   AddExercrisesController({this.type, this.id});
 
   @override
@@ -80,8 +81,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
     sumCalories = model != null ? model!.burnedCalorie!.toInt() : 0;
     selectedCategory = model != null ? [...model!.exercise] : [];
     _controllerNote.text = model != null ? model!.note! : '';
-    selectedTimeFrame =
-        TimeFrameModel(id: model!.timeFrameId, code: '', name: model!.timeFrame);
+    selectedTimeFrame = TimeFrameModel(
+        id: model!.timeFrameId, code: '', name: model!.timeFrame);
     files.addAll(model!.imageUrls);
 
     if (widget.type == 'update') {
@@ -808,47 +809,59 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                                 ? Container(
                                                     child: Image.asset(R
                                                         .drawable.ic_add_photo))
-                                                : Stack(
-                                                    alignment:
-                                                        AlignmentDirectional
-                                                            .topEnd,
-                                                    children: [
-                                                        Positioned.fill(
-                                                          child: files[index]
-                                                                  is PickedFile
-                                                              ? Image.file(
-                                                                  File(files[
+                                                : GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          '/photo_view',
+                                                          arguments: {
+                                                            'files': files,
+                                                            'index': index
+                                                          });
+                                                    },
+                                                    child: Stack(
+                                                        alignment:
+                                                            AlignmentDirectional
+                                                                .topEnd,
+                                                        children: [
+                                                          Positioned.fill(
+                                                            child: files[index]
+                                                                    is PickedFile
+                                                                ? Image.file(
+                                                                    File(files[
+                                                                            index]
+                                                                        .path),
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  )
+                                                                : Image.network(
+                                                                    files[index]
+                                                                        .url,
+                                                                    fit: BoxFit
+                                                                        .cover),
+                                                          ),
+                                                          IconButton(
+                                                              icon: Image.asset(R
+                                                                  .drawable
+                                                                  .ic_trash),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  if (files[
                                                                           index]
-                                                                      .path),
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                )
-                                                              : Image.network(
-                                                                  files[index]
-                                                                      .url,
-                                                                  fit: BoxFit
-                                                                      .cover),
-                                                        ),
-                                                        IconButton(
-                                                            icon: Image.asset(R
-                                                                .drawable
-                                                                .ic_trash),
-                                                            onPressed: () {
-                                                              setState(() {
-                                                                if (files[index]
-                                                                    is PickedFile) {
-                                                                  files.removeAt(
-                                                                      index);
-                                                                } else {
-                                                                  removeIDs.add(
-                                                                      files[index]
-                                                                          .id);
-                                                                  files.removeAt(
-                                                                      index);
-                                                                }
-                                                              });
-                                                            })
-                                                      ]));
+                                                                      is PickedFile) {
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  } else {
+                                                                    removeIDs.add(
+                                                                        files[index]
+                                                                            .id);
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  }
+                                                                });
+                                                              })
+                                                        ]),
+                                                  ));
                                       })
                                 ]),
                           ),
@@ -1007,8 +1020,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                                   fontSize: 20,
                                   fontWeight: FontWeight.w500)),
                           SizedBox(height: 16),
-                          Text(
-                              '${R.string.ky_luc.tr()}:',
+                          Text('${R.string.ky_luc.tr()}:',
                               textAlign: TextAlign.center),
                           SizedBox(height: 8),
                           Text(
@@ -1037,12 +1049,12 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
             type: widget.type,
             model: selectedCategory,
             callback: (callback, sum) {
-                print(sum);
-                setState(() {
-                  selectedCategory.addAll(callback ?? []);
-                  //sumCalories = sum;
-                  sumCalo();
-                });
+              print(sum);
+              setState(() {
+                selectedCategory.addAll(callback ?? []);
+                //sumCalories = sum;
+                sumCalo();
+              });
             },
           ),
         ));
@@ -1061,7 +1073,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
       BotToast.showLoading();
       final result = await ExercrisesClient().deleteExercrises(widget.id);
       if (result == true) {
-        Observable.instance.notifyObservers([], notifyName : "active_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "active_change_data");
         // DartNotificationCenter.post(channel: 'active_change_data');
         Navigator.pop(context);
       }
@@ -1113,7 +1126,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           removeIDs,
           paths);
       if (result == true) {
-        Observable.instance.notifyObservers([], notifyName : "active_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "active_change_data");
         // DartNotificationCenter.post(channel: 'active_change_data');
         Navigator.pop(context);
       }
@@ -1159,7 +1173,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
           selectedCategory,
           paths);
       if (result == true) {
-        Observable.instance.notifyObservers([], notifyName : "active_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "active_change_data");
         // DartNotificationCenter.post(channel: 'active_change_data');
         Navigator.pop(context);
       }
@@ -1541,7 +1556,9 @@ typedef TimeCallback = Function(DateTime?);
 class DateMultiPicker extends StatefulWidget {
   final DateTime? initDate;
   final TimeCallback? callback;
+
   DateMultiPicker({this.initDate, this.callback});
+
   @override
   _DateMultiPickerState createState() => _DateMultiPickerState();
 }
@@ -1698,7 +1715,9 @@ class CustomTimePicker extends StatefulWidget {
   final int? selectedHour;
   final int? selectedMinute;
   final TimeHourCallback? callback;
+
   CustomTimePicker({this.selectedHour, this.selectedMinute, this.callback});
+
   @override
   _CustomTimePickerState createState() => _CustomTimePickerState();
 }
@@ -1722,7 +1741,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       selectedMinute = widget.selectedMinute;
     }
     hourController = FixedExtentScrollController(initialItem: selectedHour!);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
+    minuteController =
+        FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   @override

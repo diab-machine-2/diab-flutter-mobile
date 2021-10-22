@@ -175,7 +175,7 @@ class EnergyChartState extends State<EnergyChart>
                         top: 58,
                         right: 43,
                         child: SizedBox(
-                          height: 200,
+                          height: 170,
                           child: Row(
                             //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -263,7 +263,10 @@ class EnergyChartState extends State<EnergyChart>
                                 width: 65, height: 110),
                             SizedBox(width: 25),
                             Expanded(
-                              child: Text(model.note!),
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Text(model.note ?? ''),
+                              ),
                             )
                           ],
                         ),

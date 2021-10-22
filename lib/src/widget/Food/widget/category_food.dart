@@ -132,8 +132,8 @@ class _CategoryFoodState extends State<CategoryFood>
                                   double number = 0;
                                   foodOfCategory.forEach((element) {
                                     totalCalo +=
-                                        element.portion * element.calorie!;
-                                    number += element.portion;
+                                        (element.portion ?? 0) * (element.calorie ?? 0);
+                                    number += (element.portion ?? 0);
                                   });
                                   return GestureDetector(
                                     onTap: () {
@@ -156,23 +156,15 @@ class _CategoryFoodState extends State<CategoryFood>
                                             top: 11,
                                             bottom: 11),
                                         child: Row(children: [
-                                          CachedNetworkImage(
-                                            imageUrl: category
-                                                    .subCategories[index]
-                                                    .image
-                                                    .url ??
-                                                '',
+                                          SizedBox(
                                             width: 50,
                                             height: 50,
-                                            placeholder: (_, __) {
-                                              return const Center(
-                                                  child:
-                                                      CircularProgressIndicator());
-                                            },
-                                            errorWidget: (_, __, ___) {
-                                              return Image.asset(
-                                                  R.drawable.ic_food_default);
-                                            },
+                                            child: Image.network(
+                                                category.subCategories[index]
+                                                        .image.url ??
+                                                    '',
+                                                width: 50,
+                                                height: 50),
                                           ),
                                           SizedBox(width: 16),
                                           Expanded(

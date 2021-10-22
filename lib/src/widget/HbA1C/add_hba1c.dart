@@ -9,6 +9,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -355,46 +356,57 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                                 ? Container(
                                                     child: Image.asset(
                                                         R.drawable.ic_add_photo))
-                                                : Stack(
-                                                    alignment:
-                                                        AlignmentDirectional
-                                                            .topEnd,
-                                                    children: [
-                                                        Positioned.fill(
-                                                          child: files[index]
-                                                                  is PickedFile
-                                                              ? Image.file(
-                                                                  File(files[
-                                                                          index]
-                                                                      .path),
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                )
-                                                              : Image.network(
-                                                                  files[index]
-                                                                      .url,
-                                                                  fit: BoxFit
-                                                                      .cover),
-                                                        ),
-                                                        IconButton(
-                                                            icon: Image.asset(
-                                                                R.drawable.ic_trash),
-                                                            onPressed: () {
-                                                              setState(() {
-                                                                if (files[index]
-                                                                    is PickedFile) {
-                                                                  files.removeAt(
-                                                                      index);
-                                                                } else {
-                                                                  removeIDs.add(
-                                                                      files[index]
-                                                                          .id);
-                                                                  files.removeAt(
-                                                                      index);
-                                                                }
-                                                              });
-                                                            })
-                                                      ]));
+                                                : GestureDetector(
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                    context,
+                                                    '/photo_view',
+                                                    arguments: {
+                                                      'files': files,
+                                                      'index': index
+                                                    });
+                                              },
+                                                  child: Stack(
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .topEnd,
+                                                      children: [
+                                                          Positioned.fill(
+                                                            child: files[index]
+                                                                    is PickedFile
+                                                                ? Image.file(
+                                                                    File(files[
+                                                                            index]
+                                                                        .path),
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  )
+                                                                : Image.network(
+                                                                    files[index]
+                                                                        .url,
+                                                                    fit: BoxFit
+                                                                        .cover),
+                                                          ),
+                                                          IconButton(
+                                                              icon: Image.asset(
+                                                                  R.drawable.ic_trash),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  if (files[index]
+                                                                      is PickedFile) {
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  } else {
+                                                                    removeIDs.add(
+                                                                        files[index]
+                                                                            .id);
+                                                                    files.removeAt(
+                                                                        index);
+                                                                  }
+                                                                });
+                                                              })
+                                                        ]),
+                                                ));
                                       })
                                 ]),
                           ),

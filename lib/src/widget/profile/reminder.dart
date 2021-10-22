@@ -229,9 +229,11 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(convertToUTC(models![index].time!, 'HH:mm'),
+                Text(models![index].name ?? "",
                     style: TextStyle(
-                        color: R.color.black, fontFamily: 'Viga', fontSize: 24)),
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600)),
                 CupertinoSwitch(
                   activeColor: R.color.greenGradientBottom,
                   value: models![index].isActive!,
@@ -240,12 +242,6 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                   },
                 )
               ]),
-              SizedBox(height: 8),
-              Text(models![index].name!,
-                  style: TextStyle(
-                      color: R.color.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600)),
               models![index].content == null || models![index].content!.isEmpty
                   ? SizedBox()
                   : Padding(
@@ -255,7 +251,21 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                               color: R.color.primaryGreyColor,
                               fontSize: 16,
                               fontWeight: FontWeight.w400)),
-                    )
+                    ),
+              SizedBox(height: 8),
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Image.asset(R.drawable.ic_stopwatch,
+                    width: 24, height: 24),
+                SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                      'Khung giờ nhắc nhở: ' + getTimeFrame(models![index]),
+                      style: TextStyle(
+                          color: Color(0xff666666),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400)),
+                )
+              ])
             ]),
           ),
         ),
@@ -263,11 +273,31 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
     );
   }
 
+  String getTimeFrame(ScheduleReminderModel model) {
+    List<String> names = [];
+    if (model.isWakeUp == true) {
+      names.add('thức giấc');
+    }
+    if (model.isBreakfast == true) {
+      names.add('ăn sáng');
+    }
+    if (model.isLunch == true) {
+      names.add('ăn trưa');
+    }
+    if (model.isDinner == true) {
+      names.add('ăn tối');
+    }
+    if (model.isSleeping == true) {
+      names.add('đi ngủ');
+    }
+    return names.join(', ');
+  }
+
   edit(ScheduleReminderModel model) async {
     try {
+      model.isActive = !(model.isActive ?? true);
       BotToast.showLoading();
-      await UserClient().editScheduleReminder(model.id, model.name,
-          model.remindType, model.time, model.content, !model.isActive!);
+      await UserClient().editScheduleReminder(model);
       loadData();
       BotToast.closeAllLoading();
     } catch (e, _) {

@@ -36,7 +36,7 @@ PODS:
   - firebase_core (1.7.0):
     - Firebase/CoreOnly (= 8.7.0)
     - Flutter
-  - firebase_crashlytics (2.2.2):
+  - firebase_crashlytics (2.2.3):
     - Firebase/Crashlytics (= 8.7.0)
     - firebase_core
     - Flutter
@@ -294,7 +294,7 @@ SPEC CHECKSUMS:
   Firebase: bc9325d5ee2041524bac78a5213d0e530c651309
   firebase_analytics: 72e3c5d712e43eeb0cb6f194f7cc10bc81e7d3fe
   firebase_core: f5ac1f2726a2bd0468cea0161eddeea3d83d7e3e
-  firebase_crashlytics: 7d9a2a04c1c756f62137ca97f8972790e7be8678
+  firebase_crashlytics: 16f2d46200fab0b7085912fd473f77c06b3c69f7
   firebase_messaging: cfee8830477d2f1875e027a65cce7f6239ebf583
   FirebaseAnalytics: 52768800c2add1d84b751420cb4caaf8195f2c41
   FirebaseCore: f4804c1d3f4bbbefc88904d15653038f2c99ddf7
@@ -328,9 +328,9 @@ SPEC CHECKSUMS:
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
-  video_player: ecd305f42e9044793efd34846e1ce64c31ea6fcb
+  video_player: 9cc823b1d9da7e8427ee591e8438bfbcde500e6e
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
-  webview_flutter: 5fb4def2bbd4339889ee14d045b605cefc5bc232
+  webview_flutter: 9f491a9b5a66f2573946a389b2677987b0ff8c0b
 
 PODFILE CHECKSUM: c1c32d3f6ecdddfc7af82c0865fa156e6062f4d8
 
