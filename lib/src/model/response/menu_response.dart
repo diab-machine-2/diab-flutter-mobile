@@ -449,17 +449,41 @@ class MenuResponse {
   List<FoodModel>? foodListInTime(
       {required DateTime time, required int timeCode}) {
     if (timeCode == 0) {
+      final List<FoodModel> foods = [];
+      int indexOfFood(FoodModel food) {
+        for (int index = 0; index < foods.length; index++) {
+          if (foods[index].id == food.id) return index;
+        }
+        return -1;
+      }
+
+      void addFood(FoodModel food) {
+        final int index = indexOfFood(food);
+        if (index != -1) {
+          foods[index] = foods[index].copyWith(
+              portion: (foods[index].portion ?? 0) + (food.portion ?? 0));
+          return;
+        }
+        foods.add(food);
+      }
+
       final List<FoodModel> listFood_4 =
           _timeGroupsFromDateTime(time: time, timeCode: 4)?.listFoods ?? [];
       final List<FoodModel> listFood_5 =
           _timeGroupsFromDateTime(time: time, timeCode: 5)?.listFoods ?? [];
       final List<FoodModel> listFood_6 =
           _timeGroupsFromDateTime(time: time, timeCode: 6)?.listFoods ?? [];
-      return [
-        ...listFood_4,
-        ...listFood_5,
-        ...listFood_6,
-      ];
+
+      listFood_4.forEach((food) {
+        addFood(food);
+      });
+      listFood_5.forEach((food) {
+        addFood(food);
+      });
+      listFood_6.forEach((food) {
+        addFood(food);
+      });
+      return foods;
     }
     return _timeGroupsFromDateTime(time: time, timeCode: timeCode)?.listFoods;
   }
