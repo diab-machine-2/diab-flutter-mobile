@@ -235,12 +235,10 @@ class AppRepository {
   Future<ApiResult<CommonResponse>> sendFeedbackCourse(SendFeedbackCourseRequest request) async {
     try {
       final CommonResponse response = await appClient.sendFeedbackCourse(request);
-      if (response.meta?.success == true) {
+      if (response.statusCode == 200) {
         return ApiResult.success(data: response);
       } else
-        return const ApiResult.failure(
-            error:
-            NetworkExceptions.defaultError("Can't find a matching menu"));
+        return ApiResult.failure(error: NetworkExceptions.defaultError(response.message ?? ''));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

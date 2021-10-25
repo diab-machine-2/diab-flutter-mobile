@@ -5,7 +5,7 @@
 class SendFeedbackCourseRequest {
   SendFeedbackCourseRequest({
       String? lessonId, 
-      double? rating, 
+      int? rating, 
       String? note,}){
     _lessonId = lessonId;
     _rating = rating;
@@ -18,11 +18,11 @@ class SendFeedbackCourseRequest {
     _note = json['note'];
   }
   String? _lessonId;
-  double? _rating;
+  int? _rating;
   String? _note;
 
   String? get lessonId => _lessonId;
-  double? get rating => _rating;
+  int? get rating => _rating;
   String? get note => _note;
 
   Map<String, dynamic> toJson() {

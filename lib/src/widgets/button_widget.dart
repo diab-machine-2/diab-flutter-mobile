@@ -34,8 +34,8 @@ class ButtonWidget extends StatelessWidget {
         height: height ?? 50.h,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            color: backgroundColor ?? R.color.accentColor,
-            gradient: backgroundColor == null ? LinearGradient(
+            color: onPressed == null ? R.color.gray : (backgroundColor ?? R.color.accentColor),
+            gradient: backgroundColor == null && onPressed != null ? LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [Color(0xFF4BB2AB), Color(0xFF01857A), Color(0xFF008479)],
@@ -44,7 +44,7 @@ class ButtonWidget extends StatelessWidget {
 //              colors: [Theme.of(context).primaryColor, Colors.lightBlue],
 //            ),
             border: Border.all(
-                color: borderColor ?? backgroundColor ?? R.color.accentColor,
+                color: onPressed == null ? R.color.gray : (borderColor ?? backgroundColor ?? R.color.accentColor),
                 width: 1.5),
             borderRadius: BorderRadius.circular(200.sp)),
         child: Text(
