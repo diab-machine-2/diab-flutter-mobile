@@ -58,10 +58,17 @@ class FoodItem extends StatelessWidget {
             SizedBox(
               width: 50,
               height: 50,
-              child: Image.network(
-                  model.image == null ? '' : model.image!.url ?? '',
-                  width: 50,
-                  height: 50),
+              child: CachedNetworkImage(
+                imageUrl: model.image == null ? '' : model.image!.url ?? '',
+                width: 50,
+                height: 50,
+                placeholder: (_, __) {
+                  return const Center(child: CircularProgressIndicator());
+                },
+                errorWidget: (_, __, ___) {
+                  return Image.asset(R.drawable.ic_food_default);
+                },
+              ),
             ),
             SizedBox(width: 16),
             Expanded(
