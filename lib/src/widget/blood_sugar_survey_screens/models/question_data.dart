@@ -96,7 +96,7 @@ class Question {
           ),
           AnswerData(
             answer: R.string.survey_answer_4_1_c.tr(),
-            image: R.drawable.ic_answer_three,
+            image: R.drawable.ic_answer_four,
           ),
         ]);
   }
