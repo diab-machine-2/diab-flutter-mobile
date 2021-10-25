@@ -32,3 +32,10 @@ class CourseFeedbackFailure extends CourseFeedbackState {
   @override
   String toString() => 'CourseFeedbackFailure { error: $error }';
 }
+
+class CourseFeedbackDone extends CourseFeedbackState {
+  @override
+  String toString() {
+    return 'CourseFeedbackDone';
+  }
+}

@@ -28,5 +28,6 @@ class CourseFeedbackCubit extends Cubit<CourseFeedbackState> {
     }, failure: (NetworkExceptions error) {
       emit(CourseFeedbackFailure(NetworkExceptions.getErrorMessage(error)));
     });
+    emit(CourseFeedbackDone());
   }
 }

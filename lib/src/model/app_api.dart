@@ -24,7 +24,6 @@ import 'response/menu_response.dart';
 import 'response/my_lesson_response.dart';
 import 'response/save_survey_result_response.dart';
 import 'response/tdee_response.dart';
-import 'response/update_lesson_section_response.dart';
 import 'response/upgrade_account_response.dart';
 import 'response/user_info_response.dart';
 
@@ -135,13 +134,8 @@ abstract class AppApi {
     @Path("lessonId") String lessonId,
   );
 
-  @POST("App/LessonSection/InsertLearningLessonAccount")
-  Future<UpdateLessonSectionResponse> insertLearningLessonAccount(
-    @Body() UpdateLessonSectionRequest request,
-  );
-
   @POST("App/LessonSection/SetCompletedLessonAccount")
-  Future<UpdateLessonSectionResponse> setCompletedLessonAccount(
+  Future<CommonResponse> setCompletedLessonAccount(
     @Body() UpdateLessonSectionRequest request,
   );
 }

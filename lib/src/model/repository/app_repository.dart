@@ -21,7 +21,6 @@ import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
-import 'package:medical/src/model/response/update_lesson_section_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -287,27 +286,12 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<UpdateLessonSectionResponse>> insertLearningLessonAccount(
+  Future<ApiResult<CommonResponse>> setCompletedLessonAccount(
       UpdateLessonSectionRequest request) async {
     try {
-      final UpdateLessonSectionResponse response =
-          await appClient.insertLearningLessonAccount(request);
-      if (response.statusCode == 200) {
-        return ApiResult.success(data: response);
-      } else
-        return ApiResult.failure(
-            error: NetworkExceptions.defaultError(response.message ?? ''));
-    } catch (e) {
-      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
-    }
-  }
-
-  Future<ApiResult<UpdateLessonSectionResponse>> setCompletedLessonAccount(
-      UpdateLessonSectionRequest request) async {
-    try {
-      final UpdateLessonSectionResponse response =
+      final CommonResponse response =
           await appClient.setCompletedLessonAccount(request);
-      if (response.statusCode == 200) {
+      if (response.meta?.success == true) {
         return ApiResult.success(data: response);
       } else
         return ApiResult.failure(

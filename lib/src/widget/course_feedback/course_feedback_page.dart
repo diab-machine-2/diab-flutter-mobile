@@ -46,7 +46,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
           listener: (context, state) {
             if (state is CourseFeedbackFailure)
               Message.showToastMessage(context, state.error);
-            if (state is CourseFeedbackSuccess) {
+            if (state is CourseFeedbackDone) {
               NavigationUtil.pop(context);
             }
           },

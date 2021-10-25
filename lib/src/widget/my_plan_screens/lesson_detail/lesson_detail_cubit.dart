@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
+import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
-import 'package:medical/src/model/response/update_lesson_section_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
@@ -63,15 +63,13 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   void updateUrlSource() {
     if (currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_VIDEO) {
       videoUrls = currentSectionDetail?.sourceUrls ?? [];
-    }
-    else {
+    } else {
       videoUrls = [];
     }
 
     if (currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_AUDIO) {
       audioUrls = currentSectionDetail?.sourceUrls ?? [];
-    }
-    else {
+    } else {
       audioUrls = [];
     }
   }
@@ -81,7 +79,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
     await getSectionList();
 
-    for (int index = 0; index < sectionList.length; index ++) {
+    for (int index = 0; index < sectionList.length; index++) {
       if (sectionList[index]?.isComplete == false) {
         currentSection = index;
         break;
@@ -116,11 +114,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     }
     if (sectionStatus.isAllComplete &&
         currentSectionDetail?.isComplete != true) {
-      print('LOG call API done');
-      // print('LOG ${sectionStatus.isAllComplete}');
-      if (await completeLearningSection()) {
-        currentSectionDetail?.isComplete = true;
-      }
+      print('LOG call API complete');
+      completeLearningSection();
     }
   }
 
@@ -138,31 +133,10 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     emit(const LessonDetailInitial());
   }
 
-  Future<bool> startLearningSection() async {
+  Future<void> completeLearningSection() async {
     await Future.delayed(Duration.zero);
     emit(const LessonDetailLoading());
-    final ApiResult<UpdateLessonSectionResponse> apiResult =
-        await repository.insertLearningLessonAccount(
-      UpdateLessonSectionRequest(
-        lessonId: lessonId,
-        type: currentSectionDetail?.type,
-        lessonSectionId: currentSectionDetail?.id,
-      ),
-    );
-    apiResult.when(success: (UpdateLessonSectionResponse response) {
-      emit(const LessonDetailSuccess());
-      return true;
-    }, failure: (NetworkExceptions error) {
-      emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));
-    });
-    emit(const LessonDetailInitial());
-    return false;
-  }
-
-  Future<bool> completeLearningSection() async {
-    await Future.delayed(Duration.zero);
-    emit(const LessonDetailLoading());
-    final ApiResult<UpdateLessonSectionResponse> apiResult =
+    final ApiResult<CommonResponse> apiResult =
         await repository.setCompletedLessonAccount(
       UpdateLessonSectionRequest(
         lessonId: lessonId,
@@ -170,13 +144,12 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
         lessonSectionId: currentSectionDetail?.id,
       ),
     );
-    apiResult.when(success: (UpdateLessonSectionResponse response) {
+    apiResult.when(success: (CommonResponse response) {
+      currentSectionDetail?.isComplete = true;
       emit(const LessonDetailSuccess());
-      return true;
     }, failure: (NetworkExceptions error) {
       emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));
     });
     emit(const LessonDetailInitial());
-    return false;
   }
 }

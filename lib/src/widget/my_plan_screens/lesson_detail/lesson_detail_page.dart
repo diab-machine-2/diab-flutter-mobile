@@ -66,7 +66,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   Const.LESSON_SECTION_TYPE_QUIZ
               ? CourseQuizPage(
                   lessonId: _cubit.currentSectionDetail?.id ?? '',
-                  onDone: () {
+                  onDone: () async {
+                    await _cubit.completeLearningSection();
                     _cubit.onChangeSection(_cubit.currentSection + 1);
                   },
                 )
