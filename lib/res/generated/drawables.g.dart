@@ -45,12 +45,12 @@ class Drawables {
 	String get ic_after_eat_selected => "lib/res/drawables/ic_after_eat_selected.png";
 	String get ic_alarm => "lib/res/drawables/ic_alarm.png";
 	String get ic_angry => "lib/res/drawables/ic_angry.png";
+	String get ic_answer_four => "lib/res/drawables/ic_answer_four.png";
 	String get ic_answer_insulin => "lib/res/drawables/ic_answer_insulin.png";
 	String get ic_answer_no => "lib/res/drawables/ic_answer_no.png";
 	String get ic_answer_no_pill => "lib/res/drawables/ic_answer_no_pill.png";
 	String get ic_answer_one => "lib/res/drawables/ic_answer_one.png";
 	String get ic_answer_pill => "lib/res/drawables/ic_answer_pill.png";
-	String get ic_answer_three => "lib/res/drawables/ic_answer_three.png";
 	String get ic_answer_two => "lib/res/drawables/ic_answer_two.png";
 	String get ic_answer_yes => "lib/res/drawables/ic_answer_yes.png";
 	String get ic_app => "lib/res/drawables/ic_app.png";

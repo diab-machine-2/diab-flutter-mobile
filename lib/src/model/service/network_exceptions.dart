@@ -47,6 +47,9 @@ abstract class NetworkExceptions with _$NetworkExceptions {
     if (data.toString().contains("errorMesssage")) {
       message = data["errorMesssage"];
     }
+    if (data.toString().contains("message")) {
+      message = data["message"];
+    }
     switch (statusCode) {
       case 400:
       case 401:

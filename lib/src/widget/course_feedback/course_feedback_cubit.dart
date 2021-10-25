@@ -9,11 +9,11 @@ import 'course_feedback.dart';
 
 class CourseFeedbackCubit extends Cubit<CourseFeedbackState> {
   final AppRepository repository;
-  double rate = 0;
+  int rate = 0;
 
   CourseFeedbackCubit(this.repository) : super(InitialCourseFeedbackState());
 
-  void rateFeedback(double rate) {
+  void rateFeedback(int rate) {
     emit(CourseFeedbackLoading());
     this.rate = rate;
     emit(InitialCourseFeedbackState());
