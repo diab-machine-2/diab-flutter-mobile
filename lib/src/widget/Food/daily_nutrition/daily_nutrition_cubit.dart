@@ -46,8 +46,6 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
 
   String notes = '';
 
-  String foodId = '';
-
   double totalKcal = 0;
 
   bool get isBasicUser {
@@ -126,6 +124,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   Future<void> getSuggestFood() async {
     if (timeCode == null || isBasicUser && selectedDate.weekday > 2) {
       selectedFoods = [];
+      refresh();
       return;
     }
     emit(const DailyNutritionLoading());
@@ -135,9 +134,11 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
       if (response.listdayfood == null || response.food == null) {
         selectedFoods = [];
       } else {
-        foodId = response.idInTime(time: selectedDate, timeCode: timeCode ?? 1);
-        selectedFoods =
-            response.foodListInTime(time: selectedDate, timeCode: timeCode ?? 1) ?? [];
+        selectedFoods = response.foodListInTime(
+              time: selectedDate,
+              timeCode: timeCode ?? 1,
+            ) ??
+            [];
       }
       calculatorCalo();
       emit(const DailyNutritionSuccess());
@@ -150,13 +151,12 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   Future<void> changeFood({
     required FoodModel newFoodModel,
   }) async {
-    if (foodId.isEmpty) return;
     await Future.delayed(Duration.zero);
     emit(const DailyNutritionLoading());
     final FoodChangeRequest request = FoodChangeRequest(
-      id: foodId,
+      id: newFoodModel.mealId,
       foodId: newFoodModel.id,
-      portion: (newFoodModel.portion ?? 0).toInt(),
+      portion: newFoodModel.portion,
     );
     final ApiResult<CommonResponse> apiResult =
         await repository.changeFood(request);
@@ -173,6 +173,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     if (selectedTimeFrame?.name == 'Sáng') return 1;
     if (selectedTimeFrame?.name == 'Trưa') return 2;
     if (selectedTimeFrame?.name == 'Tối') return 3;
+    if (selectedTimeFrame?.name == 'Nhẹ') return 0;
     return null;
   }
 

@@ -70,14 +70,17 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
               child: Column(
                 children: [
                   _buildSearchBar(),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 27),
-                    child: TabBarWidget(
-                      initTab: TabItem.suggest,
-                      onSelect: (TabItem tab) {
-                        _cubit.refreshTab(newTab: tab);
-                        _controller.jumpToPage(tab.index);
-                      },
+                  Visibility(
+                    visible: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 27),
+                      child: TabBarWidget(
+                        initTab: TabItem.suggest,
+                        onSelect: (TabItem tab) {
+                          _cubit.refreshTab(newTab: tab);
+                          _controller.jumpToPage(tab.index);
+                        },
+                      ),
                     ),
                   ),
                   Expanded(

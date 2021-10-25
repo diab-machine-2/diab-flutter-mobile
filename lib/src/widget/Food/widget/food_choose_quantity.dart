@@ -375,7 +375,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                       description: widget.model!.description,
                                       foodCategoryId:
                                           widget.model!.foodCategoryId,
-                                        quantity: quantity
+                                      quantity: quantity,
+                                      mealId: widget.model!.mealId,
                                     )
                                   });
                               Navigator.pop(context);

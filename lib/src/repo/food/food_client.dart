@@ -221,7 +221,7 @@ class FoodClient extends FetchClient {
   Future<bool> postIndexFood(int date, String? timeFrameId, String note,
       List<FoodModel> foods, List<String> files) async {
     try {
-      Map<String, String> params = {
+      final Map<String, String> params = {
         'date': date.toString(),
         'mealId': timeFrameId ?? '',
         'note': note,

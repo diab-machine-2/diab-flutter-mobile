@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/widget/Food/widget/category_food.dart';
@@ -78,8 +79,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
         Container(
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage(R.drawable.bg_splash),
-                  fit: BoxFit.cover)),
+                  image: AssetImage(R.drawable.bg_splash), fit: BoxFit.cover)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -121,14 +121,16 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                           decoration: BoxDecoration(
                               color: R.color.white,
                               borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: R.color.grayComponentBorder)),
+                              border: Border.all(
+                                  color: R.color.grayComponentBorder)),
                           child: Padding(
                             padding: EdgeInsets.only(left: 16, right: 16),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(R.string.tim_kiem_mon_an.tr(),
-                                    style: TextStyle(color: R.color.primaryGreyColor)),
+                                    style: TextStyle(
+                                        color: R.color.primaryGreyColor)),
                                 Image.asset(R.drawable.ic_search,
                                     width: 24, height: 24)
                               ],
@@ -188,54 +190,69 @@ class CustomSegmentState extends State<CustomSegment> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width - 32 / 3;
-    return CupertinoSegmentedControl(
-        selectedColor: R.color.greenGradientBottom,
-        unselectedColor: R.color.transparent,
-        borderColor: R.color.greenGradientBottom,
-        groupValue: segmentedControlValue,
-        onValueChanged: (int val) {
-          widget.onchange!(val);
-          setState(() {
-            segmentedControlValue = val;
-          });
-        },
-        children: {
-          0: Container(
-              width: width,
-              child: Center(
-                child: Text(R.string.mon_an_gan_day.tr(),
-                    style: TextStyle(
-                        fontWeight: segmentedControlValue == 0
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                        color: segmentedControlValue == 0
-                            ? R.color.white
-                            : R.color.black)),
-              )),
-          1: Container(
-              width: width,
-              child: Center(
-                child: Text(R.string.mon_yeu_thich.tr(),
-                    style: TextStyle(
-                        fontWeight: segmentedControlValue == 1
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                        color: segmentedControlValue == 1
-                            ? R.color.white
-                            : R.color.black)),
-              )),
-          2: Container(
-              width: width,
-              child: Center(
-                  child: Text(R.string.danh_muc.tr(),
-                      style: TextStyle(
-                          fontWeight: segmentedControlValue == 2
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                          color: segmentedControlValue == 2
-                              ? R.color.white
-                              : R.color.black))))
-        });
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(children: [
+        SizedBox(width: 16.w),
+        _buildButtonTabBar(
+            title: R.string.mon_an_gan_day.tr(),
+            isSelected: segmentedControlValue == 0,
+            onTap: () {
+              widget.onchange!(0);
+              setState(() {
+                segmentedControlValue = 0;
+              });
+            }),
+        _buildButtonTabBar(
+            title: R.string.mon_yeu_thich.tr(),
+            isSelected: segmentedControlValue == 1,
+            onTap: () {
+              widget.onchange!(1);
+              setState(() {
+                segmentedControlValue = 1;
+              });
+            }),
+        _buildButtonTabBar(
+            title: R.string.danh_muc.tr(),
+            isSelected: segmentedControlValue == 2,
+            onTap: () {
+              widget.onchange!(2);
+              setState(() {
+                segmentedControlValue = 2;
+              });
+            }),
+        SizedBox(width: 16.w),
+      ]),
+    );
+  }
+
+  Widget _buildButtonTabBar(
+      {required String title,
+      required bool isSelected,
+      required VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 143.w,
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(200),
+          color: isSelected ? R.color.blue_6 : R.color.transparent,
+        ),
+        child: Text(
+          title,
+          style: TextStyle(
+            color: isSelected
+                ? R.color.greenGradientBottom
+                : R.color.captionColorGray,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w700,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
   }
 }
