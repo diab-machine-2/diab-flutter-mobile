@@ -15,9 +15,10 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'course_feedback.dart';
 
 class CourseFeedbackPage extends StatefulWidget {
-
   final String lessonId;
-  const CourseFeedbackPage({Key? key, required this.lessonId}) : super(key: key);
+
+  const CourseFeedbackPage({Key? key, required this.lessonId})
+      : super(key: key);
 
   @override
   _CourseFeedbackPageState createState() => _CourseFeedbackPageState();
@@ -72,7 +73,9 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
             Expanded(
               child: Column(
                 children: [
-                  SizedBox(height: 30.h,),
+                  SizedBox(
+                    height: 30.h,
+                  ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -85,13 +88,12 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                               fontWeight: FontWeight.bold,
                               color: R.color.textDark,
                               height: 1.4,
-                              letterSpacing: 0.4
-                          ),
+                              letterSpacing: 0.4),
                         ),
                       ),
                       InkWell(
                         onTap: () {
-                          NavigationUtil.pop(context);
+                          NavigationUtil.popToFirst(context);
                         },
                         child: Icon(
                           Icons.close,
@@ -107,12 +109,11 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                   Text(
                     R.string.rate_how_you_feel.tr(),
                     style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w400,
-                      color: R.color.textDark,
-                      height: 1.37,
-                      letterSpacing: 0.4
-                    ),
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.textDark,
+                        height: 1.37,
+                        letterSpacing: 0.4),
                     maxLines: 2,
                     textAlign: TextAlign.center,
                   ),
@@ -131,7 +132,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                         color: R.color.accentColor,
                       ),
                       onRatingUpdate: (rating) {
-                        _cubit.rateFeedback(rating);
+                        _cubit.rateFeedback(rating.toInt());
                       },
                     ),
                   ),
@@ -162,7 +163,9 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 15.h,),
+                        SizedBox(
+                          height: 15.h,
+                        ),
                         TextField(
                           textInputAction: TextInputAction.go,
                           maxLines: 5,
@@ -173,29 +176,34 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                           controller: _commentController,
                           decoration: InputDecoration(
                             hintText: R.string.enter_your_feeling.tr(),
-                            hintStyle: TextStyle(color: R.color.gray, fontSize: 16.sp),
+                            hintStyle:
+                                TextStyle(color: R.color.gray, fontSize: 16.sp),
                             focusColor: R.color.accentColor,
                             enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color:  R.color.gray),
+                              borderSide: BorderSide(color: R.color.gray),
                             ),
                             focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color:  R.color.gray),
+                              borderSide: BorderSide(color: R.color.gray),
                             ),
                           ),
                         )
                       ],
                     ),
                   ),
-
                 ],
               ),
             ),
             Container(
                 width: 200.w,
                 margin: EdgeInsets.only(bottom: 10.h),
-                child: ButtonWidget(title: R.string.sent_report.tr(), onPressed: () {
-                  _cubit.sendFeedback(widget.lessonId, _commentController.text);
-                })),
+                child: ButtonWidget(
+                    title: R.string.sent_report.tr(),
+                    onPressed: _cubit.rate == 0
+                        ? null
+                        : () {
+                            _cubit.sendFeedback(
+                                widget.lessonId, _commentController.text);
+                          })),
           ],
         ),
       ),
