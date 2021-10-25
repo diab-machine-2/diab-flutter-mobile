@@ -255,14 +255,14 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                             ),
                             _buildItemLayout(
                               child: Column(children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    addFood(context);
-                                  },
-                                  child: Container(
-                                    color: R.color.transparent,
-                                    child: Column(children: [
-                                      Row(
+                                Container(
+                                  color: R.color.transparent,
+                                  child: Column(children: [
+                                    InkWell(
+                                      onTap: () {
+                                        addFood(context);
+                                      },
+                                      child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
@@ -287,139 +287,139 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                               ],
                                             ),
                                           ]),
-                                      SizedBox(height: 16.h),
-                                      Container(
-                                          height: 1,
-                                          color: R.color.color0xffE5E5E5),
-                                      ListView.separated(
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          padding: EdgeInsets.zero,
-                                          itemCount:
-                                              _cubit.selectedFoods.length,
-                                          separatorBuilder: (context, index) {
-                                            return Container(
-                                                height: 1,
-                                                color: R.color.color0xffD6D8E0);
-                                          },
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                                final String quantity = '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0)}';
-                                                final String kcal = formatNumber((_cubit.selectedFoods[index].portion ?? 0) * _cubit.selectedFoods[index].calorie!);
-                                                final String detail = '${R.string.da_an.tr()} $quantity ${_cubit.selectedFoods[index].unit}, $kcal ${R.string.kcal.tr()}';
-                                            return Container(
-                                              color: R.color.transparent,
-                                              padding: EdgeInsets.symmetric(
-                                                vertical: 12.h,
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  CachedNetworkImage(
-                                                    imageUrl: _cubit
-                                                            .selectedFoods[
-                                                                index]
-                                                            .image!
-                                                            .url ??
-                                                        '',
-                                                    width: 50,
-                                                    height: 50,
-                                                    placeholder: (_, __) {
-                                                      return const Center(
-                                                          child:
-                                                              CircularProgressIndicator());
-                                                    },
-                                                    errorWidget: (_, __, ___) {
-                                                      return Image.asset(R
-                                                          .drawable
-                                                          .ic_food_default);
-                                                    },
-                                                  ),
-                                                  Expanded(
-                                                    child: Padding(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 8.w),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                              _cubit
-                                                                  .selectedFoods[
-                                                                      index]
-                                                                  .name!,
-                                                              style: TextStyle(
-                                                                  color: R.color
-                                                                      .textDark,
-                                                                  fontSize:
-                                                                      16.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700)),
-                                                          SizedBox(height: 4.h),
-                                                          Text(
-                                                            detail,
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    Container(
+                                        height: 1,
+                                        color: R.color.color0xffE5E5E5),
+                                    ListView.separated(
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        padding: EdgeInsets.zero,
+                                        itemCount:
+                                            _cubit.selectedFoods.length,
+                                        separatorBuilder: (context, index) {
+                                          return Container(
+                                              height: 1,
+                                              color: R.color.color0xffD6D8E0);
+                                        },
+                                        itemBuilder: (BuildContext context,
+                                            int index) {
+                                              final String quantity = '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0)}';
+                                              final String kcal = formatNumber((_cubit.selectedFoods[index].portion ?? 0) * _cubit.selectedFoods[index].calorie!);
+                                              final String detail = '${R.string.da_an.tr()} $quantity ${_cubit.selectedFoods[index].unit}, $kcal ${R.string.kcal.tr()}';
+                                          return Container(
+                                            color: R.color.transparent,
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 12.h,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                CachedNetworkImage(
+                                                  imageUrl: _cubit
+                                                          .selectedFoods[
+                                                              index]
+                                                          .image!
+                                                          .url ??
+                                                      '',
+                                                  width: 50,
+                                                  height: 50,
+                                                  placeholder: (_, __) {
+                                                    return const Center(
+                                                        child:
+                                                            CircularProgressIndicator());
+                                                  },
+                                                  errorWidget: (_, __, ___) {
+                                                    return Image.asset(R
+                                                        .drawable
+                                                        .ic_food_default);
+                                                  },
+                                                ),
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 8.w),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                            _cubit
+                                                                .selectedFoods[
+                                                                    index]
+                                                                .name!,
                                                             style: TextStyle(
                                                                 color: R.color
                                                                     .textDark,
-                                                                fontSize: 16.sp,
+                                                                fontSize:
+                                                                    16.sp,
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w400),
-                                                          )
-                                                        ],
+                                                                        .w700)),
+                                                        SizedBox(height: 4.h),
+                                                        Text(
+                                                          detail,
+                                                          style: TextStyle(
+                                                              color: R.color
+                                                                  .textDark,
+                                                              fontSize: 16.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () async {
+                                                    final dynamic result =
+                                                        await NavigationUtil
+                                                            .navigatePage(
+                                                      context,
+                                                      ChangeMenuPage(
+                                                        preFoodModel: _cubit
+                                                                .selectedFoods[
+                                                            index],
+                                                        hasSelectQuantity:
+                                                            true,
                                                       ),
-                                                    ),
-                                                  ),
-                                                  GestureDetector(
-                                                    onTap: () async {
-                                                      final dynamic result =
-                                                          await NavigationUtil
-                                                              .navigatePage(
-                                                        context,
-                                                        ChangeMenuPage(
-                                                          preFoodModel: _cubit
-                                                                  .selectedFoods[
-                                                              index],
-                                                          hasSelectQuantity:
-                                                              true,
-                                                        ),
-                                                      );
-                                                      if (result is FoodModel) {
-                                                        await _cubit.changeFood(newFoodModel: result);
-                                                        _cubit.selectedFoods[
-                                                            index] = result;
-                                                        _cubit.refresh();
-                                                      }
-                                                    },
-                                                    child: Image.asset(
-                                                      R.drawable.ic_refresh,
-                                                      width: 20,
-                                                      height: 20,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 12.w),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      _cubit.selectedFoods
-                                                          .removeAt(index);
-                                                      _cubit.calculatorCalo();
+                                                    );
+                                                    if (result is FoodModel) {
+                                                      await _cubit.changeFood(newFoodModel: result);
+                                                      _cubit.selectedFoods[
+                                                          index] = result;
                                                       _cubit.refresh();
-                                                    },
-                                                    child: Image.asset(
-                                                      R.drawable.ic_trash_red,
-                                                      width: 20,
-                                                      height: 20,
-                                                    ),
+                                                    }
+                                                  },
+                                                  child: Image.asset(
+                                                    R.drawable.ic_refresh,
+                                                    width: 20,
+                                                    height: 20,
                                                   ),
-                                                ],
-                                              ),
-                                            );
-                                          })
-                                    ]),
-                                  ),
+                                                ),
+                                                SizedBox(width: 12.w),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    _cubit.selectedFoods
+                                                        .removeAt(index);
+                                                    _cubit.calculatorCalo();
+                                                    _cubit.refresh();
+                                                  },
+                                                  child: Image.asset(
+                                                    R.drawable.ic_trash_red,
+                                                    width: 20,
+                                                    height: 20,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        })
+                                  ]),
                                 )
                               ]),
                             ),
