@@ -159,19 +159,18 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                                     width: 50,
                                     height: 50,
                                     child: CachedNetworkImage(
-                                        imageUrl: foods[index].image!.url ?? '',
-                                        width: 50,
-                                        height: 50,
-                                        placeholder: (_, __) {
-                                                      return const Center(
-                                                          child:
-                                                              CircularProgressIndicator());
-                                                    },
-                                                    errorWidget: (_, __, ___) {
-                                                      return Image.asset(R
-                                                          .drawable
-                                                          .ic_food_default);
-                                                    },),
+                                      imageUrl: foods[index].image!.url ?? '',
+                                      width: 50,
+                                      height: 50,
+                                      placeholder: (_, __) {
+                                        return const Center(
+                                            child: CircularProgressIndicator());
+                                      },
+                                      errorWidget: (_, __, ___) {
+                                        return Image.asset(
+                                            R.drawable.ic_food_default);
+                                      },
+                                    ),
                                   ),
                                   SizedBox(width: 16),
                                   Expanded(
