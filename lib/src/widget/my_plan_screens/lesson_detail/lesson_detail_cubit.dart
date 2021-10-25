@@ -26,66 +26,94 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   AudioManagement? audioManagement;
   late SectionStatusData sectionStatus;
 
+  List<String> videoUrls = [];
+  List<String> audioUrls = [];
+
   LessonSectionListResponseData? get currentSectionDetail =>
       sectionList.isEmpty ? null : sectionList[currentSection];
 
   String get sectionPosition =>
       '${sectionList.isEmpty ? 0 : currentSection + 1}/${sectionList.length}';
 
-  void onChangeSection(int newSection) {
+  void onChangeSection(int newSection, {bool isFromList = false}) {
     if (newSection < 0 || newSection >= sectionList.length) return;
 
     currentSection = newSection;
 
+    updateUrlSource();
+
     videoManagement?.refreshSourceList(
-      urls: currentSectionDetail?.sourceUrls ?? [],
+      urls: videoUrls,
     );
 
     audioManagement?.refreshSourceList(
-      urls: currentSectionDetail?.sourceUrls ?? [],
+      urls: audioUrls,
     );
 
     sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
 
-    Timer(const Duration(seconds: 1), () {
-      checkSectionComplete();
-    });
+    if (!isFromList) {
+      checkSectionComplete(withDelay: true);
+    }
 
     emit(const LessonDetailSuccess());
     emit(const LessonDetailInitial());
   }
 
-  Future<void> initData(String lessonId) async {
-    this.lessonId = lessonId;
-    await getSectionList();
-
-    sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
-
-    Timer(const Duration(seconds: 1), () {
-      checkSectionComplete();
-    });
-
+  void updateUrlSource() {
     if (currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_VIDEO) {
-      videoManagement = VideoManagement(
-          urls: currentSectionDetail?.sourceUrls ?? [],
-          onExitFullScreen: () {},
-          onAllFinished: () {
-            sectionStatus.isVideoCompleted = true;
-            checkSectionComplete();
-          });
+      videoUrls = currentSectionDetail?.sourceUrls ?? [];
+    }
+    else {
+      videoUrls = [];
     }
 
     if (currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_AUDIO) {
-      audioManagement = AudioManagement(
-          urls: currentSectionDetail?.sourceUrls ?? [],
-          onAllFinished: () {
-            sectionStatus.isAudioCompleted = true;
-            checkSectionComplete();
-          });
+      audioUrls = currentSectionDetail?.sourceUrls ?? [];
+    }
+    else {
+      audioUrls = [];
     }
   }
 
-  Future<void> checkSectionComplete() async {
+  Future<void> initData(String lessonId) async {
+    this.lessonId = lessonId;
+
+    await getSectionList();
+
+    for (int index = 0; index < sectionList.length; index ++) {
+      if (sectionList[index]?.isComplete == false) {
+        currentSection = index;
+        break;
+      }
+    }
+
+    updateUrlSource();
+
+    sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
+
+    checkSectionComplete(withDelay: true);
+
+    videoManagement = VideoManagement(
+        urls: videoUrls,
+        onExitFullScreen: () {},
+        onAllFinished: () {
+          sectionStatus.isVideoCompleted = true;
+          checkSectionComplete();
+        });
+
+    audioManagement = AudioManagement(
+        urls: audioUrls,
+        onAllFinished: () {
+          sectionStatus.isAudioCompleted = true;
+          checkSectionComplete();
+        });
+  }
+
+  Future<void> checkSectionComplete({bool withDelay = false}) async {
+    if (withDelay) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
     if (sectionStatus.isAllComplete &&
         currentSectionDetail?.isComplete != true) {
       print('LOG call API done');

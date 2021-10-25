@@ -61,10 +61,14 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           }
         },
         builder: (context, state) {
+          _checkScrollable();
           return _cubit.currentSectionDetail?.type ==
                   Const.LESSON_SECTION_TYPE_QUIZ
               ? CourseQuizPage(
                   lessonId: _cubit.currentSectionDetail?.id ?? '',
+                  onDone: () {
+                    _cubit.onChangeSection(_cubit.currentSection + 1);
+                  },
                 )
               : Scaffold(
                   body: BackgroundPage(
@@ -124,20 +128,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                             padding: EdgeInsets.symmetric(horizontal: 16.w),
                             child: NotificationListener(
                               onNotification: (notify) {
-                                if (notify is KeepAliveNotification) {
-                                  if (_cubit.sectionStatus.isScrollToEnd !=
-                                      true) {
-                                    if (_scrollController.position.pixels ==
-                                            0 &&
-                                        _scrollController
-                                                .position.maxScrollExtent ==
-                                            0) {
-                                      _cubit.sectionStatus.isScrollToEnd = true;
-                                    }
-                                    print(
-                                        'LOG max: ${_scrollController.position.maxScrollExtent}');
-                                  }
-                                }
                                 if (notify is ScrollEndNotification &&
                                     _scrollController.position.pixels ==
                                         _scrollController
@@ -321,7 +311,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           iconSize: 24.sp,
         ),
         Text(
-          audioData?.timeText ?? '',
+          audioData?.timeText ?? '00:00 / 00:00',
           style: TextStyle(
             color: R.color.textDark,
             fontSize: 14.sp,
@@ -347,8 +337,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     );
   }
 
-  void showLessonCategoryList() {
-    showModalBottomSheet(
+  Future<void> showLessonCategoryList() async {
+    await showModalBottomSheet(
       context: context,
       clipBehavior: Clip.hardEdge,
       shape: const RoundedRectangleBorder(
@@ -358,9 +348,19 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         return BottomSheetWidget(
           sectionList: _cubit.sectionList,
           currentSection: _cubit.currentSection,
-          onChangeSection: _cubit.onChangeSection,
+          onChangeSection: (int newSectionIndex) {
+            _cubit.onChangeSection(newSectionIndex, isFromList: true);
+          },
         );
       },
     );
+    _cubit.checkSectionComplete(withDelay: true);
+  }
+
+  Future<void> _checkScrollable() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    _cubit.sectionStatus.isScrollToEnd =
+        _scrollController.position.pixels == 0 &&
+            _scrollController.position.maxScrollExtent == 0;
   }
 }

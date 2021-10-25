@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:dio/dio.dart';
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,9 +25,10 @@ import 'course_quiz.dart';
 
 class CourseQuizPage extends StatefulWidget {
   final String lessonId;
+  final VoidCallback? onDone;
 
   const CourseQuizPage(
-      {Key? key, this.lessonId = "0c8c3920-dd49-41ad-aa1b-08d987ed41f9"})
+      {Key? key, this.lessonId = "0c8c3920-dd49-41ad-aa1b-08d987ed41f9", this.onDone})
       : super(key: key);
 
   @override
@@ -290,9 +292,10 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                         _controller.scrollToIndex(0,
                             duration: Duration(milliseconds: 400),
                             preferPosition: AutoScrollPosition.begin);
-                      }, continueLearnCallback: () {
+                      }, continueLearnCallback: () async {
                         logger.i("continueLearnCallback");
-                        NavigationUtil.navigatePage(context, CourseFeedbackPage(lessonId: widget.lessonId));
+                        await NavigationUtil.navigatePage(context, CourseFeedbackPage(lessonId: widget.lessonId));
+                        widget.onDone?.call();
                       });
                     } else {
                       int newIndex = _cubit.selectedCourseIndex + 1;

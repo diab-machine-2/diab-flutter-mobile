@@ -46,7 +46,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
             if (state is CourseFeedbackFailure)
               Message.showToastMessage(context, state.error);
             if (state is CourseFeedbackSuccess) {
-              NavigationUtil.popToFirst(context);
+              NavigationUtil.pop(context);
             }
           },
           builder: (context, state) {

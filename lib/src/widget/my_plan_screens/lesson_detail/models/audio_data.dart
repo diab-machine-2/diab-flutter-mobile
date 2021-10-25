@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:medical/src/utils/date_utils.dart';
 
 class AudioController {
   AudioController({
@@ -88,10 +89,7 @@ class AudioData {
     return position;
   }
 
-  String get currentText => currentTime.toString().split('.').first;
-  String get totalText => totalTime.toString().split('.').first;
-
   String get timeText {
-    return '$currentText / $totalText';
+    return '${DateUtil.formatDuration(currentTime)} / ${DateUtil.formatDuration(totalTime)}';
   }
 }
