@@ -20,7 +20,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   final AppRepository repository;
   late final String lessonId;
 
-  List<LessonSectionListResponseData?> sectionList = [];
+  List<LessonSectionListResponseDataSections?> sectionList = [];
+  LessonSectionListResponseDataReview? review;
   int currentSection = 0;
   VideoManagement? videoManagement;
   AudioManagement? audioManagement;
@@ -29,11 +30,17 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   List<String> videoUrls = [];
   List<String> audioUrls = [];
 
-  LessonSectionListResponseData? get currentSectionDetail =>
+  LessonSectionListResponseDataSections? get currentSectionDetail =>
       sectionList.isEmpty ? null : sectionList[currentSection];
 
   String get sectionPosition =>
       '${sectionList.isEmpty ? 0 : currentSection + 1}/${sectionList.length}';
+
+  bool get isLastSection => currentSection >= (sectionList.length - 1);
+
+  bool get isFirstSection => currentSection <= 0;
+
+  bool get reviewed => review?.rating != null;
 
   void onChangeSection(int newSection, {bool isFromList = false}) {
     if (newSection < 0 || newSection >= sectionList.length) return;
@@ -74,6 +81,15 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     }
   }
 
+  bool get isAllSectionCompleted {
+    for (final section in sectionList) {
+      if (section?.isComplete != true) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<void> initData(String lessonId) async {
     this.lessonId = lessonId;
 
@@ -112,10 +128,15 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     if (withDelay) {
       await Future.delayed(const Duration(seconds: 1));
     }
-    if (sectionStatus.isAllComplete &&
-        currentSectionDetail?.isComplete != true) {
+    if (sectionStatus.isSectionCompleted &&
+        currentSectionDetail?.isComplete != null &&
+        state is! LessonDetailFeedBack) {
       print('LOG call API complete');
-      completeLearningSection();
+      await completeLearningCurrentSection();
+    }
+    if (isAllSectionCompleted && !reviewed) {
+      print('LOG navigate to FeedBack screen');
+      emit(const LessonDetailFeedBack());
     }
   }
 
@@ -125,7 +146,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     final ApiResult<LessonSectionListResponse> apiResult =
         await repository.getListLessonSection(lessonId);
     apiResult.when(success: (LessonSectionListResponse response) {
-      sectionList = response.data ?? [];
+      sectionList = response.data?.sections ?? [];
+      review = response.data?.review;
       emit(const LessonDetailSuccess());
     }, failure: (NetworkExceptions error) {
       emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));
@@ -133,7 +155,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     emit(const LessonDetailInitial());
   }
 
-  Future<void> completeLearningSection() async {
+  Future<void> completeLearningCurrentSection() async {
     await Future.delayed(Duration.zero);
     emit(const LessonDetailLoading());
     final ApiResult<CommonResponse> apiResult =

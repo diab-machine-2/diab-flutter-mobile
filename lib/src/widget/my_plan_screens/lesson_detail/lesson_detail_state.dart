@@ -49,3 +49,11 @@ class LessonDetailChangeType extends LessonDetailState {
     return 'LessonDetailChangeType{}';
   }
 }
+
+class LessonDetailFeedBack extends LessonDetailState {
+  const LessonDetailFeedBack();
+  @override
+  String toString() {
+    return 'LessonDetailFeedBack{}';
+  }
+}

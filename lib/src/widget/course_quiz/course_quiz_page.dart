@@ -294,7 +294,6 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                             preferPosition: AutoScrollPosition.begin);
                       }, continueLearnCallback: () async {
                         logger.i("continueLearnCallback");
-                        await NavigationUtil.navigatePage(context, CourseFeedbackPage(lessonId: widget.lessonId));
                         widget.onDone?.call();
                       });
                     } else {

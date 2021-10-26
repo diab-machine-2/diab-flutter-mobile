@@ -93,7 +93,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                       ),
                       InkWell(
                         onTap: () {
-                          NavigationUtil.popToFirst(context);
+                          NavigationUtil.pop(context);
                         },
                         child: Icon(
                           Icons.close,

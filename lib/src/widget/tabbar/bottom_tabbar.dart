@@ -4,6 +4,8 @@ import 'package:medical/res/R.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan_page.dart';
 
 typedef TabbarSelected = Function(int);
 
@@ -82,10 +84,14 @@ class _BottomTabbar extends State<BottomTabbar> {
             ),
           ),
           onTap: () {
-            setState(() {
-              index = screenIndex;
-              widget.callback(index);
-            });
+            if (screenIndex == 1) {
+              NavigationUtil.navigatePage(context, const MyPlanPage());
+            } else {
+              setState(() {
+                index = screenIndex;
+                widget.callback(index);
+              });
+            }
           }),
     );
   }

@@ -7,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/course_feedback/course_feedback.dart';
 import 'package:medical/src/widget/course_quiz/course_quiz.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/background_page.dart';
@@ -59,15 +60,23 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           if (state is LessonDetailFailure) {
             Message.showToastMessage(context, state.error);
           }
+          if (state is LessonDetailFeedBack) {
+            NavigationUtil.replace(
+                context, CourseFeedbackPage(lessonId: widget.lessonId));
+          }
         },
         builder: (context, state) {
           _checkScrollable();
           return _cubit.currentSectionDetail?.type ==
-                  Const.LESSON_SECTION_TYPE_QUIZ
+                  Const.LESSON_SECTION_TYPE_TEXT
               ? CourseQuizPage(
-                  lessonId: _cubit.currentSectionDetail?.id ?? '',
+                  // lessonId: _cubit.currentSectionDetail?.id ?? '',
                   onDone: () async {
-                    await _cubit.completeLearningSection();
+                    await _cubit.completeLearningCurrentSection();
+                    _cubit.checkSectionComplete();
+                    if (_cubit.isLastSection) {
+                      NavigationUtil.pop(context);
+                    }
                     _cubit.onChangeSection(_cubit.currentSection + 1);
                   },
                 )
@@ -202,7 +211,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   padding:
                                       EdgeInsets.symmetric(horizontal: 16.w),
                                   decoration: BoxDecoration(
-                                    color: R.color.main_6,
+                                    color: _cubit.isFirstSection
+                                        ? R.color.color0xffE5E5E5
+                                        : R.color.main_6,
                                     borderRadius: BorderRadius.circular(200),
                                   ),
                                   child: Row(
@@ -211,12 +222,16 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       Icon(
                                         Icons.chevron_left_rounded,
                                         size: 20.w,
-                                        color: R.color.greenGradientBottom,
+                                        color: _cubit.isFirstSection
+                                            ? R.color.grey_2
+                                            : R.color.greenGradientBottom,
                                       ),
                                       Text(
                                         'Quay lại',
                                         style: TextStyle(
-                                          color: R.color.accentColor,
+                                          color: _cubit.isFirstSection
+                                              ? R.color.grey_2
+                                              : R.color.accentColor,
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w700,
                                         ),
@@ -258,7 +273,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   padding:
                                       EdgeInsets.symmetric(horizontal: 16.w),
                                   decoration: BoxDecoration(
-                                    color: R.color.main_6,
+                                    color: _cubit.isLastSection
+                                        ? R.color.color0xffE5E5E5
+                                        : R.color.main_6,
                                     borderRadius: BorderRadius.circular(200),
                                   ),
                                   child: Row(
@@ -267,7 +284,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       Text(
                                         'Tiếp theo',
                                         style: TextStyle(
-                                          color: R.color.accentColor,
+                                          color: _cubit.isLastSection
+                                              ? R.color.grey_2
+                                              : R.color.accentColor,
                                           fontSize: 14.sp,
                                           fontWeight: FontWeight.w700,
                                         ),
@@ -275,7 +294,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       Icon(
                                         Icons.chevron_right_rounded,
                                         size: 20.w,
-                                        color: R.color.greenGradientBottom,
+                                        color: _cubit.isLastSection
+                                            ? R.color.grey_2
+                                            : R.color.greenGradientBottom,
                                       ),
                                     ],
                                   ),
@@ -360,8 +381,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   Future<void> _checkScrollable() async {
     await Future.delayed(const Duration(milliseconds: 500));
-    _cubit.sectionStatus.isScrollToEnd =
+    _cubit.sectionStatus.isScrollToEnd = _scrollController.hasClients &&
         _scrollController.position.pixels == 0 &&
-            _scrollController.position.maxScrollExtent == 0;
+        _scrollController.position.maxScrollExtent == 0;
   }
 }
