@@ -174,96 +174,7 @@ class _MyPlanPageState extends State<MyPlanPage> {
           child: ButtonWidget(
             title: R.string.search_by_key.tr(),
             onPressed: () {
-              showDialog(
-                barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-                barrierDismissible: true,
-                context: context,
-                builder: (_) => GestureDetector(
-                  onTap: () {
-                    NavigationUtil.pop(context);
-                  },
-                  child: Scaffold(
-                    backgroundColor: R.color.transparent,
-                    body: Center(
-                      child: GestureDetector(
-                        child: Container(
-                          width: 344.w,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 24.h),
-                          decoration: BoxDecoration(
-                            color: R.color.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                alignment: Alignment.centerLeft,
-                                child: Wrap(
-                                  spacing: 8.w,
-                                  runSpacing: 10.h,
-                                  children: List.generate(
-                                    _cubit.keyWordList.length,
-                                    (index) => GestureDetector(
-                                      onTap: () {},
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 15.w, vertical: 5.h),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(36),
-                                          border: Border.all(
-                                              color: R.color.color0xffB1DDDB),
-                                        ),
-                                        child: Text(
-                                          _cubit.keyWordList[index],
-                                          style: TextStyle(
-                                            color: R.color.textDark,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 20.h),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    width: 150.w,
-                                    child: ButtonWidget(
-                                      height: 43.h,
-                                      title: 'Huỷ',
-                                      onPressed: () {
-                                        NavigationUtil.pop(context);
-                                      },
-                                      textColor: R.color.textDark,
-                                      backgroundColor: R.color.grayBorder,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 150.w,
-                                    child: ButtonWidget(
-                                        height: 43.h,
-                                        title: 'Xác nhận',
-                                        onPressed: () {
-                                          NavigationUtil.pop(context);
-                                        }),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              );
+              _showSearchDialog();
             },
             textSize: 14,
             radius: 8,
@@ -312,9 +223,9 @@ class _MyPlanPageState extends State<MyPlanPage> {
                             if (_cubit.lessonsList[index]?.id?.isNotEmpty ==
                                 true) {
                               NavigationUtil.navigatePage(
-                                  context,
-                                  LessonDetailPage(
-                                      _cubit.lessonsList[index]!.id!,
+                                context,
+                                LessonDetailPage(
+                                  _cubit.lessonsList[index]!.id!,
                                 ),
                               );
                             }
@@ -336,6 +247,9 @@ class _MyPlanPageState extends State<MyPlanPage> {
     required MyLessonResponseData? lessonDetail,
     VoidCallback? onTap,
   }) {
+    final bool isLocked =
+        lessonDetail?.learningStatus == Const.LESSON_NOT_LEARN &&
+            _cubit.currentLessonType == LessonType.route;
     return Container(
       margin: EdgeInsets.symmetric(vertical: (127.h - 87.w) / 2),
       height: 87.w,
@@ -361,7 +275,11 @@ class _MyPlanPageState extends State<MyPlanPage> {
           SizedBox(width: 16.w),
           Expanded(
             child: InkWell(
-              onTap: onTap,
+              onTap: isLocked
+                  ? () {
+                      _showLockedDialog();
+                    }
+                  : onTap,
               child: Row(
                 children: [
                   Container(
@@ -683,6 +601,166 @@ class _MyPlanPageState extends State<MyPlanPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showSearchDialog() {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      barrierDismissible: true,
+      context: context,
+      builder: (_) => GestureDetector(
+        onTap: () {
+          NavigationUtil.pop(context);
+        },
+        child: Scaffold(
+          backgroundColor: R.color.transparent,
+          body: Center(
+            child: GestureDetector(
+              child: Container(
+                width: 344.w,
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Wrap(
+                        spacing: 8.w,
+                        runSpacing: 10.h,
+                        children: List.generate(
+                          _cubit.keyWordList.length,
+                          (index) => GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 15.w, vertical: 5.h),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(36),
+                                border:
+                                    Border.all(color: R.color.color0xffB1DDDB),
+                              ),
+                              child: Text(
+                                _cubit.keyWordList[index],
+                                style: TextStyle(
+                                  color: R.color.textDark,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          width: 150.w,
+                          child: ButtonWidget(
+                            height: 43.h,
+                            title: 'Huỷ',
+                            onPressed: () {
+                              NavigationUtil.pop(context);
+                            },
+                            textColor: R.color.textDark,
+                            backgroundColor: R.color.grayBorder,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 150.w,
+                          child: ButtonWidget(
+                              height: 43.h,
+                              title: 'Xác nhận',
+                              onPressed: () {
+                                NavigationUtil.pop(context);
+                              }),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showLockedDialog() {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      barrierDismissible: true,
+      context: context,
+      builder: (_) => GestureDetector(
+        onTap: () {
+          NavigationUtil.pop(context);
+        },
+        child: Scaffold(
+          backgroundColor: R.color.transparent,
+          body: Center(
+            child: GestureDetector(
+              child: Container(
+                width: 344.w,
+                padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 24.h),
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 20.h),
+                      child: Image.asset(R.drawable.img_lesson_locked,
+                          width: 175.w, height: 180.h),
+                    ),
+                    Text(
+                      'Bài học chưa mở khoá!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 6.h,
+                    ),
+                    Text(
+                      'Bạn cần học lần lượt các bài học theo lộ trình của diaB để mở khoá bài học này.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 24.h),
+                      padding: EdgeInsets.symmetric(horizontal: 50.w),
+                      child: ButtonWidget(
+                        height: 32.h,
+                        title: 'Đồng ý',
+                        onPressed: () {},
+                        textSize: 14.sp,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

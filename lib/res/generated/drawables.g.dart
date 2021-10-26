@@ -241,6 +241,7 @@ class Drawables {
 	String get img_goal => "lib/res/drawables/img_goal.png";
 	String get img_gym_trainer => "lib/res/drawables/img_gym_trainer.png";
 	String get img_hotline => "lib/res/drawables/img_hotline.png";
+	String get img_lesson_locked => "lib/res/drawables/img_lesson_locked.png";
 	String get img_list_service => "lib/res/drawables/img_list_service.png";
 	String get img_logo => "lib/res/drawables/img_logo.png";
 	String get img_male_emotion => "lib/res/drawables/img_male_emotion.png";
