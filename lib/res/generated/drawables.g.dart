@@ -6,6 +6,7 @@ class Drawables {
 	String get bg_apple_home => "lib/res/drawables/bg_apple_home.png";
 	String get bg_apple_orange => "lib/res/drawables/bg_apple_orange.png";
 	String get bg_blood_presser => "lib/res/drawables/bg_blood_presser.png";
+	String get bg_card_my_plan => "lib/res/drawables/bg_card_my_plan.png";
 	String get bg_des => "lib/res/drawables/bg_des.png";
 	String get bg_detail => "lib/res/drawables/bg_detail.png";
 	String get bg_detail_pro => "lib/res/drawables/bg_detail_pro.png";
@@ -216,6 +217,7 @@ class Drawables {
 	String get img_blood_sugar_testing_schedule_short => "lib/res/drawables/img_blood_sugar_testing_schedule_short.png";
 	String get img_blood_sugar_testing_schedule_tall => "lib/res/drawables/img_blood_sugar_testing_schedule_tall.png";
 	String get img_bmi_empty => "lib/res/drawables/img_bmi_empty.png";
+	String get img_book_coach => "lib/res/drawables/img_book_coach.png";
 	String get img_check_phone => "lib/res/drawables/img_check_phone.png";
 	String get img_congrat => "lib/res/drawables/img_congrat.png";
 	String get img_cooking => "lib/res/drawables/img_cooking.png";
@@ -247,6 +249,7 @@ class Drawables {
 	String get img_parent => "lib/res/drawables/img_parent.png";
 	String get img_register_success => "lib/res/drawables/img_register_success.png";
 	String get img_reminder => "lib/res/drawables/img_reminder.png";
+	String get img_result_booking => "lib/res/drawables/img_result_booking.png";
 	String get img_runner => "lib/res/drawables/img_runner.png";
 	String get img_runner_left => "lib/res/drawables/img_runner_left.png";
 	String get img_schedule_glucose => "lib/res/drawables/img_schedule_glucose.png";

@@ -45,6 +45,7 @@ class Const {
   static const String DATE_TIME_CREATE_SV_FORMAT = "yyyy-MM-dd HH:mm:ss";
   static const String DATE_REQUEST_FORMAT = "MM-dd-yyyy";
   static const String DATE_FORMAT = "dd/MM/yyyy";
+  static const String FULL_DATE_FORMAT = "EEEE, dd/MM/yyyy";
   static const String DATE_FORMAT_TASK = "yyyy-MM-dd";
   static const String DATE_FORMAT_POST = "HH:mm dd/MM/yyyy";
   static const String DATE = "EEE";

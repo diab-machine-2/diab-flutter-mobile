@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
 import 'request/ios_receipt_request.dart';
+import 'request/post_survey_request.dart';
 import 'request/send_feedback_course_request.dart';
 import 'response/blood_sugar_template_response.dart';
 import 'response/create_menu_response.dart';
@@ -114,6 +116,13 @@ abstract class AppApi {
 
   @GET("App/Lesson/GetLessonQuizDetail/{lessonId}")
   Future<ListQuizLessonResponse> getListQuiz(@Path("lessonId") String lessonId,);
+
+  // Survey
+  @GET("App/Survey/{surveyId}")
+  Future<DetailSurveyResponse> getDetailSurvey(@Path("surveyId") String surveyId,);
+
+  @POST("App/SurveyResult")
+  Future<CommonResponse> submitSurvey(@Body() PostSurveyRequest request);
 
   //Acount
   @GET("App/Account/GetCurrentUserInfo")

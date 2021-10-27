@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey/survey.dart';
@@ -13,7 +14,9 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
 class SurveyPage extends StatefulWidget {
-  const SurveyPage({Key? key}) : super(key: key);
+  final int index;
+  final SurveyData surveyData;
+  const SurveyPage({Key? key, required this.index, required this.surveyData}) : super(key: key);
 
   @override
   _SurveyPageState createState() => _SurveyPageState();
@@ -21,6 +24,7 @@ class SurveyPage extends StatefulWidget {
 
 class _SurveyPageState extends State<SurveyPage> {
   late SurveyCubit _cubit;
+   SectionSurvey? _sectionSurvey;
 
   @override
   void initState() {
@@ -28,6 +32,10 @@ class _SurveyPageState extends State<SurveyPage> {
     super.initState();
     AppRepository repository = AppRepository();
     _cubit = SurveyCubit(repository);
+    if (widget.surveyData.sections != null) {
+      _sectionSurvey = widget.surveyData.sections![widget.index];
+    }
+
   }
 
   @override
@@ -79,7 +87,7 @@ class _SurveyPageState extends State<SurveyPage> {
                   alignment: Alignment.center,
                   margin: EdgeInsets.symmetric(horizontal: 40.h),
                   child: Text(
-                    R.string.part_number.tr(args: ["1"]),
+                    _sectionSurvey?.name ?? "",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 20.sp,
@@ -99,7 +107,7 @@ class _SurveyPageState extends State<SurveyPage> {
               child: ButtonWidget(
                 title: R.string.text_continue.tr(),
                 onPressed: () {
-                  NavigationUtil.navigatePage(context, SurveyResultPage());
+                  NavigationUtil.navigatePage(context, SurveyResultPage(index: widget.index, surveyData: widget.surveyData,));
                 },
               ),
             ),

@@ -11,10 +11,12 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey/survey_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/stack_loading_view.dart';
 
 import 'introduce_survey.dart';
 
 class IntroduceSurveyPage extends StatefulWidget {
+
   const IntroduceSurveyPage({Key? key}) : super(key: key);
 
   @override
@@ -23,6 +25,7 @@ class IntroduceSurveyPage extends StatefulWidget {
 
 class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
   late IntroduceSurveyCubit _cubit;
+  final String surveyId = "5b002e55-639c-4b0c-0ea7-08d9983c72bb";
 
   @override
   void initState() {
@@ -30,6 +33,8 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
     super.initState();
     AppRepository repository = AppRepository();
     _cubit = IntroduceSurveyCubit(repository);
+    // _cubit.getMySurvey();
+    _cubit.getDetailSurvey(surveyId);
   }
 
   @override
@@ -60,56 +65,61 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
     return CommonPage(
       background: R.drawable.bg_welcome,
       title: R.string.survey.tr(),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.all(16.h),
-              shrinkWrap: true,
-              children: [
-                Image.asset(
-                  R.drawable.img_survey,
-                  width: double.infinity,
-                  height: 170.h,
-                  fit: BoxFit.fill,
-                ),
-                SizedBox(
-                  height: 32.h,
-                ),
-                Text(
-                  R.string.introduction_to_the_survey.tr(),
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                    color: R.color.textDark,
-                    height: 1.4
+      child: StackLoadingView(
+        visibleLoading: state is IntroduceSurveyLoading,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.all(16.h),
+                shrinkWrap: true,
+                children: [
+                  Image.asset(
+                    R.drawable.img_survey,
+                    width: double.infinity,
+                    height: 170.h,
+                    fit: BoxFit.fill,
                   ),
-                ),
-                SizedBox(height: 16.h),
-                Text(
-                  R.string.introduction.tr(),
-                  style: TextStyle(
-                      fontSize: 16.sp,
+                  SizedBox(
+                    height: 32.h,
+                  ),
+                  Text(
+                    _cubit.surveyData?.name ?? R.string.introduction_to_the_survey.tr(),
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.bold,
                       color: R.color.textDark,
-                      height: 1.37
+                      height: 1.4
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Center(
-            child: Container(
-              width: 200.w,
-              margin: EdgeInsets.only(bottom: 30.h, top: 10.h),
-              child: ButtonWidget(
-                title: R.string.start_survey.tr(),
-                onPressed: () {
-                  NavigationUtil.navigatePage(context, SurveyPage());
-                },
+                  SizedBox(height: 16.h),
+                  Text(
+                    _cubit.surveyData?.description ?? R.string.introduction.tr(),
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        color: R.color.textDark,
+                        height: 1.37
+                    ),
+                  ),
+                ],
               ),
             ),
-          )
-        ],
+            Center(
+              child: Container(
+                width: 200.w,
+                margin: EdgeInsets.only(bottom: 30.h, top: 10.h),
+                child: ButtonWidget(
+                  title: R.string.start_survey.tr(),
+                  onPressed: () {
+                    if (_cubit.surveyData == null)
+                      return;
+                    NavigationUtil.navigatePage(context, SurveyPage(index: 0, surveyData: _cubit.surveyData!,));
+                  },
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

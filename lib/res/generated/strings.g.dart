@@ -817,4 +817,25 @@ class Strings {
 	String get start_survey => 'start_survey';
 	String get text_congratulation_survey => 'text_congratulation_survey';
 	String get explain => 'explain';
+	String get book_coach => 'book_coach';
+	String get description_book_coach => 'description_book_coach';
+	String get date_book => 'date_book';
+	String get time_book => 'time_book';
+	String get save_booking => 'save_booking';
+	String get my_plan => 'my_plan';
+	String get join => 'join';
+	String get coach => 'coach';
+	String get booking_success => 'booking_success';
+	String get time_9_10 => 'time_9_10';
+	String get time_10_11 => 'time_10_11';
+	String get time_11_12 => 'time_11_12';
+	String get time_12_13 => 'time_12_13';
+	String get time_13_14 => 'time_13_14';
+	String get time_14_15 => 'time_14_15';
+	String get time_15_16 => 'time_15_16';
+	String get time_16_17 => 'time_16_17';
+	String get time_17_18 => 'time_17_18';
+	String get time_18_19 => 'time_18_19';
+	String get time_19_20 => 'time_19_20';
+	String get time_20_21 => 'time_20_21';
 }
