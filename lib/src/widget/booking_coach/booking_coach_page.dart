@@ -29,6 +29,7 @@ class BookingCoachPage extends StatefulWidget {
 class _BookingCoachPageState extends State<BookingCoachPage> {
   TextEditingController _dateController = TextEditingController();
   late BookingCoachCubit _cubit;
+  bool isBooked = true;
   final List<String> listTime = [
     R.string.time_9_10.tr(),
     R.string.time_10_11.tr(),
@@ -84,120 +85,164 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
     return CommonPage(
       background: R.drawable.bg_welcome,
       title: R.string.book_coach.tr(),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.all(16.h),
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
+      child: isBooked == true ? seeBookingWidget() : bookCoachWidget(),
+    );
+  }
+
+  Widget bookCoachWidget() {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.all(16.h),
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      R.string.description_book_coach.tr(),
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.textDark,
+                          height: 1.4,
+                          letterSpacing: 0.4),
+                    ),
+                  ),
+                  SizedBox(width: 10.h),
+                  Image.asset(R.drawable.img_book_coach, height: 120.h),
+                ],
+              ),
+              SizedBox(height: 25.h),
+              Text(
+                R.string.date_book.tr(),
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.textDark,
+                    height: 1.4,
+                    letterSpacing: 0.4),
+              ),
+              SizedBox(height: 12.h),
+              TextFieldWidget(
+                  autoFocus: false,
+                  controller: _dateController,
+                  padding:
+                  EdgeInsets.symmetric(vertical: 9.h, horizontal: 12.h),
+                  readOnly: true,
+                  isRequired: true,
+                  // will disable paste operation
+                  onTap: pickDate,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.text,
+                  suffixIcon: GestureDetector(
+                    onTap: pickDate,
+                    child: Icon(
+                      Icons.calendar_today_outlined,
+                      color: R.color.gray,
+                      size: 20.h,
+                    ),
+                  )),
+              SizedBox(height: 25.h),
+              Text(
+                R.string.time_book.tr(),
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.textDark,
+                    height: 1.4,
+                    letterSpacing: 0.4),
+              ),
+              SizedBox(height: 12.h),
+              Wrap(
+                spacing: 12.h,
+                runSpacing: 20.h,
+                children: listTime.map((e) {
+                  bool isSelected = e == _cubit.selectedTime;
+                  return InkWell(
+                    onTap: () {
+                      _cubit.pickTime(e);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 10.h, vertical: 8.h),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.h),
+                        color: isSelected
+                            ? R.color.color0xffB1DDDB
+                            : R.color.white,
+                      ),
                       child: Text(
-                        R.string.description_book_coach.tr(),
-                        textAlign: TextAlign.start,
+                        e,
                         style: TextStyle(
                             fontSize: 13.sp,
-                            fontWeight: FontWeight.w400,
-                            color: R.color.textDark,
-                            height: 1.4,
-                            letterSpacing: 0.4),
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w400,
+                            color: isSelected
+                                ? R.color.accentColor
+                                : R.color.grey_2),
                       ),
                     ),
-                    SizedBox(width: 10.h),
-                    Image.asset(R.drawable.img_book_coach, height: 120.h),
-                  ],
-                ),
-                SizedBox(height: 25.h),
-                Text(
-                  R.string.date_book.tr(),
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.textDark,
-                      height: 1.4,
-                      letterSpacing: 0.4),
-                ),
-                SizedBox(height: 12.h),
-                TextFieldWidget(
-                    autoFocus: false,
-                    controller: _dateController,
-                    padding:
-                        EdgeInsets.symmetric(vertical: 9.h, horizontal: 12.h),
-                    readOnly: true,
-                    isRequired: true,
-                    // will disable paste operation
-                    onTap: pickDate,
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.text,
-                    suffixIcon: GestureDetector(
-                      onTap: pickDate,
-                      child: Icon(
-                        Icons.calendar_today_outlined,
-                        color: R.color.gray,
-                        size: 20.h,
-                      ),
-                    )),
-                SizedBox(height: 25.h),
-                Text(
-                  R.string.time_book.tr(),
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.textDark,
-                      height: 1.4,
-                      letterSpacing: 0.4),
-                ),
-                SizedBox(height: 12.h),
-                Wrap(
-                  spacing: 12.h,
-                  runSpacing: 20.h,
-                  children: listTime.map((e) {
-                    bool isSelected = e == _cubit.selectedTime;
-                    return InkWell(
-                      onTap: () {
-                        _cubit.pickTime(e);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.h, vertical: 8.h),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.h),
-                          color: isSelected
-                              ? R.color.color0xffB1DDDB
-                              : R.color.white,
-                        ),
-                        child: Text(
-                          e,
-                          style: TextStyle(
-                              fontSize: 13.sp,
-                              fontWeight: isSelected
-                                  ? FontWeight.w700
-                                  : FontWeight.w400,
-                              color: isSelected
-                                  ? R.color.accentColor
-                                  : R.color.grey_2),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                )
-              ],
+                  );
+                }).toList(),
+              )
+            ],
+          ),
+        ),
+        Container(
+            width: 150.w,
+            margin: EdgeInsets.only(bottom: 20.h),
+            child: ButtonWidget(
+                title: R.string.save_booking.tr(),
+                onPressed: () {
+                  showResultBookingPopup();
+                })),
+      ],
+    );
+  }
+
+  Widget seeBookingWidget() {
+    return Column(
+      children: [
+        SizedBox(height: 50.h),
+        Image.asset(
+          R.drawable.img_result_booking,
+          height: 240.h,
+        ),
+        SizedBox(height: 50.h),
+        Text(
+          R.string.you_book_coach_success.tr(),
+          textAlign: TextAlign.start,
+          style: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w400,
+              color: R.color.textDark,
+              height: 1.4,
+              letterSpacing: 0.4),
+        ),
+        SizedBox(height: 30.h),
+        Center(
+          child: Container(
+            width: 120.w,
+            child: ButtonWidget(
+              height: 35.h,
+              title: R.string.see_booking.tr(),
+              textSize: 14.sp,
+              onPressed: () {
+
+              },
+              backgroundColor: Colors.transparent,
+              borderColor: R.color.accentColor,
+              textColor: R.color.accentColor,
             ),
           ),
-          Container(
-              width: 150.w,
-              margin: EdgeInsets.only(bottom: 20.h),
-              child: ButtonWidget(
-                  title: R.string.save_booking.tr(),
-                  onPressed: () {
-                    showResultBookingPopup();
-                  })),
-        ],
-      ),
+        )
+      ],
     );
   }
 

@@ -9,6 +9,7 @@ import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey/survey.dart';
+import 'package:medical/src/widget/survey_question/survey_question_page.dart';
 import 'package:medical/src/widget/survey_result/survey_result_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -107,7 +108,7 @@ class _SurveyPageState extends State<SurveyPage> {
               child: ButtonWidget(
                 title: R.string.text_continue.tr(),
                 onPressed: () {
-                  NavigationUtil.navigatePage(context, SurveyResultPage(index: widget.index, surveyData: widget.surveyData,));
+                  NavigationUtil.navigatePage(context, SurveyQuestionPage(index: widget.index, surveyData: widget.surveyData,));
                 },
               ),
             ),

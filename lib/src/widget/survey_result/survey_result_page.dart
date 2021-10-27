@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/src/model/response/survey_data.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey/survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -14,10 +15,6 @@ import 'package:medical/src/widgets/common_page.dart';
 import 'survey_result.dart';
 
 class SurveyResultPage extends StatefulWidget {
-
-  final int index;
-  final SurveyData surveyData;
-  const SurveyResultPage({Key? key, required this.index, required this.surveyData}) : super(key: key);
 
   @override
   _SurveyResultPageState createState() => _SurveyResultPageState();
@@ -103,6 +100,7 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
               child: ButtonWidget(
                 title: R.string.completed.tr(),
                 onPressed: () {
+                  NavigationUtil.popToFirst(context);
                   // NavigationUtil.navigatePage(context, SurveyResultPage());
                 },
               ),

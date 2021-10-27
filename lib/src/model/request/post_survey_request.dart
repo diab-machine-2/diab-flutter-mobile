@@ -1,6 +1,6 @@
-/// surveyId : "string"
-/// surveySectionId : "string"
-/// questionAnswerResults : [{"surveyQuestionId":"string","surveyAnswerId":"string"}]
+/// surveyId : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+/// surveySectionId : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+/// questionAnswerResults : [{"surveyQuestionId":"3fa85f64-5717-4562-b3fc-2c963f66afa6","surveyAnswerIdList":["3fa85f64-5717-4562-b3fc-2c963f66afa6"]}]
 
 class PostSurveyRequest {
   PostSurveyRequest({
@@ -42,31 +42,31 @@ class PostSurveyRequest {
 
 }
 
-/// surveyQuestionId : "string"
-/// surveyAnswerId : "string"
+/// surveyQuestionId : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+/// surveyAnswerIdList : ["3fa85f64-5717-4562-b3fc-2c963f66afa6"]
 
 class QuestionAnswerResults {
   QuestionAnswerResults({
       String? surveyQuestionId, 
-      String? surveyAnswerId,}){
+      List<String>? surveyAnswerIdList,}){
     _surveyQuestionId = surveyQuestionId;
-    _surveyAnswerId = surveyAnswerId;
+    _surveyAnswerIdList = surveyAnswerIdList;
 }
 
   QuestionAnswerResults.fromJson(dynamic json) {
     _surveyQuestionId = json['surveyQuestionId'];
-    _surveyAnswerId = json['surveyAnswerId'];
+    _surveyAnswerIdList = json['surveyAnswerIdList'] != null ? json['surveyAnswerIdList'].cast<String>() : [];
   }
   String? _surveyQuestionId;
-  String? _surveyAnswerId;
+  List<String>? _surveyAnswerIdList;
 
   String? get surveyQuestionId => _surveyQuestionId;
-  String? get surveyAnswerId => _surveyAnswerId;
+  List<String>? get surveyAnswerIdList => _surveyAnswerIdList;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['surveyQuestionId'] = _surveyQuestionId;
-    map['surveyAnswerId'] = _surveyAnswerId;
+    map['surveyAnswerIdList'] = _surveyAnswerIdList;
     return map;
   }
 

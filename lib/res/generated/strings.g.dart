@@ -825,7 +825,9 @@ class Strings {
 	String get my_plan => 'my_plan';
 	String get join => 'join';
 	String get coach => 'coach';
+	String get you_book_coach_success => 'you_book_coach_success';
 	String get booking_success => 'booking_success';
+	String get see_booking => 'see_booking';
 	String get time_9_10 => 'time_9_10';
 	String get time_10_11 => 'time_10_11';
 	String get time_11_12 => 'time_11_12';

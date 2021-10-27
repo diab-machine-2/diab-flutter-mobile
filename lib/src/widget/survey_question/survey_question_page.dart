@@ -13,6 +13,8 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/card_course_quiz/card_course_quiz.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/survey/survey_page.dart';
+import 'package:medical/src/widget/survey_result/survey_result_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/custom_scroll_physics.dart';
@@ -23,7 +25,10 @@ import 'survey_question.dart';
 class SurveyQuestionPage extends StatefulWidget {
   final int index;
   final SurveyData surveyData;
-  const SurveyQuestionPage({Key? key, required this.index, required this.surveyData}) : super(key: key);
+
+  const SurveyQuestionPage(
+      {Key? key, required this.index, required this.surveyData})
+      : super(key: key);
 
   @override
   _SurveyQuestionPageState createState() => _SurveyQuestionPageState();
@@ -34,7 +39,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   SectionSurvey? _sectionSurvey;
   List<GlobalKey<CardCourseQuizPageState>> listGlobal = [];
   AutoScrollController _controller =
-  AutoScrollController(axis: Axis.horizontal);
+      AutoScrollController(axis: Axis.horizontal);
 
   @override
   void initState() {
@@ -44,12 +49,14 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
     _cubit = SurveyQuestionCubit(repository);
     if (widget.surveyData.sections != null) {
       _sectionSurvey = widget.surveyData.sections![widget.index];
+      _sectionSurvey?.questions?.forEach((element) {
+        listGlobal.add(GlobalKey<CardCourseQuizPageState>());
+      });
     }
     Utils.onWidgetDidBuild(() {
       _controller.position.isScrollingNotifier.addListener(() {
         if (!_controller.position.isScrollingNotifier.value) {
-          int index =
-          (_controller.offset / ScreenUtil().screenWidth).round();
+          int index = (_controller.offset / ScreenUtil().screenWidth).round();
           _cubit.jumpToIndexCourse(index);
         }
         // int index =
@@ -57,12 +64,12 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
         // _cubit.jumpToIndexCourse(index);
       });
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: R.color.color0xffB1DDDB,
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocConsumer<SurveyQuestionCubit, SurveyQuestionState>(
@@ -88,90 +95,97 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   Widget buildPage(BuildContext context, SurveyQuestionState state) {
     int lengthQuiz = _sectionSurvey?.questions?.length ?? 0;
     return Container(
-        decoration: BoxDecoration(
-          color: R.color.color0xffB1DDDB
-        ),
-        child: Column(
+      decoration: BoxDecoration(color: R.color.color0xffB1DDDB),
+      child: Column(
         children: [
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.all(16.h),
-              shrinkWrap: true,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 12.h),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          R.string.survey.tr(),
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.bold,
-                              color: R.color.textDark,
-                              height: 1.4,
-                              letterSpacing: 0.4),
-                        ),
+          ListView(
+            padding: EdgeInsets.all(16.h),
+            shrinkWrap: true,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 12.h),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        R.string.survey.tr(),
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.bold,
+                            color: R.color.textDark,
+                            height: 1.4,
+                            letterSpacing: 0.4),
                       ),
-                      InkWell(
-                        onTap: () {
-                          NavigationUtil.pop(context);
-                        },
-                        child: Icon(
-                          Icons.close,
-                          size: 30.h,
-                          color: R.color.textDark,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.symmetric(horizontal: 16.h),
-                  child: Text(
-                    _sectionSurvey?.name ?? "",
-                    style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        NavigationUtil.pop(context);
+                      },
+                      child: Icon(
+                        Icons.close,
+                        size: 30.h,
                         color: R.color.textDark,
-                        height: 1.4,
-                        letterSpacing: 0.4),
-                  ),
+                      ),
+                    )
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Container(
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.symmetric(horizontal: 16.h),
+                child: Text(
+                  _sectionSurvey?.name ?? "",
+                  style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                      color: R.color.textDark,
+                      height: 1.4,
+                      letterSpacing: 0.4),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 5.h),
           Expanded(
-              child: lengthQuiz == 0 ? Container() : ListView.builder(
-                // padding: EdgeInsets.symmetric(horizontal: 8.h),
-                controller: _controller,
-                scrollDirection: Axis.horizontal,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: lengthQuiz,
-                itemBuilder: (context, index) {
-                  QuizData data = _sectionSurvey!.questions![index];
-                  return AutoScrollTag(
-                      key: ValueKey(index),
+              child: lengthQuiz == 0
+                  ? Container()
+                  : ListView.builder(
+                      // padding: EdgeInsets.symmetric(horizontal: 8.h),
                       controller: _controller,
-                      index: index,
-                      child: Container(
-                        margin:
-                        EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.h),
-                        width: ScreenUtil().screenWidth,
-                        child: CardCourseQuizPage(
-                          key: listGlobal[index],
-                          index: index,
-                          quizData: data,
-                          onSubmitAnswer: (listAnswer) =>
-                              _cubit.recordAnswer(index, listAnswer),
-                        ),
-                      ));
-                },
-              )),
+                      scrollDirection: Axis.horizontal,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: lengthQuiz,
+                      itemBuilder: (context, index) {
+                        QuizData data = _sectionSurvey!.questions![index];
+                        return AutoScrollTag(
+                            key: ValueKey(index),
+                            controller: _controller,
+                            index: index,
+                            child: Container(
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 16.h, horizontal: 16.h),
+                              width: ScreenUtil().screenWidth - 32.h,
+                              child: CardCourseQuizPage(
+                                  key: listGlobal[index],
+                                  index: index,
+                                  quizData: data,
+                                  isQuiz: false,
+                                  onChoseAnswer: (isChoseAnswer) {
+                                    _cubit.enableNextButton(isChoseAnswer);
+                                  },
+                                  onSubmitAnswer: (listAnswer) {
+                                    _cubit.recordAnswer(
+                                        data.id!,
+                                        listAnswer,
+                                        (data.answers ?? [])
+                                            .map((e) => e.id.toString())
+                                            .toList());
+                                  }),
+                            ));
+                      },
+                    )),
           Container(
             color: R.color.white,
             padding: EdgeInsets.only(
@@ -185,15 +199,15 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                   onTap: _cubit.selectedCourseIndex == 0
                       ? null
                       : () {
-                    int newIndex = _cubit.selectedCourseIndex - 1;
-                    _controller.scrollToIndex(newIndex,
-                        duration: Duration(milliseconds: 500),
-                        preferPosition: AutoScrollPosition.middle);
-                    _cubit.jumpToIndexCourse(newIndex);
-                  },
+                          int newIndex = _cubit.selectedCourseIndex - 1;
+                          _controller.scrollToIndex(newIndex,
+                              duration: Duration(milliseconds: 500),
+                              preferPosition: AutoScrollPosition.middle);
+                          _cubit.jumpToIndexCourse(newIndex);
+                        },
                   child: Container(
                     padding:
-                    EdgeInsets.symmetric(horizontal: 20.h, vertical: 8.h),
+                        EdgeInsets.symmetric(horizontal: 20.h, vertical: 8.h),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: _cubit.selectedCourseIndex == 0
@@ -246,52 +260,76 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                     ),
                   ),
                 ),
-                InkWell(
-                  onTap: () {
-                    if (_cubit.selectedCourseIndex == lengthQuiz - 1) {
-
-                    } else {
-                      int newIndex = _cubit.selectedCourseIndex + 1;
-                      _controller.scrollToIndex(newIndex,
-                          duration: Duration(milliseconds: 400),
-                          preferPosition: AutoScrollPosition.middle);
-                      _cubit.jumpToIndexCourse(newIndex);
-                    }
-                  },
-                  child: Container(
-                    padding:
-                    EdgeInsets.symmetric(horizontal: 20.h, vertical: 8.h),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: R.color.main_6,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _cubit.selectedCourseIndex == lengthQuiz - 1
-                              ? R.string.completed.tr()
-                              : R.string.next_question.tr(),
-                          style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.bold,
-                              color: R.color.accentColor,
-                              height: 1.43,
-                              letterSpacing: 0.4),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 20.h,
-                          color: R.color.accentColor,
-                        ),
-                      ],
-                    ),
-                  ),
-                )
+                buildNextButton()
               ],
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Widget buildNextButton() {
+    int lengthQuiz = _sectionSurvey?.questions?.length ?? 0;
+    bool isEnable = _cubit.isEnableNext;
+    return InkWell(
+      onTap: isEnable
+          ? () {
+              if (_cubit.selectedCourseIndex == lengthQuiz - 1) {
+                bool isLastPart = widget.index + 1 ==
+                    (widget.surveyData.sections?.length ?? 0);
+                if (widget.surveyData.id != null &&
+                    _sectionSurvey?.id != null)
+                  _cubit.submitAnswer(widget.surveyData.id!,
+                      _sectionSurvey!.id!);
+                if (isLastPart) {
+                  NavigationUtil.pushAndRemoveUtilKeepFirstPage(
+                      context, SurveyResultPage());
+                } else {
+                  NavigationUtil.navigatePage(
+                      context,
+                      SurveyPage(
+                        index: widget.index + 1,
+                        surveyData: widget.surveyData,
+                      ));
+                }
+              } else {
+                int newIndex = _cubit.selectedCourseIndex + 1;
+                _controller.scrollToIndex(newIndex,
+                    duration: Duration(milliseconds: 400),
+                    preferPosition: AutoScrollPosition.middle);
+                _cubit.jumpToIndexCourse(newIndex);
+                _cubit.enableNextButton(false);
+              }
+            }
+          : null,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 8.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: isEnable ? R.color.main_6 : R.color.grayBorder,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              _cubit.selectedCourseIndex == lengthQuiz - 1
+                  ? R.string.completed.tr()
+                  : R.string.next_question.tr(),
+              style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                  color: isEnable ? R.color.accentColor : R.color.textDark,
+                  height: 1.43,
+                  letterSpacing: 0.4),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 20.h,
+              color: isEnable ? R.color.accentColor : R.color.textDark,
+            ),
+          ],
+        ),
       ),
     );
   }

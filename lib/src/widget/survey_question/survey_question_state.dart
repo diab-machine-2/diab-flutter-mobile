@@ -48,3 +48,10 @@ class ShowAnswerQuizSuccess extends SurveyQuestionState {
     return 'ShowAnswerQuizSuccess{}';
   }
 }
+
+class SubmitSurveySuccess extends SurveyQuestionState {
+  @override
+  String toString() {
+    return 'SubmitSurveySuccess{}';
+  }
+}

@@ -57,11 +57,13 @@ class ListQuizLessonResponse {
 
 class QuizData {
   QuizData({
-      String? name, 
+    String? id,
+    String? name,
       int? type, 
       String? explain, 
       dynamic minCompletePercent, 
       List<AnswerData>? answers,}){
+    _id = id;
     _name = name;
     _type = type;
     _explain = explain;
@@ -70,6 +72,7 @@ class QuizData {
 }
 
   QuizData.fromJson(dynamic json) {
+    _id = json['id'];
     _name = json['name'];
     _type = json['type'];
     _explain = json['explain'];
@@ -81,12 +84,14 @@ class QuizData {
       });
     }
   }
+  String? _id;
   String? _name;
   int? _type;
   String? _explain;
   dynamic _minCompletePercent;
   List<AnswerData>? _answers;
 
+  String? get id => _id;
   String? get name => _name;
   int? get type => _type;
   String? get explain => _explain;
@@ -95,6 +100,7 @@ class QuizData {
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
+    map['id'] = _id;
     map['name'] = _name;
     map['type'] = _type;
     map['explain'] = _explain;
