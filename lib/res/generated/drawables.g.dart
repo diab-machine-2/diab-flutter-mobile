@@ -106,7 +106,6 @@ class Drawables {
 	String get ic_copy => "lib/res/drawables/ic_copy.png";
 	String get ic_correct => "lib/res/drawables/ic_correct.png";
 	String get ic_course => "lib/res/drawables/ic_course.png";
-	String get ic_course_feedback => "lib/res/drawables/ic_course_feedback.png";
 	String get ic_crown => "lib/res/drawables/ic_crown.png";
 	String get ic_crown_green => "lib/res/drawables/ic_crown_green.png";
 	String get ic_dinh_duong => "lib/res/drawables/ic_dinh_duong.png";
@@ -230,6 +229,7 @@ class Drawables {
 	String get img_check_phone => "lib/res/drawables/img_check_phone.png";
 	String get img_congrat => "lib/res/drawables/img_congrat.png";
 	String get img_cooking => "lib/res/drawables/img_cooking.png";
+	String get img_course_feedback => "lib/res/drawables/img_course_feedback.png";
 	String get img_des => "lib/res/drawables/img_des.png";
 	String get img_des_person => "lib/res/drawables/img_des_person.png";
 	String get img_email_support => "lib/res/drawables/img_email_support.png";
@@ -262,6 +262,7 @@ class Drawables {
 	String get img_runner => "lib/res/drawables/img_runner.png";
 	String get img_runner_left => "lib/res/drawables/img_runner_left.png";
 	String get img_schedule_glucose => "lib/res/drawables/img_schedule_glucose.png";
+	String get img_send_feedback_successed => "lib/res/drawables/img_send_feedback_successed.png";
 	String get img_step1 => "lib/res/drawables/img_step1.png";
 	String get img_step2 => "lib/res/drawables/img_step2.png";
 	String get img_step3 => "lib/res/drawables/img_step3.png";

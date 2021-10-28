@@ -11,6 +11,7 @@ class CommonPage extends StatelessWidget {
   final IconData? icon;
   final Widget? appBarAction;
   final bool? bottomSafeArea;
+  final bool? showBackButton;
 
   const CommonPage(
       {Key? key,
@@ -21,7 +22,8 @@ class CommonPage extends StatelessWidget {
       this.onTapBack,
       this.icon,
       this.appBarAction,
-      this.bottomSafeArea,})
+      this.bottomSafeArea,
+      this.showBackButton})
       : super(key: key);
 
   @override
@@ -39,6 +41,7 @@ class CommonPage extends StatelessWidget {
               backCallback: onTapBack,
               icon: icon,
               rightWidget: appBarAction,
+              isShowBack: showBackButton ?? true,
             ),
             Expanded(child: child)
           ],

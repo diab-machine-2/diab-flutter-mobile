@@ -104,7 +104,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                     ],
                   ),
                   SizedBox(height: 20.h),
-                  Image.asset(R.drawable.ic_course_feedback, height: 150.h),
+                  Image.asset(R.drawable.img_course_feedback, height: 150.h),
                   SizedBox(height: 20.h),
                   Text(
                     R.string.rate_how_you_feel.tr(),

@@ -8,6 +8,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../activity_feedback/activity_feedback_page.dart';
 import '../select_route/select_route.dart';
 import 'activity_tab.dart';
 
@@ -178,6 +179,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       borderColor: R.color.greenGradientBottom,
                       backgroundColor: R.color.greenGradientBottom,
                       textColor: R.color.white,
+                      onTap: (){
+                        NavigationUtil.navigatePage(context, const ActivityFeedbackPage());
+                      }
                     ),
                     _buildCustomIconButton(
                       title: 'Xem hướng dẫn',
@@ -203,39 +207,43 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     required Color borderColor,
     required Color backgroundColor,
     required Color textColor,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        border: Border.all(color: borderColor),
-        borderRadius: BorderRadius.circular(13),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(4.w),
-            decoration: BoxDecoration(
-              color: R.color.main_6,
-              shape: BoxShape.circle,
-            ),
-            child: Image.asset(
-              icon,
-              width: 16.w,
-              height: 16.w,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(4.w, 4.h, 8.w, 4.h),
-            child: Text(
-              title,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w600,
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          border: Border.all(color: borderColor),
+          borderRadius: BorderRadius.circular(13),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(4.w),
+              decoration: BoxDecoration(
+                color: R.color.main_6,
+                shape: BoxShape.circle,
+              ),
+              child: Image.asset(
+                icon,
+                width: 16.w,
+                height: 16.w,
               ),
             ),
-          ),
-        ],
+            Padding(
+              padding: EdgeInsets.fromLTRB(4.w, 4.h, 8.w, 4.h),
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
