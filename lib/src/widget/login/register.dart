@@ -487,7 +487,7 @@ class _RegisterControllerState extends State<RegisterController> {
         "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
         "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
         "grant_type": "external",
-        "external_token": credential.identityToken,
+        "external_token": credential.identityToken ?? '',
         "provider": 'Apple'
       });
       final user = await UserClient().fetchUser();

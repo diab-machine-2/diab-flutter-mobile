@@ -165,7 +165,7 @@ class LoginClient extends FetchClient {
         print('register success');
         return true;
       } else {
-        final error = (await response.stream.bytesToString());
+        final error = await response.stream.bytesToString();
         throw Error.fromString(error);
       }
     } catch (e) {
