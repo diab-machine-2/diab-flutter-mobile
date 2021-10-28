@@ -84,11 +84,12 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
   loadDataDetail() async {
     BotToast.showLoading();
     model = await WeightClient().fetchDetail(widget.id);
+    if (model == null) return;
     BotToast.closeAllLoading();
     bmiNumber = model!.bmi;
     selectedWeight = model!.weight == null ? 0 : model!.weight!.toInt();
     selectedHeight = model!.height == null ? 0 : model!.height!.toInt();
-    _controllerNote.text = model!.note!;
+    _controllerNote.text = model!.note ?? '';
     selectedHip = model!.waist == null ? 0 : model!.waist!.toInt();
     files.addAll(model!.images);
     selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
@@ -914,8 +915,6 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         Observable.instance
             .notifyObservers([], notifyName: "Weight_change_data");
-        // DartNotificationCenter.post(channel: 'Weight_change_data');
-        Navigator.pop(context);
       }
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -982,8 +981,6 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
         Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
         Observable.instance
             .notifyObservers([], notifyName: "Weight_change_data");
-        // DartNotificationCenter.post(channel: 'Weight_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -1044,8 +1041,6 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
         updateHeightProfile();
         Observable.instance
             .notifyObservers([], notifyName: "Weight_change_data");
-        // DartNotificationCenter.post(channel: 'Weight_change_data');
-        Navigator.pop(context);
       }
     } catch (e, _) {
       BotToast.closeAllLoading();

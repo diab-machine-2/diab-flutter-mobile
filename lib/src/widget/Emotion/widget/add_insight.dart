@@ -67,8 +67,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
   InputEmotionModel? model;
 
   EmotionModel? emotion;
-  List<SymptomModel>? symptoms = [];
-  List<ActivityModel>? activities = [];
+  List<SymptomModel> symptoms = [];
+  List<ActivityModel> activities = [];
   String? otherSymptom;
   String? otherActivity;
 
@@ -78,8 +78,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
     super.initState();
     if (widget.type == 'input') {
       emotion = widget.emotion;
-      symptoms = widget.symptoms;
-      activities = widget.activities;
+      symptoms = widget.symptoms ?? [];
+      activities = widget.activities ?? [];
       otherSymptom = widget.otherSymptom;
       otherActivity = widget.otherActivity;
       loadTimeFrame();
@@ -258,145 +258,141 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                             // color: R.color.white,
                             padding: EdgeInsets.all(16),
                             child: Column(
-                              children: [
-                                Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(children: [
-                                            Image.asset(R.drawable.ic_chatting,
-                                                width: 24, height: 24),
-                                            SizedBox(width: 8),
-                                            Text(
-                                                R.string.trieu_chung_cua_ban
-                                                    .tr(),
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w700)),
-                                          ]),
-                                          GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(builder:
-                                                      (BuildContext context) {
-                                                return AddSymboController(
-                                                  type: 'update',
-                                                  symptoms: symptoms,
-                                                  otherSymptom: otherSymptom,
-                                                  callback: (data, other) {
-                                                    setState(() {
-                                                      symptoms = data;
-                                                      otherSymptom = other;
-                                                    });
-                                                  },
-                                                );
-                                              }));
-                                            },
-                                            child: Text(R.string.chinh_sua.tr(),
-                                                style: TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: R.color.mainColor)),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 16),
-                                      Tags(
-                                        // key: _tagStateKey,
-                                        alignment: WrapAlignment.start,
-                                        runAlignment: WrapAlignment.start,
-                                        spacing: 2,
-                                        horizontalScroll: false,
-                                        itemCount: symptoms!.length,
-                                        itemBuilder: (index) {
-                                          final item = symptoms![index];
-
-                                          return ItemTags(
-                                              padding: EdgeInsets.only(
-                                                  bottom: 0,
-                                                  top: 0,
-                                                  left: 4,
-                                                  right: 8),
-                                              pressEnabled: false,
-                                              key: Key(index.toString()),
-                                              index: index,
-                                              image: ItemTagsImage(
-                                                child: Image.network(
-                                                    item.icon.url ?? '',
-                                                    width: 24,
-                                                    height: 24),
-                                              ),
-                                              title: item.name!,
-                                              activeColor: R.color.white,
-                                              textOverflow:
-                                                  TextOverflow.visible,
-                                              splashColor: R.color.green,
-                                              combine:
-                                                  ItemTagsCombine.withTextAfter,
-                                              textActiveColor: R.color.textDark,
-                                              textStyle:
-                                                  TextStyle(fontSize: 14),
-                                              elevation: 0,
-                                              onPressed: (item) => null);
+                                      Row(children: [
+                                        Image.asset(R.drawable.ic_chatting,
+                                            width: 24, height: 24),
+                                        SizedBox(width: 8),
+                                        Text(
+                                            R.string.trieu_chung_cua_ban
+                                                .tr(),
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight:
+                                                    FontWeight.w700)),
+                                      ]),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(context,
+                                              MaterialPageRoute(builder:
+                                                  (BuildContext context) {
+                                            return AddSymboController(
+                                              type: 'update',
+                                              symptoms: symptoms,
+                                              otherSymptom: otherSymptom,
+                                              callback: (data, other) {
+                                                setState(() {
+                                                  symptoms = data ?? [];
+                                                  otherSymptom = other;
+                                                });
+                                              },
+                                            );
+                                          }));
                                         },
+                                        child: Text(R.string.chinh_sua.tr(),
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: R.color.mainColor)),
                                       ),
-                                      otherSymptom == null ||
-                                              otherSymptom!.isEmpty
-                                          ? SizedBox()
-                                          : Column(children: [
+                                    ],
+                                  ),
+                                  SizedBox(height: 16),
+                                  Tags(
+                                    // key: _tagStateKey,
+                                    alignment: WrapAlignment.start,
+                                    runAlignment: WrapAlignment.start,
+                                    spacing: 2,
+                                    horizontalScroll: false,
+                                    itemCount: symptoms.length,
+                                    itemBuilder: (index) {
+                                      final item = symptoms[index];
+
+                                      return ItemTags(
+                                          padding: EdgeInsets.only(
+                                              bottom: 0,
+                                              top: 0,
+                                              left: 4,
+                                              right: 8),
+                                          pressEnabled: false,
+                                          key: Key(index.toString()),
+                                          index: index,
+                                          image: ItemTagsImage(
+                                            child: Image.network(
+                                                item.icon.url ?? '',
+                                                width: 24,
+                                                height: 24),
+                                          ),
+                                          title: item.name!,
+                                          activeColor: R.color.white,
+                                          textOverflow:
+                                              TextOverflow.visible,
+                                          splashColor: R.color.green,
+                                          combine:
+                                              ItemTagsCombine.withTextAfter,
+                                          textActiveColor: R.color.textDark,
+                                          textStyle:
+                                              TextStyle(fontSize: 14),
+                                          elevation: 0,
+                                          onPressed: (item) => null);
+                                    },
+                                  ),
+                                  otherSymptom == null ||
+                                          otherSymptom!.isEmpty
+                                      ? SizedBox()
+                                      : Column(children: [
+                                          SizedBox(
+                                            height: 16,
+                                          ),
+                                          Container(
+                                              height: 1,
+                                              color:
+                                                  R.color.color0xffE5E5E5),
+                                          Column(
+                                            children: [
                                               SizedBox(
                                                 height: 16,
                                               ),
-                                              Container(
-                                                  height: 1,
-                                                  color:
-                                                      R.color.color0xffE5E5E5),
-                                              Column(
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start,
                                                 children: [
-                                                  SizedBox(
-                                                    height: 16,
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(R.string.khac.tr(),
-                                                          style: TextStyle(
-                                                              fontSize: 14,
-                                                              color: R.color
-                                                                  .textDark,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700)),
-                                                      SizedBox(width: 8),
-                                                      Expanded(
-                                                        child: Text(
-                                                            otherSymptom!,
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                color: R.color
-                                                                    .textDark,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400)),
-                                                      ),
-                                                    ],
+                                                  Text(R.string.khac.tr(),
+                                                      style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: R.color
+                                                              .textDark,
+                                                          fontWeight:
+                                                              FontWeight
+                                                                  .w700)),
+                                                  SizedBox(width: 8),
+                                                  Expanded(
+                                                    child: Text(
+                                                        otherSymptom!,
+                                                        style: TextStyle(
+                                                            fontSize: 14,
+                                                            color: R.color
+                                                                .textDark,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400)),
                                                   ),
                                                 ],
-                                              )
-                                            ]),
-                                    ]),
-                              ],
-                            ),
+                                              ),
+                                            ],
+                                          )
+                                        ]),
+                                ]),
                           ),
                         ),
                         Padding(
@@ -441,7 +437,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                   otherActivity: otherActivity,
                                                   callback: (data, other) {
                                                     setState(() {
-                                                      activities = data;
+                                                      activities = data ?? [];
                                                       otherActivity = other;
                                                     });
                                                   },
@@ -463,9 +459,9 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                         runAlignment: WrapAlignment.start,
                                         //columns: 3,
                                         horizontalScroll: false,
-                                        itemCount: activities!.length,
+                                        itemCount: activities.length,
                                         itemBuilder: (index) {
-                                          final item = activities![index];
+                                          final item = activities[index];
                                           print(item.icon.url);
 
                                           return ItemTags(
@@ -920,10 +916,10 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
     List<String?> symptomIds = [];
     List<String?> activityIds = [];
 
-    symptoms!.forEach((element) {
+    symptoms.forEach((element) {
       symptomIds.add(element.id);
     });
-    activities!.forEach((element) {
+    activities.forEach((element) {
       activityIds.add(element.id);
     });
 
@@ -986,10 +982,10 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
     List<String?> symptomIds = [];
     List<String?> activityIds = [];
 
-    symptoms!.forEach((element) {
+    symptoms.forEach((element) {
       symptomIds.add(element.id);
     });
-    activities!.forEach((element) {
+    activities.forEach((element) {
       activityIds.add(element.id);
     });
 
@@ -1158,8 +1154,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
         return;
       }
     } else {
-      if ((symptoms!.isEmpty && widget.symptoms == null) &&
-          (activities!.isEmpty && widget.activities == null) &&
+      if ((symptoms.isEmpty && widget.symptoms == null) &&
+          (activities.isEmpty && widget.activities == null) &&
           note.isEmpty &&
           files.length == 0) {
         Navigator.pop(context);
