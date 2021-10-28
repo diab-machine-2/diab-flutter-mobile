@@ -425,7 +425,8 @@ class _RegisterControllerState extends State<RegisterController> {
     late GoogleSignInAuthentication authen;
     try {
       account = await _googleSignIn.signIn();
-      authen = await account!.authentication;
+      if (account == null) return;
+      authen = await account.authentication;
       print(authen.accessToken);
       BotToast.showLoading();
 
@@ -511,7 +512,7 @@ class _RegisterControllerState extends State<RegisterController> {
               'Apple', credential.givenName ?? R.string.user_name_default.tr(), false);
         }
       } else {
-        Message.showToastMessage(context, error.toString());
+        // Message.showToastMessage(context, error.toString());
       }
     }
   }
