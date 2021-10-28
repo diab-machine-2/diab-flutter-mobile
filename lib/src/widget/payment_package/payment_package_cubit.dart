@@ -39,18 +39,18 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
 
     _purchaseUpdatedSubscription =
         FlutterInappPurchase.purchaseUpdated.listen((productItem) {
-          logger.i('purchase-updated: $productItem');
-          if (productItem != null) {
-            handlePurchase(productItem);
-            FlutterInappPurchase.instance.finishTransaction(productItem);
-          }
+      logger.i('purchase-updated: $productItem');
+      if (productItem != null) {
+        handlePurchase(productItem);
+        FlutterInappPurchase.instance.finishTransaction(productItem);
+      }
     });
 
     _purchaseErrorSubscription =
         FlutterInappPurchase.purchaseError.listen((purchaseError) {
-          logger.i('purchase-error: $purchaseError');
-          String? error = purchaseError?.message;
-          handlePurchase(null, error: error);
+      logger.i('purchase-error: $purchaseError');
+      String? error = purchaseError?.message;
+      handlePurchase(null, error: error);
     });
   }
 
@@ -60,9 +60,11 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
       emit(PaymentPackageFailure(R.string.error_no_network_connection.tr()));
       return;
     } else {
-      String skuId = "pro_${monthUsed}_months";
-      int indexSku = listItem.indexWhere((element) => element.productId == skuId);
-      if(indexSku >= 0) {
+      String skuId = "pro_${monthUsed}_${Platform.isIOS ? "months" : "month"}";
+      logger.i(skuId);
+      int indexSku =
+          listItem.indexWhere((element) => element.productId == skuId);
+      if (indexSku >= 0) {
         FlutterInappPurchase.instance.requestSubscription(skuId);
       } else {
         emit(PaymentPackageFailure(R.string.not_found_sku.tr()));
@@ -70,13 +72,14 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
     }
   }
 
-  void handlePurchase(PurchasedItem? item, {String? error}) async{
+  void handlePurchase(PurchasedItem? item, {String? error}) async {
     emit(PaymentPackageLoading());
     if (!Utils.isEmpty(error)) {
       emit(PaymentPackageFailure(error!));
     } else {
       if (Platform.isIOS) {
-        ApiResult<dynamic> apiResult = await appRepository.verifyReceipt(receipt: item!.transactionReceipt);
+        ApiResult<dynamic> apiResult = await appRepository.verifyReceipt(
+            receipt: item!.transactionReceipt);
         apiResult.when(success: (dynamic response) {
           emit(PurchaseSuccess());
         }, failure: (NetworkExceptions error) {
@@ -90,7 +93,9 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
 
   void getListSubscription() async {
     emit(PaymentPackageLoading());
-    List<String> skus = ["pro_1_month", "pro_3_month", "pro_12_month"];
+    List<String> skus = Platform.isIOS
+        ? ["pro_1_months", "pro_3_months", "pro_12_months"]
+        : ["pro_1_month", "pro_3_month", "pro_12_month"];
     listItem = await FlutterInappPurchase.instance.getSubscriptions(skus);
     emit(PaymentPackageInitial());
   }
