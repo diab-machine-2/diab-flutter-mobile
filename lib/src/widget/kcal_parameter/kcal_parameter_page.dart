@@ -301,7 +301,9 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                       showDialog(
                         barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                         context: context,
-                        builder: (_) => NoticeChangePage(onClick: () {
+                        builder: (_) => NoticeChangePage(
+                          description: R.string.consumption.tr(),
+                          onClick: () {
                           NavigationUtil.pop(context);
                           Future.delayed(const Duration(milliseconds: 200), () {
                             if (widget.callback != null && number != null) {

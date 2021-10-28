@@ -6,7 +6,6 @@ import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
-import 'models/lesson_type.dart';
 import 'models/plan_type.dart';
 
 import 'models/time_data.dart';
@@ -25,22 +24,6 @@ class MyPlanCubit extends Cubit<MyPlanState> {
   PlanType currentPlanType = PlanType.lesson;
   List<PlanType> planTypeList = [PlanType.goal, PlanType.lesson];
 
-  LessonType currentLessonType = LessonType.route;
-  final List<LessonType> lessonTypeList = [
-    LessonType.route,
-    LessonType.suggest
-  ];
-
-  List<String> keyWordList = [
-    'Dinh dưỡng',
-    'Đường huyết',
-    'Cân nặng',
-    'Huyết áp',
-    'Cảm xúc',
-    'Vận động',
-    'HbA1c',
-  ];
-
   List<MyLessonResponseData?> lessonsList = [];
 
   int get currentPlanTypeIndex {
@@ -48,19 +31,8 @@ class MyPlanCubit extends Cubit<MyPlanState> {
     return index == -1 ? 0 : index;
   }
 
-  int get currentLessonTypeIndex {
-    final int index = lessonTypeList.indexOf(currentLessonType);
-    return index == -1 ? 0 : index;
-  }
-
   void changePlanType(int newIndex) {
     currentPlanType = planTypeList[newIndex];
-    emit(const MyPlanChangeType());
-    emit(const MyPlanInitial());
-  }
-
-  void changeLessonType(int newIndex) {
-    currentLessonType = lessonTypeList[newIndex];
     emit(const MyPlanChangeType());
     emit(const MyPlanInitial());
   }
@@ -90,21 +62,6 @@ class MyPlanCubit extends Cubit<MyPlanState> {
 
   Future<void> getInitData({bool isRefresh = false}) async {
     await getCurrentUserInfo(isRefresh: isRefresh);
-    await getLessonsList(isRefresh: isRefresh);
-  }
-
-  Future<void> getLessonsList({bool isRefresh = false}) async {
-    if (!isRefresh) {
-      emit(const MyPlanLoading());
-    }
-    final ApiResult<MyLessonResponse> apiResult =
-        await repository.getLessonsList(currentLessonTypeIndex);
-    apiResult.when(success: (MyLessonResponse response) {
-      lessonsList = response.data ?? [];
-      emit(const MyPlanSuccess());
-    }, failure: (NetworkExceptions error) {
-      emit(MyPlanFailure(NetworkExceptions.getErrorMessage(error)));
-    });
   }
 
   Future<void> getCurrentUserInfo({bool isRefresh = false}) async {
@@ -123,7 +80,7 @@ class MyPlanCubit extends Cubit<MyPlanState> {
           Const.DATE_TIME_SV_FORMAT,
         );
       }
-      if (packageCode == Const.PREMIUM && packageTimeExpired != null) {
+      if (packageCode == Const.PRO && packageTimeExpired != null) {
         timeData = TimeData(
           startDate: DateTime.now(),
           endDate: packageTimeExpired!,

@@ -111,7 +111,7 @@ class PieChart2State extends State {
                         height: 4,
                       ),
                       Indicator(
-                        color: R.color.color0xffF58220,
+                        color: R.color.orange_1,
                         number: '10%',
                         text: R.string.very_low.tr(),
                         isSquare: true,
@@ -156,7 +156,7 @@ class PieChart2State extends State {
           );
         case 2:
           return PieChartSectionData(
-            color: R.color.color0xffF58220,
+            color: R.color.orange_1,
             value: 15,
             showTitle: false,
             radius: radius,

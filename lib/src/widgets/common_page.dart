@@ -10,6 +10,7 @@ class CommonPage extends StatelessWidget {
   final VoidCallback? onTapBack;
   final IconData? icon;
   final Widget? appBarAction;
+  final bool? bottomSafeArea;
 
   const CommonPage(
       {Key? key,
@@ -19,7 +20,8 @@ class CommonPage extends StatelessWidget {
       this.textColor,
       this.onTapBack,
       this.icon,
-      this.appBarAction})
+      this.appBarAction,
+      this.bottomSafeArea,})
       : super(key: key);
 
   @override
@@ -28,7 +30,7 @@ class CommonPage extends StatelessWidget {
       background: background,
       child: SafeArea(
         top: true,
-        bottom: false,
+        bottom: bottomSafeArea ?? false,
         child: Column(
           children: [
             CustomAppBar(

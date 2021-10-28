@@ -6,9 +6,18 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 class NoticeChangePage extends StatelessWidget {
-  final VoidCallback onClick;
+  const NoticeChangePage(
+      {this.title,
+      required this.description,
+      this.negativeButtonTitle,
+      this.positiveButtonTitle,
+      required this.onClick});
 
-  NoticeChangePage({required this.onClick});
+  final String? title;
+  final String description;
+  final String? negativeButtonTitle;
+  final String? positiveButtonTitle;
+  final VoidCallback onClick;
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +37,11 @@ class NoticeChangePage extends StatelessWidget {
                 SizedBox(height: 4.h),
                 Padding(
                   padding: EdgeInsets.only(top: 4.h, bottom: 24.h),
-                  child: Image.asset(R.drawable.img_upgrade_package, width: 155.w, height: 150.h),
+                  child: Image.asset(R.drawable.img_upgrade_package,
+                      width: 155.w, height: 150.h),
                 ),
                 Text(
-                  R.string.confirm_change.tr(),
+                  title ?? R.string.confirm_change.tr(),
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
@@ -40,7 +50,7 @@ class NoticeChangePage extends StatelessWidget {
                 ),
                 SizedBox(height: 20.h),
                 Text(
-                  R.string.consumption.tr(),
+                  description,
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w400,
@@ -56,7 +66,7 @@ class NoticeChangePage extends StatelessWidget {
                     Expanded(
                         flex: 1,
                         child: ButtonWidget(
-                          title: R.string.cancel.tr(),
+                          title: negativeButtonTitle ?? R.string.cancel.tr(),
                           backgroundColor: R.color.grayBorder,
                           textColor: R.color.textDark,
                           height: 43.h,
@@ -64,15 +74,16 @@ class NoticeChangePage extends StatelessWidget {
                         )),
                     SizedBox(width: 15.w),
                     Expanded(
-                        flex: 1,
-                        child: ButtonWidget(
-                          title: R.string.agree.tr(),
-                          height: 43.h,
-                          onPressed: () {
-                            onClick();
-                            NavigationUtil.pop(context);
-                          },
-                        )),
+                      flex: 1,
+                      child: ButtonWidget(
+                        title: positiveButtonTitle ?? R.string.agree.tr(),
+                        height: 43.h,
+                        onPressed: () {
+                          onClick();
+                          NavigationUtil.pop(context);
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ],

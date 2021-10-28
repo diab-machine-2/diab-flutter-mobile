@@ -321,7 +321,7 @@ class _AppApi implements AppApi {
   @override
   Future<MyLessonResponse> getLessonsList(type) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'type': type};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<MyLessonResponse>(
@@ -345,7 +345,168 @@ class _AppApi implements AppApi {
                     _dio.options, 'App/Lesson/GetListLessonSection/$lessonId',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = LessonSectionListResponse.fromJson(_result.data!);
+                final data = {
+"meta": {
+    "success": true
+  },
+  "data": {
+"review": {
+    "rating": 1,
+    "note": "string"
+  },
+  "sections" : [
+    {
+      "id": "189c0f00-6a05-44e0-cc49-08d98d956006",
+      "name": "Khóa h?c dinh du?ng",
+      "type": 1,
+      "content": """
+      Người bệnh tiểu đường cần biết mình nên bổ sung thực phẩm như thế nào cho phù hợp, nên ăn gì và không nên ăn gì. Theo đó, những thực phẩm người bệnh tiểu đường nên ăn bao gồm:
+
+Nhóm đường bột: Ngũ cốc nguyên hạt, đậu đỗ, gạo còn vỏ cám, rau củ... được chế biến bằng cách hấp, luộc, nướng, hạn chế tối đa rán, xào... Các loại củ như khoai sắn cũng cung cấp khá nhiều tinh bột, nên nếu người bệnh tiểu đường ăn các loại này thì cần phải giảm hoặc cắt cơm.""",
+      "quizzes": [],
+      "links": [
+        {
+          "id": "21623041-88f2-4a5f-ab28-08d98d5a695e",
+          "type": 1,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        },
+        {
+          "id": "66133f40-0d7e-45f2-ab29-08d98d5a695e",
+          "type": 1,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+        }
+      ],
+      "isComplete": true
+    },
+    {
+      "id": "1bb86ddb-22cd-4a70-b510-08d98f899372",
+      "name": "H?c ph?n abc",
+      "type": 2,
+      "content": "Mô t? test",
+      "quizzes": [],
+      "links": [
+        {
+          "id": "21623041-88f2-4a5f-ab28-08d98d5a695e",
+          "type": 1,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+        },
+        {
+          "id": "66133f40-0d7e-45f2-ab29-08d98d5a695e",
+          "type": 1,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+        }
+      ],
+      "isComplete": true
+    },
+    {
+      "id": "fb3e093b-96e8-4bfd-cc4a-08d98d956006",
+      "name": "Khóa h?c dinh du?ng",
+      "type": 3,
+      "content": "Mô t? test",
+      "quizzes": [
+        {
+          "name": "tên quiz ediited",
+          "type": 1,
+          "explain": "Gi?i thích edited",
+          "answers": [
+            {
+              "id": "00f2200c-60ef-4cdf-01b4-08d98d6c681f",
+              "name": "câu tr? l?i s?a - 2",
+              "order": 0,
+              "isCorrect": false
+            },
+            {
+              "id": "6ce36123-06d2-4c89-01b5-08d98d6c681f",
+              "name": "câu tr? l?i s?a - 3",
+              "order": 0,
+              "isCorrect": false
+            },
+            {
+              "id": "c4c22a56-aff8-4205-01b3-08d98d6c681f",
+              "name": "câu tr? l?i s?a - 1",
+              "order": 0,
+              "isCorrect": true
+            },
+            {
+              "id": "f9cc61ea-514e-47ca-01b6-08d98d6c681f",
+              "name": "câu tr? l?i s?a - 4",
+              "order": 0,
+              "isCorrect": false
+            }
+          ]
+        },
+        {
+          "name": "tên quiz",
+          "type": 1,
+          "explain": "Gi?i thích",
+          "answers": [
+            {
+              "id": "2466c88f-af34-4621-42f5-08d98d62b317",
+              "name": "câu tr? l?i 2",
+              "order": 0,
+              "isCorrect": false
+            },
+            {
+              "id": "4930a419-fe18-4d8b-42f7-08d98d62b317",
+              "name": "câu tr? l?i 4",
+              "order": 0,
+              "isCorrect": false
+            },
+            {
+              "id": "60920b57-3596-44a0-42f4-08d98d62b317",
+              "name": "câu tr? l?i 1",
+              "order": 0,
+              "isCorrect": true
+            },
+            {
+              "id": "837dd703-45ea-4ccb-42f6-08d98d62b317",
+              "name": "câu tr? l?i 3",
+              "order": 0,
+              "isCorrect": false
+            }
+          ]
+        }
+      ],
+      "links": [],
+      "isComplete": true
+    },
+    {
+      "id": "189c0f00-6a05-44e0-cc49-08d98d956006",
+      "name": "Khóa h?c dinh du?ng",
+      "type": 1,
+      "content": """
+      Người bệnh tiểu đường cần biết mình nên bổ sung thực phẩm như thế nào cho phù hợp, nên ăn gì và không nên ăn gì. Theo đó, những thực phẩm người bệnh tiểu đường nên ăn bao gồm:
+
+Nhóm đường bột: Ngũ cốc nguyên hạt, đậu đỗ, gạo còn vỏ cám, rau củ... được chế biến bằng cách hấp, luộc, nướng, hạn chế tối đa rán, xào... Các loại củ như khoai sắn cũng cung cấp khá nhiều tinh bột, nên nếu người bệnh tiểu đường ăn các loại này thì cần phải giảm hoặc cắt cơm.""",
+      "quizzes": [],
+      "links": [
+        {
+          "id": "21623041-88f2-4a5f-ab28-08d98d5a695e",
+          "type": 1,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
+        },
+        {
+          "id": "66133f40-0d7e-45f2-ab29-08d98d5a695e",
+          "type": 1,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
+        },
+        {
+          "id": "66133f40-0d7e-45f2-ab29-08d98d5a695e",
+          "type": 1,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
+        },
+        {
+          "id": "66133f40-0d7e-45f2-ab29-08d98d5a695e",
+          "type": 1,
+          "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4"
+        }
+      ],
+      "isComplete": true
+    }
+  ]
+}
+};
+    final value = LessonSectionListResponse.fromJson(data);
     return value;
   }
 
