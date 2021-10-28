@@ -60,7 +60,7 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
       emit(PaymentPackageFailure(R.string.error_no_network_connection.tr()));
       return;
     } else {
-      String skuId = "pro_${monthUsed}_month";
+      String skuId = "pro_${monthUsed}_months";
       int indexSku = listItem.indexWhere((element) => element.productId == skuId);
       if(indexSku >= 0) {
         FlutterInappPurchase.instance.requestSubscription(skuId);
