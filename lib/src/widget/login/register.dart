@@ -522,13 +522,13 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.showLoading();
       if (!update) {
         await LoginClient().registerWithSocial(
-            {'providerName': provider, 'providerKey': providerKey});
+            {'providerName': provider, 'providerKey': providerKey ?? ''});
 
         await LoginClient().login({
           "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
           "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
           "grant_type": "external",
-          "external_token": externalToken,
+          "external_token": externalToken ?? '',
           "provider": provider
         });
       }
