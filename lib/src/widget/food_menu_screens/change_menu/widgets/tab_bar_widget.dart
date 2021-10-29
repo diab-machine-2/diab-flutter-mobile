@@ -71,7 +71,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
         onSelect(tab);
       },
       child: Container(
-        width: 143.w,
+        width: 143 ,
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(

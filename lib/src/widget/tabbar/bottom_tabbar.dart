@@ -66,7 +66,7 @@ class _BottomTabbar extends State<BottomTabbar> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(image,
-                    height: 20.h,
+                    height: 20,
                     color: index == screenIndex
                         ? R.color.accentColor
                         : R.color.gray),
@@ -76,7 +76,7 @@ class _BottomTabbar extends State<BottomTabbar> {
                         color: index == screenIndex
                             ? R.color.accentColor
                             : R.color.gray,
-                        fontSize: 12.sp,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold))
               ],
             ),

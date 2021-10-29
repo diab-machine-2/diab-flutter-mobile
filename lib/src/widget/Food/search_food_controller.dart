@@ -193,7 +193,7 @@ class CustomSegmentState extends State<CustomSegment> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(children: [
-        SizedBox(width: 16.w),
+        SizedBox(width: 16),
         _buildButtonTabBar(
             title: R.string.mon_an_gan_day.tr(),
             isSelected: segmentedControlValue == 0,
@@ -221,7 +221,7 @@ class CustomSegmentState extends State<CustomSegment> {
                 segmentedControlValue = 2;
               });
             }),
-        SizedBox(width: 16.w),
+        SizedBox(width: 16),
       ]),
     );
   }
@@ -233,7 +233,7 @@ class CustomSegmentState extends State<CustomSegment> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 143.w,
+        width: 143 ,
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
@@ -246,7 +246,7 @@ class CustomSegmentState extends State<CustomSegment> {
             color: isSelected
                 ? R.color.greenGradientBottom
                 : R.color.captionColorGray,
-            fontSize: 14.sp,
+            fontSize: 14,
             fontWeight: FontWeight.w700,
           ),
           maxLines: 1,

@@ -161,14 +161,14 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                         )
                       : null),
           labelStyle: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 16,
               color: widget.isEnable ? R.color.textDark : R.color.gray),
           hintStyle: TextStyle(
-            fontSize: 16.sp,
+            fontSize: 16,
             color: R.color.gray,
           ),
           errorStyle: TextStyle(
-            fontSize: 15.sp,
+            fontSize: 15,
             color: R.color.red,
           )),
       keyboardType: widget.keyboardType,
@@ -179,7 +179,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       textAlign: TextAlign.start,
       textAlignVertical: TextAlignVertical.center,
       style: TextStyle(
-        fontSize: 16.sp,
+        fontSize: 16,
         color: widget.isEnable ? R.color.textDark : R.color.gray,
       ),
     );

@@ -89,7 +89,7 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
                   widget.label ?? "",
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                      color: widget.color ?? R.color.gray, fontSize: 30.sp),
+                      color: widget.color ?? R.color.gray, fontSize: 30),
                 )),
             Visibility(
                 visible: Utils.isEmpty(widget.label),
@@ -105,7 +105,7 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
                           Expanded(
                             child: Text(list![0] ?? "",
                                 style: TextStyle(
-                                  fontSize: 14.sp,
+                                  fontSize: 14,
                                   color: R.color.gray,
                                 )),
                           ),
@@ -121,12 +121,12 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
                             isExpanded: true,
                             style: TextStyle(
                               color: widget.color ?? R.color.gray,
-                              fontSize: 14.sp,
+                              fontSize: 14,
                             ),
                             hint: Text(
                               widget.hintText ?? "",
                               style: TextStyle(
-                                  fontSize: 14.sp, color: R.color.gray),
+                                  fontSize: 14, color: R.color.gray),
                             ),
                             value: _selectedPos != null && _selectedPos! >= 0
                                 ? list![_selectedPos!]
@@ -136,7 +136,7 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
                                       child: Text(
                                         item ?? "",
                                         style: TextStyle(
-                                            fontSize: 14.sp,
+                                            fontSize: 14,
                                             color:
                                                 widget.color ?? R.color.gray),
                                       ),

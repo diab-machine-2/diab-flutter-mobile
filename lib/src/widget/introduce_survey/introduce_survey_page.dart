@@ -64,32 +64,32 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
         children: [
           Expanded(
             child: ListView(
-              padding: EdgeInsets.all(16.h),
+              padding: EdgeInsets.all(16),
               shrinkWrap: true,
               children: [
                 Image.asset(
                   R.drawable.img_survey,
                   width: double.infinity,
-                  height: 170.h,
+                  height: 170,
                   fit: BoxFit.fill,
                 ),
                 SizedBox(
-                  height: 32.h,
+                  height: 32,
                 ),
                 Text(
                   R.string.introduction_to_the_survey.tr(),
                   style: TextStyle(
-                    fontSize: 20.sp,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: R.color.textDark,
                     height: 1.4
                   ),
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 16),
                 Text(
                   R.string.introduction.tr(),
                   style: TextStyle(
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       color: R.color.textDark,
                       height: 1.37
                   ),
@@ -99,8 +99,8 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
           ),
           Center(
             child: Container(
-              width: 200.w,
-              margin: EdgeInsets.only(bottom: 30.h, top: 10.h),
+              width: 200 ,
+              margin: EdgeInsets.only(bottom: 30, top: 10),
               child: ButtonWidget(
                 title: R.string.start_survey.tr(),
                 onPressed: () {
