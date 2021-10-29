@@ -186,15 +186,15 @@ class ExercrisesClient extends FetchClient {
   Future<bool> postIndexExercrises(int date, String? timeFrameId, String note,
       List<ExercrisesCategoryModel> exercises, List<String> files) async {
     try {
-      Map<String, String?> params = {
+      Map<String, String> params = {
         'date': date.toString(),
-        'timeFrameId': timeFrameId,
+        'timeFrameId': timeFrameId ?? '',
         'note': note,
       };
       for (int i = 0; i < exercises.length; i++) {
-        params['exercises[$i].exerciseId'] = exercises[i].exerciseId;
+        params['exercises[$i].exerciseId'] = exercises[i].exerciseId ?? '';
         params['exercises[$i].seq'] = exercises[i].order.toString();
-        params['exercises[$i].description'] = exercises[i].description;
+        params['exercises[$i].description'] = exercises[i].description ?? '';
         params['exercises[$i].duration'] = exercises[i].duration.toString();
         params['exercises[$i].burnedCalorie'] =
             exercises[i].burnedCalorie.toString();
@@ -265,15 +265,15 @@ class ExercrisesClient extends FetchClient {
       List<String?> removalImageIds,
       List<String> files) async {
     try {
-      Map<String, String?> params = {
-        'id': id,
+      Map<String, String> params = {
+        'id': id ?? '',
         'date': date.toString(),
-        'timeFrameId': timeFrameId,
+        'timeFrameId': timeFrameId ?? '',
         'note': note,
         'removalImageIdsStr': removalImageIds.join(';')
       };
       for (int i = 0; i < exercises.length; i++) {
-        params['exercises[$i].exerciseId'] = exercises[i].exerciseId;
+        params['exercises[$i].exerciseId'] = exercises[i].exerciseId ?? '';
         params['exercises[$i].seq'] = i.toString();
         params['exercises[$i].duration'] = exercises[i].duration.toString();
         params['exercises[$i].burnedCalorie'] =

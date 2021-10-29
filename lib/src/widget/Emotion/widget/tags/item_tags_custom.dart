@@ -157,13 +157,13 @@ class _ItemTagsCustomState extends State<ItemTagsCustom> {
 
     if (_dataListInherited!.list!.length > (widget.index + 1) &&
         _dataListInherited!.list!.elementAt(widget.index) != null &&
-        _dataListInherited!.list!.elementAt(widget.index).title != widget.title) {
+        _dataListInherited!.list!.elementAt(widget.index)?.title != widget.title) {
       // when an element is removed from the data source
       _dataListInherited!.list!.removeAt(widget.index);
 
       // when all item list changed in data source
       if (_dataListInherited!.list!.elementAt(widget.index) != null &&
-          _dataListInherited!.list!.elementAt(widget.index).title != widget.title)
+          _dataListInherited!.list!.elementAt(widget.index)?.title != widget.title)
         _dataListInherited!.list!
             .removeRange(widget.index, _dataListInherited!.list!.length);
     }
@@ -454,9 +454,9 @@ class _ItemTagsCustomState extends State<ItemTagsCustom> {
   void _singleItem(DataListInherited dataSetIn, DataList? dataSet) {
     dataSetIn.list!
         .where((tg) => tg != null)
-        .where((tg) => tg.active)
+        .where((tg) => tg?.active ?? false)
         .where((tg2) => tg2 != dataSet)
-        .forEach((tg) => tg.active = false);
+        .forEach((tg) => tg?.active = false);
   }
 }
 

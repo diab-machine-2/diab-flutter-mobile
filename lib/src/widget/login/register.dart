@@ -425,7 +425,8 @@ class _RegisterControllerState extends State<RegisterController> {
     late GoogleSignInAuthentication authen;
     try {
       account = await _googleSignIn.signIn();
-      authen = await account!.authentication;
+      if (account == null) return;
+      authen = await account.authentication;
       print(authen.accessToken);
       BotToast.showLoading();
 
@@ -487,7 +488,7 @@ class _RegisterControllerState extends State<RegisterController> {
         "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
         "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
         "grant_type": "external",
-        "external_token": credential.identityToken,
+        "external_token": credential.identityToken ?? '',
         "provider": 'Apple'
       });
       final user = await UserClient().fetchUser();
@@ -511,7 +512,7 @@ class _RegisterControllerState extends State<RegisterController> {
               'Apple', credential.givenName ?? R.string.user_name_default.tr(), false);
         }
       } else {
-        Message.showToastMessage(context, error.toString());
+        // Message.showToastMessage(context, error.toString());
       }
     }
   }
@@ -522,13 +523,13 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.showLoading();
       if (!update) {
         await LoginClient().registerWithSocial(
-            {'providerName': provider, 'providerKey': providerKey});
+            {'providerName': provider, 'providerKey': providerKey ?? ''});
 
         await LoginClient().login({
           "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
           "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
           "grant_type": "external",
-          "external_token": externalToken,
+          "external_token": externalToken ?? '',
           "provider": provider
         });
       }
