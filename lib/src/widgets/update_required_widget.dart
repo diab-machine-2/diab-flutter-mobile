@@ -23,7 +23,7 @@ class UpdateRequiredWidget extends StatelessWidget {
         title: title,
         background: R.drawable.bg_detail_pro,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(30.w, 50.h, 30.w, 0),
+          padding: EdgeInsets.fromLTRB(30 , 50, 30 , 0),
           child: Column(
             children: [
               UpgradePackageWidget(
@@ -37,10 +37,10 @@ class UpdateRequiredWidget extends StatelessWidget {
                   );
                 },
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 16),
               Container(
                 width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 40.h),
+                margin: EdgeInsets.symmetric(horizontal: 40),
                 child: ButtonWidget(
                     title: R.string.tim_hieu_them.tr(),
                     backgroundColor: R.color.white,

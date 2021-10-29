@@ -78,14 +78,14 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                         child: SingleChildScrollView(
                           child: Padding(
                             padding:
-                                EdgeInsets.fromLTRB(16.w, 36.h, 16.w, 32.h),
+                                EdgeInsets.fromLTRB(16 , 36, 16 , 32),
                             child: Column(
                               children: [
                                 Visibility(
                                   visible: _cubit.isFirstQuestionScreen,
                                   child: Padding(
                                     padding: EdgeInsets.fromLTRB(
-                                        67.w, 0, 67.w, 50.h),
+                                        67 , 0, 67 , 50),
                                     child: Image.asset(R.drawable
                                         .img_blood_sugar_survey_question_1),
                                   ),
@@ -106,9 +106,9 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 27.h),
+                      SizedBox(height: 27),
                       Container(
-                        width: 195.w,
+                        width: 195 ,
                         child: ButtonWidget(
                           title: !_cubit.canSurveyDone &&
                                   _cubit.isFirstQuestionScreen
@@ -127,7 +127,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                               : R.color.gray,
                         ),
                       ),
-                      SizedBox(height: 24.h),
+                      SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -150,18 +150,18 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
         : _buildListOfImageAnswer(
             question: question, onSelectAnswer: onSelectAnswer);
     return Padding(
-      padding: EdgeInsets.only(bottom: 32.h),
+      padding: EdgeInsets.only(bottom: 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             question.question,
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 12),
           if (containImageAnswer)
             Column(
               children: answerList,
@@ -194,7 +194,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
         ),
       );
       if (index != question.answers.length - 1) {
-        answerList.add(SizedBox(height: 8.h));
+        answerList.add(SizedBox(height: 8));
       }
     }
     return answerList;
@@ -228,7 +228,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        padding: EdgeInsets.symmetric(horizontal: 16 , vertical: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: isSelected
@@ -243,12 +243,12 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
           answer,
           style: isSelected
               ? TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: R.color.main_1,
                 )
               : TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontWeight: FontWeight.w400,
                   color: R.color.grey_2,
                 ),
@@ -281,17 +281,17 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
             height: 54,
             child: Image.asset(answerData.image ?? ''),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 8),
           Text(
             answerData.answer,
             style: isSelected
                 ? TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: R.color.main_1,
                   )
                 : TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 16,
                     fontWeight: FontWeight.w400,
                     color: R.color.grey_2,
                   ),
@@ -305,8 +305,8 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
 
   Widget _builddExtendDetail(double hba1c) {
     return Container(
-      margin: EdgeInsets.only(top: 20.h),
-      padding: EdgeInsets.symmetric(vertical: 8.h),
+      margin: EdgeInsets.only(top: 20),
+      padding: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: R.color.greenbg,
         borderRadius: BorderRadius.circular(16),
@@ -314,7 +314,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
       child: Row(
         children: [
           Container(
-            margin: EdgeInsets.only(left: 8.w, right: 6.w),
+            margin: EdgeInsets.only(left: 8 , right: 6),
             width: 20,
             height: 20,
             child: Image.asset(
@@ -344,7 +344,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
               ),
             ),
           ),
-          SizedBox(width: 14.w),
+          SizedBox(width: 14),
         ],
       ),
     );

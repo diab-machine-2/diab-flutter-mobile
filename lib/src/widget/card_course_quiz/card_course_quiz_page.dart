@@ -90,7 +90,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                 .toString();
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: R.color.white,
@@ -101,7 +101,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
           Text(
             R.string.question_number.tr(args: [(widget.index + 1).toString()]),
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 16,
               fontWeight: FontWeight.w400,
               color: R.color.textDark,
             ),
@@ -110,13 +110,13 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
           Text(
             quizData.name ?? "",
             style: TextStyle(
-                fontSize: 20.sp,
+                fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: R.color.textDark,
                 height: 1.4),
             maxLines: 2,
           ),
-          SizedBox(height: 20.h),
+          SizedBox(height: 20),
           Expanded(
             child: ListView.separated(
                 padding: EdgeInsets.zero,
@@ -124,7 +124,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                 shrinkWrap: true,
                 itemCount: quizData.answers?.length ?? 0,
                 separatorBuilder: (context, indexQuestion) => SizedBox(
-                      height: 10.h,
+                      height: 10,
                     ),
                 itemBuilder: (context, indexQuestion) {
                   AnswerData data = (quizData.answers ?? [])[indexQuestion];
@@ -132,7 +132,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                       data: data, isSingleChoice: isSingleChoice);
                 }),
           ),
-          SizedBox(height: 10.h),
+          SizedBox(height: 10),
           _cubit.isAnswered
               ? Column(
                   children: [
@@ -141,20 +141,20 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                         isAnswerRight
                             ? R.drawable.ic_congratulation
                             : R.drawable.ic_regret,
-                        height: 60.h,
+                        height: 60,
                       ),
                     ),
-                    SizedBox(height: 10.h),
+                    SizedBox(height: 10),
                     Center(
                       child: SizedBox(
-                        // width: 200.w,
+                        // width: 200 ,
                         child: Text(
                           isAnswerRight
                               ? R.string.congratulations_your_reply_is_correct
                                   .tr()
                               : R.string.regret_answer.tr(),
                           style: TextStyle(
-                            fontSize: 14.sp,
+                            fontSize: 14,
                             fontWeight: FontWeight.w400,
                             color: R.color.textDark,
                           ),
@@ -163,7 +163,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                         ),
                       ),
                     ),
-                    SizedBox(height: 15.h),
+                    SizedBox(height: 15),
                   ],
                 )
               : Container(),
@@ -172,9 +172,9 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
             child: Center(
               child: Container(
                 alignment: Alignment.center,
-                width: 128.w,
+                width: 128 ,
                 child: ButtonWidget(
-                  height: 35.h,
+                  height: 35,
                   title: R.string.check.tr(),
                   onPressed: !isAnswering
                       ? null
@@ -202,7 +202,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                     R.drawable.ic_help_circle,
                     color: R.color.accentColor,
                     fit: BoxFit.fill,
-                    height: 28.h,
+                    height: 28,
                   )),
             ),
           ),
@@ -216,9 +216,9 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
     bool isSelected = _cubit.listAnswerChoosing.contains(id);
     bool isAnswerRight = data.isCorrect == true;
     return Container(
-      padding: EdgeInsets.all(4.h),
+      padding: EdgeInsets.all(4),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.h),
+          borderRadius: BorderRadius.circular(10),
           color: isSelected ? R.color.color0xffB1DDDB : R.color.white,
           border: Border.all(
             width: isSelected && !_cubit.isShowAnswer ? 0 : 1,
@@ -268,7 +268,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                 child: Text(
                   data.name ?? "",
                   style: TextStyle(
-                    fontSize: 14.sp,
+                    fontSize: 14,
                     fontWeight:
                         isSelected ? FontWeight.bold : FontWeight.normal,
                     color: isSelected ? R.color.accentColor : R.color.textDark,
@@ -283,7 +283,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                   child: Image.asset(
                     isAnswerRight ? R.drawable.ic_check : R.drawable.ic_close,
                     color: isAnswerRight ? R.color.accentColor : R.color.red,
-                    height: 20.h,
+                    height: 20,
                   ),
                 ))
           ],
@@ -301,15 +301,15 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
       builder: (_) => PopupWindowWidget(
           child: Container(
         width: double.infinity,
-        padding: EdgeInsets.all(16.h),
-        // height: ScreenUtil().screenHeight - 150.h,
+        padding: EdgeInsets.all(16),
+        // height: ScreenUtil().screenHeight - 150,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
               Image.asset(
                 R.drawable.img_des,
-                height: 80.h,
+                height: 80,
               ),
               SizedBox(width: 16),
               Expanded(
@@ -317,12 +317,12 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                   child: Text(R.string.explain,
                       style: TextStyle(
                           color: R.color.black,
-                          fontSize: 20.sp,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold)),
                 ),
               )
             ]),
-            SizedBox(height: 16.h),
+            SizedBox(height: 16),
             Expanded(
               child: SingleChildScrollView(
                 child: Text(
@@ -331,7 +331,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                   style: TextStyle(
                     color: R.color.textDark,
                     fontWeight: FontWeight.normal,
-                    fontSize: 16.sp,
+                    fontSize: 16,
                     letterSpacing: 0.4,
                     height: 1.4,
                   ),

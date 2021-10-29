@@ -70,7 +70,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
     return BackgroundPage(
           background: R.drawable.bg_welcome,
           child: Container(
-            padding: EdgeInsets.all(16.h),
+            padding: EdgeInsets.all(16),
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -120,7 +120,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                         Container(
                           width: double.infinity,
                           margin: EdgeInsets.symmetric(
-                              horizontal: 16.h, vertical: 32.h),
+                              horizontal: 16, vertical: 32),
                           child: _cubit.selectedIndex < 2
                               ? Row(
                                   mainAxisAlignment:
@@ -139,7 +139,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                                                 //     _cubit.selectedIndex--);
                                               },
                                         child: Container(
-                                            width: 100.w,
+                                            width: 100 ,
                                             alignment: Alignment.center,
                                             child: Text(R.string.ignore.tr(),
                                                 style: TextStyle(
@@ -149,12 +149,12 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                                                             ? R.color.gray
                                                             : R.color
                                                                 .accentColor,
-                                                    fontSize: 16.sp,
+                                                    fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.w700))),
                                       ),
                                       Container(
-                                          width: 128.w,
+                                          width: 128 ,
                                           child: ButtonWidget(
                                               title:
                                                   R.string.text_continue.tr(),
@@ -173,7 +173,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
                                     Container(
-                                        width: 128.w,
+                                        width: 128 ,
                                         child: ButtonWidget(
                                             title: R.string.start.tr(),
                                             onPressed: () {
@@ -197,11 +197,11 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          height: 50.h,
+          height: 50,
         ),
-        Container(height: 240.h, child: Image.asset(image)),
+        Container(height: 240, child: Image.asset(image)),
         SizedBox(
-          height: 50.h,
+          height: 50,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -211,25 +211,25 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: R.color.textDark,
-                    fontSize: 24.sp,
+                    fontSize: 24,
                     fontWeight: FontWeight.w700)),
             SizedBox(width: 10),
             Image.asset(
               R.drawable.ic_pro,
-              height: 20.h,
+              height: 20,
               color: Utils.getColorByCode(widget.code),
             )
           ],
         ),
         SizedBox(
-          height: 12.h,
+          height: 12,
         ),
         Text(
           description,
           textAlign: TextAlign.center,
           style: TextStyle(
             color: R.color.textDark,
-            fontSize: 16.sp,
+            fontSize: 16,
           ),
         ),
       ],
@@ -241,11 +241,11 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          height: 50.h,
+          height: 50,
         ),
-        Container(height: 240.h, child: Image.asset(image)),
+        Container(height: 240, child: Image.asset(image)),
         SizedBox(
-          height: 50.h,
+          height: 50,
         ),
       ]..addAll(descriptions.map((e) => rowInfoDescription(e)).toList()),
     );
@@ -253,23 +253,23 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
 
   Widget rowInfoDescription(String title) {
     return Container(
-      margin: EdgeInsets.only(bottom: 24.h),
+      margin: EdgeInsets.only(bottom: 24),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            height: 45.h,
-            padding: EdgeInsets.all(11.h),
+            height: 45,
+            padding: EdgeInsets.all(11),
             decoration:
                 BoxDecoration(shape: BoxShape.circle, color: R.color.main_6),
             child: Image.asset(
               R.drawable.ic_verify,
               fit: BoxFit.fill,
-              height: 22.h,
+              height: 22,
             ),
           ),
           SizedBox(
-            width: 16.w,
+            width: 16 ,
           ),
           Expanded(
             child: Text(
@@ -277,7 +277,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
               textAlign: TextAlign.left,
               style: TextStyle(
                 color: R.color.textDark,
-                fontSize: 16.sp,
+                fontSize: 16,
               ),
             ),
           )

@@ -12,16 +12,16 @@ class PopupWindowWidget extends StatelessWidget {
       body: Container(
         alignment: Alignment.bottomCenter,
           child: Padding(
-              padding: EdgeInsets.all(16.h),
+              padding: EdgeInsets.all(16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Expanded(
                     child: Container(
                       width: double.infinity,
-                        // padding: EdgeInsets.all(16.h),
+                        // padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.h),
+                          borderRadius: BorderRadius.circular(10),
                           image: DecorationImage(
                             image: AssetImage(R.drawable.bg_des),
                             fit: BoxFit.fill,
@@ -30,7 +30,7 @@ class PopupWindowWidget extends StatelessWidget {
                         child: child
                     ),
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 16),
                   Center(
                     child: GestureDetector(
                       onTap: () {

@@ -77,7 +77,7 @@ class _ListServicePageState extends State<ListServicePage> {
           controller: _controller,
           onRefresh: () => _cubit.getListPackage(isRefresh: true),
           child: ListView(
-            padding: EdgeInsets.all(16.h),
+            padding: EdgeInsets.all(16),
             children: [
               Image.asset(
                 R.drawable.img_list_service,
@@ -85,35 +85,35 @@ class _ListServicePageState extends State<ListServicePage> {
                 width: double.infinity,
               ),
               Container(
-                  margin: EdgeInsets.only(top: 32.h, left: 8.h, right: 8.h),
+                  margin: EdgeInsets.only(top: 32, left: 8, right: 8),
                   child: Text(
                     R.string.list_service.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: R.color.textDark,
                       fontWeight: FontWeight.bold,
-                      fontSize: 20.sp,
+                      fontSize: 20,
                     ),
                   )),
               Container(
-                  margin: EdgeInsets.only(top: 16.h, left: 8.h, right: 8.h),
+                  margin: EdgeInsets.only(top: 16, left: 8, right: 8),
                   child: Text(
                     R.string.text_list_service.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: R.color.textDark,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                     ),
                   )),
               SizedBox(
-                height: 32.h,
+                height: 32,
               ),
               ListView.separated(
                 padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   itemCount: _cubit.listFilterData.length,
                   separatorBuilder: (context, index) => SizedBox(
-                        height: 16.h,
+                        height: 16,
                       ),
                   itemBuilder: (context, index) {
                     DetailPackageData data = _cubit.listFilterData[index];
@@ -123,10 +123,10 @@ class _ListServicePageState extends State<ListServicePage> {
                     });
                   }),
               SizedBox(
-                height: 27.h,
+                height: 27,
               ),
               // Container(
-              //     width: 128.w,
+              //     width: 128 ,
               //     child: ButtonWidget(
               //         title: R.string.text_continue.tr(),
               //         onPressed: () {
@@ -154,39 +154,39 @@ class _ListServicePageState extends State<ListServicePage> {
     return GestureDetector(
       onTap: onChooseService,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.h),
+        padding: EdgeInsets.symmetric(horizontal: 20),
         child: Stack(
           alignment: Alignment.center,
           children: [
             Container(
-              height: 96.h,
+              height: 96,
               width: double.infinity,
               decoration: BoxDecoration(
                   color: R.color.white,
-                  borderRadius: BorderRadius.circular(16.h)),
+                  borderRadius: BorderRadius.circular(16)),
             ),
             Positioned(
               left: 0,
               child: Container(
-                height: 96.h,
-                width: 54.h,
-                padding: EdgeInsets.all(5.h),
+                height: 96,
+                width: 54,
+                padding: EdgeInsets.all(5),
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         image: AssetImage(background), fit: BoxFit.fill),
-                    borderRadius: BorderRadius.circular(5.h)),
+                    borderRadius: BorderRadius.circular(5)),
                 child: Image.asset(
                   icon,
                   fit: BoxFit.contain,
                   // color: color,
-                  height: 43.h,
-                  width: 43.h,
+                  height: 43,
+                  width: 43,
                 ),
               ),
             ),
             Positioned(
-              left: 70.h,
-              right: 32.h,
+              left: 70,
+              right: 32,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -196,10 +196,10 @@ class _ListServicePageState extends State<ListServicePage> {
                     style: TextStyle(
                       color: R.color.textDark,
                       fontWeight: FontWeight.w700,
-                      fontSize: 20.sp,
+                      fontSize: 20,
                     ),
                   ),
-                  SizedBox(height: 5.h),
+                  SizedBox(height: 5),
                   Text(
                     data.description ?? "",
                     textAlign: TextAlign.left,
@@ -207,14 +207,14 @@ class _ListServicePageState extends State<ListServicePage> {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: R.color.textDark,
-                      fontSize: 14.sp,
+                      fontSize: 14,
                     ),
                   ),
                 ],
               ),
             ),
             Positioned(
-                right: 10.h,
+                right: 10,
                 child: Icon(
                   CupertinoIcons.chevron_right,
                   color: R.color.accentColor,

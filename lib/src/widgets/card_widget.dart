@@ -38,7 +38,7 @@ class CardWidget extends StatelessWidget {
             border: Border.all(
                 color: borderColor ?? backgroundColor ?? R.color.gray,
                 width: borderWidth ?? 1.5),
-            borderRadius: BorderRadius.circular(radius ?? 10.h)),
+            borderRadius: BorderRadius.circular(radius ?? 10)),
         child: child,
       ),
     );
