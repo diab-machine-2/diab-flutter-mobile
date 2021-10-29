@@ -15,8 +15,6 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
-import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
-
 class ScheduleGlucoseController extends StatefulWidget {
   @override
   _ScheduleGlucoseControllerState createState() =>
@@ -196,70 +194,64 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                             children: [
                               Expanded(
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: RichText(
-                                            text: TextSpan(
-                                              text:
-                                                  '${R.string.default_time_to_measure_blood_sugar.tr()} ',
-                                              style: TextStyle(
-                                                  color:
-                                                      R.color.primaryGreyColor),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                    text: timeModel == null
-                                                        ? R.string
-                                                            .suggest_time_to_measure_blood_sugar
-                                                            .tr()
-                                                        : R.string
-                                                            .time_to_measure_blood_sugar
-                                                            .tr(args: [
-                                                            '${timeModel!.beforeEat}',
-                                                            '${timeModel!.afterEat}',
-                                                            '${timeModel!.beforeSleeping}'
-                                                          ]),
-                                                    style: TextStyle(
-                                                        color: R.color.black,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 14))
-                                              ],
-                                            ),
-                                          ),
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      RichText(
+                                        text: TextSpan(
+                                          text:
+                                              '${R.string.default_time_to_measure_blood_sugar.tr()} ',
+                                          style: TextStyle(
+                                              color: R.color.primaryGreyColor),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                                text: timeModel == null
+                                                    ? R.string.suggest_time_to_measure_blood_sugar.tr()
+                                                    : R.string.time_to_measure_blood_sugar.tr(args: ['${timeModel!.beforeEat}', '${timeModel!.afterEat}', '${timeModel!.beforeSleeping}']),
+                                                style: TextStyle(
+                                                    color: R.color.black,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14))
+                                          ],
                                         ),
-                                        SizedBox(width: 150)
-                                      ],
-                                    ),
-                                    SizedBox(height: 16),
-                                    Row(
-                                      children: [
-                                        _buildButton(
-                                            title: R.string.setup.tr(),
-                                            icon: R.drawable.ic_alarm,
+                                      ),
+                                      SizedBox(height: 16),
+                                      Row(
+                                        children: [
+                                          GestureDetector(
                                             onTap: () {
-                                              Navigator.pushNamed(
-                                                  context,
-                                                  NavigatorName
-                                                      .setting_schedule_glucose);
-                                            }),
-                                        const SizedBox(width: 16),
-                                        _buildButton(
-                                            title: R.string.testing_schedule_suggest.tr(),
-                                            icon: R.drawable.ic_blood_sugar_testing_suggest,
-                                            onTap: () async {
-                                              await NavigationUtil.navigatePage(
-                                                context,
-                                                const BloodSugarStartSurveyPage(),
-                                              );
-                                              loadSchedule();
-                                            })
-                                      ],
-                                    )
-                                  ],
-                                ),
+                                              Navigator.pushNamed(context,
+                                                  NavigatorName.setting_schedule_glucose);
+                                            },
+                                            child: Container(
+                                                height: 36,
+                                                decoration: BoxDecoration(
+                                                    color: R.color.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            18)),
+                                                padding: EdgeInsets.only(
+                                                    left: 16, right: 16),
+                                                child: Row(
+                                                  children: [
+                                                    Image.asset(
+                                                        R.drawable.ic_alarm,
+                                                        width: 24,
+                                                        height: 24),
+                                                    SizedBox(width: 8),
+                                                    Text(R.string.setup.tr(),
+                                                        style: TextStyle(
+                                                            color: R.color.mainColor,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600))
+                                                  ],
+                                                )),
+                                          ),
+                                        ],
+                                      )
+                                    ]),
                               ),
                             ],
                           ),

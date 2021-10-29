@@ -8,7 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -97,13 +97,8 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                 : model.carbChart.items.length == 0)
                             ? GestureDetector(
                                 onTap: () {
-                                  NavigationUtil.navigatePage(
-                                    context,
-                                    DailyNutritionPage(
-                                      type: 'input',
-                                      id: null,
-                                    ),
-                                  );
+                                  Navigator.pushNamed(context, NavigatorName.add_food,
+                                      arguments: {'type': 'input', 'id': null});
                                 },
                                 child:
                                     Image.asset(R.drawable.img_food_empty),

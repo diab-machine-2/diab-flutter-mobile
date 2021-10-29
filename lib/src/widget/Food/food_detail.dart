@@ -6,13 +6,12 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-
-import 'daily_nutrition/daily_nutrition.dart';
 
 class FoodDetailController extends StatefulWidget {
   FoodDetailController({Key? key}) : super(key: key);
@@ -240,16 +239,8 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                       index];
                                                               return GestureDetector(
                                                                 onTap: () {
-                                                                  NavigationUtil
-                                                                      .navigatePage(
-                                                                    context,
-                                                                    DailyNutritionPage(
-                                                                      type:
-                                                                          'update',
-                                                                      id: inputModel
-                                                                          .id,
-                                                                    ),
-                                                                  );
+                                                                  Navigator.pushNamed(context, NavigatorName.add_food,
+                                                                      arguments: {'type': 'input', 'id': null});
                                                                 },
                                                                 child:
                                                                     Container(

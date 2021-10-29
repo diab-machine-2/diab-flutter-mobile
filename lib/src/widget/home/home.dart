@@ -3,19 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
-import 'package:medical/src/widget/list_service/list_service_page.dart';
 
 class HomeController extends StatefulWidget {
   @override
@@ -423,7 +420,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                             ]),
                                           )),
                               ),
-                              buildServiceButton(),
+                              SizedBox(height: 16),
                               CourseSuggest(position: 1),
                             ]),
                       ),
@@ -1094,33 +1091,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
           ))
         ])
       ]),
-    );
-  }
-
-  Widget buildServiceButton() {
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsets.all(16),
-      height: 64,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF4BB2AB), Color(0xFF01857A), Color(0xFF008479)],
-        ),
-      ),
-      child: MaterialButton(
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        shape: StadiumBorder(),
-        child: Text(
-          R.string.upgrade_account.tr(),
-          style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        onPressed: () {
-            NavigationUtil.rootNavigatePage(context, ListServicePage());
-        },
-      ),
     );
   }
 }
