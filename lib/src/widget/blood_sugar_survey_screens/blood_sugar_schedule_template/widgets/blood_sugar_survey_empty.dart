@@ -23,12 +23,12 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(40.w, 50.h, 40.w, 50.h),
+              padding: EdgeInsets.fromLTRB(40 , 50, 40 , 50),
               child:
                   Image.asset(R.drawable.img_blood_sugar_survey_empty_result),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 28.w),
+              padding: EdgeInsets.symmetric(horizontal: 28),
               child: RichText(
                 textDirection: ui.TextDirection.ltr,
                 textAlign: TextAlign.center,
@@ -37,21 +37,21 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
                   style: TextStyle(
                       color: R.color.primaryGreyColor,
                       fontWeight: FontWeight.w400,
-                      fontSize: 16.sp),
+                      fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(
                       text: ' ${R.string.no_need_to_test.tr()} ',
                       style: TextStyle(
                           color: R.color.black,
                           fontWeight: FontWeight.w700,
-                          fontSize: 16.sp),
+                          fontSize: 16),
                     ),
                     TextSpan(
                       text: R.string.often_testing_blood_sugar.tr(),
                       style: TextStyle(
                           color: R.color.primaryGreyColor,
                           fontWeight: FontWeight.w400,
-                          fontSize: 16.sp),
+                          fontSize: 16),
                     )
                   ],
                 ),
@@ -61,7 +61,7 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
               visible: description.isNotEmpty,
               child: Container(
                 width: double.infinity,
-                margin: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 0),
+                margin: EdgeInsets.fromLTRB(16 , 24, 16 , 0),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                     color: R.color.main_6,
@@ -72,17 +72,17 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
                   trimExpandedText: R.string.show_less.tr(),
                   trimCollapsedText: R.string.show_more.tr(),
                   style: TextStyle(
-                    fontSize: 14.sp,
+                    fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: R.color.textDark,
                   ),
                   moreStyle: TextStyle(
-                    fontSize: 14.sp,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: R.color.greenGradientBottom,
                   ),
                   lessStyle: TextStyle(
-                    fontSize: 14.sp,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: R.color.greenGradientBottom,
                   ),
@@ -93,7 +93,7 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
             SafeArea(
               top: false,
               child: Container(
-                width: 208.w,
+                width: 208 ,
                 child: ButtonWidget(
                     title: R.string.back_to_schedule.tr(),
                     onPressed: () {
@@ -106,7 +106,7 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
                     }),
               ),
             ),
-            SizedBox(height: 24.h),
+            SizedBox(height: 24),
           ],
         ),
       ),

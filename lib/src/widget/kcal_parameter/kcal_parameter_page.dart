@@ -46,10 +46,10 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
       body: Center(
         child: Container(
           width: double.infinity,
-          margin: EdgeInsets.symmetric(horizontal: 24.h),
-          padding: EdgeInsets.all(20.h),
+          margin: EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.h),
+            borderRadius: BorderRadius.circular(10),
             color: R.color.white,
           ),
           child: BlocProvider(
@@ -92,31 +92,31 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
             child: Text(
               R.string.diab_parameter.tr(),
               style: TextStyle(
-                fontSize: 20.sp,
+                fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: R.color.textDark,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          SizedBox(height: 17.h),
+          SizedBox(height: 17),
           Text(
             R.string.energy_use_per_day.tr(),
             style: TextStyle(
               color: R.color.textDark,
-              fontSize: 16.sp,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 20.h),
+          SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
                 SizedBox(
-                  width: 150.h,
+                  width: 150,
                   child: CupertinoTextField(
                     controller: _controller,
                     decoration: BoxDecoration(color: R.color.white),
@@ -131,24 +131,24 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                     ],
                     style: TextStyle(
                         color: R.color.textDark,
-                        fontSize: 50.sp,
+                        fontSize: 50,
                         fontWeight: FontWeight.bold),
                     placeholder: '--',
                     placeholderStyle: TextStyle(
                         color: R.color.textDark,
-                        fontSize: 50.sp,
+                        fontSize: 50,
                         fontWeight: FontWeight.bold),
                     onChanged: (value) {},
                   ),
                 ),
-                Container(height: 1, width: 130.h, color: R.color.gray)
+                Container(height: 1, width: 130, color: R.color.gray)
               ]),
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Text(
                   R.string.kcal.tr(),
                   style: TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 16,
                     color: R.color.textDark,
                   ),
                 ),
@@ -156,7 +156,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
             ],
           ),
           SizedBox(
-            height: 25.h,
+            height: 25,
           ),
           GestureDetector(
             onTap: () async {
@@ -176,17 +176,17 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                 Text(
                   R.string.recipe.tr(),
                   style: TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: R.color.accentColor,
                   ),
                 ),
                 SizedBox(
-                  width: 5.h,
+                  width: 5,
                 ),
                 Icon(
                   CupertinoIcons.arrow_right,
-                  size: 20.h,
+                  size: 20,
                   color: R.color.accentColor,
                 )
               ],
@@ -195,12 +195,12 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
           Visibility(
             visible: showExpandedText,
             child: Padding(
-              padding: EdgeInsets.only(top: 17.h),
+              padding: EdgeInsets.only(top: 17),
               child: Stack(
                 alignment: AlignmentDirectional.bottomStart,
                 children: [
                   Container(
-                    padding: EdgeInsets.fromLTRB(68.w, 8.h, 12.w, 8.h),
+                    padding: EdgeInsets.fromLTRB(68 , 8, 12 , 8),
                     decoration: BoxDecoration(
                       color: R.color.main_6,
                       borderRadius: BorderRadius.circular(8),
@@ -209,7 +209,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                       text: TextSpan(
                           text: R.string.text_if.tr(),
                           style: TextStyle(
-                            fontSize: 14.sp,
+                            fontSize: 14,
                             fontWeight: FontWeight.w400,
                             color: R.color.black,
                           ),
@@ -217,7 +217,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                             TextSpan(
                               text: ' ${R.string.increase.tr()} ',
                               style: TextStyle(
-                                fontSize: 14.sp,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 color: R.color.black,
                               ),
@@ -225,7 +225,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                             TextSpan(
                               text: R.string.text_or.tr(),
                               style: TextStyle(
-                                fontSize: 14.sp,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 color: R.color.black,
                               ),
@@ -233,7 +233,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                             TextSpan(
                               text: ' ${R.string.decrease.tr()} ',
                               style: TextStyle(
-                                fontSize: 14.sp,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 color: R.color.black,
                               ),
@@ -241,7 +241,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                             TextSpan(
                               text: R.string.text_warning_change_param.tr(),
                               style: TextStyle(
-                                fontSize: 14.sp,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 color: R.color.black,
                               ),
@@ -251,29 +251,29 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                   ),
                   Image.asset(
                     R.drawable.img_gym_trainer,
-                    width: 64.w,
-                    height: 82.h,
+                    width: 64 ,
+                    height: 82,
                   ),
                 ],
               ),
             ),
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: 24),
           Text(
             R.string.have_3_meal.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
               color: R.color.textDark,
             ),
           ),
-          SizedBox(height: 17.h),
+          SizedBox(height: 17),
           Padding(
-            padding: EdgeInsets.only(left: 40.h),
+            padding: EdgeInsets.only(left: 40),
             child: buildCheckMeal(),
           ),
-          SizedBox(height: 30.h),
+          SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -283,16 +283,16 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                   title: R.string.cancel.tr(),
                   backgroundColor: R.color.grayBorder,
                   textColor: R.color.textDark,
-                  height: 43.h,
+                  height: 43,
                   onPressed: () => NavigationUtil.pop(context),
                 ),
               ),
-              SizedBox(width: 15.w),
+              SizedBox(width: 15),
               Expanded(
                 flex: 1,
                 child: ButtonWidget(
                   title: R.string.agree.tr(),
-                  height: 43.h,
+                  height: 43,
                   onPressed: () {
                     final String text = _controller.text.trim();
                     int? number;
@@ -339,14 +339,14 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                 _cubit.onCheckedNoSubMeal();
               }
             }),
-        SizedBox(height: 10.h),
+        SizedBox(height: 10),
         Container(
           height: 1,
           margin: const EdgeInsets.only(left: 10),
-          width: 170.h,
+          width: 170,
           color: R.color.gray,
         ),
-        SizedBox(height: 10.h),
+        SizedBox(height: 10),
         buildRowCheck(
             title: R.string.breakfast_meal.tr(),
             isChecked: _cubit.createMenuRequest.includeBreakfast,
@@ -391,11 +391,11 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
             },
           ),
         ),
-        SizedBox(width: 22.w),
+        SizedBox(width: 22),
         Text(
           title,
           style: TextStyle(
-            fontSize: 16.sp,
+            fontSize: 16,
             color: R.color.textDark,
           ),
         ),

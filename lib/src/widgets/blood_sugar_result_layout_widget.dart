@@ -49,7 +49,7 @@ class BloodSugarResultLayoutWidget extends StatelessWidget {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.all(16.w),
+                padding: EdgeInsets.all(16),
                 child: Row(children: [
                   Expanded(
                     child: RichText(
@@ -59,7 +59,7 @@ class BloodSugarResultLayoutWidget extends StatelessWidget {
                         style: TextStyle(
                             color: R.color.primaryGreyColor,
                             fontWeight: FontWeight.w400,
-                            fontSize: 16.sp),
+                            fontSize: 16),
                         children: <TextSpan>[
                           TextSpan(
                             text: R.string.time_per_day
@@ -67,13 +67,13 @@ class BloodSugarResultLayoutWidget extends StatelessWidget {
                             style: TextStyle(
                                 color: R.color.black,
                                 fontWeight: FontWeight.w700,
-                                fontSize: 16.sp),
+                                fontSize: 16),
                           )
                         ],
                       ),
                     ),
                   ),
-                  SizedBox(width: 153.w)
+                  SizedBox(width: 153)
                 ]),
               ),
             ],

@@ -31,7 +31,7 @@ class ButtonWidget extends StatelessWidget {
       onTap: onPressed,
       child: Container(
 //        color: backgroundColor,
-        height: height ?? 50.h,
+        height: height ?? 50,
         alignment: Alignment.center,
         decoration: BoxDecoration(
             color: onPressed == null ? R.color.gray : (backgroundColor ?? R.color.accentColor),
@@ -46,12 +46,12 @@ class ButtonWidget extends StatelessWidget {
             border: Border.all(
                 color: onPressed == null ? R.color.gray : (borderColor ?? backgroundColor ?? R.color.accentColor),
                 width: 1.5),
-            borderRadius: BorderRadius.circular(radius ?? 200.sp)),
+            borderRadius: BorderRadius.circular(200)),
         child: Text(
           title,
           style: TextStyle(
               color: textColor ?? R.color.white,
-              fontSize: textSize ?? 16.sp,
+              fontSize: textSize ?? 16,
               fontWeight: FontWeight.w700),
         ),
       ),

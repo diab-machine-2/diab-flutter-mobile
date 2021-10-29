@@ -63,7 +63,7 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
         background: R.drawable.bg_welcome,
         title: R.string.sample_menu.tr(),
         child: ListView(
-          padding: EdgeInsets.all(16.h),
+          padding: EdgeInsets.all(16),
           shrinkWrap: true,
           children: [
             Column(
@@ -72,10 +72,10 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                 Image.asset(
                   R.drawable.img_cooking,
                   width: double.infinity,
-                  height: 240.h,
+                  height: 240,
                 ),
                 SizedBox(
-                  height: 32.h,
+                  height: 32,
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -83,25 +83,25 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                     R.string.text_intro_menu.tr(),
                     style: TextStyle(
                       color: R.color.textDark,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       letterSpacing: 0.4,
                       height: 1.375,
                     ),
                   ),
                 ),
                 SizedBox(
-                  height: 12.h,
+                  height: 12,
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.symmetric(horizontal: 20.h),
+                  margin: EdgeInsets.symmetric(horizontal: 20),
                   child: RichText(
                     text: TextSpan(
                       text: R.string.step_1.tr(),
                       style: TextStyle(
                         color: R.color.textDark,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16.sp,
+                        fontSize: 16,
                         letterSpacing: 0.4,
                         height: 1.375,
                       ),
@@ -111,7 +111,7 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                             style: TextStyle(
                               color: R.color.textDark,
                               fontWeight: FontWeight.normal,
-                              fontSize: 16.sp,
+                              fontSize: 16,
                               letterSpacing: 0.4,
                               height: 1.375,
                             )),
@@ -120,18 +120,18 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                   ),
                 ),
                 SizedBox(
-                  height: 12.h,
+                  height: 12,
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.symmetric(horizontal: 20.h),
+                  margin: EdgeInsets.symmetric(horizontal: 20),
                   child: RichText(
                     text: TextSpan(
                       text: R.string.step_2.tr(),
                       style: TextStyle(
                         color: R.color.textDark,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16.sp,
+                        fontSize: 16,
                         letterSpacing: 0.4,
                         height: 1.375,
                       ),
@@ -141,7 +141,7 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                             style: TextStyle(
                               color: R.color.textDark,
                               fontWeight: FontWeight.normal,
-                              fontSize: 16.sp,
+                              fontSize: 16,
                               letterSpacing: 0.4,
                               height: 1.375,
                             )),
@@ -150,10 +150,10 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                   ),
                 ),
                 SizedBox(
-                  height: 34.h,
+                  height: 34,
                 ),
                 Container(
-                  width: 128.w,
+                  width: 128 ,
                   child: ButtonWidget(
                     title: R.string.start.tr(),
                     onPressed: () {

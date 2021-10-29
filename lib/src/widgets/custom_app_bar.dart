@@ -30,7 +30,7 @@ class CustomAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-          vertical: paddingVertical ?? 18.h, horizontal: 16.h),
+          vertical: paddingVertical ?? 18, horizontal: 16),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -41,11 +41,11 @@ class CustomAppBar extends StatelessWidget {
             child: InkWell(
               onTap: backCallback ?? () => NavigationUtil.pop(context),
               child: Padding(
-                  padding: EdgeInsets.only(right: 10.h),
+                  padding: EdgeInsets.only(right: 10),
                   child: Icon(
                     icon ?? CupertinoIcons.arrow_left,
                     color: textColor ?? R.color.textDark,
-                    size: iconSize ?? 28.h,
+                    size: iconSize ?? 28,
                   )),
             ),
           ),
@@ -55,7 +55,7 @@ class CustomAppBar extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                  fontSize: titleSize ?? 20.sp,
+                  fontSize: titleSize ?? 20,
                   color: textColor ?? R.color.textDark,
                   fontWeight: FontWeight.bold),
             ),
@@ -63,7 +63,7 @@ class CustomAppBar extends StatelessWidget {
           Visibility(
               visible: rightWidget != null,
               child: Padding(
-                padding: EdgeInsets.only(left: 10.h),
+                padding: EdgeInsets.only(left: 10),
                 child: rightWidget ?? Container(),
               )),
         ],
