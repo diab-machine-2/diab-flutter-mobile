@@ -26,6 +26,16 @@ class MyPlanCubit extends Cubit<MyPlanState> {
 
   List<MyLessonResponseData?> lessonsList = [];
 
+  List<String> keyWordList = [
+    'Dinh dưỡng',
+    'Đường huyết',
+    'Cân nặng',
+    'Huyết áp',
+    'Cảm xúc',
+    'Vận động',
+    'HbA1c',
+  ];
+
   int get currentPlanTypeIndex {
     final int index = planTypeList.indexOf(currentPlanType);
     return index == -1 ? 0 : index;

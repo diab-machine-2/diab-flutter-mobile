@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -46,109 +45,95 @@ class _LessonTabPageState extends State<LessonTabPage>
     return BlocProvider(
       create: (context) => _cubit,
       child: BlocConsumer<LessonTabCubit, LessonTabState>(
-          listener: (context, state) {
-            if (state is LessonTabLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-              _controller.refreshCompleted();
-            }
-            if (state is LessonTabFailure) {
-              Message.showToastMessage(context, state.error);
-            }
-          },
-          builder: (context, state) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Container(
-                  margin: EdgeInsets.symmetric(
-                    vertical: 20.h,
-                    horizontal: 16.w,
-                  ),
-                  width: 159.w,
-                  height: 32.h,
-                  child: ButtonWidget(
-                    title: R.string.search_by_key.tr(),
-                    onPressed: () {
-                      _showSearchDialog();
+        listener: (context, state) {
+          if (state is LessonTabLoading) {
+            BotToast.showLoading();
+          } else {
+            BotToast.closeAllLoading();
+            _controller.refreshCompleted();
+          }
+          if (state is LessonTabFailure) {
+            Message.showToastMessage(context, state.error);
+          }
+        },
+        builder: (context, state) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SizedBox(
+                height: 20.h,
+              ),
+              Container(
+                height: 30.h,
+                child: Row(
+                  children: List.generate(
+                    _cubit.lessonTypeList.length,
+                    (index) {
+                      return _buildLessonTypeSelect(
+                        title: _cubit.lessonTypeList[index].title,
+                        isActive: _cubit.currentLessonTypeIndex == index,
+                        onTap: () {
+                          _cubit.changeLessonType(index);
+                        },
+                      );
                     },
-                    textSize: 14,
-                    radius: 8,
                   ),
                 ),
-                Container(
-                  height: 30.h,
-                  child: Row(
-                    children: List.generate(
-                      _cubit.lessonTypeList.length,
-                      (index) {
-                        return _buildLessonTypeSelect(
-                          title: _cubit.lessonTypeList[index].title,
-                          isActive: _cubit.currentLessonTypeIndex == index,
-                          onTap: () {
-                            _cubit.changeLessonType(index);
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: SafeArea(
-                    top: false,
-                    child: SmartRefresher(
-                      controller: _controller,
-                      onRefresh: () => _cubit.getLessonsList(isRefresh: true),
-                      child: SingleChildScrollView(
-                        child: Stack(
-                          children: [
-                            Visibility(
-                              visible:
-                                  _cubit.currentLessonType == LessonType.route,
-                              child: Positioned(
-                                top: (127.h) / 2 + 20.h,
-                                left: 19.5.w,
-                                child: Container(
-                                  height: max(
-                                      (_cubit.lessonsList.length - 1) * 127.h,
-                                      0),
-                                  width: 1,
-                                  child: const DashedVerticalLine(),
-                                ),
+              ),
+              Expanded(
+                child: SafeArea(
+                  top: false,
+                  child: SmartRefresher(
+                    controller: _controller,
+                    onRefresh: () => _cubit.getLessonsList(isRefresh: true),
+                    child: SingleChildScrollView(
+                      child: Stack(
+                        children: [
+                          Visibility(
+                            visible:
+                                _cubit.currentLessonType == LessonType.route,
+                            child: Positioned(
+                              top: (127.h) / 2 + 20.h,
+                              left: 19.5.w,
+                              child: Container(
+                                height: max(
+                                    (_cubit.lessonsList.length - 1) * 127.h, 0),
+                                width: 1,
+                                child: const DashedVerticalLine(),
                               ),
                             ),
-                            Column(
-                              children: List.generate(
-                                _cubit.lessonsList.length,
-                                (index) => _buildLessonWidget(
-                                    lessonDetail: _cubit.lessonsList[index],
-                                    onTap: () {
-                                      if (_cubit.lessonsList[index]?.id
-                                              ?.isNotEmpty ==
-                                          true) {
-                                        NavigationUtil.navigatePage(
-                                          context,
-                                          LessonDetailPage(
-                                            _cubit.lessonsList[index]!.id!,
-                                          ),
-                                        );
-                                      }
-                                    }),
-                              )
-                                ..insert(0, SizedBox(height: 20.h))
-                                ..add(SizedBox(height: 20.h)),
-                            ),
-                          ],
-                        ),
+                          ),
+                          Column(
+                            children: List.generate(
+                              _cubit.lessonsList.length,
+                              (index) => _buildLessonWidget(
+                                  lessonDetail: _cubit.lessonsList[index],
+                                  onTap: () {
+                                    if (_cubit.lessonsList[index]?.id
+                                            ?.isNotEmpty ==
+                                        true) {
+                                      NavigationUtil.navigatePage(
+                                        context,
+                                        LessonDetailPage(
+                                          _cubit.lessonsList[index]!.id!,
+                                        ),
+                                      );
+                                    }
+                                  }),
+                            )
+                              ..insert(0, SizedBox(height: 20.h))
+                              ..add(SizedBox(height: 20.h)),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -258,7 +243,11 @@ class _LessonTabPageState extends State<LessonTabPage>
                                 ),
                               ),
                               SizedBox(width: 4.w),
-                              Image.asset(R.drawable.ic_new_lesson, width: 24.w, height: 24.w,)
+                              Image.asset(
+                                R.drawable.ic_new_lesson,
+                                width: 24.w,
+                                height: 24.w,
+                              )
                             ],
                           ),
                           Text(
@@ -274,7 +263,8 @@ class _LessonTabPageState extends State<LessonTabPage>
                           LessonStatusWidget(
                             learningStatus: lessonDetail?.learningStatus,
                             progress: lessonDetail?.percentComplete,
-                            isRequired: _cubit.currentLessonType == LessonType.route,
+                            isRequired:
+                                _cubit.currentLessonType == LessonType.route,
                           ),
                         ],
                       ),
@@ -362,96 +352,6 @@ class _LessonTabPageState extends State<LessonTabPage>
                         textSize: 14.sp,
                       ),
                     )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showSearchDialog() {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      barrierDismissible: true,
-      context: context,
-      builder: (_) => GestureDetector(
-        onTap: () {
-          NavigationUtil.pop(context);
-        },
-        child: Scaffold(
-          backgroundColor: R.color.transparent,
-          body: Center(
-            child: GestureDetector(
-              child: Container(
-                width: 344.w,
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
-                decoration: BoxDecoration(
-                  color: R.color.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      child: Wrap(
-                        spacing: 8.w,
-                        runSpacing: 10.h,
-                        children: List.generate(
-                          _cubit.keyWordList.length,
-                          (index) => GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 15.w, vertical: 5.h),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(36),
-                                border:
-                                    Border.all(color: R.color.color0xffB1DDDB),
-                              ),
-                              child: Text(
-                                _cubit.keyWordList[index],
-                                style: TextStyle(
-                                  color: R.color.textDark,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: 150.w,
-                          child: ButtonWidget(
-                            height: 43.h,
-                            title: 'Huỷ',
-                            onPressed: () {
-                              NavigationUtil.pop(context);
-                            },
-                            textColor: R.color.textDark,
-                            backgroundColor: R.color.grayBorder,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 150.w,
-                          child: ButtonWidget(
-                              height: 43.h,
-                              title: 'Xác nhận',
-                              onPressed: () {
-                                NavigationUtil.pop(context);
-                              }),
-                        )
-                      ],
-                    ),
                   ],
                 ),
               ),

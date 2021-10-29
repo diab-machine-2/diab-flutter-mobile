@@ -10,6 +10,7 @@ import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/background_page.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -151,6 +152,29 @@ class _MyPlanPageState extends State<MyPlanPage> {
     );
   }
 
+  Widget _buildFilterWidget() {
+    return Column(
+      children: [
+        Row(children: [
+          Expanded(
+            child: Container(),
+          ),
+          Row(children: [
+            Text(
+              'Lọc lịch trình',
+              style: TextStyle(
+                color: R.color.greenGradientBottom,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ]),
+        ]),
+        Container(),
+      ],
+    );
+  }
+
   Widget _buildScheduleWidget() {
     if (_cubit.timeData == null) return const SizedBox();
     return Padding(
@@ -260,6 +284,96 @@ class _MyPlanPageState extends State<MyPlanPage> {
           Icons.check_rounded,
           color: R.color.white,
           size: 16.sp,
+        ),
+      ),
+    );
+  }
+
+  void _showSearchDialog() {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      barrierDismissible: true,
+      context: context,
+      builder: (_) => GestureDetector(
+        onTap: () {
+          NavigationUtil.pop(context);
+        },
+        child: Scaffold(
+          backgroundColor: R.color.transparent,
+          body: Center(
+            child: GestureDetector(
+              child: Container(
+                width: 344.w,
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Wrap(
+                        spacing: 8.w,
+                        runSpacing: 10.h,
+                        children: List.generate(
+                          _cubit.keyWordList.length,
+                          (index) => GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 15.w, vertical: 5.h),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(36),
+                                border:
+                                    Border.all(color: R.color.color0xffB1DDDB),
+                              ),
+                              child: Text(
+                                _cubit.keyWordList[index],
+                                style: TextStyle(
+                                  color: R.color.textDark,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          width: 150.w,
+                          child: ButtonWidget(
+                            height: 43.h,
+                            title: 'Huỷ',
+                            onPressed: () {
+                              NavigationUtil.pop(context);
+                            },
+                            textColor: R.color.textDark,
+                            backgroundColor: R.color.grayBorder,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 150.w,
+                          child: ButtonWidget(
+                              height: 43.h,
+                              title: 'Xác nhận',
+                              onPressed: () {
+                                NavigationUtil.pop(context);
+                              }),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

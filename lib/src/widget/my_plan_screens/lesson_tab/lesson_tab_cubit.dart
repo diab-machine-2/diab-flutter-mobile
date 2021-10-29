@@ -21,16 +21,6 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
   List<MyLessonResponseData?> lessonsList = [];
 
-  List<String> keyWordList = [
-    'Dinh dưỡng',
-    'Đường huyết',
-    'Cân nặng',
-    'Huyết áp',
-    'Cảm xúc',
-    'Vận động',
-    'HbA1c',
-  ];
-
   int get currentLessonTypeIndex {
     final int index = lessonTypeList.indexOf(currentLessonType);
     return index == -1 ? 0 : index;
