@@ -68,11 +68,12 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     BotToast.showLoading();
     model = await HbA1CClient().fetchDetail(widget.id);
     BotToast.closeAllLoading();
-    _controller.text = model!.hbA1C!.round() == model!.hbA1C
+    if (model == null) return;
+    _controller.text = model!.hbA1C?.round() == model!.hbA1C
         ? model!.hbA1C!.round().toString()
         : model!.hbA1C.toString();
-    _controllerNote.text = model!.description!;
-    time = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+    _controllerNote.text = model!.description ?? '';
+    time = DateTime.fromMillisecondsSinceEpoch((model!.date ?? 0) * 1000);
     files.addAll(model!.images);
     setState(() {});
   }
@@ -742,8 +743,6 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
         Observable.instance.notifyObservers([], notifyName : "hba1c_change_data");
-        // DartNotificationCenter.post(channel: 'hba1c_change_data');
-        Navigator.pop(context);
       }
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -798,8 +797,6 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       if (result == true) {
         Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
         Observable.instance.notifyObservers([], notifyName : "hba1c_change_data");
-        // DartNotificationCenter.post(channel: 'hba1c_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -850,8 +847,6 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
           paths);
       if (result == true) {
         Observable.instance.notifyObservers([], notifyName : "hba1c_change_data");
-        // DartNotificationCenter.post(channel: 'hba1c_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();

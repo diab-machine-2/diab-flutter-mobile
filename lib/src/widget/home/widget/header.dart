@@ -134,8 +134,17 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                             : Image.network(user.imageUrl!.url!,
                                                 width: 42, height: 42)),
                                   ),
-                                  Image.asset(R.drawable.ic_crown,
-                                      width: 20, height: 20)
+                                  Container(
+                                    width: 20,
+                                    height: 20,
+                                    padding: const EdgeInsets.all(4),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: R.color.white,
+                                    ),
+                                    child: Image.asset(R.drawable.ic_crown_green),
+                                  )
                                 ]),
                             SizedBox(width: 8),
                             Expanded(

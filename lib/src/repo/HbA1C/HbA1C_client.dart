@@ -130,8 +130,8 @@ class HbA1CClient extends FetchClient {
       List<String?> removalImageIds,
       List<String> files) async {
     try {
-      Map<String, String?> params = {
-        'id': id,
+      Map<String, String> params = {
+        'id': id ?? '',
         'date': date.toString(),
         'hbA1CIndex': hbA1CIndex,
         'description': description,

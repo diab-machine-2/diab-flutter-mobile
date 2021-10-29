@@ -78,9 +78,9 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
     BotToast.showLoading();
     model = await ExercrisesClient().fetchDetail(widget.id);
     selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
-    sumCalories = model != null ? model!.burnedCalorie!.toInt() : 0;
-    selectedCategory = model != null ? [...model!.exercise] : [];
-    _controllerNote.text = model != null ? model!.note! : '';
+    sumCalories = model?.burnedCalorie != null ? model!.burnedCalorie!.toInt() : 0;
+    selectedCategory = model?.exercise != null ? [...model!.exercise] : [];
+    _controllerNote.text = model?.note != null ? model!.note! : '';
     selectedTimeFrame = TimeFrameModel(
         id: model!.timeFrameId, code: '', name: model!.timeFrame);
     files.addAll(model!.imageUrls);
@@ -1075,8 +1075,6 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
       if (result == true) {
         Observable.instance
             .notifyObservers([], notifyName: "active_change_data");
-        // DartNotificationCenter.post(channel: 'active_change_data');
-        Navigator.pop(context);
       }
       BotToast.closeAllLoading();
       // if(result.)
@@ -1128,8 +1126,6 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
       if (result == true) {
         Observable.instance
             .notifyObservers([], notifyName: "active_change_data");
-        // DartNotificationCenter.post(channel: 'active_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
@@ -1175,8 +1171,6 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
       if (result == true) {
         Observable.instance
             .notifyObservers([], notifyName: "active_change_data");
-        // DartNotificationCenter.post(channel: 'active_change_data');
-        Navigator.pop(context);
       }
 
       BotToast.closeAllLoading();
