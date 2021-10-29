@@ -6,10 +6,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/modal/user/secure.dart';
-import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/response/user_info_response.dart';
-import 'package:medical/src/model/service/api_result.dart';
-import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
@@ -17,12 +13,10 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:medical/src/widget/my_package/my_package_page.dart';
 
 class ProfileController extends StatefulWidget {
   @override
@@ -30,9 +24,7 @@ class ProfileController extends StatefulWidget {
 }
 
 class _ProfileControllerState extends State<ProfileController> with Observer {
-  bool isPro = false;
   SecureModel? secureModel;
-  final AppRepository _appRepository = AppRepository();
 
   void initState() {
     super.initState();
@@ -57,27 +49,14 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   }
 
   loadData() async {
-    await checkPackage();
     try {
       BotToast.showLoading();
       secureModel = await UserClient().fetchInfoSecure();
-      await checkPackage();
       BotToast.closeAllLoading();
       setState(() {});
     } catch (_) {
       BotToast.closeAllLoading();
     }
-  }
-
-  Future<void> checkPackage() async {
-    final ApiResult<UserInfoResponse> apiResult =
-        await _appRepository.getCurrentUserInfo();
-    apiResult.when(success: (UserInfoResponse response) {
-      final String packageCode = response.data?.packageCode ?? '';
-      isPro = packageCode.isNotEmpty && packageCode != Const.BASIC;
-    }, failure: (NetworkExceptions error) {
-      isPro = false;
-    });
   }
 
   @override
@@ -157,9 +136,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                                   child: Row(
                                     children: [
                                       Image.asset(
-                                          isPro
-                                              ? R.drawable.ic_pro
-                                              : R.drawable.ic_crown_green,
+                                          R.drawable.ic_crown_green,
                                           width: 20,
                                           height: 20),
                                       SizedBox(width: 8),
@@ -176,144 +153,76 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           ]),
                     ),
                   ]),
-                  //Buttons
-                  const SizedBox(height: 19),
+                  SizedBox(height: 16),
                   Row(children: [
-                    Expanded(
-                      child: buildItem(
-                          color: R.color.color0xffD3EFEE,
-                          title: R.string.blood_sugar_schedule_single_line.tr(),
-                          image: R.drawable.ic_blood_sugar_testing_schedule,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, NavigatorName.schedule_glucose);
-                          }),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: buildItem(
-                          color: R.color.color0xffFEEDDC,
-                          title: R.string.goal_setting.tr(),
-                          image: R.drawable.ic_set_goal,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, NavigatorName.goal_setting);
-                          }),
-                    )
+                    buildItem(R.color.color0xffD3EFEE, R.string.goal_setting.tr(),
+                        R.drawable.ic_set_goal, 0),
+                    SizedBox(width: 16),
+                    buildItem(R.color.color0xffFEEDDC, R.string.remind.tr(),
+                        R.drawable.ic_remind, 1)
                   ]),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 16),
                   Row(children: [
-                    Expanded(
-                      child: buildItem(
-                          isShow: isPro,
-                          color: R.color.color0xffFCF8DA,
-                          title: R.string.remind.tr(),
-                          image: R.drawable.ic_remind,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, NavigatorName.reminder);
-                          }),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: buildItem(
-                          isShow: isPro,
-                          color: R.color.color0xffD3EFEE,
-                          title: R.string.food_menu.tr(),
-                          image: R.drawable.ic_food_menu,
-                          onTap: () {
-                            NavigationUtil.navigatePage(context, const FoodMenuPage());
-                          }),
-                    )
+                    buildItem(R.color.color0xffFCF8DA, R.string.personal_schedule.tr(),
+                        R.drawable.ic_personal_schedule, 2),
+                    SizedBox(width: 16),
+                    buildItem(R.color.color0xffFDE9E9, R.string.blood_sugar_schedule.tr(),
+                        R.drawable.ic_blood_sugar_testing_schedule, 3)
                   ]),
-                  buildItem(
-                      isShow: !isPro,
-                      isRow: true,
-                      color: R.color.color0xffFCF8DA,
-                      title: R.string.remind.tr(),
-                      image: R.drawable.ic_remind,
-                      onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.reminder);
-                      }),
-                  const SizedBox(height: 12),
-                  buildItem(
-                      isRow: true,
-                      color: R.color.color0xffFDE9E9,
-                      title: R.string.personal_schedule_single_line.tr(),
-                      image: R.drawable.ic_personal_schedule,
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, NavigatorName.schedule_activity);
-                      }),
-                  const SizedBox(height: 12),
-                  buildItem(
-                      isRow: true,
-                      color: R.color.color0xffD3EFEE,
-                      title: R.string.my_package.tr(),
-                      image: R.drawable.ic_my_package,
-                      onTap: () {
-                        NavigationUtil.navigatePage(context, MyPackagePage());
-                      }),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   buildAction(
-                      R.string.profile_information.tr(), R.drawable.ic_user, 0),
+                      R.string.personal_info.tr(), R.drawable.ic_user, 0),
                   buildAction(
                       R.string.user_manual.tr(), R.drawable.ic_question, 1),
                   buildAction(R.string.information_security.tr(),
                       R.drawable.ic_security, 2),
                   buildAction(
                       R.string.contact_diab.tr(), R.drawable.ic_contact, 3),
-                  buildAction(
-                      R.string.password.tr(), R.drawable.ic_password, 4),
+                  buildAction(R.string.password.tr(), R.drawable.ic_password, 4),
                 ],
               ),
             )));
   }
 
-  Widget buildItem({
-    bool isShow = true,
-    bool isRow = false,
-    required Color color,
-    required String title,
-    required String image,
-    required VoidCallback onTap,
-  }) {
-    final Widget textWidget = Text(
-      title,
-      style: TextStyle(
-          fontSize: 14, fontWeight: FontWeight.w700, color: R.color.textDark),
-      textAlign: TextAlign.center,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-    );
-    return Visibility(
-      visible: isShow,
+  Widget buildItem(Color color, String title, String image, int index) {
+    return Expanded(
       child: GestureDetector(
-        onTap: onTap,
+        onTap: () {
+          if (index == 0) {
+            Navigator.pushNamed(
+                context, NavigatorName.goal_setting);
+          }
+          if (index == 2) {
+            Navigator.pushNamed(
+                context, NavigatorName.schedule_activity);
+          }
+          if (index == 1) {
+            Navigator.pushNamed(
+                context, NavigatorName.reminder);
+          }
+          if (index == 3) {
+            Navigator.pushNamed(
+                context, NavigatorName.schedule_glucose);
+          }
+          // if (index == 1 || index == 3) {
+          //   Message.showToastMessage(context,
+          //       'Tính năng này sẽ được ra mắt trong bản nâng cấp tiếp theo');
+          //}
+        },
         child: Container(
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: isRow
-              ? const EdgeInsets.symmetric(vertical: 7, horizontal: 12)
-              : const EdgeInsets.symmetric(vertical: 14),
-          child: isRow
-              ? Row(
-                  children: [
-                    Image.asset(image, width: 35, height: 35),
-                    const SizedBox(width: 12),
-                    textWidget,
-                  ],
-                )
-              : Column(
-                  children: [
-                    Image.asset(image, width: 35, height: 35),
-                    const SizedBox(height: 12),
-                    textWidget,
-                  ],
-                ),
-        ),
+            decoration: BoxDecoration(
+                color: color, borderRadius: BorderRadius.circular(12)),
+            padding: EdgeInsets.all(14),
+            child: Column(children: [
+              Image.asset(image, width: 35, height: 35),
+              SizedBox(height: 12),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.textDark),
+                  textAlign: TextAlign.center)
+            ])),
       ),
     );
   }

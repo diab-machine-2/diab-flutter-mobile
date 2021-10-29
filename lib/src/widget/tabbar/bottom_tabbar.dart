@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -66,7 +65,7 @@ class _BottomTabbar extends State<BottomTabbar> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(image,
-                    height: 20.h,
+                    height: 20,
                     color: index == screenIndex
                         ? R.color.accentColor
                         : R.color.gray),
@@ -76,7 +75,7 @@ class _BottomTabbar extends State<BottomTabbar> {
                         color: index == screenIndex
                             ? R.color.accentColor
                             : R.color.gray,
-                        fontSize: 12.sp,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold))
               ],
             ),

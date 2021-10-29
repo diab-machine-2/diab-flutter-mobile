@@ -144,12 +144,8 @@ class FoodItem extends StatelessWidget {
     try {
       if (!model.liked!) {
         await FoodClient().addFoodToFavorite(model.id);
-        Observable.instance.notifyObservers([], notifyName : "add_food_to_favorite");
-        // DartNotificationCenter.post(channel: 'add_food_to_favorite');
       } else {
         await FoodClient().romoveFoodFromFavorite(model.id);
-        Observable.instance.notifyObservers([], notifyName : "add_food_to_favorite");
-        // DartNotificationCenter.post(channel: 'add_food_to_favorite');
       }
       BotToast.closeAllLoading();
     } catch (e, _) {

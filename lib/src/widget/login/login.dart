@@ -519,7 +519,7 @@ class _LoginControllerState extends State<LoginController> {
               'Apple', credential.givenName ?? R.string.user_name_default.tr(), false);
         }
       } else {
-        Message.showToastMessage(context, error.toString());
+        // Message.showToastMessage(context, error.toString());
       }
     }
   }

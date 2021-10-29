@@ -364,7 +364,7 @@ cap_nhat_chi_so_hba1c,Cập nhật chỉ số HbA1C,
 nhap_chi_so_hba1c,Nhập chỉ số HbA1C,
 chi_so_hba1c_doi_voi_benh_tieu_duong,Chỉ số HbA1C đối với bệnh tiểu đường,
 ban_chua_nhap_chi_so_hba1c,Bạn chưa nhập chỉ số HbA1C,
-invalid_hba1c,Chúng tôi xin lỗi, số liệu mà bạn nhập không trong phạm vi cho phép. Giá trị kỳ vọng nằm trong ngưỡng 1 - 30,
+invalid_hba1c,"Chúng tôi xin lỗi, số liệu mà bạn nhập không trong phạm vi cho phép. Giá trị kỳ vọng nằm trong ngưỡng 1 - 30",
 bang_chi_so_hba1c_va_duong_huyet,Bảng chỉ số HbA1C & đường huyết,
 HomeScreen,============================================Home screen====================================================
 thanh_vien_co_ban,Thành viên cơ bản,
