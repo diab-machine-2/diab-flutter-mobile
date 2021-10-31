@@ -19,9 +19,14 @@ class FoodChooseQuantity extends StatefulWidget {
   final FoodModel? selectedModel;
   final String? categoryId;
   final FoodQuantityCallback? callback;
+  final double? kcalLeft;
 
   FoodChooseQuantity(
-      {this.model, this.selectedModel, this.categoryId, this.callback});
+      {this.model,
+      this.selectedModel,
+      this.categoryId,
+      this.callback,
+      required this.kcalLeft});
 
   @override
   _FoodChooseQuantityState createState() => _FoodChooseQuantityState();
@@ -43,12 +48,13 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     if (widget.selectedModel != null) {
       selectedQuantity = (widget.selectedModel!.portion ?? 0).floor();
       selectedPercent =
-          (((widget.selectedModel!.portion ?? 0) - selectedQuantity) * 10).round();
+          (((widget.selectedModel!.portion ?? 0) - selectedQuantity) * 10)
+              .round();
       //selectedPercent = selectedPercent == 0 ? 0 : (selectedPercent + 1);
-      _controllerKcal.text =
-          ((widget.selectedModel!.calorie ?? 0) * (widget.selectedModel!.quantity ?? 0))
-              .round()
-              .toString();
+      _controllerKcal.text = ((widget.selectedModel!.calorie ?? 0) *
+              (widget.selectedModel!.quantity ?? 0))
+          .round()
+          .toString();
     }
     hourController = FixedExtentScrollController(initialItem: selectedQuantity);
     minuteController =
@@ -183,76 +189,109 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                           ),
                         ),
                       ),
-                      widget.model?.code == 'OtherUneditable'
-                          ? Padding(
-                              padding: EdgeInsets.all(20),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(height: 40),
-                                    Text('Số Kcal đã nạp',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500)),
-                                    SizedBox(height: 20),
-                                    TextField(
-                                        controller: _controllerKcal,
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter.deny(
-                                              RegExp(r'[-.]'))
-                                        ],
-                                        enableInteractiveSelection: false,
-                                        keyboardType: TextInputType.number,
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w400),
-                                        decoration: InputDecoration(
-                                            hintText: 'Nhập số Kcal đã nạp',
-                                            contentPadding:
-                                                EdgeInsets.only(bottom: 8),
-                                            border: InputBorder.none,
-                                            hintStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400,
-                                                color: Color(0xff666666)))),
-                                    Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
-                                    SizedBox(height: 20),
-                                  ]),
-                            )
-                          : Column(
+                      if (widget.model?.code == 'OtherUneditable')
+                        Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                  SizedBox(height: 16),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 16),
-                                    child: Text('Khẩu phần của bạn',
-                                        style: TextStyle(
-                                            color: Colors.black,
+                                SizedBox(height: 40),
+                                Text('Số Kcal đã nạp',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500)),
+                                SizedBox(height: 20),
+                                TextField(
+                                    controller: _controllerKcal,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.deny(
+                                          RegExp(r'[-.]'))
+                                    ],
+                                    enableInteractiveSelection: false,
+                                    keyboardType: TextInputType.number,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                    decoration: InputDecoration(
+                                        hintText: 'Nhập số Kcal đã nạp',
+                                        contentPadding:
+                                            EdgeInsets.only(bottom: 8),
+                                        border: InputBorder.none,
+                                        hintStyle: TextStyle(
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w500)),
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xff666666)))),
+                                Container(height: 1, color: Color(0xffE5E5E5)),
+                                SizedBox(height: 20),
+                              ]),
+                        )
+                      else
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 16),
+                              Visibility(
+                                visible: widget.kcalLeft != null,
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      text:
+                                          R.string.food_quantity_recommand.tr(),
+                                      style: TextStyle(
+                                          color: R.color.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400),
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                              ' ${recommendedQuantity?.toStringAsFixed(1)} ${widget.model?.unit} ',
+                                          style: TextStyle(
+                                              color: R.color.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                        TextSpan(
+                                          text: R.string.for_this_food.tr(),
+                                          style: TextStyle(
+                                              color: R.color.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  SizedBox(height: 16),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                          height: 150,
-                                          width: 106,
-                                          child: CupertinoPicker(
-                                              scrollController: hourController,
-                                              selectionOverlay: null,
-                                              onSelectedItemChanged: (value) {
-                                                setState(() {
-                                                  selectedQuantity = value;
-                                                  //widget.callback(selectedHour, selectedMinute);
-                                                });
-                                              },
-                                              itemExtent: 47.0,
-                                              children: List<int>.generate(
-                                                      16, (i) => i)
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 16),
+                                child: Text('Khẩu phần của bạn',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500)),
+                              ),
+                              SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                      height: 150,
+                                      width: 106,
+                                      child: CupertinoPicker(
+                                          scrollController: hourController,
+                                          selectionOverlay: null,
+                                          onSelectedItemChanged: (value) {
+                                            setState(() {
+                                              selectedQuantity = value;
+                                              //widget.callback(selectedHour, selectedMinute);
+                                            });
+                                          },
+                                          itemExtent: 47.0,
+                                          children:
+                                              List<int>.generate(16, (i) => i)
                                                   .map((e) => Center(
                                                         child: Text(
                                                             (e).toString(),
@@ -269,29 +308,28 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                                                         .bold)),
                                                       ))
                                                   .toList())),
-                                      SizedBox(width: 8),
-                                      Text(',',
-                                          style: TextStyle(
-                                              color: Color(0xff01645A),
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.bold)),
-                                      SizedBox(width: 8),
-                                      Container(
-                                          height: 150,
-                                          width: 106,
-                                          child: CupertinoPicker(
-                                              scrollController:
-                                                  minuteController,
-                                              selectionOverlay: null,
-                                              onSelectedItemChanged: (value) {
-                                                setState(() {
-                                                  selectedPercent = value;
-                                                  //widget.callback(selectedHour, selectedMinute);
-                                                });
-                                              },
-                                              itemExtent: 47.0,
-                                              children: List<int>.generate(
-                                                      10, (i) => i)
+                                  SizedBox(width: 8),
+                                  Text(',',
+                                      style: TextStyle(
+                                          color: Color(0xff01645A),
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold)),
+                                  SizedBox(width: 8),
+                                  Container(
+                                      height: 150,
+                                      width: 106,
+                                      child: CupertinoPicker(
+                                          scrollController: minuteController,
+                                          selectionOverlay: null,
+                                          onSelectedItemChanged: (value) {
+                                            setState(() {
+                                              selectedPercent = value;
+                                              //widget.callback(selectedHour, selectedMinute);
+                                            });
+                                          },
+                                          itemExtent: 47.0,
+                                          children:
+                                              List<int>.generate(10, (i) => i)
                                                   .map((e) => Center(
                                                         child: Text('$e',
                                                             style: TextStyle(
@@ -307,9 +345,9 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                                                         .bold)),
                                                       ))
                                                   .toList()))
-                                    ],
-                                  ),
-                                ]),
+                                ],
+                              ),
+                            ]),
                       SizedBox(height: 16),
                       Row(children: [
                         SizedBox(width: 16),
@@ -412,6 +450,12 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
         ),
       ),
     );
+  }
+
+  double? get recommendedQuantity {
+    if (widget.kcalLeft != null) {
+      return widget.kcalLeft! / (widget.model?.calorie ?? 1);
+    }
   }
 
   Widget buildItem(String title, double? number, String unit) {

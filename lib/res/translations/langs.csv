@@ -582,6 +582,7 @@ suggest_food_empty,"Rất tiếc! Chúng tôi chưa tìm được món ăn phù 
 food_menu_empty,"Rất tiếc! Chúng tôi chưa có thực đơn mẫu nằm trong khung năng lượng của bạn.",
 food_menu_update_required,Vui lòng nâng cấp tài khoản lên gói Đồng hành để xem đầy đủ thực đơn mẫu cho cả tuần!,
 energy_use_per_day,Mức tiêu hao năng lượng/ngày của bạn,
+food_from_menu,"Theo thực đơn mẫu, có phải bạn đã ăn",
 MyPlanScreen,============================================MyPlan screen====================================================
 activity,Hoạt động,
 title_goal,Mục tiêu,
