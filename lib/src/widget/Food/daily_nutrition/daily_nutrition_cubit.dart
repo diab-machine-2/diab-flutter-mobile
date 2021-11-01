@@ -105,7 +105,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   }
 
   void removeFood(int index) {
-    if (files[index] is PickedFile) {
+    if (files[index] is XFile) {
       files.removeAt(index);
     } else {
       removeIDs.add(files[index].id);
