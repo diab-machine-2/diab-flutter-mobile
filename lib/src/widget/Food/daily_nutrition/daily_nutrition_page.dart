@@ -6,7 +6,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
@@ -86,7 +85,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                       _cubit.showDetailToggle();
                     },
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: _cubit.showDetail
                           ? Image.asset(R.drawable.ic_help_circle_active,
                               width: 24, height: 24)
@@ -100,9 +99,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                         child: ListView(
                           keyboardDismissBehavior:
                               ScrollViewKeyboardDismissBehavior.onDrag,
-                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           children: [
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Visibility(
                               visible: _cubit.showDetail,
                               child: Description(
@@ -115,7 +114,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                             Stack(
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.only(top: 12),
+                                  padding: const EdgeInsets.only(top: 12),
                                   child: Container(
                                     height: 136,
                                     decoration: BoxDecoration(
@@ -126,17 +125,17 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                 ),
                                 Row(
                                   children: [
-                                    SizedBox(width: 16),
+                                    const SizedBox(width: 16),
                                     Image.asset(R.drawable.img_food_person,
-                                        width: 113 , height: 148),
-                                    SizedBox(width: 16),
+                                        width: 113, height: 148),
+                                    const SizedBox(width: 16),
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                             '${R.string.luong_calo_ban_da_nap.tr()}:'),
-                                        SizedBox(height: 8),
+                                        const SizedBox(height: 8),
                                         Row(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.end,
@@ -149,10 +148,10 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
-                                            SizedBox(width: 4),
+                                            const SizedBox(width: 4),
                                             Padding(
-                                              padding:
-                                                  EdgeInsets.only(bottom: 3),
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 3),
                                               child: Text(
                                                 R.string.kcal.tr(),
                                               ),
@@ -192,24 +191,24 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Image.asset(R.drawable.ic_calendar,
-                                                width: 24 , height: 24),
-                                            SizedBox(width: 8),
+                                                width: 24, height: 24),
+                                            const SizedBox(width: 8),
                                             Text(
                                                 convertToUTC(
                                                     _cubit.selectedDate
                                                             .millisecondsSinceEpoch ~/
                                                         1000,
                                                     'HH:mm - dd/MM/yyyy'),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.w400))
                                           ]),
-                                      SizedBox(height: 16),
+                                      const SizedBox(height: 16),
                                       Container(
                                           height: 1,
                                           color: R.color.color0xffE5E5E5),
-                                      SizedBox(height: 8),
+                                      const SizedBox(height: 8),
                                     ]),
                                   ),
                                 )
@@ -229,199 +228,245 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Image.asset(R.drawable.ic_clock,
-                                              width: 24 , height: 24),
-                                          SizedBox(width: 8),
+                                              width: 24, height: 24),
+                                          const SizedBox(width: 8),
                                           Text(
                                             _cubit.selectedTimeFrame == null
                                                 ? R.string.chon_khung_gio.tr()
-                                                : _cubit
-                                                    .selectedTimeFrame!.name ?? '',
-                                            style: TextStyle(
+                                                : _cubit.selectedTimeFrame!
+                                                        .name ??
+                                                    '',
+                                            style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
                                             ),
                                           )
                                         ],
                                       ),
-                                      SizedBox(height: 16),
+                                      const SizedBox(height: 16),
                                       Container(
                                           height: 1,
                                           color: R.color.color0xffE5E5E5),
-                                      SizedBox(height: 8),
+                                      const SizedBox(height: 8),
                                     ]),
                                   ),
                                 )
                               ]),
                             ),
                             _buildItemLayout(
-                              child: Column(children: [
-                                Container(
-                                  color: R.color.transparent,
-                                  child: Column(children: [
-                                    InkWell(
-                                      onTap: () {
-                                        addFood(context);
-                                      },
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Image.asset(R.drawable.ic_bowl,
-                                                width: 24, height: 24),
-                                            Row(
-                                              children: [
-                                                Image.asset(
-                                                  R.drawable.ic_circle_plus_exe,
-                                                  width: 24,
-                                                  height: 24,
-                                                ),
-                                                SizedBox(width: 4),
-                                                Text(
-                                                  R.string.them_mon_an.tr(),
-                                                  style: TextStyle(
-                                                    color: R.color.mainColor,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ]),
-                                    ),
-                                    SizedBox(height: 16),
-                                    Container(
-                                        height: 1,
-                                        color: R.color.color0xffE5E5E5),
-                                    ListView.separated(
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        padding: EdgeInsets.zero,
-                                        itemCount:
-                                            _cubit.selectedFoods.length,
-                                        separatorBuilder: (context, index) {
-                                          return Container(
-                                              height: 1,
-                                              color: R.color.color0xffD6D8E0);
+                              child: Container(
+                                color: R.color.transparent,
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          addFood(context);
                                         },
-                                        itemBuilder: (BuildContext context,
-                                            int index) {
-                                              final String quantity = '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0)}';
-                                              final String kcal = formatNumber((_cubit.selectedFoods[index].portion ?? 0) * _cubit.selectedFoods[index].calorie!);
-                                              final String detail = '${R.string.da_an.tr()} $quantity ${_cubit.selectedFoods[index].unit}, $kcal ${R.string.kcal.tr()}';
-                                          return Container(
-                                            color: R.color.transparent,
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 12,
+                                        child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Image.asset(R.drawable.ic_bowl,
+                                                  width: 24, height: 24),
+                                              Row(
+                                                children: [
+                                                  Image.asset(
+                                                    R.drawable
+                                                        .ic_circle_plus_exe,
+                                                    width: 24,
+                                                    height: 24,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    R.string.them_mon_an.tr(),
+                                                    style: TextStyle(
+                                                      color: R.color.mainColor,
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ]),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Container(
+                                          height: 1,
+                                          color: R.color.color0xffE5E5E5),
+                                      Visibility(
+                                        visible: _cubit.showFoodFromMenuTitle,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 10),
+                                          child: Text(
+                                            '${R.string.food_from_menu.tr()}:',
+                                            style: TextStyle(
+                                              color: R.color.accentColor,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
                                             ),
-                                            child: Row(
-                                              children: [
-                                                CachedNetworkImage(
-                                                  imageUrl: _cubit
-                                                          .selectedFoods[
-                                                              index]
-                                                          .image!
-                                                          .url ??
-                                                      '',
-                                                  width: 50,
-                                                  height: 50,
-                                                  placeholder: (_, __) {
-                                                    return const Center(
-                                                        child:
-                                                            CircularProgressIndicator());
-                                                  },
-                                                  errorWidget: (_, __, ___) {
-                                                    return Image.asset(R
-                                                        .drawable
-                                                        .ic_food_default);
-                                                  },
-                                                ),
-                                                Expanded(
-                                                  child: Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 8),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                            _cubit
-                                                                .selectedFoods[
-                                                                    index]
-                                                                .name!,
+                                          ),
+                                        ),
+                                      ),
+                                      ListView.separated(
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          padding: EdgeInsets.zero,
+                                          itemCount:
+                                              _cubit.selectedFoods.length,
+                                          separatorBuilder: (context, index) {
+                                            return Container(
+                                                height: 1,
+                                                color: R.color.color0xffD6D8E0);
+                                          },
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            final String quantity =
+                                                '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0)}';
+                                            final String kcal = formatNumber(
+                                                (_cubit.selectedFoods[index]
+                                                            .portion ??
+                                                        0) *
+                                                    _cubit.selectedFoods[index]
+                                                        .calorie!);
+                                            final String detail =
+                                                '${R.string.da_an.tr()} $quantity ${_cubit.selectedFoods[index].unit}, $kcal ${R.string.kcal.tr()}';
+                                            return Container(
+                                              color: R.color.transparent,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: 12,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  CachedNetworkImage(
+                                                    imageUrl: _cubit
+                                                            .selectedFoods[
+                                                                index]
+                                                            .image!
+                                                            .url ??
+                                                        '',
+                                                    width: 50,
+                                                    height: 50,
+                                                    placeholder: (_, __) {
+                                                      return const Center(
+                                                          child:
+                                                              CircularProgressIndicator());
+                                                    },
+                                                    errorWidget: (_, __, ___) {
+                                                      return Image.asset(R
+                                                          .drawable
+                                                          .ic_food_default);
+                                                    },
+                                                  ),
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding: const EdgeInsets
+                                                              .symmetric(
+                                                          horizontal: 8),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                              _cubit
+                                                                  .selectedFoods[
+                                                                      index]
+                                                                  .name!,
+                                                              style: TextStyle(
+                                                                  color: R.color
+                                                                      .textDark,
+                                                                  fontSize: 16,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700)),
+                                                          const SizedBox(
+                                                              height: 4),
+                                                          Text(
+                                                            detail,
                                                             style: TextStyle(
                                                                 color: R.color
                                                                     .textDark,
-                                                                fontSize:
-                                                                    16,
+                                                                fontSize: 16,
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w700)),
-                                                        SizedBox(height: 4),
-                                                        Text(
-                                                          detail,
-                                                          style: TextStyle(
-                                                              color: R.color
-                                                                  .textDark,
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400),
-                                                        )
-                                                      ],
+                                                                        .w400),
+                                                          )
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                                GestureDetector(
-                                                  onTap: () async {
-                                                    final dynamic result =
-                                                        await NavigationUtil
-                                                            .navigatePage(
-                                                      context,
-                                                      ChangeMenuPage(
-                                                        preFoodModel: _cubit
-                                                                .selectedFoods[
-                                                            index],
-                                                        hasSelectQuantity:
-                                                            true,
+                                                  Visibility(
+                                                    visible: _cubit
+                                                            .selectedFoods[
+                                                                index]
+                                                            .mealId
+                                                            ?.isNotEmpty ==
+                                                        true,
+                                                    child: GestureDetector(
+                                                      onTap: () async {
+                                                        final dynamic result =
+                                                            await NavigationUtil
+                                                                .navigatePage(
+                                                          context,
+                                                          ChangeMenuPage(
+                                                            preFoodModel: _cubit
+                                                                    .selectedFoods[
+                                                                index],
+                                                            hasSelectQuantity:
+                                                                true,
+                                                          ),
+                                                        );
+                                                        if (result
+                                                            is FoodModel) {
+                                                          await _cubit
+                                                              .changeFood(
+                                                                  newFoodModel:
+                                                                      result);
+                                                          _cubit.selectedFoods[
+                                                              index] = result;
+                                                          if (result.mealId
+                                                                  ?.isNotEmpty ==
+                                                              true) {
+                                                            _cubit.foodSuggestByMenu[
+                                                                index] = result;
+                                                          }
+
+                                                          _cubit.refresh();
+                                                        }
+                                                      },
+                                                      child: Image.asset(
+                                                        R.drawable.ic_refresh,
+                                                        width: 20,
+                                                        height: 20,
                                                       ),
-                                                    );
-                                                    if (result is FoodModel) {
-                                                      await _cubit.changeFood(newFoodModel: result);
-                                                      _cubit.selectedFoods[
-                                                          index] = result;
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 12),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      _cubit.selectedFoods
+                                                          .removeAt(index);
+                                                      _cubit.calculatorCalo();
                                                       _cubit.refresh();
-                                                    }
-                                                  },
-                                                  child: Image.asset(
-                                                    R.drawable.ic_refresh,
-                                                    width: 20,
-                                                    height: 20,
+                                                    },
+                                                    child: Image.asset(
+                                                      R.drawable.ic_trash_red,
+                                                      width: 20,
+                                                      height: 20,
+                                                    ),
                                                   ),
-                                                ),
-                                                SizedBox(width: 12),
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    _cubit.selectedFoods
-                                                        .removeAt(index);
-                                                    _cubit.calculatorCalo();
-                                                    _cubit.refresh();
-                                                  },
-                                                  child: Image.asset(
-                                                    R.drawable.ic_trash_red,
-                                                    width: 20,
-                                                    height: 20,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        })
-                                  ]),
-                                )
-                              ]),
+                                                ],
+                                              ),
+                                            );
+                                          })
+                                    ]),
+                              ),
                             ),
                             _buildItemLayout(
                               child: Column(
@@ -430,16 +475,16 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                   Row(children: [
                                     Image.asset(R.drawable.ic_note_text,
                                         width: 24, height: 24),
-                                    SizedBox(width: 8),
+                                    const SizedBox(width: 8),
                                     Text(
                                       R.string.ghi_chu.tr(),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     )
                                   ]),
-                                  SizedBox(height: 24),
+                                  const SizedBox(height: 24),
                                   TextField(
                                       controller: _controllerNote,
                                       style: TextStyle(
@@ -451,7 +496,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                               .string.nhap_ghi_chu_cua_ban
                                               .tr(),
                                           contentPadding:
-                                              EdgeInsets.only(bottom: 8),
+                                              const EdgeInsets.only(bottom: 8),
                                           border: InputBorder.none,
                                           hintStyle: TextStyle(
                                               fontSize: 16,
@@ -461,7 +506,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                   Container(
                                       height: 1,
                                       color: R.color.color0xffE5E5E5),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   GridView.builder(
                                     physics:
                                         const NeverScrollableScrollPhysics(),
@@ -518,7 +563,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                 ],
                               ),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                           ],
                         ),
                       ),
@@ -532,9 +577,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                             top: false,
                             child: Container(
                               height: 48,
-                              width: 195 ,
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 16 , vertical: 16),
+                              width: 195,
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 16),
                               decoration: BoxDecoration(
                                 color: R.color.mainColor,
                                 borderRadius: BorderRadius.circular(200),
@@ -563,8 +608,8 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                         SafeArea(
                           top: false,
                           child: Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 16 , vertical: 16),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 16),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -574,7 +619,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                   },
                                   child: Container(
                                       height: 48,
-                                      width: 164 ,
+                                      width: 164,
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(200),
@@ -595,7 +640,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                   },
                                   child: Container(
                                     height: 48,
-                                    width: 164 ,
+                                    width: 164,
                                     decoration: BoxDecoration(
                                         color: R.color.mainColor,
                                         borderRadius:
@@ -633,13 +678,13 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
 
   Widget _buildItemLayout({required Widget child}) {
     return Container(
-      margin: EdgeInsets.only(top: 16),
+      margin: const EdgeInsets.only(top: 16),
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      padding: EdgeInsets.symmetric(
-        horizontal: 16 ,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
         vertical: 16,
       ),
       child: child,
@@ -679,6 +724,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
               _cubit.calculatorCalo();
               _cubit.refresh();
             },
+            suggestKcal: _cubit.totalKcalInFoodMenu,
           );
         },
       ),
@@ -692,11 +738,11 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
         actions: <Widget>[
           CupertinoActionSheetAction(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(
                 children: [
                   Image.asset(R.drawable.ic_photo, width: 24, height: 24),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Text(
                     R.string.chon_trong_thu_vien.tr(),
                     style: TextStyle(
@@ -714,12 +760,12 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
           ),
           CupertinoActionSheetAction(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(
                 children: [
                   Image.asset(R.drawable.ic_camera_black,
                       width: 24, height: 24),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Text(
                     R.string.chup_anh.tr(),
                     style: TextStyle(
@@ -822,7 +868,8 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
           content: Stack(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16 , vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -837,7 +884,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                               fontWeight: FontWeight.w600)),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.only(top: 16),
                       child: Text(R.string.confirm_to_remove_data.tr(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -846,7 +893,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                               fontWeight: FontWeight.w400)),
                     ),
                     Container(
-                      margin: EdgeInsets.only(top: 16),
+                      margin: const EdgeInsets.only(top: 16),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -870,7 +917,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                     )),
                               ),
                             ),
-                            SizedBox(width: 14),
+                            const SizedBox(width: 14),
                             Expanded(
                               child: GestureDetector(
                                 onTap: () {
@@ -945,7 +992,8 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
           content: Stack(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16 , vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -960,7 +1008,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                               fontWeight: FontWeight.w600)),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.only(top: 16),
                       child: Text(R.string.confirm_to_back.tr(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -968,7 +1016,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                               fontSize: 14,
                               fontWeight: FontWeight.w400)),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -990,7 +1038,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                             fontWeight: FontWeight.w600)),
                                   ))),
                         ),
-                        SizedBox(width: 14),
+                        const SizedBox(width: 14),
                         Expanded(
                           child: GestureDetector(
                             onTap: () {

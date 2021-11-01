@@ -67,6 +67,11 @@ class FoodModel {
     );
   }
 
+  double? get totalKcal {
+    if (calorie == null || portion == null) return null;
+    return calorie! * portion!;
+  }
+
   static List<FoodModel> toList(List<dynamic> items) {
     return items.map((item) => FoodModel.fromJson(item)).toList();
   }
