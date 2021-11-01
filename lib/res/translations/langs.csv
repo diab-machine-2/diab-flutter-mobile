@@ -352,6 +352,7 @@ mon_yeu_thich,Món yêu thích,
 danh_muc,Danh mục,
 kcal_input,Số Kcal đã nạp,
 enter_kcal_hint,Nhập số Kcal đã nạp,
+invalid_kcal,Số Kcal phải lớn hơn 0,
 Hba1cScreen,============================================Hba1c screen====================================================
 tim_hieu_them,Tìm hiểu thêm,
 bai_viet_noi_bat,Bài viết nổi bật,

@@ -194,7 +194,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const SizedBox(height: 40),
-                                Text(R.string.kcal_input,
+                                Text(R.string.kcal_input.tr(),
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontSize: 16,
@@ -213,7 +213,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400),
                                     decoration: InputDecoration(
-                                        hintText: R.string.enter_kcal_hint,
+                                        hintText: R.string.enter_kcal_hint.tr(),
                                         contentPadding:
                                             const EdgeInsets.only(bottom: 8),
                                         border: InputBorder.none,
@@ -267,7 +267,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(left: 16),
-                                child: Text(R.string.khau_phan_cua_ban,
+                                child: Text(R.string.khau_phan_cua_ban.tr(),
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontSize: 16,
@@ -383,14 +383,14 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                               if (_controllerKcal.text.isEmpty &&
                                   widget.model!.code == 'OtherUneditable') {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập dữ liệu');
+                                    context, R.string.ban_chua_nhap_du_lieu.tr());
                                 return;
                               }
                               if (widget.model!.code == 'OtherUneditable') {
                                 quantity = double.parse(_controllerKcal.text);
                                 if (quantity == 0) {
                                   Message.showToastMessage(
-                                      context, 'Số Kcal phải lớn hơn 0');
+                                      context, R.string.invalid_kcal.tr());
                                   return;
                                 }
                               }

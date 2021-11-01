@@ -354,6 +354,7 @@ class Strings {
 	String get danh_muc => 'danh_muc';
 	String get kcal_input => 'kcal_input';
 	String get enter_kcal_hint => 'enter_kcal_hint';
+	String get invalid_kcal => 'invalid_kcal';
 	String get hba1cscreen => 'Hba1cScreen';
 	String get tim_hieu_them => 'tim_hieu_them';
 	String get bai_viet_noi_bat => 'bai_viet_noi_bat';
