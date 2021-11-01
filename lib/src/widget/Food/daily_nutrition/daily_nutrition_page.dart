@@ -401,40 +401,50 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                       ),
                                                     ),
                                                   ),
-                                                  GestureDetector(
-                                                    onTap: () async {
-                                                      final dynamic result =
-                                                          await NavigationUtil
-                                                              .navigatePage(
-                                                        context,
-                                                        ChangeMenuPage(
-                                                          preFoodModel: _cubit
-                                                                  .selectedFoods[
-                                                              index],
-                                                          hasSelectQuantity:
-                                                              true,
-                                                        ),
-                                                      );
-                                                      if (result is FoodModel) {
-                                                        await _cubit.changeFood(
-                                                            newFoodModel:
-                                                                result);
-                                                        _cubit.selectedFoods[
-                                                            index] = result;
-                                                        if (result.mealId
-                                                                ?.isNotEmpty ==
-                                                            true) {
-                                                          _cubit.foodSuggestByMenu[
+                                                  Visibility(
+                                                    visible: _cubit
+                                                            .selectedFoods[
+                                                                index]
+                                                            .mealId
+                                                            ?.isNotEmpty ==
+                                                        true,
+                                                    child: GestureDetector(
+                                                      onTap: () async {
+                                                        final dynamic result =
+                                                            await NavigationUtil
+                                                                .navigatePage(
+                                                          context,
+                                                          ChangeMenuPage(
+                                                            preFoodModel: _cubit
+                                                                    .selectedFoods[
+                                                                index],
+                                                            hasSelectQuantity:
+                                                                true,
+                                                          ),
+                                                        );
+                                                        if (result
+                                                            is FoodModel) {
+                                                          await _cubit
+                                                              .changeFood(
+                                                                  newFoodModel:
+                                                                      result);
+                                                          _cubit.selectedFoods[
                                                               index] = result;
-                                                        }
+                                                          if (result.mealId
+                                                                  ?.isNotEmpty ==
+                                                              true) {
+                                                            _cubit.foodSuggestByMenu[
+                                                                index] = result;
+                                                          }
 
-                                                        _cubit.refresh();
-                                                      }
-                                                    },
-                                                    child: Image.asset(
-                                                      R.drawable.ic_refresh,
-                                                      width: 20,
-                                                      height: 20,
+                                                          _cubit.refresh();
+                                                        }
+                                                      },
+                                                      child: Image.asset(
+                                                        R.drawable.ic_refresh,
+                                                        width: 20,
+                                                        height: 20,
+                                                      ),
                                                     ),
                                                   ),
                                                   const SizedBox(width: 12),

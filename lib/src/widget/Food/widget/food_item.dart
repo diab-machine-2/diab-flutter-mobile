@@ -99,23 +99,10 @@ class FoodItem extends StatelessWidget {
             SizedBox(width: 8),
             GestureDetector(
               onTap: () {
-                final newModel = FoodModel(
-                    id: model.id,
-                    code: model.code,
-                    name: model.name,
-                    portion: model.portion,
-                    unit: model.unit,
-                    calorie: model.calorie,
-                    glucose: model.glucose,
-                    lipid: model.lipid,
-                    protein: model.protein,
-                    fibre: model.fibre,
-                    image: model.image,
-                    liked: !(model.liked ?? true),
-                    text: model.text,
-                    description: model.description,
-                    foodCategoryId: model.foodCategoryId,
-                    quantity: model.quantity);
+                final newModel = model.copyWith(
+                  mealId: selectedModel?.mealId,
+                  liked: !(model.liked ?? true),
+                );
                 callback(newModel, index);
                 likeFood(context);
               },

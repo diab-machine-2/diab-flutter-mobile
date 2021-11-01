@@ -397,25 +397,12 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                               Observable.instance.notifyObservers([],
                                   notifyName: "add_food_to_cart",
                                   map: {
-                                    "food": FoodModel(
-                                      id: widget.model!.id,
-                                      name: widget.model!.name,
+                                    "food": widget.model!.copyWith(
                                       portion: quantity,
-                                      unit: widget.model!.unit,
-                                      calorie: widget.model!.calorie,
-                                      glucose: widget.model!.glucose,
-                                      lipid: widget.model!.lipid,
-                                      protein: widget.model!.protein,
-                                      fibre: widget.model!.fibre,
-                                      image: widget.model!.image,
-                                      liked: widget.model!.liked,
-                                      text: widget.model!.text,
-                                      description: widget.model!.description,
-                                      foodCategoryId:
-                                          widget.model!.foodCategoryId,
                                       quantity: quantity,
-                                      mealId: widget.model!.mealId,
-                                    )
+                                      mealId: widget.selectedModel?.mealId ??
+                                          widget.model!.mealId,
+                                    ),
                                   });
                               Navigator.pop(context);
                             },
