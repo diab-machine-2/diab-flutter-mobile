@@ -18,7 +18,8 @@ typedef SearchFoodCallback = Function(List<FoodModel>);
 class SearchFoodController extends StatefulWidget {
   final List<FoodModel>? foods;
   final SearchFoodCallback? callback;
-  SearchFoodController({this.foods, this.callback});
+  final double? suggestKcal;
+  const SearchFoodController({this.foods, this.callback, this.suggestKcal});
   @override
   _SearchFoodControllerState createState() => _SearchFoodControllerState();
 
@@ -113,6 +114,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                                 builder: (BuildContext context) {
                                   return SearchFood(
                                     foods: selectedFoods,
+                                    suggestKcal: widget.suggestKcal,
                                   );
                                 }));
                       },
@@ -148,9 +150,18 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                     child: Padding(
                       padding: EdgeInsets.only(bottom: 150),
                       child: TabBarView(controller: _tabController, children: [
-                        NearFood(foods: selectedFoods),
-                        FavoriteFood(foods: selectedFoods),
-                        CategoryFood(foods: selectedFoods)
+                        NearFood(
+                          foods: selectedFoods,
+                          suggestKcal: widget.suggestKcal,
+                        ),
+                        FavoriteFood(
+                          foods: selectedFoods,
+                          suggestKcal: widget.suggestKcal,
+                        ),
+                        CategoryFood(
+                          foods: selectedFoods,
+                          suggestKcal: widget.suggestKcal,
+                        )
                       ]),
                     ),
                   )

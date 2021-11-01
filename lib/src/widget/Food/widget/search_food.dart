@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 
 class SearchFood extends StatefulWidget {
   final List<FoodModel> foods;
-  SearchFood({required this.foods});
+  final double? suggestKcal;
+  const SearchFood({required this.foods, required this.suggestKcal});
   @override
   _SearchFoodState createState() => _SearchFoodState();
 }
@@ -83,6 +86,18 @@ class _SearchFoodState extends State<SearchFood> with Observer {
   likeFood(FoodModel model, int index) {
     BlocProvider.of<FoodBloc>(currentContext)
         .add(LikeFood(model: model, index: index));
+  }
+
+  double? getKcalLeft(FoodModel? selectedModel) {
+    if (widget.suggestKcal == null) return null;
+    double totalSelectedKcal = 0;
+    for (final food in selectedFoods) {
+      totalSelectedKcal += food.totalKcal ?? 0;
+    }
+    final double kcalLeft = widget.suggestKcal! -
+        totalSelectedKcal +
+        (selectedModel?.totalKcal ?? 0);
+    return max(kcalLeft, 0);
   }
 
   @override
@@ -224,16 +239,20 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                                                 .lastIndexWhere((element) =>
                                                     element.id ==
                                                     model![index].id);
+                                            final FoodModel? selectedModel =
+                                                selectedIndex != -1
+                                                    ? selectedFoods[
+                                                        selectedIndex]
+                                                    : null;
                                             return FoodItem(
                                               model: model[index],
-                                              selectedModel: selectedIndex != -1
-                                                  ? selectedFoods[selectedIndex]
-                                                  : null,
+                                              selectedModel: selectedModel,
                                               index: index,
                                               isSearch: true,
                                               callback: (model, index) {
                                                 likeFood(model, index);
                                               },
+                                              kcalLeft: getKcalLeft(selectedModel),
                                             );
                                           }
                                         }))),

@@ -17,7 +17,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 
 class CategoryFood extends StatefulWidget {
   final List<FoodModel> foods;
-  CategoryFood({required this.foods});
+  final double? suggestKcal;
+  CategoryFood({required this.foods, this.suggestKcal});
   @override
   _CategoryFoodState createState() => _CategoryFoodState();
 }
@@ -224,7 +225,11 @@ class _CategoryFoodState extends State<CategoryFood>
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => FoodOfCategory(
-          category: category, foods: selectedFoods, callback: (value) {}),
+          category: category,
+        foods: selectedFoods,
+        callback: (value) {},
+        suggestKcal: widget.suggestKcal,
+      ),
     );
   }
 }

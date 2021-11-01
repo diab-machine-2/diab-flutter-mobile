@@ -12,16 +12,19 @@ import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
-typedef FoodQuantityCallback = Function(FoodModel);
-
 class FoodChooseQuantity extends StatefulWidget {
   final FoodModel? model;
   final FoodModel? selectedModel;
   final String? categoryId;
-  final FoodQuantityCallback? callback;
+  final Function(FoodModel)? callback;
+  final double? kcalLeft;
 
-  FoodChooseQuantity(
-      {this.model, this.selectedModel, this.categoryId, this.callback});
+  const FoodChooseQuantity(
+      {this.model,
+      this.selectedModel,
+      this.categoryId,
+      this.callback,
+      required this.kcalLeft});
 
   @override
   _FoodChooseQuantityState createState() => _FoodChooseQuantityState();
@@ -29,7 +32,7 @@ class FoodChooseQuantity extends StatefulWidget {
 
 class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
   DateTime selectedDate = DateTime.now();
-  TextEditingController _controllerKcal = TextEditingController(text: '');
+  final TextEditingController _controllerKcal = TextEditingController(text: '');
   FixedExtentScrollController? hourController;
   FixedExtentScrollController? minuteController;
   int selectedQuantity = 1;
@@ -43,12 +46,13 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     if (widget.selectedModel != null) {
       selectedQuantity = (widget.selectedModel!.portion ?? 0).floor();
       selectedPercent =
-          (((widget.selectedModel!.portion ?? 0) - selectedQuantity) * 10).round();
+          (((widget.selectedModel!.portion ?? 0) - selectedQuantity) * 10)
+              .round();
       //selectedPercent = selectedPercent == 0 ? 0 : (selectedPercent + 1);
-      _controllerKcal.text =
-          ((widget.selectedModel!.calorie ?? 0) * (widget.selectedModel!.quantity ?? 0))
-              .round()
-              .toString();
+      _controllerKcal.text = ((widget.selectedModel!.calorie ?? 0) *
+              (widget.selectedModel!.quantity ?? 0))
+          .round()
+          .toString();
     }
     hourController = FixedExtentScrollController(initialItem: selectedQuantity);
     minuteController =
@@ -57,7 +61,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> items = [];
+    final List<Widget> items = [];
     if (widget.model!.calorie != null) {
       items.add(buildItem(
           R.string.calo.tr(), widget.model!.calorie, R.string.kcal.tr()));
@@ -83,7 +87,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
         backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
-            padding: EdgeInsets.only(left: 16, right: 16),
+            padding: const EdgeInsets.only(left: 16, right: 16),
             child: GestureDetector(
               onTap: () {},
               child: Container(
@@ -92,7 +96,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                   color: R.color.white,
                 ),
                 child: Padding(
-                  padding: EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.only(bottom: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -104,11 +108,11 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                   R.color.color0xffB1DDDB.withAlpha(90),
                                   R.color.color0xFFFED31B.withAlpha(90),
                                 ],
-                                begin: FractionalOffset(0.3, -0.5),
-                                end: FractionalOffset(0, 1),
-                                stops: [0.0, 1.0])),
+                                begin: const FractionalOffset(0.3, -0.5),
+                                end: const FractionalOffset(0, 1),
+                                stops: const [0.0, 1.0])),
                         child: Padding(
-                          padding: EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -122,8 +126,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                           onTap: () {
                                             Navigator.pop(context);
                                           },
-                                          child: Icon(Icons.arrow_back)),
-                                      SizedBox(width: 12),
+                                          child: const Icon(Icons.arrow_back)),
+                                      const SizedBox(width: 12),
                                       Text(widget.model!.name!,
                                           style: TextStyle(
                                               color: R.color.black,
@@ -131,7 +135,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                               fontWeight: FontWeight.w500)),
                                     ],
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   GestureDetector(
                                     onTap: () {
                                       setState(() {
@@ -153,166 +157,200 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                   )
                                 ],
                               ),
-                              widget.model!.code == 'OtherUneditable'
-                                  ? SizedBox()
-                                  : Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(height: 12),
-                                        Text(widget.model!.description ?? '',
-                                            style: TextStyle(
-                                                color: R.color.black,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400)),
-                                        SizedBox(height: 12),
-                                        Text(
-                                            '${R.string.khau_phan.tr()} ${(widget.model!.portion ?? 0).round()} ${widget.model!.unit} ${R.string.bao_gom.tr()}:',
-                                            style: TextStyle(
-                                                color: R.color.black,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400)),
-                                        SizedBox(height: 12),
-                                        Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: items),
-                                      ],
-                                    )
+                              if (widget.model!.code == 'OtherUneditable')
+                                const SizedBox()
+                              else
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 12),
+                                    Text(widget.model!.description ?? '',
+                                        style: TextStyle(
+                                            color: R.color.black,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400)),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                        '${R.string.khau_phan.tr()} ${(widget.model!.portion ?? 0).round()} ${widget.model!.unit} ${R.string.bao_gom.tr()}:',
+                                        style: TextStyle(
+                                            color: R.color.black,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400)),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: items),
+                                  ],
+                                )
                             ],
                           ),
                         ),
                       ),
-                      widget.model?.code == 'OtherUneditable'
-                          ? Padding(
-                              padding: EdgeInsets.all(20),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(height: 40),
-                                    Text('Số Kcal đã nạp',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500)),
-                                    SizedBox(height: 20),
-                                    TextField(
-                                        controller: _controllerKcal,
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter.deny(
-                                              RegExp(r'[-.]'))
-                                        ],
-                                        enableInteractiveSelection: false,
-                                        keyboardType: TextInputType.number,
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w400),
-                                        decoration: InputDecoration(
-                                            hintText: 'Nhập số Kcal đã nạp',
-                                            contentPadding:
-                                                EdgeInsets.only(bottom: 8),
-                                            border: InputBorder.none,
-                                            hintStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400,
-                                                color: Color(0xff666666)))),
-                                    Container(
-                                        height: 1, color: Color(0xffE5E5E5)),
-                                    SizedBox(height: 20),
-                                  ]),
-                            )
-                          : Column(
+                      if (widget.model?.code == 'OtherUneditable')
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                  SizedBox(height: 16),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 16),
-                                    child: Text('Khẩu phần của bạn',
-                                        style: TextStyle(
-                                            color: Colors.black,
+                                const SizedBox(height: 40),
+                                Text(R.string.kcal_input.tr(),
+                                    style: TextStyle(
+                                        color: R.color.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500)),
+                                const SizedBox(height: 20),
+                                TextField(
+                                    controller: _controllerKcal,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.deny(
+                                          RegExp(r'[-.]'))
+                                    ],
+                                    enableInteractiveSelection: false,
+                                    keyboardType: TextInputType.number,
+                                    style: TextStyle(
+                                        color: R.color.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400),
+                                    decoration: InputDecoration(
+                                        hintText: R.string.enter_kcal_hint.tr(),
+                                        contentPadding:
+                                            const EdgeInsets.only(bottom: 8),
+                                        border: InputBorder.none,
+                                        hintStyle: TextStyle(
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w500)),
+                                            fontWeight: FontWeight.w400,
+                                            color: R.color.primaryGreyColor))),
+                                Container(
+                                    height: 1, color: R.color.color0xffE5E5E5),
+                                const SizedBox(height: 20),
+                              ]),
+                        )
+                      else
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 16),
+                              Visibility(
+                                visible: widget.kcalLeft != null,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      text:
+                                          R.string.food_quantity_recommand.tr(),
+                                      style: TextStyle(
+                                          color: R.color.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400),
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                              ' ${recommendedQuantity?.toStringAsFixed(1)} ${widget.model?.unit} ',
+                                          style: TextStyle(
+                                              color: R.color.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                        TextSpan(
+                                          text: R.string.for_this_food.tr(),
+                                          style: TextStyle(
+                                              color: R.color.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  SizedBox(height: 16),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                          height: 150,
-                                          width: 106,
-                                          child: CupertinoPicker(
-                                              scrollController: hourController,
-                                              selectionOverlay: null,
-                                              onSelectedItemChanged: (value) {
-                                                setState(() {
-                                                  selectedQuantity = value;
-                                                  //widget.callback(selectedHour, selectedMinute);
-                                                });
-                                              },
-                                              itemExtent: 47.0,
-                                              children: List<int>.generate(
-                                                      16, (i) => i)
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16),
+                                child: Text(R.string.khau_phan_cua_ban.tr(),
+                                    style: TextStyle(
+                                        color: R.color.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500)),
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                      height: 150,
+                                      width: 106,
+                                      child: CupertinoPicker(
+                                          scrollController: hourController,
+                                          selectionOverlay: null,
+                                          onSelectedItemChanged: (value) {
+                                            setState(() {
+                                              selectedQuantity = value;
+                                              //widget.callback(selectedHour, selectedMinute);
+                                            });
+                                          },
+                                          itemExtent: 47.0,
+                                          children:
+                                              List<int>.generate(16, (i) => i)
                                                   .map((e) => Center(
                                                         child: Text(
                                                             (e).toString(),
                                                             style: TextStyle(
                                                                 color: selectedQuantity ==
                                                                         e
-                                                                    ? Color(
-                                                                        0xff01645A)
-                                                                    : Color(
-                                                                        0xffC0C2C5),
+                                                                    ? R.color
+                                                                        .mainColor
+                                                                    : R.color
+                                                                        .color0xffC0C2C5,
                                                                 fontSize: 24,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold)),
                                                       ))
                                                   .toList())),
-                                      SizedBox(width: 8),
-                                      Text(',',
-                                          style: TextStyle(
-                                              color: Color(0xff01645A),
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.bold)),
-                                      SizedBox(width: 8),
-                                      Container(
-                                          height: 150,
-                                          width: 106,
-                                          child: CupertinoPicker(
-                                              scrollController:
-                                                  minuteController,
-                                              selectionOverlay: null,
-                                              onSelectedItemChanged: (value) {
-                                                setState(() {
-                                                  selectedPercent = value;
-                                                  //widget.callback(selectedHour, selectedMinute);
-                                                });
-                                              },
-                                              itemExtent: 47.0,
-                                              children: List<int>.generate(
-                                                      10, (i) => i)
+                                  const SizedBox(width: 8),
+                                  Text(',',
+                                      style: TextStyle(
+                                          color: R.color.mainColor,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold)),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                      height: 150,
+                                      width: 106,
+                                      child: CupertinoPicker(
+                                          scrollController: minuteController,
+                                          selectionOverlay: null,
+                                          onSelectedItemChanged: (value) {
+                                            setState(() {
+                                              selectedPercent = value;
+                                              //widget.callback(selectedHour, selectedMinute);
+                                            });
+                                          },
+                                          itemExtent: 47.0,
+                                          children:
+                                              List<int>.generate(10, (i) => i)
                                                   .map((e) => Center(
                                                         child: Text('$e',
                                                             style: TextStyle(
                                                                 color: selectedPercent ==
                                                                         e
-                                                                    ? Color(
-                                                                        0xff01645A)
-                                                                    : Color(
-                                                                        0xffC0C2C5),
+                                                                    ? R.color
+                                                                        .mainColor
+                                                                    : R.color
+                                                                        .color0xffC0C2C5,
                                                                 fontSize: 24,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold)),
                                                       ))
                                                   .toList()))
-                                    ],
-                                  ),
-                                ]),
-                      SizedBox(height: 16),
+                                ],
+                              ),
+                            ]),
+                      const SizedBox(height: 16),
                       Row(children: [
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
@@ -331,7 +369,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                             fontWeight: FontWeight.w700)))),
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
@@ -345,39 +383,26 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                               if (_controllerKcal.text.isEmpty &&
                                   widget.model!.code == 'OtherUneditable') {
                                 Message.showToastMessage(
-                                    context, 'Bạn chưa nhập dữ liệu');
+                                    context, R.string.ban_chua_nhap_du_lieu.tr());
                                 return;
                               }
                               if (widget.model!.code == 'OtherUneditable') {
                                 quantity = double.parse(_controllerKcal.text);
                                 if (quantity == 0) {
                                   Message.showToastMessage(
-                                      context, 'Số Kcal phải lớn hơn 0');
+                                      context, R.string.invalid_kcal.tr());
                                   return;
                                 }
                               }
                               Observable.instance.notifyObservers([],
                                   notifyName: "add_food_to_cart",
                                   map: {
-                                    "food": FoodModel(
-                                      id: widget.model!.id,
-                                      name: widget.model!.name,
+                                    "food": widget.model!.copyWith(
                                       portion: quantity,
-                                      unit: widget.model!.unit,
-                                      calorie: widget.model!.calorie,
-                                      glucose: widget.model!.glucose,
-                                      lipid: widget.model!.lipid,
-                                      protein: widget.model!.protein,
-                                      fibre: widget.model!.fibre,
-                                      image: widget.model!.image,
-                                      liked: widget.model!.liked,
-                                      text: widget.model!.text,
-                                      description: widget.model!.description,
-                                      foodCategoryId:
-                                          widget.model!.foodCategoryId,
                                       quantity: quantity,
-                                      mealId: widget.model!.mealId,
-                                    )
+                                      mealId: widget.selectedModel?.mealId ??
+                                          widget.model!.mealId,
+                                    ),
                                   });
                               Navigator.pop(context);
                             },
@@ -401,7 +426,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                             fontWeight: FontWeight.w700)))),
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                       ]),
                     ],
                   ),
@@ -414,17 +439,22 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     );
   }
 
+  double? get recommendedQuantity {
+    if (widget.kcalLeft != null) {
+      return widget.kcalLeft! / (widget.model?.calorie ?? 1);
+    }
+  }
+
   Widget buildItem(String title, double? number, String unit) {
-    return Container(
-        child: Column(
+    return Column(
       children: [
         Text(title, style: TextStyle(color: R.color.primaryGreyColor)),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text('$number $unit',
             style: TextStyle(
                 color: R.color.mainColor, fontWeight: FontWeight.w600))
       ],
-    ));
+    );
   }
 
   likeFood() async {

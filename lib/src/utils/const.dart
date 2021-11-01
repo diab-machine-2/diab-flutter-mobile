@@ -102,4 +102,10 @@ class Const {
   static const String TEMPLATE_B = 'B';
   static const String TEMPLATE_K = 'K';
   static const String TEMPLATE_FGHI = 'FGHI';
+
+  static const String BREAKFAST = 'Sáng';
+  static const String LUNCH = 'Trưa';
+  static const String DINNER = 'Tối';
+  static const String SUBMEAL = 'Nhẹ';
+
 }

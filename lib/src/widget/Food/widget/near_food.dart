@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -10,7 +12,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 
 class NearFood extends StatefulWidget {
   final List<FoodModel> foods;
-  NearFood({required this.foods});
+  final double? suggestKcal;
+  const NearFood({required this.foods, required this.suggestKcal});
   @override
   _NearFoodState createState() => _NearFoodState();
 }
@@ -64,6 +67,18 @@ class _NearFoodState extends State<NearFood>
         .add(LikeFood(model: model, index: index));
   }
 
+  double? getKcalLeft(FoodModel? selectedModel) {
+    if (widget.suggestKcal == null) return null;
+    double totalSelectedKcal = 0;
+    for (final food in selectedFoods) {
+      totalSelectedKcal += food.totalKcal ?? 0;
+    }
+    final double kcalLeft = widget.suggestKcal! -
+        totalSelectedKcal +
+        (selectedModel?.totalKcal ?? 0);
+    return max(kcalLeft, 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -103,15 +118,17 @@ class _NearFoodState extends State<NearFood>
                         } else {
                           final selectedIndex = selectedFoods.lastIndexWhere(
                               (element) => element.id == model![index].id);
+                          final FoodModel? selectedModel = selectedIndex != -1
+                                ? selectedFoods[selectedIndex]
+                                : null;
                           return FoodItem(
                             model: model[index],
-                            selectedModel: selectedIndex != -1
-                                ? selectedFoods[selectedIndex]
-                                : null,
+                            selectedModel: selectedModel,
                             index: index,
                             callback: (model, index) {
                               likeFood(model, index);
                             },
+                            kcalLeft: getKcalLeft(selectedModel),
                           );
                         }
                       }));

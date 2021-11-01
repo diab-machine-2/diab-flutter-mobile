@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -15,7 +16,8 @@ class FoodOfCategory extends StatefulWidget {
   final FoodSubCategoryModel? category;
   final List<FoodModel?>? foods;
   final FoodCallback? callback;
-  FoodOfCategory({this.category, this.foods, this.callback});
+  final double? suggestKcal;
+  FoodOfCategory({this.category, this.foods, this.callback, required this.suggestKcal});
   @override
   _FoodOfCategoryState createState() => _FoodOfCategoryState();
 }
@@ -38,6 +40,18 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
     foods = result.foods;
     BotToast.closeAllLoading();
     setState(() {});
+  }
+
+  double? getKcalLeft(FoodModel? selectedModel) {
+    if (widget.suggestKcal == null) return null;
+    double totalSelectedKcal = 0;
+    for (final food in selectedFoods) {
+      totalSelectedKcal += food?.totalKcal ?? 0;
+    }
+    final double kcalLeft = widget.suggestKcal! -
+        totalSelectedKcal +
+        (selectedModel?.totalKcal ?? 0);
+    return max(kcalLeft, 0);
   }
 
   @override
@@ -95,11 +109,13 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                         final selectedIndex = selectedFoods
                                             .lastIndexWhere((element) =>
                                                 element!.id == foods[index].id);
+                                        final FoodModel? selectedModel =
+                                            selectedIndex != -1
+                                                ? selectedFoods[selectedIndex]
+                                                : null;
                                         return FoodItem(
                                           model: foods[index],
-                                          selectedModel: selectedIndex != -1
-                                              ? selectedFoods[selectedIndex]
-                                              : null,
+                                          selectedModel: selectedModel,
                                           index: index,
                                           isCategory: true,
                                           categoryId: widget.category!.id,
@@ -108,6 +124,7 @@ class _FoodOfCategoryState extends State<FoodOfCategory> {
                                               foods[index] = model;
                                             });
                                           },
+                                          kcalLeft: getKcalLeft(selectedModel),
                                         );
                                       }),
                                 )
