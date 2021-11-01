@@ -12,16 +12,14 @@ import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
-typedef FoodQuantityCallback = Function(FoodModel);
-
 class FoodChooseQuantity extends StatefulWidget {
   final FoodModel? model;
   final FoodModel? selectedModel;
   final String? categoryId;
-  final FoodQuantityCallback? callback;
+  final Function(FoodModel)? callback;
   final double? kcalLeft;
 
-  FoodChooseQuantity(
+  const FoodChooseQuantity(
       {this.model,
       this.selectedModel,
       this.categoryId,
@@ -34,7 +32,7 @@ class FoodChooseQuantity extends StatefulWidget {
 
 class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
   DateTime selectedDate = DateTime.now();
-  TextEditingController _controllerKcal = TextEditingController(text: '');
+  final TextEditingController _controllerKcal = TextEditingController(text: '');
   FixedExtentScrollController? hourController;
   FixedExtentScrollController? minuteController;
   int selectedQuantity = 1;
@@ -63,7 +61,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> items = [];
+    final List<Widget> items = [];
     if (widget.model!.calorie != null) {
       items.add(buildItem(
           R.string.calo.tr(), widget.model!.calorie, R.string.kcal.tr()));
@@ -89,7 +87,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
         backgroundColor: R.color.transparent,
         body: Center(
           child: Padding(
-            padding: EdgeInsets.only(left: 16, right: 16),
+            padding: const EdgeInsets.only(left: 16, right: 16),
             child: GestureDetector(
               onTap: () {},
               child: Container(
@@ -98,7 +96,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                   color: R.color.white,
                 ),
                 child: Padding(
-                  padding: EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.only(bottom: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -110,11 +108,11 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                   R.color.color0xffB1DDDB.withAlpha(90),
                                   R.color.color0xFFFED31B.withAlpha(90),
                                 ],
-                                begin: FractionalOffset(0.3, -0.5),
-                                end: FractionalOffset(0, 1),
-                                stops: [0.0, 1.0])),
+                                begin: const FractionalOffset(0.3, -0.5),
+                                end: const FractionalOffset(0, 1),
+                                stops: const [0.0, 1.0])),
                         child: Padding(
-                          padding: EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -128,8 +126,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                           onTap: () {
                                             Navigator.pop(context);
                                           },
-                                          child: Icon(Icons.arrow_back)),
-                                      SizedBox(width: 12),
+                                          child: const Icon(Icons.arrow_back)),
+                                      const SizedBox(width: 12),
                                       Text(widget.model!.name!,
                                           style: TextStyle(
                                               color: R.color.black,
@@ -137,7 +135,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                               fontWeight: FontWeight.w500)),
                                     ],
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   GestureDetector(
                                     onTap: () {
                                       setState(() {
@@ -159,49 +157,49 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                   )
                                 ],
                               ),
-                              widget.model!.code == 'OtherUneditable'
-                                  ? SizedBox()
-                                  : Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(height: 12),
-                                        Text(widget.model!.description ?? '',
-                                            style: TextStyle(
-                                                color: R.color.black,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400)),
-                                        SizedBox(height: 12),
-                                        Text(
-                                            '${R.string.khau_phan.tr()} ${(widget.model!.portion ?? 0).round()} ${widget.model!.unit} ${R.string.bao_gom.tr()}:',
-                                            style: TextStyle(
-                                                color: R.color.black,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400)),
-                                        SizedBox(height: 12),
-                                        Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: items),
-                                      ],
-                                    )
+                              if (widget.model!.code == 'OtherUneditable')
+                                const SizedBox()
+                              else
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 12),
+                                    Text(widget.model!.description ?? '',
+                                        style: TextStyle(
+                                            color: R.color.black,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400)),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                        '${R.string.khau_phan.tr()} ${(widget.model!.portion ?? 0).round()} ${widget.model!.unit} ${R.string.bao_gom.tr()}:',
+                                        style: TextStyle(
+                                            color: R.color.black,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400)),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: items),
+                                  ],
+                                )
                             ],
                           ),
                         ),
                       ),
                       if (widget.model?.code == 'OtherUneditable')
                         Padding(
-                          padding: EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(20),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(height: 40),
-                                Text('Số Kcal đã nạp',
+                                const SizedBox(height: 40),
+                                Text(R.string.kcal_input,
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500)),
-                                SizedBox(height: 20),
+                                const SizedBox(height: 20),
                                 TextField(
                                     controller: _controllerKcal,
                                     inputFormatters: [
@@ -211,20 +209,21 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                     enableInteractiveSelection: false,
                                     keyboardType: TextInputType.number,
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w400),
                                     decoration: InputDecoration(
-                                        hintText: 'Nhập số Kcal đã nạp',
+                                        hintText: R.string.enter_kcal_hint,
                                         contentPadding:
-                                            EdgeInsets.only(bottom: 8),
+                                            const EdgeInsets.only(bottom: 8),
                                         border: InputBorder.none,
                                         hintStyle: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w400,
-                                            color: Color(0xff666666)))),
-                                Container(height: 1, color: Color(0xffE5E5E5)),
-                                SizedBox(height: 20),
+                                            color: R.color.primaryGreyColor))),
+                                Container(
+                                    height: 1, color: R.color.color0xffE5E5E5),
+                                const SizedBox(height: 20),
                               ]),
                         )
                       else
@@ -235,7 +234,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                               Visibility(
                                 visible: widget.kcalLeft != null,
                                 child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
                                   child: RichText(
                                     text: TextSpan(
                                       text:
@@ -266,14 +266,14 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(left: 16),
-                                child: Text('Khẩu phần của bạn',
+                                padding: const EdgeInsets.only(left: 16),
+                                child: Text(R.string.khau_phan_cua_ban,
                                     style: TextStyle(
-                                        color: Colors.black,
+                                        color: R.color.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500)),
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -298,23 +298,23 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                                             style: TextStyle(
                                                                 color: selectedQuantity ==
                                                                         e
-                                                                    ? Color(
-                                                                        0xff01645A)
-                                                                    : Color(
-                                                                        0xffC0C2C5),
+                                                                    ? R.color
+                                                                        .mainColor
+                                                                    : R.color
+                                                                        .color0xffC0C2C5,
                                                                 fontSize: 24,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold)),
                                                       ))
                                                   .toList())),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Text(',',
                                       style: TextStyle(
-                                          color: Color(0xff01645A),
+                                          color: R.color.mainColor,
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold)),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Container(
                                       height: 150,
                                       width: 106,
@@ -335,10 +335,10 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                                             style: TextStyle(
                                                                 color: selectedPercent ==
                                                                         e
-                                                                    ? Color(
-                                                                        0xff01645A)
-                                                                    : Color(
-                                                                        0xffC0C2C5),
+                                                                    ? R.color
+                                                                        .mainColor
+                                                                    : R.color
+                                                                        .color0xffC0C2C5,
                                                                 fontSize: 24,
                                                                 fontWeight:
                                                                     FontWeight
@@ -348,9 +348,9 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                 ],
                               ),
                             ]),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Row(children: [
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
@@ -369,7 +369,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                             fontWeight: FontWeight.w700)))),
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
@@ -426,7 +426,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                             fontWeight: FontWeight.w700)))),
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                       ]),
                     ],
                   ),
@@ -446,16 +446,15 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
   }
 
   Widget buildItem(String title, double? number, String unit) {
-    return Container(
-        child: Column(
+    return Column(
       children: [
         Text(title, style: TextStyle(color: R.color.primaryGreyColor)),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text('$number $unit',
             style: TextStyle(
                 color: R.color.mainColor, fontWeight: FontWeight.w600))
       ],
-    ));
+    );
   }
 
   likeFood() async {

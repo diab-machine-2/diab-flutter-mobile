@@ -352,6 +352,8 @@ class Strings {
 	String get mon_an_gan_day => 'mon_an_gan_day';
 	String get mon_yeu_thich => 'mon_yeu_thich';
 	String get danh_muc => 'danh_muc';
+	String get kcal_input => 'kcal_input';
+	String get enter_kcal_hint => 'enter_kcal_hint';
 	String get hba1cscreen => 'Hba1cScreen';
 	String get tim_hieu_them => 'tim_hieu_them';
 	String get bai_viet_noi_bat => 'bai_viet_noi_bat';

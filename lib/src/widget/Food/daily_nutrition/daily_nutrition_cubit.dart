@@ -214,10 +214,10 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   }
 
   int? get timeCode {
-    if (selectedTimeFrame?.name == 'Sáng') return 1;
-    if (selectedTimeFrame?.name == 'Trưa') return 2;
-    if (selectedTimeFrame?.name == 'Tối') return 3;
-    if (selectedTimeFrame?.name == 'Nhẹ') return 0;
+    if (selectedTimeFrame?.name == Const.BREAKFAST) return 1;
+    if (selectedTimeFrame?.name == Const.LUNCH) return 2;
+    if (selectedTimeFrame?.name == Const.DINNER) return 3;
+    if (selectedTimeFrame?.name == Const.SUBMEAL) return 0;
     return null;
   }
 
