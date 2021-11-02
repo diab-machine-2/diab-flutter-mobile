@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,8 +8,8 @@ import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/my_plan/models/lesson_status.dart';
 import 'package:medical/src/widgets/button_widget.dart';
-import 'package:medical/src/widgets/dashed_vertical_line.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -30,13 +28,14 @@ class _LessonTabPageState extends State<LessonTabPage>
     with AutomaticKeepAliveClientMixin<LessonTabPage> {
   late final LessonTabCubit _cubit;
   final RefreshController _controller = RefreshController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = LessonTabCubit(appRepository);
-    _cubit.getLessonsList();
+    _cubit.getInitData();
   }
 
   @override
@@ -60,79 +59,234 @@ class _LessonTabPageState extends State<LessonTabPage>
           return Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              SizedBox(
-                height: 20.h,
-              ),
               Container(
-                height: 30.h,
-                child: Row(
-                  children: List.generate(
-                    _cubit.lessonTypeList.length,
-                    (index) {
-                      return _buildLessonTypeSelect(
-                        title: _cubit.lessonTypeList[index].title,
-                        isActive: _cubit.currentLessonTypeIndex == index,
-                        onTap: () {
-                          _cubit.changeLessonType(index);
-                        },
-                      );
-                    },
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: R.color.color0xfff5f5f5),
+                    left: BorderSide(color: R.color.color0xfff5f5f5),
+                    bottom: BorderSide(color: R.color.color0xfff5f5f5),
                   ),
                 ),
-              ),
-              Expanded(
-                child: SafeArea(
-                  top: false,
-                  child: SmartRefresher(
-                    controller: _controller,
-                    onRefresh: () => _cubit.getLessonsList(isRefresh: true),
-                    child: SingleChildScrollView(
-                      child: Stack(
-                        children: [
-                          Visibility(
-                            visible:
-                                _cubit.currentLessonType == LessonType.route,
-                            child: Positioned(
-                              top: (127.h) / 2 + 20.h,
-                              left: 19.5.w,
-                              child: Container(
-                                height: max(
-                                    (_cubit.lessonsList.length - 1) * 127.h, 0),
-                                width: 1,
-                                child: const DashedVerticalLine(),
-                              ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: R.color.white,
+                    borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(16),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: R.color.greenGradientBottom.withOpacity(0.08),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      _buildWeekListWidget(),
+                      Row(children: [
+                        ...List.generate(
+                          _cubit.lessonTypeList.length,
+                          (index) {
+                            return _buildLessonTypeSelect(
+                              title: _cubit.lessonTypeList[index].title,
+                              isActive: _cubit.currentLessonTypeIndex == index,
+                              onTap: () {
+                                _cubit.changeLessonType(index);
+                              },
+                            );
+                          },
+                        ),
+                        const Spacer(),
+                        InkWell(
+                          onTap: () {},
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Stack(
+                              children: [
+                                Column(
+                                  children: [
+                                    const SizedBox(height: 3, width: 24),
+                                    Image.asset(
+                                      R.drawable.ic_filter_lesson,
+                                      width: 20,
+                                      height: 20,
+                                    ),
+                                  ],
+                                ),
+                                Visibility(
+                                  visible: _cubit.isFiltering,
+                                  child: Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: Container(
+                                      width: 10,
+                                      height: 10,
+                                      decoration: BoxDecoration(
+                                        color: R.color.greenGradientTop,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                            width: 2, color: R.color.white),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
                           ),
-                          Column(
-                            children: List.generate(
-                              _cubit.lessonsList.length,
-                              (index) => _buildLessonWidget(
-                                  lessonDetail: _cubit.lessonsList[index],
-                                  onTap: () {
-                                    if (_cubit.lessonsList[index]?.id
-                                            ?.isNotEmpty ==
-                                        true) {
-                                      NavigationUtil.navigatePage(
-                                        context,
-                                        LessonDetailPage(
-                                          _cubit.lessonsList[index]!.id!,
-                                        ),
-                                      );
-                                    }
-                                  }),
-                            )
-                              ..insert(0, SizedBox(height: 20.h))
-                              ..add(SizedBox(height: 20.h)),
-                          ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      ]),
+                    ],
                   ),
                 ),
+              ),
+              //Lesson list
+              Expanded(
+                child: _cubit.lessonsList.isEmpty
+                    ? _buildEmptyLessonList()
+                    : SafeArea(
+                        top: false,
+                        child: SmartRefresher(
+                          controller: _controller,
+                          onRefresh: () =>
+                              _cubit.getLessonsList(isRefresh: true),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: List.generate(
+                                _cubit.lessonsList.length,
+                                (index) => _buildLessonWidget(
+                                    lessonDetail: _cubit.lessonsList[index],
+                                    onTap: () {
+                                      if (_cubit.lessonsList[index]?.id
+                                              ?.isNotEmpty ==
+                                          true) {
+                                        NavigationUtil.navigatePage(
+                                          context,
+                                          LessonDetailPage(
+                                            _cubit.lessonsList[index]!.id!,
+                                          ),
+                                        );
+                                      }
+                                    }),
+                              )
+                                ..insert(0, SizedBox(height: 20.h))
+                                ..add(SizedBox(height: 20.h)),
+                            ),
+                          ),
+                        ),
+                      ),
               ),
             ],
           );
         },
+      ),
+    );
+  }
+
+  void animateToIndex(int index) {
+    if (_cubit.timeData?.weekList.isNotEmpty != true) return;
+    if (index < 0) {
+      index = 0;
+    }
+    if (index >= _cubit.timeData!.weekList.length) {
+      index = _cubit.timeData!.weekList.length - 1;
+    }
+    final double newPosition = index * 96 + (6 * index.toDouble());
+    _scrollController.jumpTo(newPosition);
+    _cubit.onSelectWeek(index);
+  }
+
+  Widget _buildWeekListWidget() {
+    if (_cubit.timeData == null) return const SizedBox();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24.0),
+      child: Row(
+        children: [
+          InkWell(
+            onTap: () {
+              if (_cubit.timeData?.currentWeekIndex == null) return;
+              animateToIndex(_cubit.timeData!.currentWeekIndex - 1);
+            },
+            child: Icon(
+              Icons.chevron_left_rounded,
+              size: 24,
+              color: (_cubit.timeData?.currentWeekIndex ?? 0) <= 0
+                  ? R.color.captionColorGray
+                  : R.color.greenGradientBottom,
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              controller: _scrollController,
+              child: Row(
+                children: List.generate(
+                  _cubit.timeData!.weekList.length,
+                  (index) => _buildSingleWeek(
+                      weekIndex: index,
+                      status: _cubit.timeData!.weekList[index].status,
+                      isSelected: index == _cubit.timeData?.currentWeekIndex,
+                      onSelect: () {
+                        _cubit.onSelectWeek(index);
+                      }),
+                )..add(SizedBox(
+                    width: MediaQuery.of(context).size.width - 96 * 2)),
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              if (_cubit.timeData?.currentWeekIndex == null) return;
+              animateToIndex(_cubit.timeData!.currentWeekIndex + 1);
+            },
+            child: Icon(
+              Icons.chevron_right_rounded,
+              size: 24,
+              color: (_cubit.timeData?.currentWeekIndex ?? 0) >=
+                      ((_cubit.timeData?.weekList.length ?? 1) - 1)
+                  ? R.color.captionColorGray
+                  : R.color.greenGradientBottom,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleWeek({
+    required int weekIndex,
+    required CompletionStatus status,
+    required bool isSelected,
+    VoidCallback? onSelect,
+  }) {
+    return GestureDetector(
+      onTap: onSelect,
+      child: Container(
+        alignment: Alignment.center,
+        margin: const EdgeInsets.only(left: 6),
+        width: 96,
+        height: 32,
+        decoration: BoxDecoration(
+          color: isSelected ? R.color.blue_6 : R.color.transparent,
+          borderRadius: BorderRadius.circular(200),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Tuần ${weekIndex + 1}',
+              style: TextStyle(
+                color: isSelected
+                    ? R.color.greenGradientBottom
+                    : status.statusColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            status.weekStatusIcon
+          ],
+        ),
       ),
     );
   }
@@ -142,39 +296,69 @@ class _LessonTabPageState extends State<LessonTabPage>
     required bool isActive,
     VoidCallback? onTap,
   }) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: isActive
-                    ? R.color.greenGradientBottom
-                    : R.color.captionColorGray,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-              ),
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: isActive
+                  ? R.color.greenGradientBottom
+                  : R.color.captionColorGray,
+              fontSize: 16,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
             ),
-            if (isActive)
-              Container(
-                height: 4.h,
-                decoration: BoxDecoration(
-                  color: R.color.greenGradientBottom,
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(8)),
-                ),
-              )
-            else
-              Container(
-                height: 1.h,
-                color: R.color.captionColorGray,
-              ),
-          ],
-        ),
+          ),
+          Container(
+            width: 105,
+            height: 3,
+            margin: const EdgeInsets.only(top: 10),
+            decoration: BoxDecoration(
+              color: isActive ? R.color.mainColor : R.color.transparent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildEmptyLessonList() {
+    return Column(
+      children: [
+        SizedBox(height: 116.h),
+        Image.asset(
+          R.drawable.img_lesson_locked,
+          width: 200.w,
+          height: 200.w,
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(60, 24, 60, 6),
+          child: Text(
+            'Không tìm thấy bài học phù hợp!',
+            style: TextStyle(
+              color: R.color.textDark,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 80),
+          child: Text(
+            'Bạn hãy tạo lại bộ lọc để tìm kiếm các kết quả khác nhé.',
+            style: TextStyle(
+              color: R.color.textDark,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
     );
   }
 
@@ -186,28 +370,13 @@ class _LessonTabPageState extends State<LessonTabPage>
         lessonDetail?.learningStatus == Const.LESSON_NOT_LEARN &&
             _cubit.currentLessonType == LessonType.route;
     return Container(
-      margin: EdgeInsets.symmetric(vertical: (127.h - 87.w) / 2),
-      height: 87.w,
+      margin: const EdgeInsets.symmetric(vertical: 20),
+      height: 87,
       alignment: Alignment.center,
       color: R.color.transparent,
       child: Row(
         children: [
-          Visibility(
-            visible: _cubit.currentLessonType == LessonType.route,
-            child: Container(
-              margin: EdgeInsets.only(left: 12.w),
-              width: 16.w,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: R.color.white,
-                border: Border.all(
-                  width: 4.w,
-                  color: getBorderColor(lessonDetail?.learningStatus),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(width: 16.w),
+          const SizedBox(width: 16),
           Expanded(
             child: InkWell(
               onTap: isLocked
@@ -218,8 +387,8 @@ class _LessonTabPageState extends State<LessonTabPage>
               child: Row(
                 children: [
                   Container(
-                    height: 87.w,
-                    width: 87.w,
+                    height: 87,
+                    width: 87,
                     decoration: BoxDecoration(
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(8),
@@ -227,7 +396,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                   ),
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14.w),
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,15 +407,15 @@ class _LessonTabPageState extends State<LessonTabPage>
                                 lessonDetail?.module ?? '',
                                 style: TextStyle(
                                   color: R.color.greenGradientBottom,
-                                  fontSize: 14.sp,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
-                              SizedBox(width: 4.w),
+                              const SizedBox(width: 4),
                               Image.asset(
                                 R.drawable.ic_new_lesson,
-                                width: 24.w,
-                                height: 24.w,
+                                width: 24,
+                                height: 24,
                               )
                             ],
                           ),
@@ -254,7 +423,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                             lessonDetail?.name ?? '',
                             style: TextStyle(
                               color: R.color.textDark,
-                              fontSize: 16.sp,
+                              fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
                             maxLines: 2,
@@ -272,24 +441,17 @@ class _LessonTabPageState extends State<LessonTabPage>
                   ),
                   Icon(
                     Icons.chevron_right_rounded,
-                    size: 24.w,
+                    size: 24,
                     color: R.color.greenGradientBottom,
                   ),
                 ],
               ),
             ),
           ),
-          SizedBox(width: 16.w),
+          const SizedBox(width: 16),
         ],
       ),
     );
-  }
-
-  Color getBorderColor(int? learningStatus) {
-    if (learningStatus == Const.LESSON_LEARNT)
-      return R.color.greenGradientBottom;
-    if (learningStatus == Const.LESSON_LEARNING) return R.color.color0xff50C087;
-    return R.color.color0xffC0C2C5;
   }
 
   void _showLockedDialog() {

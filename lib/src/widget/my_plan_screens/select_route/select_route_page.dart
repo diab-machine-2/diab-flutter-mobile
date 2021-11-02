@@ -1,7 +1,5 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
@@ -38,14 +36,14 @@ class _SelectRoutePageState extends State<SelectRoutePage> {
           title: 'Chọn lộ trình',
           bottomSafeArea: true,
           child: ListView.separated(
-            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 20.h),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
             itemCount: 4,
             itemBuilder: (context, index) {
               return _buildRoute();
             },
             separatorBuilder: (context, index) {
               return Container(
-                margin: EdgeInsets.symmetric(vertical: 20.h),
+                margin: const EdgeInsets.symmetric(vertical: 20),
                 height: 1,
                 color: R.color.grayBorder,
               );
@@ -62,7 +60,7 @@ class _SelectRoutePageState extends State<SelectRoutePage> {
       children: [
         Container(
           clipBehavior: Clip.hardEdge,
-          height: 171.5.h,
+          height: 171.5,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -70,25 +68,25 @@ class _SelectRoutePageState extends State<SelectRoutePage> {
             color: Colors.red,
           ),
         ),
-        SizedBox(height: 12.h),
+        const SizedBox(height: 12),
         Text(
           'Lộ trình cho người thể trạng yếu',
           style: TextStyle(
             color: R.color.textDark,
-            fontSize: 16.sp,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
         ),
-        SizedBox(height: 6.h),
+        const SizedBox(height: 6),
         Text(
           'Lộ trình này giúp người có thể trạng yếu giữ được sức khỏe mỗi ngày, nâng cao sức đề kháng',
           style: TextStyle(
             color: R.color.grey_1,
-            fontSize: 14.sp,
+            fontSize: 14,
             fontWeight: FontWeight.w400,
           ),
         ),
-        SizedBox(height: 12.h),
+        const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -96,26 +94,26 @@ class _SelectRoutePageState extends State<SelectRoutePage> {
               'Cường độ yếu',
               style: TextStyle(
                 color: R.color.orange_1,
-                fontSize: 14.sp,
+                fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
             SizedBox(
-              width: 120.w,
+              width: 120,
               child: ButtonWidget(
                 title: 'Tham gia',
-                height: 32.h,
-                textSize: 14.sp,
+                height: 32,
+                textSize: 14,
                 onPressed: () {
                   showDialog(
-                        barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-                        context: context,
-                        builder: (_) => NoticeChangePage(
-                          description: 'Bạn đang học lộ trình cho người có thể trạng yếu, bạn có chắc muốn đổi lộ trình khác không?',
-                          positiveButtonTitle: 'Xác nhận',
-                          onClick: () {
-                        }),
-                      );
+                    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+                    context: context,
+                    builder: (_) => NoticeChangePage(
+                        description:
+                            'Bạn đang học lộ trình cho người có thể trạng yếu, bạn có chắc muốn đổi lộ trình khác không?',
+                        positiveButtonTitle: 'Xác nhận',
+                        onClick: () {}),
+                  );
                 },
               ),
             ),

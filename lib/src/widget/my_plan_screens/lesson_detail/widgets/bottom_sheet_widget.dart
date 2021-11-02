@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -34,15 +33,15 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
       backgroundColor: R.color.white,
       body: SafeArea(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 60.w,
-                height: 6.h,
-                margin: EdgeInsets.only(top: 12.h, bottom: 18.h),
+                width: 60,
+                height: 6,
+                margin: const EdgeInsets.only(top: 12, bottom: 18),
                 decoration: BoxDecoration(
                   color: Colors.grey,
                   borderRadius: BorderRadius.circular(12),
@@ -50,12 +49,12 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
               ),
               Container(
                 alignment: Alignment.centerLeft,
-                margin: EdgeInsets.only(bottom: 10.h),
+                margin: const EdgeInsets.only(bottom: 10),
                 child: Text(
                   'Danh mục bài học',
                   style: TextStyle(
                     color: R.color.textDark,
-                    fontSize: 20.sp,
+                    fontSize: 20,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -63,7 +62,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
               Expanded(
                 child: Scrollbar(
                   child: ListView.separated(
-                      padding: EdgeInsets.only(bottom: 32.h),
+                      padding: const EdgeInsets.only(bottom: 32),
                       itemCount: widget.sectionList.length,
                       itemBuilder: (context, index) {
                         return _buildSingleLessonCategory(
@@ -84,15 +83,15 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                       }),
                 ),
               ),
-              SizedBox(height: 14.h),
+              const SizedBox(height: 14),
               Center(
                 child: GestureDetector(
                   onTap: () {
                     NavigationUtil.pop(context);
                   },
                   child: Container(
-                    height: 36.w,
-                    width: 36.w,
+                    height: 36,
+                    width: 36,
                     child: Image.asset(
                       R.drawable.ic_close_border,
                       color: R.color.accentColor,
@@ -100,7 +99,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                   ),
                 ),
               ),
-              SizedBox(height: 24.h),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -116,7 +115,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(14.w),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
             color: isSelected ? R.color.greenbg : R.color.white,
             border:
@@ -129,13 +128,13 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
               width: 24,
               height: 24,
             ),
-            SizedBox(width: 20.w),
+            const SizedBox(width: 20),
             Expanded(
               child: Text(
                 sectionDetail?.name ?? '',
                 style: TextStyle(
                   color: R.color.textDark,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -143,7 +142,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
             Visibility(
               visible: sectionDetail?.isComplete ?? false,
               child: Padding(
-                padding: EdgeInsets.only(left: 14.w),
+                padding: const EdgeInsets.only(left: 14),
                 child: Image.asset(
                   R.drawable.ic_check_mark,
                   width: 24,

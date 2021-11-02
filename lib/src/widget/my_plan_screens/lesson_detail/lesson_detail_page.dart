@@ -2,7 +2,6 @@ import 'package:better_player/better_player.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
@@ -89,8 +88,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         SafeArea(
                           bottom: false,
                           child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 18.h, horizontal: 16.h),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 18, horizontal: 16),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -102,7 +101,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                        fontSize: 16.sp,
+                                        fontSize: 16,
                                         color: R.color.textDark,
                                         fontWeight: FontWeight.w400),
                                   ),
@@ -122,20 +121,20 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             _cubit.currentSectionDetail?.name ?? '',
                             style: TextStyle(
                               color: R.color.textDark,
-                              fontSize: 20.sp,
+                              fontSize: 20,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
-                        SizedBox(height: 14.h),
+                        const SizedBox(height: 14),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: NotificationListener(
                               onNotification: (notify) {
                                 if (notify is ScrollEndNotification &&
@@ -157,7 +156,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       (index) {
                                         return Padding(
                                           padding:
-                                              EdgeInsets.only(bottom: 24.h),
+                                              const EdgeInsets.only(bottom: 24),
                                           child: BetterPlayer(
                                               controller: _cubit
                                                   .videoManagement!
@@ -197,7 +196,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         ),
                         Container(
                           color: R.color.white,
-                          padding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 18.h),
+                          padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -207,9 +206,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       _cubit.currentSection - 1);
                                 },
                                 child: Container(
-                                  height: 36.h,
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16.w),
+                                  height: 36,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
                                   decoration: BoxDecoration(
                                     color: _cubit.isFirstSection
                                         ? R.color.color0xffE5E5E5
@@ -221,7 +220,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                     children: [
                                       Icon(
                                         Icons.chevron_left_rounded,
-                                        size: 20.w,
+                                        size: 20,
                                         color: _cubit.isFirstSection
                                             ? R.color.grey_2
                                             : R.color.greenGradientBottom,
@@ -232,7 +231,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           color: _cubit.isFirstSection
                                               ? R.color.grey_2
                                               : R.color.accentColor,
-                                          fontSize: 14.sp,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.w700,
                                         ),
                                       ),
@@ -245,8 +244,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   showLessonCategoryList();
                                 },
                                 child: Container(
-                                  width: 36.w,
-                                  height: 36.w,
+                                  width: 36,
+                                  height: 36,
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
@@ -257,7 +256,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                     _cubit.sectionPosition,
                                     style: TextStyle(
                                       color: R.color.accentColor,
-                                      fontSize: 14.sp,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -269,9 +268,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       _cubit.currentSection + 1);
                                 },
                                 child: Container(
-                                  height: 36.h,
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16.w),
+                                  height: 36,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
                                   decoration: BoxDecoration(
                                     color: _cubit.isLastSection
                                         ? R.color.color0xffE5E5E5
@@ -287,13 +286,13 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           color: _cubit.isLastSection
                                               ? R.color.grey_2
                                               : R.color.accentColor,
-                                          fontSize: 14.sp,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.w700,
                                         ),
                                       ),
                                       Icon(
                                         Icons.chevron_right_rounded,
-                                        size: 20.w,
+                                        size: 20,
                                         color: _cubit.isLastSection
                                             ? R.color.grey_2
                                             : R.color.greenGradientBottom,
@@ -330,13 +329,13 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           icon: audioData?.isPlaying ?? false
               ? const Icon(Icons.pause)
               : const Icon(Icons.play_arrow),
-          iconSize: 24.sp,
+          iconSize: 24,
         ),
         Text(
           audioData?.timeText ?? '00:00 / 00:00',
           style: TextStyle(
             color: R.color.textDark,
-            fontSize: 14.sp,
+            fontSize: 14,
             fontWeight: FontWeight.w400,
           ),
         ),

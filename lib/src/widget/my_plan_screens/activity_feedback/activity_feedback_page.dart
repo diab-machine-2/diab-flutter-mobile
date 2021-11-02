@@ -2,7 +2,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -68,15 +67,15 @@ class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
               builder: (context, state) {
                 return SingleChildScrollView(
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 20.w),
+                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
                     child: Column(
                       children: [
                         Image.asset(
                           R.drawable.img_course_feedback,
-                          width: 152.w,
-                          height: 153.h,
+                          width: 152,
+                          height: 153,
                         ),
-                        SizedBox(height: 24.h),
+                        const SizedBox(height: 24),
                         ...List.generate(
                           _cubit.level.length,
                           (index) => buildQuestion(
@@ -86,9 +85,9 @@ class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
                                 _cubit.onSelectAnswer(index);
                               }),
                         ),
-                        SizedBox(height: 14.h),
+                        const SizedBox(height: 14),
                         _buildNotesInput(),
-                        SizedBox(height: 32.h),
+                        const SizedBox(height: 32),
                         Container(
                           width: 195,
                           child: ButtonWidget(
@@ -119,10 +118,10 @@ class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
     VoidCallback? onTap,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: 10.h),
-      padding: EdgeInsets.all(4.h),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.h),
+        borderRadius: BorderRadius.circular(10),
         color: isSelected ? R.color.color0xffB1DDDB : R.color.white,
         border: Border.all(
           width: isSelected ? 0 : 1,
@@ -168,7 +167,7 @@ class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
                 child: Text(
                   title,
                   style: TextStyle(
-                    fontSize: 14.sp,
+                    fontSize: 14,
                     fontWeight:
                         isSelected ? FontWeight.bold : FontWeight.normal,
                     color: isSelected ? R.color.accentColor : R.color.textDark,
@@ -195,23 +194,21 @@ class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
             children: [
               Icon(
                 Icons.chat_outlined,
-                size: 20.sp,
+                size: 20,
                 color: R.color.textDark,
               ),
-              SizedBox(width: 12.h),
+              const SizedBox(width: 12),
               Text(
                 R.string.feeling.tr(),
                 style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: R.color.textDark,
                 ),
               ),
             ],
           ),
-          SizedBox(
-            height: 15.h,
-          ),
+          const SizedBox(height: 15),
           TextField(
             textInputAction: TextInputAction.go,
             maxLines: 5,
@@ -224,7 +221,7 @@ class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
             },
             decoration: InputDecoration(
               hintText: R.string.enter_your_feeling.tr(),
-              hintStyle: TextStyle(color: R.color.gray, fontSize: 16.sp),
+              hintStyle: TextStyle(color: R.color.gray, fontSize: 16),
               focusColor: R.color.accentColor,
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: R.color.gray),
@@ -247,10 +244,10 @@ class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
         backgroundColor: R.color.transparent,
         body: Center(
           child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 24.h),
-            padding: EdgeInsets.all(20.h),
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.h),
+              borderRadius: BorderRadius.circular(10),
               color: R.color.white,
             ),
             child: SingleChildScrollView(
@@ -258,7 +255,7 @@ class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: 40.h,
+                    height: 40,
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
@@ -266,20 +263,20 @@ class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
                         child: Icon(
                           Icons.close,
                           color: R.color.textDark,
-                          size: 20.h,
+                          size: 20,
                         ),
                       ),
                     ),
                   ),
                   Image.asset(
                     R.drawable.img_send_feedback_successed,
-                    height: 160.h,
+                    height: 160,
                   ),
-                  SizedBox(height: 40.h),
+                  const SizedBox(height: 40),
                   Text(
                     'Gửi đánh giá thành công!',
                     style: TextStyle(
-                        fontSize: 20.sp,
+                        fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: R.color.textDark,
                         height: 1.4),

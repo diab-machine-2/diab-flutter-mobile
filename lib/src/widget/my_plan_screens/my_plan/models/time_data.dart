@@ -1,3 +1,5 @@
+import 'lesson_status.dart';
+
 const timeStep = Duration(days: 1);
 
 class TimeData {
@@ -8,10 +10,10 @@ class TimeData {
     DateTime dateTime = firstDayOfTheFirstWeek;
     final DateTime theLastDay = lastDayOfTheLastWeek;
     List<DateTime> singleWeek = [];
-    while(dateTime.isBefore(theLastDay)) {
+    while (dateTime.isBefore(theLastDay)) {
       singleWeek.add(dateTime);
       if (dateTime.weekday == DateTime.sunday) {
-        weekList.add(singleWeek);
+        weekList.add(WeekData(dayList: singleWeek));
         singleWeek = [];
       }
       dateTime = dateTime.add(timeStep);
@@ -20,14 +22,23 @@ class TimeData {
 
   final DateTime startDate;
   final DateTime endDate;
-  final List<List<DateTime>> weekList = [];
+  final List<WeekData> weekList = [];
   int currentWeekIndex = 0;
 
-  List<DateTime> get currentWeek => weekList[currentWeekIndex];
+  WeekData get currentWeek => weekList[currentWeekIndex];
 
   DateTime get firstDayOfTheFirstWeek =>
       startDate.subtract(Duration(days: startDate.weekday - 1));
 
   DateTime get lastDayOfTheLastWeek =>
       endDate.add(Duration(days: DateTime.daysPerWeek - endDate.weekday));
+}
+
+class WeekData {
+  WeekData({
+    required this.dayList,
+    this.status = CompletionStatus.not_start_yet
+  });
+  final List<DateTime> dayList;
+  CompletionStatus status;
 }

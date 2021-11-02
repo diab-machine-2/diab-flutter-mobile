@@ -635,11 +635,11 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
             decoration: BoxDecoration(
                 color: highlight
                     ? R.color.color0xffF4DBBD
-                    : R.color.color0xffF5F7FA,
+                    : R.color.grey_6,
                 border: Border.all(
                     color: highlight
                         ? R.color.color0xffE5B440
-                        : R.color.color0xffF5F7FA),
+                        : R.color.grey_6),
                 borderRadius: BorderRadius.circular(12)),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Image.asset(icon, width: 51, height: 34),

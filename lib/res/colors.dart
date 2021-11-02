@@ -58,6 +58,7 @@ class AppColors {
   static const attentionText = Color(0xffAF0000);
   static const blue_6 = Color(0xffD5EFFF);
   static const orange_1 = Color(0xffF58220);
+  static const grey_6 = Color(0xffF5F7FA);
   static const color0xffE5E5E5 = Color(0xffE5E5E5);
   static const color0xff003F38 = Color(0xff003F38);
   static const color0xffBEC0C8 = Color(0xffBEC0C8);
@@ -96,5 +97,4 @@ class AppColors {
   static const color0xffFCF8DA = Color(0xffFCF8DA);
   static const color0xffFDE9E9 = Color(0xffFDE9E9);
   static const color0xff737072 = Color(0xff737072);
-  static const color0xffF5F7FA = Color(0xffF5F7FA);
 }

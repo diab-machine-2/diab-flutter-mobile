@@ -63,20 +63,7 @@ class _MyPlanPageState extends State<MyPlanPage> {
                 children: [
                   Container(
                     padding: EdgeInsets.only(bottom: 24.h),
-                    decoration: BoxDecoration(
-                      color: R.color.white,
-                      borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(16),
-                      ),
-                      border: Border.all(color: R.color.color0xfff5f5f5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: R.color.greenGradientBottom.withOpacity(0.08),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                        ),
-                      ],
-                    ),
+                    color: R.color.white,
                     child: SafeArea(
                       bottom: false,
                       child: Column(
@@ -96,7 +83,7 @@ class _MyPlanPageState extends State<MyPlanPage> {
                                     child: Icon(
                                       CupertinoIcons.arrow_left,
                                       color: R.color.textDark,
-                                      size: 28.h,
+                                      size: 28,
                                     ),
                                   ),
                                 ),
@@ -106,7 +93,7 @@ class _MyPlanPageState extends State<MyPlanPage> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                        fontSize: 20.sp,
+                                        fontSize: 20,
                                         color: R.color.textDark,
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -127,7 +114,6 @@ class _MyPlanPageState extends State<MyPlanPage> {
                               },
                             ),
                           ),
-                          _buildScheduleWidget(),
                         ],
                       ),
                     ),
@@ -209,7 +195,8 @@ class _MyPlanPageState extends State<MyPlanPage> {
                       alignment: Alignment.bottomCenter,
                       width: 16.sp + 8.w,
                       child: Text(
-                        _cubit.timeData?.currentWeek[index].dayInWeek ?? '',
+                        _cubit.timeData?.currentWeek.dayList[index].dayInWeek ??
+                            '',
                       ),
                     ),
                   ),
@@ -229,7 +216,8 @@ class _MyPlanPageState extends State<MyPlanPage> {
                               ),
                             )
                           : _buildSingleDay(
-                              day: _cubit.timeData?.currentWeek[index ~/ 2],
+                              day: _cubit
+                                  .timeData?.currentWeek.dayList[index ~/ 2],
                             );
                     },
                   ),
