@@ -1,4 +1,4 @@
-import 'lesson_status.dart';
+import 'completion_status.dart';
 
 const timeStep = Duration(days: 1);
 

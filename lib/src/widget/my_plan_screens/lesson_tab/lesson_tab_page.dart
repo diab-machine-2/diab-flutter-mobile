@@ -8,12 +8,13 @@ import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/my_plan_screens/my_plan/models/lesson_status.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../lesson_detail/lesson_detail.dart';
+import '../my_plan/models/completion_status.dart';
+import '../my_plan/widgets/app_bar_bottom.dart';
 import 'lesson_tab.dart';
 import 'models/lesson_type.dart';
 
@@ -59,86 +60,63 @@ class _LessonTabPageState extends State<LessonTabPage>
           return Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: R.color.color0xfff5f5f5),
-                    left: BorderSide(color: R.color.color0xfff5f5f5),
-                    bottom: BorderSide(color: R.color.color0xfff5f5f5),
-                  ),
-                ),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: R.color.white,
-                    borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(16),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: R.color.greenGradientBottom.withOpacity(0.08),
-                        spreadRadius: 5,
-                        blurRadius: 7,
+              AppBarBottom(
+                child: Column(
+                  children: [
+                    _buildWeekListWidget(),
+                    Row(children: [
+                      ...List.generate(
+                        _cubit.lessonTypeList.length,
+                        (index) {
+                          return _buildLessonTypeSelect(
+                            title: _cubit.lessonTypeList[index].title,
+                            isActive: _cubit.currentLessonTypeIndex == index,
+                            onTap: () {
+                              _cubit.changeLessonType(index);
+                            },
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      _buildWeekListWidget(),
-                      Row(children: [
-                        ...List.generate(
-                          _cubit.lessonTypeList.length,
-                          (index) {
-                            return _buildLessonTypeSelect(
-                              title: _cubit.lessonTypeList[index].title,
-                              isActive: _cubit.currentLessonTypeIndex == index,
-                              onTap: () {
-                                _cubit.changeLessonType(index);
-                              },
-                            );
-                          },
-                        ),
-                        const Spacer(),
-                        InkWell(
-                          onTap: () {},
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Stack(
-                              children: [
-                                Column(
-                                  children: [
-                                    const SizedBox(height: 3, width: 24),
-                                    Image.asset(
-                                      R.drawable.ic_filter_lesson,
-                                      width: 20,
-                                      height: 20,
-                                    ),
-                                  ],
-                                ),
-                                Visibility(
-                                  visible: _cubit.isFiltering,
-                                  child: Positioned(
-                                    top: 0,
-                                    right: 0,
-                                    child: Container(
-                                      width: 10,
-                                      height: 10,
-                                      decoration: BoxDecoration(
-                                        color: R.color.greenGradientTop,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            width: 2, color: R.color.white),
-                                      ),
+                      const Spacer(),
+                      InkWell(
+                        onTap: () {},
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Stack(
+                            children: [
+                              Column(
+                                children: [
+                                  const SizedBox(height: 3, width: 24),
+                                  Image.asset(
+                                    R.drawable.ic_filter_lesson,
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                ],
+                              ),
+                              Visibility(
+                                visible: _cubit.isFiltering,
+                                child: Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: R.color.greenGradientTop,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          width: 2, color: R.color.white),
                                     ),
                                   ),
-                                )
-                              ],
-                            ),
+                                ),
+                              )
+                            ],
                           ),
                         ),
-                      ]),
-                    ],
-                  ),
+                      ),
+                    ]),
+                  ],
                 ),
               ),
               //Lesson list

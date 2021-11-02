@@ -201,6 +201,7 @@ class Drawables {
 	String get ic_sleeping => "lib/res/drawables/ic_sleeping.png";
 	String get ic_stack => "lib/res/drawables/ic_stack.png";
 	String get ic_start_exercise => "lib/res/drawables/ic_start_exercise.png";
+	String get ic_start_exercise_bold => "lib/res/drawables/ic_start_exercise_bold.png";
 	String get ic_stopwatch => "lib/res/drawables/ic_stopwatch.png";
 	String get ic_survey => "lib/res/drawables/ic_survey.png";
 	String get ic_trash => "lib/res/drawables/ic_trash.png";
