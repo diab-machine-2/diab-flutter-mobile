@@ -17,17 +17,7 @@ class VideoPlayerWidget extends StatelessWidget {
         //TODO: Change background
         background: R.drawable.bg_lesson_detail,
         title: title,
-        showBackButton: false,
-        appBarAction: InkWell(
-          onTap: () {
-            NavigationUtil.pop(context);
-          },
-          child: Icon(
-            Icons.clear_rounded,
-            size: 24,
-            color: R.color.textDark,
-          ),
-        ),
+        showCloseBackButton: true,
         child: Column(
           children: [
             Padding(

@@ -1,7 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -23,12 +22,12 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.fromLTRB(40 , 50, 40 , 50),
+              padding: const EdgeInsets.fromLTRB(40, 50, 40, 50),
               child:
                   Image.asset(R.drawable.img_blood_sugar_survey_empty_result),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 28),
+              padding: const EdgeInsets.symmetric(horizontal: 28),
               child: RichText(
                 textDirection: ui.TextDirection.ltr,
                 textAlign: TextAlign.center,
@@ -61,7 +60,7 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
               visible: description.isNotEmpty,
               child: Container(
                 width: double.infinity,
-                margin: EdgeInsets.fromLTRB(16 , 24, 16 , 0),
+                margin: const EdgeInsets.fromLTRB(16, 24, 16, 0),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                     color: R.color.main_6,
@@ -93,7 +92,7 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
             SafeArea(
               top: false,
               child: Container(
-                width: 208 ,
+                width: 208,
                 child: ButtonWidget(
                     title: R.string.back_to_schedule.tr(),
                     onPressed: () {
@@ -106,7 +105,7 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
                     }),
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
           ],
         ),
       ),

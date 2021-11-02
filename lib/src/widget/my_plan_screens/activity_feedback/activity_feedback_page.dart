@@ -42,17 +42,7 @@ class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
             //TODO: Change background
             background: R.drawable.bg_lesson_detail,
             bottomSafeArea: true,
-            showBackButton: false,
-            appBarAction: InkWell(
-              onTap: () {
-                NavigationUtil.pop(context);
-              },
-              child: Icon(
-                Icons.clear_rounded,
-                size: 24,
-                color: R.color.textDark,
-              ),
-            ),
+            showCloseBackButton: true,
             child: BlocConsumer<ActivityFeedbackCubit, ActivityFeedbackState>(
               listener: (context, state) {
                 if (state is ActivityFeedbackLoading) {

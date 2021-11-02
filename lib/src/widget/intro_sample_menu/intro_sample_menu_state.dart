@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 abstract class IntroSampleMenuState extends Equatable {
-  IntroSampleMenuState([List props = const []]) : super();
+  const IntroSampleMenuState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -21,7 +20,7 @@ class IntroSampleMenuLoading extends IntroSampleMenuState {
 class IntroSampleMenuFailure extends IntroSampleMenuState {
   final String error;
 
-  IntroSampleMenuFailure(this.error);
+  const IntroSampleMenuFailure(this.error);
 
   @override
   String toString() => 'IntroSampleMenuFailure { error: $error }';

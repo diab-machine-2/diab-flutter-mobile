@@ -535,7 +535,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                 children: [
                                                   Positioned.fill(
                                                       child: _cubit.files[index]
-                                                              is PickedFile
+                                                              is XFile
                                                           ? Image.file(
                                                               File(_cubit
                                                                   .files[index]
@@ -546,8 +546,14 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                               imageUrl: _cubit
                                                                   .files[index]
                                                                   .url,
-                                                              fit: BoxFit
-                                                                  .cover)),
+                                                              fit: BoxFit.cover,
+                                                              placeholder:
+                                                                  (_, __) {
+                                                                return const Center(
+                                                                    child:
+                                                                        CircularProgressIndicator());
+                                                              },
+                                                            )),
                                                   IconButton(
                                                     icon: Image.asset(
                                                         R.drawable.ic_trash),

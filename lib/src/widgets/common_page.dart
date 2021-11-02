@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widgets/background_page.dart';
-import 'package:medical/src/widgets/custom_app_bar.dart';
 
 class CommonPage extends StatelessWidget {
   final String background;
@@ -10,8 +12,8 @@ class CommonPage extends StatelessWidget {
   final VoidCallback? onTapBack;
   final IconData? icon;
   final Widget? appBarAction;
+  final bool? showCloseBackButton;
   final bool? bottomSafeArea;
-  final bool? showBackButton;
 
   const CommonPage(
       {Key? key,
@@ -22,8 +24,8 @@ class CommonPage extends StatelessWidget {
       this.onTapBack,
       this.icon,
       this.appBarAction,
-      this.bottomSafeArea,
-      this.showBackButton})
+      this.showCloseBackButton,
+      this.bottomSafeArea})
       : super(key: key);
 
   @override
@@ -36,12 +38,39 @@ class CommonPage extends StatelessWidget {
         child: Column(
           children: [
             CustomAppBar(
-              title: title ?? "",
-              textColor: textColor,
-              backCallback: onTapBack,
-              icon: icon,
-              rightWidget: appBarAction,
-              isShowBack: showBackButton ?? true,
+              backgroundColor: R.color.transparent,
+              title: Text(
+                title ?? '',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: textColor ?? R.color.textDark,
+                ),
+              ),
+              showRightCloseButton: showCloseBackButton,
+              leadingIcon: GestureDetector(
+                onTap: onTapBack ??
+                    () {
+                      NavigationUtil.pop(context);
+                    },
+                child: Icon(
+                  icon ?? Icons.arrow_back,
+                  color: textColor ?? R.color.textDark,
+                ),
+              ),
+              actions: showCloseBackButton == true
+                  ? [
+                      IconButton(
+                        icon: Icon(Icons.close, color: R.color.black),
+                        onPressed: onTapBack ??
+                            () {
+                              NavigationUtil.pop(context);
+                            },
+                      )
+                    ]
+                  : appBarAction != null
+                      ? [appBarAction!]
+                      : null,
             ),
             Expanded(child: child)
           ],
@@ -50,4 +79,3 @@ class CommonPage extends StatelessWidget {
     );
   }
 }
-
