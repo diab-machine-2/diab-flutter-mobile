@@ -2,10 +2,9 @@ import 'dart:ui' as ui;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widgets/custom_app_bar.dart';
+import 'package:medical/src/widget/base/custom_appbar.dart';
 
 class BloodSugarResultLayoutWidget extends StatelessWidget {
   const BloodSugarResultLayoutWidget({
@@ -49,7 +48,7 @@ class BloodSugarResultLayoutWidget extends StatelessWidget {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Row(children: [
                   Expanded(
                     child: RichText(
@@ -73,7 +72,7 @@ class BloodSugarResultLayoutWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: 153)
+                  const SizedBox(width: 153)
                 ]),
               ),
             ],
@@ -110,14 +109,25 @@ class BloodSugarResultLayoutWidget extends StatelessWidget {
   Widget _buildAppBar(BuildContext context) {
     return SafeArea(
       child: CustomAppBar(
-        title: title,
-        backCallback: () {
-          if (onTapBack == null)
-            NavigationUtil.pop(context);
-          else {
-            onTapBack!.call();
-          }
-        },
+        backgroundColor: R.color.transparent,
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: R.color.textDark,
+          ),
+        ),
+        leadingIcon: GestureDetector(
+          onTap: onTapBack ??
+              () {
+                NavigationUtil.pop(context);
+              },
+          child: Icon(
+            Icons.arrow_back,
+            color: R.color.textDark,
+          ),
+        ),
       ),
     );
   }

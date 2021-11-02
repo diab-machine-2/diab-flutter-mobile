@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
@@ -46,8 +45,8 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
       body: Center(
         child: Container(
           width: double.infinity,
-          margin: EdgeInsets.symmetric(horizontal: 24),
-          padding: EdgeInsets.all(20),
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: R.color.white,
@@ -99,7 +98,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
               textAlign: TextAlign.center,
             ),
           ),
-          SizedBox(height: 17),
+          const SizedBox(height: 17),
           Text(
             R.string.energy_use_per_day.tr(),
             style: TextStyle(
@@ -109,7 +108,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -155,9 +154,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
               ),
             ],
           ),
-          SizedBox(
-            height: 25,
-          ),
+          const SizedBox(height: 25),
           GestureDetector(
             onTap: () async {
               await showDialog(
@@ -181,9 +178,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                     color: R.color.accentColor,
                   ),
                 ),
-                SizedBox(
-                  width: 5,
-                ),
+                const SizedBox(width: 5),
                 Icon(
                   CupertinoIcons.arrow_right,
                   size: 20,
@@ -195,12 +190,12 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
           Visibility(
             visible: showExpandedText,
             child: Padding(
-              padding: EdgeInsets.only(top: 17),
+              padding: const EdgeInsets.only(top: 17),
               child: Stack(
                 alignment: AlignmentDirectional.bottomStart,
                 children: [
                   Container(
-                    padding: EdgeInsets.fromLTRB(68 , 8, 12 , 8),
+                    padding: const EdgeInsets.fromLTRB(68, 8, 12, 8),
                     decoration: BoxDecoration(
                       color: R.color.main_6,
                       borderRadius: BorderRadius.circular(8),
@@ -251,14 +246,14 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                   ),
                   Image.asset(
                     R.drawable.img_gym_trainer,
-                    width: 64 ,
+                    width: 64,
                     height: 82,
                   ),
                 ],
               ),
             ),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           Text(
             R.string.have_3_meal.tr(),
             textAlign: TextAlign.center,
@@ -268,12 +263,12 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
               color: R.color.textDark,
             ),
           ),
-          SizedBox(height: 17),
+          const SizedBox(height: 17),
           Padding(
-            padding: EdgeInsets.only(left: 40),
+            padding: const EdgeInsets.only(left: 40),
             child: buildCheckMeal(),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -287,7 +282,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                   onPressed: () => NavigationUtil.pop(context),
                 ),
               ),
-              SizedBox(width: 15),
+              const SizedBox(width: 15),
               Expanded(
                 flex: 1,
                 child: ButtonWidget(
@@ -337,14 +332,14 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                 _cubit.onCheckedNoSubMeal();
               }
             }),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Container(
           height: 1,
           margin: const EdgeInsets.only(left: 10),
           width: 170,
           color: R.color.gray,
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         buildRowCheck(
             title: R.string.breakfast_meal.tr(),
             isChecked: _cubit.createMenuRequest.includeBreakfast,
@@ -389,7 +384,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
             },
           ),
         ),
-        SizedBox(width: 22),
+        const SizedBox(width: 22),
         Text(
           title,
           style: TextStyle(

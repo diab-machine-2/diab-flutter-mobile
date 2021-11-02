@@ -2,7 +2,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -56,14 +55,14 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
                     background: R.drawable.bg_detail_pro,
                     child: SingleChildScrollView(
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(28 , 51, 28, 32),
+                        padding: const EdgeInsets.fromLTRB(28 , 51, 28, 32),
                         child: Column(
                           children: [
-                            SizedBox(height: 51),
+                            const SizedBox(height: 51),
                             Image.asset(
                                 R.drawable.img_blood_sugar_start_survey),
                             Padding(
-                              padding: EdgeInsets.only(top: 51, bottom: 24),
+                              padding: const EdgeInsets.only(top: 51, bottom: 24),
                               child: Text(
                                 _cubit.surveyCode.isEmpty
                                     ? R.string.blood_sugar_survey_description
@@ -72,7 +71,7 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
                                         .blood_sugar_survey_done_description
                                         .tr(),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -122,7 +121,7 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
                   onPressed: onShowResult,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Container(
                 width: 195 ,
                 child: ButtonWidget(

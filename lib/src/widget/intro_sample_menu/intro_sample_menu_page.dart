@@ -2,7 +2,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -24,9 +23,8 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    AppRepository repository = AppRepository();
+    final AppRepository repository = AppRepository();
     _cubit = IntroSampleMenuCubit(repository);
   }
 
@@ -63,7 +61,7 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
         background: R.drawable.bg_welcome,
         title: R.string.sample_menu.tr(),
         child: ListView(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           shrinkWrap: true,
           children: [
             Column(
@@ -74,9 +72,7 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                   width: double.infinity,
                   height: 240,
                 ),
-                SizedBox(
-                  height: 32,
-                ),
+                const SizedBox(height: 32),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -89,12 +85,12 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   child: RichText(
                     text: TextSpan(
                       text: R.string.step_1.tr(),
@@ -119,12 +115,10 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
+                const SizedBox(height: 12),
                 Container(
                   alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   child: RichText(
                     text: TextSpan(
                       text: R.string.step_2.tr(),
@@ -149,11 +143,9 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 34,
-                ),
+                const SizedBox(height: 34),
                 Container(
-                  width: 128 ,
+                  width: 128,
                   child: ButtonWidget(
                     title: R.string.start.tr(),
                     onPressed: () {
@@ -162,7 +154,8 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                         context: context,
                         builder: (_) => KcalParameterPage(
                           callback: (request) {
-                            NavigationUtil.replace(context, FoodMenuPage(createMenuRequest: request));
+                            NavigationUtil.replace(context,
+                                FoodMenuPage(createMenuRequest: request));
                           },
                         ),
                       );
