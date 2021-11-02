@@ -246,7 +246,8 @@ class _LessonTabPageState extends State<LessonTabPage>
         width: 96,
         height: 32,
         decoration: BoxDecoration(
-          color: isSelected ? R.color.blue_6 : R.color.transparent,
+          color: status.statusBackgroundColor,
+          border: isSelected ? Border.all(color: status.statusIconColor) : null,
           borderRadius: BorderRadius.circular(200),
         ),
         child: Row(
@@ -255,9 +256,7 @@ class _LessonTabPageState extends State<LessonTabPage>
             Text(
               'Tuần ${weekIndex + 1}',
               style: TextStyle(
-                color: isSelected
-                    ? R.color.greenGradientBottom
-                    : status.statusColor,
+                color: status.statusIconColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
@@ -437,63 +436,66 @@ class _LessonTabPageState extends State<LessonTabPage>
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       barrierDismissible: true,
       context: context,
-      builder: (_) => GestureDetector(
-        onTap: () {
-          NavigationUtil.pop(context);
-        },
-        child: Scaffold(
-          backgroundColor: R.color.transparent,
-          body: Center(
-            child: GestureDetector(
-              child: Container(
-                width: 344.w,
-                padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 24.h),
-                decoration: BoxDecoration(
-                  color: R.color.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 20.h),
-                      child: Image.asset(R.drawable.img_lesson_locked,
-                          width: 175.w, height: 180.h),
-                    ),
-                    Text(
-                      'Bài học chưa mở khoá!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 6.h,
-                    ),
-                    Text(
-                      'Bạn cần học lần lượt các bài học theo lộ trình của diaB để mở khoá bài học này.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 24.h),
-                      padding: EdgeInsets.symmetric(horizontal: 50.w),
-                      child: ButtonWidget(
-                        height: 32.h,
-                        title: 'Đồng ý',
-                        onPressed: () {},
-                        textSize: 14.sp,
-                      ),
-                    )
+      builder: (_) => Scaffold(
+        backgroundColor: R.color.transparent,
+        body: Center(
+          child: GestureDetector(
+            child: Container(
+              width: 344,
+              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 24.h),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    R.color.white,
+                    R.color.main_6,
                   ],
                 ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(84.w, 0, 84.w, 20),
+                    child: Image.asset(
+                      R.drawable.img_lesson_locked,
+                    ),
+                  ),
+                  Text(
+                    'Bài học chưa mở khoá!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Bạn cần học lần lượt các bài học theo lộ trình của diaB để mở khoá bài học này.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    child: ButtonWidget(
+                      height: 43,
+                      title: 'Đồng ý',
+                      onPressed: () {
+                        NavigationUtil.pop(context);
+                      },
+                      textSize: 14,
+                    ),
+                  )
+                ],
               ),
             ),
           ),

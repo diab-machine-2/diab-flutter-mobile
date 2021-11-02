@@ -263,6 +263,7 @@ class Drawables {
 	String get img_runner => "lib/res/drawables/img_runner.png";
 	String get img_runner_left => "lib/res/drawables/img_runner_left.png";
 	String get img_schedule_glucose => "lib/res/drawables/img_schedule_glucose.png";
+	String get img_select_route_successed => "lib/res/drawables/img_select_route_successed.png";
 	String get img_send_feedback_successed => "lib/res/drawables/img_send_feedback_successed.png";
 	String get img_step1 => "lib/res/drawables/img_step1.png";
 	String get img_step2 => "lib/res/drawables/img_step2.png";

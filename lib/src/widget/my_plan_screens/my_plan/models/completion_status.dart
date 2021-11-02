@@ -44,7 +44,7 @@ extension WeekStatus on CompletionStatus {
     }
   }
 
-  Color get statusColor {
+  Color get statusIconColor {
     switch (this) {
       case CompletionStatus.completed:
         return R.color.greenGradientBottom;
@@ -54,6 +54,19 @@ extension WeekStatus on CompletionStatus {
         return R.color.green;
       case CompletionStatus.not_start_yet:
         return R.color.captionColorGray;
+    }
+  }
+
+  Color get statusBackgroundColor {
+    switch (this) {
+      case CompletionStatus.completed:
+        return R.color.main_6;
+      case CompletionStatus.not_completed:
+        return R.color.orange_6;
+      case CompletionStatus.studying:
+        return R.color.greenbg;
+      case CompletionStatus.not_start_yet:
+        return R.color.grey_6;
     }
   }
 

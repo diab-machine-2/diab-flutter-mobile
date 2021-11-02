@@ -8,6 +8,7 @@ class CommonPage extends StatelessWidget {
   final String background;
   final String? title;
   final Color? textColor;
+  final Color? appbarColor;
   final Widget child;
   final VoidCallback? onTapBack;
   final IconData? icon;
@@ -21,6 +22,7 @@ class CommonPage extends StatelessWidget {
       required this.child,
       this.title,
       this.textColor,
+      this.appbarColor,
       this.onTapBack,
       this.icon,
       this.appBarAction,
@@ -33,12 +35,12 @@ class CommonPage extends StatelessWidget {
     return BackgroundPage(
       background: background,
       child: SafeArea(
-        top: true,
+        top: appbarColor == null,
         bottom: bottomSafeArea ?? false,
         child: Column(
           children: [
             CustomAppBar(
-              backgroundColor: R.color.transparent,
+              backgroundColor: appbarColor ?? R.color.transparent,
               title: Text(
                 title ?? '',
                 style: TextStyle(

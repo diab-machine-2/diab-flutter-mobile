@@ -2,7 +2,6 @@ import 'package:better_player/better_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
 class VideoPlayerWidget extends StatelessWidget {
@@ -21,11 +20,16 @@ class VideoPlayerWidget extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 24,
-                ),
-                child: BetterPlayer.network(videoUrl)),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 24,
+              ),
+              child: BetterPlayer.network(
+                videoUrl,
+                betterPlayerConfiguration:
+                    const BetterPlayerConfiguration(autoPlay: true),
+              ),
+            ),
           ],
         ),
       ),

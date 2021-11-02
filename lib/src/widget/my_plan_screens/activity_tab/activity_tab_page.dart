@@ -1,17 +1,17 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
+import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/video_player_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../activity_feedback/activity_feedback_page.dart';
+import '../my_plan/models/completion_status.dart';
 import '../my_plan/widgets/app_bar_bottom.dart';
 import '../select_route/select_route.dart';
 import 'activity_tab.dart';
@@ -99,34 +99,58 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     onRefresh: () => _cubit.refresh(),
                     child: _cubit.data.isEmpty
                         ? Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 53.w),
+                            padding: const EdgeInsets.symmetric(horizontal: 53),
                             child: Column(
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 24.h),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 24),
                                   child: Image.asset(
                                       R.drawable.img_activity_empty),
                                 ),
-                                Text(
-                                  'Hôm nay là ngày nghỉ!',
-                                  style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w700),
-                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 32),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'Hôm nay là ngày nghỉ!',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: R.color.textDark,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        'Hãy dành thời gian nghỉ ngơi và thư giãn nhé!',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: R.color.textDark,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ],
+                                  ),
+                                )
                               ],
                             ),
                           )
-                        : ListView(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 20.h),
-                            children: [
-                              _buildActivityWidget(),
-                              _buildActivityWidget(),
-                              _buildActivityWidget(),
-                              _buildActivityWidget(),
-                            ],
-                          ),
+                        : ListView.separated(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 20),
+                            itemCount: 5,
+                            itemBuilder: (context, index) {
+                              return _buildActivityWidget();
+                            },
+                            separatorBuilder: (context, index) {
+                              return Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 20),
+                                height: 1,
+                                color: R.color.grayBorder,
+                              );
+                            }),
                   ),
                 ),
               ),
@@ -206,21 +230,19 @@ class _ActivityTabPageState extends State<ActivityTabPage>
 
   Widget _buildActivityWidget() {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: (127.h - 87.w) / 2),
-      height: 87.w,
-      alignment: Alignment.center,
       color: R.color.transparent,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 87.w,
-            width: 87.w,
+            height: 87,
+            width: 87,
             decoration: BoxDecoration(
               color: Colors.blue,
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          SizedBox(width: 14.w),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -234,23 +256,24 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                         'Bài 1. Vận động mạnh và dài nhất có thể nè mọi ae',
                         style: TextStyle(
                           color: R.color.textDark,
-                          fontSize: 16.sp,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    const SizedBox(width: 8),
                     Text(
                       '5 phút',
                       style: TextStyle(
                           color: R.color.grey_2,
-                          fontSize: 12.sp,
+                          fontSize: 12,
                           fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),
+                const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -278,7 +301,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     ),
                   ],
                 ),
-                // _buildLessonStatusWidget(),
+                const SizedBox(height: 12),
+                const LessonStatusWidget(
+                  learningStatus: Const.LESSON_LEARNT,
+                  progress: null,
+                  isRequired: false,
+                ),
               ],
             ),
           ),
@@ -306,24 +334,24 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(4.w),
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: R.color.main_6,
                 shape: BoxShape.circle,
               ),
               child: Image.asset(
                 icon,
-                width: 16.w,
-                height: 16.w,
+                width: 16,
+                height: 16,
               ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(4.w, 4.h, 8.w, 4.h),
+              padding: const EdgeInsets.fromLTRB(4, 4, 8, 4),
               child: Text(
                 title,
                 style: TextStyle(
                   color: textColor,
-                  fontSize: 12.sp,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -337,14 +365,14 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   Widget _buildScheduleWidget() {
     if (_cubit.timeData == null) return const SizedBox();
     return Padding(
-      padding: EdgeInsets.only(top: 20.h, bottom: 4.h),
+      padding: const EdgeInsets.only(top: 20, bottom: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildWeekListWidget(),
-          SizedBox(height: 20.h),
+          const SizedBox(height: 20),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
                 Row(
@@ -353,7 +381,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     7,
                     (index) => Container(
                       alignment: Alignment.bottomCenter,
-                      width: 16.sp + 8.w,
+                      width: 24,
                       child: Text(
                         _cubit.timeData?.currentWeek.dayList[index].dayInWeek ??
                             '',
@@ -361,7 +389,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     ),
                   ),
                 ),
-                SizedBox(height: 4.h),
+                const SizedBox(height: 4),
                 Row(
                   children: List.generate(
                     13,
@@ -404,7 +432,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         width: 96,
         height: 32,
         decoration: BoxDecoration(
-          color: isSelected ? R.color.blue_6 : R.color.transparent,
+          color: status.statusBackgroundColor,
+          border: isSelected ? Border.all(color: status.statusIconColor) : null,
           borderRadius: BorderRadius.circular(200),
         ),
         child: Row(
@@ -413,9 +442,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             Text(
               'Tuần ${weekIndex + 1}',
               style: TextStyle(
-                color: isSelected
-                    ? R.color.greenGradientBottom
-                    : status.statusColor,
+                color: status.statusIconColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
@@ -432,7 +459,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     return InkWell(
       onTap: () {},
       child: Container(
-        padding: EdgeInsets.all(4.w),
+        padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: R.color.greenGradientBottom,
@@ -440,7 +467,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         child: Icon(
           Icons.check_rounded,
           color: R.color.white,
-          size: 16.sp,
+          size: 16,
         ),
       ),
     );

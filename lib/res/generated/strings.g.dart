@@ -589,6 +589,7 @@ class Strings {
 	String get energy_use_per_day => 'energy_use_per_day';
 	String get food_from_menu => 'food_from_menu';
 	String get myplanscreen => 'MyPlanScreen';
+	String get my_plan => 'my_plan';
 	String get activity => 'activity';
 	String get title_goal => 'title_goal';
 	String get title_lesson => 'title_lesson';

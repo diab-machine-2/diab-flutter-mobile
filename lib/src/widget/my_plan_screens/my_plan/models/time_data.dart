@@ -37,7 +37,7 @@ class TimeData {
 class WeekData {
   WeekData({
     required this.dayList,
-    this.status = CompletionStatus.not_start_yet
+    this.status = CompletionStatus.not_completed
   });
   final List<DateTime> dayList;
   CompletionStatus status;

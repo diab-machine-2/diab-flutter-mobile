@@ -14,7 +14,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   final AppRepository repository;
 
-  List<dynamic> data = [];
+  List<dynamic> data = ['sdfs'];
 
   TimeData? timeData;
 
@@ -29,7 +29,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   Future<void> refresh() async {
     await Future.delayed(const Duration(seconds: 1));
-    data.add('sdfs');
+    data.clear();
     emit(const ActivityTabSuccess());
     emit(const ActivityTabInitial());
   }

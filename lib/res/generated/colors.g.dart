@@ -59,6 +59,7 @@ class Colors {
 	Color get blue_6 => Color(0xffD5EFFF);
 	Color get orange_1 => Color(0xffF58220);
 	Color get grey_6 => Color(0xffF5F7FA);
+	Color get orange_6 => Color(0xffFEEDDC);
 	Color get color0xffE5E5E5 => Color(0xffE5E5E5);
 	Color get color0xff003F38 => Color(0xff003F38);
 	Color get color0xffBEC0C8 => Color(0xffBEC0C8);
@@ -93,7 +94,6 @@ class Colors {
 	Color get color0xffFF5552 => Color(0xffFF5552);
 	Color get color0xffDFF6EC => Color(0xffDFF6EC);
 	Color get color0xffD3EFEE => Color(0xffD3EFEE);
-	Color get color0xffFEEDDC => Color(0xffFEEDDC);
 	Color get color0xffFCF8DA => Color(0xffFCF8DA);
 	Color get color0xffFDE9E9 => Color(0xffFDE9E9);
 	Color get color0xff737072 => Color(0xff737072);

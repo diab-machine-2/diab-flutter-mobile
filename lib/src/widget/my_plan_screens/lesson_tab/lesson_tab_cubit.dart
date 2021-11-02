@@ -30,7 +30,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   String packageCode = '';
   DateTime? packageTimeExpired;
 
-  bool get isFiltering => true;
+  bool get isFiltering => false;
 
   void onSelectWeek(int newIndex) {
     timeData?.currentWeekIndex = newIndex;

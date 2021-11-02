@@ -192,7 +192,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                     const SizedBox(width: 16),
                     Expanded(
                       child: buildItem(
-                          color: R.color.color0xffFEEDDC,
+                          color: R.color.orange_6,
                           title: R.string.goal_setting.tr(),
                           image: R.drawable.ic_set_goal,
                           onTap: () {

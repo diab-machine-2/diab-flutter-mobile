@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -112,7 +113,22 @@ class _SelectRoutePageState extends State<SelectRoutePage> {
                         description:
                             'Bạn đang học lộ trình cho người có thể trạng yếu, bạn có chắc muốn đổi lộ trình khác không?',
                         positiveButtonTitle: 'Xác nhận',
-                        onClick: () {}),
+                        onClick: () {
+                          NavigationUtil.pop(context);
+                          // showDialog(
+                          //   context: context,
+                          //   builder: (_) => Scaffold(
+                          //     body: Center(
+                          //       child: Container(
+                          //         width: 200,
+                          //         height: 200,
+                          //         color: Colors.red,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // );
+                        },
+                        gradientColor: true),
                   );
                 },
               ),

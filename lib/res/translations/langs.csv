@@ -587,6 +587,7 @@ food_menu_update_required,Vui lòng nâng cấp tài khoản lên gói Đồng h
 energy_use_per_day,Mức tiêu hao năng lượng/ngày của bạn,
 food_from_menu,"Theo thực đơn mẫu, có phải bạn đã ăn",
 MyPlanScreen,============================================MyPlan screen====================================================
+my_plan,Lịch trình của tôi,
 activity,Hoạt động,
 title_goal,Mục tiêu,
 title_lesson,Bài học,
