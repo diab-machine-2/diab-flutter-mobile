@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widgets/background_page.dart';
-import 'package:medical/src/widgets/custom_app_bar.dart';
 
 class CommonPage extends StatelessWidget {
   final String background;
@@ -32,11 +34,26 @@ class CommonPage extends StatelessWidget {
         child: Column(
           children: [
             CustomAppBar(
-              title: title ?? "",
-              textColor: textColor,
-              backCallback: onTapBack,
-              icon: icon,
-              rightWidget: appBarAction,
+              backgroundColor: R.color.transparent,
+              title: Text(
+                title ?? '',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: textColor ?? R.color.textDark,
+                ),
+              ),
+              leadingIcon: GestureDetector(
+                onTap: onTapBack ??
+                    () {
+                      NavigationUtil.pop(context);
+                    },
+                child: Icon(
+                  Icons.arrow_back,
+                  color: textColor ?? R.color.textDark,
+                ),
+              ),
+              actions: appBarAction != null ? [appBarAction!] : null,
             ),
             Expanded(child: child)
           ],
@@ -45,4 +62,3 @@ class CommonPage extends StatelessWidget {
     );
   }
 }
-
