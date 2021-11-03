@@ -256,6 +256,7 @@ class Drawables {
 	String get img_step2 => "lib/res/drawables/img_step2.png";
 	String get img_step3 => "lib/res/drawables/img_step3.png";
 	String get img_survey => "lib/res/drawables/img_survey.png";
+	String get img_survey_completed => "lib/res/drawables/img_survey_completed.png";
 	String get img_tabble_hba1c => "lib/res/drawables/img_tabble_hba1c.png";
 	String get img_upgrade_package => "lib/res/drawables/img_upgrade_package.png";
 	String get img_welcome_0 => "lib/res/drawables/img_welcome_0.png";

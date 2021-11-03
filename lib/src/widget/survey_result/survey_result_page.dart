@@ -1,21 +1,17 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:medical/res/R.dart';
-import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:medical/src/model/response/survey_data.dart';
-import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/survey/survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
 import 'survey_result.dart';
 
 class SurveyResultPage extends StatefulWidget {
-
   @override
   _SurveyResultPageState createState() => _SurveyResultPageState();
 }
@@ -25,9 +21,8 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    AppRepository repository = AppRepository();
+    final AppRepository repository = AppRepository();
     _cubit = SurveyResultCubit(repository);
   }
 
@@ -63,44 +58,54 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
         children: [
           Expanded(
             child: ListView(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               shrinkWrap: true,
               children: [
-                Center(
-                  child: Image.asset(
-                    R.drawable.ic_learn_result_high,
-                    width: double.infinity,
-                    height: 240,
-                  ),
+                SizedBox(height: 50.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 50.w),
+                  child: Image.asset(R.drawable.img_survey_completed),
                 ),
-                SizedBox(
-                  height: 16,
-                ),
+                const SizedBox(height: 24),
                 Container(
                   alignment: Alignment.center,
-                  margin: EdgeInsets.symmetric(horizontal: 40),
+                  margin: const EdgeInsets.symmetric(horizontal: 40),
                   child: Text(
-                    R.string.text_congratulation_survey.tr(),
+                    R.string.thank_you_for_survey.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: R.color.greenGradientBottom,
-                        height: 1.4
+                        height: 1.4),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Text(
+                    R.string.thank_you_for_survey_description.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.textDark,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          Center(
+          SafeArea(
+            top: false,
             child: Container(
-              width: 200 ,
-              margin: EdgeInsets.only(bottom: 30, top: 10),
+              alignment: Alignment.center,
+              width: 195,
+              margin: const EdgeInsets.only(bottom: 20, top: 10),
               child: ButtonWidget(
                 title: R.string.completed.tr(),
                 onPressed: () {
-                  NavigationUtil.popToFirst(context);
                   // NavigationUtil.navigatePage(context, SurveyResultPage());
                 },
               ),

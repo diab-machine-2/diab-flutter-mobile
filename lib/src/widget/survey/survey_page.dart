@@ -1,23 +1,26 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:medical/res/R.dart';
-import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey/survey.dart';
-import 'package:medical/src/widget/survey_question/survey_question_page.dart';
-import 'package:medical/src/widget/survey_result/survey_result_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
+
+import '../survey_question/survey_question_page.dart';
 
 class SurveyPage extends StatefulWidget {
   final int index;
   final SurveyData surveyData;
-  const SurveyPage({Key? key, required this.index, required this.surveyData}) : super(key: key);
+  const SurveyPage({
+    Key? key,
+    required this.index,
+    required this.surveyData,
+  }) : super(key: key);
 
   @override
   _SurveyPageState createState() => _SurveyPageState();
@@ -25,18 +28,16 @@ class SurveyPage extends StatefulWidget {
 
 class _SurveyPageState extends State<SurveyPage> {
   late SurveyCubit _cubit;
-   SectionSurvey? _sectionSurvey;
+  SectionSurvey? _sectionSurvey;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    AppRepository repository = AppRepository();
+    final AppRepository repository = AppRepository();
     _cubit = SurveyCubit(repository);
     if (widget.surveyData.sections != null) {
       _sectionSurvey = widget.surveyData.sections![widget.index];
     }
-
   }
 
   @override
@@ -71,48 +72,60 @@ class _SurveyPageState extends State<SurveyPage> {
         children: [
           Expanded(
             child: ListView(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               shrinkWrap: true,
               children: [
-                Center(
-                  child: Image.asset(
-                    R.drawable.ic_survey,
-                    width: double.infinity,
-                    height: 240,
-                  ),
+                Image.asset(
+                  R.drawable.ic_survey,
+                  width: double.infinity,
+                  height: 240,
                 ),
-                SizedBox(
-                  height: 40,
-                ),
+                const SizedBox(height: 40),
                 Container(
-                  alignment: Alignment.center,
-                  margin: EdgeInsets.symmetric(horizontal: 40),
+                  alignment: Alignment.centerLeft,
                   child: Text(
-                    _sectionSurvey?.name ?? "",
-                    textAlign: TextAlign.center,
+                    _sectionSurvey?.name ?? '',
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: R.color.textDark,
-                        height: 1.4
+                        height: 1.4),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Viverra amet mauris, vehicula sollicitudin tristique. Nullam mauris aliquet faucibus quis. Pellentesque quam mattis nec dolor, mattis vel ultricies dictum tincidunt. Fermentum urna id malesuada rutrum.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.textDark,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          Center(
+          SafeArea(
+            top: false,
             child: Container(
-              width: 200 ,
-              margin: EdgeInsets.only(bottom: 30, top: 10),
+              alignment: Alignment.center,
+              width: 195,
+              margin: const EdgeInsets.only(bottom: 20, top: 10),
               child: ButtonWidget(
                 title: R.string.text_continue.tr(),
                 onPressed: () {
-                  NavigationUtil.navigatePage(context, SurveyQuestionPage(index: widget.index, surveyData: widget.surveyData,));
+                  NavigationUtil.navigatePage(
+                    context,
+                    SurveyQuestionPage(
+                      index: widget.index,
+                      surveyData: widget.surveyData,
+                    ),
+                  );
                 },
               ),
             ),
-          )
+          ),
         ],
       ),
     );

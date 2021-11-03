@@ -268,7 +268,7 @@ class AppRepository {
   Future<ApiResult<CommonResponse>> submitSurvey(PostSurveyRequest request) async {
     try {
       final CommonResponse response = await appClient.submitSurvey(request);
-      if (response.statusCode == 200) {
+      if (response.meta?.success == true) {
         return ApiResult.success(data: response);
       } else
         return ApiResult.failure(error: NetworkExceptions.defaultError(response.message ?? ''));

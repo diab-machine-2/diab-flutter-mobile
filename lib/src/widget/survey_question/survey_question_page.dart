@@ -1,25 +1,23 @@
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:medical/res/R.dart';
-import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
 import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/card_course_quiz/card_course_quiz.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey/survey_page.dart';
-import 'package:medical/src/widget/survey_result/survey_result_page.dart';
-import 'package:medical/src/widgets/button_widget.dart';
-import 'package:medical/src/widgets/common_page.dart';
-import 'package:medical/src/widgets/custom_scroll_physics.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../survey_result/survey_result_page.dart';
 import 'survey_question.dart';
 
 class SurveyQuestionPage extends StatefulWidget {
@@ -38,14 +36,13 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   late SurveyQuestionCubit _cubit;
   SectionSurvey? _sectionSurvey;
   List<GlobalKey<CardCourseQuizPageState>> listGlobal = [];
-  AutoScrollController _controller =
+  final AutoScrollController _controller =
       AutoScrollController(axis: Axis.horizontal);
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    AppRepository repository = AppRepository();
+    final AppRepository repository = AppRepository();
     _cubit = SurveyQuestionCubit(repository);
     if (widget.surveyData.sections != null) {
       _sectionSurvey = widget.surveyData.sections![widget.index];
@@ -56,12 +53,10 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
     Utils.onWidgetDidBuild(() {
       _controller.position.isScrollingNotifier.addListener(() {
         if (!_controller.position.isScrollingNotifier.value) {
-          int index = (_controller.offset / ScreenUtil().screenWidth).round();
+          final int index =
+              (_controller.offset / ScreenUtil().screenWidth).round();
           _cubit.jumpToIndexCourse(index);
         }
-        // int index =
-        // (_controller.offset / (ScreenUtil().screenWidth - 80.h)).round();
-        // _cubit.jumpToIndexCourse(index);
       });
     });
   }
@@ -93,58 +88,29 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   }
 
   Widget buildPage(BuildContext context, SurveyQuestionState state) {
-    int lengthQuiz = _sectionSurvey?.questions?.length ?? 0;
+    final int lengthQuiz = _sectionSurvey?.questions?.length ?? 0;
     return Container(
       decoration: BoxDecoration(color: R.color.color0xffB1DDDB),
       child: Column(
         children: [
-          ListView(
-            padding: EdgeInsets.all(16.h),
-            shrinkWrap: true,
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 12.h),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        R.string.survey.tr(),
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                            color: R.color.textDark,
-                            height: 1.4,
-                            letterSpacing: 0.4),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        NavigationUtil.pop(context);
-                      },
-                      child: Icon(
-                        Icons.close,
-                        size: 30.h,
-                        color: R.color.textDark,
-                      ),
-                    )
-                  ],
-                ),
+          CustomAppBar(
+            backgroundColor: R.color.transparent,
+            title: Text(
+              R.string.survey.tr(),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: R.color.textDark,
               ),
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.symmetric(horizontal: 16.h),
-                child: Text(
-                  _sectionSurvey?.name ?? "",
-                  style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                      color: R.color.textDark,
-                      height: 1.4,
-                      letterSpacing: 0.4),
-                ),
-              ),
+            ),
+            showRightCloseButton: true,
+            actions: [
+              IconButton(
+                icon: Icon(Icons.close, color: R.color.black),
+                onPressed: () {
+                  NavigationUtil.pop(context);
+                },
+              )
             ],
           ),
           SizedBox(height: 5.h),
@@ -152,13 +118,12 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               child: lengthQuiz == 0
                   ? Container()
                   : ListView.builder(
-                      // padding: EdgeInsets.symmetric(horizontal: 8.h),
                       controller: _controller,
                       scrollDirection: Axis.horizontal,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: lengthQuiz,
                       itemBuilder: (context, index) {
-                        QuizData data = _sectionSurvey!.questions![index];
+                        final QuizData data = _sectionSurvey!.questions![index];
                         return AutoScrollTag(
                             key: ValueKey(index),
                             controller: _controller,
@@ -199,9 +164,9 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                   onTap: _cubit.selectedCourseIndex == 0
                       ? null
                       : () {
-                          int newIndex = _cubit.selectedCourseIndex - 1;
+                          final int newIndex = _cubit.selectedCourseIndex - 1;
                           _controller.scrollToIndex(newIndex,
-                              duration: Duration(milliseconds: 500),
+                              duration: const Duration(milliseconds: 500),
                               preferPosition: AutoScrollPosition.middle);
                           _cubit.jumpToIndexCourse(newIndex);
                         },
@@ -270,21 +235,19 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   }
 
   Widget buildNextButton() {
-    int lengthQuiz = _sectionSurvey?.questions?.length ?? 0;
-    bool isEnable = _cubit.isEnableNext;
+    final int lengthQuiz = _sectionSurvey?.questions?.length ?? 0;
+    final bool isEnable = _cubit.isEnableNext;
     return InkWell(
       onTap: isEnable
           ? () {
               if (_cubit.selectedCourseIndex == lengthQuiz - 1) {
-                bool isLastPart = widget.index + 1 ==
+                final bool isLastPart = widget.index + 1 ==
                     (widget.surveyData.sections?.length ?? 0);
-                if (widget.surveyData.id != null &&
-                    _sectionSurvey?.id != null)
-                  _cubit.submitAnswer(widget.surveyData.id!,
-                      _sectionSurvey!.id!);
+                if (widget.surveyData.id != null && _sectionSurvey?.id != null)
+                  _cubit.submitAnswer(
+                      widget.surveyData.id!, _sectionSurvey!.id!);
                 if (isLastPart) {
-                  NavigationUtil.pushAndRemoveUtilKeepFirstPage(
-                      context, SurveyResultPage());
+                  NavigationUtil.navigatePage(context, SurveyResultPage());
                 } else {
                   NavigationUtil.navigatePage(
                       context,
@@ -294,9 +257,9 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                       ));
                 }
               } else {
-                int newIndex = _cubit.selectedCourseIndex + 1;
+                final int newIndex = _cubit.selectedCourseIndex + 1;
                 _controller.scrollToIndex(newIndex,
-                    duration: Duration(milliseconds: 400),
+                    duration: const Duration(milliseconds: 400),
                     preferPosition: AutoScrollPosition.middle);
                 _cubit.jumpToIndexCourse(newIndex);
                 _cubit.enableNextButton(false);

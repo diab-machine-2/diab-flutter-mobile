@@ -8,10 +8,13 @@ class CommonPage extends StatelessWidget {
   final String background;
   final String? title;
   final Color? textColor;
+  final Color? appbarColor;
   final Widget child;
   final VoidCallback? onTapBack;
   final IconData? icon;
   final Widget? appBarAction;
+  final bool? showCloseBackButton;
+  final bool? bottomSafeArea;
 
   const CommonPage(
       {Key? key,
@@ -19,9 +22,12 @@ class CommonPage extends StatelessWidget {
       required this.child,
       this.title,
       this.textColor,
+      this.appbarColor,
       this.onTapBack,
       this.icon,
-      this.appBarAction})
+      this.appBarAction,
+      this.showCloseBackButton,
+      this.bottomSafeArea})
       : super(key: key);
 
   @override
@@ -29,12 +35,12 @@ class CommonPage extends StatelessWidget {
     return BackgroundPage(
       background: background,
       child: SafeArea(
-        top: true,
-        bottom: false,
+        top: appbarColor == null,
+        bottom: bottomSafeArea ?? false,
         child: Column(
           children: [
             CustomAppBar(
-              backgroundColor: R.color.transparent,
+              backgroundColor: appbarColor ?? R.color.transparent,
               title: Text(
                 title ?? '',
                 style: TextStyle(
@@ -43,17 +49,30 @@ class CommonPage extends StatelessWidget {
                   color: textColor ?? R.color.textDark,
                 ),
               ),
+              showRightCloseButton: showCloseBackButton,
               leadingIcon: GestureDetector(
                 onTap: onTapBack ??
                     () {
                       NavigationUtil.pop(context);
                     },
                 child: Icon(
-                  Icons.arrow_back,
+                  icon ?? Icons.arrow_back,
                   color: textColor ?? R.color.textDark,
                 ),
               ),
-              actions: appBarAction != null ? [appBarAction!] : null,
+              actions: showCloseBackButton == true
+                  ? [
+                      IconButton(
+                        icon: Icon(Icons.close, color: R.color.black),
+                        onPressed: onTapBack ??
+                            () {
+                              NavigationUtil.pop(context);
+                            },
+                      )
+                    ]
+                  : appBarAction != null
+                      ? [appBarAction!]
+                      : null,
             ),
             Expanded(child: child)
           ],
