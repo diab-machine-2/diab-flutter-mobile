@@ -80,12 +80,12 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                 child: SingleChildScrollView(
                   child: Container(
                     width: double.infinity,
-                    padding: EdgeInsets.all(16.h),
+                    padding: EdgeInsets.all(16),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: 35.h,
+                            height: 35,
                           ),
                           RichText(
                             textAlign: TextAlign.start,
@@ -93,7 +93,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                               text: "Bạn cần hoàn thành lần lượt theo ",
                               style: TextStyle(
                                 color: R.color.textDark,
-                                fontSize: 16.sp,
+                                fontSize: 16,
                                 height: 1.375,
                               ),
                               children: <TextSpan>[
@@ -102,26 +102,26 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                     style: TextStyle(
                                       color: R.color.textDark,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16.sp,
+                                      fontSize: 16,
                                       height: 1.375,
                                     )),
                                 TextSpan(
                                     text: " sau:",
                                     style: TextStyle(
                                       color: R.color.textDark,
-                                      fontSize: 16.sp,
+                                      fontSize: 16,
                                       height: 1.375,
                                     )),
                               ],
                             ),
                           ),
                           SizedBox(
-                            height: 24.h,
+                            height: 24,
                           ),
                           Container(
                             width: double.infinity,
                             child: CardWidget(
-                              padding: EdgeInsets.all(16.h),
+                              padding: EdgeInsets.all(16),
                               borderWidth: 0,
                               borderColor: Colors.transparent,
                               backgroundImage: R.drawable.bg_register_package_pro,
@@ -133,14 +133,14 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                     textAlign: TextAlign.start,
                                     style: TextStyle(
                                       color: R.color.accentColor,
-                                      fontSize: 20.sp,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       height: 1.4,
                                       letterSpacing: 0.4
                                     ),
                                   ),
                                   SizedBox(
-                                    height: 8.h,
+                                    height: 8,
                                   ),
                                   RichText(
                                     textAlign: TextAlign.start,
@@ -148,7 +148,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                       text: "Nâng cấp tài khoản\nlên gói ",
                                       style: TextStyle(
                                         color: R.color.textDark,
-                                        fontSize: 16.sp,
+                                        fontSize: 16,
                                         height: 1.375,
                                       ),
                                       children: <TextSpan>[
@@ -157,7 +157,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                             style: TextStyle(
                                               color: R.color.textDark,
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 16.sp,
+                                              fontSize: 16,
                                               height: 1.375,
                                             )),
                                       ],
@@ -168,12 +168,12 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                             ),
                           ),
                           SizedBox(
-                            height: 24.h,
+                            height: 24,
                           ),
                           Container(
                             width: double.infinity,
                             child: CardWidget(
-                              padding: EdgeInsets.all(16.h),
+                              padding: EdgeInsets.all(16),
                               borderWidth: 0,
                               borderColor: Colors.transparent,
                               backgroundImage: R.drawable.bg_register_package_premium,
@@ -185,14 +185,14 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                     textAlign: TextAlign.start,
                                     style: TextStyle(
                                         color: R.color.accentColor,
-                                        fontSize: 20.sp,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                         height: 1.4,
                                         letterSpacing: 0.4
                                     ),
                                   ),
                                   SizedBox(
-                                    height: 8.h,
+                                    height: 8,
                                   ),
                                   RichText(
                                     textAlign: TextAlign.start,
@@ -200,7 +200,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                       text: "Thanh toán gói\ndịch vụ ",
                                       style: TextStyle(
                                         color: R.color.textDark,
-                                        fontSize: 16.sp,
+                                        fontSize: 16,
                                         height: 1.375,
                                       ),
                                       children: <TextSpan>[
@@ -209,13 +209,13 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                             style: TextStyle(
                                               color: R.color.textDark,
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 16.sp,
+                                              fontSize: 16,
                                               height: 1.375,
                                             )),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height: 12.h),
+                                  SizedBox(height: 12),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -224,7 +224,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                             color: R.color.textDark,
-                                            fontSize: 16.sp,
+                                            fontSize: 16,
                                             letterSpacing: 0.4,
                                             height: 1.375,
                                           )),
@@ -237,13 +237,13 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                           style: TextStyle(
                                             color: R.color.accentColor,
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 20.sp,
+                                            fontSize: 20,
                                             letterSpacing: 0.08,
                                             height: 1.4,
                                           )),
                                     ],
                                   ),
-                                  SizedBox(height: 12.h),
+                                  SizedBox(height: 12),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -252,7 +252,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                             color: R.color.textDark,
-                                            fontSize: 16.sp,
+                                            fontSize: 16,
                                             letterSpacing: 0.4,
                                             height: 1.375,
                                           )),
@@ -264,7 +264,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                                           style: TextStyle(
                                             color: R.color.accentColor,
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 20.sp,
+                                            fontSize: 20,
                                             letterSpacing: 0.08,
                                             height: 1.4,
                                           )),
@@ -275,27 +275,27 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                             ),
                           ),
                           SizedBox(
-                            height: 24.h,
+                            height: 24,
                           ),
                           Text(
                             R.string.text_notice_upgrade_premium.tr(),
                             textAlign: TextAlign.start,
                             style: TextStyle(
                               color: R.color.textDark,
-                              fontSize: 16.sp,
+                              fontSize: 16,
                               height: 1.37,
                               letterSpacing: 0.4
                             ),
                           ),
                           SizedBox(
-                            height: 16.h,
+                            height: 16,
                           ),
                         ]),
                   ),
                 ),
               ),
               Container(
-                margin: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.h),
+                margin: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                 child: ButtonWidget(
                   title: R.string.upgrade_package_pro.tr(),
                   onPressed: () {
@@ -303,7 +303,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                   },
                 ),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 20),
             ],
           )),
     );

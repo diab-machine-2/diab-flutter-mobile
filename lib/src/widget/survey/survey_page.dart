@@ -71,27 +71,27 @@ class _SurveyPageState extends State<SurveyPage> {
         children: [
           Expanded(
             child: ListView(
-              padding: EdgeInsets.all(16.h),
+              padding: EdgeInsets.all(16),
               shrinkWrap: true,
               children: [
                 Center(
                   child: Image.asset(
                     R.drawable.ic_survey,
                     width: double.infinity,
-                    height: 240.h,
+                    height: 240,
                   ),
                 ),
                 SizedBox(
-                  height: 40.h,
+                  height: 40,
                 ),
                 Container(
                   alignment: Alignment.center,
-                  margin: EdgeInsets.symmetric(horizontal: 40.h),
+                  margin: EdgeInsets.symmetric(horizontal: 40),
                   child: Text(
                     _sectionSurvey?.name ?? "",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontSize: 20.sp,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: R.color.textDark,
                         height: 1.4
@@ -103,8 +103,8 @@ class _SurveyPageState extends State<SurveyPage> {
           ),
           Center(
             child: Container(
-              width: 200.w,
-              margin: EdgeInsets.only(bottom: 30.h, top: 10.h),
+              width: 200 ,
+              margin: EdgeInsets.only(bottom: 30, top: 10),
               child: ButtonWidget(
                 title: R.string.text_continue.tr(),
                 onPressed: () {

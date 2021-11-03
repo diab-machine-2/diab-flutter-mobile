@@ -37,6 +37,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   DateTime selectedDate = DateTime.now();
 
   List<FoodModel> selectedFoods = [];
+  List<FoodModel> foodSuggestByMenu = [];
 
   FoodInputModel? model;
 
@@ -48,9 +49,38 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
 
   double totalKcal = 0;
 
+  double? totalKcalInFoodMenu;
+
   bool get isBasicUser {
     final String packageCode = userInfo?.packageCode ?? '';
     return packageCode.isEmpty || packageCode == Const.BASIC;
+  }
+
+  bool get showFoodFromMenuTitle {
+    if (selectedFoods.isEmpty) return false;
+    if (selectedFoods.length != foodSuggestByMenu.length) return false;
+    final List<FoodModel> tmp = List<FoodModel>.from(selectedFoods);
+    int i = 0;
+    while (tmp.isNotEmpty && i < 100) {
+      i++;
+      if (isContain(tmp.last, foodSuggestByMenu)) {
+        tmp.removeLast();
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool isContain(FoodModel food, List<FoodModel> listFood) {
+    for (final model in listFood) {
+      if (food.id != null &&
+          food.id == model.id &&
+          food.portion == model.portion) {
+        return true;
+      }
+    }
+    return false;
   }
 
   Future<void> getInitialData({String? type, String? id}) async {
@@ -75,7 +105,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   }
 
   void removeFood(int index) {
-    if (files[index] is PickedFile) {
+    if (files[index] is XFile) {
       files.removeAt(index);
     } else {
       removeIDs.add(files[index].id);
@@ -124,6 +154,8 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   Future<void> getSuggestFood() async {
     if (timeCode == null || isBasicUser && selectedDate.weekday > 2) {
       selectedFoods = [];
+      foodSuggestByMenu = [];
+      totalKcalInFoodMenu = null;
       refresh();
       return;
     }
@@ -133,12 +165,16 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     apiResult.when(success: (MenuResponse response) {
       if (response.listdayfood == null || response.food == null) {
         selectedFoods = [];
+        foodSuggestByMenu = [];
+        totalKcalInFoodMenu = null;
       } else {
         selectedFoods = response.foodListInTime(
               time: selectedDate,
               timeCode: timeCode ?? 1,
             ) ??
             [];
+        foodSuggestByMenu = List<FoodModel>.from(selectedFoods);
+        totalKcalInFoodMenu = getTotalKcalFromListFood(selectedFoods);
       }
       calculatorCalo();
       emit(const DailyNutritionSuccess());
@@ -146,6 +182,14 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
       emit(DailyNutritionFailure(NetworkExceptions.getErrorMessage(error)));
     });
     emit(const DailyNutritionInitial());
+  }
+
+  double getTotalKcalFromListFood(List<FoodModel> foods) {
+    double total = 0;
+    for (final FoodModel food in foods) {
+      total += (food.calorie ?? 0) * (food.portion ?? 0);
+    }
+    return total;
   }
 
   Future<void> changeFood({
@@ -170,10 +214,10 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   }
 
   int? get timeCode {
-    if (selectedTimeFrame?.name == 'Sáng') return 1;
-    if (selectedTimeFrame?.name == 'Trưa') return 2;
-    if (selectedTimeFrame?.name == 'Tối') return 3;
-    if (selectedTimeFrame?.name == 'Nhẹ') return 0;
+    if (selectedTimeFrame?.name == Const.BREAKFAST) return 1;
+    if (selectedTimeFrame?.name == Const.LUNCH) return 2;
+    if (selectedTimeFrame?.name == Const.DINNER) return 3;
+    if (selectedTimeFrame?.name == Const.SUBMEAL) return 0;
     return null;
   }
 

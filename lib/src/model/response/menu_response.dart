@@ -494,9 +494,14 @@ class MenuResponse {
     if (listdayfood != null) {
       for (int index = 0; index < listdayfood!.length; index++) {
         if (listdayfood![index]?.dateCode == dateCode) {
-          final MenuResponseListdayfoodTimeGroups? foods = listdayfood![index]
-              ?.timeGroups
-              ?.firstWhere((mealDetail) => mealDetail?.timeCode == timeCode);
+          MenuResponseListdayfoodTimeGroups? foods;
+          final List<MenuResponseListdayfoodTimeGroups?> timeGroups =
+              listdayfood![index]?.timeGroups ?? [];
+          for (final listFood in timeGroups) {
+            if (listFood?.timeCode == timeCode) {
+              foods = listFood;
+            }
+          }
           return foods;
         }
       }

@@ -104,7 +104,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                   _cubit.getUpgradeAccount(widget.code, isRefresh: true);
                 },
                 child: ListView(
-                    padding: EdgeInsets.all(16.h),
+                    padding: EdgeInsets.all(16),
                     shrinkWrap: true,
                     children: [
                       AspectRatio(
@@ -114,26 +114,26 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.symmetric(vertical: 23.h),
+                        margin: EdgeInsets.symmetric(vertical: 23),
                         child: Text(
                           data?.advantageHighlight?.toUpperCase() ?? "",
                           textAlign: TextAlign.left,
                           style: TextStyle(
                               color: R.color.accentColor,
                               fontWeight: FontWeight.w800,
-                              fontSize: 18.sp,
+                              fontSize: 18,
                               height: 1.56,
                               letterSpacing: 0.4),
                         ),
                       ),
                       sliderWidget(data?.packageAdvantages ?? []),
                       SizedBox(
-                        height: 30.h,
+                        height: 30,
                       ),
                       Visibility(
                           visible: widget.code == Const.PREMIUM,
                           child: Container(
-                              margin: EdgeInsets.only(bottom: 24.h),
+                              margin: EdgeInsets.only(bottom: 24),
                               child: priceWidget(data?.prices ?? []))),
                       tableComparison(data?.featuresComparisonTable ?? []),
                       Visibility(
@@ -141,11 +141,11 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                         child: Column(
                           children: [
                             SizedBox(
-                              height: 32.h,
+                              height: 32,
                             ),
                             storyWidget(data?.successStories ?? []),
                             SizedBox(
-                              height: 32.h,
+                              height: 32,
                             ),
                             detailWidget(data),
                           ],
@@ -171,12 +171,12 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                           topLeft: Radius.circular(16),
                           topRight: Radius.circular(16))),
                   padding:
-                      EdgeInsets.symmetric(horizontal: 16.h, vertical: 24.h),
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Container(
-                        width: 128.w,
+                        width: 128 ,
                         child: ButtonWidget(
                           title: R.string.interest.tr(),
                           onPressed: () {
@@ -188,7 +188,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                         ),
                       ),
                       Container(
-                        width: 128.w,
+                        width: 128 ,
                         child: ButtonWidget(
                           title: R.string.sign_up.tr(),
                           onPressed: () {
@@ -247,7 +247,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                           topLeft: Radius.circular(16),
                           topRight: Radius.circular(16))),
                   padding:
-                      EdgeInsets.symmetric(horizontal: 16.h, vertical: 24.h),
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                   child: ButtonWidget(
                     title: R.string.see_detail.tr(),
                     onPressed: () {
@@ -274,7 +274,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
     return CardWidget(
       borderWidth: 0,
       borderColor: Colors.transparent,
-      padding: EdgeInsets.symmetric(vertical: 16.h),
+      padding: EdgeInsets.symmetric(vertical: 16),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -288,22 +288,22 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                       style: TextStyle(
                         color: R.color.textDark,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16.sp,
+                        fontSize: 16,
                       )),
                   SizedBox(
-                    height: 8.h,
+                    height: 8,
                   ),
                   Text(Utils.formatMoney(price?.totalPrice) ?? "",
                       style: TextStyle(
                         color: R.color.textDark,
-                        fontSize: 16.sp,
+                        fontSize: 16,
                       )),
                 ],
               )),
           Container(
             color: R.color.gray,
             width: 0.7,
-            height: 45.h,
+            height: 45,
           ),
           Expanded(
             flex: 1,
@@ -316,17 +316,17 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                         style: TextStyle(
                           color: R.color.textDark,
                           fontWeight: FontWeight.bold,
-                          fontSize: 16.sp,
+                          fontSize: 16,
                         )),
                     SizedBox(
-                      height: 8.h,
+                      height: 8,
                     ),
                     Text(
                         R.string.number_month
                             .tr(args: [price?.monthUsed?.toString() ?? ""]),
                         style: TextStyle(
                           color: R.color.textDark,
-                          fontSize: 16.sp,
+                          fontSize: 16,
                         )),
                   ],
                 )),
@@ -340,7 +340,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
     return Column(
       children: [
         SizedBox(
-          height: 100.h,
+          height: 100,
           child: PageView(
             onPageChanged: (value) {
               _cubit.selectAdvantage(value);
@@ -351,7 +351,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                       alignment: Alignment.center,
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(10.h),
+                          borderRadius: BorderRadius.circular(10),
                           child: CachedNetworkImage(
                             imageUrl: e.image?.url ?? "",
                             width: double.infinity,
@@ -361,7 +361,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                           ),
                         ),
                         Positioned(
-                            left: 24.h,
+                            left: 24,
                             top: 0,
                             bottom: 0,
                             child: Center(
@@ -370,7 +370,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                                   style: TextStyle(
                                     color: R.color.textDark,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16.sp,
+                                    fontSize: 16,
                                   )),
                             ))
                       ],
@@ -378,7 +378,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                 .toList(),
           ),
         ),
-        SizedBox(height: 12.h),
+        SizedBox(height: 12),
         Utils.isEmpty(listData)
             ? Container()
             : SmoothPageIndicator(
@@ -401,15 +401,15 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       child: Container(
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(10.h)),
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(10)),
             color: R.color.color0xffB1DDDB),
-        padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.h),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Text(R.string.feature.tr(),
             textAlign: TextAlign.start,
             style: TextStyle(
               color: R.color.textDark,
               fontWeight: FontWeight.bold,
-              fontSize: 16.sp,
+              fontSize: 16,
             )),
       ),
     ));
@@ -424,7 +424,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                 style: TextStyle(
                   color: R.color.textDark,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                 )),
           ),
         ),
@@ -436,14 +436,14 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
                 topRight:
-                    Radius.circular(widget.code == Const.PREMIUM ? 0 : 10.h)),
+                    Radius.circular(widget.code == Const.PREMIUM ? 0 : 10)),
             color: R.color.color0xffB1DDDB),
         child: Text(R.string.diab_pro.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Utils.getColorByCode(Const.PRO),
               fontWeight: FontWeight.bold,
-              fontSize: 16.sp,
+              fontSize: 16,
             )),
       ),
     ));
@@ -454,14 +454,14 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 borderRadius:
-                    BorderRadius.only(topRight: Radius.circular(10.h)),
+                    BorderRadius.only(topRight: Radius.circular(10)),
                 color: R.color.color0xffB1DDDB),
             child: Text(R.string.diab_premium.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Utils.getColorByCode(Const.PREMIUM),
                   fontWeight: FontWeight.bold,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                 )),
           ),
         ),
@@ -479,10 +479,10 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
-                    bottomLeft: !isLast ? Radius.zero : Radius.circular(10.h)),
+                    bottomLeft: !isLast ? Radius.zero : Radius.circular(10)),
                 color:
                     index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
-            padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.h),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -494,10 +494,10 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                       R.drawable.ic_question_circle,
                       color: R.color.accentColor,
                       fit: BoxFit.fill,
-                      height: 24.h,
+                      height: 24,
                     )),
                 SizedBox(
-                  width: 16.w,
+                  width: 16 ,
                 ),
                 Expanded(
                   child: Text(
@@ -505,7 +505,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: R.color.textDark,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                     ),
                   ),
                 )
@@ -526,7 +526,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                 e.toggleStatus?.isEnableBasic == true
                     ? R.drawable.ic_mark
                     : R.drawable.ic_x,
-                height: 26.h,
+                height: 26,
               ),
             ),
           ),
@@ -540,14 +540,14 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                 borderRadius: BorderRadius.only(
                     bottomRight: (!isLast || widget.code == Const.PREMIUM)
                         ? Radius.zero
-                        : Radius.circular(10.h)),
+                        : Radius.circular(10)),
                 color:
                     index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
             child: Image.asset(
               e.toggleStatus?.isEnablePro == true
                   ? R.drawable.ic_mark
                   : R.drawable.ic_x,
-              height: 26.h,
+              height: 26,
             ),
           ),
         ),
@@ -560,14 +560,14 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
                       bottomRight:
-                          !isLast ? Radius.zero : Radius.circular(10.h)),
+                          !isLast ? Radius.zero : Radius.circular(10)),
                   color:
                       index % 2 == 0 ? R.color.white : R.color.color0xffB1DDDB),
               child: Image.asset(
                 e.toggleStatus?.isEnablePremium == true
                     ? R.drawable.ic_mark
                     : R.drawable.ic_x,
-                height: 26.h,
+                height: 26,
               ),
             ),
           ),
@@ -580,8 +580,8 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       columnWidths: {
         0: FlexColumnWidth(), // fixed to 100 width
-        1: FixedColumnWidth(70.h),
-        2: FixedColumnWidth(60.h), //fixed to 100 width
+        1: FixedColumnWidth(70),
+        2: FixedColumnWidth(60), //fixed to 100 width
       },
       children: listRow,
     );
@@ -596,7 +596,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       builder: (_) => PopupWindowWidget(
           child: Container(
         width: double.infinity,
-        // height: ScreenUtil().screenHeight - 150.h,
+        // height: ScreenUtil().screenHeight - 150,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -606,7 +606,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
-                  padding: EdgeInsets.all(16.h),
+                  padding: EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -616,23 +616,23 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                         style: TextStyle(
                           color: R.color.textDark,
                           fontWeight: FontWeight.bold,
-                          fontSize: 20.sp,
+                          fontSize: 20,
                           letterSpacing: 0.08,
                           height: 1.4,
                         ),
                       ),
-                      SizedBox(height: 10.h),
+                      SizedBox(height: 10),
                       Text(
                         data.description ?? "",
                         textAlign: TextAlign.left,
                         style: TextStyle(
                           color: R.color.textDark,
-                          fontSize: 16.sp,
+                          fontSize: 16,
                           letterSpacing: 0.4,
                           height: 1.5,
                         ),
                       ),
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 16),
                     ],
                   ),
                 ),
@@ -646,23 +646,23 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
 
   TableCell tableCell({required Widget child, double? height}) {
     return TableCell(
-      child: SizedBox(height: height ?? 74.h, child: child),
+      child: SizedBox(height: height ?? 74, child: child),
     );
   }
 
   Widget rowInfoDescription(String title, String description) {
     return Container(
-      margin: EdgeInsets.only(top: 16.h, left: 16.h, right: 16.h),
+      margin: EdgeInsets.only(top: 16, left: 16, right: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Image.asset(
             R.drawable.ic_pro,
-            height: 20.h,
+            height: 20,
             fit: BoxFit.fill,
           ),
           SizedBox(
-            width: 12.w,
+            width: 12 ,
           ),
           Expanded(
             child: Column(
@@ -673,7 +673,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                   textAlign: TextAlign.left,
                   style: TextStyle(
                       color: R.color.textDark,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 3),
@@ -682,7 +682,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: R.color.textDark,
-                    fontSize: 14.sp,
+                    fontSize: 14,
                   ),
                 ),
               ],
@@ -697,7 +697,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
     return CardWidget(
       borderWidth: 0,
       borderColor: Colors.transparent,
-      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 12.h),
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -707,26 +707,26 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
             style: TextStyle(
               color: R.color.textDark,
               fontWeight: FontWeight.w700,
-              fontSize: 16.sp,
+              fontSize: 16,
               letterSpacing: 0.4,
               height: 1.375,
             ),
           ),
           SizedBox(
-            height: 8.h,
+            height: 8,
           ),
           Text(
             data?.detail ?? "",
             textAlign: TextAlign.left,
             style: TextStyle(
               color: R.color.color0xff454649,
-              fontSize: 16.sp,
+              fontSize: 16,
               letterSpacing: 0.4,
               height: 1.375,
             ),
           ),
           SizedBox(
-            height: 12.h,
+            height: 12,
           ),
           ListView.separated(
             shrinkWrap: true,
@@ -739,10 +739,10 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                 Image.asset(
                   R.drawable.ic_verify,
                   fit: BoxFit.fill,
-                  height: 15.h,
+                  height: 15,
                 ),
                 SizedBox(
-                  width: 7.w,
+                  width: 7 ,
                 ),
                 Expanded(
                   child: Text(
@@ -750,7 +750,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: R.color.color0xff454649,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       letterSpacing: 0.4,
                     ),
                   ),
@@ -758,7 +758,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
               ],
             ),
             separatorBuilder: (context, index) => SizedBox(
-              height: 8.h,
+              height: 8,
             ),
           )
         ],
@@ -770,7 +770,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
     return Column(
       children: [
         Container(
-          height: 250.h,
+          height: 250,
           child: PageView(
             onPageChanged: (value) {
               _cubit.selectStory(value);
@@ -780,7 +780,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                 .map((e) => CardWidget(
                       borderWidth: 0,
                       borderColor: Colors.transparent,
-                      padding: EdgeInsets.symmetric(horizontal: 12.h),
+                      padding: EdgeInsets.symmetric(horizontal: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -791,23 +791,23 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                             style: TextStyle(
                               color: R.color.textDark,
                               fontWeight: FontWeight.w700,
-                              fontSize: 16.sp,
+                              fontSize: 16,
                               letterSpacing: 0.4,
                               height: 1.375,
                             ),
                           ),
                           SizedBox(
-                            height: 12.h,
+                            height: 12,
                           ),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               AvatarWidget(
                                 name: Utils.getImageUrl(e.image?.url) ?? "",
-                                size: 33.h,
+                                size: 33,
                                 avatar: e.name,
                               ),
-                              SizedBox(width: 20.w),
+                              SizedBox(width: 20),
                               Expanded(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -819,7 +819,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                                       style: TextStyle(
                                         color: R.color.textDark,
                                         fontWeight: FontWeight.w700,
-                                        fontSize: 16.sp,
+                                        fontSize: 16,
                                         letterSpacing: 0.4,
                                         height: 1.375,
                                       ),
@@ -830,7 +830,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                                       style: TextStyle(
                                         color: R.color.grey_2,
                                         fontWeight: FontWeight.w400,
-                                        fontSize: 14.sp,
+                                        fontSize: 14,
                                         letterSpacing: 0.2,
                                         height: 1.42857,
                                       ),
@@ -841,7 +841,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                             ],
                           ),
                           SizedBox(
-                            height: 22.h,
+                            height: 22,
                           ),
                           Flexible(
                             child: Text(
@@ -850,7 +850,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                               style: TextStyle(
                                 color: R.color.color0xff454649,
                                 fontWeight: FontWeight.w400,
-                                fontSize: 16.sp,
+                                fontSize: 16,
                                 letterSpacing: 0.4,
                                 height: 1.375,
                               ),
@@ -862,7 +862,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                 .toList(),
           ),
         ),
-        SizedBox(height: 12.h),
+        SizedBox(height: 12),
         Utils.isEmpty(listStory)
             ? Container()
             : SmoothPageIndicator(
@@ -907,7 +907,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                       child: Container(
                         width: double.infinity,
                         padding: EdgeInsets.symmetric(
-                            vertical: 23.h, horizontal: 31.h),
+                            vertical: 23, horizontal: 31),
                         color: R.color.white,
                         child: Text(
                           R.string.interest_course.tr(),
@@ -915,7 +915,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                           style: TextStyle(
                             color: R.color.textDark,
                             fontWeight: FontWeight.w700,
-                            fontSize: 16.sp,
+                            fontSize: 16,
                           ),
                         ),
                       ),
@@ -926,7 +926,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                     sendMessageWidget(),
                     Container(
                       margin:
-                          EdgeInsets.only(top: 24.h, left: 16.h, right: 16.h),
+                          EdgeInsets.only(top: 24, left: 16, right: 16),
                       child: ButtonWidget(
                         title: R.string.send.tr(),
                         textColor: _cubit.selectedIndexInterest == null
@@ -940,7 +940,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                               },
                       ),
                     ),
-                    SizedBox(height: 40.h),
+                    SizedBox(height: 40),
                   ],
                 ),
               ),
@@ -954,10 +954,10 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       visible: _cubit.selectedIndexInterest == 2,
       child: Container(
         alignment: Alignment.centerLeft,
-        margin: EdgeInsets.only(top: 16.h, left: 16.h, right: 16.h),
+        margin: EdgeInsets.only(top: 16, left: 16, right: 16),
         child: TextFieldWidget(
           controller: _feedbackController,
-          padding: EdgeInsets.all(16.h),
+          padding: EdgeInsets.all(16),
           maxLines: 5,
           hintText: R.string.hint_msg_to_diab.tr(),
           textInputAction: TextInputAction.send,
@@ -975,8 +975,8 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
       onTap: () => _cubit.selectOptionInterest(index),
       child: Container(
         alignment: Alignment.centerLeft,
-        margin: EdgeInsets.only(top: 16.h, left: 16.h, right: 16.h),
-        padding: EdgeInsets.symmetric(vertical: 9.h, horizontal: 12.h),
+        margin: EdgeInsets.only(top: 16, left: 16, right: 16),
+        padding: EdgeInsets.symmetric(vertical: 9, horizontal: 12),
         decoration: BoxDecoration(
             color: isSelected ? R.color.color0xffB1DDDB : R.color.white,
             border: Border.all(
@@ -989,7 +989,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
           title,
           style: TextStyle(
               color: isSelected ? R.color.accentColor : R.color.textDark,
-              fontSize: 16.sp,
+              fontSize: 16,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal),
         ),
       ),

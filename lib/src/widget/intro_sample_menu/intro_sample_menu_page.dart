@@ -2,7 +2,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -24,9 +23,8 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    AppRepository repository = AppRepository();
+    final AppRepository repository = AppRepository();
     _cubit = IntroSampleMenuCubit(repository);
   }
 
@@ -63,7 +61,7 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
         background: R.drawable.bg_welcome,
         title: R.string.sample_menu.tr(),
         child: ListView(
-          padding: EdgeInsets.all(16.h),
+          padding: const EdgeInsets.all(16),
           shrinkWrap: true,
           children: [
             Column(
@@ -72,36 +70,34 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                 Image.asset(
                   R.drawable.img_cooking,
                   width: double.infinity,
-                  height: 240.h,
+                  height: 240,
                 ),
-                SizedBox(
-                  height: 32.h,
-                ),
+                const SizedBox(height: 32),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     R.string.text_intro_menu.tr(),
                     style: TextStyle(
                       color: R.color.textDark,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       letterSpacing: 0.4,
                       height: 1.375,
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 12.h,
+                const SizedBox(
+                  height: 12,
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.symmetric(horizontal: 20.h),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   child: RichText(
                     text: TextSpan(
                       text: R.string.step_1.tr(),
                       style: TextStyle(
                         color: R.color.textDark,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16.sp,
+                        fontSize: 16,
                         letterSpacing: 0.4,
                         height: 1.375,
                       ),
@@ -111,7 +107,7 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                             style: TextStyle(
                               color: R.color.textDark,
                               fontWeight: FontWeight.normal,
-                              fontSize: 16.sp,
+                              fontSize: 16,
                               letterSpacing: 0.4,
                               height: 1.375,
                             )),
@@ -119,19 +115,17 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 12.h,
-                ),
+                const SizedBox(height: 12),
                 Container(
                   alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.symmetric(horizontal: 20.h),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   child: RichText(
                     text: TextSpan(
                       text: R.string.step_2.tr(),
                       style: TextStyle(
                         color: R.color.textDark,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16.sp,
+                        fontSize: 16,
                         letterSpacing: 0.4,
                         height: 1.375,
                       ),
@@ -141,7 +135,7 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                             style: TextStyle(
                               color: R.color.textDark,
                               fontWeight: FontWeight.normal,
-                              fontSize: 16.sp,
+                              fontSize: 16,
                               letterSpacing: 0.4,
                               height: 1.375,
                             )),
@@ -149,11 +143,9 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 34.h,
-                ),
+                const SizedBox(height: 34),
                 Container(
-                  width: 128.w,
+                  width: 128,
                   child: ButtonWidget(
                     title: R.string.start.tr(),
                     onPressed: () {
@@ -162,7 +154,8 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                         context: context,
                         builder: (_) => KcalParameterPage(
                           callback: (request) {
-                            NavigationUtil.replace(context, FoodMenuPage(createMenuRequest: request));
+                            NavigationUtil.replace(context,
+                                FoodMenuPage(createMenuRequest: request));
                           },
                         ),
                       );

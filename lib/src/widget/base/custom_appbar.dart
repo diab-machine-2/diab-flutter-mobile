@@ -40,9 +40,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
       centerTitle: false,
       automaticallyImplyLeading: false,
       actions: widget.actions,
-      leading: widget.leadingIcon != null
-          ? widget.leadingIcon
-          : IconButton(
+      leading: widget.leadingIcon ??
+          IconButton(
               splashColor: R.color.transparent,
               highlightColor: R.color.transparent,
               icon: widget.leadingIcon == null

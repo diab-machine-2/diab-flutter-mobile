@@ -18,7 +18,8 @@ typedef SearchFoodCallback = Function(List<FoodModel>);
 class SearchFoodController extends StatefulWidget {
   final List<FoodModel>? foods;
   final SearchFoodCallback? callback;
-  SearchFoodController({this.foods, this.callback});
+  final double? suggestKcal;
+  const SearchFoodController({this.foods, this.callback, this.suggestKcal});
   @override
   _SearchFoodControllerState createState() => _SearchFoodControllerState();
 
@@ -113,6 +114,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                                 builder: (BuildContext context) {
                                   return SearchFood(
                                     foods: selectedFoods,
+                                    suggestKcal: widget.suggestKcal,
                                   );
                                 }));
                       },
@@ -148,9 +150,18 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                     child: Padding(
                       padding: EdgeInsets.only(bottom: 150),
                       child: TabBarView(controller: _tabController, children: [
-                        NearFood(foods: selectedFoods),
-                        FavoriteFood(foods: selectedFoods),
-                        CategoryFood(foods: selectedFoods)
+                        NearFood(
+                          foods: selectedFoods,
+                          suggestKcal: widget.suggestKcal,
+                        ),
+                        FavoriteFood(
+                          foods: selectedFoods,
+                          suggestKcal: widget.suggestKcal,
+                        ),
+                        CategoryFood(
+                          foods: selectedFoods,
+                          suggestKcal: widget.suggestKcal,
+                        )
                       ]),
                     ),
                   )
@@ -193,7 +204,7 @@ class CustomSegmentState extends State<CustomSegment> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(children: [
-        SizedBox(width: 16.w),
+        SizedBox(width: 16),
         _buildButtonTabBar(
             title: R.string.mon_an_gan_day.tr(),
             isSelected: segmentedControlValue == 0,
@@ -221,7 +232,7 @@ class CustomSegmentState extends State<CustomSegment> {
                 segmentedControlValue = 2;
               });
             }),
-        SizedBox(width: 16.w),
+        SizedBox(width: 16),
       ]),
     );
   }
@@ -233,7 +244,7 @@ class CustomSegmentState extends State<CustomSegment> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 143.w,
+        width: 143 ,
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
@@ -246,7 +257,7 @@ class CustomSegmentState extends State<CustomSegment> {
             color: isSelected
                 ? R.color.greenGradientBottom
                 : R.color.captionColorGray,
-            fontSize: 14.sp,
+            fontSize: 14,
             fontWeight: FontWeight.w700,
           ),
           maxLines: 1,

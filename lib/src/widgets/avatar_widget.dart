@@ -26,7 +26,7 @@ class AvatarWidget extends StatelessWidget{
       textStyle: TextStyle(
           color: R.color.white,
           fontWeight: FontWeight.w600,
-          fontSize: 17.sp
+          fontSize: 17,
       ),
       sources: [NetworkSource(avatar ?? "")],
     );

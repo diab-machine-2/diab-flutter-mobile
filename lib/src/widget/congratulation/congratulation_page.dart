@@ -79,26 +79,26 @@ class _CongratulationPageState extends State<CongratulationPage> {
               Expanded(
                 child: ListView(
                     shrinkWrap: true,
-                    padding: EdgeInsets.all(16.h),
+                    padding: EdgeInsets.all(16),
                     children: [
                       SizedBox(
-                        height: 10.h,
+                        height: 10,
                       ),
                       Container(
-                          height: 240.h,
+                          height: 240,
                           child: Image.asset(widget.code == Const.PRO
                               ? R.drawable.ic_congratulation
                               : R.drawable.ic_workaround)),
                       Visibility(
                         visible: widget.code == Const.PRO,
                         child: Container(
-                          margin: EdgeInsets.only(top: 20.h, left: 20.h, right: 20.h),
+                          margin: EdgeInsets.only(top: 20, left: 20, right: 20),
                           child: Text(
                             R.string.text_congratulation.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: R.color.textDark,
-                                fontSize: 20.sp,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 height: 1.4,
                                 letterSpacing: 0.4),
@@ -106,26 +106,26 @@ class _CongratulationPageState extends State<CongratulationPage> {
                         ),
                       ),
                       SizedBox(
-                        height: 44.h,
+                        height: 44,
                       ),
                       Text(
                         R.string.text_please_bank.tr(),
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           color: R.color.textDark,
-                          fontSize: 16.sp,
+                          fontSize: 16,
                           height: 1.87,
                           // letterSpacing: 0.4
                         ),
                       ),
                       SizedBox(
-                        height: 16.h,
+                        height: 16,
                       ),
                       bankWidget(widget.priceData)
                     ]),
               ),
               Container(
-                padding: EdgeInsets.all(16.h),
+                padding: EdgeInsets.all(16),
                 child: ButtonWidget(
                   title: R.string.back_home.tr(),
                   onPressed: () {
@@ -137,7 +137,7 @@ class _CongratulationPageState extends State<CongratulationPage> {
                 ),
               ),
               SizedBox(
-                height: 20.h,
+                height: 20,
               ),
             ],
           )
@@ -150,7 +150,7 @@ class _CongratulationPageState extends State<CongratulationPage> {
       bank = price.packageBankPayments![0];
     }
     return CardWidget(
-      padding: EdgeInsets.all(16.h),
+      padding: EdgeInsets.all(16),
       borderWidth: 0,
       borderColor: Colors.transparent,
       child: Column(
@@ -158,22 +158,22 @@ class _CongratulationPageState extends State<CongratulationPage> {
           rowInfoDescription(
               R.string.amount.tr(), Utils.formatMoney(price.totalPrice) ?? ""),
           SizedBox(
-            height: 10.h,
+            height: 10,
           ),
           rowInfoDescription(
               R.string.account_number.tr(), bank?.bankAccountId ?? "",
               isCopy: true),
           SizedBox(
-            height: 10.h,
+            height: 10,
           ),
           rowInfoDescription(R.string.bank.tr(), bank?.bankName ?? ""),
           SizedBox(
-            height: 10.h,
+            height: 10,
           ),
           rowInfoDescription(
               R.string.receiver.tr(), bank?.bankAccountName ?? ""),
           SizedBox(
-            height: 10.h,
+            height: 10,
           ),
           rowInfoDescription(R.string.content.tr(), bank?.content ?? "",
               isCopy: true),
@@ -195,7 +195,7 @@ class _CongratulationPageState extends State<CongratulationPage> {
               textAlign: TextAlign.left,
               style: TextStyle(
                 color: R.color.textDark,
-                fontSize: 16.sp,
+                fontSize: 16,
               ),
             ),
           ),
@@ -211,7 +211,7 @@ class _CongratulationPageState extends State<CongratulationPage> {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   color: R.color.textDark,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                   height: 1.37,
                   letterSpacing: 0.4),
@@ -219,7 +219,7 @@ class _CongratulationPageState extends State<CongratulationPage> {
           ),
         ),
         Container(
-          width: 25.h,
+          width: 25,
           alignment: Alignment.center,
           child: Visibility(
             visible: isCopy,
@@ -231,7 +231,7 @@ class _CongratulationPageState extends State<CongratulationPage> {
               },
               child: Image.asset(
                 R.drawable.ic_copy,
-                height: 20.h,
+                height: 20,
               ),
             ),
           ),

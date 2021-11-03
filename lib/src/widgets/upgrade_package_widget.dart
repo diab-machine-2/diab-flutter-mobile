@@ -17,27 +17,27 @@ class UpgradePackageWidget extends StatelessWidget {
         Image.asset(
           R.drawable.img_upgrade_package,
           width: double.infinity,
-          height: 240.h,
+          height: 240,
         ),
         SizedBox(
-          height: 32.h,
+          height: 32,
         ),
         Text(
           text ?? R.string.text_upgrade_package.tr(),
           textAlign: TextAlign.center,
           style: TextStyle(
             color: R.color.textDark,
-            fontSize: 16.sp,
+            fontSize: 16,
             letterSpacing: 0.4,
             height: 1.375,
           ),
         ),
         SizedBox(
-          height: 24.h,
+          height: 24,
         ),
         Container(
           width: double.infinity,
-          margin: EdgeInsets.symmetric(horizontal: 40.h),
+          margin: EdgeInsets.symmetric(horizontal: 40),
           child: ButtonWidget(
             title: R.string.upgrade_package_pro.tr(),
             // R.string.renewal_package_pro.tr(),

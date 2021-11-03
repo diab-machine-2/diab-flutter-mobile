@@ -63,27 +63,27 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
         children: [
           Expanded(
             child: ListView(
-              padding: EdgeInsets.all(16.h),
+              padding: EdgeInsets.all(16),
               shrinkWrap: true,
               children: [
                 Center(
                   child: Image.asset(
                     R.drawable.ic_learn_result_high,
                     width: double.infinity,
-                    height: 240.h,
+                    height: 240,
                   ),
                 ),
                 SizedBox(
-                  height: 16.h,
+                  height: 16,
                 ),
                 Container(
                   alignment: Alignment.center,
-                  margin: EdgeInsets.symmetric(horizontal: 40.h),
+                  margin: EdgeInsets.symmetric(horizontal: 40),
                   child: Text(
                     R.string.text_congratulation_survey.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontSize: 20.sp,
+                        fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: R.color.greenGradientBottom,
                         height: 1.4
@@ -95,8 +95,8 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
           ),
           Center(
             child: Container(
-              width: 200.w,
-              margin: EdgeInsets.only(bottom: 30.h, top: 10.h),
+              width: 200 ,
+              margin: EdgeInsets.only(bottom: 30, top: 10),
               child: ButtonWidget(
                 title: R.string.completed.tr(),
                 onPressed: () {

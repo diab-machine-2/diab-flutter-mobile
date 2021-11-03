@@ -96,14 +96,14 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
             Expanded(
               child: ListView(
                 shrinkWrap: true,
-                padding: EdgeInsets.all(16.h),
+                padding: EdgeInsets.all(16),
                 children: [
                   Container(
                       padding: EdgeInsets.symmetric(
-                          horizontal: 16.h, vertical: 12.h),
+                          horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
                           color: R.color.white,
-                          borderRadius: BorderRadius.circular(10.sp)),
+                          borderRadius: BorderRadius.circular(10)),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -115,17 +115,17 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       color: R.color.textDark,
-                                      fontSize: 20.sp,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.w700)),
                               SizedBox(width: 10),
                               Image.asset(
                                 R.drawable.ic_pro,
-                                height: 18.h,
+                                height: 18,
                                 color: Utils.getColorByCode(widget.packageCode),
                               )
                             ],
                           ),
-                          SizedBox(height: 14.h),
+                          SizedBox(height: 14),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,7 +134,7 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
                                     color: R.color.textDark,
-                                    fontSize: 16.sp,
+                                    fontSize: 16,
                                     letterSpacing: 0.4,
                                     height: 1.375,
                                   )),
@@ -147,13 +147,13 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                                   style: TextStyle(
                                     color: R.color.accentColor,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 20.sp,
+                                    fontSize: 20,
                                     letterSpacing: 0.08,
                                     height: 1.4,
                                   )),
                             ],
                           ),
-                          SizedBox(height: 14.h),
+                          SizedBox(height: 14),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -162,7 +162,7 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
                                     color: R.color.textDark,
-                                    fontSize: 16.sp,
+                                    fontSize: 16,
                                     letterSpacing: 0.4,
                                     height: 1.375,
                                   )),
@@ -174,7 +174,7 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                                   style: TextStyle(
                                     color: R.color.accentColor,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 20.sp,
+                                    fontSize: 20,
                                     letterSpacing: 0.08,
                                     height: 1.4,
                                   )),
@@ -182,13 +182,13 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                           ),
                         ],
                       )),
-                  SizedBox(height: 14.h),
+                  SizedBox(height: 14),
                   Text(R.string.notice_payment.tr(),
                       textAlign: TextAlign.start,
                       style: TextStyle(
                         color: R.color.red,
                         fontStyle: FontStyle.italic,
-                        fontSize: 14.sp,
+                        fontSize: 14,
                         letterSpacing: 0.2,
                         height: 1.42857,
                       )),
@@ -196,7 +196,7 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
               ),
             ),
             Container(
-              margin: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.h),
+              margin: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
               child: ButtonWidget(
                 title: R.string.payment.tr(),
                 onPressed: () {
@@ -211,7 +211,7 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
                 },
               ),
             ),
-            SizedBox(height: 20.h),
+            SizedBox(height: 20),
           ],
         ),
       ),

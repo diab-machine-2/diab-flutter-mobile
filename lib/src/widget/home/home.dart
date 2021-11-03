@@ -1100,10 +1100,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
   Widget buildServiceButton() {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.all(16.h),
-      height: 64.h,
+      margin: EdgeInsets.all(16),
+      height: 64,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.h),
+        borderRadius: BorderRadius.circular(10),
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -1115,7 +1115,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
         shape: StadiumBorder(),
         child: Text(
           R.string.upgrade_account.tr(),
-          style: TextStyle(color: R.color.white, fontSize: 16.sp, fontWeight: FontWeight.bold),
+          style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.bold),
         ),
         onPressed: () {
             NavigationUtil.rootNavigatePage(context, ListServicePage());

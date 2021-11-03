@@ -81,7 +81,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
           _cubit.getListTransaction(isRefresh: true);
         },
         child: ListView(
-          padding: EdgeInsets.all(16.h),
+          padding: EdgeInsets.all(16),
           shrinkWrap: true,
           children: [
             Visibility(
@@ -100,11 +100,11 @@ class _MyPackagePageState extends State<MyPackagePage> {
                   children: [
                     listTransactionWidget(_cubit.listActiveTransaction),
                     SizedBox(
-                      height: 24.h,
+                      height: 24,
                     ),
                     Container(
                       width: double.infinity,
-                      margin: EdgeInsets.symmetric(horizontal: 40.h),
+                      margin: EdgeInsets.symmetric(horizontal: 40),
                       child: ButtonWidget(
                         title: R.string.renewal_package_pro.tr(),
                         onPressed: () {
@@ -116,7 +116,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                   ],
                 )),
             SizedBox(
-              height: 50.h,
+              height: 50,
             ),
             Text(
               R.string.history_transaction.tr(),
@@ -124,7 +124,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
               style: TextStyle(
                 color: R.color.accentColor,
                 fontWeight: FontWeight.w700,
-                fontSize: 20.sp,
+                fontSize: 20,
                 letterSpacing: 0.08,
                 height: 1.4,
               ),
@@ -139,11 +139,11 @@ class _MyPackagePageState extends State<MyPackagePage> {
   Widget listTransactionWidget(List<TransactionData> list) {
     return ListView.separated(
         shrinkWrap: true,
-        padding: EdgeInsets.symmetric(/*horizontal: 16.h, */ vertical: 20.h),
+        padding: EdgeInsets.symmetric(/*horizontal: 16, */ vertical: 20),
         physics: const NeverScrollableScrollPhysics(),
         itemCount: list.length,
         separatorBuilder: (context, index) => Container(
-              margin: EdgeInsets.symmetric(vertical: 24.h, horizontal: 10.h),
+              margin: EdgeInsets.symmetric(vertical: 24, horizontal: 10),
               alignment: Alignment.center,
               color: R.color.grayBorder,
             ),
@@ -167,7 +167,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                 style: TextStyle(
                   color: R.color.textDark,
                   fontWeight: FontWeight.w700,
-                  fontSize: 20.sp,
+                  fontSize: 20,
                   letterSpacing: 0.08,
                   height: 1.4,
                 ),
@@ -179,11 +179,11 @@ class _MyPackagePageState extends State<MyPackagePage> {
               child: Container(
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.h),
+                  borderRadius: BorderRadius.circular(8),
                   color:
                       isExpired ? R.color.grayBorder : R.color.color0xFFC3E8D3,
                 ),
-                padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 8.h),
+                padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                 child: Text(
                   isExpired
                       ? R.string.status_expired.tr()
@@ -192,7 +192,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                   style: TextStyle(
                     color: isExpired ? R.color.grey_2 : R.color.green,
                     fontWeight: FontWeight.w400,
-                    fontSize: 12.sp,
+                    fontSize: 12,
                     letterSpacing: 0.2,
                     height: 1.5,
                   ),
@@ -202,7 +202,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
           ],
         ),
         SizedBox(
-          height: 12.h,
+          height: 12,
         ),
         Row(
           children: [
@@ -214,7 +214,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   color: R.color.textDark,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   letterSpacing: 0.4,
                   height: 1.375,
                 ),
@@ -235,7 +235,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   color: R.color.textDark,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   letterSpacing: 0.4,
                   height: 1.375,
                 ),
@@ -246,7 +246,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
         Visibility(
           visible: !isExpired,
           child: Padding(
-            padding: EdgeInsets.only(top: 12.h),
+            padding: EdgeInsets.only(top: 12),
             child: Row(
               children: [
                 Align(
@@ -256,7 +256,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       color: R.color.textDark,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       letterSpacing: 0.4,
                       height: 1.375,
                     ),
@@ -272,7 +272,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       color: R.color.textDark,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       letterSpacing: 0.4,
                       height: 1.375,
                     ),
@@ -283,7 +283,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
           ),
         ),
         SizedBox(
-          height: 12.h,
+          height: 12,
         ),
         Row(
           children: [
@@ -294,7 +294,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   color: R.color.textDark,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   letterSpacing: 0.4,
                   height: 1.375,
                 ),
@@ -308,7 +308,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   color: R.color.textDark,
-                  fontSize: 16.sp,
+                  fontSize: 16,
                   letterSpacing: 0.4,
                   height: 1.375,
                 ),
@@ -319,7 +319,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
         Visibility(
           visible: isExpired,
           child: Padding(
-            padding: EdgeInsets.only(top: 12.h),
+            padding: EdgeInsets.only(top: 12),
             child: isPackageSuspended
                 ? Text(R.string.package_deactivate.tr(),
                     textAlign: TextAlign.start,
@@ -327,7 +327,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                       color: R.color.red,
                       fontWeight: FontWeight.w400,
                       fontStyle: FontStyle.italic,
-                      fontSize: 14.sp,
+                      fontSize: 14,
                       letterSpacing: 0.2,
                       height: 1.42857,
                     ))
@@ -351,7 +351,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                             style: TextStyle(
                               color: R.color.accentColor,
                               fontWeight: FontWeight.w700,
-                              fontSize: 14.sp,
+                              fontSize: 14,
                               letterSpacing: 0.4,
                               height: 1.42857,
                             ),
@@ -364,11 +364,11 @@ class _MyPackagePageState extends State<MyPackagePage> {
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Container(
-                            width: 96.w,
+                            width: 96 ,
                             child: ButtonWidget(
                               title: R.string.repurchase.tr(),
-                              textSize: 14.sp,
-                              height: 32.h,
+                              textSize: 14,
+                              height: 32,
                               onPressed: () {
                                 if (!Utils.isEmpty(data.packageCode))
                                   NavigationUtil.navigatePage(

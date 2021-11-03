@@ -47,10 +47,10 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
           child: SingleChildScrollView(
               child: Container(
                   width: double.infinity,
-                  margin: EdgeInsets.symmetric(horizontal: 24.h),
-                  padding: EdgeInsets.all(20.h),
+                  margin: EdgeInsets.symmetric(horizontal: 24),
+                  padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.h),
+                    borderRadius: BorderRadius.circular(10),
                     color: R.color.white,
                   ),
                   child: BlocProvider(
@@ -91,14 +91,14 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
             child: Text(
               R.string.diab_parameter.tr(),
               style: TextStyle(
-                fontSize: 20.sp,
+                fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: R.color.textDark,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          SizedBox(height: 14.h),
+          SizedBox(height: 14),
           parameterWidget(
               title: R.string.can_nang.tr(),
               unit: R.string.kg.tr(),
@@ -107,7 +107,7 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
               defaultNumber: 50,
               maxNumber: 200,
               valueChange: _cubit.selectWeight),
-          SizedBox(height: 16.h),
+          SizedBox(height: 16),
           parameterWidget(
               title: R.string.chieu_cao.tr(),
               unit: R.string.cm.tr(),
@@ -116,7 +116,7 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
               defaultNumber: 160,
               maxNumber: 300,
               valueChange: _cubit.selectHeight),
-          SizedBox(height: 16.h),
+          SizedBox(height: 16),
           parameterWidget(
               title: R.string.nam_sinh.tr(),
               unit: "",
@@ -125,18 +125,18 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
               defaultNumber: 1970,
               maxNumber: DateTime.now().year,
               valueChange: _cubit.selectYear),
-          SizedBox(height: 20.h),
+          SizedBox(height: 20),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(R.string.cuong_do_tap_luyen.tr(),
                   style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 14,
                       color: R.color.textDark,
                       letterSpacing: 0.4,
                       height: 1.43,
                       fontWeight: FontWeight.bold)),
-              SizedBox(height: 20.h),
+              SizedBox(height: 20),
               GestureDetector(
                 onTap: () {
                   showDialog(
@@ -160,7 +160,7 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
                                 ? R.string.chon_cuong_do_tap_luyen.tr()
                                 : _cubit.intensity?.note ?? "",
                             style: TextStyle(
-                              fontSize: 16.sp,
+                              fontSize: 16,
                               color: R.color.textDark,
                               letterSpacing: 0.4,
                               height: 1.43,
@@ -169,7 +169,7 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
                         ),
                         Icon(
                           Icons.arrow_forward_ios_outlined,
-                          size: 17.h,
+                          size: 17,
                           color: R.color.textDark,
                         )
                       ],
@@ -181,7 +181,7 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
               )
             ],
           ),
-          SizedBox(height: 30.h),
+          SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -191,15 +191,15 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
                     title: R.string.cancel.tr(),
                     backgroundColor: R.color.grayBorder,
                     textColor: R.color.textDark,
-                    height: 43.h,
+                    height: 43,
                     onPressed: () => NavigationUtil.pop(context),
                   )),
-              SizedBox(width: 15.w),
+              SizedBox(width: 15),
               Expanded(
                   flex: 1,
                   child: ButtonWidget(
                     title: R.string.text_continue.tr(),
-                    height: 43.h,
+                    height: 43,
                     onPressed: () {
                       _cubit.getTDEE();
                     },
@@ -223,7 +223,7 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
       children: [
         Text(title,
             style: TextStyle(
-                fontSize: 14.sp,
+                fontSize: 14,
                 color: R.color.textDark,
                 letterSpacing: 0.4,
                 height: 1.43,
@@ -258,7 +258,7 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
                                       defaultValue == null || defaultValue == 0
                                           ? R.color.captionColorGray
                                           : R.color.textDark,
-                                  fontSize: 24.sp,
+                                  fontSize: 24,
                                   fontWeight: FontWeight.w500)),
                         ),
                       ),
@@ -271,7 +271,7 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
                     margin: EdgeInsets.only(left: 10),
                     child: Text(unit,
                         style: TextStyle(
-                            fontSize: 16.sp,
+                            fontSize: 16,
                             color: R.color.primaryGreyColor,
                             letterSpacing: 0.4,
                             height: 1.37)),

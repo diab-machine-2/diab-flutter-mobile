@@ -2,7 +2,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -56,14 +55,14 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
                     background: R.drawable.bg_detail_pro,
                     child: SingleChildScrollView(
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(28.w, 51.h, 28.h, 32.h),
+                        padding: const EdgeInsets.fromLTRB(28 , 51, 28, 32),
                         child: Column(
                           children: [
-                            SizedBox(height: 51.h),
+                            const SizedBox(height: 51),
                             Image.asset(
                                 R.drawable.img_blood_sugar_start_survey),
                             Padding(
-                              padding: EdgeInsets.only(top: 51.h, bottom: 24.h),
+                              padding: const EdgeInsets.only(top: 51, bottom: 24),
                               child: Text(
                                 _cubit.surveyCode.isEmpty
                                     ? R.string.blood_sugar_survey_description
@@ -72,8 +71,8 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
                                         .blood_sugar_survey_done_description
                                         .tr(),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 16.sp,
+                                style: const TextStyle(
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
@@ -107,7 +106,7 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
       {VoidCallback? onTakeSurvey, VoidCallback? onShowResult}) {
     return _cubit.surveyCode.isEmpty
         ? Container(
-            width: 195.w,
+            width: 195 ,
             child: ButtonWidget(
               title: R.string.start.tr(),
               onPressed: onTakeSurvey,
@@ -116,15 +115,15 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
         : Column(
             children: [
               Container(
-                width: 195.w,
+                width: 195 ,
                 child: ButtonWidget(
                   title: R.string.show_result.tr(),
                   onPressed: onShowResult,
                 ),
               ),
-              SizedBox(height: 16.h),
+              const SizedBox(height: 16),
               Container(
-                width: 195.w,
+                width: 195 ,
                 child: ButtonWidget(
                   title: R.string.survey_again.tr(),
                   onPressed: onTakeSurvey,

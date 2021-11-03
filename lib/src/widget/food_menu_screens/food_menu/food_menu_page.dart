@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -94,18 +93,18 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.fromLTRB(
-                                      67.w, 100.h, 67.w, 52.h),
+                                  padding: const EdgeInsets.fromLTRB(
+                                      67, 100, 67, 52),
                                   child: Image.asset(R.drawable.img_cooking),
                                 ),
                                 Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 28.w),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 28),
                                   child: Text(
                                     R.string.food_menu_empty.tr(),
                                     style: TextStyle(
                                       color: R.color.textDark,
-                                      fontSize: 16.sp,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w400,
                                     ),
                                     textAlign: TextAlign.center,
@@ -116,9 +115,9 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                     updateKcal(context);
                                   },
                                   child: Container(
-                                    margin: EdgeInsets.only(top: 24.h),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16.w, vertical: 8.h),
+                                    margin: const EdgeInsets.only(top: 24),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 8),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(200),
                                       border: Border.all(
@@ -130,7 +129,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                       R.string.change_food_info.tr(),
                                       style: TextStyle(
                                         color: R.color.greenGradientBottom,
-                                        fontSize: 14.sp,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
@@ -147,8 +146,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                       updateKcal(context);
                                     }),
                                 Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16.w),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -179,15 +178,15 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                 ),
                                 //Divider
                                 Container(
-                                  margin: EdgeInsets.only(top: 10.h),
+                                  margin: const EdgeInsets.only(top: 10),
                                   color: R.color.color0xffE5E5E5,
                                   height: 1,
                                   width: double.infinity,
                                 ),
                                 Expanded(
                                   child: ListView(
-                                    padding: EdgeInsets.fromLTRB(
-                                        16.w, 0, 16.h, 32.h),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        16, 0, 16, 32),
                                     children: [
                                       ...List.generate(
                                           _cubit
@@ -224,8 +223,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                                 ?.isNotEmpty ??
                                             false,
                                         child: Padding(
-                                          padding: EdgeInsets.only(
-                                            top: 33.h,
+                                          padding: const EdgeInsets.only(
+                                            top: 33,
                                           ),
                                           child: Row(
                                             children: [
@@ -242,7 +241,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                                         '${R.string.note.tr()} ',
                                                     style: TextStyle(
                                                         color: R.color.textDark,
-                                                        fontSize: 16.sp,
+                                                        fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.w700),
                                                     children: [
@@ -254,7 +253,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                                         style: TextStyle(
                                                             color: R
                                                                 .color.textDark,
-                                                            fontSize: 16.sp,
+                                                            fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .w400),
@@ -267,7 +266,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(height: 33.h),
+                                      const SizedBox(height: 33),
                                     ],
                                   ),
                                 ),
@@ -286,7 +285,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     VoidCallback? onUpdateKcal,
   }) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20.w, 28.h, 16.w, 34.h),
+      padding: const EdgeInsets.fromLTRB(20, 28, 16, 34),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,16 +295,16 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               title,
               style: TextStyle(
                 color: R.color.black,
-                fontSize: 20.sp,
+                fontSize: 20,
                 fontWeight: FontWeight.w700,
               ),
             ),
           ),
-          SizedBox(width: 50.w),
+          const SizedBox(width: 50),
           GestureDetector(
             onTap: onUpdateKcal,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(200),
                 border: Border.all(
@@ -317,7 +316,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                 R.string.change_food_info.tr(),
                 style: TextStyle(
                   color: R.color.greenGradientBottom,
-                  fontSize: 14.sp,
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -334,7 +333,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
         onChangeFood,
   }) {
     return Container(
-      margin: EdgeInsets.only(top: 20.h),
+      margin: const EdgeInsets.only(top: 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         color: R.color.white,
@@ -350,7 +349,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: Row(
               children: [
                 Expanded(
@@ -358,7 +357,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                     mealData?.mealName ?? '',
                     style: TextStyle(
                       color: R.color.greenGradientBottom,
-                      fontSize: 20.sp,
+                      fontSize: 20,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -369,14 +368,14 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                   ]),
                   style: TextStyle(
                     color: R.color.textDark,
-                    fontSize: 16.sp,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Icon(Icons.brightness_1,
-                      size: 4.w, color: R.color.greenGradientBottom),
+                      size: 4, color: R.color.greenGradientBottom),
                 ),
                 Text(
                   R.string.total_starch.tr(args: [
@@ -384,7 +383,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                   ]),
                   style: TextStyle(
                     color: R.color.textDark,
-                    fontSize: 16.sp,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -394,7 +393,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
           Visibility(
             visible: mealData?.defaultFood?.isNotEmpty ?? false,
             child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 16.w),
+                margin: const EdgeInsets.symmetric(horizontal: 16),
                 height: 1,
                 color: R.color.notActiveGreen),
           ),
@@ -432,7 +431,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
         onChangeFood,
   }) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -454,7 +453,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                       return Image.asset(R.drawable.ic_food_default);
                     },
                   )),
-              SizedBox(width: 16.w),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -462,12 +461,12 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                     Visibility(
                       visible: foodDetail?.isDessert ?? false,
                       child: Padding(
-                        padding: EdgeInsets.only(bottom: 4.h),
+                        padding: const EdgeInsets.only(bottom: 4),
                         child: Text(
                           R.string.dessert.tr(),
                           style: TextStyle(
                             color: R.color.green,
-                            fontSize: 12.sp,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -477,19 +476,19 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                       foodDetail?.foodName ?? '',
                       style: TextStyle(
                         color: R.color.textDark,
-                        fontSize: 16.sp,
+                        fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     Visibility(
                       visible: isSingleFoodMeal,
                       child: Padding(
-                        padding: EdgeInsets.only(top: 4.h),
+                        padding: const EdgeInsets.only(top: 4),
                         child: Text(
                           '${foodDetail?.portion?.toStringAsFixed(1)} ${foodDetail?.foodUnitName}',
                           style: TextStyle(
                             color: R.color.color0xff454649,
-                            fontSize: 16.sp,
+                            fontSize: 16,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -512,7 +511,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               ),
             ],
           ),
-          SizedBox(height: 8.h),
+          const SizedBox(height: 8),
           Visibility(
             visible: !isSingleFoodMeal,
             child: SingleChildScrollView(
@@ -523,7 +522,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                     '${foodDetail?.portion?.toStringAsFixed(1)} ${foodDetail?.foodUnitName}',
                     style: TextStyle(
                       color: R.color.color0xff454649,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -538,14 +537,14 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                     ]),
                     style: TextStyle(
                       color: R.color.color0xff454649,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Icon(Icons.brightness_1,
-                        size: 4.w, color: R.color.greenGradientBottom),
+                        size: 4, color: R.color.greenGradientBottom),
                   ),
                   Text(
                     R.string.total_starch.tr(args: [
@@ -553,7 +552,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                     ]),
                     style: TextStyle(
                       color: R.color.color0xff454649,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -561,7 +560,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               ),
             ),
           ),
-          SizedBox(height: 4.h),
+          const SizedBox(height: 4),
           Visibility(
             visible: foodDetail?.note?.isNotEmpty ?? false,
             child: RichText(
@@ -569,7 +568,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                 text: '${R.string.attention.tr()} ',
                 style: TextStyle(
                     color: R.color.attentionText,
-                    fontSize: 14.sp,
+                    fontSize: 14,
                     fontWeight: FontWeight.w400,
                     fontStyle: FontStyle.italic),
                 children: [
@@ -577,7 +576,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                     text: foodDetail?.note,
                     style: TextStyle(
                         color: R.color.color0xff454649,
-                        fontSize: 14.sp,
+                        fontSize: 14,
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.italic),
                   )
@@ -600,7 +599,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     return GestureDetector(
       onTap: isEnable ? onTapEnabled : onTapDisable,
       child: Container(
-        padding: EdgeInsets.all(8.w),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
@@ -616,7 +615,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
           dayTitle,
           style: TextStyle(
             color: isSelected ? R.color.mainColor : R.color.primaryGreyColor,
-            fontSize: 16.sp,
+            fontSize: 16,
             fontWeight: FontWeight.w400,
           ),
         ),
