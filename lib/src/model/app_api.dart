@@ -129,7 +129,7 @@ abstract class AppApi {
     @Query("type") int type,
   );
   
-  @GET("App/Lesson/GetListLessonSection/{lessonId}")
+  @GET("App/Lesson/{lessonId}/ListLessonSection")
   Future<LessonSectionListResponse> getListLessonSection(
     @Path("lessonId") String lessonId,
   );
