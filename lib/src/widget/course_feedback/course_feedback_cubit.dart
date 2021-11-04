@@ -19,10 +19,12 @@ class CourseFeedbackCubit extends Cubit<CourseFeedbackState> {
     emit(InitialCourseFeedbackState());
   }
 
-  void sendFeedback(String lessonId, String note) async {
+  Future<void> sendFeedback(String lessonId, String note) async {
     emit(CourseFeedbackLoading());
-    SendFeedbackCourseRequest request = SendFeedbackCourseRequest(lessonId: lessonId, note: note, rating: rate);
-    ApiResult<CommonResponse> apiResult = await repository.sendFeedbackCourse(request);
+    final SendFeedbackCourseRequest request =
+        SendFeedbackCourseRequest(lessonId: lessonId, note: note, rating: rate);
+    final ApiResult<CommonResponse> apiResult =
+        await repository.sendFeedbackCourse(lessonId, request);
     apiResult.when(success: (CommonResponse response) {
       emit(CourseFeedbackSuccess());
     }, failure: (NetworkExceptions error) {

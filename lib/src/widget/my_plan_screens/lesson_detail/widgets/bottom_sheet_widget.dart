@@ -10,7 +10,7 @@ class BottomSheetWidget extends StatefulWidget {
     required this.onChangeSection,
   });
 
-  final List<LessonSectionListResponseDataSections?> sectionList;
+  final List<LessonSectionListResponseDataLessonSections?> sectionList;
   final int currentSection;
   final Function(int newIndex) onChangeSection;
 
@@ -108,7 +108,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
   }
 
   Widget _buildSingleLessonCategory({
-    required LessonSectionListResponseDataSections? sectionDetail,
+    required LessonSectionListResponseDataLessonSections? sectionDetail,
     bool isSelected = false,
     VoidCallback? onTap,
   }) {

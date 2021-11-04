@@ -591,7 +591,6 @@ class Strings {
 	String get myplanscreen => 'MyPlanScreen';
 	String get my_plan => 'my_plan';
 	String get activity => 'activity';
-	String get title_goal => 'title_goal';
 	String get title_lesson => 'title_lesson';
 	String get title_activity => 'title_activity';
 	String get title_route => 'title_route';
@@ -784,6 +783,7 @@ class Strings {
 	String get recipe => 'recipe';
 	String get consumption => 'consumption';
 	String get next => 'next';
+	String get next_lesson => 'next_lesson';
 	String get agree => 'agree';
 	String get text_congratulation => 'text_congratulation';
 	String get text_please_bank => 'text_please_bank';
@@ -804,6 +804,7 @@ class Strings {
 	String get regret_answer => 'regret_answer';
 	String get check => 'check';
 	String get see_the_answer => 'see_the_answer';
+	String get previous_question => 'previous_question';
 	String get next_question => 'next_question';
 	String get evaluation_of_lesson => 'evaluation_of_lesson';
 	String get rate_how_you_feel => 'rate_how_you_feel';

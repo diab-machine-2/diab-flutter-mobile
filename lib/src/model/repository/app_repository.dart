@@ -15,10 +15,10 @@ import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
-import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
+import 'package:medical/src/model/response/quiz_lesson.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
@@ -226,19 +226,25 @@ class AppRepository {
    * Quiz
    */
 
-  Future<ApiResult<List<QuizData>>> getListQuiz(String lessonId) async {
+  Future<ApiResult<List<QuizLesson?>>> getListQuiz(String lessonId) async {
     try {
-      ListQuizLessonResponse response = await appClient.getListQuiz(lessonId);
-      return ApiResult.success(data: response.data ?? []);
+      final LessonSectionListResponse response =
+          await appClient.getListQuiz(lessonId);
+      if (response.data?.lessonSections?.isNotEmpty != true) {
+        return const ApiResult.success(data: []);
+      } else {
+        return ApiResult.success(
+            data: response.data!.lessonSections!.first?.quizLessonSections ?? []);
+      }
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
-  Future<ApiResult<CommonResponse>> sendFeedbackCourse(SendFeedbackCourseRequest request) async {
+  Future<ApiResult<CommonResponse>> sendFeedbackCourse(String lessonId, SendFeedbackCourseRequest request) async {
     try {
-      final CommonResponse response = await appClient.sendFeedbackCourse(request);
-      if (response.statusCode == 200) {
+      final CommonResponse response = await appClient.sendFeedbackCourse(lessonId, request);
+      if (response.meta?.success == true) {
         return ApiResult.success(data: response);
       } else
         return ApiResult.failure(error: NetworkExceptions.defaultError(response.message ?? ''));

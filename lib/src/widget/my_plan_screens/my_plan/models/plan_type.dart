@@ -11,7 +11,7 @@ extension PlanTypeDetail on PlanType {
   String get title {
     switch (this) {
       case PlanType.goal:
-        return R.string.title_goal.tr();
+        return R.string.title_activity.tr();
       case PlanType.lesson:
         return R.string.title_lesson.tr();
       case PlanType.activity:

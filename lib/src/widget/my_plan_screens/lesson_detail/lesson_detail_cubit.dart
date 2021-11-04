@@ -20,17 +20,18 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   final AppRepository repository;
   late final String lessonId;
 
-  List<LessonSectionListResponseDataSections?> sectionList = [];
-  LessonSectionListResponseDataReview? review;
+  List<LessonSectionListResponseDataLessonSections?> sectionList = [];
+  LessonSectionListResponseDataLessonReviews? review;
+  bool? isEnabledRating;
   int currentSection = 0;
   VideoManagement? videoManagement;
   AudioManagement? audioManagement;
-  late SectionStatusData sectionStatus;
+  SectionStatusData? sectionStatus;
 
   List<String> videoUrls = [];
   List<String> audioUrls = [];
 
-  LessonSectionListResponseDataSections? get currentSectionDetail =>
+  LessonSectionListResponseDataLessonSections? get currentSectionDetail =>
       sectionList.isEmpty ? null : sectionList[currentSection];
 
   String get sectionPosition =>
@@ -112,14 +113,14 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
         urls: videoUrls,
         onExitFullScreen: () {},
         onAllFinished: () {
-          sectionStatus.isVideoCompleted = true;
+          sectionStatus?.isVideoCompleted = true;
           checkSectionComplete();
         });
 
     audioManagement = AudioManagement(
         urls: audioUrls,
         onAllFinished: () {
-          sectionStatus.isAudioCompleted = true;
+          sectionStatus?.isAudioCompleted = true;
           checkSectionComplete();
         });
   }
@@ -128,13 +129,13 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     if (withDelay) {
       await Future.delayed(const Duration(seconds: 1));
     }
-    if (sectionStatus.isSectionCompleted &&
+    if (sectionStatus?.isSectionCompleted == true &&
         currentSectionDetail?.isComplete != null &&
         state is! LessonDetailFeedBack) {
       print('LOG call API complete');
       await completeLearningCurrentSection();
     }
-    if (isAllSectionCompleted && !reviewed) {
+    if (isEnabledRating == true && isAllSectionCompleted && !reviewed) {
       print('LOG navigate to FeedBack screen');
       emit(const LessonDetailFeedBack());
     }
@@ -146,8 +147,11 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     final ApiResult<LessonSectionListResponse> apiResult =
         await repository.getListLessonSection(lessonId);
     apiResult.when(success: (LessonSectionListResponse response) {
-      sectionList = response.data?.sections ?? [];
-      review = response.data?.review;
+      sectionList = response.data?.lessonSections ?? [];
+      if (response.data?.lessonReviews?.isNotEmpty == true) {
+        review = response.data?.lessonReviews?.first;
+      }
+      isEnabledRating = response.data?.isEnabledRating;
       emit(const LessonDetailSuccess());
     }, failure: (NetworkExceptions error) {
       emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));

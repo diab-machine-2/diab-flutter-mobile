@@ -10,6 +10,7 @@ import 'package:medical/src/widget/course_feedback/course_feedback.dart';
 import 'package:medical/src/widget/course_quiz/course_quiz.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/background_page.dart';
+import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
 
 import 'lesson_detail.dart';
@@ -67,9 +68,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         builder: (context, state) {
           _checkScrollable();
           return _cubit.currentSectionDetail?.type ==
-                  Const.LESSON_SECTION_TYPE_TEXT
+                  Const.LESSON_SECTION_TYPE_QUIZ
               ? CourseQuizPage(
-                  // lessonId: _cubit.currentSectionDetail?.id ?? '',
+                  lessonId: _cubit.currentSectionDetail?.id ?? '',
                   onDone: () async {
                     await _cubit.completeLearningCurrentSection();
                     _cubit.checkSectionComplete();
@@ -141,7 +142,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                     _scrollController.position.pixels ==
                                         _scrollController
                                             .position.maxScrollExtent) {
-                                  _cubit.sectionStatus.isScrollToEnd = true;
+                                  _cubit.sectionStatus?.isScrollToEnd = true;
                                   _cubit.checkSectionComplete();
                                 }
                                 return true;
@@ -194,119 +195,19 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                             ),
                           ),
                         ),
-                        Container(
-                          color: R.color.white,
-                          padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  _cubit.onChangeSection(
-                                      _cubit.currentSection - 1);
-                                },
-                                child: Container(
-                                  height: 36,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
-                                  decoration: BoxDecoration(
-                                    color: _cubit.isFirstSection
-                                        ? R.color.color0xffE5E5E5
-                                        : R.color.main_6,
-                                    borderRadius: BorderRadius.circular(200),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.chevron_left_rounded,
-                                        size: 20,
-                                        color: _cubit.isFirstSection
-                                            ? R.color.grey_2
-                                            : R.color.greenGradientBottom,
-                                      ),
-                                      Text(
-                                        'Quay lại',
-                                        style: TextStyle(
-                                          color: _cubit.isFirstSection
-                                              ? R.color.grey_2
-                                              : R.color.accentColor,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  showLessonCategoryList();
-                                },
-                                child: Container(
-                                  width: 36,
-                                  height: 36,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border:
-                                        Border.all(color: R.color.accentColor),
-                                  ),
-                                  child: Text(
-                                    _cubit.sectionPosition,
-                                    style: TextStyle(
-                                      color: R.color.accentColor,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  _cubit.onChangeSection(
-                                      _cubit.currentSection + 1);
-                                },
-                                child: Container(
-                                  height: 36,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
-                                  decoration: BoxDecoration(
-                                    color: _cubit.isLastSection
-                                        ? R.color.color0xffE5E5E5
-                                        : R.color.main_6,
-                                    borderRadius: BorderRadius.circular(200),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Tiếp theo',
-                                        style: TextStyle(
-                                          color: _cubit.isLastSection
-                                              ? R.color.grey_2
-                                              : R.color.accentColor,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      Icon(
-                                        Icons.chevron_right_rounded,
-                                        size: 20,
-                                        color: _cubit.isLastSection
-                                            ? R.color.grey_2
-                                            : R.color.greenGradientBottom,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          height: MediaQuery.of(context).padding.bottom,
-                          color: Colors.white,
+                        CustomBottomBarWidget(
+                          isPreviousButtonActive: _cubit.isFirstSection,
+                          onTapPrevious: () {
+                            _cubit.onChangeSection(_cubit.currentSection - 1);
+                          },
+                          isNextButtonActive: !_cubit.isLastSection,
+                          onTapNext: () {
+                            _cubit.onChangeSection(_cubit.currentSection + 1);
+                          },
+                          currentPositionTitle: _cubit.sectionPosition,
+                          onTapCenter: () {
+                            showLessonCategoryList();
+                          },
                         ),
                       ],
                     ),
@@ -380,7 +281,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   Future<void> _checkScrollable() async {
     await Future.delayed(const Duration(milliseconds: 500));
-    _cubit.sectionStatus.isScrollToEnd = _scrollController.hasClients &&
+    _cubit.sectionStatus?.isScrollToEnd = _scrollController.hasClients &&
         _scrollController.position.pixels == 0 &&
         _scrollController.position.maxScrollExtent == 0;
   }

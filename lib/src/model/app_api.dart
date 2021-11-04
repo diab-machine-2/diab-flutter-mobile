@@ -18,7 +18,6 @@ import 'response/latest_hba1c_input_response.dart';
 import 'response/lesson_section_list_response.dart';
 import 'response/list_activity_response.dart';
 import 'response/list_package_response.dart';
-import 'response/list_quiz_lesson_response.dart';
 import 'response/list_transaction_response.dart';
 import 'response/menu_response.dart';
 import 'response/my_lesson_response.dart';
@@ -54,10 +53,10 @@ abstract class AppApi {
 
   @GET("App/PackageTransaction")
   Future<ListTransactionResponse> getListTransaction(
-      @Query("isExpired") bool? isExpired,
-      @Query("page") int? page,
-      @Query("size") int? size,
-      );
+    @Query("isExpired") bool? isExpired,
+    @Query("page") int? page,
+    @Query("size") int? size,
+  );
 
   @POST("App/Payment/VerifyApplePayment")
   Future<dynamic> verifyReceipt(@Body() IosReceiptRequest request);
@@ -112,13 +111,6 @@ abstract class AppApi {
     @Body() CreateMenuRequest request,
   );
 
-  // Quiz
-  @POST("App/Lesson/InsertLessonReview")
-  Future<CommonResponse> sendFeedbackCourse(@Body() SendFeedbackCourseRequest request);
-
-  @GET("App/Lesson/GetLessonQuizDetail/{lessonId}")
-  Future<ListQuizLessonResponse> getListQuiz(@Path("lessonId") String lessonId,);
-
   //Acount
   @GET("App/Account/GetCurrentUserInfo")
   Future<UserInfoResponse> getCurrentUserInfo();
@@ -128,7 +120,7 @@ abstract class AppApi {
   Future<MyLessonResponse> getLessonsList(
     @Query("type") int type,
   );
-  
+
   @GET("App/Lesson/{lessonId}/ListLessonSection")
   Future<LessonSectionListResponse> getListLessonSection(
     @Path("lessonId") String lessonId,
@@ -138,4 +130,14 @@ abstract class AppApi {
   Future<CommonResponse> setCompletedLessonAccount(
     @Body() UpdateLessonSectionRequest request,
   );
+
+  // Quiz
+  @POST("App/Lesson/{lessonId}/Review")
+  Future<CommonResponse> sendFeedbackCourse(
+    @Path("lessonId") String lessonId,
+    @Body() SendFeedbackCourseRequest request,
+  );
+
+  @GET("App/Lesson/{lessonId}/LessonQuizDetail")
+  Future<LessonSectionListResponse> getListQuiz(@Path("lessonId") String lessonId);
 }

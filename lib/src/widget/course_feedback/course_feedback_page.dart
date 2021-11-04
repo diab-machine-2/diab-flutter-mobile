@@ -1,10 +1,9 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:easy_localization/src/public_ext.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -25,13 +24,12 @@ class CourseFeedbackPage extends StatefulWidget {
 }
 
 class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
-  TextEditingController _commentController = TextEditingController();
-  late CourseFeedbackCubit _cubit;
+  final TextEditingController _commentController = TextEditingController();
+  late final CourseFeedbackCubit _cubit;
 
   @override
   void initState() {
-    // TODO: implement initState
-    AppRepository repository = AppRepository();
+    final AppRepository repository = AppRepository();
     _cubit = CourseFeedbackCubit(repository);
     super.initState();
   }
@@ -47,7 +45,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
             if (state is CourseFeedbackFailure)
               Message.showToastMessage(context, state.error);
             if (state is CourseFeedbackSuccess) {
-              NavigationUtil.popToFirst(context);
+              NavigationUtil.pop(context);
             }
           },
           builder: (context, state) {
@@ -67,15 +65,13 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
     return BackgroundPage(
       background: R.drawable.bg_welcome,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             Expanded(
               child: Column(
                 children: [
-                  SizedBox(
-                    height: 30,
-                  ),
+                  const SizedBox(height: 30),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -93,7 +89,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                       ),
                       InkWell(
                         onTap: () {
-                          NavigationUtil.popToFirst(context);
+                          NavigationUtil.pop(context);
                         },
                         child: Icon(
                           Icons.close,
@@ -103,9 +99,9 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                       )
                     ],
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Image.asset(R.drawable.img_course_feedback, height: 150),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
                     R.string.rate_how_you_feel.tr(),
                     style: TextStyle(
@@ -117,7 +113,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                     maxLines: 2,
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Center(
                     child: RatingBar.builder(
                       itemSize: 40,
@@ -126,7 +122,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                       direction: Axis.horizontal,
                       allowHalfRating: false,
                       itemCount: 5,
-                      itemPadding: EdgeInsets.symmetric(horizontal: 10),
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 10),
                       itemBuilder: (context, _) => Icon(
                         CupertinoIcons.star,
                         color: R.color.accentColor,
@@ -136,9 +132,9 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                       },
                     ),
                   ),
-                  SizedBox(height: 45),
+                  const SizedBox(height: 45),
                   Container(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       color: R.color.white,
@@ -152,7 +148,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                               size: 20,
                               color: R.color.textDark,
                             ),
-                            SizedBox(width: 12),
+                            const SizedBox(width: 12),
                             Text(
                               R.string.feeling.tr(),
                               style: TextStyle(
@@ -163,9 +159,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: 15,
-                        ),
+                        const SizedBox(height: 15),
                         TextField(
                           textInputAction: TextInputAction.go,
                           maxLines: 5,
@@ -194,16 +188,18 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
               ),
             ),
             Container(
-                width: 200 ,
-                margin: EdgeInsets.only(bottom: 10),
-                child: ButtonWidget(
-                    title: R.string.sent_report.tr(),
-                    onPressed: _cubit.rate == 0
-                        ? null
-                        : () {
-                            _cubit.sendFeedback(
-                                widget.lessonId, _commentController.text);
-                          })),
+              width: 200,
+              margin: const EdgeInsets.only(bottom: 10),
+              child: ButtonWidget(
+                title: R.string.sent_report.tr(),
+                onPressed: _cubit.rate == 0
+                    ? null
+                    : () {
+                        _cubit.sendFeedback(
+                            widget.lessonId, _commentController.text);
+                      },
+              ),
+            ),
           ],
         ),
       ),
