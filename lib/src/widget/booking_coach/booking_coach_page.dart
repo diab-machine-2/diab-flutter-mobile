@@ -74,7 +74,7 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
 
   Widget bookCoachWidget() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

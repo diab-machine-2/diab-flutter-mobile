@@ -22,4 +22,9 @@ extension DateTimeUntil on DateTime {
   DateTime goToBeginOfTheDay() {
     return this.copyTime(hour: 0, minute: 0);
   }
+
+  String get dayInWeek {
+    if (this.weekday == 7) return 'CN';
+    return 'T${this.weekday + 1}';
+  }
 }

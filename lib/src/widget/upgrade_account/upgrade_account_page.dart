@@ -719,7 +719,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
             data?.detail ?? "",
             textAlign: TextAlign.left,
             style: TextStyle(
-              color: R.color.color0xff454649,
+              color: R.color.grey_1,
               fontSize: 16,
               letterSpacing: 0.4,
               height: 1.375,
@@ -749,7 +749,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                     data?.enableFeatures![index].featureName ?? "",
                     textAlign: TextAlign.left,
                     style: TextStyle(
-                      color: R.color.color0xff454649,
+                      color: R.color.grey_1,
                       fontSize: 16,
                       letterSpacing: 0.4,
                     ),
@@ -848,7 +848,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                               e.story ?? "",
                               textAlign: TextAlign.left,
                               style: TextStyle(
-                                color: R.color.color0xff454649,
+                                color: R.color.grey_1,
                                 fontWeight: FontWeight.w400,
                                 fontSize: 16,
                                 letterSpacing: 0.4,

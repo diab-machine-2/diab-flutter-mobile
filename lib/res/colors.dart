@@ -52,11 +52,15 @@ class AppColors {
   static const greenGradientBottom = Color(0xff008479);
   static const main_1 = Color(0xff01645A);
   static const color0xffFF5756 = Color(0xffFF5756);
+  static const grey_1 = Color(0xff454649);
   static const grey_2 = Color(0xff787A7D);
   static const main_6 = Color(0xFFE4F5F5);
   static const attentionText = Color(0xffAF0000);
   static const blue_6 = Color(0xffD5EFFF);
   static const labelColor = Color(0xff3C3C43);
+  static const orange_1 = Color(0xffF58220);
+  static const grey_6 = Color(0xffF5F7FA);
+  static const orange_6 = Color(0xffFEEDDC);
   static const color0xffE5E5E5 = Color(0xffE5E5E5);
   static const color0xff003F38 = Color(0xff003F38);
   static const color0xffBEC0C8 = Color(0xffBEC0C8);
@@ -67,7 +71,6 @@ class AppColors {
   static const color0xffD6D8E0 = Color(0xffD6D8E0);
   static const color0xFFFDC798 = Color(0xFFFDC798);
   static const color0xffEFEFEF = Color(0xffEFEFEF);
-  static const color0xffF58220 = Color(0xffF58220);
   static const color0xff50C087 = Color(0xff50C087);
   static const color0xff7589a2 = Color(0xff7589a2);
   static const color0xffFFE3E3 = Color(0xffFFE3E3);
@@ -92,10 +95,7 @@ class AppColors {
   static const color0xffFF5552 = Color(0xffFF5552);
   static const color0xffDFF6EC = Color(0xffDFF6EC);
   static const color0xffD3EFEE = Color(0xffD3EFEE);
-  static const color0xffFEEDDC = Color(0xffFEEDDC);
   static const color0xffFCF8DA = Color(0xffFCF8DA);
   static const color0xffFDE9E9 = Color(0xffFDE9E9);
   static const color0xff737072 = Color(0xff737072);
-  static const color0xffF5F7FA = Color(0xffF5F7FA);
-  static const color0xff454649 = Color(0xff454649);
 }

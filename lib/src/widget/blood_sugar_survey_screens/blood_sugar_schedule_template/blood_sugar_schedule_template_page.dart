@@ -535,11 +535,11 @@ class _BloodSugarScheduleTemplatePageState
           decoration: BoxDecoration(
               color: isSelected
                   ? R.color.color0xffF4DBBD
-                  : R.color.color0xffF5F7FA,
+                  : R.color.grey_6,
               border: Border.all(
                   color: isSelected
                       ? R.color.color0xffE5B440
-                      : R.color.color0xffF5F7FA),
+                      : R.color.grey_6),
               borderRadius: BorderRadius.circular(12)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -595,11 +595,11 @@ class _BloodSugarScheduleTemplatePageState
               decoration: BoxDecoration(
                   color: isSelected
                       ? R.color.color0xffF4DBBD
-                      : R.color.color0xffF5F7FA,
+                      : R.color.grey_6,
                   border: Border.all(
                       color: isSelected
                           ? R.color.color0xffE5B440
-                          : R.color.color0xffF5F7FA),
+                          : R.color.grey_6),
                   borderRadius: BorderRadius.circular(12)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

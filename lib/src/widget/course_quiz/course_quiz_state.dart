@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 
 @immutable
 abstract class CourseQuizState extends Equatable {
-  CourseQuizState([List props = const []]) : super();
+  const CourseQuizState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -27,7 +26,7 @@ class CourseQuizSuccess extends CourseQuizState {
 class CourseQuizFailure extends CourseQuizState {
   final String error;
 
-  CourseQuizFailure(this.error);
+  const CourseQuizFailure(this.error);
 
   @override
   String toString() => 'CourseQuizFailure { error: $error }';
@@ -44,5 +43,13 @@ class RetryQuizSuccess extends CourseQuizState {
   @override
   String toString() {
     return 'RetryQuizSuccess';
+  }
+}
+
+class CourseQuizDone extends CourseQuizState {
+  const CourseQuizDone();
+  @override
+  String toString() {
+    return 'CourseQuizDone';
   }
 }

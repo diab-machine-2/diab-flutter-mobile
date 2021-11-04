@@ -57,7 +57,7 @@ class _MyBookingPageState extends State<MyBookingPage> {
   Widget buildPage(BuildContext context, MyBookingState state) {
     return CommonPage(
       background: R.drawable.bg_welcome,
-      title: R.string.my_plan.tr(),
+      title: R.string.my_plan_booking.tr(),
       child: ListView.separated(
         shrinkWrap: true,
         padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 10),

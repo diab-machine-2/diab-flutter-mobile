@@ -76,6 +76,15 @@ class Const {
 
   static const int maxMedia = 5;
 
+  static const int LESSON_LEARNING = 2;
+  static const int LESSON_LEARNT = 1;
+  static const int LESSON_NOT_LEARN = 0;
+
+  static const int LESSON_SECTION_TYPE_VIDEO = 1;
+  static const int LESSON_SECTION_TYPE_AUDIO = 2;
+  static const int LESSON_SECTION_TYPE_TEXT = 3;
+  static const int LESSON_SECTION_TYPE_QUIZ = 4;
+
   static const String EN = "en";
   static const String VI = "vi";
 

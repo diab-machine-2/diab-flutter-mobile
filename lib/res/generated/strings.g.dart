@@ -589,10 +589,14 @@ class Strings {
 	String get energy_use_per_day => 'energy_use_per_day';
 	String get food_from_menu => 'food_from_menu';
 	String get myplanscreen => 'MyPlanScreen';
+	String get my_plan => 'my_plan';
 	String get activity => 'activity';
-	String get title_goal => 'title_goal';
 	String get title_lesson => 'title_lesson';
 	String get title_activity => 'title_activity';
+	String get title_exercise => 'title_exercise';
+	String get title_route => 'title_route';
+	String get title_suggest => 'title_suggest';
+	String get search_by_key => 'search_by_key';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';
@@ -780,6 +784,7 @@ class Strings {
 	String get recipe => 'recipe';
 	String get consumption => 'consumption';
 	String get next => 'next';
+	String get next_lesson => 'next_lesson';
 	String get agree => 'agree';
 	String get text_congratulation => 'text_congratulation';
 	String get text_please_bank => 'text_please_bank';
@@ -800,6 +805,7 @@ class Strings {
 	String get regret_answer => 'regret_answer';
 	String get check => 'check';
 	String get see_the_answer => 'see_the_answer';
+	String get previous_question => 'previous_question';
 	String get next_question => 'next_question';
 	String get evaluation_of_lesson => 'evaluation_of_lesson';
 	String get rate_how_you_feel => 'rate_how_you_feel';
@@ -825,7 +831,7 @@ class Strings {
 	String get date_book => 'date_book';
 	String get time_book => 'time_book';
 	String get submit_booking => 'submit_booking';
-	String get my_plan => 'my_plan';
+	String get my_plan_booking => 'my_plan_booking';
 	String get join => 'join';
 	String get coach => 'coach';
 	String get you_book_coach_success => 'you_book_coach_success';

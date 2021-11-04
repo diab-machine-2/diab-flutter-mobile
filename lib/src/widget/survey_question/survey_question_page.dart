@@ -135,7 +135,8 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                               child: CardCourseQuizPage(
                                   key: listGlobal[index],
                                   index: index,
-                                  quizData: data,
+                                  //TODO fix model
+                                  quizData: null,
                                   isQuiz: false,
                                   onChoseAnswer: (isChoseAnswer) {
                                     _cubit.enableNextButton(isChoseAnswer);

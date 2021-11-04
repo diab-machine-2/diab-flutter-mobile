@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 
 @immutable
 abstract class CourseFeedbackState extends Equatable {
-  CourseFeedbackState([List props = const []]) : super();
+  const CourseFeedbackState() : super();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -27,8 +26,15 @@ class CourseFeedbackSuccess extends CourseFeedbackState {
 class CourseFeedbackFailure extends CourseFeedbackState {
   final String error;
 
-  CourseFeedbackFailure(this.error);
+  const CourseFeedbackFailure(this.error);
 
   @override
   String toString() => 'CourseFeedbackFailure { error: $error }';
+}
+
+class CourseFeedbackDone extends CourseFeedbackState {
+  @override
+  String toString() {
+    return 'CourseFeedbackDone';
+  }
 }

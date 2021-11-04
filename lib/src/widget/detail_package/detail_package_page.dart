@@ -531,7 +531,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                           e.story ?? "",
                           textAlign: TextAlign.left,
                           style: TextStyle(
-                            color: R.color.color0xff454649,
+                            color: R.color.grey_1,
                             fontWeight: FontWeight.w400,
                             fontSize: 16,
                             letterSpacing: 0.4,
@@ -655,7 +655,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
             data?.detail ?? "",
             textAlign: TextAlign.left,
             style: TextStyle(
-              color: R.color.color0xff454649,
+              color: R.color.grey_1,
               fontSize: 16,
               letterSpacing: 0.4,
               height: 1.375,
@@ -686,7 +686,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                         data?.enableFeatures![index].featureName ?? "",
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          color: R.color.color0xff454649,
+                          color: R.color.grey_1,
                           fontSize: 16,
                           letterSpacing: 0.4,
                         ),

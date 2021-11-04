@@ -25,17 +25,4 @@ class MyBookingCubit extends Cubit<MyBookingState> {
     this.selectedTime = time;
     emit(InitialMyBookingState());
   }
-
-  Future<void> sendFeedback(String lessonId, String note) async {
-    emit(MyBookingLoading());
-    final SendFeedbackCourseRequest request =
-        SendFeedbackCourseRequest(lessonId: lessonId, note: note, rating: 0);
-    final ApiResult<CommonResponse> apiResult =
-        await repository.sendFeedbackCourse(request);
-    apiResult.when(success: (CommonResponse response) {
-      emit(MyBookingSuccess());
-    }, failure: (NetworkExceptions error) {
-      emit(MyBookingFailure(NetworkExceptions.getErrorMessage(error)));
-    });
-  }
 }
