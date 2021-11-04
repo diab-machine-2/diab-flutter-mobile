@@ -8,6 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -17,6 +18,7 @@ import 'package:medical/src/widgets/custom_calendar_widget.dart';
 import 'booking_coach.dart';
 
 class BookingCoachPage extends StatefulWidget {
+  const BookingCoachPage();
   @override
   _BookingCoachPageState createState() => _BookingCoachPageState();
 }
@@ -46,7 +48,7 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
             if (state is BookingCoachSuccess) {}
             if (state is SelectedDateSuccess)
               _dateController.text = DateUtil.parseDateToString(
-                  _cubit.selectedDate, Const.FULL_DATE_FORMAT,
+                  _cubit.startDateTime, Const.FULL_DATE_FORMAT,
                   locale: Const.VI);
           },
           builder: (context, state) {
@@ -108,7 +110,13 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
                   letterSpacing: 0.4),
             ),
             const SizedBox(height: 12),
-            CustomCalendarWidget(time: DateTime.now()),
+            CustomCalendarWidget(
+              time: _cubit.startDateTime,
+              onSelectDate: (selectedDate) {
+                _cubit.startDateTime =
+                    _cubit.startDateTime.copyDate(selectedDate);
+              },
+            ),
             const SizedBox(height: 25),
             Text(
               R.string.time_book.tr(),
@@ -132,70 +140,130 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
             ),
             const SizedBox(height: 12),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Stack(
+                Column(
                   children: [
                     _buildSelectTime(
-                      hour: '09',
-                      minute: '30',
+                      hour: _cubit.startHour.toString().padLeft(2, '0'),
+                      minute: _cubit.startMinute.toString().padLeft(2, '0'),
                       color: R.color.white,
+                      onTapHour: () {
+                        _cubit.showSelectHour = !_cubit.showSelectHour;
+                        _cubit.showSelectMinute = false;
+                        _cubit.pickTime();
+                      },
+                      onTapMinute: () {
+                        _cubit.showSelectMinute = !_cubit.showSelectMinute;
+                        _cubit.showSelectHour = false;
+                        _cubit.pickTime();
+                      },
                     ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: 44,
-                          height: 36,
-                          child: ButtonTheme(
-                            alignedDropdown: true,
-                            child: DropdownButton<String>(
-                              menuMaxHeight: 300,
-                              items: <String>['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-                                  .map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Container(
-                                      width: 22, height: 24, child: Text(value)),
-                                );
-                              }).toList(),
-                              onChanged: (_) {},
-                              icon: const SizedBox(),
-                              underline: const SizedBox(),
+                    Container(
+                      width: 86,
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 4),
+                          Visibility(
+                            visible: _cubit.showSelectHour,
+                            child: Container(
+                              width: 43,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                color: R.color.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: List.generate(
+                                    Const.hourList.length,
+                                    (index) => GestureDetector(
+                                      onTap: () {
+                                        _cubit.startHour =
+                                            Const.hourList[index];
+                                        _cubit.closeSelectTime();
+                                      },
+                                      child: Container(
+                                        height: 30,
+                                        child: Text(
+                                          Const.hourList[index]
+                                              .toString()
+                                              .padLeft(2, '0'),
+                                          style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 44,
-                          height: 36,
-                          child: ButtonTheme(
-                            alignedDropdown: true,
-                            child: DropdownButton<String>(
-                              menuMaxHeight: 500,
-                              items: <String>['E', 'F', 'G', 'H']
-                                  .map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (_) {},
-                              icon: const SizedBox(),
-                              underline: const SizedBox(),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 86,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Visibility(
+                            visible: _cubit.showSelectMinute,
+                            child: Container(
+                              width: 43,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                color: R.color.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: List.generate(
+                                  Const.minuteList.length,
+                                  (index) => GestureDetector(
+                                    onTap: () {
+                                      _cubit.startMinute =
+                                          Const.minuteList[index];
+                                      _cubit.closeSelectTime();
+                                    },
+                                    child: Container(
+                                        height: 30,
+                                        child: Text(
+                                          Const.minuteList[index]
+                                              .toString()
+                                              .padLeft(2, '0'),
+                                          style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w400),
+                                        )),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 4),
+                        ],
+                      ),
                     ),
                   ],
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  width: 16,
-                  height: 1,
-                  color: R.color.greenGradientBottom,
+                  height: 36,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    width: 16,
+                    height: 1,
+                    color: R.color.greenGradientBottom,
+                  ),
                 ),
                 _buildSelectTime(
-                  hour: '10',
-                  minute: '30',
+                  hour: _cubit.endDateTime.hour.toString().padLeft(2, '0'),
+                  minute: _cubit.endDateTime.minute.toString().padLeft(2, '0'),
                   color: R.color.color0xfff5f5f5,
                 ),
               ],
@@ -210,6 +278,7 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
                   child: ButtonWidget(
                     title: R.string.submit_booking.tr(),
                     onPressed: () {
+                      _cubit.submitBooking();
                       showResultBookingPopup();
                     },
                   ),
@@ -226,6 +295,8 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
     required String hour,
     required String minute,
     required Color color,
+    VoidCallback? onTapHour,
+    VoidCallback? onTapMinute,
   }) {
     return Container(
       width: 86,
@@ -237,14 +308,17 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 4, 4, 4),
-            child: Text(
-              hour,
-              style: TextStyle(
-                color: R.color.greenGradientBottom,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
+          InkWell(
+            onTap: onTapHour,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 4, 4),
+              child: Text(
+                hour,
+                style: TextStyle(
+                  color: R.color.greenGradientBottom,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
           ),
@@ -256,14 +330,17 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
               fontWeight: FontWeight.w400,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(4, 4, 8, 4),
-            child: Text(
-              minute,
-              style: TextStyle(
-                color: R.color.greenGradientBottom,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
+          InkWell(
+            onTap: onTapMinute,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(4, 4, 8, 4),
+              child: Text(
+                minute,
+                style: TextStyle(
+                  color: R.color.greenGradientBottom,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
           ),

@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 
 @immutable
 abstract class MyBookingState extends Equatable {
-  MyBookingState([List props = const []]) : super();
+  const MyBookingState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -27,7 +26,7 @@ class MyBookingSuccess extends MyBookingState {
 class MyBookingFailure extends MyBookingState {
   final String error;
 
-  MyBookingFailure(this.error);
+  const MyBookingFailure(this.error);
 
   @override
   String toString() => 'MyBookingFailure { error: $error }';

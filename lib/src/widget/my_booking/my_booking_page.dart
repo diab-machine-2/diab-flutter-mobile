@@ -1,8 +1,6 @@
-import 'dart:math';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:easy_localization/src/public_ext.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,8 +24,7 @@ class _MyBookingPageState extends State<MyBookingPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    AppRepository repository = AppRepository();
+    final AppRepository repository = AppRepository();
     _cubit = MyBookingCubit(repository);
     super.initState();
   }
@@ -77,108 +74,123 @@ class _MyBookingPageState extends State<MyBookingPage> {
     );
   }
 
-  Widget cardWidget(
-      int index,
+  Widget cardWidget(int index,
       {String? date,
       String? time,
       String? description,
       String? coachAvatar,
       String? coachName}) {
     return CardWidget(
-        backgroundImage: R.drawable.bg_card_my_plan,
-        borderColor: R.color.green,
-        borderWidth: 0,
-        child: Container(
-      padding: EdgeInsets.all(16.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                date ?? "Thứ 6, 12/7/2021",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.white,
-                    height: 1.4,
-                    letterSpacing: 0.4),
+      backgroundImage: R.drawable.bg_card_my_plan,
+      borderColor: R.color.green,
+      borderWidth: 0,
+      child: Container(
+        padding: EdgeInsets.all(16.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              date ?? "Thứ 6, 12/7/2021",
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.white,
+                  height: 1.4,
+                  letterSpacing: 0.4),
+            ),
+            Text(
+              time ?? "10:00 am - 11:00 am",
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.white,
+                  height: 1.4,
+                  letterSpacing: 0.4),
+            ),
+            SizedBox(
+              height: 12.h,
+            ),
+            Text(
+              description ??
+                  "Buổi Coaching 1 - 1 lập kế hoạch học tập cho user sử dụng gói thấu cảm",
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.white,
+                  height: 1.4,
+                  letterSpacing: 0.4),
+            ),
+            Visibility(
+              visible: index % 2 == 0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 12.h,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl:
+                            "https://www.w3schools.com/howto/img_avatar.png",
+                        width: 45.h,
+                        height: 45.h,
+                      ),
+                      SizedBox(
+                        width: 10.h,
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              R.string.coach.tr(),
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: R.color.white,
+                                  height: 1.4,
+                                  letterSpacing: 0.2),
+                            ),
+                            SizedBox(
+                              height: 3.h,
+                            ),
+                            Text(
+                              coachName ?? "Coach Name",
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: R.color.white,
+                                  height: 1.4,
+                                  letterSpacing: 0.2),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 16.h,
+                  ),
+                  ButtonWidget(
+                      title: R.string.join.tr(),
+                      textColor: R.color.white,
+                      borderColor: R.color.white,
+                      backgroundColor: Colors.transparent,
+                      height: 35.h,
+                      onPressed: () {}),
+                ],
               ),
-              Text(
-                time ?? "10:00 am - 11:00 am",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.white,
-                    height: 1.4,
-                    letterSpacing: 0.4),
-              ),
-              SizedBox(height: 12.h,),
-              Text(
-                description ?? "Buổi Coaching 1 - 1 lập kế hoạch học tập cho user sử dụng gói thấu cảm",
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w400,
-                    color: R.color.white,
-                    height: 1.4,
-                    letterSpacing: 0.4),
-              ),
-              Visibility(
-                visible: index % 2 == 0,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 12.h,),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CachedNetworkImage(
-                            imageUrl: "https://www.w3schools.com/howto/img_avatar.png", width: 45.h, height: 45.h,),
-                        SizedBox(width: 10.h,),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                R.string.coach.tr(),
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w400,
-                                    color: R.color.white,
-                                    height: 1.4,
-                                    letterSpacing: 0.2),
-                              ),
-                              SizedBox(height: 3.h,),
-                              Text(
-                                coachName ?? "Coach Name",
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: R.color.white,
-                                    height: 1.4,
-                                    letterSpacing: 0.2),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 16.h,),
-                    ButtonWidget(title: R.string.join.tr(),
-                        textColor: R.color.white,
-                        borderColor: R.color.white,
-                        backgroundColor: Colors.transparent,
-                        height: 35.h,
-                        onPressed: () {}),
-                  ],
-                ),
-              )
-            ],
-
-    ),
-        ));
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

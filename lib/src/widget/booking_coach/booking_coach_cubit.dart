@@ -1,39 +1,53 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/request/send_feedback_course_request.dart';
-import 'package:medical/src/model/response/common_response.dart';
-import 'package:medical/src/model/service/api_result.dart';
-import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/extention.dart';
 
 import 'booking_coach.dart';
 
 class BookingCoachCubit extends Cubit<BookingCoachState> {
-  final AppRepository repository;
-  DateTime? selectedDate;
-  String? selectedTime;
-
   BookingCoachCubit(this.repository) : super(InitialBookingCoachState());
+
+  final AppRepository repository;
+
+  DateTime startDateTime = DateTime.now().goToBeginOfTheDay();
+  DateTime endDateTime =
+      DateTime.now().goToBeginOfTheDay().add(const Duration(hours: 1));
+
+  bool showSelectHour = false;
+  bool showSelectMinute = false;
+
+  int startHour = 0;
+  int startMinute = 0;
 
   void pickDate(DateTime date) {
     emit(BookingCoachLoading());
-    this.selectedDate = date;
+    this.startDateTime = date;
     emit(SelectedDateSuccess());
   }
 
-  void pickTime(String time) {
+  void pickTime() {
     emit(BookingCoachLoading());
-    this.selectedTime = time;
-    emit(InitialBookingCoachState());
+
+    startDateTime = startDateTime.copyTime(
+      hour: startHour,
+      minute: startMinute,
+    );
+
+    endDateTime = startDateTime.add(const Duration(hours: 1));
+
+    emit(SelectedDateSuccess());
   }
 
-  void sendFeedback(String lessonId, String note) async {
+  void closeSelectTime() {
+    showSelectHour = false;
+    showSelectMinute = false;
+    pickTime();
+  }
+
+  Future<void> submitBooking() async {
     emit(BookingCoachLoading());
-    SendFeedbackCourseRequest request = SendFeedbackCourseRequest(lessonId: lessonId, note: note, rating: 0);
-    ApiResult<CommonResponse> apiResult = await repository.sendFeedbackCourse(request);
-    apiResult.when(success: (CommonResponse response) {
-      emit(BookingCoachSuccess());
-    }, failure: (NetworkExceptions error) {
-      emit(BookingCoachFailure(NetworkExceptions.getErrorMessage(error)));
-    });
+    await Future.delayed(const Duration(seconds: 1));
+    print('LOG book time $startDateTime');
+    emit(BookingCoachSuccess());
   }
 }
