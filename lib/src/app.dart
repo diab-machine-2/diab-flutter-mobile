@@ -114,8 +114,8 @@ class _AppState extends State<App> {
               localizationsDelegates: context.localizationDelegates,
               supportedLocales: context.supportedLocales,
               locale: context.locale,
-              // home: FlashScreenController(),
-              home: IntroduceSurveyPage(),
+              home: FlashScreenController(),
+              // home: IntroduceSurveyPage(),
               debugShowCheckedModeBanner: false,
               onGenerateRoute: (settings) {
                 switch (settings.name) {

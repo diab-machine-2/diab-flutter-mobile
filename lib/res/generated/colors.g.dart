@@ -56,6 +56,7 @@ class Colors {
 	Color get main_6 => Color(0xFFE4F5F5);
 	Color get attentionText => Color(0xffAF0000);
 	Color get blue_6 => Color(0xffD5EFFF);
+	Color get labelColor => Color(0xff3C3C43);
 	Color get color0xffE5E5E5 => Color(0xffE5E5E5);
 	Color get color0xff003F38 => Color(0xff003F38);
 	Color get color0xffBEC0C8 => Color(0xffBEC0C8);

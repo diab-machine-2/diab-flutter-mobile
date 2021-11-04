@@ -1,10 +1,8 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:easy_localization/src/public_ext.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -12,43 +10,25 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
-import 'package:medical/src/widgets/popup_window_widget.dart';
-import 'package:medical/src/widgets/text_field_widget.dart';
+import 'package:medical/src/widgets/custom_calendar_widget.dart';
 
 import 'booking_coach.dart';
 
 class BookingCoachPage extends StatefulWidget {
-
   @override
   _BookingCoachPageState createState() => _BookingCoachPageState();
 }
 
 class _BookingCoachPageState extends State<BookingCoachPage> {
-  TextEditingController _dateController = TextEditingController();
   late BookingCoachCubit _cubit;
-  bool isBooked = true;
-  final List<String> listTime = [
-    R.string.time_9_10.tr(),
-    R.string.time_10_11.tr(),
-    R.string.time_11_12.tr(),
-    R.string.time_12_13.tr(),
-    R.string.time_13_14.tr(),
-    R.string.time_14_15.tr(),
-    R.string.time_15_16.tr(),
-    R.string.time_16_17.tr(),
-    R.string.time_17_18.tr(),
-    R.string.time_18_19.tr(),
-    R.string.time_19_20.tr(),
-    R.string.time_20_21.tr(),
-  ];
+  bool isBooked = false;
+  final TextEditingController _dateController = TextEditingController();
 
   @override
   void initState() {
-    // TODO: implement initState
-    AppRepository repository = AppRepository();
+    final AppRepository repository = AppRepository();
     _cubit = BookingCoachCubit(repository);
     super.initState();
   }
@@ -66,7 +46,8 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
             if (state is BookingCoachSuccess) {}
             if (state is SelectedDateSuccess)
               _dateController.text = DateUtil.parseDateToString(
-                  _cubit.selectedDate, Const.FULL_DATE_FORMAT, locale: Const.VI);
+                  _cubit.selectedDate, Const.FULL_DATE_FORMAT,
+                  locale: Const.VI);
           },
           builder: (context, state) {
             if (state is BookingCoachLoading) {
@@ -90,119 +71,204 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
   }
 
   Widget bookCoachWidget() {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView(
-            padding: EdgeInsets.all(16.h),
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text(
-                      R.string.description_book_coach.tr(),
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.textDark,
-                          height: 1.4,
-                          letterSpacing: 0.4),
-                    ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    R.string.description_book_coach.tr(),
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.textDark,
+                        height: 1.4,
+                        letterSpacing: 0.4),
                   ),
-                  SizedBox(width: 10.h),
-                  Image.asset(R.drawable.img_book_coach, height: 120.h),
-                ],
+                ),
+                const SizedBox(width: 10),
+                Image.asset(R.drawable.img_book_coach, height: 120.h),
+              ],
+            ),
+            const SizedBox(height: 25),
+            Text(
+              R.string.date_book.tr(),
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.textDark,
+                  height: 1.4,
+                  letterSpacing: 0.4),
+            ),
+            const SizedBox(height: 12),
+            CustomCalendarWidget(time: DateTime.now()),
+            const SizedBox(height: 25),
+            Text(
+              R.string.time_book.tr(),
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.textDark,
+                  height: 1.4,
+                  letterSpacing: 0.4),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              R.string.select_time_booking_description.tr(),
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: R.color.textDark,
               ),
-              SizedBox(height: 25.h),
-              Text(
-                R.string.date_book.tr(),
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.textDark,
-                    height: 1.4,
-                    letterSpacing: 0.4),
-              ),
-              SizedBox(height: 12.h),
-              TextFieldWidget(
-                  autoFocus: false,
-                  controller: _dateController,
-                  padding:
-                  EdgeInsets.symmetric(vertical: 9.h, horizontal: 12.h),
-                  readOnly: true,
-                  isRequired: true,
-                  // will disable paste operation
-                  onTap: pickDate,
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.text,
-                  suffixIcon: GestureDetector(
-                    onTap: pickDate,
-                    child: Icon(
-                      Icons.calendar_today_outlined,
-                      color: R.color.gray,
-                      size: 20.h,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Stack(
+                  children: [
+                    _buildSelectTime(
+                      hour: '09',
+                      minute: '30',
+                      color: R.color.white,
                     ),
-                  )),
-              SizedBox(height: 25.h),
-              Text(
-                R.string.time_book.tr(),
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.textDark,
-                    height: 1.4,
-                    letterSpacing: 0.4),
-              ),
-              SizedBox(height: 12.h),
-              Wrap(
-                spacing: 12.h,
-                runSpacing: 20.h,
-                children: listTime.map((e) {
-                  bool isSelected = e == _cubit.selectedTime;
-                  return InkWell(
-                    onTap: () {
-                      _cubit.pickTime(e);
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 44,
+                          height: 36,
+                          child: ButtonTheme(
+                            alignedDropdown: true,
+                            child: DropdownButton<String>(
+                              menuMaxHeight: 300,
+                              items: <String>['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+                                  .map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Container(
+                                      width: 22, height: 24, child: Text(value)),
+                                );
+                              }).toList(),
+                              onChanged: (_) {},
+                              icon: const SizedBox(),
+                              underline: const SizedBox(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 44,
+                          height: 36,
+                          child: ButtonTheme(
+                            alignedDropdown: true,
+                            child: DropdownButton<String>(
+                              menuMaxHeight: 500,
+                              items: <String>['E', 'F', 'G', 'H']
+                                  .map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (_) {},
+                              icon: const SizedBox(),
+                              underline: const SizedBox(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  width: 16,
+                  height: 1,
+                  color: R.color.greenGradientBottom,
+                ),
+                _buildSelectTime(
+                  hour: '10',
+                  minute: '30',
+                  color: R.color.color0xfff5f5f5,
+                ),
+              ],
+            ),
+            const SizedBox(height: 44),
+            SafeArea(
+              top: false,
+              child: Center(
+                child: Container(
+                  width: 160,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  child: ButtonWidget(
+                    title: R.string.submit_booking.tr(),
+                    onPressed: () {
+                      showResultBookingPopup();
                     },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 10.h, vertical: 8.h),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.h),
-                        color: isSelected
-                            ? R.color.color0xffB1DDDB
-                            : R.color.white,
-                      ),
-                      child: Text(
-                        e,
-                        style: TextStyle(
-                            fontSize: 13.sp,
-                            fontWeight: isSelected
-                                ? FontWeight.w700
-                                : FontWeight.w400,
-                            color: isSelected
-                                ? R.color.accentColor
-                                : R.color.grey_2),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              )
-            ],
-          ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        Container(
-            width: 150.w,
-            margin: EdgeInsets.only(bottom: 20.h),
-            child: ButtonWidget(
-                title: R.string.save_booking.tr(),
-                onPressed: () {
-                  showResultBookingPopup();
-                })),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildSelectTime({
+    required String hour,
+    required String minute,
+    required Color color,
+  }) {
+    return Container(
+      width: 86,
+      height: 36,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 4, 4, 4),
+            child: Text(
+              hour,
+              style: TextStyle(
+                color: R.color.greenGradientBottom,
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Text(
+            ':',
+            style: TextStyle(
+              color: R.color.greenGradientBottom,
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 4, 8, 4),
+            child: Text(
+              minute,
+              style: TextStyle(
+                color: R.color.greenGradientBottom,
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -233,9 +299,7 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
               height: 35.h,
               title: R.string.see_booking.tr(),
               textSize: 14.sp,
-              onPressed: () {
-
-              },
+              onPressed: () {},
               backgroundColor: Colors.transparent,
               borderColor: R.color.accentColor,
               textColor: R.color.accentColor,
@@ -244,16 +308,6 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
         )
       ],
     );
-  }
-
-  void pickDate() {
-    DatePicker.showDatePicker(context,
-        maxTime: DateTime.now(),
-        showTitleActions: true,
-        locale: LocaleType.vi,
-        currentTime: _cubit.selectedDate, onConfirm: (date) {
-      _cubit.pickDate(date);
-    });
   }
 
   void showResultBookingPopup() {

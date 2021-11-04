@@ -56,6 +56,7 @@ class AppColors {
   static const main_6 = Color(0xFFE4F5F5);
   static const attentionText = Color(0xffAF0000);
   static const blue_6 = Color(0xffD5EFFF);
+  static const labelColor = Color(0xff3C3C43);
   static const color0xffE5E5E5 = Color(0xffE5E5E5);
   static const color0xff003F38 = Color(0xff003F38);
   static const color0xffBEC0C8 = Color(0xffBEC0C8);
