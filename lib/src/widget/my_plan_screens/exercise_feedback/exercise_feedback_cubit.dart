@@ -1,11 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 
-import 'activity_feedback.dart';
+import 'exercise_feedback.dart';
 
-class ActivityFeedbackCubit extends Cubit<ActivityFeedbackState> {
-  ActivityFeedbackCubit(this.repository)
-      : super(const ActivityFeedbackInitial());
+class ExerciseFeedbackCubit extends Cubit<ExerciseFeedbackState> {
+  ExerciseFeedbackCubit(this.repository)
+      : super(const ExerciseFeedbackInitial());
 
   final AppRepository repository;
 
@@ -16,13 +16,13 @@ class ActivityFeedbackCubit extends Cubit<ActivityFeedbackState> {
 
   void onSelectAnswer(int newAnswer) {
     selectedAnswer = newAnswer;
-    emit(const ActivityFeedbackSuccess());
-    emit(const ActivityFeedbackInitial());
+    emit(const ExerciseFeedbackSuccess());
+    emit(const ExerciseFeedbackInitial());
   }
 
   void onSumit() {
     if (selectedAnswer == null) {
-      emit(const ActivityFeedbackFailure('Select one'));
+      emit(const ExerciseFeedbackFailure('Select one'));
     }
     print('LOG $note, ${level[selectedAnswer ?? 0]}');
   }

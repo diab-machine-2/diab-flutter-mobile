@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
 import 'request/create_menu_request.dart';
 import 'request/food_change_request.dart';
 import 'request/ios_receipt_request.dart';
+import 'request/post_survey_request.dart';
 import 'request/send_feedback_course_request.dart';
 import 'request/send_interest_request.dart';
 import 'request/update_lesson_section_request.dart';
@@ -111,6 +113,15 @@ abstract class AppApi {
     @Body() CreateMenuRequest request,
   );
 
+  // Survey
+  @GET("App/Survey/{surveyId}")
+  Future<DetailSurveyResponse> getDetailSurvey(
+    @Path("surveyId") String surveyId,
+  );
+
+  @POST("App/SurveyResult")
+  Future<CommonResponse> submitSurvey(@Body() PostSurveyRequest request);
+
   //Acount
   @GET("App/Account/GetCurrentUserInfo")
   Future<UserInfoResponse> getCurrentUserInfo();
@@ -139,5 +150,6 @@ abstract class AppApi {
   );
 
   @GET("App/Lesson/{lessonId}/LessonQuizDetail")
-  Future<LessonSectionListResponse> getListQuiz(@Path("lessonId") String lessonId);
+  Future<LessonSectionListResponse> getListQuiz(
+      @Path("lessonId") String lessonId);
 }

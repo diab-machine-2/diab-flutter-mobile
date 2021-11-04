@@ -593,6 +593,7 @@ class Strings {
 	String get activity => 'activity';
 	String get title_lesson => 'title_lesson';
 	String get title_activity => 'title_activity';
+	String get title_exercise => 'title_exercise';
 	String get title_route => 'title_route';
 	String get title_suggest => 'title_suggest';
 	String get search_by_key => 'search_by_key';
@@ -821,9 +822,20 @@ class Strings {
 	String get accept => 'accept';
 	String get survey => 'survey';
 	String get part_number => 'part_number';
-	String get introduction_to_the_survey => 'introduction_to_the_survey';
-	String get introduction => 'introduction';
 	String get start_survey => 'start_survey';
-	String get text_congratulation_survey => 'text_congratulation_survey';
+	String get thank_you_for_survey => 'thank_you_for_survey';
+	String get thank_you_for_survey_description => 'thank_you_for_survey_description';
 	String get explain => 'explain';
+	String get book_coach => 'book_coach';
+	String get description_book_coach => 'description_book_coach';
+	String get date_book => 'date_book';
+	String get time_book => 'time_book';
+	String get submit_booking => 'submit_booking';
+	String get my_plan_booking => 'my_plan_booking';
+	String get join => 'join';
+	String get coach => 'coach';
+	String get you_book_coach_success => 'you_book_coach_success';
+	String get booking_success => 'booking_success';
+	String get see_booking => 'see_booking';
+	String get select_time_booking_description => 'select_time_booking_description';
 }

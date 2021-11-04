@@ -15,7 +15,7 @@ extension PlanTypeDetail on PlanType {
       case PlanType.lesson:
         return R.string.title_lesson.tr();
       case PlanType.activity:
-        return R.string.title_activity.tr();
+        return R.string.title_exercise.tr();
     }
   }
 }

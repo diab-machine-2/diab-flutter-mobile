@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:medical/src/model/response/survey_data.dart';
 import 'package:meta/meta.dart';
 
 @immutable
 abstract class IntroduceSurveyState extends Equatable {
-  IntroduceSurveyState([List props = const []]) : super();
+  const IntroduceSurveyState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -20,7 +20,7 @@ class InitialIntroduceSurveyState extends IntroduceSurveyState {
 class IntroduceSurveyFailure extends IntroduceSurveyState {
   final String error;
 
-  IntroduceSurveyFailure(this.error);
+  const IntroduceSurveyFailure(this.error);
 
   @override
   String toString() {
@@ -38,5 +38,16 @@ class IntroduceSurveySuccess extends IntroduceSurveyState {
   @override
   String toString() {
     return 'IntroduceSurveySuccess{}';
+  }
+}
+
+class GetDetailSurveySuccess extends IntroduceSurveyState {
+
+  final SurveyData response;
+
+  const GetDetailSurveySuccess(this.response);
+  @override
+  String toString() {
+    return 'GetDetailSurveySuccess{response: ${response.toJson().toString()}}';
   }
 }

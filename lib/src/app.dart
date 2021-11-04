@@ -27,12 +27,14 @@ import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Exercrises/search_exercrises.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/base/base_state.dart';
+import 'package:medical/src/widget/booking_coach/booking_coach_page.dart';
 import 'package:medical/src/widget/course_feedback/course_feedback_page.dart';
 import 'package:medical/src/widget/course_quiz/course_quiz.dart';
 import 'package:medical/src/widget/detail_package/detail_package_page.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/intro_sample_menu/intro_sample_menu_page.dart';
+import 'package:medical/src/widget/introduce_survey/introduce_survey_page.dart';
 import 'package:medical/src/widget/login/change_password.dart';
 import 'package:medical/src/widget/login/login.dart';
 import 'package:medical/src/widget/login/register.dart';
@@ -44,6 +46,7 @@ import 'package:medical/src/widget/login/verify_phone.dart';
 import 'package:medical/src/widget/login/create_new_password.dart';
 import 'package:medical/src/widget/login/register_success.dart';
 import 'package:medical/src/widget/login/update_info.dart';
+import 'package:medical/src/widget/my_booking/my_booking_page.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
 import 'package:medical/src/widget/notification/notification_detail.dart';
 import 'package:medical/src/widget/notification/notification_tabbar.dart';
@@ -112,7 +115,7 @@ class _AppState extends State<App> {
               supportedLocales: context.supportedLocales,
               locale: context.locale,
               home: FlashScreenController(),
-              // home: CourseQuizPage(),
+              // home: IntroduceSurveyPage(),
               debugShowCheckedModeBanner: false,
               onGenerateRoute: (settings) {
                 switch (settings.name) {

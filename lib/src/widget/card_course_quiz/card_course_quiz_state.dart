@@ -10,7 +10,22 @@ abstract class CardCourseQuizState extends Equatable {
   List<Object> get props => [];
 }
 
-class InitialCardCourseQuizState extends CardCourseQuizState {}
+class InitialCardCourseQuizState extends CardCourseQuizState {
+
+  @override
+  String toString() {
+    return 'InitialCardCourseQuizState{}';
+  }
+}
+
+class ChooseAnswerSuccess extends CardCourseQuizState {
+
+  @override
+  String toString() {
+    return 'ChooseAnswerSuccess{}';
+  }
+}
+
 
 class CardCourseQuizLoading extends CardCourseQuizState {
   @override

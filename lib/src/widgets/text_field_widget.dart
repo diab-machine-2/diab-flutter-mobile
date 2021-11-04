@@ -13,6 +13,7 @@ class TextFieldWidget extends StatefulWidget {
       this.isEnable = true,
       this.autoFocus = true,
       this.isRequired = false,
+        this.borderColor,
       this.border: 10,
       this.onChanged,
       this.padding = const EdgeInsets.all(20),
@@ -47,6 +48,7 @@ class TextFieldWidget extends StatefulWidget {
   final String? hintText;
   final int? minLines;
   final int? maxLines;
+  final Color? borderColor;
   final double border;
   final TextInputType keyboardType;
   final FocusNode? focusNode;
@@ -91,15 +93,15 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
           isDense: true,
           contentPadding: widget.padding,
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: R.color.gray, width: 0.0),
+            borderSide: BorderSide(color: widget.borderColor ?? R.color.gray, width: 0.0),
             borderRadius: BorderRadius.circular(widget.border),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: R.color.gray, width: 0.0),
+            borderSide: BorderSide(color: widget.borderColor ?? R.color.gray, width: 0.0),
             borderRadius: BorderRadius.circular(widget.border),
           ),
           border: OutlineInputBorder(
-            borderSide: BorderSide(color: R.color.gray, width: 0.0),
+            borderSide: BorderSide(color: widget.borderColor ?? R.color.gray, width: 0.0),
             borderRadius: BorderRadius.circular(widget.border),
           ),
           errorText: widget.errorText,

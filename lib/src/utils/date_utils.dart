@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:intl/intl.dart';
 
 import 'logger.dart';
@@ -14,11 +16,11 @@ class DateUtil {
     return date;
   }
 
-  static String parseDateToString(DateTime dateTime, String format) {
+  static String parseDateToString(DateTime? dateTime, String format, {String? locale}) {
     String date = "";
     if (dateTime != null)
       try {
-        date = DateFormat(format).format(dateTime);
+        date = DateFormat(format, locale).format(dateTime);
       } on FormatException catch (e) {
         logger.e(e.toString());
       }

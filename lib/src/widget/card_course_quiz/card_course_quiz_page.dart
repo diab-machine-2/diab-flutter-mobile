@@ -4,23 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
 import 'package:medical/src/model/response/quiz_lesson.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/popup_window_widget.dart';
 
 import 'card_course_quiz.dart';
 
+enum SurveyQuestionTypes { SingleChoice, MultipleChoice, Text, Range }
+
 class CardCourseQuizPage extends StatefulWidget {
   final int index;
   final QuizLesson? quizData;
   final ValueChanged<List<String>> onSubmitAnswer;
+  final bool isQuiz;
+  final ValueChanged<bool>? onChoseAnswer;
 
   const CardCourseQuizPage(
       {Key? key,
       required this.quizData,
       required this.index,
-      required this.onSubmitAnswer})
+      required this.onSubmitAnswer,
+      this.onChoseAnswer,
+      this.isQuiz = true})
       : super(key: key);
 
   @override
@@ -52,6 +60,12 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
           listener: (context, state) {
             if (state is CardCourseQuizFailure)
               Message.showToastMessage(context, state.error);
+            if (state is ChooseAnswerSuccess) {
+              if (widget.onChoseAnswer != null) {
+                widget
+                    .onChoseAnswer!(!Utils.isEmpty(_cubit.listAnswerChoosing));
+              }
+            }
           },
           builder: (context, state) {
             if (state is CardCourseQuizLoading) {
@@ -64,6 +78,21 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
         ),
       ),
     );
+  }
+
+  SurveyQuestionTypes getTypeQuestion(int? type) {
+    switch (type) {
+      case 1:
+        return SurveyQuestionTypes.SingleChoice;
+      case 2:
+        return SurveyQuestionTypes.MultipleChoice;
+      case 3:
+        return SurveyQuestionTypes.Text;
+      case 4:
+        return SurveyQuestionTypes.Range;
+      default:
+        return SurveyQuestionTypes.SingleChoice;
+    }
   }
 
   Widget buildPage(BuildContext context, CardCourseQuizState state) {
@@ -162,7 +191,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
           else
             Container(),
           Visibility(
-            visible: !_cubit.isShowAnswer,
+            visible: widget.isQuiz && !_cubit.isShowAnswer,
             child: Center(
               child: Container(
                 alignment: Alignment.center,
@@ -186,7 +215,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
             ),
           ),
           Visibility(
-            visible: _cubit.isShowAnswer,
+            visible: widget.isQuiz && _cubit.isShowAnswer,
             child: Center(
               child: GestureDetector(
                   onTap: () {
@@ -287,6 +316,55 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
     );
   }
 
+  Widget buildRange(int index, AnswerData data) {
+    final String id = data.id ?? "";
+    final bool isSelected = _cubit.listAnswerChoosing.contains(id);
+    final bool isAnswerRight = data.isCorrect == true;
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: isSelected ? R.color.color0xffB1DDDB : R.color.white,
+              border: Border.all(
+                width: isSelected && !_cubit.isShowAnswer ? 0 : 1,
+                color: _cubit.isShowAnswer
+                    ? (isAnswerRight ? R.color.accentColor : R.color.red)
+                    : (isSelected
+                        ? R.color.accentColor
+                        : R.color.grayComponentBorder),
+              )),
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: _cubit.isShowAnswer ? null : () => _cubit.checkBox(id, true),
+            child: Text(
+              index.toString() /* ?? ""*/,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? R.color.accentColor : R.color.textDark,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: Text(
+            data.name ?? "",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: R.color.textDark,
+            ),
+            maxLines: 1,
+            textAlign: TextAlign.start,
+          ),
+        )
+      ],
+    );
+  }
+
   void showDescriptionPopup(String? message) {
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.9),
@@ -294,48 +372,49 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
       barrierDismissible: true,
       context: context,
       builder: (_) => PopupWindowWidget(
-          child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        // height: ScreenUtil().screenHeight - 150,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(children: [
-              Image.asset(
-                R.drawable.img_des,
-                height: 80,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Center(
-                  child: Text(R.string.explain,
-                      style: TextStyle(
-                          color: R.color.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold)),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          // height: ScreenUtil().screenHeight - 150,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: [
+                Image.asset(
+                  R.drawable.img_des,
+                  height: 80,
                 ),
-              )
-            ]),
-            const SizedBox(height: 16),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  message ?? "",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 16,
-                    letterSpacing: 0.4,
-                    height: 1.4,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Center(
+                    child: Text(R.string.explain,
+                        style: TextStyle(
+                            color: R.color.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                )
+              ]),
+              const SizedBox(height: 16),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    message ?? "",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 16,
+                      letterSpacing: 0.4,
+                      height: 1.4,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 

@@ -22,7 +22,7 @@ class CardCourseQuizCubit extends Cubit<CardCourseQuizState> {
     } else {
       listAnswerChoosing.add(answerId);
     }
-    emit(InitialCardCourseQuizState());
+    emit(ChooseAnswerSuccess());
   }
 
   void applyAnswer() {

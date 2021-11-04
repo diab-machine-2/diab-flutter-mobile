@@ -45,6 +45,7 @@ class Const {
   static const String DATE_TIME_CREATE_SV_FORMAT = "yyyy-MM-dd HH:mm:ss";
   static const String DATE_REQUEST_FORMAT = "MM-dd-yyyy";
   static const String DATE_FORMAT = "dd/MM/yyyy";
+  static const String FULL_DATE_FORMAT = "EEEE, dd/MM/yyyy";
   static const String DATE_FORMAT_TASK = "yyyy-MM-dd";
   static const String DATE_FORMAT_POST = "HH:mm dd/MM/yyyy";
   static const String DATE = "EEE";
@@ -116,5 +117,32 @@ class Const {
   static const String LUNCH = 'Trưa';
   static const String DINNER = 'Tối';
   static const String SUBMEAL = 'Nhẹ';
+
+  static const List<int> hourList = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+  ];
+  static const List<int> minuteList = [0, 15, 30, 45];
 
 }

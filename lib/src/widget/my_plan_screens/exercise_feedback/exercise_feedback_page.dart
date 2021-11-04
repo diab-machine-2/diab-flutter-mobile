@@ -9,23 +9,23 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
-import 'activity_feedback.dart';
+import 'exercise_feedback.dart';
 
-class ActivityFeedbackPage extends StatefulWidget {
-  const ActivityFeedbackPage();
+class ExerciseFeedbackPage extends StatefulWidget {
+  const ExerciseFeedbackPage();
 
   @override
-  _ActivityFeedbackPageState createState() => _ActivityFeedbackPageState();
+  _ExerciseFeedbackPageState createState() => _ExerciseFeedbackPageState();
 }
 
-class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
-  late final ActivityFeedbackCubit _cubit;
+class _ExerciseFeedbackPageState extends State<ExerciseFeedbackPage> {
+  late final ExerciseFeedbackCubit _cubit;
 
   @override
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
-    _cubit = ActivityFeedbackCubit(appRepository);
+    _cubit = ExerciseFeedbackCubit(appRepository);
   }
 
   @override
@@ -43,14 +43,14 @@ class _ActivityFeedbackPageState extends State<ActivityFeedbackPage> {
             background: R.drawable.bg_lesson_detail,
             bottomSafeArea: true,
             showCloseBackButton: true,
-            child: BlocConsumer<ActivityFeedbackCubit, ActivityFeedbackState>(
+            child: BlocConsumer<ExerciseFeedbackCubit, ExerciseFeedbackState>(
               listener: (context, state) {
-                if (state is ActivityFeedbackLoading) {
+                if (state is ExerciseFeedbackLoading) {
                   BotToast.showLoading();
                 } else {
                   BotToast.closeAllLoading();
                 }
-                if (state is ActivityFeedbackFailure) {
+                if (state is ExerciseFeedbackFailure) {
                   Message.showToastMessage(context, state.error);
                 }
               },
