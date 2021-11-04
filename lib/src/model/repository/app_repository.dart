@@ -4,6 +4,7 @@ import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
+import 'package:medical/src/model/request/update_lesson_section_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
@@ -11,11 +12,13 @@ import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
-import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
+import 'package:medical/src/model/response/my_lesson_response.dart';
+import 'package:medical/src/model/response/quiz_lesson.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
@@ -223,19 +226,25 @@ class AppRepository {
    * Quiz
    */
 
-  Future<ApiResult<List<QuizData>>> getListQuiz(String lessonId) async {
+  Future<ApiResult<List<QuizLesson?>>> getListQuiz(String lessonId) async {
     try {
-      ListQuizLessonResponse response = await appClient.getListQuiz(lessonId);
-      return ApiResult.success(data: response.data ?? []);
+      final LessonSectionListResponse response =
+          await appClient.getListQuiz(lessonId);
+      if (response.data?.lessonSections?.isNotEmpty != true) {
+        return const ApiResult.success(data: []);
+      } else {
+        return ApiResult.success(
+            data: response.data!.lessonSections!.first?.quizLessonSections ?? []);
+      }
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
-  Future<ApiResult<CommonResponse>> sendFeedbackCourse(SendFeedbackCourseRequest request) async {
+  Future<ApiResult<CommonResponse>> sendFeedbackCourse(String lessonId, SendFeedbackCourseRequest request) async {
     try {
-      final CommonResponse response = await appClient.sendFeedbackCourse(request);
-      if (response.statusCode == 200) {
+      final CommonResponse response = await appClient.sendFeedbackCourse(lessonId, request);
+      if (response.meta?.success == true) {
         return ApiResult.success(data: response);
       } else
         return ApiResult.failure(error: NetworkExceptions.defaultError(response.message ?? ''));
@@ -257,6 +266,42 @@ class AppRepository {
         return const ApiResult.failure(
             error:
                 NetworkExceptions.defaultError("Can't not get UserInfo"));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  /**
+   * My Plan
+   */
+  Future<ApiResult<MyLessonResponse>> getLessonsList(int type) async {
+    try {
+      final MyLessonResponse response = await appClient.getLessonsList(type);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<LessonSectionListResponse>> getListLessonSection(String lessonId) async {
+    try {
+      final LessonSectionListResponse response = await appClient.getListLessonSection(lessonId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> setCompletedLessonAccount(
+      UpdateLessonSectionRequest request) async {
+    try {
+      final CommonResponse response =
+          await appClient.setCompletedLessonAccount(request);
+      if (response.meta?.success == true) {
+        return ApiResult.success(data: response);
+      } else
+        return ApiResult.failure(
+            error: NetworkExceptions.defaultError(response.message ?? ''));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

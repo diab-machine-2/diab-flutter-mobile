@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
+import 'package:medical/src/model/response/quiz_lesson.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
@@ -8,19 +8,22 @@ import 'course_quiz.dart';
 
 class CourseQuizCubit extends Cubit<CourseQuizState> {
   final AppRepository repository;
-  List<QuizData> listQuiz = [];
-  Map<int, List<String>> answer = Map();
+  List<QuizLesson?> listQuiz = [];
+  Map<int, List<String>> answer = {};
   int selectedCourseIndex = 0;
   int countAnswerRight = 0;
 
   CourseQuizCubit(this.repository) : super(InitialCourseQuizState());
 
-  void getListQuiz(String lessonId) async {
+  Future<void> getListQuiz(String lessonId) async {
     emit(CourseQuizLoading());
-    ApiResult<List<QuizData>> apiResult =
-    await repository.getListQuiz(lessonId);
-    apiResult.when(success: (List<QuizData> response) {
+    final ApiResult<List<QuizLesson?>> apiResult =
+        await repository.getListQuiz(lessonId);
+    apiResult.when(success: (List<QuizLesson?> response) {
       listQuiz = response;
+      if (listQuiz.isNotEmpty != true) {
+        emit(const CourseQuizDone());
+      }
       emit(CourseQuizSuccess());
     }, failure: (NetworkExceptions error) {
       emit(CourseQuizFailure(NetworkExceptions.getErrorMessage(error)));
@@ -30,8 +33,14 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   void recordAnswer(int index, List<String> listAnswerId) {
     emit(CourseQuizLoading());
     answer[index] = listAnswerId;
-    bool isRight = listAnswerId.toString() ==
-        listQuiz[index].answers?.where((e) => e.isCorrect == true).map((e) => e.id).toList().toString();
+    final bool isRight = listAnswerId.toString() ==
+        listQuiz[index]
+            ?.quiz
+            ?.quizAnswers
+            ?.where((e) => e?.isCorrect == true)
+            .map((e) => e?.quizId)
+            .toList()
+            .toString();
     if (isRight) {
       countAnswerRight++;
     }

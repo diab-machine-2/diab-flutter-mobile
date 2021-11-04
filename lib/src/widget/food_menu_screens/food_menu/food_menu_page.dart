@@ -487,7 +487,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                         child: Text(
                           '${foodDetail?.portion?.toStringAsFixed(1)} ${foodDetail?.foodUnitName}',
                           style: TextStyle(
-                            color: R.color.color0xff454649,
+                            color: R.color.grey_1,
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
                           ),
@@ -521,7 +521,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                   Text(
                     '${foodDetail?.portion?.toStringAsFixed(1)} ${foodDetail?.foodUnitName}',
                     style: TextStyle(
-                      color: R.color.color0xff454649,
+                      color: R.color.grey_1,
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
                     ),
@@ -536,7 +536,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                       '${(foodDetail?.calorie ?? 0.0) * (foodDetail?.portion ?? 0)}'
                     ]),
                     style: TextStyle(
-                      color: R.color.color0xff454649,
+                      color: R.color.grey_1,
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
                     ),
@@ -551,7 +551,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                       '${(foodDetail?.glucose ?? 0.0) * (foodDetail?.portion ?? 0)}'
                     ]),
                     style: TextStyle(
-                      color: R.color.color0xff454649,
+                      color: R.color.grey_1,
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
                     ),
@@ -575,7 +575,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                   TextSpan(
                     text: foodDetail?.note,
                     style: TextStyle(
-                        color: R.color.color0xff454649,
+                        color: R.color.grey_1,
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.italic),

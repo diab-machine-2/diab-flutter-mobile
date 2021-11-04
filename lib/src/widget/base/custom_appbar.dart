@@ -9,6 +9,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Widget? bottom;
   final double bottomHeight;
   final Color? backgroundColor;
+  final bool? showRightCloseButton;
 
   CustomAppBar(
       {Key? key,
@@ -17,7 +18,8 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
       this.actions,
       this.bottom,
       this.bottomHeight = 50,
-      this.backgroundColor})
+      this.backgroundColor,
+      this.showRightCloseButton})
       : preferredSize = Size.fromHeight(
             kToolbarHeight + (bottom == null ? 0 : bottomHeight)),
         super(key: key);
@@ -34,22 +36,26 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: widget.backgroundColor,
-      title: Transform(
-          transform: Matrix4.translationValues(-20.0, 0.0, 0.0),
-          child: widget.title),
+      title: widget.showRightCloseButton == true
+          ? widget.title
+          : Transform(
+              transform: Matrix4.translationValues(-20.0, 0.0, 0.0),
+              child: widget.title),
       centerTitle: false,
       automaticallyImplyLeading: false,
       actions: widget.actions,
-      leading: widget.leadingIcon ??
-          IconButton(
-              splashColor: R.color.transparent,
-              highlightColor: R.color.transparent,
-              icon: widget.leadingIcon == null
-                  ? Icon(Icons.arrow_back, color: R.color.white)
-                  : widget.leadingIcon!,
-              onPressed: () {
-                navigatorKey.currentState!.pop();
-              }),
+      leading: widget.showRightCloseButton == true
+          ? null
+          : widget.leadingIcon ??
+              IconButton(
+                  splashColor: R.color.transparent,
+                  highlightColor: R.color.transparent,
+                  icon: widget.leadingIcon == null
+                      ? Icon(Icons.arrow_back, color: R.color.white)
+                      : widget.leadingIcon!,
+                  onPressed: () {
+                    navigatorKey.currentState!.pop();
+                  }),
       bottom: widget.bottom as PreferredSizeWidget?,
     );
   }

@@ -131,7 +131,7 @@ class ActionListPanel extends StatelessWidget {
                               : FontWeight.w400,
                           color: selectedIndex == index
                               ? R.color.mainColor
-                              : R.color.color0xff454649)),
+                              : R.color.grey_1)),
                 ],
               ),
               selectedIndex == index

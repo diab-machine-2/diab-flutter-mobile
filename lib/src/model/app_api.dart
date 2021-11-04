@@ -1,23 +1,26 @@
 import 'package:dio/dio.dart';
-import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
-import 'request/ios_receipt_request.dart';
-import 'request/send_feedback_course_request.dart';
-import 'response/blood_sugar_template_response.dart';
-import 'response/create_menu_response.dart';
-import 'package:medical/src/model/response/menu_response.dart';
-import 'package:medical/src/model/response/list_activity_response.dart';
+import 'package:retrofit/http.dart';
+import 'package:retrofit/retrofit.dart';
+
 import 'request/create_menu_request.dart';
 import 'request/food_change_request.dart';
+import 'request/ios_receipt_request.dart';
+import 'request/send_feedback_course_request.dart';
 import 'request/send_interest_request.dart';
+import 'request/update_lesson_section_request.dart';
+import 'response/blood_sugar_template_response.dart';
+import 'response/common_response.dart';
+import 'response/create_menu_response.dart';
+import 'response/detail_package_response.dart';
 import 'response/diabetes_status_response.dart';
 import 'response/food_suggest_response.dart';
 import 'response/latest_hba1c_input_response.dart';
-import 'response/list_transaction_response.dart';
-import 'package:retrofit/http.dart';
-import 'package:retrofit/retrofit.dart';
-import 'response/common_response.dart';
-import 'response/detail_package_response.dart';
+import 'response/lesson_section_list_response.dart';
+import 'response/list_activity_response.dart';
 import 'response/list_package_response.dart';
+import 'response/list_transaction_response.dart';
+import 'response/menu_response.dart';
+import 'response/my_lesson_response.dart';
 import 'response/save_survey_result_response.dart';
 import 'response/tdee_response.dart';
 import 'response/upgrade_account_response.dart';
@@ -50,10 +53,10 @@ abstract class AppApi {
 
   @GET("App/PackageTransaction")
   Future<ListTransactionResponse> getListTransaction(
-      @Query("isExpired") bool? isExpired,
-      @Query("page") int? page,
-      @Query("size") int? size,
-      );
+    @Query("isExpired") bool? isExpired,
+    @Query("page") int? page,
+    @Query("size") int? size,
+  );
 
   @POST("App/Payment/VerifyApplePayment")
   Future<dynamic> verifyReceipt(@Body() IosReceiptRequest request);
@@ -108,14 +111,33 @@ abstract class AppApi {
     @Body() CreateMenuRequest request,
   );
 
-  // Quiz
-  @POST("App/Lesson/InsertLessonReview")
-  Future<CommonResponse> sendFeedbackCourse(@Body() SendFeedbackCourseRequest request);
-
-  @GET("App/Lesson/GetLessonQuizDetail/{lessonId}")
-  Future<ListQuizLessonResponse> getListQuiz(@Path("lessonId") String lessonId,);
-
   //Acount
   @GET("App/Account/GetCurrentUserInfo")
   Future<UserInfoResponse> getCurrentUserInfo();
+
+  //My Plan
+  @GET("App/Lesson/MyLessons")
+  Future<MyLessonResponse> getLessonsList(
+    @Query("type") int type,
+  );
+
+  @GET("App/Lesson/{lessonId}/ListLessonSection")
+  Future<LessonSectionListResponse> getListLessonSection(
+    @Path("lessonId") String lessonId,
+  );
+
+  @POST("App/LessonSection/SetCompletedLessonAccount")
+  Future<CommonResponse> setCompletedLessonAccount(
+    @Body() UpdateLessonSectionRequest request,
+  );
+
+  // Quiz
+  @POST("App/Lesson/{lessonId}/Review")
+  Future<CommonResponse> sendFeedbackCourse(
+    @Path("lessonId") String lessonId,
+    @Body() SendFeedbackCourseRequest request,
+  );
+
+  @GET("App/Lesson/{lessonId}/LessonQuizDetail")
+  Future<LessonSectionListResponse> getListQuiz(@Path("lessonId") String lessonId);
 }
