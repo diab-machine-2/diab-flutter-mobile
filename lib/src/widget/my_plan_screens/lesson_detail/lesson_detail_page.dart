@@ -40,8 +40,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   @override
   void dispose() {
     super.dispose();
-    _cubit.videoManagement?.disposeAllVideo();
-    _cubit.audioManagement?.disposeAllAudio();
+    _cubit.videoManager?.disposeAllVideo();
+    _cubit.audioManager?.disposeAllAudio();
     _scrollController.removeListener(() {});
     _scrollController.dispose();
   }
@@ -153,23 +153,23 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     ...List.generate(
-                                      _cubit.videoManagement?.videoAmount ?? 0,
+                                      _cubit.videoManager?.videoAmount ?? 0,
                                       (index) {
                                         return Padding(
                                           padding:
                                               const EdgeInsets.only(bottom: 24),
                                           child: BetterPlayer(
                                               controller: _cubit
-                                                  .videoManagement!
+                                                  .videoManager!
                                                   .controllerList[index]),
                                         );
                                       },
                                     ),
                                     ...List.generate(
-                                        _cubit.audioManagement?.audioAmount ??
+                                        _cubit.audioManager?.audioAmount ??
                                             0, (index) {
                                       final AudioController? _controller =
-                                          _cubit.audioManagement
+                                          _cubit.audioManager
                                               ?.getController(index);
                                       return StreamBuilder<AudioData>(
                                           stream: _controller?.onChanged.stream,

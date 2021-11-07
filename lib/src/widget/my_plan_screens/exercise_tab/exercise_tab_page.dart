@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -13,7 +14,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../my_plan/models/completion_status.dart';
 import '../my_plan/widgets/app_bar_bottom.dart';
-import '../select_route/select_route.dart';
+import '../select_road_map/select_road_map.dart';
 import 'exercise_tab.dart';
 
 class ExerciseTabPage extends StatefulWidget {
@@ -34,7 +35,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = ExerciseTabCubit(appRepository);
-    _cubit.getCurrentUserInfo();
+    _cubit.initData();
   }
 
   @override
@@ -64,7 +65,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     InkWell(
                       onTap: () {
                         NavigationUtil.navigatePage(
-                            context, const SelectRoutePage());
+                            context, const SelectRoadMapPage());
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -96,8 +97,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   top: false,
                   child: SmartRefresher(
                     controller: _controller,
-                    onRefresh: () => _cubit.refresh(),
-                    child: _cubit.data.isEmpty
+                    onRefresh: () =>
+                        _cubit.getExerciseMovement(isRefresh: true),
+                    child: _cubit.exerciseList.isEmpty
                         ? Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 53),
                             child: Column(
@@ -139,9 +141,10 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                         : ListView.separated(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 20),
-                            itemCount: 5,
+                            itemCount: _cubit.exerciseList.length,
                             itemBuilder: (context, index) {
-                              return _buildActivityWidget();
+                              return _buildActivityWidget(
+                                  exerciseItem: _cubit.exerciseList[index]);
                             },
                             separatorBuilder: (context, index) {
                               return Container(
@@ -228,7 +231,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     );
   }
 
-  Widget _buildActivityWidget() {
+  Widget _buildActivityWidget({
+    required ExerciseMovementResponseData? exerciseItem,
+  }) {
     return Container(
       color: R.color.transparent,
       child: Row(
@@ -253,7 +258,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   children: [
                     Expanded(
                       child: Text(
-                        'Bài 1. Vận động mạnh và dài nhất có thể nè mọi ae',
+                        exerciseItem?.name ?? '',
                         style: TextStyle(
                           color: R.color.textDark,
                           fontSize: 16,
@@ -265,7 +270,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '5 phút',
+                      '${exerciseItem?.practiceTime ?? ''} phút',
                       style: TextStyle(
                           color: R.color.grey_2,
                           fontSize: 12,
@@ -278,27 +283,35 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildCustomIconButton(
-                        title: 'Bắt đầu tập',
-                        icon: R.drawable.ic_start_exercise,
+                      title: 'Bắt đầu tập',
+                      icon: R.drawable.ic_start_exercise,
+                      borderColor: R.color.greenGradientBottom,
+                      backgroundColor: R.color.greenGradientBottom,
+                      textColor: R.color.white,
+                      onTap: () {
+                        NavigationUtil.navigatePage(
+                          context,
+                          const VideoPlayerWidget(
+                            videoUrl:
+                                'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                          ),
+                        );
+                      },
+                    ),
+                    _buildCustomIconButton(
+                        title: 'Xem hướng dẫn',
+                        icon: R.drawable.ic_play,
                         borderColor: R.color.greenGradientBottom,
-                        backgroundColor: R.color.greenGradientBottom,
-                        textColor: R.color.white,
+                        backgroundColor: R.color.white,
+                        textColor: R.color.greenGradientBottom,
                         onTap: () {
                           NavigationUtil.navigatePage(
-                              context,
-                              const VideoPlayerWidget(
-                                title: 'Bài 1. Vận động mạnh và phù hợp',
-                                videoUrl:
-                                    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                              ));
+                            context,
+                            VideoPlayerWidget(
+                              videoUrl: exerciseItem?.videoUrl ?? '',
+                            ),
+                          );
                         }),
-                    _buildCustomIconButton(
-                      title: 'Xem hướng dẫn',
-                      icon: R.drawable.ic_play,
-                      borderColor: R.color.greenGradientBottom,
-                      backgroundColor: R.color.white,
-                      textColor: R.color.greenGradientBottom,
-                    ),
                   ],
                 ),
                 const SizedBox(height: 12),

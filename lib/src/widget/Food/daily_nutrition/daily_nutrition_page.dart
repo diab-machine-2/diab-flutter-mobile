@@ -19,6 +19,7 @@ import 'package:medical/src/widget/food_menu_screens/change_menu/change_menu.dar
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../search_food_controller.dart';
@@ -343,7 +344,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                               ),
                                               child: Row(
                                                 children: [
-                                                  CachedNetworkImage(
+                                                  NetWorkImageWidget(
                                                     imageUrl: _cubit
                                                             .selectedFoods[
                                                                 index]
@@ -352,16 +353,6 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                         '',
                                                     width: 50,
                                                     height: 50,
-                                                    placeholder: (_, __) {
-                                                      return const Center(
-                                                          child:
-                                                              CircularProgressIndicator());
-                                                    },
-                                                    errorWidget: (_, __, ___) {
-                                                      return Image.asset(R
-                                                          .drawable
-                                                          .ic_food_default);
-                                                    },
                                                   ),
                                                   Expanded(
                                                     child: Padding(
@@ -542,17 +533,10 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                                   .path),
                                                               fit: BoxFit.cover,
                                                             )
-                                                          : CachedNetworkImage(
+                                                          : NetWorkImageWidget(
                                                               imageUrl: _cubit
                                                                   .files[index]
                                                                   .url,
-                                                              fit: BoxFit.cover,
-                                                              placeholder:
-                                                                  (_, __) {
-                                                                return const Center(
-                                                                    child:
-                                                                        CircularProgressIndicator());
-                                                              },
                                                             )),
                                                   IconButton(
                                                     icon: Image.asset(

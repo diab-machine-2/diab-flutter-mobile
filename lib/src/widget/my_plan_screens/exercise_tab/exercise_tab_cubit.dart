@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -14,12 +15,11 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
 
   final AppRepository repository;
 
-  List<dynamic> data = ['sdfs'];
-
   TimeData? timeData;
 
   String packageCode = '';
   DateTime? packageTimeExpired;
+  List<ExerciseMovementResponseData?> exerciseList = [];
 
   void onSelectWeek(int newIndex) {
     timeData?.currentWeekIndex = newIndex;
@@ -27,11 +27,9 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     emit(const ExerciseTabInitial());
   }
 
-  Future<void> refresh() async {
-    await Future.delayed(const Duration(seconds: 1));
-    data.clear();
-    emit(const ExerciseTabSuccess());
-    emit(const ExerciseTabInitial());
+  Future<void> initData() async {
+    await getCurrentUserInfo();
+    getExerciseMovement();
   }
 
   Future<void> getCurrentUserInfo({bool isRefresh = false}) async {
@@ -60,5 +58,21 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     }, failure: (NetworkExceptions error) {
       emit(ExerciseTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
+  }
+
+  Future<void> getExerciseMovement({bool isRefresh = false}) async {
+    if (!isRefresh) {
+      await Future.delayed(Duration.zero);
+      emit(const ExerciseTabLoading());
+    }
+    final ApiResult<ExerciseMovementResponse> apiResult =
+        await repository.getExerciseMovement();
+    apiResult.when(success: (ExerciseMovementResponse response) {
+      exerciseList = response.data ?? [];
+      emit(const ExerciseTabSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(ExerciseTabFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    emit(const ExerciseTabInitial());
   }
 }

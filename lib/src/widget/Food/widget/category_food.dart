@@ -14,6 +14,7 @@ import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/Food/widget/food_of_category.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 class CategoryFood extends StatefulWidget {
   final List<FoodModel> foods;
@@ -160,23 +161,13 @@ class _CategoryFoodState extends State<CategoryFood>
                                           SizedBox(
                                             width: 50,
                                             height: 50,
-                                            child: CachedNetworkImage(
+                                            child: NetWorkImageWidget(
                                               imageUrl: category
                                                       .subCategories[index]
                                                       .image
-                                                      .url ??
-                                                  '',
+                                                      .url,
                                               width: 50,
                                               height: 50,
-                                              placeholder: (_, __) {
-                                                return const Center(
-                                                    child:
-                                                        CircularProgressIndicator());
-                                              },
-                                              errorWidget: (_, __, ___) {
-                                                return Image.asset(
-                                                    R.drawable.ic_food_default);
-                                              },
                                             ),
                                           ),
                                           SizedBox(width: 16),

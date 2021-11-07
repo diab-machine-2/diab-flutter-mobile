@@ -300,6 +300,7 @@ class Strings {
 	String get foodscreen => 'FoodScreen';
 	String get nang_luong_nap_tren_ngay => 'nang_luong_nap_tren_ngay';
 	String get ban_chua_nhap_gia_tri => 'ban_chua_nhap_gia_tri';
+	String get ban_chua_nhap_thong_tin => 'ban_chua_nhap_thong_tin';
 	String get tinh_lai_theo_cong_thuc_tdee => 'tinh_lai_theo_cong_thuc_tdee';
 	String get tinh_theo_tdee => 'tinh_theo_tdee';
 	String get nam_sinh => 'nam_sinh';

@@ -1,69 +1,67 @@
 import 'package:better_player/better_player.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 
-import 'button_widget.dart';
+import 'exercise_detail.dart';
 
-class VideoPlayerWidget extends StatefulWidget {
-  const VideoPlayerWidget({required this.videoUrl});
-  final String videoUrl;
+class ExerciseDetail extends StatefulWidget {
+  const ExerciseDetail();
 
   @override
-  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
+  _ExerciseDetailState createState() => _ExerciseDetailState();
 }
 
-class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late final BetterPlayerController _controller;
+class _ExerciseDetailState extends State<ExerciseDetail> {
+  late final ExerciseDetailCubit _cubit;
 
   @override
   void initState() {
     super.initState();
-    _controller = BetterPlayerController(
-      const BetterPlayerConfiguration(
-          allowedScreenSleep: false, autoPlay: true),
-      betterPlayerDataSource: BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        widget.videoUrl,
-      ),
-    );
+    final AppRepository appRepository = AppRepository();
+    _cubit = ExerciseDetailCubit(appRepository);
   }
 
   @override
   void dispose() {
+    _cubit.videoManager.dispose();
     super.dispose();
-    _controller.dispose(forceDispose: true);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: R.color.textDark,
-      body: Stack(
-        children: [
-          Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-            ),
-            child: BetterPlayer(controller: _controller),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).padding.top,
-            right: 16,
-            child: IconButton(
-              onPressed: () {
-                showWarningDialog(context);
-              },
-              icon: const Icon(
-                Icons.close_rounded,
+    return BlocProvider(
+      create: (context) => _cubit,
+      child: Scaffold(
+        backgroundColor: R.color.textDark,
+        body: Stack(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
               ),
-              color: R.color.white,
-              iconSize: 24,
+              child: BetterPlayer(controller: _cubit.videoManager.controller),
             ),
-          ),
-        ],
+            Positioned(
+              top: MediaQuery.of(context).padding.top,
+              right: 16,
+              child: IconButton(
+                onPressed: () {
+                  showWarningDialog(context);
+                },
+                icon: const Icon(
+                  Icons.close_rounded,
+                ),
+                color: R.color.white,
+                iconSize: 24,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

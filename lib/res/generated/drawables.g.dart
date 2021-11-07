@@ -115,6 +115,7 @@ class Drawables {
 	String get ic_email => "lib/res/drawables/ic_email.png";
 	String get ic_emotion => "lib/res/drawables/ic_emotion.png";
 	String get ic_emotion_plus => "lib/res/drawables/ic_emotion_plus.png";
+	String get ic_error_image => "lib/res/drawables/ic_error_image.png";
 	String get ic_excersire => "lib/res/drawables/ic_excersire.png";
 	String get ic_filter => "lib/res/drawables/ic_filter.png";
 	String get ic_filter_lesson => "lib/res/drawables/ic_filter_lesson.png";
@@ -147,7 +148,6 @@ class Drawables {
 	String get ic_info => "lib/res/drawables/ic_info.png";
 	String get ic_kg => "lib/res/drawables/ic_kg.png";
 	String get ic_laughing => "lib/res/drawables/ic_laughing.png";
-	String get ic_learn_result_high => "lib/res/drawables/ic_learn_result_high.png";
 	String get ic_learn_result_medium => "lib/res/drawables/ic_learn_result_medium.png";
 	String get ic_learning => "lib/res/drawables/ic_learning.png";
 	String get ic_lesson_lock => "lib/res/drawables/ic_lesson_lock.png";
@@ -214,7 +214,6 @@ class Drawables {
 	String get ic_warning => "lib/res/drawables/ic_warning.png";
 	String get ic_weight => "lib/res/drawables/ic_weight.png";
 	String get ic_weight_plus => "lib/res/drawables/ic_weight_plus.png";
-	String get ic_workaround => "lib/res/drawables/ic_workaround.png";
 	String get ic_x => "lib/res/drawables/ic_x.png";
 	String get ic_year => "lib/res/drawables/ic_year.png";
 	String get img_activity_empty => "lib/res/drawables/img_activity_empty.png";
@@ -249,6 +248,7 @@ class Drawables {
 	String get img_goal => "lib/res/drawables/img_goal.png";
 	String get img_gym_trainer => "lib/res/drawables/img_gym_trainer.png";
 	String get img_hotline => "lib/res/drawables/img_hotline.png";
+	String get img_learn_result_high => "lib/res/drawables/img_learn_result_high.png";
 	String get img_lesson_locked => "lib/res/drawables/img_lesson_locked.png";
 	String get img_list_service => "lib/res/drawables/img_list_service.png";
 	String get img_logo => "lib/res/drawables/img_logo.png";
@@ -271,6 +271,7 @@ class Drawables {
 	String get img_step1 => "lib/res/drawables/img_step1.png";
 	String get img_step2 => "lib/res/drawables/img_step2.png";
 	String get img_step3 => "lib/res/drawables/img_step3.png";
+	String get img_stop_exercise => "lib/res/drawables/img_stop_exercise.png";
 	String get img_survey => "lib/res/drawables/img_survey.png";
 	String get img_survey_completed => "lib/res/drawables/img_survey_completed.png";
 	String get img_tabble_hba1c => "lib/res/drawables/img_tabble_hba1c.png";
@@ -279,4 +280,5 @@ class Drawables {
 	String get img_welcome_1 => "lib/res/drawables/img_welcome_1.png";
 	String get img_welcome_2 => "lib/res/drawables/img_welcome_2.png";
 	String get img_welcome_3 => "lib/res/drawables/img_welcome_3.png";
+	String get img_workaround => "lib/res/drawables/img_workaround.png";
 }

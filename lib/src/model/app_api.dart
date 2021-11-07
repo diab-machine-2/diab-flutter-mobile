@@ -15,6 +15,7 @@ import 'response/create_menu_response.dart';
 import 'response/detail_package_response.dart';
 import 'response/detail_survey_response.dart';
 import 'response/diabetes_status_response.dart';
+import 'response/exercise_movement_response.dart';
 import 'response/food_suggest_response.dart';
 import 'response/latest_hba1c_input_response.dart';
 import 'response/lesson_section_list_response.dart';
@@ -148,6 +149,9 @@ abstract class AppApi {
     @Query('page') int page,
     @Query('size') int size,
   );
+
+  @GET("App/ExerciseMovement/All")
+  Future<ExerciseMovementResponse> getExerciseMovement();
 
   // Quiz
   @POST("App/Lesson/{lessonId}/Review")

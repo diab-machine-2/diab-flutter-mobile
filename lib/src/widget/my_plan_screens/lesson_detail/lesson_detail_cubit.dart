@@ -10,9 +10,9 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
 
 import 'lesson_detail.dart';
-import 'models/audio_management.dart';
+import 'models/audio_manager.dart';
 import 'models/section_status_data.dart';
-import 'models/video_management.dart';
+import 'models/video_manager.dart';
 
 class LessonDetailCubit extends Cubit<LessonDetailState> {
   LessonDetailCubit(this.repository) : super(const LessonDetailInitial());
@@ -24,8 +24,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   LessonSectionListResponseDataLessonReviews? review;
   bool? isEnabledRating;
   int currentSection = 0;
-  VideoManagement? videoManagement;
-  AudioManagement? audioManagement;
+  VideoManager? videoManager;
+  AudioManager? audioManager;
   SectionStatusData? sectionStatus;
 
   List<String> videoUrls = [];
@@ -50,11 +50,11 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
     updateUrlSource();
 
-    videoManagement?.refreshSourceList(
+    videoManager?.refreshSourceList(
       urls: videoUrls,
     );
 
-    audioManagement?.refreshSourceList(
+    audioManager?.refreshSourceList(
       urls: audioUrls,
     );
 
@@ -109,7 +109,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
     checkSectionComplete(withDelay: true);
 
-    videoManagement = VideoManagement(
+    videoManager = VideoManager(
         urls: videoUrls,
         onExitFullScreen: () {},
         onAllFinished: () {
@@ -117,7 +117,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
           checkSectionComplete();
         });
 
-    audioManagement = AudioManagement(
+    audioManager = AudioManager(
         urls: audioUrls,
         onAllFinished: () {
           sectionStatus?.isAudioCompleted = true;

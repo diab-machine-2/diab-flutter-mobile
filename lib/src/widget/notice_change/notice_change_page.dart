@@ -89,13 +89,14 @@ class NoticeChangePage extends StatelessWidget {
                     Expanded(
                       flex: 1,
                       child: ButtonWidget(
-                        title: positiveButtonTitle ?? R.string.agree.tr(),
-                        height: 43,
-                        onPressed: onClick ??
-                            () {
-                              NavigationUtil.pop(context);
-                            },
-                      ),
+                          title: positiveButtonTitle ?? R.string.agree.tr(),
+                          height: 43,
+                          onPressed: () {
+                            if (onClick != null) {
+                              onClick?.call();
+                            }
+                            NavigationUtil.pop(context);
+                          }),
                     ),
                   ],
                 ),

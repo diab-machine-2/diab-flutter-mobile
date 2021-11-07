@@ -298,6 +298,7 @@ cac_hoat_dong_khac,Các hoạt động khác,
 FoodScreen,============================================Food screen====================================================
 nang_luong_nap_tren_ngay,Năng lượng nạp / ngày,
 ban_chua_nhap_gia_tri,Bạn chưa nhập giá trị,
+ban_chua_nhap_thong_tin,Bạn chưa nhập thông tin,
 tinh_lai_theo_cong_thuc_tdee,Tính lại theo công thức TDEE,
 tinh_theo_tdee,Tính theo TDEE,
 nam_sinh,Năm sinh,

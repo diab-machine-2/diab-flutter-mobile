@@ -88,7 +88,7 @@ class _CongratulationPageState extends State<CongratulationPage> {
                           height: 240,
                           child: Image.asset(widget.code == Const.PRO
                               ? R.drawable.ic_congratulation
-                              : R.drawable.ic_workaround)),
+                              : R.drawable.img_workaround)),
                       Visibility(
                         visible: widget.code == Const.PRO,
                         child: Container(
