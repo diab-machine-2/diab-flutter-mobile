@@ -10,6 +10,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../lesson_detail/lesson_detail.dart';
@@ -366,10 +367,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                   Container(
                     height: 87,
                     width: 87,
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    child: const NetWorkImageWidget(imageUrl: '')
                   ),
                   Expanded(
                     child: Padding(
