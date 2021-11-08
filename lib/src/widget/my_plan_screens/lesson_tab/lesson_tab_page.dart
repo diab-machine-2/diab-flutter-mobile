@@ -361,7 +361,7 @@ class _LessonTabPageState extends State<LessonTabPage>
           const SizedBox(width: 16),
           Expanded(
             child: InkWell(
-              onTap: isLocked
+              onTap: !isLocked
                   ? () {
                       _showLockedDialog();
                     }
@@ -381,7 +381,14 @@ class _LessonTabPageState extends State<LessonTabPage>
                         children: [
                           Row(
                             children: [
-                              // ...List.generate(lessonDetail, (index) => null)
+                              Text(
+                                lessonDetail?.module ?? '',
+                                style: TextStyle(
+                                  color: R.color.greenGradientBottom,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
                               const SizedBox(width: 4),
                               Image.asset(
                                 R.drawable.ic_new_lesson,
