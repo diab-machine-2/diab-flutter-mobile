@@ -9,9 +9,11 @@ import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/video_player_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../exercise_detail/exercise_detail.dart';
 import '../my_plan/models/completion_status.dart';
 import '../my_plan/widgets/app_bar_bottom.dart';
 import '../select_road_map/select_road_map.dart';
@@ -99,61 +101,65 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     controller: _controller,
                     onRefresh: () =>
                         _cubit.getExerciseMovement(isRefresh: true),
-                    child: _cubit.exerciseList.isEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 53),
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 24),
-                                  child: Image.asset(
-                                      R.drawable.img_activity_empty),
+                    child: _cubit.exerciseList?.isEmpty == null
+                        ? const SizedBox.shrink()
+                        : _cubit.exerciseList!.isEmpty
+                            ? Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 53),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 24),
+                                      child: Image.asset(
+                                          R.drawable.img_activity_empty),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 32),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            'Hôm nay là ngày nghỉ!',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            'Hãy dành thời gian nghỉ ngơi và thư giãn nhé!',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 32),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        'Hôm nay là ngày nghỉ!',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: R.color.textDark,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        'Hãy dành thời gian nghỉ ngơi và thư giãn nhé!',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: R.color.textDark,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w400),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          )
-                        : ListView.separated(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 20),
-                            itemCount: _cubit.exerciseList.length,
-                            itemBuilder: (context, index) {
-                              return _buildActivityWidget(
-                                  exerciseItem: _cubit.exerciseList[index]);
-                            },
-                            separatorBuilder: (context, index) {
-                              return Container(
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 20),
-                                height: 1,
-                                color: R.color.grayBorder,
-                              );
-                            }),
+                              )
+                            : ListView.separated(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 20),
+                                itemCount: _cubit.exerciseList?.length ?? 0,
+                                itemBuilder: (context, index) {
+                                  return _buildActivityWidget(
+                                      exerciseItem:
+                                          _cubit.exerciseList?[index]);
+                                },
+                                separatorBuilder: (context, index) {
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 20),
+                                    height: 1,
+                                    color: R.color.grayBorder,
+                                  );
+                                }),
                   ),
                 ),
               ),
@@ -234,19 +240,16 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   Widget _buildActivityWidget({
     required ExerciseMovementResponseData? exerciseItem,
   }) {
+    if (exerciseItem == null) return const SizedBox.shrink();
     return Container(
       color: R.color.transparent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 87,
-            width: 87,
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
+              height: 87,
+              width: 87,
+              child: const NetWorkImageWidget(imageUrl: '')),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -258,7 +261,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   children: [
                     Expanded(
                       child: Text(
-                        exerciseItem?.name ?? '',
+                        exerciseItem.name ?? '',
                         style: TextStyle(
                           color: R.color.textDark,
                           fontSize: 16,
@@ -270,7 +273,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '${exerciseItem?.practiceTime ?? ''} phút',
+                      '${exerciseItem.practiceTime ?? ''} phút',
                       style: TextStyle(
                           color: R.color.grey_2,
                           fontSize: 12,
@@ -291,9 +294,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                       onTap: () {
                         NavigationUtil.navigatePage(
                           context,
-                          const VideoPlayerWidget(
-                            videoUrl:
-                                'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                          ExerciseDetail(
+                            exerciseData: exerciseItem,
                           ),
                         );
                       },
@@ -308,7 +310,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                           NavigationUtil.navigatePage(
                             context,
                             VideoPlayerWidget(
-                              videoUrl: exerciseItem?.videoUrl ?? '',
+                              videoUrl: exerciseItem.videoUrl ?? '',
                             ),
                           );
                         }),

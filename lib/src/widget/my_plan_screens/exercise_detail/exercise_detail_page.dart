@@ -1,15 +1,20 @@
 import 'package:better_player/better_player.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
+import '../exercise_feedback/exercise_feedback.dart';
 import 'exercise_detail.dart';
 
 class ExerciseDetail extends StatefulWidget {
-  const ExerciseDetail();
+  const ExerciseDetail({required this.exerciseData});
+  final ExerciseMovementResponseData exerciseData;
 
   @override
   _ExerciseDetailState createState() => _ExerciseDetailState();
@@ -23,6 +28,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = ExerciseDetailCubit(appRepository);
+    _cubit.initData(widget.exerciseData);
   }
 
   @override
@@ -39,18 +45,47 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
         backgroundColor: R.color.textDark,
         body: Stack(
           children: [
-            Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-              ),
-              child: BetterPlayer(controller: _cubit.videoManager.controller),
+            BlocConsumer<ExerciseDetailCubit, ExerciseDetailState>(
+              listener: (context, state) {
+                if (state is ExerciseDetailLoading) {
+                  BotToast.showLoading();
+                } else {
+                  BotToast.closeAllLoading();
+                }
+                if (state is ExerciseDetailFailure) {
+                  Message.showToastMessage(context, state.error);
+                }
+                if (state is ExerciseDetailAllCompleted) {
+                  print('LOG Completed');
+                }
+                if (state is ExerciseDetailMakeFeedback) {
+                  NavigationUtil.navigatePage(
+                      context, const ExerciseFeedbackPage());
+                }
+              },
+              builder: (context, state) {
+                return Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                  ),
+                  child: _cubit.videoManager.controller != null
+                      ? BetterPlayer(
+                          controller: _cubit.videoManager.controller!)
+                      : const SizedBox.shrink(),
+                );
+              },
             ),
             Positioned(
               top: MediaQuery.of(context).padding.top,
               right: 16,
               child: IconButton(
                 onPressed: () {
+                  if (_cubit.videoManager.isCompleted ||
+                      _cubit.videoManager.controller == null) {
+                    NavigationUtil.pop(context);
+                    return;
+                  }
                   showWarningDialog(context);
                 },
                 icon: const Icon(

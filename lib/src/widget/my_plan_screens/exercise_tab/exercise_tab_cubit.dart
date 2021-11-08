@@ -19,7 +19,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
 
   String packageCode = '';
   DateTime? packageTimeExpired;
-  List<ExerciseMovementResponseData?> exerciseList = [];
+  List<ExerciseMovementResponseData?>? exerciseList;
 
   void onSelectWeek(int newIndex) {
     timeData?.currentWeekIndex = newIndex;

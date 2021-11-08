@@ -42,10 +42,18 @@ class ExerciseDetailLoading extends ExerciseDetailState {
   }
 }
 
-class ExerciseDetailChangeType extends ExerciseDetailState {
-  const ExerciseDetailChangeType();
+class ExerciseDetailAllCompleted extends ExerciseDetailState {
+  const ExerciseDetailAllCompleted();
   @override
   String toString() {
-    return 'ExerciseDetailChangeType{}';
+    return 'ExerciseDetailAllCompleted{}';
+  }
+}
+
+class ExerciseDetailMakeFeedback extends ExerciseDetailState {
+  const ExerciseDetailMakeFeedback();
+  @override
+  String toString() {
+    return 'ExerciseDetailMakeFeedback{}';
   }
 }

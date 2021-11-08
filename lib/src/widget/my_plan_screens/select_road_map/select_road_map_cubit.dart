@@ -46,7 +46,7 @@ class SelectRoadMapCubit extends Cubit<SelectRoadMapState> {
   Future<void> changeRoadMap() async {
     emit(const SelectRoadMapLoading());
     await Future.delayed(const Duration(seconds: 1));
-    emit (const SelectRoadMapChange());
+    emit (const SelectRoadMapChanged());
     emit(const SelectRoadMapInitial());
   }
 }

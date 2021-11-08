@@ -1,36 +1,83 @@
+import 'dart:ui';
+
 import 'package:better_player/better_player.dart';
+import 'package:medical/src/model/response/exercise_movement_response.dart';
 
 class VideoManager {
-  VideoManager({required String url, required int loop}) {
-    _initVideoController(url: url, loop: loop);
+  BetterPlayerController? controller;
+  List<VideoSourceData> sourceList = [];
+  int currentSourceIndex = 0;
+  bool isCompleted = false;
+  final VoidCallback? onDone;
+
+  VideoManager.fromExerciseData(ExerciseMovementResponseData exerciseData,
+      {this.onDone}) {
+    sourceList.clear();
+
+    for (final ExerciseMovementResponseDataSections? data
+        in exerciseData.sections ?? []) {
+      sourceList.add(VideoSourceData(
+          url: data?.videoUrl ?? '', loopTimes: data?.replayTime ?? 1));
+    }
+
+    if (sourceList.isNotEmpty) {
+      this.controller = BetterPlayerController(
+        const BetterPlayerConfiguration(
+          aspectRatio: 16 / 9,
+          autoPlay: true,
+        ),
+        betterPlayerDataSource: BetterPlayerDataSource(
+          BetterPlayerDataSourceType.network,
+          sourceList[currentSourceIndex].url,
+        ),
+      );
+
+      this.controller?.videoPlayerController?.addListener(() {
+        if (this.controller?.videoPlayerController?.value != null &&
+            !this.controller!.videoPlayerController!.value.isPlaying &&
+            this.controller!.videoPlayerController!.value.initialized &&
+            (this.controller!.videoPlayerController!.value.duration ==
+                this.controller!.videoPlayerController!.value.position)) {
+          loopVideo();
+        }
+      });
+    }
   }
 
-  late final BetterPlayerController controller;
-
-  void _initVideoController({required String url, required int loop}) {
-    this.controller = BetterPlayerController(
-      const BetterPlayerConfiguration(
-        aspectRatio: 16 / 9,
-      ),
-      betterPlayerDataSource: BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        '',
-      ),
-    );
-  }
-
-  void changeUrl({required String url, required int loop}) {
-    this.controller.setupDataSource(
+  void playNextVideo() {
+    if (currentSourceIndex + 1 >= sourceList.length) {
+      isCompleted = true;
+      onDone?.call();
+      return;
+    }
+    currentSourceIndex += 1;
+    this.controller?.setupDataSource(
           BetterPlayerDataSource(
             BetterPlayerDataSourceType.network,
-            url,
+            sourceList[currentSourceIndex].url,
           ),
         );
-    this.controller.retryDataSource();
-    this.controller.setControlsAlwaysVisible(true);
+    this.controller?.retryDataSource();
+    this.controller?.setControlsAlwaysVisible(true);
+  }
+
+  void loopVideo() {
+    final int newLoopTimes = sourceList[currentSourceIndex].loopTimes - 1;
+    if (newLoopTimes > 0) {
+      sourceList[currentSourceIndex].loopTimes = newLoopTimes;
+      this.controller?.seekTo(Duration.zero);
+    } else {
+      playNextVideo();
+    }
   }
 
   void dispose() {
-    this.controller.dispose(forceDispose: true);
+    this.controller?.dispose(forceDispose: true);
   }
+}
+
+class VideoSourceData {
+  VideoSourceData({required this.url, required this.loopTimes});
+  final String url;
+  int loopTimes;
 }

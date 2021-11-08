@@ -23,7 +23,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
   LessonType currentLessonType = LessonType.route;
 
-  List<MyLessonResponseData?> lessonsList = [];
+  List<MyLessonResponseData?>? lessonsList;
 
   TimeData? timeData;
 

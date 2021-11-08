@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 
-import 'button_widget.dart';
-
 class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget({required this.videoUrl});
   final String videoUrl;
@@ -36,7 +34,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     _controller.dispose(forceDispose: true);
   }
 
-  @override
+  @override 
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: R.color.textDark,
@@ -54,7 +52,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             right: 16,
             child: IconButton(
               onPressed: () {
-                showWarningDialog(context);
+                NavigationUtil.pop(context);
               },
               icon: const Icon(
                 Icons.close_rounded,
@@ -66,91 +64,5 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         ],
       ),
     );
-  }
-
-  Future<void> showWarningDialog(BuildContext context) async {
-    final dynamic confirm = await showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      context: context,
-      builder: (_) => Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Center(
-          child: SingleChildScrollView(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    R.color.white,
-                    R.color.main_6,
-                  ],
-                ),
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 4),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4, bottom: 24),
-                    child: Image.asset(R.drawable.img_stop_exercise,
-                        width: 231, height: 150),
-                  ),
-                  Text(
-                    'Bạn muốn dừng bài học?',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.textDark,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Việc thoát ra sẽ gây gián đoạn quá trình học bài tập vận động, bạn vẫn chắc chắn muốn thoát?',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: R.color.textDark,
-                    ),
-                    maxLines: 3,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                          flex: 1,
-                          child: ButtonWidget(
-                            title: 'Huỷ',
-                            backgroundColor: R.color.grayBorder,
-                            textColor: R.color.textDark,
-                            height: 43,
-                            onPressed: () => NavigationUtil.pop(context),
-                          )),
-                      const SizedBox(width: 15),
-                      Expanded(
-                        flex: 1,
-                        child: ButtonWidget(
-                            title: 'Xác nhận',
-                            height: 43,
-                            onPressed: () {
-                              NavigationUtil.pop(context, result: true);
-                            }),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-    if (confirm is bool && confirm) {
-      NavigationUtil.pop(context);
-    }
   }
 }

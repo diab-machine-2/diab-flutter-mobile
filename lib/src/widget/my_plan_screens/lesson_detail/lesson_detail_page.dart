@@ -159,15 +159,14 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           padding:
                                               const EdgeInsets.only(bottom: 24),
                                           child: BetterPlayer(
-                                              controller: _cubit
-                                                  .videoManager!
+                                              controller: _cubit.videoManager!
                                                   .controllerList[index]),
                                         );
                                       },
                                     ),
                                     ...List.generate(
-                                        _cubit.audioManager?.audioAmount ??
-                                            0, (index) {
+                                        _cubit.audioManager?.audioAmount ?? 0,
+                                        (index) {
                                       final AudioController? _controller =
                                           _cubit.audioManager
                                               ?.getController(index);

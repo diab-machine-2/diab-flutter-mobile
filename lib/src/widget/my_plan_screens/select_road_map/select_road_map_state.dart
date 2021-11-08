@@ -42,8 +42,8 @@ class SelectRoadMapLoading extends SelectRoadMapState {
   }
 }
 
-class SelectRoadMapChange extends SelectRoadMapState {
-  const SelectRoadMapChange();
+class SelectRoadMapChanged extends SelectRoadMapState {
+  const SelectRoadMapChanged();
   @override
   String toString() {
     return 'SelectRoadMapChange{}';

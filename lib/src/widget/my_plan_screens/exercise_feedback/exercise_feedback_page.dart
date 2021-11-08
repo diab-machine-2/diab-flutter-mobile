@@ -233,46 +233,65 @@ class _ExerciseFeedbackPageState extends State<ExerciseFeedbackPage> {
       builder: (_) => Scaffold(
         backgroundColor: R.color.transparent,
         body: Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: R.color.white,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 40,
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () => NavigationUtil.pop(context),
-                        child: Icon(
-                          Icons.close,
-                          color: R.color.textDark,
-                          size: 20,
-                        ),
-                      ),
+          child: SingleChildScrollView(
+            child: Stack(
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        R.color.white,
+                        R.color.main_6,
+                      ],
                     ),
                   ),
-                  Image.asset(
-                    R.drawable.img_send_feedback_successed,
-                    height: 160,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(60, 4, 60, 24),
+                        child: Image.asset(
+                          R.drawable.img_survey_completed,
+                        ),
+                      ),
+                      Text(
+                        'Cảm ơn bạn đã để lại đánh giá!',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.textDark,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Chúng tôi rất trân trọng những phản hồi của bạn để làm tốt hơn mỗi ngày',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.textDark,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                    ],
                   ),
-                  const SizedBox(height: 40),
-                  Text(
-                    'Gửi đánh giá thành công!',
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.textDark,
-                        height: 1.4),
+                ),
+                Positioned(
+                  top: 4,
+                  right: 24,
+                  child: IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    iconSize: 24,
+                    onPressed: () {
+                      NavigationUtil.pop(context);
+                    },
                   ),
-                ],
-              ),
+                )
+              ],
             ),
           ),
         ),

@@ -122,39 +122,42 @@ class _LessonTabPageState extends State<LessonTabPage>
               ),
               //Lesson list
               Expanded(
-                child: _cubit.lessonsList.isEmpty
-                    ? _buildEmptyLessonList()
-                    : SafeArea(
-                        top: false,
-                        child: SmartRefresher(
-                          controller: _controller,
-                          onRefresh: () =>
-                              _cubit.getLessonsList(isRefresh: true),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: List.generate(
-                                _cubit.lessonsList.length,
-                                (index) => _buildLessonWidget(
-                                    lessonDetail: _cubit.lessonsList[index],
-                                    onTap: () {
-                                      if (_cubit.lessonsList[index]?.id
-                                              ?.isNotEmpty ==
-                                          true) {
-                                        NavigationUtil.navigatePage(
-                                          context,
-                                          LessonDetailPage(
-                                            _cubit.lessonsList[index]!.id!,
-                                          ),
-                                        );
-                                      }
-                                    }),
-                              )
-                                ..insert(0, SizedBox(height: 20.h))
-                                ..add(SizedBox(height: 20.h)),
+                child: _cubit.lessonsList?.isEmpty == null
+                    ? const SizedBox.shrink()
+                    : _cubit.lessonsList!.isEmpty
+                        ? _buildEmptyLessonList()
+                        : SafeArea(
+                            top: false,
+                            child: SmartRefresher(
+                              controller: _controller,
+                              onRefresh: () =>
+                                  _cubit.getLessonsList(isRefresh: true),
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: List.generate(
+                                    _cubit.lessonsList?.length ?? 0,
+                                    (index) => _buildLessonWidget(
+                                        lessonDetail:
+                                            _cubit.lessonsList?[index],
+                                        onTap: () {
+                                          if (_cubit.lessonsList?[index]?.id
+                                                  ?.isNotEmpty ==
+                                              true) {
+                                            NavigationUtil.navigatePage(
+                                              context,
+                                              LessonDetailPage(
+                                                _cubit.lessonsList![index]!.id!,
+                                              ),
+                                            );
+                                          }
+                                        }),
+                                  )
+                                    ..insert(0, SizedBox(height: 20.h))
+                                    ..add(SizedBox(height: 20.h)),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
               ),
             ],
           );
@@ -365,10 +368,9 @@ class _LessonTabPageState extends State<LessonTabPage>
               child: Row(
                 children: [
                   Container(
-                    height: 87,
-                    width: 87,
-                    child: const NetWorkImageWidget(imageUrl: '')
-                  ),
+                      height: 87,
+                      width: 87,
+                      child: const NetWorkImageWidget(imageUrl: '')),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),

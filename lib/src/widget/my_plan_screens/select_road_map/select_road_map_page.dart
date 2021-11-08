@@ -53,7 +53,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
               if (state is SelectRoadMapFailure) {
                 Message.showToastMessage(context, state.error);
               }
-              if (state is SelectRoadMapChange) {
+              if (state is SelectRoadMapChanged) {
                 showDialogChangeSuccessed();
               }
             },
@@ -154,7 +154,6 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                             'Bạn đang học lộ trình cho người có thể trạng yếu, bạn có chắc muốn đổi lộ trình khác không?',
                         positiveButtonTitle: 'Xác nhận',
                         onClick: () {
-                          NavigationUtil.pop(context);
                           _cubit.changeRoadMap();
                         },
                         gradientColor: true),

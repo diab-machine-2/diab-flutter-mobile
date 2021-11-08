@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'exercise_detail.dart';
 import 'models/video_manager.dart';
 
@@ -8,10 +9,21 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
 
   final AppRepository repository;
 
-  VideoManager videoManager = VideoManager(
-    url:
-        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    loop: 1,
-  );
+  late final ExerciseMovementResponseData exerciseData;
+  late final VideoManager videoManager;
+  bool isFeedbacked = false;
 
+  void initData(ExerciseMovementResponseData exerciseData) {
+    this.exerciseData = exerciseData;
+    videoManager = VideoManager.fromExerciseData(
+      exerciseData,
+      onDone: () {
+        emit(
+          isFeedbacked
+              ? const ExerciseDetailAllCompleted()
+              : const ExerciseDetailMakeFeedback(),
+        );
+      },
+    );
+  }
 }
