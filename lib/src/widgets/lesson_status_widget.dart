@@ -22,7 +22,7 @@ class LessonStatusWidget extends StatelessWidget {
           ),
           SizedBox(width: 8.w),
           Text(
-            'Hoàn thành',
+            R.string.complete_lesson,
             style: TextStyle(
               color: R.color.greenGradientBottom,
               fontSize: 12.sp,

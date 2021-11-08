@@ -6,11 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../activity_tab/activity_tab.dart';
 import '../exercise_tab/exercise_tab.dart';
 import '../lesson_tab/lesson_tab.dart';
 import 'models/plan_type.dart';

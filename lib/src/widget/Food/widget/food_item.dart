@@ -10,6 +10,7 @@ import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/widget/Food/widget/food_choose_quantity.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 typedef FoodItemCallback = Function(FoodModel, int);
 
@@ -61,16 +62,10 @@ class FoodItem extends StatelessWidget {
             SizedBox(
               width: 50,
               height: 50,
-              child: CachedNetworkImage(
+              child: NetWorkImageWidget(
                 imageUrl: model.image == null ? '' : model.image!.url ?? '',
                 width: 50,
                 height: 50,
-                placeholder: (_, __) {
-                  return const Center(child: CircularProgressIndicator());
-                },
-                errorWidget: (_, __, ___) {
-                  return Image.asset(R.drawable.ic_food_default);
-                },
               ),
             ),
             SizedBox(width: 16),

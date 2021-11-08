@@ -10,9 +10,9 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
 
 import 'lesson_detail.dart';
-import 'models/audio_management.dart';
+import 'models/audio_manager.dart';
 import 'models/section_status_data.dart';
-import 'models/video_management.dart';
+import 'models/video_manager.dart';
 
 class LessonDetailCubit extends Cubit<LessonDetailState> {
   LessonDetailCubit(this.repository) : super(const LessonDetailInitial());
@@ -24,8 +24,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   LessonSectionListResponseDataLessonReviews? review;
   bool? isEnabledRating;
   int currentSection = 0;
-  VideoManagement? videoManagement;
-  AudioManagement? audioManagement;
+  VideoManager? videoManager;
+  AudioManager? audioManager;
   SectionStatusData? sectionStatus;
 
   List<String> videoUrls = [];
@@ -44,24 +44,28 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   bool get reviewed => review?.rating != null;
 
   void onChangeSection(int newSection, {bool isFromList = false}) {
-    if (newSection < 0 || newSection >= sectionList.length) return;
+    if (newSection < 0) return;
+    if (newSection >= sectionList.length) {
+      checkSectionComplete();
+      return;
+    }
 
     currentSection = newSection;
 
     updateUrlSource();
 
-    videoManagement?.refreshSourceList(
+    videoManager?.refreshSourceList(
       urls: videoUrls,
     );
 
-    audioManagement?.refreshSourceList(
+    audioManager?.refreshSourceList(
       urls: audioUrls,
     );
 
     sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
 
     if (!isFromList) {
-      checkSectionComplete(withDelay: true);
+      checkSectionComplete();
     }
 
     emit(const LessonDetailSuccess());
@@ -107,9 +111,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
     sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
 
-    checkSectionComplete(withDelay: true);
-
-    videoManagement = VideoManagement(
+    videoManager = VideoManager(
         urls: videoUrls,
         onExitFullScreen: () {},
         onAllFinished: () {
@@ -117,7 +119,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
           checkSectionComplete();
         });
 
-    audioManagement = AudioManagement(
+    audioManager = AudioManager(
         urls: audioUrls,
         onAllFinished: () {
           sectionStatus?.isAudioCompleted = true;
@@ -125,18 +127,13 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
         });
   }
 
-  Future<void> checkSectionComplete({bool withDelay = false}) async {
-    if (withDelay) {
-      await Future.delayed(const Duration(seconds: 1));
-    }
+  Future<void> checkSectionComplete() async {
     if (sectionStatus?.isSectionCompleted == true &&
         currentSectionDetail?.isComplete != null &&
         state is! LessonDetailFeedBack) {
-      print('LOG call API complete');
       await completeLearningCurrentSection();
     }
     if (isEnabledRating == true && isAllSectionCompleted && !reviewed) {
-      print('LOG navigate to FeedBack screen');
       emit(const LessonDetailFeedBack());
     }
   }
@@ -159,9 +156,11 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     emit(const LessonDetailInitial());
   }
 
-  Future<void> completeLearningCurrentSection() async {
-    await Future.delayed(Duration.zero);
-    emit(const LessonDetailLoading());
+  Future<void> completeLearningCurrentSection({bool showLoading = true}) async {
+    if (showLoading) {
+      await Future.delayed(Duration.zero);
+      emit(const LessonDetailLoading());
+    }
     final ApiResult<CommonResponse> apiResult =
         await repository.setCompletedLessonAccount(
       UpdateLessonSectionRequest(

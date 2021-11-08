@@ -1,5 +1,4 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +13,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/intro_sample_menu/intro_sample_menu.dart';
 import 'package:medical/src/widget/kcal_parameter/kcal_parameter.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../widgets/update_required_widget.dart';
@@ -65,7 +65,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             }
             if (state is FoodMenuEmpty &&
                 _cubit.userInfo?.hasFoodMenu != true) {
-              NavigationUtil.replace(context, IntroSampleMenuPage());
+              NavigationUtil.replace(context, const IntroSampleMenuPage());
             }
           },
           builder: (context, state) {
@@ -442,16 +442,10 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: CachedNetworkImage(
-                    imageUrl: foodDetail?.image?.url ?? '',
+                  child: NetWorkImageWidget(
+                    imageUrl: foodDetail?.image?.url,
                     width: 50,
                     height: 50,
-                    placeholder: (_, __) {
-                      return const Center(child: CircularProgressIndicator());
-                    },
-                    errorWidget: (_, __, ___) {
-                      return Image.asset(R.drawable.ic_food_default);
-                    },
                   )),
               const SizedBox(width: 16),
               Expanded(

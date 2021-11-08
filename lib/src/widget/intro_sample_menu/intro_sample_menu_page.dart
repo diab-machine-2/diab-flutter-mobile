@@ -14,6 +14,7 @@ import 'package:medical/src/widgets/common_page.dart';
 import 'intro_sample_menu.dart';
 
 class IntroSampleMenuPage extends StatefulWidget {
+  const IntroSampleMenuPage();
   @override
   _IntroSampleMenuPageState createState() => _IntroSampleMenuPageState();
 }

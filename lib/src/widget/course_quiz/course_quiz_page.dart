@@ -312,7 +312,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   Image.asset(
                     rate < 0.8
                         ? R.drawable.ic_learn_result_medium
-                        : R.drawable.ic_learn_result_high,
+                        : R.drawable.img_learn_result_high,
                     height: 150,
                   ),
                   const SizedBox(height: 10),

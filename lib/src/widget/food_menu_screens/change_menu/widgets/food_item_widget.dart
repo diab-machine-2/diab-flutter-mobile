@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 import 'food_select_popup.dart';
 
@@ -47,18 +48,12 @@ class FoodItemWidget extends StatelessWidget {
             Container(
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
-              child: CachedNetworkImage(
+              child: NetWorkImageWidget(
                 imageUrl: newFoodModel.image == null
                     ? ''
                     : newFoodModel.image!.url ?? '',
                 width: 50,
                 height: 50,
-                placeholder: (_, __) {
-                  return const Center(child: CircularProgressIndicator());
-                },
-                errorWidget: (_, __, ___) {
-                  return Image.asset(R.drawable.ic_food_default);
-                },
               ),
             ),
             const SizedBox(width: 16),

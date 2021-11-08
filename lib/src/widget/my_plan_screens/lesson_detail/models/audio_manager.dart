@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'audio_data.dart';
 
-class AudioManagement {
-  AudioManagement({required this.urls, this.onAllFinished}) {
+class AudioManager {
+  AudioManager({required this.urls, this.onAllFinished}) {
     refreshSourceList(urls: urls);
   }
 

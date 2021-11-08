@@ -297,20 +297,21 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                         barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                         context: context,
                         builder: (_) => NoticeChangePage(
-                          description: R.string.consumption.tr(),
-                          onClick: () {
-                          NavigationUtil.pop(context);
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            if (widget.callback != null && number != null) {
-                              _cubit.createMenuRequest.setKcal = number;
-                              widget.callback!(_cubit.createMenuRequest);
-                            }
-                          });
-                        }),
+                            description: R.string.consumption.tr(),
+                            onClick: () {
+                              Future.delayed(const Duration(milliseconds: 200),
+                                  () {
+                                if (widget.callback != null && number != null) {
+                                  _cubit.createMenuRequest.setKcal = number;
+                                  widget.callback!(_cubit.createMenuRequest);
+                                }
+                              });
+                              NavigationUtil.pop(context);
+                            }),
                       );
                     } else {
                       Message.showToastMessage(
-                          context, R.string.ban_chua_nhap_gia_tri.tr());
+                          context, R.string.ban_chua_nhap_thong_tin.tr());
                     }
                   },
                 ),

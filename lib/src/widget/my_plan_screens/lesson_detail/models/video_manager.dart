@@ -1,8 +1,8 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 
-class VideoManagement {
-  VideoManagement({
+class VideoManager {
+  VideoManager({
     required List<String> urls,
     this.onExitFullScreen,
     this.onAllFinished,

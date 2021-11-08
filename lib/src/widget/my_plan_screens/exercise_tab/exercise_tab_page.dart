@@ -1,19 +1,23 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/video_player_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../exercise_detail/exercise_detail.dart';
 import '../my_plan/models/completion_status.dart';
 import '../my_plan/widgets/app_bar_bottom.dart';
-import '../select_route/select_route.dart';
+import '../select_road_map/select_road_map.dart';
 import 'exercise_tab.dart';
 
 class ExerciseTabPage extends StatefulWidget {
@@ -34,7 +38,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = ExerciseTabCubit(appRepository);
-    _cubit.getCurrentUserInfo();
+    _cubit.initData();
   }
 
   @override
@@ -64,13 +68,13 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     InkWell(
                       onTap: () {
                         NavigationUtil.navigatePage(
-                            context, const SelectRoutePage());
+                            context, const SelectRoadMapPage());
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
-                            'Thay đổi lộ trình',
+                            R.string.change_road_map.tr(),
                             style: TextStyle(
                               color: R.color.greenGradientBottom,
                               fontSize: 16,
@@ -96,61 +100,67 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   top: false,
                   child: SmartRefresher(
                     controller: _controller,
-                    onRefresh: () => _cubit.refresh(),
-                    child: _cubit.data.isEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 53),
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 24),
-                                  child: Image.asset(
-                                      R.drawable.img_activity_empty),
+                    onRefresh: () =>
+                        _cubit.getExerciseMovement(isRefresh: true),
+                    child: _cubit.exerciseList?.isEmpty == null
+                        ? const SizedBox.shrink()
+                        : _cubit.exerciseList!.isEmpty
+                            ? Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 53),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 24),
+                                      child: Image.asset(
+                                          R.drawable.img_activity_empty),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 32),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            R.string.today_is_day_off.tr(),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            R.string.today_is_day_off_description.tr(),
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 32),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        'Hôm nay là ngày nghỉ!',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: R.color.textDark,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        'Hãy dành thời gian nghỉ ngơi và thư giãn nhé!',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: R.color.textDark,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w400),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          )
-                        : ListView.separated(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 20),
-                            itemCount: 5,
-                            itemBuilder: (context, index) {
-                              return _buildActivityWidget();
-                            },
-                            separatorBuilder: (context, index) {
-                              return Container(
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 20),
-                                height: 1,
-                                color: R.color.grayBorder,
-                              );
-                            }),
+                              )
+                            : ListView.separated(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 20),
+                                itemCount: _cubit.exerciseList?.length ?? 0,
+                                itemBuilder: (context, index) {
+                                  return _buildActivityWidget(
+                                      exerciseItem:
+                                          _cubit.exerciseList?[index]);
+                                },
+                                separatorBuilder: (context, index) {
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 20),
+                                    height: 1,
+                                    color: R.color.grayBorder,
+                                  );
+                                }),
                   ),
                 ),
               ),
@@ -228,20 +238,19 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     );
   }
 
-  Widget _buildActivityWidget() {
+  Widget _buildActivityWidget({
+    required ExerciseMovementResponseData? exerciseItem,
+  }) {
+    if (exerciseItem == null) return const SizedBox.shrink();
     return Container(
       color: R.color.transparent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 87,
-            width: 87,
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
+              height: 87,
+              width: 87,
+              child: const NetWorkImageWidget(imageUrl: '')),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -253,7 +262,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   children: [
                     Expanded(
                       child: Text(
-                        'Bài 1. Vận động mạnh và dài nhất có thể nè mọi ae',
+                        exerciseItem.name ?? '',
                         style: TextStyle(
                           color: R.color.textDark,
                           fontSize: 16,
@@ -265,7 +274,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '5 phút',
+                      '${exerciseItem.practiceTime ?? ''} ${R.string.minute.tr()}',
                       style: TextStyle(
                           color: R.color.grey_2,
                           fontSize: 12,
@@ -278,27 +287,34 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildCustomIconButton(
-                        title: 'Bắt đầu tập',
-                        icon: R.drawable.ic_start_exercise,
+                      title: R.string.start_exercise.tr(),
+                      icon: R.drawable.ic_start_exercise,
+                      borderColor: R.color.greenGradientBottom,
+                      backgroundColor: R.color.greenGradientBottom,
+                      textColor: R.color.white,
+                      onTap: () {
+                        NavigationUtil.navigatePage(
+                          context,
+                          ExerciseDetail(
+                            exerciseData: exerciseItem,
+                          ),
+                        );
+                      },
+                    ),
+                    _buildCustomIconButton(
+                        title: R.string.show_instruction.tr(),
+                        icon: R.drawable.ic_play,
                         borderColor: R.color.greenGradientBottom,
-                        backgroundColor: R.color.greenGradientBottom,
-                        textColor: R.color.white,
+                        backgroundColor: R.color.white,
+                        textColor: R.color.greenGradientBottom,
                         onTap: () {
                           NavigationUtil.navigatePage(
-                              context,
-                              const VideoPlayerWidget(
-                                title: 'Bài 1. Vận động mạnh và phù hợp',
-                                videoUrl:
-                                    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                              ));
+                            context,
+                            VideoPlayerWidget(
+                              videoUrl: exerciseItem.videoUrl ?? '',
+                            ),
+                          );
                         }),
-                    _buildCustomIconButton(
-                      title: 'Xem hướng dẫn',
-                      icon: R.drawable.ic_play,
-                      borderColor: R.color.greenGradientBottom,
-                      backgroundColor: R.color.white,
-                      textColor: R.color.greenGradientBottom,
-                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -440,7 +456,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Tuần ${weekIndex + 1}',
+              '${R.string.week_upper_case_first.tr()} ${weekIndex + 1}',
               style: TextStyle(
                 color: status.statusIconColor,
                 fontSize: 14,

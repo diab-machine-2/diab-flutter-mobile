@@ -934,6 +934,8 @@ class LessonSectionListResponseDataLessonSections {
       return R.drawable.ic_lesson_section_audio;
     if (type == Const.LESSON_SECTION_TYPE_TEXT)
       return R.drawable.ic_lesson_section_text;
+    if (type == Const.LESSON_SECTION_TYPE_QUIZ)
+    return R.drawable.ic_question_circle;
     return '';
   }
 

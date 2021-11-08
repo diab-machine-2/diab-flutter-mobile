@@ -3,6 +3,7 @@
 class Strings {
 	String get ok => 'ok';
 	String get cancel => 'cancel';
+	String get confirm => 'confirm';
 	String get error => 'error';
 	String get error_not_implemented => 'error_not_implemented';
 	String get error_request_canceled => 'error_request_canceled';
@@ -300,6 +301,7 @@ class Strings {
 	String get foodscreen => 'FoodScreen';
 	String get nang_luong_nap_tren_ngay => 'nang_luong_nap_tren_ngay';
 	String get ban_chua_nhap_gia_tri => 'ban_chua_nhap_gia_tri';
+	String get ban_chua_nhap_thong_tin => 'ban_chua_nhap_thong_tin';
 	String get tinh_lai_theo_cong_thuc_tdee => 'tinh_lai_theo_cong_thuc_tdee';
 	String get tinh_theo_tdee => 'tinh_theo_tdee';
 	String get nam_sinh => 'nam_sinh';
@@ -597,6 +599,28 @@ class Strings {
 	String get title_route => 'title_route';
 	String get title_suggest => 'title_suggest';
 	String get search_by_key => 'search_by_key';
+	String get stop_exercise_warning => 'stop_exercise_warning';
+	String get stop_exercise_warning_description => 'stop_exercise_warning_description';
+	String get exercise_level_1 => 'exercise_level_1';
+	String get exercise_level_2 => 'exercise_level_2';
+	String get exercise_level_3 => 'exercise_level_3';
+	String get exercise_level_4 => 'exercise_level_4';
+	String get exercise_level_5 => 'exercise_level_5';
+	String get send_feedback => 'send_feedback';
+	String get thank_you_for_feedback => 'thank_you_for_feedback';
+	String get thank_you_for_feedback_description => 'thank_you_for_feedback_description';
+	String get change_road_map => 'change_road_map';
+	String get select_road_map => 'select_road_map';
+	String get today_is_day_off => 'today_is_day_off';
+	String get today_is_day_off_description => 'today_is_day_off_description';
+	String get start_exercise => 'start_exercise';
+	String get show_instruction => 'show_instruction';
+	String get lesson_category => 'lesson_category';
+	String get section_position => 'section_position';
+	String get no_matched_lesson => 'no_matched_lesson';
+	String get no_matched_lesson_description => 'no_matched_lesson_description';
+	String get lesson_locked => 'lesson_locked';
+	String get lesson_locked_warning => 'lesson_locked_warning';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';
@@ -671,6 +695,7 @@ class Strings {
 	String get minute_upper_case_first => 'minute_upper_case_first';
 	String get hour => 'hour';
 	String get hour_upper_case_first => 'hour_upper_case_first';
+	String get week_upper_case_first => 'week_upper_case_first';
 	String get nhap_thoi_gian => 'nhap_thoi_gian';
 	String get unit_percent => 'unit_percent';
 	String get phien_dang_nhap_het_han_vui_long_dang_nhap_lai => 'phien_dang_nhap_het_han_vui_long_dang_nhap_lai';
@@ -785,6 +810,7 @@ class Strings {
 	String get consumption => 'consumption';
 	String get next => 'next';
 	String get next_lesson => 'next_lesson';
+	String get complete_lesson => 'complete_lesson';
 	String get agree => 'agree';
 	String get text_congratulation => 'text_congratulation';
 	String get text_please_bank => 'text_please_bank';

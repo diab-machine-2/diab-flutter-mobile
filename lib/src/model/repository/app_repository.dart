@@ -12,6 +12,7 @@ import 'package:medical/src/model/response/create_menu_response.dart';
 import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
+import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -344,6 +345,16 @@ class AppRepository {
   Future<ApiResult<ListRoadmapResponse>> getRoadMap({required int page, required int size}) async {
     try {
       final ListRoadmapResponse response = await appClient.getRoadMap(page, size);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ExerciseMovementResponse>> getExerciseMovement() async {
+    try {
+      final ExerciseMovementResponse response =
+          await appClient.getExerciseMovement();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

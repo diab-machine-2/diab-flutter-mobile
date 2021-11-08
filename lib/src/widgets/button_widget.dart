@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 
 class ButtonWidget extends StatelessWidget {
@@ -13,7 +12,7 @@ class ButtonWidget extends StatelessWidget {
   final double? radius;
   final bool modeFlatButton;
 
-  ButtonWidget({
+  const ButtonWidget({
     this.backgroundColor,
     this.textSize,
     this.textColor,
@@ -30,22 +29,23 @@ class ButtonWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-//        color: backgroundColor,
         height: height ?? 50,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            color: onPressed == null ? R.color.gray : (backgroundColor ?? R.color.accentColor),
-            gradient: backgroundColor == null && onPressed != null ? LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF4BB2AB), Color(0xFF01857A), Color(0xFF008479)],
-            ) : null,
-//            gradient: LinearGradient(
-//              colors: [Theme.of(context).primaryColor, Colors.lightBlue],
-//            ),
-            border: Border.all(
-                color: onPressed == null ? R.color.gray : (borderColor ?? backgroundColor ?? R.color.accentColor),
-                width: 1.5),
+            color: onPressed == null
+                ? R.color.gray
+                : (backgroundColor ?? R.color.accentColor),
+            gradient: backgroundColor == null && onPressed != null
+                ? const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF4BB2AB),
+                      Color(0xFF01857A),
+                      Color(0xFF008479)
+                    ],
+                  )
+                : null,
             borderRadius: BorderRadius.circular(200)),
         child: Text(
           title,
