@@ -132,11 +132,10 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                               margin: EdgeInsets.symmetric(
                                   vertical: 16.h, horizontal: 16.h),
                               width: ScreenUtil().screenWidth - 32.h,
-                              child: CardCourseQuizPage(
+                              child: CardCourseQuizSurveyPage(
                                   key: listGlobal[index],
                                   index: index,
-                                  //TODO fix model
-                                  quizData: null,
+                                  quizData: data,
                                   isQuiz: false,
                                   onChoseAnswer: (isChoseAnswer) {
                                     _cubit.enableNextButton(isChoseAnswer);
