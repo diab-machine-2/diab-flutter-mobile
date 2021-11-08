@@ -1,5 +1,6 @@
 import 'package:better_player/better_player.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -94,7 +95,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    'Phần ${_cubit.sectionPosition}',
+                                    R.string.section_position
+                                        .tr(args: [_cubit.sectionPosition]),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(

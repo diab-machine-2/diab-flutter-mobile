@@ -131,11 +131,9 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     if (sectionStatus?.isSectionCompleted == true &&
         currentSectionDetail?.isComplete != null &&
         state is! LessonDetailFeedBack) {
-      print('LOG call API complete');
       await completeLearningCurrentSection();
     }
     if (isEnabledRating == true && isAllSectionCompleted && !reviewed) {
-      print('LOG navigate to FeedBack screen');
       emit(const LessonDetailFeedBack());
     }
   }

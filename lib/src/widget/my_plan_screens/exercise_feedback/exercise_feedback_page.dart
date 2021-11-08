@@ -81,10 +81,10 @@ class _ExerciseFeedbackPageState extends State<ExerciseFeedbackPage> {
                         Container(
                           width: 195,
                           child: ButtonWidget(
-                            title: 'Gửi đánh giá',
+                            title: R.string.send_feedback.tr(),
                             onPressed: () {
                               FocusScope.of(context).unfocus();
-                              _cubit.onSumit();
+                              _cubit.onSubmit();
                               showFeedbackSuccessed();
                             },
                           ),
@@ -259,7 +259,7 @@ class _ExerciseFeedbackPageState extends State<ExerciseFeedbackPage> {
                         ),
                       ),
                       Text(
-                        'Cảm ơn bạn đã để lại đánh giá!',
+                        R.string.thank_you_for_feedback.tr(),
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -268,7 +268,7 @@ class _ExerciseFeedbackPageState extends State<ExerciseFeedbackPage> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Chúng tôi rất trân trọng những phản hồi của bạn để làm tốt hơn mỗi ngày',
+                        R.string.thank_you_for_feedback_description.tr(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,

@@ -1,5 +1,6 @@
 import 'package:better_player/better_player.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -56,7 +57,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                   Message.showToastMessage(context, state.error);
                 }
                 if (state is ExerciseDetailAllCompleted) {
-                  print('LOG Completed');
+                  //TODO: Lesson completed
                 }
                 if (state is ExerciseDetailMakeFeedback) {
                   NavigationUtil.navigatePage(
@@ -132,7 +133,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                         width: 231, height: 150),
                   ),
                   Text(
-                    'Bạn muốn dừng bài học?',
+                    R.string.stop_exercise_warning.tr(),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
@@ -141,7 +142,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Việc thoát ra sẽ gây gián đoạn quá trình học bài tập vận động, bạn vẫn chắc chắn muốn thoát?',
+                    R.string.stop_exercise_warning_description.tr(),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -157,7 +158,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                       Expanded(
                           flex: 1,
                           child: ButtonWidget(
-                            title: 'Huỷ',
+                            title: R.string.cancel.tr(),
                             backgroundColor: R.color.grayBorder,
                             textColor: R.color.textDark,
                             height: 43,
@@ -167,7 +168,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                       Expanded(
                         flex: 1,
                         child: ButtonWidget(
-                            title: 'Xác nhận',
+                            title: R.string.confirm.tr(),
                             height: 43,
                             onPressed: () {
                               NavigationUtil.pop(context, result: true);

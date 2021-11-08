@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -51,7 +52,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                 alignment: Alignment.centerLeft,
                 margin: const EdgeInsets.only(bottom: 10),
                 child: Text(
-                  'Danh mục bài học',
+                  R.string.lesson_category.tr(),
                   style: TextStyle(
                     color: R.color.textDark,
                     fontSize: 20,

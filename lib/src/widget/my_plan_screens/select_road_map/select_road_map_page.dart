@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loadmore/loadmore.dart';
@@ -41,7 +42,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
         body: CommonPage(
           //TODO: Change background
           background: R.drawable.bg_lesson_detail,
-          title: 'Chọn lộ trình',
+          title: R.string.select_road_map.tr(),
           bottomSafeArea: true,
           child: BlocConsumer<SelectRoadMapCubit, SelectRoadMapState>(
             listener: (context, state) {
@@ -142,7 +143,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
             SizedBox(
               width: 120,
               child: ButtonWidget(
-                title: 'Tham gia',
+                title: R.string.join.tr(),
                 height: 32,
                 textSize: 14,
                 onPressed: () {
@@ -152,7 +153,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                     builder: (_) => NoticeChangePage(
                         description:
                             'Bạn đang học lộ trình cho người có thể trạng yếu, bạn có chắc muốn đổi lộ trình khác không?',
-                        positiveButtonTitle: 'Xác nhận',
+                        positiveButtonTitle: R.string.confirm.tr(),
                         onClick: () {
                           _cubit.changeRoadMap();
                         },

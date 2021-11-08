@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -258,7 +259,7 @@ class _LessonTabPageState extends State<LessonTabPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Tuần ${weekIndex + 1}',
+              '${R.string.week_upper_case_first.tr()} ${weekIndex + 1}',
               style: TextStyle(
                 color: status.statusIconColor,
                 fontSize: 14,
@@ -318,7 +319,7 @@ class _LessonTabPageState extends State<LessonTabPage>
         Padding(
           padding: const EdgeInsets.fromLTRB(60, 24, 60, 6),
           child: Text(
-            'Không tìm thấy bài học phù hợp!',
+            R.string.no_matched_lesson.tr(),
             style: TextStyle(
               color: R.color.textDark,
               fontSize: 16,
@@ -330,7 +331,7 @@ class _LessonTabPageState extends State<LessonTabPage>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 80),
           child: Text(
-            'Bạn hãy tạo lại bộ lọc để tìm kiếm các kết quả khác nhé.',
+            R.string.no_matched_lesson_description.tr(),
             style: TextStyle(
               color: R.color.textDark,
               fontSize: 14,
@@ -465,7 +466,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                     ),
                   ),
                   Text(
-                    'Bài học chưa mở khoá!',
+                    R.string.lesson_locked.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: R.color.textDark,
@@ -475,7 +476,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Bạn cần học lần lượt các bài học theo lộ trình của diaB để mở khoá bài học này.',
+                    R.string.lesson_locked_warning.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: R.color.textDark,
@@ -488,7 +489,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                     padding: const EdgeInsets.symmetric(horizontal: 50),
                     child: ButtonWidget(
                       height: 43,
-                      title: 'Đồng ý',
+                      title: R.string.agree.tr(),
                       onPressed: () {
                         NavigationUtil.pop(context);
                       },

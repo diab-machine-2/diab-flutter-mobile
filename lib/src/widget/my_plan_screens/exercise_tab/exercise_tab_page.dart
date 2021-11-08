@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -73,7 +74,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
-                            'Thay đổi lộ trình',
+                            R.string.change_road_map.tr(),
                             style: TextStyle(
                               color: R.color.greenGradientBottom,
                               fontSize: 16,
@@ -121,7 +122,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                                       child: Column(
                                         children: [
                                           Text(
-                                            'Hôm nay là ngày nghỉ!',
+                                            R.string.today_is_day_off.tr(),
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 color: R.color.textDark,
@@ -130,7 +131,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                                           ),
                                           const SizedBox(height: 6),
                                           Text(
-                                            'Hãy dành thời gian nghỉ ngơi và thư giãn nhé!',
+                                            R.string.today_is_day_off_description.tr(),
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 color: R.color.textDark,
@@ -273,7 +274,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '${exerciseItem.practiceTime ?? ''} phút',
+                      '${exerciseItem.practiceTime ?? ''} ${R.string.minute.tr()}',
                       style: TextStyle(
                           color: R.color.grey_2,
                           fontSize: 12,
@@ -286,7 +287,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildCustomIconButton(
-                      title: 'Bắt đầu tập',
+                      title: R.string.start_exercise.tr(),
                       icon: R.drawable.ic_start_exercise,
                       borderColor: R.color.greenGradientBottom,
                       backgroundColor: R.color.greenGradientBottom,
@@ -301,7 +302,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                       },
                     ),
                     _buildCustomIconButton(
-                        title: 'Xem hướng dẫn',
+                        title: R.string.show_instruction.tr(),
                         icon: R.drawable.ic_play,
                         borderColor: R.color.greenGradientBottom,
                         backgroundColor: R.color.white,
@@ -455,7 +456,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Tuần ${weekIndex + 1}',
+              '${R.string.week_upper_case_first.tr()} ${weekIndex + 1}',
               style: TextStyle(
                 color: status.statusIconColor,
                 fontSize: 14,
