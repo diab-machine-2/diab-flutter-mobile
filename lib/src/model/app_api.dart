@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -14,12 +13,14 @@ import 'response/blood_sugar_template_response.dart';
 import 'response/common_response.dart';
 import 'response/create_menu_response.dart';
 import 'response/detail_package_response.dart';
+import 'response/detail_survey_response.dart';
 import 'response/diabetes_status_response.dart';
 import 'response/food_suggest_response.dart';
 import 'response/latest_hba1c_input_response.dart';
 import 'response/lesson_section_list_response.dart';
 import 'response/list_activity_response.dart';
 import 'response/list_package_response.dart';
+import 'response/list_roadmap_response.dart';
 import 'response/list_transaction_response.dart';
 import 'response/menu_response.dart';
 import 'response/my_lesson_response.dart';
@@ -140,6 +141,12 @@ abstract class AppApi {
   @POST("App/LessonSection/SetCompletedLessonAccount")
   Future<CommonResponse> setCompletedLessonAccount(
     @Body() UpdateLessonSectionRequest request,
+  );
+ 
+  @GET("App/Roadmap")
+  Future<ListRoadmapResponse> getRoadMap(
+    @Query('page') int page,
+    @Query('size') int size,
   );
 
   // Quiz

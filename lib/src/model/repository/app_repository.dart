@@ -17,6 +17,7 @@ import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
+import 'package:medical/src/model/response/list_roadmap_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
@@ -335,6 +336,15 @@ class AppRepository {
       } else
         return ApiResult.failure(
             error: NetworkExceptions.defaultError(response.message ?? ''));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ListRoadmapResponse>> getRoadMap({required int page, required int size}) async {
+    try {
+      final ListRoadmapResponse response = await appClient.getRoadMap(page, size);
+      return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

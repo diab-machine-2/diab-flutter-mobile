@@ -1,5 +1,5 @@
-import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -9,17 +9,18 @@ import 'survey_question.dart';
 
 class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
   final AppRepository repository;
-  Map<String, List<String>> answer = Map();
+  Map<String, List<String>> answer = {};
   int selectedCourseIndex = 0;
   int countAnswerRight = 0;
   bool isEnableNext = false;
 
   SurveyQuestionCubit(this.repository) : super(InitialSurveyQuestionState());
 
-  void recordAnswer(String questionId, List<String> listAnswerId, List<String> rightAnswerId) {
+  void recordAnswer(String questionId, List<String> listAnswerId,
+      List<String> rightAnswerId) {
     emit(SurveyQuestionLoading());
     answer[questionId] = listAnswerId;
-    bool isRight = listAnswerId.toString() == rightAnswerId.toString();
+    final bool isRight = listAnswerId.toString() == rightAnswerId.toString();
     if (isRight) {
       countAnswerRight++;
     }
@@ -44,14 +45,22 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     emit(InitialSurveyQuestionState());
   }
 
-  void submitAnswer(String surveyId, String sectionId, ) async {
+  Future<void> submitAnswer(
+    String surveyId,
+    String sectionId,
+  ) async {
     emit(SurveyQuestionLoading());
-    List<QuestionAnswerResults> list = [];
+    final List<QuestionAnswerResults> list = [];
     answer.forEach((key, value) {
-      list.add(QuestionAnswerResults(surveyQuestionId: key, surveyAnswerIdList: value));
+      list.add(QuestionAnswerResults(
+          surveyQuestionId: key, surveyAnswerIdList: value));
     });
-    PostSurveyRequest request = PostSurveyRequest(surveyId: surveyId, surveySectionId: sectionId, questionAnswerResults: list);
-    ApiResult<CommonResponse> apiResult = await repository.submitSurvey(request);
+    final PostSurveyRequest request = PostSurveyRequest(
+        surveyId: surveyId,
+        surveySectionId: sectionId,
+        questionAnswerResults: list);
+    final ApiResult<CommonResponse> apiResult =
+        await repository.submitSurvey(request);
     apiResult.when(success: (CommonResponse response) {
       emit(SubmitSurveySuccess());
     }, failure: (NetworkExceptions error) {
