@@ -361,7 +361,7 @@ class _LessonTabPageState extends State<LessonTabPage>
           const SizedBox(width: 16),
           Expanded(
             child: InkWell(
-              onTap: isLocked
+              onTap: !isLocked
                   ? () {
                       _showLockedDialog();
                     }

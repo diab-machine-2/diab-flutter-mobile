@@ -101,7 +101,7 @@ class CustomBottomBarWidget extends StatelessWidget {
               width: 140,
               height: 36,
               child: ButtonWidget(
-                title: R.string.complete_lesson,
+                title: R.string.complete_lesson.tr(),
                 onPressed: onTapNext,
                 textSize: 14,
               ),

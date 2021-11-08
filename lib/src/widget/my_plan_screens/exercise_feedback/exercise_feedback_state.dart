@@ -41,3 +41,11 @@ class ExerciseFeedbackLoading extends ExerciseFeedbackState {
     return 'ExerciseFeedbackLoading{}';
   }
 }
+
+class ExerciseFeedbackSent extends ExerciseFeedbackState {
+  const ExerciseFeedbackSent();
+  @override
+  String toString() {
+    return 'ExerciseFeedbackSent{}';
+  }
+}

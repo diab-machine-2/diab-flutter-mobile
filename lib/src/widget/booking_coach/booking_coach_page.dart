@@ -45,7 +45,9 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
           listener: (context, state) {
             if (state is BookingCoachFailure)
               Message.showToastMessage(context, state.error);
-            if (state is BookingCoachSuccess) {}
+            if (state is BookingCoachSuccess) {
+              showResultBookingPopup();
+            }
             if (state is SelectedDateSuccess)
               _dateController.text = DateUtil.parseDateToString(
                   _cubit.startDateTime, Const.FULL_DATE_FORMAT,
@@ -279,7 +281,6 @@ class _BookingCoachPageState extends State<BookingCoachPage> {
                     title: R.string.submit_booking.tr(),
                     onPressed: () {
                       _cubit.submitBooking();
-                      showResultBookingPopup();
                     },
                   ),
                 ),

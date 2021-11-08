@@ -61,7 +61,11 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                 }
                 if (state is ExerciseDetailMakeFeedback) {
                   NavigationUtil.navigatePage(
-                      context, const ExerciseFeedbackPage());
+                    context,
+                    ExerciseFeedbackPage(
+                      exerciseMovementId: _cubit.exerciseData.id ?? '',
+                    ),
+                  );
                 }
               },
               builder: (context, state) {
