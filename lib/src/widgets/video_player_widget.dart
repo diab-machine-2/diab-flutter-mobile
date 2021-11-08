@@ -18,14 +18,16 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   void initState() {
     super.initState();
-    _controller = BetterPlayerController(
-      const BetterPlayerConfiguration(
-          allowedScreenSleep: false, autoPlay: true),
-      betterPlayerDataSource: BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        widget.videoUrl,
-      ),
-    );
+    if (widget.videoUrl.isNotEmpty) {
+      _controller = BetterPlayerController(
+        const BetterPlayerConfiguration(
+            allowedScreenSleep: false, autoPlay: true),
+        betterPlayerDataSource: BetterPlayerDataSource(
+          BetterPlayerDataSourceType.network,
+          widget.videoUrl,
+        ),
+      );
+    }
   }
 
   @override
@@ -34,7 +36,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     _controller.dispose(forceDispose: true);
   }
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: R.color.textDark,
@@ -45,7 +47,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             padding: const EdgeInsets.symmetric(
               horizontal: 16,
             ),
-            child: BetterPlayer(controller: _controller),
+            child: widget.videoUrl.isEmpty
+                ? const SizedBox.shrink()
+                : BetterPlayer(controller: _controller),
           ),
           Positioned(
             top: MediaQuery.of(context).padding.top,

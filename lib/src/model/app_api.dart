@@ -3,6 +3,7 @@ import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
 import 'request/create_menu_request.dart';
+import 'request/exercise_feedback_request.dart';
 import 'request/food_change_request.dart';
 import 'request/ios_receipt_request.dart';
 import 'request/post_survey_request.dart';
@@ -152,6 +153,11 @@ abstract class AppApi {
 
   @GET("App/ExerciseMovement/All")
   Future<ExerciseMovementResponse> getExerciseMovement();
+
+  @POST("App/ExerciseMovementReview")
+  Future<CommonResponse> exerciseFeedback(
+    @Body() ExerciseFeedbackRequest request,
+  );
 
   // Quiz
   @POST("App/Lesson/{lessonId}/Review")

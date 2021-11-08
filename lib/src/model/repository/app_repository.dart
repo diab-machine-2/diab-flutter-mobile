@@ -1,5 +1,6 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
+import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
@@ -356,6 +357,21 @@ class AppRepository {
       final ExerciseMovementResponse response =
           await appClient.getExerciseMovement();
       return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> exerciseFeedback(
+      ExerciseFeedbackRequest request) async {
+    try {
+      final CommonResponse response = await appClient.exerciseFeedback(request);
+      if (response.meta?.success == true) {
+        return ApiResult.success(data: response);
+      } else {
+        return ApiResult.failure(
+            error: NetworkExceptions.defaultError(response.message ?? ''));
+      }
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

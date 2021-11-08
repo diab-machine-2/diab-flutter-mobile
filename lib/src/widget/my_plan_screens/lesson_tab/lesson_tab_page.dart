@@ -381,14 +381,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                         children: [
                           Row(
                             children: [
-                              Text(
-                                lessonDetail?.module ?? '',
-                                style: TextStyle(
-                                  color: R.color.greenGradientBottom,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
+                              // ...List.generate(lessonDetail, (index) => null)
                               const SizedBox(width: 4),
                               Image.asset(
                                 R.drawable.ic_new_lesson,

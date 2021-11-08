@@ -12,7 +12,9 @@ import 'package:medical/src/widgets/common_page.dart';
 import 'exercise_feedback.dart';
 
 class ExerciseFeedbackPage extends StatefulWidget {
-  const ExerciseFeedbackPage();
+  const ExerciseFeedbackPage({required this.exerciseMovementId});
+
+  final String exerciseMovementId;
 
   @override
   _ExerciseFeedbackPageState createState() => _ExerciseFeedbackPageState();
@@ -25,7 +27,7 @@ class _ExerciseFeedbackPageState extends State<ExerciseFeedbackPage> {
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
-    _cubit = ExerciseFeedbackCubit(appRepository);
+    _cubit = ExerciseFeedbackCubit(appRepository, widget.exerciseMovementId);
   }
 
   @override
@@ -52,6 +54,9 @@ class _ExerciseFeedbackPageState extends State<ExerciseFeedbackPage> {
                 }
                 if (state is ExerciseFeedbackFailure) {
                   Message.showToastMessage(context, state.error);
+                }
+                if (state is ExerciseFeedbackSent) {
+                  showFeedbackSuccessed();
                 }
               },
               builder: (context, state) {
@@ -84,8 +89,7 @@ class _ExerciseFeedbackPageState extends State<ExerciseFeedbackPage> {
                             title: R.string.send_feedback.tr(),
                             onPressed: () {
                               FocusScope.of(context).unfocus();
-                              _cubit.onSubmit();
-                              showFeedbackSuccessed();
+                              _cubit.submitFeedback();
                             },
                           ),
                         ),
