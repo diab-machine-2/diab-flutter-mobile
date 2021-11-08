@@ -786,6 +786,7 @@ class Strings {
 	String get consumption => 'consumption';
 	String get next => 'next';
 	String get next_lesson => 'next_lesson';
+	String get complete_lesson => 'complete_lesson';
 	String get agree => 'agree';
 	String get text_congratulation => 'text_congratulation';
 	String get text_please_bank => 'text_please_bank';

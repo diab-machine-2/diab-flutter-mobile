@@ -27,7 +27,6 @@ class LessonDetailPage extends StatefulWidget {
 
 class _LessonDetailPageState extends State<LessonDetailPage> {
   late final LessonDetailCubit _cubit;
-  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -42,8 +41,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     super.dispose();
     _cubit.videoManager?.disposeAllVideo();
     _cubit.audioManager?.disposeAllAudio();
-    _scrollController.removeListener(() {});
-    _scrollController.dispose();
   }
 
   @override
@@ -66,7 +63,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           }
         },
         builder: (context, state) {
-          _checkScrollable();
           return _cubit.currentSectionDetail?.type ==
                   Const.LESSON_SECTION_TYPE_QUIZ
               ? CourseQuizPage(
@@ -136,60 +132,46 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: NotificationListener(
-                              onNotification: (notify) {
-                                if (notify is ScrollEndNotification &&
-                                    _scrollController.position.pixels ==
-                                        _scrollController
-                                            .position.maxScrollExtent) {
-                                  _cubit.sectionStatus?.isScrollToEnd = true;
-                                  _cubit.checkSectionComplete();
-                                }
-                                return true;
-                              },
-                              child: SingleChildScrollView(
-                                controller: _scrollController,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ...List.generate(
-                                      _cubit.videoManager?.videoAmount ?? 0,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ...List.generate(
+                                    _cubit.videoManager?.videoAmount ?? 0,
+                                    (index) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 24),
+                                        child: BetterPlayer(
+                                            controller: _cubit.videoManager!
+                                                .controllerList[index]),
+                                      );
+                                    },
+                                  ),
+                                  ...List.generate(
+                                      _cubit.audioManager?.audioAmount ?? 0,
                                       (index) {
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 24),
-                                          child: BetterPlayer(
-                                              controller: _cubit.videoManager!
-                                                  .controllerList[index]),
-                                        );
-                                      },
-                                    ),
-                                    ...List.generate(
-                                        _cubit.audioManager?.audioAmount ?? 0,
-                                        (index) {
-                                      final AudioController? _controller =
-                                          _cubit.audioManager
-                                              ?.getController(index);
-                                      return StreamBuilder<AudioData>(
-                                          stream: _controller?.onChanged.stream,
-                                          builder: (context, snapshot) {
-                                            return _buildAudioController(
-                                              audioData: snapshot.data,
-                                              seektoPosition: (newPosition) {
-                                                _controller
-                                                    ?.seekTo(newPosition);
-                                              },
-                                              onTogglePlay: () {
-                                                _controller?.togglePlay();
-                                              },
-                                            );
-                                          });
-                                    }).toList(),
-                                    WidgetHtmlText(
-                                        _cubit.currentSectionDetail?.content ??
-                                            ''),
-                                  ],
-                                ),
+                                    final AudioController? _controller = _cubit
+                                        .audioManager
+                                        ?.getController(index);
+                                    return StreamBuilder<AudioData>(
+                                        stream: _controller?.onChanged.stream,
+                                        builder: (context, snapshot) {
+                                          return _buildAudioController(
+                                            audioData: snapshot.data,
+                                            seektoPosition: (newPosition) {
+                                              _controller?.seekTo(newPosition);
+                                            },
+                                            onTogglePlay: () {
+                                              _controller?.togglePlay();
+                                            },
+                                          );
+                                        });
+                                  }).toList(),
+                                  WidgetHtmlText(
+                                      _cubit.currentSectionDetail?.content ??
+                                          ''),
+                                ],
                               ),
                             ),
                           ),
@@ -275,13 +257,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         );
       },
     );
-    _cubit.checkSectionComplete(withDelay: true);
-  }
-
-  Future<void> _checkScrollable() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    _cubit.sectionStatus?.isScrollToEnd = _scrollController.hasClients &&
-        _scrollController.position.pixels == 0 &&
-        _scrollController.position.maxScrollExtent == 0;
+    _cubit.checkSectionComplete();
   }
 }

@@ -44,7 +44,11 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   bool get reviewed => review?.rating != null;
 
   void onChangeSection(int newSection, {bool isFromList = false}) {
-    if (newSection < 0 || newSection >= sectionList.length) return;
+    if (newSection < 0) return;
+    if (newSection >= sectionList.length) {
+      checkSectionComplete();
+      return;
+    }
 
     currentSection = newSection;
 
@@ -61,7 +65,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
 
     if (!isFromList) {
-      checkSectionComplete(withDelay: true);
+      checkSectionComplete();
     }
 
     emit(const LessonDetailSuccess());
@@ -107,8 +111,6 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
     sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
 
-    checkSectionComplete(withDelay: true);
-
     videoManager = VideoManager(
         urls: videoUrls,
         onExitFullScreen: () {},
@@ -125,10 +127,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
         });
   }
 
-  Future<void> checkSectionComplete({bool withDelay = false}) async {
-    if (withDelay) {
-      await Future.delayed(const Duration(seconds: 1));
-    }
+  Future<void> checkSectionComplete() async {
     if (sectionStatus?.isSectionCompleted == true &&
         currentSectionDetail?.isComplete != null &&
         state is! LessonDetailFeedBack) {
@@ -159,9 +158,11 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     emit(const LessonDetailInitial());
   }
 
-  Future<void> completeLearningCurrentSection() async {
-    await Future.delayed(Duration.zero);
-    emit(const LessonDetailLoading());
+  Future<void> completeLearningCurrentSection({bool showLoading = true}) async {
+    if (showLoading) {
+      await Future.delayed(Duration.zero);
+      emit(const LessonDetailLoading());
+    }
     final ApiResult<CommonResponse> apiResult =
         await repository.setCompletedLessonAccount(
       UpdateLessonSectionRequest(

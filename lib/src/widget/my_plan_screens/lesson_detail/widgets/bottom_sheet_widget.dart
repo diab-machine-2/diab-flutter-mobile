@@ -127,6 +127,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
               sectionDetail?.icon ?? '',
               width: 24,
               height: 24,
+              color: R.color.grey_1,
             ),
             const SizedBox(width: 20),
             Expanded(

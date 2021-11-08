@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
+import 'button_widget.dart';
+
 class CustomBottomBarWidget extends StatelessWidget {
   const CustomBottomBarWidget({
     required this.isPreviousButtonActive,
@@ -12,7 +14,6 @@ class CustomBottomBarWidget extends StatelessWidget {
     this.onTapCenter,
     this.previousButtonTitle,
     this.nextButtonTitle,
-    this.lastButtonWidget,
   });
 
   final bool isPreviousButtonActive;
@@ -23,7 +24,6 @@ class CustomBottomBarWidget extends StatelessWidget {
   final VoidCallback? onTapCenter;
   final String? previousButtonTitle;
   final String? nextButtonTitle;
-  final Widget? lastButtonWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -96,40 +96,53 @@ class CustomBottomBarWidget extends StatelessWidget {
             ),
           ),
           //Next button
-          InkWell(
-            onTap: onTapNext,
-            child: Container(
+          if (!isNextButtonActive)
+            Container(
               width: 140,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: isNextButtonActive ? R.color.main_6 : R.color.grayBorder,
+              height: 36,
+              child: ButtonWidget(
+                title: R.string.complete_lesson,
+                onPressed: onTapNext,
+                textSize: 14,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    nextButtonTitle ?? R.string.next_lesson.tr(),
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: isNextButtonActive
-                            ? R.color.accentColor
-                            : R.color.textDark,
-                        height: 1.43,
-                        letterSpacing: 0.4),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16,
-                    color: isNextButtonActive
-                        ? R.color.accentColor
-                        : R.color.textDark,
-                  ),
-                ],
+            )
+          else
+            InkWell(
+              onTap: onTapNext,
+              child: Container(
+                width: 140,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color:
+                      isNextButtonActive ? R.color.main_6 : R.color.grayBorder,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      nextButtonTitle ?? R.string.next_lesson.tr(),
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: isNextButtonActive
+                              ? R.color.accentColor
+                              : R.color.textDark,
+                          height: 1.43,
+                          letterSpacing: 0.4),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: isNextButtonActive
+                          ? R.color.accentColor
+                          : R.color.textDark,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          )
+            )
         ],
       ),
     );
