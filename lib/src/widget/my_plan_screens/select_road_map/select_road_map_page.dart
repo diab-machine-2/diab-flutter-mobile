@@ -168,8 +168,8 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
     );
   }
 
-  void showDialogChangeSuccessed() {
-    showDialog(
+  Future<void> showDialogChangeSuccessed() async {
+    await showDialog(
       context: context,
       builder: (_) => Scaffold(
         backgroundColor: Colors.transparent,
@@ -200,7 +200,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                         ),
                       ),
                       Text(
-                        'Chọn lộ trình thành công!',
+                        R.string.change_road_map_success.tr(),
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -238,5 +238,6 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
         ),
       ),
     );
+    NavigationUtil.pop(context, result: true);
   }
 }

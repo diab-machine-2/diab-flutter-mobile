@@ -7,6 +7,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 
+import '../lesson_filter/models/filter_data.dart';
 import '../my_plan/models/time_data.dart';
 import 'lesson_tab.dart';
 import 'models/lesson_type.dart';
@@ -21,6 +22,8 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     LessonType.suggest
   ];
 
+  FilterData filterData = FilterData();
+
   LessonType currentLessonType = LessonType.route;
 
   List<MyLessonResponseData?>? lessonsList;
@@ -30,12 +33,14 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   String packageCode = '';
   DateTime? packageTimeExpired;
 
-  bool get isFiltering => false;
+  void refresh() {
+    emit(const LessonTabSuccess());
+    emit(const LessonTabInitial());
+  }
 
   void onSelectWeek(int newIndex) {
     timeData?.currentWeekIndex = newIndex;
-    emit(const LessonTabSuccess());
-    emit(const LessonTabInitial());
+    refresh();
   }
 
   int get currentLessonTypeIndex {

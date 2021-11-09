@@ -362,7 +362,7 @@ class Strings {
 	String get bai_viet_noi_bat => 'bai_viet_noi_bat';
 	String get xu_huong_hba1c => 'xu_huong_hba1c';
 	String get xem_nguong_hba1c => 'xem_nguong_hba1c';
-	String get bo_loc => 'bo_loc';
+	String get filter => 'filter';
 	String get sau_thang => 'sau_thang';
 	String get mot_nam => 'mot_nam';
 	String get hai_nam => 'hai_nam';
@@ -611,6 +611,7 @@ class Strings {
 	String get thank_you_for_feedback_description => 'thank_you_for_feedback_description';
 	String get change_road_map => 'change_road_map';
 	String get select_road_map => 'select_road_map';
+	String get change_road_map_success => 'change_road_map_success';
 	String get today_is_day_off => 'today_is_day_off';
 	String get today_is_day_off_description => 'today_is_day_off_description';
 	String get start_exercise => 'start_exercise';
@@ -621,6 +622,11 @@ class Strings {
 	String get no_matched_lesson_description => 'no_matched_lesson_description';
 	String get lesson_locked => 'lesson_locked';
 	String get lesson_locked_warning => 'lesson_locked_warning';
+	String get filter_by_key_word => 'filter_by_key_word';
+	String get enter_lesson_name => 'enter_lesson_name';
+	String get filtering => 'filtering';
+	String get remake_filter => 'remake_filter';
+	String get filter_not_learnt_lesson_yet => 'filter_not_learnt_lesson_yet';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';

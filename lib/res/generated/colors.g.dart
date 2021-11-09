@@ -47,6 +47,7 @@ class Colors {
 	Color get red => Color(0xffE53935);
 	Color get greenbg => Color(0xffE6F6ED);
 	Color get gray => Color(0xffA1A3A6);
+	Color get gray_1 => Color(0xff515356);
 	Color get grayCaption => Color(0xff9C9C9C);
 	Color get greenGradientTop => Color(0xff4BB2AB);
 	Color get greenGradientBottom => Color(0xff008479);
@@ -61,6 +62,8 @@ class Colors {
 	Color get orange_1 => Color(0xffF58220);
 	Color get grey_6 => Color(0xffF5F7FA);
 	Color get orange_6 => Color(0xffFEEDDC);
+	Color get tagColor => Color(0xffF3F6F9);
+	Color get shadowColor => Color(0xff38476D);
 	Color get color0xffE5E5E5 => Color(0xffE5E5E5);
 	Color get color0xff003F38 => Color(0xff003F38);
 	Color get color0xffBEC0C8 => Color(0xffBEC0C8);
