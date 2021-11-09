@@ -67,8 +67,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   children: [
                     InkWell(
                       onTap: () {
-                        NavigationUtil.navigatePage(
-                            context, const SelectRoadMapPage());
+                        changeRoadMap();
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -131,7 +130,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                                           ),
                                           const SizedBox(height: 6),
                                           Text(
-                                            R.string.today_is_day_off_description.tr(),
+                                            R.string
+                                                .today_is_day_off_description
+                                                .tr(),
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 color: R.color.textDark,
@@ -487,6 +488,14 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         ),
       ),
     );
+  }
+
+  Future<void> changeRoadMap() async {
+    final roadMapChanged =
+        await NavigationUtil.navigatePage(context, const SelectRoadMapPage());
+    if (roadMapChanged is bool && roadMapChanged) {
+      _cubit.getExerciseMovement();
+    }
   }
 
   @override

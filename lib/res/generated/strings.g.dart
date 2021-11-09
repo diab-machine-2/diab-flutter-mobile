@@ -611,6 +611,7 @@ class Strings {
 	String get thank_you_for_feedback_description => 'thank_you_for_feedback_description';
 	String get change_road_map => 'change_road_map';
 	String get select_road_map => 'select_road_map';
+	String get change_road_map_success => 'change_road_map_success';
 	String get today_is_day_off => 'today_is_day_off';
 	String get today_is_day_off_description => 'today_is_day_off_description';
 	String get start_exercise => 'start_exercise';
