@@ -21,7 +21,7 @@ class ButtonWidget extends StatelessWidget {
     required this.title,
     required this.onPressed,
     this.radius,
-    this.modeFlatButton: false,
+    this.modeFlatButton = false,
   });
 
   @override
@@ -46,6 +46,11 @@ class ButtonWidget extends StatelessWidget {
                     ],
                   )
                 : null,
+            border: borderColor == null ? null : Border.all(
+                color: onPressed == null
+                    ? R.color.gray
+                    : (borderColor ?? backgroundColor ?? R.color.accentColor),
+                width: 1.5),
             borderRadius: BorderRadius.circular(200)),
         child: Text(
           title,

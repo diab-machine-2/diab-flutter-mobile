@@ -9,12 +9,14 @@ import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_filter/models/filter_data.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../lesson_detail/lesson_detail.dart';
+import '../lesson_filter/lesson_filter.dart';
 import '../my_plan/models/completion_status.dart';
 import '../my_plan/widgets/app_bar_bottom.dart';
 import 'lesson_tab.dart';
@@ -81,7 +83,15 @@ class _LessonTabPageState extends State<LessonTabPage>
                       ),
                       const Spacer(),
                       InkWell(
-                        onTap: () {},
+                        onTap: () async {
+                          final dynamic result =
+                              await NavigationUtil.navigatePage(
+                                  context, LessonFilterPage(_cubit.filterData));
+                          if (result is FilterData) {
+                            _cubit.filterData = result;
+                          }
+                          _cubit.refresh();
+                        },
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: Stack(
@@ -97,7 +107,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                 ],
                               ),
                               Visibility(
-                                visible: _cubit.isFiltering,
+                                visible: !_cubit.filterData.isEmpty,
                                 child: Positioned(
                                   top: 0,
                                   right: 0,

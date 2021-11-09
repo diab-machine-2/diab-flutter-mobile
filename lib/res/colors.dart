@@ -47,6 +47,7 @@ class AppColors {
   static const red = Color(0xffE53935);
   static const greenbg = Color(0xffE6F6ED);
   static const gray = Color(0xffA1A3A6);
+  static const gray_1 = Color(0xff515356);
   static const grayCaption = Color(0xff9C9C9C);
   static const greenGradientTop = Color(0xff4BB2AB);
   static const greenGradientBottom = Color(0xff008479);
@@ -61,6 +62,8 @@ class AppColors {
   static const orange_1 = Color(0xffF58220);
   static const grey_6 = Color(0xffF5F7FA);
   static const orange_6 = Color(0xffFEEDDC);
+  static const tagColor = Color(0xffF3F6F9);
+  static const shadowColor = Color(0xff38476D);
   static const color0xffE5E5E5 = Color(0xffE5E5E5);
   static const color0xff003F38 = Color(0xff003F38);
   static const color0xffBEC0C8 = Color(0xffBEC0C8);

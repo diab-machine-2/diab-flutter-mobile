@@ -29,7 +29,7 @@ class FilterAction extends StatelessWidget {
           children: [
             Image.asset(R.drawable.ic_filter, width: 24, height: 24),
             SizedBox(width: 8),
-            Text(R.string.bo_loc.tr(), style: TextStyle(color: R.color.primaryColor)),
+            Text(R.string.filter.tr(), style: TextStyle(color: R.color.primaryColor)),
           ],
         ));
   }
