@@ -93,7 +93,8 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
       children: [
         _buildSearchBox(
           keyWord: _cubit.filterData.keyWordFilter,
-          hintText: R.string.filter_by_key_word.tr(),
+          title: R.string.filter_by_key_word.tr(),
+          hintText: R.string.enter_key_word.tr(),
           onSelectTag: () {
             _cubit.searchingStatus = SearchingStatus.keyWord;
             _cubit.refresh();
@@ -106,6 +107,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
         const SizedBox(height: 16),
         _buildSearchBox(
           keyWord: _cubit.filterData.lessonNameFilter,
+          title: R.string.filter_by_lesson_name.tr(),
           hintText: R.string.enter_lesson_name.tr(),
           onSelectTag: () {
             _cubit.searchingStatus = SearchingStatus.lessonName;
@@ -166,144 +168,167 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
         _cubit.searchingStatus == SearchingStatus.keyWord
             ? _cubit.filterData.keyWordFilter
             : _cubit.filterData.lessonNameFilter;
-    final String hintText = _cubit.searchingStatus == SearchingStatus.keyWord
+    final String title = _cubit.searchingStatus == SearchingStatus.keyWord
         ? R.string.filter_by_key_word.tr()
+        : R.string.filter_by_lesson_name.tr();
+    final String hintText = _cubit.searchingStatus == SearchingStatus.keyWord
+        ? R.string.enter_key_word.tr()
         : R.string.enter_lesson_name.tr();
-    return Stack(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Visibility(
-          visible: _cubit.suggestWordFiltered.isNotEmpty,
-          child: Container(
-            width: double.infinity,
-            height: min(262, _cubit.suggestWordFiltered.length * 48 + 70),
-            decoration: BoxDecoration(
-              color: R.color.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: 60),
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: _cubit.suggestWordFiltered.length,
-                    itemBuilder: (context, index) {
-                      final bool isSelected = selectedList
-                          .contains(_cubit.suggestWordFiltered[index]);
-                      return InkWell(
-                        onTap: () {
-                          if (!isSelected) {
-                            _cubit.searchingStatus == SearchingStatus.keyWord
-                                ? _cubit.filterData.keyWordFilter
-                                    .add(_cubit.suggestWordFiltered[index])
-                                : _cubit.filterData.lessonNameFilter
-                                    .add(_cubit.suggestWordFiltered[index]);
-                          } else {
-                            _cubit.searchingStatus == SearchingStatus.keyWord
-                                ? _cubit.filterData.keyWordFilter
-                                    .remove(_cubit.suggestWordFiltered[index])
-                                : _cubit.filterData.lessonNameFilter
-                                    .remove(_cubit.suggestWordFiltered[index]);
-                          }
-                          _cubit.refresh();
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          height: 48,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  '${_cubit.suggestWordFiltered[index]}',
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? R.color.mainColor
-                                        : R.color.textDark,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Visibility(
-                                visible: isSelected,
-                                child: Icon(
-                                  Icons.check_rounded,
-                                  size: 20,
-                                  color: R.color.accentColor,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return Container(
-                        height: 1,
-                        color: R.color.color0xffE5E5E5,
-                      );
-                    },
-                  ),
-                )
-              ],
-            ),
+        Text(
+          title,
+          style: TextStyle(
+            color: R.color.textDark,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        Column(
-          children: [
-            Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: R.color.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    width: 1.5,
-                    color: R.color.color0xffE5E5E5,
+        const SizedBox(height: 4),
+        Expanded(
+          child: Stack(
+            children: [
+              Visibility(
+                visible: _cubit.suggestWordFiltered.isNotEmpty,
+                child: Container(
+                  width: double.infinity,
+                  height: min(310, _cubit.suggestWordFiltered.length * 48 + 70),
+                  decoration: BoxDecoration(
+                    color: R.color.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 60),
+                      Expanded(
+                        child: ListView.separated(
+                          itemCount: _cubit.suggestWordFiltered.length,
+                          itemBuilder: (context, index) {
+                            final bool isSelected = selectedList
+                                .contains(_cubit.suggestWordFiltered[index]);
+                            return InkWell(
+                              onTap: () {
+                                if (!isSelected) {
+                                  _cubit.searchingStatus ==
+                                          SearchingStatus.keyWord
+                                      ? _cubit.filterData.keyWordFilter.add(
+                                          _cubit.suggestWordFiltered[index])
+                                      : _cubit.filterData.lessonNameFilter.add(
+                                          _cubit.suggestWordFiltered[index]);
+                                } else {
+                                  _cubit.searchingStatus ==
+                                          SearchingStatus.keyWord
+                                      ? _cubit.filterData.keyWordFilter.remove(
+                                          _cubit.suggestWordFiltered[index])
+                                      : _cubit.filterData.lessonNameFilter
+                                          .remove(_cubit
+                                              .suggestWordFiltered[index]);
+                                }
+                                _cubit.refresh();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                height: 48,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        '${_cubit.suggestWordFiltered[index]}',
+                                        style: TextStyle(
+                                          color: isSelected
+                                              ? R.color.mainColor
+                                              : R.color.textDark,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Visibility(
+                                      visible: isSelected,
+                                      child: Icon(
+                                        Icons.check_rounded,
+                                        size: 20,
+                                        color: R.color.accentColor,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) {
+                            return Container(
+                              height: 1,
+                              color: R.color.color0xffE5E5E5,
+                            );
+                          },
+                        ),
+                      )
+                    ],
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: hintText,
-                        ),
-                        style: TextStyle(
-                          color: R.color.grey_2,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        onChanged: (text) {
-                          _cubit.textSearch = text;
-                          _cubit.refresh();
-                        },
+              ),
+              Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: R.color.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        width: 1.5,
+                        color: R.color.color0xffE5E5E5,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    InkWell(
-                      onTap: () {
-                        _cubit.searchingStatus = SearchingStatus.none;
-                        _cubit.refresh();
-                      },
-                      child: Image.asset(
-                        R.drawable.ic_search,
-                        color: R.color.gray,
-                        width: 24,
-                        height: 24,
-                      ),
-                    )
-                  ],
-                ),),
-            const Spacer(),
-            _buildButtonFilter(),
-            const SizedBox(height: 20),
-          ],
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            autofocus: true,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: hintText,
+                            ),
+                            style: TextStyle(
+                              color: R.color.grey_2,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            onChanged: (text) {
+                              _cubit.textSearch = text;
+                              _cubit.refresh();
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        InkWell(
+                          onTap: () {
+                            _cubit.searchingStatus = SearchingStatus.none;
+                            _cubit.refresh();
+                          },
+                          child: Image.asset(
+                            R.drawable.ic_search,
+                            color: R.color.gray,
+                            width: 24,
+                            height: 24,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const Spacer(),
+                  _buildButtonFilter(),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -311,69 +336,84 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
 
   Widget _buildSearchBox({
     required List<String> keyWord,
+    required String title,
     required String hintText,
     VoidCallback? onSelectTag,
     Function(int)? onRemoveTag,
   }) {
-    return GestureDetector(
-      onTap: onSelectTag,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: R.color.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            width: 1.5,
-            color: R.color.color0xffE5E5E5,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            color: R.color.textDark,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        child: keyWord.isEmpty
-            ? Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      hintText,
-                      style: TextStyle(
-                        color: R.color.grey_2,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                  Image.asset(
-                    R.drawable.ic_search,
-                    color: R.color.gray,
-                    width: 24,
-                    height: 24,
-                  )
-                ],
-              )
-            : Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ...List.generate(
-                    keyWord.length,
-                    (index) => _buildTag(
-                      title: keyWord[index],
-                      onSelectTag: onSelectTag,
-                      onTapRemove: () {
-                        if (onRemoveTag != null) {
-                          onRemoveTag(index);
-                        }
-                      },
-                    ),
-                  ),
-                  Image.asset(
-                    R.drawable.ic_search,
-                    color: R.color.gray,
-                    width: 24,
-                    height: 24,
-                  )
-                ],
+        const SizedBox(height: 4),
+        GestureDetector(
+          onTap: onSelectTag,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: R.color.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                width: 1.5,
+                color: R.color.color0xffE5E5E5,
               ),
-      ),
+            ),
+            child: keyWord.isEmpty
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          hintText,
+                          style: TextStyle(
+                            color: R.color.grey_2,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      Image.asset(
+                        R.drawable.ic_search,
+                        color: R.color.gray,
+                        width: 24,
+                        height: 24,
+                      )
+                    ],
+                  )
+                : Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ...List.generate(
+                        keyWord.length,
+                        (index) => _buildTag(
+                          title: keyWord[index],
+                          onSelectTag: onSelectTag,
+                          onTapRemove: () {
+                            if (onRemoveTag != null) {
+                              onRemoveTag(index);
+                            }
+                          },
+                        ),
+                      ),
+                      Image.asset(
+                        R.drawable.ic_search,
+                        color: R.color.gray,
+                        width: 24,
+                        height: 24,
+                      )
+                    ],
+                  ),
+          ),
+        ),
+      ],
     );
   }
 
