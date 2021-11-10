@@ -623,7 +623,9 @@ class Strings {
 	String get lesson_locked => 'lesson_locked';
 	String get lesson_locked_warning => 'lesson_locked_warning';
 	String get filter_by_key_word => 'filter_by_key_word';
+	String get filter_by_lesson_name => 'filter_by_lesson_name';
 	String get enter_lesson_name => 'enter_lesson_name';
+	String get enter_key_word => 'enter_key_word';
 	String get filtering => 'filtering';
 	String get remake_filter => 'remake_filter';
 	String get filter_not_learnt_lesson_yet => 'filter_not_learnt_lesson_yet';

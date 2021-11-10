@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_filter/models/filter_data.dart';
 
 import 'lesson_filter.dart';
+import 'models/filter_data.dart';
 import 'models/searching_status.dart';
 
 class LessonFilterCubit extends Cubit<LessonFilterState> {
