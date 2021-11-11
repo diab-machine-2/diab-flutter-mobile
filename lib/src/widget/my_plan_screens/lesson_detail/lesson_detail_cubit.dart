@@ -45,7 +45,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   void onChangeSection(int newSection, {bool isFromList = false}) {
     if (newSection < 0) return;
-    if (newSection >= sectionList.length) {
+    if (newSection >= sectionList.length || isAllSectionCompleted) {
       checkSectionComplete();
       return;
     }
@@ -131,7 +131,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     if (sectionStatus?.isSectionCompleted == true &&
         currentSectionDetail?.isComplete != null &&
         state is! LessonDetailFeedBack) {
-      await completeLearningCurrentSection();
+      await completeLearningCurrentSection(showLoading: false);
     }
     if (isEnabledRating == true && isAllSectionCompleted && !reviewed) {
       emit(const LessonDetailFeedBack());
