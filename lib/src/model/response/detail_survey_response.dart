@@ -6,11 +6,12 @@ import 'survey_data.dart';
 
 class DetailSurveyResponse {
   DetailSurveyResponse({
-      Meta? meta,
-    SurveyData? data,}){
+    Meta? meta,
+    SurveyData? data,
+  }) {
     _meta = meta;
     _data = data;
-}
+  }
 
   DetailSurveyResponse.fromJson(dynamic json) {
     _meta = json['meta'] != null ? Meta.fromJson(json['meta']) : null;
@@ -32,6 +33,4 @@ class DetailSurveyResponse {
     }
     return map;
   }
-
 }
-

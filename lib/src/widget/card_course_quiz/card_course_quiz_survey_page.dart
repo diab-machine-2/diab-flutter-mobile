@@ -5,11 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widgets/button_widget.dart';
-import 'package:medical/src/widgets/popup_window_widget.dart';
 import 'package:medical/src/widgets/text_field_widget.dart';
 
 import 'card_course_quiz.dart';
@@ -19,17 +17,13 @@ enum SurveyQuestionTypes { SingleChoice, MultipleChoice, Text, Range }
 class CardCourseQuizSurveyPage extends StatefulWidget {
   final int index;
   final QuizData quizData;
-  final ValueChanged<List<String>> onSubmitAnswer;
-  final bool isQuiz;
-  final ValueChanged<bool>? onChoseAnswer;
+  final ValueChanged<QuestionAnswerResults> onSubmitAnswer;
 
   const CardCourseQuizSurveyPage(
       {Key? key,
       required this.quizData,
       required this.index,
-      required this.onSubmitAnswer,
-      this.onChoseAnswer,
-      this.isQuiz = true})
+      required this.onSubmitAnswer})
       : super(key: key);
 
   @override
@@ -64,9 +58,13 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
             if (state is CardCourseQuizFailure)
               Message.showToastMessage(context, state.error);
             if (state is ChooseAnswerSuccess) {
-              if (widget.onChoseAnswer != null) {
-                widget
-                    .onChoseAnswer!(!Utils.isEmpty(_cubit.listAnswerChoosing));
+              if (widget.onSubmitAnswer != null) {
+                widget.onSubmitAnswer(
+                  QuestionAnswerResults(
+                    surveyQuestionId: widget.quizData.id,
+                    surveyAnswerIdList: _cubit.listAnswerChoosing,
+                  ),
+                );
               }
             }
           },
@@ -102,15 +100,6 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
     final QuizData quizData = widget.quizData;
     final List<AnswerData> listAnswer = quizData.answers ?? [];
     listAnswer.sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
-    final bool isAnswering =
-        !_cubit.isAnswered && _cubit.listAnswerChoosing.isNotEmpty;
-    final bool isAnswerRight = _cubit.isAnswered &&
-        _cubit.listAnswerApply.toString() ==
-            quizData.answers
-                ?.where((e) => e.isCorrect == true)
-                .map((e) => e.id)
-                .toList()
-                .toString();
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 20.h),
@@ -124,7 +113,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           Text(
             R.string.question_number.tr(args: [(widget.index + 1).toString()]),
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 16,
               fontWeight: FontWeight.w400,
               color: R.color.textDark,
             ),
@@ -133,7 +122,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           Text(
             quizData.name ?? "",
             style: TextStyle(
-                fontSize: 20.sp,
+                fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: R.color.textDark,
                 height: 1.4),
@@ -142,80 +131,6 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           SizedBox(height: 20.h),
           Expanded(
             child: buildAnswerByType(quizData),
-          ),
-          SizedBox(height: 10.h),
-          if (_cubit.isAnswered)
-            Column(
-              children: [
-                Center(
-                  child: Image.asset(
-                    isAnswerRight
-                        ? R.drawable.ic_congratulation
-                        : R.drawable.ic_regret,
-                    height: 60.h,
-                  ),
-                ),
-                SizedBox(height: 10.h),
-                Center(
-                  child: SizedBox(
-                    // width: 200.w,
-                    child: Text(
-                      isAnswerRight
-                          ? R.string.congratulations_your_reply_is_correct.tr()
-                          : R.string.regret_answer.tr(),
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w400,
-                        color: R.color.textDark,
-                      ),
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 15.h),
-              ],
-            )
-          else
-            Container(),
-          Visibility(
-            visible: widget.isQuiz && !_cubit.isShowAnswer,
-            child: Center(
-              child: Container(
-                alignment: Alignment.center,
-                width: 128.w,
-                child: ButtonWidget(
-                  height: 35.h,
-                  title: R.string.check.tr(),
-                  onPressed: !isAnswering
-                      ? null
-                      : () {
-                          _cubit.applyAnswer();
-                          widget.onSubmitAnswer(_cubit.listAnswerApply);
-                        },
-                  backgroundColor: Colors.transparent,
-                  borderColor:
-                      !isAnswering ? R.color.grayBorder : R.color.accentColor,
-                  textColor:
-                      !isAnswering ? R.color.grayBorder : R.color.accentColor,
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.isQuiz && _cubit.isShowAnswer,
-            child: Center(
-              child: GestureDetector(
-                  onTap: () {
-                    showDescriptionPopup(quizData.explain);
-                  },
-                  child: Image.asset(
-                    R.drawable.ic_help_circle,
-                    color: R.color.accentColor,
-                    fit: BoxFit.fill,
-                    height: 28.h,
-                  )),
-            ),
           ),
         ],
       ),
@@ -229,15 +144,15 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
         controller: _textController,
         borderColor: R.color.accentColor,
         onChanged: (text) {
-          if (widget.onChoseAnswer != null) {
-            widget.onChoseAnswer!(!Utils.isEmpty(text));
+          if (widget.onSubmitAnswer != null && text != null) {
+            widget.onSubmitAnswer(QuestionAnswerResults(
+                surveyQuestionId: quizData.id, content: text));
           }
         },
       );
     } else if (type == SurveyQuestionTypes.Range) {
       return ListView.separated(
           padding: EdgeInsets.zero,
-          // physics: CustomScrollPhysics(itemDimension: height(850) + 10),
           shrinkWrap: true,
           itemCount: quizData.answers?.length ?? 0,
           separatorBuilder: (context, indexQuestion) => SizedBox(
@@ -250,7 +165,6 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
     } else {
       return ListView.separated(
           padding: EdgeInsets.zero,
-          // physics: CustomScrollPhysics(itemDimension: height(850) + 10),
           shrinkWrap: true,
           itemCount: quizData.answers?.length ?? 0,
           separatorBuilder: (context, indexQuestion) => SizedBox(
@@ -269,25 +183,21 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
   Widget buildQuestion({required AnswerData data, bool isSingleChoice = true}) {
     final String id = data.id ?? "";
     final bool isSelected = _cubit.listAnswerChoosing.contains(id);
-    final bool isAnswerRight = data.isCorrect == true;
     return Container(
       padding: EdgeInsets.all(4.h),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.h),
-          color: isSelected ? R.color.color0xffB1DDDB : R.color.white,
-          border: Border.all(
-            width: isSelected && !_cubit.isShowAnswer ? 0 : 1,
-            color: _cubit.isShowAnswer
-                ? (isAnswerRight ? R.color.accentColor : R.color.red)
-                : (isSelected
-                    ? Colors.transparent
-                    : R.color.grayComponentBorder),
-          )),
+        borderRadius: BorderRadius.circular(10.h),
+        color: isSelected ? R.color.color0xffB1DDDB : R.color.white,
+        border: Border.all(
+          width: isSelected && !_cubit.isShowAnswer ? 0 : 1,
+          color: isSelected ? Colors.transparent : R.color.grayComponentBorder,
+        ),
+      ),
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onTap: _cubit.isShowAnswer
-            ? null
-            : () => _cubit.checkBox(id, isSingleChoice),
+        onTap: () {
+          _cubit.checkBox(id, isSingleChoice);
+        },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -321,9 +231,9 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
               child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: Text(
-                  data.name ?? "",
+                  data.content ?? '',
                   style: TextStyle(
-                    fontSize: 14.sp,
+                    fontSize: 14,
                     fontWeight:
                         isSelected ? FontWeight.bold : FontWeight.normal,
                     color: isSelected ? R.color.accentColor : R.color.textDark,
@@ -331,16 +241,6 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
                 ),
               ),
             ),
-            Visibility(
-                visible: _cubit.isShowAnswer,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Image.asset(
-                    isAnswerRight ? R.drawable.ic_check : R.drawable.ic_close,
-                    color: isAnswerRight ? R.color.accentColor : R.color.red,
-                    height: 20.h,
-                  ),
-                ))
           ],
         ),
       ),
@@ -350,43 +250,39 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
   Widget buildRange(int index, AnswerData data) {
     final String id = data.id ?? "";
     final bool isSelected = _cubit.listAnswerChoosing.contains(id);
-    final bool isAnswerRight = data.isCorrect == true;
     return Row(
       children: [
-        Container(
-          padding: EdgeInsets.all(16.h),
-          decoration: BoxDecoration(
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => _cubit.checkBox(id, true),
+          child: Container(
+            padding: EdgeInsets.all(16.h),
+            decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.h),
               color: isSelected ? R.color.color0xffB1DDDB : R.color.white,
               border: Border.all(
                 width: isSelected && !_cubit.isShowAnswer ? 0 : 1,
-                color: _cubit.isShowAnswer
-                    ? (isAnswerRight ? R.color.accentColor : R.color.red)
-                    : (isSelected
-                        ? R.color.accentColor
-                        : R.color.grayComponentBorder),
-              )),
-          child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: _cubit.isShowAnswer ? null : () => _cubit.checkBox(id, true),
+                color: isSelected
+                    ? R.color.accentColor
+                    : R.color.grayComponentBorder,
+              ),
+            ),
             child: Text(
               index.toString() /* ?? ""*/,
               style: TextStyle(
-                fontSize: 14.sp,
+                fontSize: 14,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 color: isSelected ? R.color.accentColor : R.color.textDark,
               ),
             ),
           ),
         ),
-        SizedBox(
-          height: 16.h,
-        ),
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
-            data.name ?? "",
+            data.content ?? '',
             style: TextStyle(
-              fontSize: 14.sp,
+              fontSize: 14,
               fontWeight: FontWeight.w400,
               color: R.color.textDark,
             ),
@@ -396,65 +292,5 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
         )
       ],
     );
-  }
-
-  void showDescriptionPopup(String? message) {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.9),
-      useSafeArea: true,
-      barrierDismissible: true,
-      context: context,
-      builder: (_) => PopupWindowWidget(
-          child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(16.h),
-        // height: ScreenUtil().screenHeight - 150.h,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(children: [
-              Image.asset(
-                R.drawable.img_des,
-                height: 80.h,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Center(
-                  child: Text(R.string.explain,
-                      style: TextStyle(
-                          color: R.color.black,
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.bold)),
-                ),
-              )
-            ]),
-            SizedBox(height: 16.h),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  message ?? "",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 16.sp,
-                    letterSpacing: 0.4,
-                    height: 1.4,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      )),
-    );
-  }
-
-  void showAnswer() {
-    _cubit.showAnswer();
-  }
-
-  void clearAllAnswer() {
-    _cubit.clearAllAnswer();
   }
 }

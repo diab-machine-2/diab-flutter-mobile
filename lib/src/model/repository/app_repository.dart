@@ -265,7 +265,7 @@ class AppRepository {
 
   Future<ApiResult<SurveyData>> getDetailSurvey(String surveyId) async {
     try {
-      DetailSurveyResponse response = await appClient.getDetailSurvey(surveyId);
+      final DetailSurveyResponse response = await appClient.getDetailSurvey(surveyId);
       if (response.data != null) {
         return ApiResult.success(data: response.data!);
       } else {

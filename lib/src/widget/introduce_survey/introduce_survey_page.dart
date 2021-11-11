@@ -2,7 +2,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -10,6 +9,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey/survey_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 import 'introduce_survey.dart';
 
@@ -67,11 +67,12 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
               padding: const EdgeInsets.all(16),
               shrinkWrap: true,
               children: [
-                Image.asset(
-                  R.drawable.img_survey,
-                  width: double.infinity,
-                  height: 170.h,
-                  fit: BoxFit.fill,
+                Container(
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: NetWorkImageWidget(imageUrl: _cubit.surveyData?.image?.url),
                 ),
                 const SizedBox(height: 32),
                 Text(
