@@ -191,6 +191,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                           onTapCenter: () {
                             showLessonCategoryList();
                           },
+                          isCompleted: _cubit.isAllSectionCompleted,
                         ),
                       ],
                     ),

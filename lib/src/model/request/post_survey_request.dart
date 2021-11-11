@@ -1,73 +1,101 @@
-/// surveyId : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-/// surveySectionId : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-/// questionAnswerResults : [{"surveyQuestionId":"3fa85f64-5717-4562-b3fc-2c963f66afa6","surveyAnswerIdList":["3fa85f64-5717-4562-b3fc-2c963f66afa6"]}]
+class QuestionAnswerResults {
+/*
+{
+  "surveyQuestionId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "surveyAnswerIdList": [
+    "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  ],
+  "content": "string"
+} 
+*/
+
+  String? surveyQuestionId;
+  List<String?>? surveyAnswerIdList;
+  String? content;
+
+  QuestionAnswerResults({
+    this.surveyQuestionId,
+    this.surveyAnswerIdList,
+    this.content,
+  });
+  QuestionAnswerResults.fromJson(Map<String, dynamic> json) {
+    surveyQuestionId = json['surveyQuestionId']?.toString();
+    if (json['surveyAnswerIdList'] != null) {
+      final v = json['surveyAnswerIdList'];
+      final arr0 = <String>[];
+      v.forEach((v) {
+        arr0.add(v.toString());
+      });
+      surveyAnswerIdList = arr0;
+    }
+    content = json['content']?.toString();
+  }
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{};
+    data['surveyQuestionId'] = surveyQuestionId;
+    if (surveyAnswerIdList != null) {
+      final v = surveyAnswerIdList;
+      final arr0 = [];
+      v!.forEach((v) {
+        arr0.add(v);
+      });
+      data['surveyAnswerIdList'] = arr0;
+    }
+    data['content'] = content;
+    return data;
+  }
+}
 
 class PostSurveyRequest {
+/*
+{
+  "surveyId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "surveySectionId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "questionAnswerResults": [
+    {
+      "surveyQuestionId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "surveyAnswerIdList": [
+        "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+      ],
+      "content": "string"
+    }
+  ]
+} 
+*/
+
+  String? surveyId;
+  String? surveySectionId;
+  List<QuestionAnswerResults?>? questionAnswerResults;
+
   PostSurveyRequest({
-      String? surveyId, 
-      String? surveySectionId, 
-      List<QuestionAnswerResults>? questionAnswerResults,}){
-    _surveyId = surveyId;
-    _surveySectionId = surveySectionId;
-    _questionAnswerResults = questionAnswerResults;
-}
-
-  PostSurveyRequest.fromJson(dynamic json) {
-    _surveyId = json['surveyId'];
-    _surveySectionId = json['surveySectionId'];
+    this.surveyId,
+    this.surveySectionId,
+    this.questionAnswerResults,
+  });
+  PostSurveyRequest.fromJson(Map<String, dynamic> json) {
+    surveyId = json['surveyId']?.toString();
+    surveySectionId = json['surveySectionId']?.toString();
     if (json['questionAnswerResults'] != null) {
-      _questionAnswerResults = [];
-      json['questionAnswerResults'].forEach((v) {
-        _questionAnswerResults?.add(QuestionAnswerResults.fromJson(v));
+      final v = json['questionAnswerResults'];
+      final arr0 = <QuestionAnswerResults>[];
+      v.forEach((v) {
+        arr0.add(QuestionAnswerResults.fromJson(v));
       });
+      questionAnswerResults = arr0;
     }
   }
-  String? _surveyId;
-  String? _surveySectionId;
-  List<QuestionAnswerResults>? _questionAnswerResults;
-
-  String? get surveyId => _surveyId;
-  String? get surveySectionId => _surveySectionId;
-  List<QuestionAnswerResults>? get questionAnswerResults => _questionAnswerResults;
-
   Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['surveyId'] = _surveyId;
-    map['surveySectionId'] = _surveySectionId;
-    if (_questionAnswerResults != null) {
-      map['questionAnswerResults'] = _questionAnswerResults?.map((v) => v.toJson()).toList();
+    final data = <String, dynamic>{};
+    data['surveyId'] = surveyId;
+    data['surveySectionId'] = surveySectionId;
+    if (questionAnswerResults != null) {
+      final v = questionAnswerResults;
+      final arr0 = [];
+      v!.forEach((v) {
+        arr0.add(v!.toJson());
+      });
+      data['questionAnswerResults'] = arr0;
     }
-    return map;
+    return data;
   }
-
-}
-
-/// surveyQuestionId : "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-/// surveyAnswerIdList : ["3fa85f64-5717-4562-b3fc-2c963f66afa6"]
-
-class QuestionAnswerResults {
-  QuestionAnswerResults({
-      String? surveyQuestionId, 
-      List<String>? surveyAnswerIdList,}){
-    _surveyQuestionId = surveyQuestionId;
-    _surveyAnswerIdList = surveyAnswerIdList;
-}
-
-  QuestionAnswerResults.fromJson(dynamic json) {
-    _surveyQuestionId = json['surveyQuestionId'];
-    _surveyAnswerIdList = json['surveyAnswerIdList'] != null ? json['surveyAnswerIdList'].cast<String>() : [];
-  }
-  String? _surveyQuestionId;
-  List<String>? _surveyAnswerIdList;
-
-  String? get surveyQuestionId => _surveyQuestionId;
-  List<String>? get surveyAnswerIdList => _surveyAnswerIdList;
-
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['surveyQuestionId'] = _surveyQuestionId;
-    map['surveyAnswerIdList'] = _surveyAnswerIdList;
-    return map;
-  }
-
 }

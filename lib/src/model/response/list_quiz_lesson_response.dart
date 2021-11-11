@@ -5,15 +5,16 @@
 
 class ListQuizLessonResponse {
   ListQuizLessonResponse({
-      String? id, 
-      int? statusCode, 
-      String? message, 
-      List<QuizData>? data,}){
+    String? id,
+    int? statusCode,
+    String? message,
+    List<QuizData>? data,
+  }) {
     _id = id;
     _statusCode = statusCode;
     _message = message;
     _data = data;
-}
+  }
 
   ListQuizLessonResponse.fromJson(dynamic json) {
     _id = json['id'];
@@ -46,7 +47,6 @@ class ListQuizLessonResponse {
     }
     return map;
   }
-
 }
 
 /// name : "B?nh ti?u du?ng là gì?"
@@ -58,23 +58,39 @@ class ListQuizLessonResponse {
 class QuizData {
   QuizData({
     String? id,
+    String? code,
     String? name,
-      int? type, 
-      String? explain, 
-      dynamic minCompletePercent, 
-      List<AnswerData>? answers,}){
+    int? order,
+    int? type,
+    bool? isScore,
+    bool? isRelatedQuestions,
+    bool? isRelatedPatients,
+    String? explain,
+    dynamic minCompletePercent,
+    List<AnswerData>? answers,
+  }) {
     _id = id;
+    _code = code;
     _name = name;
+    _order = order;
     _type = type;
+    _isScore = isScore;
+    _isRelatedQuestions = isRelatedQuestions;
+    _isRelatedPatients = isRelatedPatients;
     _explain = explain;
     _minCompletePercent = minCompletePercent;
     _answers = answers;
-}
+  }
 
   QuizData.fromJson(dynamic json) {
     _id = json['id'];
+    _code = json['code'];
     _name = json['name'];
+    _order = json['order'];
     _type = json['type'];
+    _isScore = json['isScore'];
+    _isRelatedQuestions = json['isRelatedQuestions'];
+    _isRelatedPatients = json['isRelatedPatients'];
     _explain = json['explain'];
     _minCompletePercent = json['minCompletePercent'];
     if (json['answers'] != null) {
@@ -85,15 +101,25 @@ class QuizData {
     }
   }
   String? _id;
+  String? _code;
   String? _name;
+  int? _order;
   int? _type;
+  bool? _isScore;
+  bool? _isRelatedQuestions;
+  bool? _isRelatedPatients;
   String? _explain;
   dynamic _minCompletePercent;
   List<AnswerData>? _answers;
 
   String? get id => _id;
+  String? get code => _code;
   String? get name => _name;
+  int? get order => _order;
   int? get type => _type;
+  bool? get isScore => _isScore;
+  bool? get isRelatedQuestions => _isRelatedQuestions;
+  bool? get isRelatedPatients => _isRelatedPatients;
   String? get explain => _explain;
   dynamic get minCompletePercent => _minCompletePercent;
   List<AnswerData>? get answers => _answers;
@@ -101,8 +127,13 @@ class QuizData {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
+    map['code'] = _code;
     map['name'] = _name;
+    map['order'] = _order;
     map['type'] = _type;
+    map['isScore'] = _isScore;
+    map['isRelatedQuestions'] = _isRelatedQuestions;
+    map['isRelatedPatients'] = _isRelatedPatients;
     map['explain'] = _explain;
     map['minCompletePercent'] = _minCompletePercent;
     if (_answers != null) {
@@ -110,7 +141,6 @@ class QuizData {
     }
     return map;
   }
-
 }
 
 /// id : "491047bc-a779-4dad-7b6d-08d98c9b30de"
@@ -120,39 +150,69 @@ class QuizData {
 
 class AnswerData {
   AnswerData({
-      String? id, 
-      String? name, 
-      int? order, 
-      bool? isCorrect,}){
+    String? id,
+    String? content,
+    String? name,
+    int? order,
+    int? point,
+    bool? flag,
+    bool? isMappedToSurvey,
+    String? mappedSurveyId,
+    bool? isCorrect,
+  }) {
     _id = id;
+    _content = content;
     _name = name;
     _order = order;
+    _point = point;
+    _flag = flag;
+    _isMappedToSurvey = isMappedToSurvey;
+    _mappedSurveyId = mappedSurveyId;
     _isCorrect = isCorrect;
-}
+  }
 
   AnswerData.fromJson(dynamic json) {
     _id = json['id'];
+    _content = json['content'];
     _name = json['name'];
     _order = json['order'];
+    _point = json['point'];
+    _flag = json['flag'];
+    _isMappedToSurvey = json['isMappedToSurvey'];
+    _mappedSurveyId = json['mappedSurveyId'];
     _isCorrect = json['isCorrect'];
   }
   String? _id;
+  String? _content;
   String? _name;
   int? _order;
+  int? _point;
+  bool? _flag;
+  bool? _isMappedToSurvey;
+  String? _mappedSurveyId;
   bool? _isCorrect;
 
   String? get id => _id;
+  String? get content => _content;
   String? get name => _name;
   int? get order => _order;
+  int? get point => _point;
+  bool? get flag => _flag;
+  bool? get isMappedToSurvey => _isMappedToSurvey;
+  String? get mappedSurveyId => _mappedSurveyId;
   bool? get isCorrect => _isCorrect;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
+    map['content'] = _content;
     map['name'] = _name;
     map['order'] = _order;
+    map['point'] = _point;
+    map['flag'] = _flag;
+    map['isMappedToSurvey'] = _isMappedToSurvey;
+    map['mappedSurveyId'] = _mappedSurveyId;
     map['isCorrect'] = _isCorrect;
     return map;
   }
-
 }

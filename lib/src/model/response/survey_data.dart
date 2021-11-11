@@ -1,3 +1,5 @@
+import 'package:medical/src/modal/base/images.dart';
+
 import 'list_quiz_lesson_response.dart';
 
 /// id : "5b002e55-639c-4b0c-0ea7-08d9983c72bb"
@@ -16,6 +18,8 @@ class SurveyData {
   SurveyData({
     String? id,
     String? code,
+    String? coverId,
+    ImagesModel? image,
     String? name,
     String? description,
     bool? isBeta,
@@ -23,10 +27,13 @@ class SurveyData {
     int? status,
     String? updateDatetime,
     String? updaterName,
-    String? updaterImage,
-    List<SectionSurvey>? sections,}){
+    ImagesModel? updaterImage,
+    List<SectionSurvey>? sections,
+  }) {
     _id = id;
     _code = code;
+    _coverId = coverId;
+    _image = image;
     _name = name;
     _description = description;
     _isBeta = isBeta;
@@ -41,6 +48,8 @@ class SurveyData {
   SurveyData.fromJson(dynamic json) {
     _id = json['id'];
     _code = json['code'];
+    _coverId = json['coverId'];
+    _image = ImagesModel.fromJson(json['image']);
     _name = json['name'];
     _description = json['description'];
     _isBeta = json['isBeta'];
@@ -48,7 +57,7 @@ class SurveyData {
     _status = json['status'];
     _updateDatetime = json['updateDatetime'];
     _updaterName = json['updaterName'];
-    _updaterImage = json['updaterImage'];
+    _updaterImage = ImagesModel.fromJson(json['updaterImage']);
     if (json['sections'] != null) {
       _sections = [];
       json['sections'].forEach((v) {
@@ -58,6 +67,8 @@ class SurveyData {
   }
   String? _id;
   String? _code;
+  String? _coverId;
+  ImagesModel? _image;
   String? _name;
   String? _description;
   bool? _isBeta;
@@ -65,11 +76,13 @@ class SurveyData {
   int? _status;
   String? _updateDatetime;
   String? _updaterName;
-  String? _updaterImage;
+  ImagesModel? _updaterImage;
   List<SectionSurvey>? _sections;
 
   String? get id => _id;
   String? get code => _code;
+  String? get coverId => _coverId;
+  ImagesModel? get image => _image;
   String? get name => _name;
   String? get description => _description;
   bool? get isBeta => _isBeta;
@@ -77,13 +90,15 @@ class SurveyData {
   int? get status => _status;
   String? get updateDatetime => _updateDatetime;
   String? get updaterName => _updaterName;
-  String? get updaterImage => _updaterImage;
+  ImagesModel? get updaterImage => _updaterImage;
   List<SectionSurvey>? get sections => _sections;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
     map['code'] = _code;
+    map['coverId'] = _coverId;
+    map['image'] = _image;
     map['name'] = _name;
     map['description'] = _description;
     map['isBeta'] = _isBeta;
@@ -97,7 +112,6 @@ class SurveyData {
     }
     return map;
   }
-
 }
 
 /// id : "c2ed3add-31e2-4239-2ee1-08d9983c72d0"
@@ -108,18 +122,33 @@ class SurveyData {
 class SectionSurvey {
   SectionSurvey({
     String? id,
+    String? surveyId,
     String? name,
+    String? description,
     int? order,
-    List<QuizData>? questions,}){
+    List<QuizData>? questions,
+  }) {
     _id = id;
+    _surveyId = surveyId;
     _name = name;
+    _description = description;
     _order = order;
     _questions = questions;
   }
 
+  List<QuizData> get questionList {
+    return (questions
+            ?.where((element) => element.isRelatedQuestions == false)
+            .toList() ??
+        [])
+      ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+  }
+
   SectionSurvey.fromJson(dynamic json) {
     _id = json['id'];
+    _surveyId = json['surveyId'];
     _name = json['name'];
+    _description = json['description'];
     _order = json['order'];
     if (json['questions'] != null) {
       _questions = [];
@@ -129,26 +158,31 @@ class SectionSurvey {
     }
   }
   String? _id;
+  String? _surveyId;
   String? _name;
+  String? _description;
   int? _order;
   List<QuizData>? _questions;
 
   String? get id => _id;
+  String? get surveyId => _surveyId;
   String? get name => _name;
+  String? get description => _description;
   int? get order => _order;
   List<QuizData>? get questions => _questions;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
+    map['surveyId'] = _surveyId;
     map['name'] = _name;
+    map['description'] = _description;
     map['order'] = _order;
     if (_questions != null) {
       map['questions'] = _questions?.map((v) => v.toJson()).toList();
     }
     return map;
   }
-
 }
 
 /// id : "608f01ff-0bde-4e4b-211a-08d9946a7083"
@@ -171,7 +205,8 @@ class QuestionSurvey {
     bool? isScore,
     bool? isRelatedQuestions,
     bool? isRelatedPatients,
-    List<AnswerSurvey>? answers,}){
+    List<AnswerSurvey>? answers,
+  }) {
     _id = id;
     _code = code;
     _name = name;
@@ -234,7 +269,6 @@ class QuestionSurvey {
     }
     return map;
   }
-
 }
 
 /// id : "762b477c-4543-44f6-0beb-08d9946a708f"
@@ -252,18 +286,13 @@ class AnswerSurvey {
     String? content,
     int? order,
     int? point,
-    int? rangeBegin,
-    int? rangeEnd,
-    String? titleBegin,
-    String? titleEnd,}){
+    bool? flag,
+  }) {
     _id = id;
     _content = content;
     _order = order;
     _point = point;
-    _rangeBegin = rangeBegin;
-    _rangeEnd = rangeEnd;
-    _titleBegin = titleBegin;
-    _titleEnd = titleEnd;
+    _flag = flag;
   }
 
   AnswerSurvey.fromJson(dynamic json) {
@@ -271,28 +300,19 @@ class AnswerSurvey {
     _content = json['content'];
     _order = json['order'];
     _point = json['point'];
-    _rangeBegin = json['rangeBegin'];
-    _rangeEnd = json['rangeEnd'];
-    _titleBegin = json['titleBegin'];
-    _titleEnd = json['titleEnd'];
+    _flag = json['flag'];
   }
   String? _id;
   String? _content;
   int? _order;
   int? _point;
-  int? _rangeBegin;
-  int? _rangeEnd;
-  String? _titleBegin;
-  String? _titleEnd;
+  bool? _flag;
 
   String? get id => _id;
   String? get content => _content;
   int? get order => _order;
   int? get point => _point;
-  int? get rangeBegin => _rangeBegin;
-  int? get rangeEnd => _rangeEnd;
-  String? get titleBegin => _titleBegin;
-  String? get titleEnd => _titleEnd;
+  bool? get flag => _flag;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -300,11 +320,7 @@ class AnswerSurvey {
     map['content'] = _content;
     map['order'] = _order;
     map['point'] = _point;
-    map['rangeBegin'] = _rangeBegin;
-    map['rangeEnd'] = _rangeEnd;
-    map['titleBegin'] = _titleBegin;
-    map['titleEnd'] = _titleEnd;
+    map['flag'] = _flag;
     return map;
   }
-
 }

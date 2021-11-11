@@ -12,13 +12,15 @@ import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/card_course_quiz/card_course_quiz.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey/survey_page.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../card_course_quiz/card_course_quiz.dart';
 import '../survey_result/survey_result_page.dart';
 import 'survey_question.dart';
+import 'widgets/custom_progress_bar_widget.dart';
 
 class SurveyQuestionPage extends StatefulWidget {
   final int index;
@@ -34,7 +36,6 @@ class SurveyQuestionPage extends StatefulWidget {
 
 class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   late SurveyQuestionCubit _cubit;
-  SectionSurvey? _sectionSurvey;
   List<GlobalKey<CardCourseQuizPageState>> listGlobal = [];
   final AutoScrollController _controller =
       AutoScrollController(axis: Axis.horizontal);
@@ -43,9 +44,10 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   void initState() {
     super.initState();
     final AppRepository repository = AppRepository();
-    _cubit = SurveyQuestionCubit(repository);
+    final SectionSurvey? _sectionSurvey =
+        widget.surveyData.sections?[widget.index];
+    _cubit = SurveyQuestionCubit(repository, _sectionSurvey);
     if (widget.surveyData.sections != null) {
-      _sectionSurvey = widget.surveyData.sections![widget.index];
       _sectionSurvey?.questions?.forEach((element) {
         listGlobal.add(GlobalKey<CardCourseQuizPageState>());
       });
@@ -88,7 +90,6 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   }
 
   Widget buildPage(BuildContext context, SurveyQuestionState state) {
-    final int lengthQuiz = _sectionSurvey?.questions?.length ?? 0;
     return Container(
       decoration: BoxDecoration(color: R.color.color0xffB1DDDB),
       child: Column(
@@ -113,52 +114,46 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               )
             ],
           ),
-          SizedBox(height: 5.h),
+          const SizedBox(height: 5),
           Expanded(
-              child: lengthQuiz == 0
-                  ? Container()
-                  : ListView.builder(
-                      controller: _controller,
-                      scrollDirection: Axis.horizontal,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: lengthQuiz,
-                      itemBuilder: (context, index) {
-                        final QuizData data = _sectionSurvey!.questions![index];
-                        return AutoScrollTag(
-                            key: ValueKey(index),
-                            controller: _controller,
-                            index: index,
-                            child: Container(
-                              margin: EdgeInsets.symmetric(
-                                  vertical: 16.h, horizontal: 16.h),
-                              width: ScreenUtil().screenWidth - 32.h,
-                              child: CardCourseQuizSurveyPage(
-                                  key: listGlobal[index],
-                                  index: index,
-                                  quizData: data,
-                                  isQuiz: false,
-                                  onChoseAnswer: (isChoseAnswer) {
-                                    _cubit.enableNextButton(isChoseAnswer);
-                                  },
-                                  onSubmitAnswer: (listAnswer) {
-                                    _cubit.recordAnswer(
-                                        data.id!,
-                                        listAnswer,
-                                        (data.answers ?? [])
-                                            .map((e) => e.id.toString())
-                                            .toList());
-                                  }),
-                            ));
+            child: ListView.builder(
+              controller: _controller,
+              scrollDirection: Axis.horizontal,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _cubit.lengthQuiz,
+              itemBuilder: (context, index) {
+                final QuizData data = _cubit.questions[index];
+                return AutoScrollTag(
+                  key: ValueKey(index),
+                  controller: _controller,
+                  index: index,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 16),
+                    width: ScreenUtil().screenWidth - 32,
+                    child: CardCourseQuizSurveyPage(
+                      key: listGlobal[index],
+                      index: index,
+                      quizData: data,
+                      onSubmitAnswer: (listAnswer) {
+                        _cubit.recordAnswer(
+                          questionId: data.id!,
+                          answerResult: listAnswer,
+                        );
                       },
-                    )),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const CustomProgressBarWidget(),
           Container(
             color: R.color.white,
             padding: EdgeInsets.only(
-                left: 16.h,
-                right: 16.h,
-                top: 14.h,
-                bottom: Platform.isIOS ? 30.h : 14.h),
+                left: 16, right: 16, top: 14, bottom: Platform.isIOS ? 30 : 14),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 InkWell(
                   onTap: _cubit.selectedCourseIndex == 0
@@ -172,7 +167,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                         },
                   child: Container(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 20.h, vertical: 8.h),
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       color: _cubit.selectedCourseIndex == 0
@@ -184,7 +179,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                       children: [
                         Icon(
                           Icons.arrow_back_ios,
-                          size: 20.h,
+                          size: 20,
                           color: _cubit.selectedCourseIndex == 0
                               ? R.color.textDark
                               : R.color.accentColor,
@@ -192,7 +187,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                         Text(
                           R.string.back.tr(),
                           style: TextStyle(
-                              fontSize: 14.sp,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: _cubit.selectedCourseIndex == 0
                                   ? R.color.textDark
@@ -201,27 +196,6 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                               letterSpacing: 0.4),
                         ),
                       ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.all(10.h),
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          width: 1,
-                          color: R.color.accentColor,
-                        )),
-                    child: Text(
-                      "${_cubit.selectedCourseIndex + 1}/$lengthQuiz",
-                      style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: R.color.accentColor,
-                          height: 1.43,
-                          letterSpacing: 0.4),
                     ),
                   ),
                 ),
@@ -235,65 +209,81 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
   }
 
   Widget buildNextButton() {
-    final int lengthQuiz = _sectionSurvey?.questions?.length ?? 0;
-    final bool isEnable = _cubit.isEnableNext;
-    return InkWell(
-      onTap: isEnable
-          ? () {
-              if (_cubit.selectedCourseIndex == lengthQuiz - 1) {
-                final bool isLastPart = widget.index + 1 ==
-                    (widget.surveyData.sections?.length ?? 0);
-                if (widget.surveyData.id != null && _sectionSurvey?.id != null)
-                  _cubit.submitAnswer(
-                      widget.surveyData.id!, _sectionSurvey!.id!);
-                if (isLastPart) {
-                  NavigationUtil.navigatePage(context, SurveyResultPage());
-                } else {
-                  NavigationUtil.navigatePage(
-                      context,
-                      SurveyPage(
-                        index: widget.index + 1,
-                        surveyData: widget.surveyData,
-                      ));
-                }
+    final bool isEnable = _cubit.nextButtonEnable;
+    final VoidCallback? onTap = isEnable
+        ? () {
+            if (_cubit.selectedCourseIndex == _cubit.lengthQuiz - 1) {
+              final bool isLastPart =
+                  widget.index + 1 == (widget.surveyData.sections?.length ?? 0);
+              if (widget.surveyData.id != null &&
+                  _cubit.sectionSurvey?.id != null)
+                _cubit.submitAnswer(
+                    widget.surveyData.id!, _cubit.sectionSurvey!.id!);
+              _cubit.emit(SurveyQuestionHideProgressMessage());
+              if (isLastPart) {
+                NavigationUtil.navigatePage(context, SurveyResultPage());
               } else {
-                final int newIndex = _cubit.selectedCourseIndex + 1;
-                _controller.scrollToIndex(newIndex,
-                    duration: const Duration(milliseconds: 400),
-                    preferPosition: AutoScrollPosition.middle);
-                _cubit.jumpToIndexCourse(newIndex);
-                _cubit.enableNextButton(false);
+                NavigationUtil.navigatePage(
+                    context,
+                    SurveyPage(
+                      index: widget.index + 1,
+                      surveyData: widget.surveyData,
+                    ));
               }
+            } else {
+              final int newIndex = _cubit.selectedCourseIndex + 1;
+              _controller.scrollToIndex(newIndex,
+                  duration: const Duration(milliseconds: 400),
+                  preferPosition: AutoScrollPosition.middle);
+              _cubit.jumpToIndexCourse(newIndex);
             }
-          : null,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 8.h),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: isEnable ? R.color.main_6 : R.color.grayBorder,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _cubit.selectedCourseIndex == lengthQuiz - 1
-                  ? R.string.completed.tr()
-                  : R.string.next_question.tr(),
-              style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                  color: isEnable ? R.color.accentColor : R.color.textDark,
-                  height: 1.43,
-                  letterSpacing: 0.4),
+          }
+        : null;
+    return _cubit.selectedCourseIndex == _cubit.lengthQuiz - 1
+        ? Container(
+            height: 36,
+            width: 117,
+            child: ButtonWidget(
+              title: R.string.next.tr(),
+              onPressed: onTap ?? () {},
+              textSize: 14,
+              backgroundColor:
+                  isEnable ? R.color.greenGradientBottom : R.color.white,
+              borderColor: isEnable ? null : R.color.gray,
+              textColor: isEnable ? R.color.white : R.color.gray,
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 20.h,
-              color: isEnable ? R.color.accentColor : R.color.textDark,
+          )
+        : InkWell(
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: isEnable ? R.color.main_6 : R.color.grayBorder,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _cubit.selectedCourseIndex == _cubit.lengthQuiz - 1
+                        ? R.string.completed.tr()
+                        : R.string.next_question.tr(),
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            isEnable ? R.color.accentColor : R.color.textDark,
+                        height: 1.43,
+                        letterSpacing: 0.4),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 20,
+                    color: isEnable ? R.color.accentColor : R.color.textDark,
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 }

@@ -859,6 +859,7 @@ class Strings {
 	String get start_survey => 'start_survey';
 	String get thank_you_for_survey => 'thank_you_for_survey';
 	String get thank_you_for_survey_description => 'thank_you_for_survey_description';
+	String get survey_progress => 'survey_progress';
 	String get explain => 'explain';
 	String get book_coach => 'book_coach';
 	String get description_book_coach => 'description_book_coach';

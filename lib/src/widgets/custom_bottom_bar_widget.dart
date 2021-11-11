@@ -14,6 +14,7 @@ class CustomBottomBarWidget extends StatelessWidget {
     this.onTapCenter,
     this.previousButtonTitle,
     this.nextButtonTitle,
+    this.isCompleted,
   });
 
   final bool isPreviousButtonActive;
@@ -24,127 +25,150 @@ class CustomBottomBarWidget extends StatelessWidget {
   final VoidCallback? onTapCenter;
   final String? previousButtonTitle;
   final String? nextButtonTitle;
+  final bool? isCompleted;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: R.color.white,
       padding: EdgeInsets.fromLTRB(
-          16, 14, 16, MediaQuery.of(context).padding.bottom),
+        16,
+        14,
+        16,
+        MediaQuery.of(context).padding.bottom,
+      ),
       child: Row(
         children: [
           //Previous button
-          InkWell(
-            onTap: onTapPrevious,
+          _buildPreviousButton(),
+          //Center button
+          _buildCenterButton(),
+          //Next button
+          _buildNextButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreviousButton() {
+    return InkWell(
+      onTap: onTapPrevious,
+      child: Container(
+        width: 140,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: isPreviousButtonActive ? R.color.grayBorder : R.color.main_6,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.arrow_back_ios,
+              size: 16,
+              color: isPreviousButtonActive
+                  ? R.color.textDark
+                  : R.color.accentColor,
+            ),
+            Text(
+              previousButtonTitle ?? R.string.back.tr(),
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: isPreviousButtonActive
+                      ? R.color.textDark
+                      : R.color.accentColor,
+                  height: 1.43,
+                  letterSpacing: 0.4),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCenterButton() {
+    return Expanded(
+      child: InkWell(
+        onTap: onTapCenter,
+        child: Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                width: 1,
+                color: R.color.accentColor,
+              )),
+          child: Text(
+            currentPositionTitle,
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: R.color.accentColor,
+                height: 1.43,
+                letterSpacing: 0.4),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNextButton() {
+    if (isCompleted == true) {
+      return Container(
+        width: 140,
+        height: 36,
+        child: ButtonWidget(
+          title: R.string.complete_lesson.tr(),
+          onPressed: onTapNext,
+          textSize: 14,
+        ),
+      );
+    }
+    return (!isNextButtonActive && isCompleted == null)
+        ? Container(
+            width: 140,
+            height: 36,
+            child: ButtonWidget(
+              title: R.string.complete_lesson.tr(),
+              onPressed: onTapNext,
+              textSize: 14,
+            ),
+          )
+        : InkWell(
+            onTap: onTapNext,
             child: Container(
               width: 140,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: isPreviousButtonActive
-                    ? R.color.grayBorder
-                    : R.color.main_6,
+                color: isNextButtonActive ? R.color.main_6 : R.color.grayBorder,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.arrow_back_ios,
-                    size: 16,
-                    color: isPreviousButtonActive
-                        ? R.color.textDark
-                        : R.color.accentColor,
-                  ),
                   Text(
-                    previousButtonTitle ?? R.string.back.tr(),
+                    nextButtonTitle ?? R.string.next_lesson.tr(),
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: isPreviousButtonActive
-                            ? R.color.textDark
-                            : R.color.accentColor,
+                        color: isNextButtonActive
+                            ? R.color.accentColor
+                            : R.color.textDark,
                         height: 1.43,
                         letterSpacing: 0.4),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: isNextButtonActive
+                        ? R.color.accentColor
+                        : R.color.textDark,
                   ),
                 ],
               ),
             ),
-          ),
-          //Center button
-          Expanded(
-            child: InkWell(
-              onTap: onTapCenter,
-              child: Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      width: 1,
-                      color: R.color.accentColor,
-                    )),
-                child: Text(
-                  currentPositionTitle,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: R.color.accentColor,
-                      height: 1.43,
-                      letterSpacing: 0.4),
-                ),
-              ),
-            ),
-          ),
-          //Next button
-          if (!isNextButtonActive)
-            Container(
-              width: 140,
-              height: 36,
-              child: ButtonWidget(
-                title: R.string.complete_lesson.tr(),
-                onPressed: onTapNext,
-                textSize: 14,
-              ),
-            )
-          else
-            InkWell(
-              onTap: onTapNext,
-              child: Container(
-                width: 140,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color:
-                      isNextButtonActive ? R.color.main_6 : R.color.grayBorder,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      nextButtonTitle ?? R.string.next_lesson.tr(),
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: isNextButtonActive
-                              ? R.color.accentColor
-                              : R.color.textDark,
-                          height: 1.43,
-                          letterSpacing: 0.4),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: isNextButtonActive
-                          ? R.color.accentColor
-                          : R.color.textDark,
-                    ),
-                  ],
-                ),
-              ),
-            )
-        ],
-      ),
-    );
+          );
   }
 }

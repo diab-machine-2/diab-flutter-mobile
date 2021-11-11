@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +78,7 @@ class _SurveyPageState extends State<SurveyPage> {
               shrinkWrap: true,
               children: [
                 Image.asset(
-                  R.drawable.ic_survey,
+                  randomImage(),
                   width: double.infinity,
                   height: 240,
                 ),
@@ -92,10 +94,11 @@ class _SurveyPageState extends State<SurveyPage> {
                         height: 1.4),
                   ),
                 ),
+                const SizedBox(height: 16),
                 Container(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Viverra amet mauris, vehicula sollicitudin tristique. Nullam mauris aliquet faucibus quis. Pellentesque quam mattis nec dolor, mattis vel ultricies dictum tincidunt. Fermentum urna id malesuada rutrum.',
+                    _sectionSurvey?.description ?? '',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -129,5 +132,16 @@ class _SurveyPageState extends State<SurveyPage> {
         ],
       ),
     );
+  }
+
+  String randomImage() {
+    final List<String> imageList = [
+      R.drawable.img_survey_1,
+      R.drawable.img_survey_2,
+      R.drawable.img_survey_3,
+      R.drawable.img_survey_4,
+    ];
+    final Random _random = Random();
+    return imageList[_random.nextInt(imageList.length)];
   }
 }

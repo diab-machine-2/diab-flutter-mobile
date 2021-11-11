@@ -33,7 +33,7 @@ class ButtonWidget extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
             color: onPressed == null
-                ? R.color.gray
+                ? R.color.white
                 : (backgroundColor ?? R.color.accentColor),
             gradient: backgroundColor == null && onPressed != null
                 ? const LinearGradient(
@@ -46,11 +46,17 @@ class ButtonWidget extends StatelessWidget {
                     ],
                   )
                 : null,
-            border: borderColor == null ? null : Border.all(
-                color: onPressed == null
-                    ? R.color.gray
-                    : (borderColor ?? backgroundColor ?? R.color.accentColor),
-                width: 1.5),
+            border: onPressed == null
+                ? Border.all(color: R.color.gray, width: 1.5)
+                : borderColor == null
+                    ? null
+                    : Border.all(
+                        color: onPressed == null
+                            ? R.color.gray
+                            : (borderColor ??
+                                backgroundColor ??
+                                R.color.accentColor),
+                        width: 1.5),
             borderRadius: BorderRadius.circular(200)),
         child: Text(
           title,

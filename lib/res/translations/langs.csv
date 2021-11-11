@@ -857,6 +857,7 @@ part_number,"Phần {}. Hiểu biết về bệnh đái tháo đường",
 start_survey,Bắt đầu khảo sát,
 thank_you_for_survey,Cảm ơn bạn đã hoàn thành khảo sát!,
 thank_you_for_survey_description,Ý kiến đóng góp của bạn rất có giá trị và quan trọng đối với chúng tôi.,
+survey_progress,Bạn đã hoàn thành {}% khảo sát!
 explain,Giải thích,
 book_coach,Đặt lịch coach,
 description_book_coach,Đặt lịch tư vấn cùng chuyên gia giúp bạn có nhiều kiến thức trong quá trình chữa trị đái tháo đường,
