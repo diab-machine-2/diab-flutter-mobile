@@ -76,6 +76,12 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
 
   void showOverlay() {
     late final int progress;
+    if (_cubit.progress < 90) {
+      showed90Message = false;
+    }
+    if (_cubit.progress < 50) {
+      showed50Message = false;
+    }
     if (_cubit.progress >= 0.9 && !showed90Message) {
       progress = 90;
       showed90Message = true;
@@ -83,12 +89,6 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
       progress = 50;
       showed50Message = true;
     } else {
-      if (_cubit.progress < 90) {
-        showed90Message = false;
-      }
-      if (_cubit.progress < 50) {
-        showed50Message = false;
-      }
       return;
     }
 
