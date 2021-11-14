@@ -50,7 +50,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
   Widget build(BuildContext context) {
     super.build(context);
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
@@ -145,15 +145,18 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
   Widget buildAnswerByType(QuizData quizData) {
     final SurveyQuestionTypes type = getTypeQuestion(quizData.type);
     if (type == SurveyQuestionTypes.Text) {
-      return TextFieldWidget(
-        controller: _textController,
-        borderColor: R.color.accentColor,
-        onChanged: (text) {
-          if (widget.onSubmitAnswer != null && text != null) {
-            widget.onSubmitAnswer(QuestionAnswerResults(
-                surveyQuestionId: quizData.id, content: text));
-          }
-        },
+      return Container(
+        alignment: Alignment.topCenter,
+        child: TextFieldWidget(
+          controller: _textController,
+          borderColor: R.color.accentColor,
+          onChanged: (text) {
+            if (widget.onSubmitAnswer != null && text != null) {
+              widget.onSubmitAnswer(QuestionAnswerResults(
+                  surveyQuestionId: quizData.id, content: text));
+            }
+          },
+        ),
       );
     } else if (type == SurveyQuestionTypes.Range) {
       return ListView.separated(
