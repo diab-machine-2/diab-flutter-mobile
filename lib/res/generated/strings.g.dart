@@ -629,6 +629,8 @@ class Strings {
 	String get filtering => 'filtering';
 	String get remake_filter => 'remake_filter';
 	String get filter_not_learnt_lesson_yet => 'filter_not_learnt_lesson_yet';
+	String get lesson_not_learnt_yet => 'lesson_not_learnt_yet';
+	String get lesson_not_unlock_yet => 'lesson_not_unlock_yet';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';

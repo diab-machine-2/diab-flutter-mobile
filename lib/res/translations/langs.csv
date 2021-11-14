@@ -627,6 +627,8 @@ enter_key_word,Nhập từ khoá,
 filtering,Lọc kết quả,
 remake_filter,Tạo lại bộ lọc,
 filter_not_learnt_lesson_yet,Lọc bài chưa học,
+lesson_not_learnt_yet,Chưa học,
+lesson_not_unlock_yet,Chưa mở khoá,
 Common,============================================Common====================================================
 huyet_ap,Huyết áp,
 duong_huyet,Đường huyết,

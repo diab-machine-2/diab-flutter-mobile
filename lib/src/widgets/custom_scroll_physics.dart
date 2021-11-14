@@ -3,7 +3,8 @@ import 'package:flutter/widgets.dart';
 class CustomScrollPhysics extends ScrollPhysics {
   final double itemDimension;
 
-  CustomScrollPhysics({required this.itemDimension, ScrollPhysics? parent})
+  const CustomScrollPhysics(
+      {required this.itemDimension, ScrollPhysics? parent})
       : super(parent: parent);
 
   @override
@@ -21,7 +22,7 @@ class CustomScrollPhysics extends ScrollPhysics {
   }
 
   double _getTargetPixels(
-      ScrollMetrics position,
+    ScrollMetrics position,
     Tolerance tolerance,
     double velocity,
     double portion,

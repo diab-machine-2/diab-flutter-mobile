@@ -66,6 +66,7 @@ class QuizLessonQuiz {
   String? type;
   String? lessonLevel;
   String? lesson;
+  String? explain;
   List<QuizLessonQuizQuizAnswers?>? quizAnswers;
 
   QuizLessonQuiz({
@@ -76,6 +77,7 @@ class QuizLessonQuiz {
     this.type,
     this.lessonLevel,
     this.lesson,
+    this.explain,
     this.quizAnswers,
   });
   QuizLessonQuiz.fromJson(Map<String, dynamic> json) {
@@ -86,6 +88,7 @@ class QuizLessonQuiz {
     type = json['type']?.toString();
     lessonLevel = json['lessonLevel']?.toString();
     lesson = json['lesson']?.toString();
+    explain = json['explain']?.toString();
     if (json['quizAnswers'] != null) {
       final v = json['quizAnswers'];
       final arr0 = <QuizLessonQuizQuizAnswers>[];
@@ -104,6 +107,7 @@ class QuizLessonQuiz {
     data['type'] = type;
     data['lessonLevel'] = lessonLevel;
     data['lesson'] = lesson;
+    data['explain'] = explain;
     if (quizAnswers != null) {
       final v = quizAnswers;
       final arr0 = [];

@@ -5,8 +5,11 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/const.dart';
 
 class LessonStatusWidget extends StatelessWidget {
-  const LessonStatusWidget(
-      {required this.learningStatus, this.progress, required this.isRequired});
+  const LessonStatusWidget({
+    required this.learningStatus,
+    this.progress,
+    required this.isRequired,
+  });
   final int? learningStatus;
   final int? progress;
   final bool isRequired;
@@ -64,46 +67,44 @@ class LessonStatusWidget extends StatelessWidget {
       );
     }
     if (learningStatus == Const.LESSON_NOT_LEARN) {
-      if (isRequired) {
-        return Row(
-          children: [
-            Container(
-              width: 20,
-              height: 20,
-              child: Image.asset(R.drawable.ic_lesson_lock),
+      return Row(
+        children: [
+          Container(
+            width: 20,
+            height: 20,
+            child: Image.asset(R.drawable.ic_lesson_not_learn),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            R.string.lesson_not_learnt_yet.tr(),
+            style: TextStyle(
+              color: R.color.captionColorGray,
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w700,
             ),
-            const SizedBox(width: 8),
-            Text(
-              'Chưa mở khoá',
-              style: TextStyle(
-                color: R.color.captionColorGray,
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w700,
-              ),
+          ),
+        ],
+      );
+    }
+    if (learningStatus == Const.LESSON_LOCKED) {
+      return Row(
+        children: [
+          Container(
+            width: 20,
+            height: 20,
+            child: Image.asset(R.drawable.ic_lesson_lock),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            R.string.lesson_not_unlock_yet.tr(),
+            style: TextStyle(
+              color: R.color.captionColorGray,
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w700,
             ),
-          ],
-        );
-      }
-      if (!isRequired) {
-        return Row(
-          children: [
-            Container(
-              width: 20,
-              height: 20,
-              child: Image.asset(R.drawable.ic_lesson_not_learn),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Chưa học',
-              style: TextStyle(
-                color: R.color.captionColorGray,
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        );
-      }
+          ),
+        ],
+      );
     }
     return const SizedBox.shrink();
   }

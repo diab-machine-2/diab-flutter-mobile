@@ -6,7 +6,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/quiz_lesson.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/popup_window_widget.dart';
 
 import 'card_course_quiz.dart';
@@ -52,6 +51,9 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
           listener: (context, state) {
             if (state is CardCourseQuizFailure)
               Message.showToastMessage(context, state.error);
+            if (state is ChooseAnswerSuccess) {
+              widget.onSubmitAnswer(_cubit.listAnswerChoosing);
+            }
           },
           builder: (context, state) {
             if (state is CardCourseQuizLoading) {
@@ -72,15 +74,6 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
     final List<QuizLessonQuizQuizAnswers?> listAnswer = quizData.answers;
     listAnswer.sort((a, b) => (a?.order ?? 0).compareTo(b?.order ?? 0));
     final bool isSingleChoice = quizData.type == '1';
-    final bool isAnswering =
-        !_cubit.isAnswered && _cubit.listAnswerChoosing.isNotEmpty;
-    final bool isAnswerRight = _cubit.isAnswered &&
-        _cubit.listAnswerApply.toString() ==
-            quizData.answers
-                .where((e) => e?.isCorrect == true)
-                .map((e) => e?.quizId)
-                .toList()
-                .toString();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -113,7 +106,6 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
           Expanded(
             child: ListView.separated(
                 padding: EdgeInsets.zero,
-                // physics: CustomScrollPhysics(itemDimension: height(850) + 10),
                 shrinkWrap: true,
                 itemCount: quizData.answers.length,
                 separatorBuilder: (context, indexQuestion) =>
@@ -128,73 +120,15 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                 }),
           ),
           const SizedBox(height: 10),
-          if (_cubit.isAnswered)
-            Column(
-              children: [
-                Center(
-                  child: Image.asset(
-                    isAnswerRight
-                        ? R.drawable.ic_congratulation
-                        : R.drawable.ic_regret,
-                    height: 60,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Center(
-                  child: SizedBox(
-                    child: Text(
-                      isAnswerRight
-                          ? R.string.congratulations_your_reply_is_correct.tr()
-                          : R.string.regret_answer.tr(),
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: R.color.textDark,
-                      ),
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 15),
-              ],
-            )
-          else
-            Container(),
-          Visibility(
-            visible: !_cubit.isShowAnswer,
-            child: Center(
-              child: Container(
-                alignment: Alignment.center,
-                width: 128,
-                child: ButtonWidget(
-                  height: 35,
-                  title: R.string.check.tr(),
-                  onPressed: !isAnswering
-                      ? null
-                      : () {
-                          _cubit.applyAnswer();
-                          widget.onSubmitAnswer(_cubit.listAnswerApply);
-                        },
-                  backgroundColor: Colors.transparent,
-                  borderColor:
-                      !isAnswering ? R.color.grayBorder : R.color.accentColor,
-                  textColor:
-                      !isAnswering ? R.color.grayBorder : R.color.accentColor,
-                ),
-              ),
-            ),
-          ),
           Visibility(
             visible: _cubit.isShowAnswer,
             child: Center(
               child: GestureDetector(
                   onTap: () {
-                    showDescriptionPopup('quizData.explain');
+                    showDescriptionPopup(quizData.quiz?.explain ?? '');
                   },
                   child: Image.asset(
                     R.drawable.ic_help_circle,
-                    color: R.color.accentColor,
                     fit: BoxFit.fill,
                     height: 28,
                   )),
@@ -207,7 +141,8 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
 
   Widget buildQuestion(
       {required QuizLessonQuizQuizAnswers? data, bool isSingleChoice = true}) {
-    final String id = data?.quizId ?? "";
+    //TODO: Tuyen should change to answerId field
+    final String id = data?.name ?? "";
     final bool isSelected = _cubit.listAnswerChoosing.contains(id);
     final bool isAnswerRight = data?.isCorrect == true;
     return Container(
@@ -297,7 +232,6 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
-          // height: ScreenUtil().screenHeight - 150,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -309,7 +243,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                 const SizedBox(width: 16),
                 Expanded(
                   child: Center(
-                    child: Text(R.string.explain,
+                    child: Text(R.string.explain.tr(),
                         style: TextStyle(
                             color: R.color.black,
                             fontSize: 20,

@@ -11,7 +11,6 @@ import 'package:medical/src/utils/logger.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/card_course_quiz/card_course_quiz.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
@@ -19,6 +18,7 @@ import 'package:medical/src/widgets/custom_scroll_physics.dart';
 import 'package:medical/src/widgets/popup_window_widget.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
+import '../card_course_quiz/card_course_quiz.dart';
 import 'course_quiz.dart';
 
 class CourseQuizPage extends StatefulWidget {
@@ -189,50 +189,53 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
             },
           )),
           CustomBottomBarWidget(
-            isPreviousButtonActive: _cubit.selectedCourseIndex == 0,
-            onTapPrevious: _cubit.selectedCourseIndex == 0
-                ? null
-                : () {
-                    final int newIndex = _cubit.selectedCourseIndex - 1;
-                    _controller.scrollToIndex(newIndex,
-                        duration: const Duration(milliseconds: 500),
-                        preferPosition: AutoScrollPosition.middle);
-                    _cubit.jumpToIndexCourse(newIndex);
-                  },
-            isNextButtonActive:
-                lengthQuiz != 0 && _cubit.selectedCourseIndex == lengthQuiz - 1,
-            onTapNext: () {
-              if (lengthQuiz == 0) return;
-              if (_cubit.selectedCourseIndex == lengthQuiz - 1) {
-                buildDialogCompleted(context,
-                    rightAnswer: _cubit.countAnswerRight,
-                    totalQuiz: lengthQuiz, seeResultCallback: () {
-                  logger.i("seeResultCallback");
-                  _cubit.showAnswer();
-                }, retryCallback: () {
-                  logger.i("retryCallback");
-                  _cubit.retryQuiz();
-                  _controller.scrollToIndex(0,
-                      duration: const Duration(milliseconds: 400),
-                      preferPosition: AutoScrollPosition.begin);
-                }, continueLearnCallback: () async {
-                  logger.i("continueLearnCallback");
+              isPreviousButtonActive: _cubit.selectedCourseIndex == 0,
+              onTapPrevious: _cubit.selectedCourseIndex == 0
+                  ? null
+                  : () {
+                      final int newIndex = _cubit.selectedCourseIndex - 1;
+                      _controller.scrollToIndex(newIndex,
+                          duration: const Duration(milliseconds: 500),
+                          preferPosition: AutoScrollPosition.middle);
+                      _cubit.jumpToIndexCourse(newIndex);
+                    },
+              isNextButtonActive:
+                  lengthQuiz != 0 && _cubit.selectedCourseIndex < lengthQuiz,
+              onTapNext: () {
+                if (lengthQuiz == 0) {
                   widget.onDone?.call();
-                });
-              } else {
-                final int newIndex = _cubit.selectedCourseIndex + 1;
-                _controller.scrollToIndex(newIndex,
-                    duration: const Duration(milliseconds: 400),
-                    preferPosition: AutoScrollPosition.middle);
-                _cubit.jumpToIndexCourse(newIndex);
-              }
-            },
-            currentPositionTitle: lengthQuiz == 0
-                ? '0/0'
-                : '${_cubit.selectedCourseIndex + 1}/$lengthQuiz',
-            previousButtonTitle: R.string.previous_question.tr(),
-            nextButtonTitle: R.string.next_question.tr(),
-          ),
+                  return;
+                }
+                if (_cubit.selectedCourseIndex == lengthQuiz - 1) {
+                  buildDialogCompleted(context,
+                      rightAnswer: _cubit.countAnswerRight,
+                      totalQuiz: lengthQuiz, seeResultCallback: () {
+                    logger.i("seeResultCallback");
+                    _cubit.showAnswer();
+                  }, retryCallback: () {
+                    logger.i("retryCallback");
+                    _cubit.retryQuiz();
+                    _controller.scrollToIndex(0,
+                        duration: const Duration(milliseconds: 400),
+                        preferPosition: AutoScrollPosition.begin);
+                  }, continueLearnCallback: () async {
+                    logger.i("continueLearnCallback");
+                    widget.onDone?.call();
+                  });
+                } else {
+                  final int newIndex = _cubit.selectedCourseIndex + 1;
+                  _controller.scrollToIndex(newIndex,
+                      duration: const Duration(milliseconds: 400),
+                      preferPosition: AutoScrollPosition.middle);
+                  _cubit.jumpToIndexCourse(newIndex);
+                }
+              },
+              currentPositionTitle: lengthQuiz == 0
+                  ? '0/0'
+                  : '${_cubit.selectedCourseIndex + 1}/$lengthQuiz',
+              previousButtonTitle: R.string.previous_question.tr(),
+              nextButtonTitle: R.string.next_question.tr(),
+              isCompleted: _cubit.selectedCourseIndex == lengthQuiz - 1),
         ],
       ),
     );
@@ -244,12 +247,13 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     Color colorText = R.color.accentColor;
     final bool isCurrent = _cubit.selectedCourseIndex == index;
     final bool isPass = _cubit.answer.length > index;
+    
     if (isPass) {
       colorText = R.color.white;
       if (_cubit.answer[index].toString() ==
           quizData?.quiz?.quizAnswers
               ?.where((e) => e?.isCorrect == true)
-              .map((e) => e?.quizId)
+              .map((e) => e?.name)
               .toList()
               .toString()) {
         colorBackground = R.color.green;
@@ -331,7 +335,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                       textAlign: TextAlign.center,
                       text: TextSpan(
                         text:
-                            "Bạn đã ${rate == 1 ? "xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
+                            "Bạn đã${rate == 1 ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
                         style: TextStyle(
                           color: R.color.textDark,
                           fontSize: 16,

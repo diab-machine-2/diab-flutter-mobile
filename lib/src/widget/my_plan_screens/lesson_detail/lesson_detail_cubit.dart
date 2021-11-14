@@ -125,6 +125,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
           sectionStatus?.isAudioCompleted = true;
           checkSectionComplete();
         });
+
+    checkSectionComplete();
   }
 
   Future<void> checkSectionComplete() async {

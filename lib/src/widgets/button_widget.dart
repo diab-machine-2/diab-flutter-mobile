@@ -61,7 +61,8 @@ class ButtonWidget extends StatelessWidget {
         child: Text(
           title,
           style: TextStyle(
-              color: textColor ?? R.color.white,
+              color:
+                  onPressed == null ? R.color.gray : textColor ?? R.color.white,
               fontSize: textSize ?? 16,
               fontWeight: FontWeight.w700),
         ),
