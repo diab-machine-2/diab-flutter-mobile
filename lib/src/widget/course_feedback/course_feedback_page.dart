@@ -189,7 +189,7 @@ class _CourseFeedbackPageState extends State<CourseFeedbackPage> {
             ),
             Container(
               width: 200,
-              margin: const EdgeInsets.only(bottom: 10),
+              margin: const EdgeInsets.only(bottom: 20),
               child: ButtonWidget(
                 title: R.string.sent_report.tr(),
                 onPressed: _cubit.rate == 0

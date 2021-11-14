@@ -49,33 +49,38 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: BlocProvider(
-        create: (context) => _cubit,
-        child: BlocConsumer<CardCourseQuizCubit, CardCourseQuizState>(
-          listener: (context, state) {
-            if (state is CardCourseQuizFailure)
-              Message.showToastMessage(context, state.error);
-            if (state is ChooseAnswerSuccess) {
-              if (widget.onSubmitAnswer != null) {
-                widget.onSubmitAnswer(
-                  QuestionAnswerResults(
-                    surveyQuestionId: widget.quizData.id,
-                    surveyAnswerIdList: _cubit.listAnswerChoosing,
-                  ),
-                );
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: BlocProvider(
+          create: (context) => _cubit,
+          child: BlocConsumer<CardCourseQuizCubit, CardCourseQuizState>(
+            listener: (context, state) {
+              if (state is CardCourseQuizFailure)
+                Message.showToastMessage(context, state.error);
+              if (state is ChooseAnswerSuccess) {
+                if (widget.onSubmitAnswer != null) {
+                  widget.onSubmitAnswer(
+                    QuestionAnswerResults(
+                      surveyQuestionId: widget.quizData.id,
+                      surveyAnswerIdList: _cubit.listAnswerChoosing,
+                    ),
+                  );
+                }
               }
-            }
-          },
-          builder: (context, state) {
-            if (state is CardCourseQuizLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
-            return buildPage(context, state);
-          },
+            },
+            builder: (context, state) {
+              if (state is CardCourseQuizLoading) {
+                BotToast.showLoading();
+              } else {
+                BotToast.closeAllLoading();
+              }
+              return buildPage(context, state);
+            },
+          ),
         ),
       ),
     );
@@ -140,15 +145,18 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
   Widget buildAnswerByType(QuizData quizData) {
     final SurveyQuestionTypes type = getTypeQuestion(quizData.type);
     if (type == SurveyQuestionTypes.Text) {
-      return TextFieldWidget(
-        controller: _textController,
-        borderColor: R.color.accentColor,
-        onChanged: (text) {
-          if (widget.onSubmitAnswer != null && text != null) {
-            widget.onSubmitAnswer(QuestionAnswerResults(
-                surveyQuestionId: quizData.id, content: text));
-          }
-        },
+      return Container(
+        alignment: Alignment.topCenter,
+        child: TextFieldWidget(
+          controller: _textController,
+          borderColor: R.color.accentColor,
+          onChanged: (text) {
+            if (widget.onSubmitAnswer != null && text != null) {
+              widget.onSubmitAnswer(QuestionAnswerResults(
+                  surveyQuestionId: quizData.id, content: text));
+            }
+          },
+        ),
       );
     } else if (type == SurveyQuestionTypes.Range) {
       return ListView.separated(

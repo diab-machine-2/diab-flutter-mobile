@@ -35,7 +35,7 @@ class CustomBottomBarWidget extends StatelessWidget {
         16,
         14,
         16,
-        MediaQuery.of(context).padding.bottom,
+        MediaQuery.of(context).padding.bottom + 10,
       ),
       child: Row(
         children: [

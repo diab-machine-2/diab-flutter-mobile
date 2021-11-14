@@ -133,9 +133,9 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Cường độ yếu',
+              itemData.exerciseIntensity?.name ?? '',
               style: TextStyle(
-                color: R.color.orange_1,
+                color: itemData.exerciseIntensity?.color ?? R.color.textDark,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),

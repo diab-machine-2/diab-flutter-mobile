@@ -7,13 +7,13 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'course_quiz.dart';
 
 class CourseQuizCubit extends Cubit<CourseQuizState> {
+  CourseQuizCubit(this.repository) : super(InitialCourseQuizState());
   final AppRepository repository;
+
   List<QuizLesson?> listQuiz = [];
   Map<int, List<String>> answer = {};
   int selectedCourseIndex = 0;
   int countAnswerRight = 0;
-
-  CourseQuizCubit(this.repository) : super(InitialCourseQuizState());
 
   Future<void> getListQuiz(String lessonId) async {
     emit(CourseQuizLoading());
@@ -38,7 +38,8 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
             ?.quiz
             ?.quizAnswers
             ?.where((e) => e?.isCorrect == true)
-            .map((e) => e?.quizId)
+            //TODO: Tuyen should change to answerId field
+            .map((e) => e?.name)
             .toList()
             .toString();
     if (isRight) {

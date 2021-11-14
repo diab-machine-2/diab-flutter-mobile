@@ -65,25 +65,30 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: R.color.color0xffB1DDDB,
-      body: BlocProvider(
-        create: (context) => _cubit,
-        child: BlocConsumer<SurveyQuestionCubit, SurveyQuestionState>(
-          listener: (context, state) {
-            if (state is SurveyQuestionFailure) {
-              Message.showToastMessage(context, state.error);
-            }
-          },
-          builder: (context, state) {
-            if (state is SurveyQuestionLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
-            return SafeArea(
-                top: true, bottom: false, child: buildPage(context, state));
-          },
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: R.color.color0xffB1DDDB,
+        body: BlocProvider(
+          create: (context) => _cubit,
+          child: BlocConsumer<SurveyQuestionCubit, SurveyQuestionState>(
+            listener: (context, state) {
+              if (state is SurveyQuestionFailure) {
+                Message.showToastMessage(context, state.error);
+              }
+            },
+            builder: (context, state) {
+              if (state is SurveyQuestionLoading) {
+                BotToast.showLoading();
+              } else {
+                BotToast.closeAllLoading();
+              }
+              return SafeArea(
+                  top: true, bottom: false, child: buildPage(context, state));
+            },
+          ),
         ),
       ),
     );
@@ -159,6 +164,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                   onTap: _cubit.selectedCourseIndex == 0
                       ? null
                       : () {
+                          FocusScope.of(context).unfocus();
                           final int newIndex = _cubit.selectedCourseIndex - 1;
                           _controller.scrollToIndex(newIndex,
                               duration: const Duration(milliseconds: 500),
@@ -212,6 +218,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
     final bool isEnable = _cubit.nextButtonEnable;
     final VoidCallback? onTap = isEnable
         ? () {
+            FocusScope.of(context).unfocus();
             if (_cubit.selectedCourseIndex == _cubit.lengthQuiz - 1) {
               final bool isLastPart =
                   widget.index + 1 == (widget.surveyData.sections?.length ?? 0);

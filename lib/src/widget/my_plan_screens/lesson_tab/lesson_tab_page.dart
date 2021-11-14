@@ -9,7 +9,6 @@ import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_filter/models/filter_data.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -17,6 +16,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../lesson_detail/lesson_detail.dart';
 import '../lesson_filter/lesson_filter.dart';
+import '../lesson_filter/models/filter_data.dart';
 import '../my_plan/models/completion_status.dart';
 import '../my_plan/widgets/app_bar_bottom.dart';
 import 'lesson_tab.dart';
@@ -358,9 +358,6 @@ class _LessonTabPageState extends State<LessonTabPage>
     required MyLessonResponseData? lessonDetail,
     VoidCallback? onTap,
   }) {
-    final bool isLocked =
-        lessonDetail?.learningStatus == Const.LESSON_NOT_LEARN &&
-            _cubit.currentLessonType == LessonType.route;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 20),
       height: 87,
@@ -371,7 +368,7 @@ class _LessonTabPageState extends State<LessonTabPage>
           const SizedBox(width: 16),
           Expanded(
             child: InkWell(
-              onTap: !isLocked
+              onTap: lessonDetail?.learningStatus == Const.LESSON_LOCKED
                   ? () {
                       _showLockedDialog();
                     }
@@ -379,9 +376,13 @@ class _LessonTabPageState extends State<LessonTabPage>
               child: Row(
                 children: [
                   Container(
+                      clipBehavior: Clip.hardEdge,
                       height: 87,
                       width: 87,
-                      child: const NetWorkImageWidget(imageUrl: '')),
+                      decoration:
+                          BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                      child: NetWorkImageWidget(
+                          imageUrl: lessonDetail?.image?.url)),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -392,7 +393,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                           Row(
                             children: [
                               Text(
-                                lessonDetail?.module ?? '',
+                                lessonDetail?.tagName ?? '',
                                 style: TextStyle(
                                   color: R.color.greenGradientBottom,
                                   fontSize: 14,
@@ -400,11 +401,12 @@ class _LessonTabPageState extends State<LessonTabPage>
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              Image.asset(
-                                R.drawable.ic_new_lesson,
-                                width: 24,
-                                height: 24,
-                              )
+                              if (lessonDetail?.isNew == true)
+                                Image.asset(
+                                  R.drawable.ic_new_lesson,
+                                  width: 24,
+                                  height: 24,
+                                )
                             ],
                           ),
                           Text(
