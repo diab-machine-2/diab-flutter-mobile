@@ -14,7 +14,6 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
 import 'package:medical/src/widgets/custom_scroll_physics.dart';
-import 'package:medical/src/widgets/popup_window_widget.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../card_course_quiz/card_course_quiz.dart';
@@ -324,7 +323,6 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     BuildContext context, {
     required int rightAnswer,
     required int totalQuiz,
-    bool isShowResult = false,
     required VoidCallback seeResultCallback,
     VoidCallback? retryCallback,
     required VoidCallback continueLearnCallback,
@@ -400,18 +398,15 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                       ),
                     ),
                   ),
-                  Visibility(
-                    visible: !(rate == 1 || isShowResult),
-                    child: Text(
-                      R.string.challenge_yourself_again.tr(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: R.color.textDark,
-                          height: 1.37,
-                          letterSpacing: 0.4),
-                    ),
+                  Text(
+                    R.string.challenge_yourself_again.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.textDark,
+                        height: 1.37,
+                        letterSpacing: 0.4),
                   ),
                   const SizedBox(height: 30),
                   Row(
@@ -421,22 +416,15 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                         width: 128,
                         child: ButtonWidget(
                           height: 35,
-                          title: rate == 1 || isShowResult
+                          title: rate == 1
                               ? R.string.see_the_answer.tr()
                               : R.string.skip.tr(),
                           textSize: 14,
                           onPressed: () {
                             NavigationUtil.pop(context);
-                            if (rate == 1 || isShowResult == true) {
-                              seeResultCallback();
-                            } else {
-                              buildDialogCompleted(context,
-                                  rightAnswer: rightAnswer,
-                                  totalQuiz: totalQuiz,
-                                  isShowResult: true,
-                                  seeResultCallback: seeResultCallback,
-                                  continueLearnCallback: continueLearnCallback);
-                            }
+                            rate == 1
+                                ? seeResultCallback()
+                                : continueLearnCallback();
                           },
                           backgroundColor: Colors.transparent,
                           borderColor: R.color.accentColor,
@@ -447,13 +435,13 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                         width: 128,
                         child: ButtonWidget(
                             height: 35,
-                            title: rate == 1 || isShowResult
+                            title: rate == 1
                                 ? R.string.continue_learning.tr()
                                 : R.string.accept.tr(),
                             textSize: 14,
                             onPressed: () {
                               NavigationUtil.pop(context);
-                              if (rate == 1 || isShowResult) {
+                              if (rate == 1) {
                                 continueLearnCallback();
                               } else {
                                 retryCallback!();
@@ -465,60 +453,6 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void showDescriptionPopup(String? message) {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.9),
-      useSafeArea: true,
-      barrierDismissible: true,
-      context: context,
-      builder: (_) => PopupWindowWidget(
-        child: Container(
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(children: [
-                Image.asset(
-                  R.drawable.img_des,
-                  height: 80,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Center(
-                    child: Text(R.string.explain,
-                        style: TextStyle(
-                            color: R.color.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                )
-              ]),
-              const SizedBox(height: 16),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      message ?? "",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontWeight: FontWeight.normal,
-                        fontSize: 16,
-                        letterSpacing: 0.4,
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ),
         ),
       ),

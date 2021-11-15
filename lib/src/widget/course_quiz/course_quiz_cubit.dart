@@ -14,7 +14,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   List<QuizLesson?> listQuiz = [];
   Map<int, List<String>> answer = {};
   int selectedCourseIndex = 0;
-  double minCompletePercent = 0;
+  double minCompletePercent = 1;
 
   bool isShowResult = false;
 
@@ -67,7 +67,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
     final ApiResult<LessonSectionListResponse?> apiResult =
         await repository.getListQuiz(lessonId);
     apiResult.when(success: (LessonSectionListResponse? response) {
-      minCompletePercent = response?.data?.minCompletePercent?.toDouble() ?? 0;
+      minCompletePercent = response?.data?.minCompletePercent?.toDouble() ?? 1;
       if (response?.data?.lessonSections?.isNotEmpty != true) {
         listQuiz = [];
       } else {
