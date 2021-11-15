@@ -153,7 +153,9 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
           border: Border.all(
             width: isSelected && !_cubit.isShowAnswer ? 0 : 1,
             color: _cubit.isShowAnswer
-                ? (isAnswerRight ? R.color.accentColor : R.color.red)
+                ? (isAnswerRight
+                    ? R.color.green
+                    : (isSelected ? R.color.red : R.color.grayComponentBorder))
                 : (isSelected
                     ? Colors.transparent
                     : R.color.grayComponentBorder),
@@ -178,18 +180,22 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
                         value: isSelected,
                         activeColor: R.color.accentColor,
                         splashRadius: 20,
-                        onChanged: (value) {
-                          _cubit.checkBox(id, isSingleChoice);
-                        },
+                        onChanged: _cubit.isShowAnswer
+                            ? null
+                            : (value) {
+                                _cubit.checkBox(id, isSingleChoice);
+                              },
                         groupValue: true,
                       )
                     : Checkbox(
                         value: isSelected,
                         activeColor: R.color.accentColor,
                         splashRadius: 20,
-                        onChanged: (value) {
-                          _cubit.checkBox(id, isSingleChoice);
-                        }),
+                        onChanged: _cubit.isShowAnswer
+                            ? null
+                            : (value) {
+                                _cubit.checkBox(id, isSingleChoice);
+                              }),
               ),
             ),
             Expanded(
@@ -207,15 +213,16 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
               ),
             ),
             Visibility(
-                visible: _cubit.isShowAnswer,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Image.asset(
-                    isAnswerRight ? R.drawable.ic_check : R.drawable.ic_close,
-                    color: isAnswerRight ? R.color.accentColor : R.color.red,
-                    height: 20,
-                  ),
-                ))
+              visible: _cubit.isShowAnswer && (isSelected || isAnswerRight),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Image.asset(
+                  isAnswerRight ? R.drawable.ic_check : R.drawable.ic_close,
+                  color: isAnswerRight ? R.color.green : R.color.red,
+                  height: 20,
+                ),
+              ),
+            )
           ],
         ),
       ),

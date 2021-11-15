@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/quiz_lesson.dart';
-import 'package:medical/src/utils/logger.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -23,7 +22,7 @@ import 'course_quiz.dart';
 
 class CourseQuizPage extends StatefulWidget {
   final String lessonId;
-  final VoidCallback? onDone;
+  final Function(bool isPassed)? onDone;
 
   const CourseQuizPage({Key? key, required this.lessonId, this.onDone})
       : super(key: key);
@@ -84,7 +83,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
             if (state is CourseQuizFailure)
               Message.showToastMessage(context, state.error);
             if (state is CourseQuizDone) {
-              widget.onDone?.call();
+              onDoneQuiz();
             }
           },
           builder: (context, state) {
@@ -157,20 +156,26 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               itemCount: lengthQuiz,
-              itemBuilder: (context, index) => buildStep(index: index),
+              itemBuilder: (context, index) => buildStep(
+                  index: index,
+                  onTap: () {
+                    _controller.scrollToIndex(index,
+                        duration: const Duration(milliseconds: 200),
+                        preferPosition: AutoScrollPosition.middle);
+                  }),
               separatorBuilder: (context, index) => const SizedBox(width: 14),
             ),
           ),
           Expanded(
-              child: ListView.builder(
-            controller: _controller,
-            scrollDirection: Axis.horizontal,
-            physics: CustomScrollPhysics(
-                itemDimension: ScreenUtil().screenWidth - 66),
-            itemCount: lengthQuiz,
-            itemBuilder: (context, index) {
-              final QuizLesson? data = _cubit.listQuiz[index];
-              return AutoScrollTag(
+            child: ListView.builder(
+              controller: _controller,
+              scrollDirection: Axis.horizontal,
+              physics: CustomScrollPhysics(
+                  itemDimension: ScreenUtil().screenWidth - 66),
+              itemCount: lengthQuiz,
+              itemBuilder: (context, index) {
+                final QuizLesson? data = _cubit.listQuiz[index];
+                return AutoScrollTag(
                   key: ValueKey(index),
                   controller: _controller,
                   index: index,
@@ -185,103 +190,131 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                       onSubmitAnswer: (listAnswer) =>
                           _cubit.recordAnswer(index, listAnswer),
                     ),
-                  ));
-            },
-          )),
-          CustomBottomBarWidget(
-              isPreviousButtonActive: _cubit.selectedCourseIndex == 0,
-              onTapPrevious: _cubit.selectedCourseIndex == 0
-                  ? null
-                  : () {
-                      final int newIndex = _cubit.selectedCourseIndex - 1;
-                      _controller.scrollToIndex(newIndex,
-                          duration: const Duration(milliseconds: 500),
-                          preferPosition: AutoScrollPosition.middle);
-                      _cubit.jumpToIndexCourse(newIndex);
-                    },
-              isNextButtonActive:
-                  lengthQuiz != 0 && _cubit.selectedCourseIndex < lengthQuiz,
-              onTapNext: () {
-                if (lengthQuiz == 0) {
-                  widget.onDone?.call();
-                  return;
-                }
-                if (_cubit.selectedCourseIndex == lengthQuiz - 1) {
-                  buildDialogCompleted(context,
-                      rightAnswer: _cubit.countAnswerRight,
-                      totalQuiz: lengthQuiz, seeResultCallback: () {
-                    logger.i("seeResultCallback");
-                    _cubit.showAnswer();
-                  }, retryCallback: () {
-                    logger.i("retryCallback");
-                    _cubit.retryQuiz();
-                    _controller.scrollToIndex(0,
-                        duration: const Duration(milliseconds: 400),
-                        preferPosition: AutoScrollPosition.begin);
-                  }, continueLearnCallback: () async {
-                    logger.i("continueLearnCallback");
-                    widget.onDone?.call();
-                  });
-                } else {
-                  final int newIndex = _cubit.selectedCourseIndex + 1;
-                  _controller.scrollToIndex(newIndex,
-                      duration: const Duration(milliseconds: 400),
-                      preferPosition: AutoScrollPosition.middle);
-                  _cubit.jumpToIndexCourse(newIndex);
-                }
+                  ),
+                );
               },
-              currentPositionTitle: lengthQuiz == 0
-                  ? '0/0'
-                  : '${_cubit.selectedCourseIndex + 1}/$lengthQuiz',
-              previousButtonTitle: R.string.previous_question.tr(),
-              nextButtonTitle: R.string.next_question.tr(),
-              isCompleted: _cubit.selectedCourseIndex == lengthQuiz - 1),
+            ),
+          ),
+          CustomBottomBarWidget(
+            isPreviousButtonActive: _cubit.selectedCourseIndex == 0,
+            onTapPrevious: _cubit.selectedCourseIndex == 0
+                ? null
+                : () {
+                    final int newIndex = _cubit.selectedCourseIndex - 1;
+                    _controller.scrollToIndex(newIndex,
+                        duration: const Duration(milliseconds: 200),
+                        preferPosition: AutoScrollPosition.middle);
+                    _cubit.jumpToIndexCourse(newIndex);
+                  },
+            isNextButtonActive:
+                lengthQuiz != 0 && _cubit.selectedCourseIndex < lengthQuiz - 1,
+            onTapNext: () {
+              if (lengthQuiz == 0) {
+                onDoneQuiz();
+                return;
+              }
+              if (_cubit.canComplete == true) {
+                buildDialogCompleted(context,
+                    rightAnswer: _cubit.countAnswerRight,
+                    totalQuiz: lengthQuiz, seeResultCallback: () {
+                  _cubit.showAnswer();
+                  _controller.scrollToIndex(0,
+                      duration: const Duration(milliseconds: 200),
+                      preferPosition: AutoScrollPosition.begin);
+                }, retryCallback: () {
+                  _cubit.retryQuiz();
+                  _controller.scrollToIndex(0,
+                      duration: const Duration(milliseconds: 200),
+                      preferPosition: AutoScrollPosition.begin);
+                }, continueLearnCallback: () async {
+                  onDoneQuiz();
+                });
+              } else {
+                final int newIndex = _cubit.selectedCourseIndex + 1;
+                if (newIndex > lengthQuiz - 1) return;
+                _controller.scrollToIndex(newIndex,
+                    duration: const Duration(milliseconds: 200),
+                    preferPosition: AutoScrollPosition.middle);
+                _cubit.jumpToIndexCourse(newIndex);
+              }
+            },
+            currentPositionTitle: lengthQuiz == 0
+                ? '0/0'
+                : '${_cubit.selectedCourseIndex + 1}/$lengthQuiz',
+            previousButtonTitle: R.string.previous_question.tr(),
+            nextButtonTitle: R.string.next_question.tr(),
+            isCompleted: _cubit.canComplete,
+          ),
         ],
       ),
     );
   }
 
-  Widget buildStep({required int index}) {
+  Widget buildStep({required int index, required VoidCallback onTap}) {
     final QuizLesson? quizData = _cubit.listQuiz[index];
+
     Color colorBackground = R.color.white;
     Color colorText = R.color.accentColor;
+    Color? borderColor = R.color.mainColor;
+
     final bool isCurrent = _cubit.selectedCourseIndex == index;
-    final bool isPass = _cubit.answer.length > index;
-    
-    if (isPass) {
+    final bool isAnswered = _cubit.answer[index]?.isNotEmpty == true;
+    final bool isRight = _cubit.answer[index].toString() ==
+        quizData?.quiz?.quizAnswers
+            ?.where((e) => e?.isCorrect == true)
+            .map((e) => e?.name)
+            .toList()
+            .toString();
+
+    if (_cubit.isShowResult) {
       colorText = R.color.white;
-      if (_cubit.answer[index].toString() ==
-          quizData?.quiz?.quizAnswers
-              ?.where((e) => e?.isCorrect == true)
-              .map((e) => e?.name)
-              .toList()
-              .toString()) {
+      borderColor = null;
+      if (isRight) {
         colorBackground = R.color.green;
       } else {
         colorBackground = R.color.red;
       }
+    } else {
+      if (isCurrent) {
+        colorText = R.color.main_1;
+        colorBackground = R.color.white;
+        borderColor = null;
+      } else if (isAnswered) {
+        colorBackground = R.color.greenGradientBottom;
+        colorText = R.color.white;
+        borderColor = null;
+      } else {
+        colorText = R.color.main_1;
+        colorBackground = R.color.transparent;
+      }
     }
-    return Container(
-      height: 30,
-      width: 30,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: isPass || isCurrent ? colorBackground : Colors.transparent,
-        border: Border.all(
-          width: 1,
-          color: isPass || isCurrent ? colorBackground : R.color.accentColor,
+
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        height: 30,
+        width: 30,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: colorBackground,
+          border: borderColor == null
+              ? null
+              : Border.all(
+                  width: 1,
+                  color: borderColor,
+                ),
+          shape: BoxShape.circle,
         ),
-        shape: BoxShape.circle,
-      ),
-      child: Center(
-        child: Text(
-          "${index + 1}",
-          style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorText,
-              height: 1.37,
-              letterSpacing: 0.4),
+        child: Center(
+          child: Text(
+            "${index + 1}",
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: colorText,
+                height: 1.37,
+                letterSpacing: 0.4),
+          ),
         ),
       ),
     );
@@ -314,7 +347,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
               child: Column(
                 children: [
                   Image.asset(
-                    rate < 0.8
+                    rate < _cubit.minCompletePercent
                         ? R.drawable.ic_learn_result_medium
                         : R.drawable.img_learn_result_high,
                     height: 150,
@@ -334,8 +367,9 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        text:
-                            "Bạn đã${rate == 1 ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
+                        text: rate < _cubit.minCompletePercent
+                            ? "Rất tiếc! Bạn cần trả lời đúng"
+                            : "Bạn đã${rate == 1 ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
                         style: TextStyle(
                           color: R.color.textDark,
                           fontSize: 16,
@@ -343,7 +377,9 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                         ),
                         children: <TextSpan>[
                           TextSpan(
-                              text: "$rightAnswer/$totalQuiz",
+                              text: rate < _cubit.minCompletePercent
+                                  ? " ${(_cubit.minCompletePercent * 100).round()}% "
+                                  : "$rightAnswer/$totalQuiz",
                               style: TextStyle(
                                 color: R.color.accentColor,
                                 fontWeight: FontWeight.bold,
@@ -351,12 +387,15 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                                 height: 1.375,
                               )),
                           TextSpan(
-                              text: " câu!",
-                              style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                height: 1.375,
-                              )),
+                            text: rate < _cubit.minCompletePercent
+                                ? "để hoàn thành cấp độ này"
+                                : " câu!",
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              height: 1.375,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -439,49 +478,56 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
       barrierDismissible: true,
       context: context,
       builder: (_) => PopupWindowWidget(
-          child: Container(
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(children: [
-              Image.asset(
-                R.drawable.img_des,
-                height: 80,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Center(
-                  child: Text(R.string.explain,
-                      style: TextStyle(
-                          color: R.color.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold)),
+        child: Container(
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: [
+                Image.asset(
+                  R.drawable.img_des,
+                  height: 80,
                 ),
-              )
-            ]),
-            const SizedBox(height: 16),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    message ?? "",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontWeight: FontWeight.normal,
-                      fontSize: 16,
-                      letterSpacing: 0.4,
-                      height: 1.4,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Center(
+                    child: Text(R.string.explain,
+                        style: TextStyle(
+                            color: R.color.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                )
+              ]),
+              const SizedBox(height: 16),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      message ?? "",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 16,
+                        letterSpacing: 0.4,
+                        height: 1.4,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      )),
+      ),
     );
+  }
+
+  void onDoneQuiz() {
+    if (widget.onDone != null) {
+      widget.onDone!(_cubit.isPassed);
+    }
   }
 }

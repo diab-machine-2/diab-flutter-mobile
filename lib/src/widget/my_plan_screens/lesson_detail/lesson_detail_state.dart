@@ -50,10 +50,10 @@ class LessonDetailChangeType extends LessonDetailState {
   }
 }
 
-class LessonDetailFeedBack extends LessonDetailState {
-  const LessonDetailFeedBack();
+class LessonDetailCompleted extends LessonDetailState {
+  const LessonDetailCompleted();
   @override
   String toString() {
-    return 'LessonDetailFeedBack{}';
+    return 'LessonDetailCompleted{}';
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/quiz_lesson.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -13,14 +14,66 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   List<QuizLesson?> listQuiz = [];
   Map<int, List<String>> answer = {};
   int selectedCourseIndex = 0;
-  int countAnswerRight = 0;
+  double minCompletePercent = 0;
+
+  bool isShowResult = false;
+
+  bool get isAllCompleted => answer.length == listQuiz.length;
+
+  bool get isOthersCompleted {
+    for (int index = 0; index < listQuiz.length; index++) {
+      if (index == selectedCourseIndex) continue;
+      if (answer[index]?.isNotEmpty != true) return false;
+    }
+    return true;
+  }
+
+  bool? get canComplete {
+    if (isShowResult) {
+      if (selectedCourseIndex >= listQuiz.length - 1) {
+        return true;
+      } else {
+        return null;
+      }
+    }
+    if (isAllCompleted) return true;
+    if (isOthersCompleted) return false;
+    return null;
+  }
+
+  int get countAnswerRight {
+    int countAnswerRight = 0;
+    for (int index = 0; index < answer.length; index++) {
+      if (answer[index].toString() ==
+          listQuiz[index]
+              ?.quiz
+              ?.quizAnswers
+              ?.where((e) => e?.isCorrect == true)
+              //TODO: Tuyen should change to answerId field
+              .map((e) => e?.name)
+              .toList()
+              .toString()) {
+        countAnswerRight++;
+      }
+    }
+    return countAnswerRight;
+  }
+
+  bool get isPassed =>
+      (countAnswerRight / listQuiz.length) > minCompletePercent;
 
   Future<void> getListQuiz(String lessonId) async {
     emit(CourseQuizLoading());
-    final ApiResult<List<QuizLesson?>> apiResult =
+    final ApiResult<LessonSectionListResponse?> apiResult =
         await repository.getListQuiz(lessonId);
-    apiResult.when(success: (List<QuizLesson?> response) {
-      listQuiz = response;
+    apiResult.when(success: (LessonSectionListResponse? response) {
+      minCompletePercent = response?.data?.minCompletePercent?.toDouble() ?? 0;
+      if (response?.data?.lessonSections?.isNotEmpty != true) {
+        listQuiz = [];
+      } else {
+        listQuiz =
+            response!.data!.lessonSections!.first?.quizLessonSections ?? [];
+      }
       if (listQuiz.isNotEmpty != true) {
         emit(const CourseQuizDone());
       }
@@ -33,30 +86,23 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   void recordAnswer(int index, List<String> listAnswerId) {
     emit(CourseQuizLoading());
     answer[index] = listAnswerId;
-    final bool isRight = listAnswerId.toString() ==
-        listQuiz[index]
-            ?.quiz
-            ?.quizAnswers
-            ?.where((e) => e?.isCorrect == true)
-            //TODO: Tuyen should change to answerId field
-            .map((e) => e?.name)
-            .toList()
-            .toString();
-    if (isRight) {
-      countAnswerRight++;
+    if (listAnswerId.isEmpty) {
+      answer.remove(index);
     }
     emit(InitialCourseQuizState());
   }
 
   void showAnswer() {
     emit(CourseQuizLoading());
+    isShowResult = true;
+    jumpToIndexCourse(0);
     emit(ShowAnswerQuizSuccess());
   }
 
   void retryQuiz() {
     emit(CourseQuizLoading());
     answer.clear();
-    countAnswerRight = 0;
+    isShowResult = false;
     emit(RetryQuizSuccess());
   }
 
