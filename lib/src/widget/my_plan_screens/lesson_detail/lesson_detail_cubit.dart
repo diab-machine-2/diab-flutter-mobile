@@ -44,11 +44,15 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   bool get reviewed => review?.rating != null;
 
   void onChangeSection(int newSection, {bool isFromList = false}) {
-    if (newSection < 0) return;
-    if (newSection >= sectionList.length || isAllSectionCompleted) {
+    //Check can complete the lesson and make sure that user tap next button
+    if (isAllSectionCompleted && newSection > currentSection) {
       checkSectionComplete();
+      if (isEnabledRating == true && isAllSectionCompleted && !reviewed) {
+        emit(const LessonDetailCompleted());
+      }
       return;
     }
+    if (newSection < 0 || newSection >= sectionList.length) return;
 
     currentSection = newSection;
 
@@ -95,6 +99,22 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     return true;
   }
 
+  bool get isOtherCompleted {
+    for (int index = 0; index < sectionList.length; index++) {
+      if (index == currentSection) continue;
+      if (sectionList[index]?.isComplete != true) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool? get canComplete {
+    if (isAllSectionCompleted) return true;
+    if (isOtherCompleted) return false;
+    return null;
+  }
+
   Future<void> initData(String lessonId) async {
     this.lessonId = lessonId;
 
@@ -131,12 +151,9 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   Future<void> checkSectionComplete() async {
     if (sectionStatus?.isSectionCompleted == true &&
-        currentSectionDetail?.isComplete != null &&
-        state is! LessonDetailFeedBack) {
-      await completeLearningCurrentSection(showLoading: false);
-    }
-    if (isEnabledRating == true && isAllSectionCompleted && !reviewed) {
-      emit(const LessonDetailFeedBack());
+        currentSectionDetail?.isComplete != true &&
+        state is! LessonDetailCompleted) {
+      await completeLearningCurrentSection();
     }
   }
 
@@ -158,11 +175,9 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     emit(const LessonDetailInitial());
   }
 
-  Future<void> completeLearningCurrentSection({bool showLoading = true}) async {
-    if (showLoading) {
-      await Future.delayed(Duration.zero);
-      emit(const LessonDetailLoading());
-    }
+  Future<void> completeLearningCurrentSection() async {
+    await Future.delayed(Duration.zero);
+    emit(const LessonDetailLoading());
     final ApiResult<CommonResponse> apiResult =
         await repository.setCompletedLessonAccount(
       UpdateLessonSectionRequest(
@@ -177,6 +192,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     }, failure: (NetworkExceptions error) {
       emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));
     });
+    currentSectionDetail?.isComplete = true;
     emit(const LessonDetailInitial());
   }
 }

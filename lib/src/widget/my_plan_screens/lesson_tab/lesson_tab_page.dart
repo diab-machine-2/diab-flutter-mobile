@@ -432,7 +432,9 @@ class _LessonTabPageState extends State<LessonTabPage>
                   Icon(
                     Icons.chevron_right_rounded,
                     size: 24,
-                    color: R.color.greenGradientBottom,
+                    color: lessonDetail?.learningStatus == Const.LESSON_LOCKED
+                        ? R.color.captionColorGray
+                        : R.color.greenGradientBottom,
                   ),
                 ],
               ),

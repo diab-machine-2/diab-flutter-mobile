@@ -115,60 +115,49 @@ class CustomBottomBarWidget extends StatelessWidget {
   }
 
   Widget _buildNextButton() {
-    if (isCompleted == true) {
+    if (isCompleted != null) {
       return Container(
         width: 140,
         height: 36,
         child: ButtonWidget(
           title: R.string.complete_lesson.tr(),
-          onPressed: onTapNext,
+          onPressed: isCompleted! ? onTapNext : null,
           textSize: 14,
         ),
       );
     }
-    return (!isNextButtonActive && isCompleted == null)
-        ? Container(
-            width: 140,
-            height: 36,
-            child: ButtonWidget(
-              title: R.string.complete_lesson.tr(),
-              onPressed: onTapNext,
-              textSize: 14,
+    return InkWell(
+      onTap: onTapNext,
+      child: Container(
+        width: 140,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: isNextButtonActive ? R.color.main_6 : R.color.grayBorder,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              nextButtonTitle ?? R.string.next_lesson.tr(),
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: isNextButtonActive
+                      ? R.color.accentColor
+                      : R.color.textDark,
+                  height: 1.43,
+                  letterSpacing: 0.4),
             ),
-          )
-        : InkWell(
-            onTap: onTapNext,
-            child: Container(
-              width: 140,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: isNextButtonActive ? R.color.main_6 : R.color.grayBorder,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    nextButtonTitle ?? R.string.next_lesson.tr(),
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: isNextButtonActive
-                            ? R.color.accentColor
-                            : R.color.textDark,
-                        height: 1.43,
-                        letterSpacing: 0.4),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16,
-                    color: isNextButtonActive
-                        ? R.color.accentColor
-                        : R.color.textDark,
-                  ),
-                ],
-              ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color:
+                  isNextButtonActive ? R.color.accentColor : R.color.textDark,
             ),
-          );
+          ],
+        ),
+      ),
+    );
   }
 }

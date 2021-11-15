@@ -23,7 +23,6 @@ import 'package:medical/src/model/response/list_roadmap_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
-import 'package:medical/src/model/response/quiz_lesson.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
@@ -41,7 +40,7 @@ class AppRepository {
 
   Future<ApiResult<ListPackageResponse>> getListPackage() async {
     try {
-      ListPackageResponse response = await appClient.getListPackage();
+      final ListPackageResponse response = await appClient.getListPackage();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -50,7 +49,7 @@ class AppRepository {
 
   Future<ApiResult<DetailPackageResponse>> getDetailPackage(String type) async {
     try {
-      DetailPackageResponse response = await appClient.getDetailPackage(type);
+      final DetailPackageResponse response = await appClient.getDetailPackage(type);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -59,7 +58,7 @@ class AppRepository {
 
   Future<ApiResult<UpgradeAccountResponse>> getUpgradeAccount() async {
     try {
-      UpgradeAccountResponse response = await appClient.getUpgradeAccount();
+      final UpgradeAccountResponse response = await appClient.getUpgradeAccount();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -69,7 +68,7 @@ class AppRepository {
   Future<ApiResult<CommonResponse>> sendInterestFeedback(
       SendInterestRequest request) async {
     try {
-      CommonResponse response = await appClient.sendInterestFeedback(request);
+      final CommonResponse response = await appClient.sendInterestFeedback(request);
       if (response.error == null)
         return ApiResult.success(data: response);
       else
@@ -84,7 +83,7 @@ class AppRepository {
   Future<ApiResult<ListTransactionResponse>> getListTransaction(
       {bool? isExpired, int? page, int? size}) async {
     try {
-      ListTransactionResponse response =
+      final ListTransactionResponse response =
       await appClient.getListTransaction(isExpired, page, size);
       return ApiResult.success(data: response);
     } catch (e) {
@@ -94,8 +93,8 @@ class AppRepository {
 
   Future<ApiResult<dynamic>> verifyReceipt({required String? receipt}) async {
     try {
-      IosReceiptRequest request = IosReceiptRequest(receipt: receipt,);
-      dynamic response = await appClient.verifyReceipt(request);
+      final IosReceiptRequest request = IosReceiptRequest(receipt: receipt,);
+      final dynamic response = await appClient.verifyReceipt(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -159,7 +158,7 @@ class AppRepository {
 
   Future<ApiResult<List<ExerciseIntensityModel>>> getListActivity() async {
     try {
-      ListActivityResponse response = await appClient.getListActivity();
+      final ListActivityResponse response = await appClient.getListActivity();
       return ApiResult.success(data: response.data ?? []);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -169,7 +168,7 @@ class AppRepository {
   Future<ApiResult<TDEEResponse>> getTDEE(
       {int? weight, int? height, int? yearOfBirth, String? activityLevelId}) async {
     try {
-      TDEEResponse response = await appClient.getTDEE(activityLevelId, weight, height, yearOfBirth);
+      final TDEEResponse response = await appClient.getTDEE(activityLevelId, weight, height, yearOfBirth);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -232,16 +231,11 @@ class AppRepository {
    * Quiz
    */
 
-  Future<ApiResult<List<QuizLesson?>>> getListQuiz(String lessonId) async {
+  Future<ApiResult<LessonSectionListResponse?>> getListQuiz(String lessonId) async {
     try {
       final LessonSectionListResponse response =
           await appClient.getListQuiz(lessonId);
-      if (response.data?.lessonSections?.isNotEmpty != true) {
-        return const ApiResult.success(data: []);
-      } else {
-        return ApiResult.success(
-            data: response.data!.lessonSections!.first?.quizLessonSections ?? []);
-      }
+          return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

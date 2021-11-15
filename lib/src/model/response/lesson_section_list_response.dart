@@ -1479,7 +1479,7 @@ class LessonSectionListResponseData {
   int? type;
   int? order;
   bool? isEnabledRating;
-  int? minCompletePercent;
+  double? minCompletePercent;
   String? coverId;
   String? lessonModuleId;
   String? lessonLevelId;
@@ -1527,7 +1527,7 @@ class LessonSectionListResponseData {
     type = json['type']?.toInt();
     order = json['order']?.toInt();
     isEnabledRating = json['isEnabledRating'];
-    minCompletePercent = json['minCompletePercent']?.toInt();
+    minCompletePercent = json['minCompletePercent']?.toDouble();
     coverId = json['coverId']?.toString();
     lessonModuleId = json['lessonModuleId']?.toString();
     lessonLevelId = json['lessonLevelId']?.toString();

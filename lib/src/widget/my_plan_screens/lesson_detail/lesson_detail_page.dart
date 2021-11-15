@@ -7,7 +7,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/course_feedback/course_feedback.dart';
 import 'package:medical/src/widget/course_quiz/course_quiz.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/background_page.dart';
@@ -58,9 +57,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           if (state is LessonDetailFailure) {
             Message.showToastMessage(context, state.error);
           }
-          if (state is LessonDetailFeedBack) {
-            NavigationUtil.replace(
-                context, CourseFeedbackPage(lessonId: widget.lessonId));
+          if (state is LessonDetailCompleted) {
+            NavigationUtil.pop(context);
+            BotToast.closeAllLoading();
           }
         },
         builder: (context, state) {
@@ -68,11 +67,13 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   Const.LESSON_SECTION_TYPE_QUIZ
               ? CourseQuizPage(
                   lessonId: _cubit.currentSectionDetail?.id ?? '',
-                  onDone: () async {
-                    await _cubit.completeLearningCurrentSection();
-                    _cubit.checkSectionComplete();
-                    if (_cubit.isLastSection) {
-                      NavigationUtil.pop(context);
+                  onDone: (isPassed) async {
+                    if (isPassed) {
+                      await _cubit.completeLearningCurrentSection();
+                      _cubit.checkSectionComplete();
+                      if (_cubit.isLastSection) {
+                        NavigationUtil.pop(context);
+                      }
                     }
                     _cubit.onChangeSection(_cubit.currentSection + 1);
                   },
@@ -191,7 +192,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                           onTapCenter: () {
                             showLessonCategoryList();
                           },
-                          isCompleted: _cubit.isAllSectionCompleted,
+                          isCompleted: _cubit.canComplete,
                         ),
                       ],
                     ),
