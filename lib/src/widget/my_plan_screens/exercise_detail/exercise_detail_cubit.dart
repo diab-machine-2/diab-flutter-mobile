@@ -1,6 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
 import 'exercise_detail.dart';
 import 'models/video_manager.dart';
 
@@ -11,19 +14,26 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
 
   late final ExerciseMovementResponseData exerciseData;
   late final VideoManager videoManager;
-  bool isFeedbacked = false;
 
   void initData(ExerciseMovementResponseData exerciseData) {
     this.exerciseData = exerciseData;
     videoManager = VideoManager.fromExerciseData(
       exerciseData,
       onDone: () {
-        emit(
-          isFeedbacked
-              ? const ExerciseDetailAllCompleted()
-              : const ExerciseDetailMakeFeedback(),
-        );
+        completeExercise(exerciseData.id ?? '');
       },
     );
+  }
+
+  Future<void> completeExercise(String exerciseMovementId) async {
+    emit(const ExerciseDetailLoading());
+    final ApiResult<CommonResponse> apiResult =
+        await repository.selectRoadmap(exerciseMovementId);
+    apiResult.when(success: (CommonResponse response) {
+      emit(const ExerciseDetailAllCompleted());
+    }, failure: (NetworkExceptions error) {
+      emit(ExerciseDetailFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    emit(const ExerciseDetailInitial());
   }
 }

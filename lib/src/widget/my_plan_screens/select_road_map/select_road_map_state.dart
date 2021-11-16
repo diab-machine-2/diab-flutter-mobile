@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:medical/src/model/response/list_roadmap_response.dart';
 
 abstract class SelectRoadMapState extends Equatable {
   const SelectRoadMapState() : super();
@@ -43,7 +44,8 @@ class SelectRoadMapLoading extends SelectRoadMapState {
 }
 
 class SelectRoadMapChanged extends SelectRoadMapState {
-  const SelectRoadMapChanged();
+  const SelectRoadMapChanged(this.itemData);
+  final ListRoadmapResponseDataItems? itemData;
   @override
   String toString() {
     return 'SelectRoadMapChange{}';

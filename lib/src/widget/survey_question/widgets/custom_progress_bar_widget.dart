@@ -16,6 +16,7 @@ class CustomProgressBarWidget extends StatefulWidget {
 
 class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
   late final SurveyQuestionCubit _cubit;
+  final LayerLink layerLink = LayerLink();
   OverlayEntry? messegeEntry;
   OverlayEntry? triangleEntry;
 
@@ -41,34 +42,38 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
         }
         if (state is SurveyQuestionHideProgressMessage) {
           disposeOverlay();
+          showOverlay();
         }
       },
       builder: (context, state) {
-        return LayoutBuilder(
-          builder: (context, constraint) {
-            return Container(
-              alignment: Alignment.centerLeft,
-              height: 6,
-              width: double.infinity,
-              color: R.color.gray,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.horizontal(
-                    right: Radius.circular(200),
+        return CompositedTransformTarget(
+          link: layerLink,
+          child: LayoutBuilder(
+            builder: (context, constraint) {
+              return Container(
+                alignment: Alignment.centerLeft,
+                height: 6,
+                width: double.infinity,
+                color: R.color.gray,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.horizontal(
+                      right: Radius.circular(200),
+                    ),
+                    gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        R.color.color0xff004E47.withOpacity(0.3),
+                        R.color.mainColor,
+                      ],
+                    ),
                   ),
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      R.color.color0xff004E47.withOpacity(0.3),
-                      R.color.mainColor,
-                    ],
-                  ),
+                  width: constraint.maxWidth * _cubit.progress,
                 ),
-                width: constraint.maxWidth * _cubit.progress,
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       },
     );
@@ -76,10 +81,10 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
 
   void showOverlay() {
     late final int progress;
-    if (_cubit.progress < 90) {
+    if (_cubit.progress < 0.9) {
       showed90Message = false;
     }
-    if (_cubit.progress < 50) {
+    if (_cubit.progress < 0.5) {
       showed50Message = false;
     }
     if (_cubit.progress >= 0.9 && !showed90Message) {

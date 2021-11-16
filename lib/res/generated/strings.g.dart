@@ -631,6 +631,10 @@ class Strings {
 	String get filter_not_learnt_lesson_yet => 'filter_not_learnt_lesson_yet';
 	String get lesson_not_learnt_yet => 'lesson_not_learnt_yet';
 	String get lesson_not_unlock_yet => 'lesson_not_unlock_yet';
+	String get exercise_done => 'exercise_done';
+	String get joining => 'joining';
+	String get ask_for_change_roadmap => 'ask_for_change_roadmap';
+	String get road_map_changed => 'road_map_changed';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';

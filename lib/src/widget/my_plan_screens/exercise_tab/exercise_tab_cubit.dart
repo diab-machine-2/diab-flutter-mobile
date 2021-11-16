@@ -17,6 +17,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
 
   TimeData? timeData;
 
+  String roadmapId = '';
   String packageCode = '';
   DateTime? packageTimeExpired;
   List<ExerciseMovementResponseData?>? exerciseList;
@@ -29,6 +30,11 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
 
   Future<void> initData() async {
     await getCurrentUserInfo();
+    if (roadmapId.isEmpty) {
+      emit(const ExerciseTabRoadmapEmpty());
+      emit(const ExerciseTabInitial());
+      return;
+    }
     getExerciseMovement();
   }
 
@@ -40,6 +46,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
         await repository.getCurrentUserInfo();
     apiResult.when(success: (UserInfoResponse response) {
       packageCode = response.data?.packageCode ?? '';
+      roadmapId = response.data?.roadmapId ?? '';
       final String packageTimeExpiredText =
           response.data?.packageTimeExpired ?? '';
       if (packageTimeExpiredText.isNotEmpty) {
@@ -66,7 +73,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       emit(const ExerciseTabLoading());
     }
     final ApiResult<ExerciseMovementResponse> apiResult =
-        await repository.getExerciseMovement();
+        await repository.getExerciseMovement(roadmapId);
     apiResult.when(success: (ExerciseMovementResponse response) {
       exerciseList = response.data ?? [];
       emit(const ExerciseTabSuccess());

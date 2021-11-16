@@ -373,7 +373,7 @@ class _AppApi implements AppApi {
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<ListRoadmapResponse>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, 'App/Roadmap',
+                .compose(_dio.options, 'App/Roadmap/MyRoadmap',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ListRoadmapResponse.fromJson(_result.data!);
@@ -381,9 +381,24 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<ExerciseMovementResponse> getExerciseMovement() async {
+  Future<CommonResponse> selectRoadmap(roadmapId) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    final _data = roadmapId;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CommonResponse>(
+            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/Patient/Roadmap',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CommonResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ExerciseMovementResponse> getExerciseMovement(roadmapId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'roadmapId': roadmapId};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<ExerciseMovementResponse>(
@@ -405,6 +420,21 @@ class _AppApi implements AppApi {
         _setStreamType<CommonResponse>(
             Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
                 .compose(_dio.options, 'App/ExerciseMovementReview',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CommonResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CommonResponse> completeExercise(exerciseMovementId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = exerciseMovementId;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CommonResponse>(
+            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/App/ExerciseMovementAccount',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = CommonResponse.fromJson(_result.data!);

@@ -41,3 +41,11 @@ class ExerciseTabLoading extends ExerciseTabState {
     return 'ExerciseTabLoading{}';
   }
 }
+
+class ExerciseTabRoadmapEmpty extends ExerciseTabState {
+  const ExerciseTabRoadmapEmpty();
+  @override
+  String toString() {
+    return 'ExerciseTabRoadmapEmpty{}';
+  }
+}

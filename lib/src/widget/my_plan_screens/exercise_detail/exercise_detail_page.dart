@@ -57,7 +57,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                   Message.showToastMessage(context, state.error);
                 }
                 if (state is ExerciseDetailAllCompleted) {
-                  //TODO: Lesson completed
+                  showDonePopup(context);
                 }
                 if (state is ExerciseDetailMakeFeedback) {
                   NavigationUtil.navigatePage(
@@ -190,5 +190,68 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
     if (confirm is bool && confirm) {
       NavigationUtil.pop(context);
     }
+  }
+
+  Future<void> showDonePopup(BuildContext context) async {
+    await showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      builder: (_) => Scaffold(
+        backgroundColor: R.color.transparent,
+        body: Center(
+          child: Stack(
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      R.color.white,
+                      R.color.main_6,
+                    ],
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Image.asset(
+                        R.drawable.img_learn_result_high,
+                        height: 205,
+                        width: 200,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        R.string.exercise_done.tr(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: R.color.textDark),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 4,
+                right: 24,
+                child: IconButton(
+                  icon: const Icon(Icons.close_rounded),
+                  iconSize: 24,
+                  onPressed: () {
+                    NavigationUtil.pop(context);
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+    NavigationUtil.pop(context);
   }
 }

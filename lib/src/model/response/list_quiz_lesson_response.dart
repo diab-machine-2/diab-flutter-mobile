@@ -155,7 +155,7 @@ class AnswerData {
     String? name,
     int? order,
     int? point,
-    bool? flag,
+    int? flag,
     bool? isMappedToSurvey,
     String? mappedSurveyId,
     bool? isCorrect,
@@ -187,7 +187,7 @@ class AnswerData {
   String? _name;
   int? _order;
   int? _point;
-  bool? _flag;
+  int? _flag;
   bool? _isMappedToSurvey;
   String? _mappedSurveyId;
   bool? _isCorrect;
@@ -197,7 +197,7 @@ class AnswerData {
   String? get name => _name;
   int? get order => _order;
   int? get point => _point;
-  bool? get flag => _flag;
+  int? get flag => _flag;
   bool? get isMappedToSurvey => _isMappedToSurvey;
   String? get mappedSurveyId => _mappedSurveyId;
   bool? get isCorrect => _isCorrect;

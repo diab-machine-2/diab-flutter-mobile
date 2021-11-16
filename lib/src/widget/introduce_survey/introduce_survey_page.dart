@@ -68,6 +68,7 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
               shrinkWrap: true,
               children: [
                 Container(
+                  height: 172,
                   clipBehavior: Clip.hardEdge,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),

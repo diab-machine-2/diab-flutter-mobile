@@ -144,19 +144,31 @@ abstract class AppApi {
   Future<CommonResponse> setCompletedLessonAccount(
     @Body() UpdateLessonSectionRequest request,
   );
- 
-  @GET("App/Roadmap")
+
+  @GET("App/Roadmap/MyRoadmap")
   Future<ListRoadmapResponse> getRoadMap(
     @Query('page') int page,
     @Query('size') int size,
   );
 
+  @POST("App/Patient/Roadmap")
+  Future<CommonResponse> selectRoadmap(
+    @Body() String roadmapId,
+  );
+
   @GET("App/ExerciseMovement/All")
-  Future<ExerciseMovementResponse> getExerciseMovement();
+  Future<ExerciseMovementResponse> getExerciseMovement(
+    @Query('roadmapId') String roadmapId,
+  );
 
   @POST("App/ExerciseMovementReview")
   Future<CommonResponse> exerciseFeedback(
     @Body() ExerciseFeedbackRequest request,
+  );
+
+  @POST("/App/ExerciseMovementAccount")
+  Future<CommonResponse> completeExercise(
+    @Body() String exerciseMovementId,
   );
 
   // Quiz

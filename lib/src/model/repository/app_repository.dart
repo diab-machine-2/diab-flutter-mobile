@@ -49,7 +49,8 @@ class AppRepository {
 
   Future<ApiResult<DetailPackageResponse>> getDetailPackage(String type) async {
     try {
-      final DetailPackageResponse response = await appClient.getDetailPackage(type);
+      final DetailPackageResponse response =
+          await appClient.getDetailPackage(type);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -58,7 +59,8 @@ class AppRepository {
 
   Future<ApiResult<UpgradeAccountResponse>> getUpgradeAccount() async {
     try {
-      final UpgradeAccountResponse response = await appClient.getUpgradeAccount();
+      final UpgradeAccountResponse response =
+          await appClient.getUpgradeAccount();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -68,7 +70,8 @@ class AppRepository {
   Future<ApiResult<CommonResponse>> sendInterestFeedback(
       SendInterestRequest request) async {
     try {
-      final CommonResponse response = await appClient.sendInterestFeedback(request);
+      final CommonResponse response =
+          await appClient.sendInterestFeedback(request);
       if (response.error == null)
         return ApiResult.success(data: response);
       else
@@ -84,7 +87,7 @@ class AppRepository {
       {bool? isExpired, int? page, int? size}) async {
     try {
       final ListTransactionResponse response =
-      await appClient.getListTransaction(isExpired, page, size);
+          await appClient.getListTransaction(isExpired, page, size);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -93,7 +96,9 @@ class AppRepository {
 
   Future<ApiResult<dynamic>> verifyReceipt({required String? receipt}) async {
     try {
-      final IosReceiptRequest request = IosReceiptRequest(receipt: receipt,);
+      final IosReceiptRequest request = IosReceiptRequest(
+        receipt: receipt,
+      );
       final dynamic response = await appClient.verifyReceipt(request);
       return ApiResult.success(data: response);
     } catch (e) {
@@ -166,9 +171,13 @@ class AppRepository {
   }
 
   Future<ApiResult<TDEEResponse>> getTDEE(
-      {int? weight, int? height, int? yearOfBirth, String? activityLevelId}) async {
+      {int? weight,
+      int? height,
+      int? yearOfBirth,
+      String? activityLevelId}) async {
     try {
-      final TDEEResponse response = await appClient.getTDEE(activityLevelId, weight, height, yearOfBirth);
+      final TDEEResponse response =
+          await appClient.getTDEE(activityLevelId, weight, height, yearOfBirth);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -190,7 +199,8 @@ class AppRepository {
 
   Future<ApiResult<FoodSuggestResponse>> getSuggestionFood(String id) async {
     try {
-      final FoodSuggestResponse response = await appClient.getSuggestionFood(id);
+      final FoodSuggestResponse response =
+          await appClient.getSuggestionFood(id);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -220,8 +230,7 @@ class AppRepository {
         return ApiResult.success(data: response);
       } else
         return ApiResult.failure(
-            error:
-                NetworkExceptions.defaultError(response.message ?? ''));
+            error: NetworkExceptions.defaultError(response.message ?? ''));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
@@ -231,23 +240,27 @@ class AppRepository {
    * Quiz
    */
 
-  Future<ApiResult<LessonSectionListResponse?>> getListQuiz(String lessonId) async {
+  Future<ApiResult<LessonSectionListResponse?>> getListQuiz(
+      String lessonId) async {
     try {
       final LessonSectionListResponse response =
           await appClient.getListQuiz(lessonId);
-          return ApiResult.success(data: response);
+      return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
-  Future<ApiResult<CommonResponse>> sendFeedbackCourse(String lessonId, SendFeedbackCourseRequest request) async {
+  Future<ApiResult<CommonResponse>> sendFeedbackCourse(
+      String lessonId, SendFeedbackCourseRequest request) async {
     try {
-      final CommonResponse response = await appClient.sendFeedbackCourse(lessonId, request);
+      final CommonResponse response =
+          await appClient.sendFeedbackCourse(lessonId, request);
       if (response.meta?.success == true) {
         return ApiResult.success(data: response);
       } else
-        return ApiResult.failure(error: NetworkExceptions.defaultError(response.message ?? ''));
+        return ApiResult.failure(
+            error: NetworkExceptions.defaultError(response.message ?? ''));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
@@ -259,7 +272,8 @@ class AppRepository {
 
   Future<ApiResult<SurveyData>> getDetailSurvey(String surveyId) async {
     try {
-      final DetailSurveyResponse response = await appClient.getDetailSurvey(surveyId);
+      final DetailSurveyResponse response =
+          await appClient.getDetailSurvey(surveyId);
       if (response.data != null) {
         return ApiResult.success(data: response.data!);
       } else {
@@ -271,13 +285,15 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<CommonResponse>> submitSurvey(PostSurveyRequest request) async {
+  Future<ApiResult<CommonResponse>> submitSurvey(
+      PostSurveyRequest request) async {
     try {
       final CommonResponse response = await appClient.submitSurvey(request);
       if (response.meta?.success == true) {
         return ApiResult.success(data: response);
       } else
-        return ApiResult.failure(error: NetworkExceptions.defaultError(response.message ?? ''));
+        return ApiResult.failure(
+            error: NetworkExceptions.defaultError(response.message ?? ''));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
@@ -294,8 +310,7 @@ class AppRepository {
         return ApiResult.success(data: response);
       } else
         return const ApiResult.failure(
-            error:
-                NetworkExceptions.defaultError("Can't not get UserInfo"));
+            error: NetworkExceptions.defaultError("Can't not get UserInfo"));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
@@ -313,9 +328,11 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<LessonSectionListResponse>> getListLessonSection(String lessonId) async {
+  Future<ApiResult<LessonSectionListResponse>> getListLessonSection(
+      String lessonId) async {
     try {
-      final LessonSectionListResponse response = await appClient.getListLessonSection(lessonId);
+      final LessonSectionListResponse response =
+          await appClient.getListLessonSection(lessonId);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -337,19 +354,32 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<ListRoadmapResponse>> getRoadMap({required int page, required int size}) async {
+  Future<ApiResult<ListRoadmapResponse>> getRoadMap(
+      {required int page, required int size}) async {
     try {
-      final ListRoadmapResponse response = await appClient.getRoadMap(page, size);
+      final ListRoadmapResponse response =
+          await appClient.getRoadMap(page, size);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
-  Future<ApiResult<ExerciseMovementResponse>> getExerciseMovement() async {
+  Future<ApiResult<CommonResponse>> selectRoadmap(String roadmapId) async {
+    try {
+      final CommonResponse response =
+          await appClient.selectRoadmap('"$roadmapId"');
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ExerciseMovementResponse>> getExerciseMovement(
+      String roadmapId) async {
     try {
       final ExerciseMovementResponse response =
-          await appClient.getExerciseMovement();
+          await appClient.getExerciseMovement(roadmapId);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -370,5 +400,20 @@ class AppRepository {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
-  
+
+  Future<ApiResult<CommonResponse>> completeExercise(
+      String exerciseMovementId) async {
+    try {
+      final CommonResponse response =
+          await appClient.completeExercise(exerciseMovementId);
+      if (response.meta?.success == true) {
+        return ApiResult.success(data: response);
+      } else {
+        return ApiResult.failure(
+            error: NetworkExceptions.defaultError(response.message ?? ''));
+      }
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
 }

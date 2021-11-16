@@ -55,7 +55,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                 Message.showToastMessage(context, state.error);
               }
               if (state is SelectRoadMapChanged) {
-                showDialogChangeSuccessed();
+                showDialogChangeSuccessed(state.itemData);
               }
             },
             builder: (context, state) {
@@ -140,35 +140,56 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            SizedBox(
-              width: 120,
-              child: ButtonWidget(
-                title: R.string.join.tr(),
-                height: 32,
-                textSize: 14,
-                onPressed: () {
-                  showDialog(
-                    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-                    context: context,
-                    builder: (_) => NoticeChangePage(
-                        description:
-                            'Bạn đang học lộ trình cho người có thể trạng yếu, bạn có chắc muốn đổi lộ trình khác không?',
-                        positiveButtonTitle: R.string.confirm.tr(),
-                        onClick: () {
-                          _cubit.changeRoadMap();
-                        },
-                        gradientColor: true),
-                  );
-                },
-              ),
-            ),
+            if (itemData.joined == true)
+              Container(
+                height: 24,
+                alignment: Alignment.center,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                decoration: BoxDecoration(
+                  color: R.color.green,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  R.string.joining.tr(),
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              )
+            else
+              SizedBox(
+                width: 120,
+                child: ButtonWidget(
+                  title: R.string.join.tr(),
+                  height: 32,
+                  textSize: 14,
+                  onPressed: () {
+                    showDialog(
+                      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+                      context: context,
+                      builder: (_) => NoticeChangePage(
+                          description: R.string.ask_for_change_roadmap
+                              .tr(args: [itemData.name ?? '']),
+                          positiveButtonTitle: R.string.confirm.tr(),
+                          onClick: () {
+                            _cubit.changeRoadMap(itemData);
+                          },
+                          gradientColor: true),
+                    );
+                  },
+                ),
+              )
           ],
         ),
       ],
     );
   }
 
-  Future<void> showDialogChangeSuccessed() async {
+  Future<void> showDialogChangeSuccessed(
+      ListRoadmapResponseDataItems? itemData) async {
     await showDialog(
       context: context,
       builder: (_) => Scaffold(
@@ -209,7 +230,10 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Bạn đã chọn lộ trình cho người có thể trạng yếu. Lộ trình bao gồm 32 bài học.',
+                        R.string.road_map_changed.tr(args: [
+                          itemData?.name ?? '',
+                          (itemData?.exerciseMovements?.length ?? 0).toString()
+                        ]),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -238,6 +262,6 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
         ),
       ),
     );
-    NavigationUtil.pop(context, result: true);
+    NavigationUtil.pop(context, result: itemData?.id ?? '');
   }
 }

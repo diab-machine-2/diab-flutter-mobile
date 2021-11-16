@@ -4,10 +4,11 @@
 class UserInfoResponseData {
 /*
 {
-  "packageCode": "basic",
-  "packageTimeExpired": "",
+  "packageCode": "pro",
+  "packageTimeExpired": "11/01/2022 17:16:34",
   "bloodSugarTemplates": "NONE",
-  "hasFoodMenu": false
+  "hasFoodMenu": true,
+  "roadmapId": "092b686d-7e0c-4f6e-9049-08d9a8bd01b3"
 } 
 */
 
@@ -15,25 +16,29 @@ class UserInfoResponseData {
   String? packageTimeExpired;
   String? bloodSugarTemplates;
   bool? hasFoodMenu;
+  String? roadmapId;
 
   UserInfoResponseData({
     this.packageCode,
     this.packageTimeExpired,
     this.bloodSugarTemplates,
     this.hasFoodMenu,
+    this.roadmapId,
   });
   UserInfoResponseData.fromJson(Map<String, dynamic> json) {
-    packageCode = json["packageCode"]?.toString();
-    packageTimeExpired = json["packageTimeExpired"]?.toString();
-    bloodSugarTemplates = json["bloodSugarTemplates"]?.toString();
-    hasFoodMenu = json["hasFoodMenu"];
+    packageCode = json['packageCode']?.toString();
+    packageTimeExpired = json['packageTimeExpired']?.toString();
+    bloodSugarTemplates = json['bloodSugarTemplates']?.toString();
+    hasFoodMenu = json['hasFoodMenu'];
+    roadmapId = json['roadmapId']?.toString();
   }
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data["packageCode"] = packageCode;
-    data["packageTimeExpired"] = packageTimeExpired;
-    data["bloodSugarTemplates"] = bloodSugarTemplates;
-    data["hasFoodMenu"] = hasFoodMenu;
+    final data = <String, dynamic>{};
+    data['packageCode'] = packageCode;
+    data['packageTimeExpired'] = packageTimeExpired;
+    data['bloodSugarTemplates'] = bloodSugarTemplates;
+    data['hasFoodMenu'] = hasFoodMenu;
+    data['roadmapId'] = roadmapId;
     return data;
   }
 }
@@ -45,10 +50,11 @@ class UserInfoResponse {
   "statusCode": 200,
   "message": "Success",
   "data": {
-    "packageCode": "basic",
-    "packageTimeExpired": "",
+    "packageCode": "pro",
+    "packageTimeExpired": "11/01/2022 17:16:34",
     "bloodSugarTemplates": "NONE",
-    "hasFoodMenu": false
+    "hasFoodMenu": true,
+    "roadmapId": "092b686d-7e0c-4f6e-9049-08d9a8bd01b3"
   }
 } 
 */
@@ -65,20 +71,21 @@ class UserInfoResponse {
     this.data,
   });
   UserInfoResponse.fromJson(Map<String, dynamic> json) {
-    id = json["id"]?.toString();
-    statusCode = json["statusCode"]?.toInt();
-    message = json["message"]?.toString();
-    data = (json["data"] != null) ? UserInfoResponseData.fromJson(json["data"]) : null;
+    id = json['id']?.toString();
+    statusCode = json['statusCode']?.toInt();
+    message = json['message']?.toString();
+    data = (json['data'] != null)
+        ? UserInfoResponseData.fromJson(json['data'])
+        : null;
   }
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data["id"] = id;
-    data["statusCode"] = statusCode;
-    data["message"] = message;
+    final data = <String, dynamic>{};
+    data['id'] = id;
+    data['statusCode'] = statusCode;
+    data['message'] = message;
     if (data != null) {
-      data["data"] = this.data!.toJson();
+      data['data'] = this.data!.toJson();
     }
     return data;
   }
 }
-

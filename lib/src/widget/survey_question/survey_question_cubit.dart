@@ -78,13 +78,35 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
         }
         //If the answer is not selected
         else {
-          //Remove mappedQuestion from question list
-          questions
-              .removeWhere((element) => element.id == answer?.mappedSurveyId);
+          //If no selected answer linked to the question
+          if (!hasAnswerLinkedToQuestion(
+              answerResult, answer?.mappedSurveyId)) {
+            //Remove mappedQuestion from question list
+            questions
+                .removeWhere((element) => element.id == answer?.mappedSurveyId);
+          }
         }
       }
     }
     emit(InitialSurveyQuestionState());
+  }
+
+  bool hasAnswerLinkedToQuestion(
+    QuestionAnswerResults answerResult,
+    String? mappedSurveyId,
+  ) {
+    for (int index = 0;
+        index < (currentQuestion?.answers?.length ?? 0);
+        index++) {
+      final AnswerData? answer = currentQuestion?.answers?[index];
+      if (answer?.isMappedToSurvey == true) {
+        if (answerResult.surveyAnswerIdList?.contains(answer?.id) == true &&
+            answer?.mappedSurveyId == mappedSurveyId) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   bool isContainQuestion(String? questionId) {

@@ -346,7 +346,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 children: [
                   Image.asset(
                     rate < _cubit.minCompletePercent
-                        ? R.drawable.ic_learn_result_medium
+                        ? R.drawable.img_learn_result_medium
                         : R.drawable.img_learn_result_high,
                     height: 150,
                   ),

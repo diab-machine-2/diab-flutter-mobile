@@ -57,6 +57,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           if (state is ExerciseTabFailure) {
             Message.showToastMessage(context, state.error);
           }
+          if (state is ExerciseTabRoadmapEmpty) {
+            changeRoadMap();
+          }
         },
         builder: (context, state) {
           return Column(
@@ -491,9 +494,12 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Future<void> changeRoadMap() async {
-    final roadMapChanged =
+    final newRoadmapId =
         await NavigationUtil.navigatePage(context, const SelectRoadMapPage());
-    if (roadMapChanged is bool && roadMapChanged) {
+    if (newRoadmapId is String &&
+        newRoadmapId.isNotEmpty &&
+        newRoadmapId != _cubit.roadmapId) {
+      _cubit.roadmapId = newRoadmapId;
       _cubit.getExerciseMovement();
     }
   }

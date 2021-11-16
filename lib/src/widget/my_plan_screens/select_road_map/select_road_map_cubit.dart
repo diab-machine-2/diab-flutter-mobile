@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/list_roadmap_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -43,10 +44,15 @@ class SelectRoadMapCubit extends Cubit<SelectRoadMapState> {
     return true;
   }
 
-  Future<void> changeRoadMap() async {
+  Future<void> changeRoadMap(ListRoadmapResponseDataItems? itemData) async {
     emit(const SelectRoadMapLoading());
-    await Future.delayed(const Duration(seconds: 1));
-    emit (const SelectRoadMapChanged());
+    final ApiResult<CommonResponse> apiResult =
+        await repository.selectRoadmap(itemData?.id ?? '');
+    apiResult.when(success: (CommonResponse response) {
+      emit(SelectRoadMapChanged(itemData));
+    }, failure: (NetworkExceptions error) {
+      emit(SelectRoadMapFailure(NetworkExceptions.getErrorMessage(error)));
+    });
     emit(const SelectRoadMapInitial());
   }
 }

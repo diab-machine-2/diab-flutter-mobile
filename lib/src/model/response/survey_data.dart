@@ -153,7 +153,9 @@ class SectionSurvey {
     if (json['questions'] != null) {
       _questions = [];
       json['questions'].forEach((v) {
-        _questions?.add(QuizData.fromJson(v));
+        if (v != null) {
+          _questions?.add(QuizData.fromJson(v));
+        }
       });
     }
   }
