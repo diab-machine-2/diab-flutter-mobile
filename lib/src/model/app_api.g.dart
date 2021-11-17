@@ -318,17 +318,33 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<MyLessonResponse> getLessonsList(type) async {
+  Future<MyLessonResponse> getLessonsList(request) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'type': type};
+    final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<MyLessonResponse>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
                 .compose(_dio.options, 'App/Lesson/MyLessons',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = MyLessonResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<FilterDataResponse> getFilterData() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<FilterDataResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/Lesson/PrepareSearchFormItem',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = FilterDataResponse.fromJson(_result.data!);
     return value;
   }
 

@@ -6,6 +6,7 @@ import 'request/create_menu_request.dart';
 import 'request/exercise_feedback_request.dart';
 import 'request/food_change_request.dart';
 import 'request/ios_receipt_request.dart';
+import 'request/lesson_filter_request.dart';
 import 'request/post_survey_request.dart';
 import 'request/send_feedback_course_request.dart';
 import 'request/send_interest_request.dart';
@@ -17,6 +18,7 @@ import 'response/detail_package_response.dart';
 import 'response/detail_survey_response.dart';
 import 'response/diabetes_status_response.dart';
 import 'response/exercise_movement_response.dart';
+import 'response/filter_data_response.dart';
 import 'response/food_suggest_response.dart';
 import 'response/latest_hba1c_input_response.dart';
 import 'response/lesson_section_list_response.dart';
@@ -130,10 +132,13 @@ abstract class AppApi {
   Future<UserInfoResponse> getCurrentUserInfo();
 
   //My Plan
-  @GET("App/Lesson/MyLessons")
+  @POST("App/Lesson/MyLessons")
   Future<MyLessonResponse> getLessonsList(
-    @Query("type") int type,
+    @Body() LessonFilterRequest request,
   );
+
+  @GET("App/Lesson/PrepareSearchFormItem")
+  Future<FilterDataResponse> getFilterData();
 
   @GET("/App/Lesson/{lessonId}/ListLessonSection")
   Future<LessonSectionListResponse> getListLessonSection(

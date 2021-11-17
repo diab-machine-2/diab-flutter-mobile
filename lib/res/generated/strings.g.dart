@@ -635,6 +635,8 @@ class Strings {
 	String get joining => 'joining';
 	String get ask_for_change_roadmap => 'ask_for_change_roadmap';
 	String get road_map_changed => 'road_map_changed';
+	String get lesson_empty_no_filter => 'lesson_empty_no_filter';
+	String get lesson_empty_no_filter_description => 'lesson_empty_no_filter_description';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';

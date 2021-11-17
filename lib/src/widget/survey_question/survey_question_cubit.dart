@@ -60,7 +60,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
         //If the answer is selected
         if (answerResult.surveyAnswerIdList?.contains(answer?.id) == true) {
           final int? mappedQuestionIndex = sectionSurvey?.questions
-              ?.indexWhere((element) => element.id == answer?.mappedSurveyId);
+              ?.indexWhere((element) => element.id == answer?.mappedQuestionId);
           if (mappedQuestionIndex != null &&
               sectionSurvey?.questions?[mappedQuestionIndex] != null) {
             final QuizData mappedQuestion =
@@ -80,10 +80,10 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
         else {
           //If no selected answer linked to the question
           if (!hasAnswerLinkedToQuestion(
-              answerResult, answer?.mappedSurveyId)) {
+              answerResult, answer?.mappedQuestionId)) {
             //Remove mappedQuestion from question list
-            questions
-                .removeWhere((element) => element.id == answer?.mappedSurveyId);
+            questions.removeWhere(
+                (element) => element.id == answer?.mappedQuestionId);
           }
         }
       }
@@ -93,7 +93,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
 
   bool hasAnswerLinkedToQuestion(
     QuestionAnswerResults answerResult,
-    String? mappedSurveyId,
+    String? mappedQuestionId,
   ) {
     for (int index = 0;
         index < (currentQuestion?.answers?.length ?? 0);
@@ -101,7 +101,7 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
       final AnswerData? answer = currentQuestion?.answers?[index];
       if (answer?.isMappedToSurvey == true) {
         if (answerResult.surveyAnswerIdList?.contains(answer?.id) == true &&
-            answer?.mappedSurveyId == mappedSurveyId) {
+            answer?.mappedQuestionId == mappedQuestionId) {
           return true;
         }
       }

@@ -3,6 +3,7 @@ import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
+import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
@@ -14,6 +15,7 @@ import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
+import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -319,9 +321,19 @@ class AppRepository {
   /**
    * My Plan
    */
-  Future<ApiResult<MyLessonResponse>> getLessonsList(int type) async {
+  Future<ApiResult<MyLessonResponse>> getLessonsList(
+      LessonFilterRequest request) async {
     try {
-      final MyLessonResponse response = await appClient.getLessonsList(type);
+      final MyLessonResponse response = await appClient.getLessonsList(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<FilterDataResponse>> getFilterData() async {
+    try {
+      final FilterDataResponse response = await appClient.getFilterData();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

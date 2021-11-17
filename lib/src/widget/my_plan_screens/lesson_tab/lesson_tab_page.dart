@@ -17,9 +17,9 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../lesson_detail/lesson_detail.dart';
 import '../lesson_filter/lesson_filter.dart';
 import '../lesson_filter/models/filter_data.dart';
-import '../my_plan/models/completion_status.dart';
 import '../my_plan/widgets/app_bar_bottom.dart';
 import 'lesson_tab.dart';
+import 'models/completion_status.dart';
 import 'models/lesson_type.dart';
 
 class LessonTabPage extends StatefulWidget {
@@ -89,6 +89,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                   context, LessonFilterPage(_cubit.filterData));
                           if (result is FilterData) {
                             _cubit.filterData = result;
+                            _cubit.getInitData();
                           }
                           _cubit.refresh();
                         },
@@ -135,40 +136,41 @@ class _LessonTabPageState extends State<LessonTabPage>
               Expanded(
                 child: _cubit.lessonsList?.isEmpty == null
                     ? const SizedBox.shrink()
-                    : _cubit.lessonsList!.isEmpty
-                        ? _buildEmptyLessonList()
-                        : SafeArea(
-                            top: false,
-                            child: SmartRefresher(
-                              controller: _controller,
-                              onRefresh: () =>
-                                  _cubit.getLessonsList(isRefresh: true),
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  children: List.generate(
-                                    _cubit.lessonsList?.length ?? 0,
-                                    (index) => _buildLessonWidget(
-                                        lessonDetail:
-                                            _cubit.lessonsList?[index],
-                                        onTap: () {
-                                          if (_cubit.lessonsList?[index]?.id
-                                                  ?.isNotEmpty ==
-                                              true) {
-                                            NavigationUtil.navigatePage(
-                                              context,
-                                              LessonDetailPage(
-                                                _cubit.lessonsList![index]!.id!,
-                                              ),
-                                            );
-                                          }
-                                        }),
-                                  )
-                                    ..insert(0, SizedBox(height: 20.h))
-                                    ..add(SizedBox(height: 20.h)),
+                    : SafeArea(
+                        top: false,
+                        child: SmartRefresher(
+                          controller: _controller,
+                          onRefresh: () =>
+                              _cubit.getLessonsList(isRefresh: true),
+                          child: _cubit.lessonsList!.isEmpty
+                              ? _buildEmptyLessonList()
+                              : SingleChildScrollView(
+                                  child: Column(
+                                    children: List.generate(
+                                      _cubit.lessonsList?.length ?? 0,
+                                      (index) => _buildLessonWidget(
+                                          lessonDetail:
+                                              _cubit.lessonsList?[index],
+                                          onTap: () {
+                                            if (_cubit.lessonsList?[index]?.id
+                                                    ?.isNotEmpty ==
+                                                true) {
+                                              NavigationUtil.navigatePage(
+                                                context,
+                                                LessonDetailPage(
+                                                  _cubit
+                                                      .lessonsList![index]!.id!,
+                                                ),
+                                              );
+                                            }
+                                          }),
+                                    )
+                                      ..insert(0, SizedBox(height: 20.h))
+                                      ..add(SizedBox(height: 20.h)),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ),
+                        ),
+                      ),
               ),
             ],
           );
@@ -178,12 +180,12 @@ class _LessonTabPageState extends State<LessonTabPage>
   }
 
   void animateToIndex(int index) {
-    if (_cubit.timeData?.weekList.isNotEmpty != true) return;
+    if (_cubit.weekList.isNotEmpty != true) return;
     if (index < 0) {
       index = 0;
     }
-    if (index >= _cubit.timeData!.weekList.length) {
-      index = _cubit.timeData!.weekList.length - 1;
+    if (index >= _cubit.weekList.length) {
+      index = _cubit.weekList.length - 1;
     }
     final double newPosition = index * 96 + (6 * index.toDouble());
     _scrollController.jumpTo(newPosition);
@@ -191,20 +193,20 @@ class _LessonTabPageState extends State<LessonTabPage>
   }
 
   Widget _buildWeekListWidget() {
-    if (_cubit.timeData == null) return const SizedBox();
+    if (_cubit.weekList.isNotEmpty != true) return const SizedBox();
     return Padding(
       padding: const EdgeInsets.only(bottom: 24.0),
       child: Row(
         children: [
           InkWell(
             onTap: () {
-              if (_cubit.timeData?.currentWeekIndex == null) return;
-              animateToIndex(_cubit.timeData!.currentWeekIndex - 1);
+              if (_cubit.currentWeekIndex == null) return;
+              animateToIndex(_cubit.currentWeekIndex - 1);
             },
             child: Icon(
               Icons.chevron_left_rounded,
               size: 24,
-              color: (_cubit.timeData?.currentWeekIndex ?? 0) <= 0
+              color: _cubit.currentWeekIndex <= 0
                   ? R.color.captionColorGray
                   : R.color.greenGradientBottom,
             ),
@@ -215,11 +217,11 @@ class _LessonTabPageState extends State<LessonTabPage>
               controller: _scrollController,
               child: Row(
                 children: List.generate(
-                  _cubit.timeData!.weekList.length,
+                  _cubit.weekList.length,
                   (index) => _buildSingleWeek(
                       weekIndex: index,
-                      status: _cubit.timeData!.weekList[index].status,
-                      isSelected: index == _cubit.timeData?.currentWeekIndex,
+                      status: _cubit.weekList[index],
+                      isSelected: index == _cubit.currentWeekIndex,
                       onSelect: () {
                         _cubit.onSelectWeek(index);
                       }),
@@ -230,14 +232,13 @@ class _LessonTabPageState extends State<LessonTabPage>
           ),
           InkWell(
             onTap: () {
-              if (_cubit.timeData?.currentWeekIndex == null) return;
-              animateToIndex(_cubit.timeData!.currentWeekIndex + 1);
+              if (_cubit.currentWeekIndex == null) return;
+              animateToIndex(_cubit.currentWeekIndex + 1);
             },
             child: Icon(
               Icons.chevron_right_rounded,
               size: 24,
-              color: (_cubit.timeData?.currentWeekIndex ?? 0) >=
-                      ((_cubit.timeData?.weekList.length ?? 1) - 1)
+              color: _cubit.currentWeekIndex >= (_cubit.weekList.length - 1)
                   ? R.color.captionColorGray
                   : R.color.greenGradientBottom,
             ),
@@ -318,18 +319,28 @@ class _LessonTabPageState extends State<LessonTabPage>
   }
 
   Widget _buildEmptyLessonList() {
+    final bool isFiltering = !_cubit.filterData.isEmpty;
     return Column(
       children: [
         SizedBox(height: 116.h),
-        Image.asset(
-          R.drawable.img_lesson_locked,
-          width: 200.w,
-          height: 200.w,
-        ),
+        if (isFiltering)
+          Image.asset(
+            R.drawable.img_lesson_locked,
+            width: 200.w,
+            height: 200.w,
+          )
+        else
+          Image.asset(
+            R.drawable.img_activity_empty,
+            width: 268.w,
+            height: 200.w,
+          ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(60, 24, 60, 6),
+          padding: const EdgeInsets.fromLTRB(50, 24, 50, 6),
           child: Text(
-            R.string.no_matched_lesson.tr(),
+            isFiltering
+                ? R.string.no_matched_lesson.tr()
+                : R.string.lesson_empty_no_filter.tr(),
             style: TextStyle(
               color: R.color.textDark,
               fontSize: 16,
@@ -341,7 +352,9 @@ class _LessonTabPageState extends State<LessonTabPage>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 80),
           child: Text(
-            R.string.no_matched_lesson_description.tr(),
+            isFiltering
+                ? R.string.no_matched_lesson_description.tr()
+                : R.string.lesson_empty_no_filter_description.tr(),
             style: TextStyle(
               color: R.color.textDark,
               fontSize: 14,

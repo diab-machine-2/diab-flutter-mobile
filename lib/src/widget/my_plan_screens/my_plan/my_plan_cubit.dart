@@ -8,7 +8,6 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'models/plan_type.dart';
 
-import 'models/time_data.dart';
 import 'my_plan.dart';
 
 class MyPlanCubit extends Cubit<MyPlanState> {
@@ -19,22 +18,14 @@ class MyPlanCubit extends Cubit<MyPlanState> {
   String packageCode = '';
   DateTime? packageTimeExpired;
 
-  TimeData? timeData;
-
   PlanType currentPlanType = PlanType.lesson;
-  List<PlanType> planTypeList = [PlanType.goal, PlanType.lesson];
+  List<PlanType> planTypeList = [
+    PlanType.goal,
+    PlanType.lesson,
+    PlanType.activity
+  ];
 
   List<MyLessonResponseData?> lessonsList = [];
-
-  List<String> keyWordList = [
-    'Dinh dưỡng',
-    'Đường huyết',
-    'Cân nặng',
-    'Huyết áp',
-    'Cảm xúc',
-    'Vận động',
-    'HbA1c',
-  ];
 
   int get currentPlanTypeIndex {
     final int index = planTypeList.indexOf(currentPlanType);
@@ -44,29 +35,6 @@ class MyPlanCubit extends Cubit<MyPlanState> {
   void changePlanType(int newIndex) {
     currentPlanType = planTypeList[newIndex];
     emit(const MyPlanChangeType());
-    emit(const MyPlanInitial());
-  }
-
-  void checkPlanList() {
-    if (packageCode.isNotEmpty && packageCode != Const.BASIC) {
-      planTypeList = [
-        PlanType.goal,
-        PlanType.lesson,
-        PlanType.activity,
-      ];
-    } else {
-      planTypeList = [
-        PlanType.goal,
-        PlanType.lesson,
-      ];
-    }
-    emit(const MyPlanChangeType());
-    emit(const MyPlanInitial());
-  }
-
-  void onSelectWeek(int newIndex) {
-    timeData?.currentWeekIndex = newIndex;
-    emit(const MyPlanSuccess());
     emit(const MyPlanInitial());
   }
 
@@ -90,13 +58,7 @@ class MyPlanCubit extends Cubit<MyPlanState> {
           Const.DATE_TIME_SV_FORMAT,
         );
       }
-      if (packageCode == Const.PRO && packageTimeExpired != null) {
-        timeData = TimeData(
-          startDate: DateTime.now(),
-          endDate: packageTimeExpired!,
-        );
-      }
-      checkPlanList();
+
       emit(const MyPlanSuccess());
     }, failure: (NetworkExceptions error) {
       emit(MyPlanFailure(NetworkExceptions.getErrorMessage(error)));

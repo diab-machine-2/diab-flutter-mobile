@@ -157,7 +157,7 @@ class AnswerData {
     int? point,
     int? flag,
     bool? isMappedToSurvey,
-    String? mappedSurveyId,
+    String? mappedQuestionId,
     bool? isCorrect,
   }) {
     _id = id;
@@ -167,7 +167,7 @@ class AnswerData {
     _point = point;
     _flag = flag;
     _isMappedToSurvey = isMappedToSurvey;
-    _mappedSurveyId = mappedSurveyId;
+    _mappedQuestionId = mappedQuestionId;
     _isCorrect = isCorrect;
   }
 
@@ -179,7 +179,7 @@ class AnswerData {
     _point = json['point'];
     _flag = json['flag'];
     _isMappedToSurvey = json['isMappedToSurvey'];
-    _mappedSurveyId = json['mappedSurveyId'];
+    _mappedQuestionId = json['mappedQuestionId'];
     _isCorrect = json['isCorrect'];
   }
   String? _id;
@@ -189,7 +189,7 @@ class AnswerData {
   int? _point;
   int? _flag;
   bool? _isMappedToSurvey;
-  String? _mappedSurveyId;
+  String? _mappedQuestionId;
   bool? _isCorrect;
 
   String? get id => _id;
@@ -199,7 +199,7 @@ class AnswerData {
   int? get point => _point;
   int? get flag => _flag;
   bool? get isMappedToSurvey => _isMappedToSurvey;
-  String? get mappedSurveyId => _mappedSurveyId;
+  String? get mappedQuestionId => _mappedQuestionId;
   bool? get isCorrect => _isCorrect;
 
   Map<String, dynamic> toJson() {
@@ -211,7 +211,7 @@ class AnswerData {
     map['point'] = _point;
     map['flag'] = _flag;
     map['isMappedToSurvey'] = _isMappedToSurvey;
-    map['mappedSurveyId'] = _mappedSurveyId;
+    map['mappedQuestionId'] = _mappedQuestionId;
     map['isCorrect'] = _isCorrect;
     return map;
   }

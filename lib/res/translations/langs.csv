@@ -633,6 +633,8 @@ exercise_done,Chúc mừng bạn hoàn thành bài tập của ngày hôm nay!,
 joining,Đang tham gia,
 ask_for_change_roadmap,"Bạn đang học {}, bạn có chắc muốn đổi lộ trình khác không?",
 road_map_changed,"Bạn đã chọn {}. Lộ trình bao gồm {} bài học.",
+lesson_empty_no_filter,Tuần này bạn không có bài học nào!,
+lesson_empty_no_filter_description,Hãy dành thời gian nghỉ ngơi và thư giãn nhé!,
 Common,============================================Common====================================================
 huyet_ap,Huyết áp,
 duong_huyet,Đường huyết,

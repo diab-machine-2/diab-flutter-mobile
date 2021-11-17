@@ -14,6 +14,7 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
 import '../survey_question/survey_question_page.dart';
+import 'widgets/custom_progress_bar_widget.dart';
 
 class SurveyPage extends StatefulWidget {
   final int index;
@@ -109,6 +110,8 @@ class _SurveyPageState extends State<SurveyPage> {
               ],
             ),
           ),
+          CustomProgressBarWidget(
+              widget.index / (widget.surveyData.sections?.length ?? 1)),
           SafeArea(
             top: false,
             child: Container(

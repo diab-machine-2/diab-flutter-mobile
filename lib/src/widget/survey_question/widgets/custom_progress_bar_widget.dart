@@ -42,7 +42,7 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
         }
         if (state is SurveyQuestionHideProgressMessage) {
           disposeOverlay();
-          showOverlay();
+          checkOverlayStatus();
         }
       },
       builder: (context, state) {
@@ -79,14 +79,18 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
     );
   }
 
-  void showOverlay() {
-    late final int progress;
+  void checkOverlayStatus() {
     if (_cubit.progress < 0.9) {
       showed90Message = false;
     }
     if (_cubit.progress < 0.5) {
       showed50Message = false;
     }
+  }
+
+  void showOverlay() {
+    checkOverlayStatus();
+    late final int progress;
     if (_cubit.progress >= 0.9 && !showed90Message) {
       progress = 90;
       showed90Message = true;
