@@ -223,7 +223,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                                 width: 8,
                                               ),
                                               Text(
-                                                  '${R.string.binh_quan_trong_nhom_tuoi_cua_toi}: ',
+                                                  '${R.string.binh_quan_trong_nhom_tuoi_cua_toi.tr()}: ',
                                                   style: TextStyle(
                                                       color: R.color.textDark,
                                                       fontWeight:

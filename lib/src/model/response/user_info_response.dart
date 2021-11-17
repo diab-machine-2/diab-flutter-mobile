@@ -8,7 +8,8 @@ class UserInfoResponseData {
   "packageTimeExpired": "11/01/2022 17:16:34",
   "bloodSugarTemplates": "NONE",
   "hasFoodMenu": true,
-  "roadmapId": "092b686d-7e0c-4f6e-9049-08d9a8bd01b3"
+  "roadmapId": "07491c70-28bf-42bf-731c-08d9986eb25e",
+  "currentStudyWeek": 3
 } 
 */
 
@@ -17,6 +18,7 @@ class UserInfoResponseData {
   String? bloodSugarTemplates;
   bool? hasFoodMenu;
   String? roadmapId;
+  int? currentStudyWeek;
 
   UserInfoResponseData({
     this.packageCode,
@@ -24,6 +26,7 @@ class UserInfoResponseData {
     this.bloodSugarTemplates,
     this.hasFoodMenu,
     this.roadmapId,
+    this.currentStudyWeek,
   });
   UserInfoResponseData.fromJson(Map<String, dynamic> json) {
     packageCode = json['packageCode']?.toString();
@@ -31,6 +34,7 @@ class UserInfoResponseData {
     bloodSugarTemplates = json['bloodSugarTemplates']?.toString();
     hasFoodMenu = json['hasFoodMenu'];
     roadmapId = json['roadmapId']?.toString();
+    currentStudyWeek = json['currentStudyWeek']?.toInt();
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -39,6 +43,7 @@ class UserInfoResponseData {
     data['bloodSugarTemplates'] = bloodSugarTemplates;
     data['hasFoodMenu'] = hasFoodMenu;
     data['roadmapId'] = roadmapId;
+    data['currentStudyWeek'] = currentStudyWeek;
     return data;
   }
 }
@@ -54,7 +59,8 @@ class UserInfoResponse {
     "packageTimeExpired": "11/01/2022 17:16:34",
     "bloodSugarTemplates": "NONE",
     "hasFoodMenu": true,
-    "roadmapId": "092b686d-7e0c-4f6e-9049-08d9a8bd01b3"
+    "roadmapId": "07491c70-28bf-42bf-731c-08d9986eb25e",
+    "currentStudyWeek": 3
   }
 } 
 */
