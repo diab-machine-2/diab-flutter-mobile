@@ -12,7 +12,7 @@ class LessonFilterRequest {
   "lessonIdList": [
     "3fa85f64-5717-4562-b3fc-2c963f66afa6"
   ],
-  "isCompleted": true,
+  "isNotCompleted": true,
   "week": 0
 } 
 */
@@ -21,7 +21,7 @@ class LessonFilterRequest {
   String? roadmapId;
   List<String?>? tagIdList;
   List<String?>? lessonIdList;
-  bool? isCompleted;
+  bool? isNotCompleted;
   int? week;
 
   LessonFilterRequest({
@@ -29,7 +29,7 @@ class LessonFilterRequest {
     this.roadmapId,
     this.tagIdList,
     this.lessonIdList,
-    this.isCompleted,
+    this.isNotCompleted,
     this.week,
   });
   LessonFilterRequest.fromJson(Map<String, dynamic> json) {
@@ -51,7 +51,7 @@ class LessonFilterRequest {
       });
       lessonIdList = arr0;
     }
-    isCompleted = json['isCompleted'];
+    isNotCompleted = json['isNotCompleted'];
     week = json['week']?.toInt();
   }
   Map<String, dynamic> toJson() {
@@ -74,7 +74,7 @@ class LessonFilterRequest {
       });
       data['lessonIdList'] = arr0;
     }
-    data['isCompleted'] = isCompleted;
+    data['isNotCompleted'] = isNotCompleted;
     data['week'] = week;
     return data;
   }

@@ -86,7 +86,11 @@ class _LessonTabPageState extends State<LessonTabPage>
                         onTap: () async {
                           final dynamic result =
                               await NavigationUtil.navigatePage(
-                                  context, LessonFilterPage(_cubit.filterData));
+                            context,
+                            LessonFilterPage(
+                              _cubit.filterData.copyWith(),
+                            ),
+                          );
                           if (result is FilterData) {
                             _cubit.filterData = result;
                             _cubit.getInitData();

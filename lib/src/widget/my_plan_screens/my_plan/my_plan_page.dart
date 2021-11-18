@@ -32,7 +32,6 @@ class _MyPlanPageState extends State<MyPlanPage> {
   void initState() {
     final AppRepository appRepository = AppRepository();
     _cubit = MyPlanCubit(appRepository);
-    _cubit.getInitData();
     super.initState();
   }
 
