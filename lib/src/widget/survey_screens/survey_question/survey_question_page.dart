@@ -69,25 +69,31 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: Scaffold(
-        backgroundColor: R.color.color0xffB1DDDB,
-        body: BlocProvider(
-          create: (context) => _cubit,
-          child: BlocConsumer<SurveyQuestionCubit, SurveyQuestionState>(
-            listener: (context, state) {
-              if (state is SurveyQuestionFailure) {
-                Message.showToastMessage(context, state.error);
-              }
-            },
-            builder: (context, state) {
-              if (state is SurveyQuestionLoading) {
-                BotToast.showLoading();
-              } else {
-                BotToast.closeAllLoading();
-              }
-              return SafeArea(
-                  top: true, bottom: false, child: buildPage(context, state));
-            },
+      child: WillPopScope(
+        onWillPop: () async {
+          _cubit.emit(SurveyQuestionHideProgressMessage());
+          return true;
+        },
+        child: Scaffold(
+          backgroundColor: R.color.color0xffB1DDDB,
+          body: BlocProvider(
+            create: (context) => _cubit,
+            child: BlocConsumer<SurveyQuestionCubit, SurveyQuestionState>(
+              listener: (context, state) {
+                if (state is SurveyQuestionFailure) {
+                  Message.showToastMessage(context, state.error);
+                }
+              },
+              builder: (context, state) {
+                if (state is SurveyQuestionLoading) {
+                  BotToast.showLoading();
+                } else {
+                  BotToast.closeAllLoading();
+                }
+                return SafeArea(
+                    top: true, bottom: false, child: buildPage(context, state));
+              },
+            ),
           ),
         ),
       ),
@@ -114,6 +120,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               IconButton(
                 icon: Icon(Icons.close, color: R.color.black),
                 onPressed: () {
+                  _cubit.emit(SurveyQuestionHideProgressMessage());
                   NavigationUtil.pop(context);
                 },
               )
