@@ -1,7 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/theme/app_theme.dart';
@@ -26,31 +26,25 @@ import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Exercrises/search_exercrises.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
+import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/base/base_state.dart';
-import 'package:medical/src/widget/booking_coach/booking_coach_page.dart';
-import 'package:medical/src/widget/course_feedback/course_feedback_page.dart';
-import 'package:medical/src/widget/course_quiz/course_quiz.dart';
-import 'package:medical/src/widget/detail_package/detail_package_page.dart';
 import 'package:medical/src/widget/flash_screen/flash_screen.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/intro_sample_menu/intro_sample_menu_page.dart';
-import 'package:medical/src/widget/introduce_survey/introduce_survey_page.dart';
 import 'package:medical/src/widget/login/change_password.dart';
+import 'package:medical/src/widget/login/create_new_password.dart';
+import 'package:medical/src/widget/login/forgot_password.dart';
 import 'package:medical/src/widget/login/login.dart';
-import 'package:medical/src/widget/login/register.dart';
 import 'package:medical/src/widget/login/policy.dart';
+import 'package:medical/src/widget/login/register.dart';
+import 'package:medical/src/widget/login/register_success.dart';
 import 'package:medical/src/widget/login/rules.dart';
 import 'package:medical/src/widget/login/step_list.dart';
-import 'package:medical/src/widget/login/forgot_password.dart';
-import 'package:medical/src/widget/login/verify_phone.dart';
-import 'package:medical/src/widget/login/create_new_password.dart';
-import 'package:medical/src/widget/login/register_success.dart';
 import 'package:medical/src/widget/login/update_info.dart';
-import 'package:medical/src/widget/my_booking/my_booking_page.dart';
-import 'package:medical/src/widget/my_package/my_package_page.dart';
+import 'package:medical/src/widget/login/verify_phone.dart';
 import 'package:medical/src/widget/notification/notification_detail.dart';
 import 'package:medical/src/widget/notification/notification_tabbar.dart';
-import 'package:medical/src/widget/payment_package/payment_package_page.dart';
 import 'package:medical/src/widget/profile/add_reminder.dart';
 import 'package:medical/src/widget/profile/contact.dart';
 import 'package:medical/src/widget/profile/goal_setting.dart';
@@ -63,18 +57,12 @@ import 'package:medical/src/widget/profile/schedule_glucose.dart';
 import 'package:medical/src/widget/profile/setting_schedule_glucose.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
-import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
-import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
-import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
-import 'package:medical/src/widget/upgrade_account/upgrade_account_page.dart';
-import 'package:medical/src/widget/welcome_service/welcome_service_page.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'model/service/app_client.dart';
+import 'utils/navigator_name.dart';
 import 'widget/Food/add_food.dart';
 import 'widget/helper/photo_view.dart';
-import 'widget/list_service/list_service_page.dart';
-import 'utils/navigator_name.dart';
 import 'widget/profile/profile_controller.dart';
 
 class App extends StatefulWidget {
@@ -82,7 +70,7 @@ class App extends StatefulWidget {
   _AppState createState() => _AppState();
 }
 
-final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 class _AppState extends State<App> {
 
   @override
@@ -94,12 +82,12 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-        designSize: Size(375, 812),
+        designSize: const Size(375, 812),
         builder: () =>  RefreshConfiguration(
           headerBuilder: () => MaterialClassicHeader(
             color: R.color.accentColor,
           ),        // Configure the default header indicator. If you have the same header indicator for each page, you need to set this
-          footerBuilder:  () => ClassicFooter(),
+          footerBuilder:  () => const ClassicFooter(),
           child: MaterialApp(
               title: 'diaB',
               color: Colors.white,

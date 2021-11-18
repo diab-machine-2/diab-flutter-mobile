@@ -2,34 +2,30 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/survey/survey_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 
-import 'introduce_survey.dart';
+import '../../my_plan_screens/my_plan/my_plan.dart';
+import 'survey_result.dart';
 
-class IntroduceSurveyPage extends StatefulWidget {
-  const IntroduceSurveyPage({Key? key}) : super(key: key);
-
+class SurveyResultPage extends StatefulWidget {
   @override
-  _IntroduceSurveyPageState createState() => _IntroduceSurveyPageState();
+  _SurveyResultPageState createState() => _SurveyResultPageState();
 }
 
-class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
-  late IntroduceSurveyCubit _cubit;
-  final String surveyId = "8463c809-ff12-4cf6-f4ac-08d99a8a6f6d";
+class _SurveyResultPageState extends State<SurveyResultPage> {
+  late SurveyResultCubit _cubit;
 
   @override
   void initState() {
     super.initState();
     final AppRepository repository = AppRepository();
-    _cubit = IntroduceSurveyCubit(repository);
-    _cubit.getDetailSurvey(surveyId);
+    _cubit = SurveyResultCubit(repository);
   }
 
   @override
@@ -37,14 +33,14 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
     return Scaffold(
       body: BlocProvider(
         create: (context) => _cubit,
-        child: BlocConsumer<IntroduceSurveyCubit, IntroduceSurveyState>(
+        child: BlocConsumer<SurveyResultCubit, SurveyResultState>(
           listener: (context, state) {
-            if (state is IntroduceSurveyFailure) {
+            if (state is SurveyResultFailure) {
               Message.showToastMessage(context, state.error);
             }
           },
           builder: (context, state) {
-            if (state is IntroduceSurveyLoading) {
+            if (state is SurveyResultLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
@@ -56,7 +52,7 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
     );
   }
 
-  Widget buildPage(BuildContext context, IntroduceSurveyState state) {
+  Widget buildPage(BuildContext context, SurveyResultState state) {
     return CommonPage(
       background: R.drawable.bg_welcome,
       title: R.string.survey.tr(),
@@ -67,30 +63,37 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
               padding: const EdgeInsets.all(16),
               shrinkWrap: true,
               children: [
+                SizedBox(height: 50.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 50.w),
+                  child: Image.asset(R.drawable.img_survey_completed),
+                ),
+                const SizedBox(height: 24),
                 Container(
-                  height: 172,
-                  clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Text(
+                    R.string.thank_you_for_survey.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.greenGradientBottom,
+                        height: 1.4),
                   ),
-                  child: NetWorkImageWidget(imageUrl: _cubit.surveyData?.image?.url),
                 ),
-                const SizedBox(height: 32),
-                Text(
-                  _cubit.surveyData?.name ?? '',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                const SizedBox(height: 8),
+                Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Text(
+                    R.string.thank_you_for_survey_description.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
                       color: R.color.textDark,
-                      height: 1.4),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  _cubit.surveyData?.description ?? '',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: R.color.textDark,
-                    height: 1.37,
+                    ),
                   ),
                 ),
               ],
@@ -103,16 +106,9 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
               width: 195,
               margin: const EdgeInsets.only(bottom: 20, top: 10),
               child: ButtonWidget(
-                title: R.string.start_survey.tr(),
+                title: R.string.completed.tr(),
                 onPressed: () {
-                  if (_cubit.surveyData == null) return;
-                  NavigationUtil.navigatePage(
-                    context,
-                    SurveyPage(
-                      index: 0,
-                      surveyData: _cubit.surveyData!,
-                    ),
-                  );
+                  NavigationUtil.popUtil(context, MyPlanPage);
                 },
               ),
             ),
