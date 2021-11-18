@@ -160,7 +160,7 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
         overlay.insert(messegeEntry!);
         overlay.insert(triangleEntry!);
         isShowing = true;
-        Timer(const Duration(seconds: 2), () {
+        Timer(const Duration(seconds: 5), () {
           disposeOverlay();
         });
       }

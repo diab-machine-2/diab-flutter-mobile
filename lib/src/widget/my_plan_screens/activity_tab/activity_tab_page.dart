@@ -5,9 +5,9 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/booking_coach/booking_coach.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
+import '../../survey_screens/introduce_survey/introduce_survey.dart';
 import '../my_plan/widgets/app_bar_bottom.dart';
 import 'activity_tab.dart';
 
@@ -46,19 +46,26 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           }
         },
         builder: (context, state) {
-          return AppBarBottom(child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ButtonWidget(title: 'Go to Survey', onPressed: (){
-                NavigationUtil.navigatePage(context, const IntroduceSurveyPage());
-              }),
-              const SizedBox(height: 24),
-              ButtonWidget(title: 'Go to Booking', onPressed: (){
-                NavigationUtil.navigatePage(context, const BookingCoachPage());
-              }),
-            ],
-
-          ),);
+          return AppBarBottom(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ButtonWidget(
+                    title: 'Go to Survey',
+                    onPressed: () {
+                      NavigationUtil.navigatePage(
+                          context, const IntroduceSurveyPage());
+                    }),
+                const SizedBox(height: 24),
+                ButtonWidget(
+                    title: 'Go to Booking',
+                    onPressed: () {
+                      NavigationUtil.navigatePage(
+                          context, const BookingCoachPage());
+                    }),
+              ],
+            ),
+          );
         },
       ),
     );

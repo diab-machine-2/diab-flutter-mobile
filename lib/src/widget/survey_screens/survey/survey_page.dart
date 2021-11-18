@@ -1,31 +1,46 @@
+import 'dart:math';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
-import '../my_plan_screens/my_plan/my_plan_page.dart';
-import 'survey_result.dart';
+import '../survey_question/survey_question_page.dart';
+import 'survey.dart';
+import 'widgets/custom_progress_bar_widget.dart';
 
-class SurveyResultPage extends StatefulWidget {
+class SurveyPage extends StatefulWidget {
+  final int index;
+  final SurveyData surveyData;
+  const SurveyPage({
+    Key? key,
+    required this.index,
+    required this.surveyData,
+  }) : super(key: key);
+
   @override
-  _SurveyResultPageState createState() => _SurveyResultPageState();
+  _SurveyPageState createState() => _SurveyPageState();
 }
 
-class _SurveyResultPageState extends State<SurveyResultPage> {
-  late SurveyResultCubit _cubit;
+class _SurveyPageState extends State<SurveyPage> {
+  late SurveyCubit _cubit;
+  SectionSurvey? _sectionSurvey;
 
   @override
   void initState() {
     super.initState();
     final AppRepository repository = AppRepository();
-    _cubit = SurveyResultCubit(repository);
+    _cubit = SurveyCubit(repository);
+    if (widget.surveyData.sections != null) {
+      _sectionSurvey = widget.surveyData.sections![widget.index];
+    }
   }
 
   @override
@@ -33,14 +48,14 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
     return Scaffold(
       body: BlocProvider(
         create: (context) => _cubit,
-        child: BlocConsumer<SurveyResultCubit, SurveyResultState>(
+        child: BlocConsumer<SurveyCubit, SurveyState>(
           listener: (context, state) {
-            if (state is SurveyResultFailure) {
+            if (state is SurveyFailure) {
               Message.showToastMessage(context, state.error);
             }
           },
           builder: (context, state) {
-            if (state is SurveyResultLoading) {
+            if (state is SurveyLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
@@ -52,7 +67,7 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
     );
   }
 
-  Widget buildPage(BuildContext context, SurveyResultState state) {
+  Widget buildPage(BuildContext context, SurveyState state) {
     return CommonPage(
       background: R.drawable.bg_welcome,
       title: R.string.survey.tr(),
@@ -63,32 +78,28 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
               padding: const EdgeInsets.all(16),
               shrinkWrap: true,
               children: [
-                SizedBox(height: 50.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 50.w),
-                  child: Image.asset(R.drawable.img_survey_completed),
+                Image.asset(
+                  randomImage(),
+                  width: double.infinity,
+                  height: 240,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 40),
                 Container(
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.symmetric(horizontal: 40),
+                  alignment: Alignment.centerLeft,
                   child: Text(
-                    R.string.thank_you_for_survey.tr(),
-                    textAlign: TextAlign.center,
+                    _sectionSurvey?.name ?? '',
                     style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.greenGradientBottom,
+                        fontWeight: FontWeight.bold,
+                        color: R.color.textDark,
                         height: 1.4),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 Container(
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.symmetric(horizontal: 40),
+                  alignment: Alignment.centerLeft,
                   child: Text(
-                    R.string.thank_you_for_survey_description.tr(),
-                    textAlign: TextAlign.center,
+                    _sectionSurvey?.description ?? '',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -99,6 +110,8 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
               ],
             ),
           ),
+          CustomProgressBarWidget(
+              widget.index / (widget.surveyData.sections?.length ?? 1)),
           SafeArea(
             top: false,
             child: Container(
@@ -106,15 +119,32 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
               width: 195,
               margin: const EdgeInsets.only(bottom: 20, top: 10),
               child: ButtonWidget(
-                title: R.string.completed.tr(),
+                title: R.string.text_continue.tr(),
                 onPressed: () {
-                  NavigationUtil.popUtil(context, MyPlanPage);
+                  NavigationUtil.navigatePage(
+                    context,
+                    SurveyQuestionPage(
+                      index: widget.index,
+                      surveyData: widget.surveyData,
+                    ),
+                  );
                 },
               ),
             ),
-          )
+          ),
         ],
       ),
     );
+  }
+
+  String randomImage() {
+    final List<String> imageList = [
+      R.drawable.img_survey_1,
+      R.drawable.img_survey_2,
+      R.drawable.img_survey_3,
+      R.drawable.img_survey_4,
+    ];
+    final Random _random = Random();
+    return imageList[_random.nextInt(imageList.length)];
   }
 }

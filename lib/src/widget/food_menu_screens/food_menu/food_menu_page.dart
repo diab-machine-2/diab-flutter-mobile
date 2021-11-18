@@ -10,14 +10,14 @@ import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/intro_sample_menu/intro_sample_menu.dart';
-import 'package:medical/src/widget/kcal_parameter/kcal_parameter.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../widgets/update_required_widget.dart';
 import '../change_menu/change_menu.dart';
+import '../intro_sample_menu/intro_sample_menu.dart';
+import '../kcal_parameter/kcal_parameter.dart';
 import 'food_menu.dart';
 
 class FoodMenuPage extends StatefulWidget {

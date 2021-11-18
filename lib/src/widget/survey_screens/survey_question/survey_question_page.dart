@@ -12,12 +12,12 @@ import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/card_course_quiz/card_course_quiz.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/survey/survey_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
-import '../card_course_quiz/card_course_quiz.dart';
+import '../survey/survey.dart';
 import '../survey_result/survey_result_page.dart';
 import 'survey_question.dart';
 import 'widgets/custom_progress_bar_widget.dart';
