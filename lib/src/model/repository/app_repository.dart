@@ -388,10 +388,10 @@ class AppRepository {
   }
 
   Future<ApiResult<ExerciseMovementResponse>> getExerciseMovement(
-      String roadmapId) async {
+      {required String roadmapId, int? week}) async {
     try {
       final ExerciseMovementResponse response =
-          await appClient.getExerciseMovement(roadmapId);
+          await appClient.getExerciseMovement(roadmapId: roadmapId, week: week);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

@@ -6,7 +6,6 @@ import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/date_utils.dart';
 
 import '../lesson_filter/models/filter_data.dart';
 import 'lesson_tab.dart';
@@ -30,7 +29,6 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   List<MyLessonResponseData?>? lessonsList;
 
   String packageCode = '';
-  DateTime? packageTimeExpired;
 
   List<CompletionStatus> weekList = [];
 
@@ -40,7 +38,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   }
 
   void onSelectWeek(int newIndex) {
-    filterData.week = newIndex;
+    filterData.currentWeek = newIndex;
     if (filterData.filterWithWeek) {
       getLessonsList();
     } else {
@@ -53,7 +51,9 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     return index == -1 ? 0 : index;
   }
 
-  int get currentWeekIndex => filterData.week ?? 1;
+  int get currentWeekIndex => filterData.currentWeek ?? 1;
+
+  bool get isFiltering => !filterData.isEmpty;
 
   void changeLessonType(int newIndex) {
     currentLessonType = lessonTypeList[newIndex];
@@ -64,7 +64,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
   void generateWeek() {
     weekList = List.generate(52, (index) {
-      final int current = filterData.week ?? 1;
+      final int current = filterData.currentWeek ?? 1;
       if (index > current) return CompletionStatus.not_start_yet;
       if (index == current)
         return CompletionStatus.studying;
@@ -75,7 +75,10 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
   Future<void> getInitData() async {
     await getCurrentUserInfo();
-    getLessonsList();
+    await getLessonsList();
+    if (filterData.currentWeek != null) {
+      emit(LessonTabWeekChanged(filterData.currentWeek!));
+    }
   }
 
   Future<void> getLessonsList({bool isRefresh = false}) async {
@@ -96,25 +99,16 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     emit(const LessonTabInitial());
   }
 
-  Future<void> getCurrentUserInfo({bool isRefresh = false}) async {
-    if (!isRefresh) {
-      emit(const LessonTabLoading());
-    }
+  Future<void> getCurrentUserInfo() async {
+    await Future.delayed(Duration.zero);
+    emit(const LessonTabLoading());
     final ApiResult<UserInfoResponse> apiResult =
         await repository.getCurrentUserInfo();
     apiResult.when(success: (UserInfoResponse response) {
       filterData.roadmapId = response.data?.roadmapId ?? '';
       packageCode = response.data?.packageCode ?? '';
-      final String packageTimeExpiredText =
-          response.data?.packageTimeExpired ?? '';
-      if (packageTimeExpiredText.isNotEmpty) {
-        packageTimeExpired = DateUtil.parseStringToDate(
-          packageTimeExpiredText,
-          Const.DATE_TIME_SV_FORMAT,
-        );
-      }
-      if (packageCode == Const.PRO && packageTimeExpired != null) {
-        filterData.week = (response.data?.currentStudyWeek ?? 1) - 1;
+      if (packageCode == Const.PRO && response.data?.currentStudyWeek != null) {
+        filterData.currentWeek = response.data!.currentStudyWeek! - 1;
         generateWeek();
       }
       emit(const LessonTabSuccess());

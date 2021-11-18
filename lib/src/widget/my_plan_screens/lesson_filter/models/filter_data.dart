@@ -14,7 +14,7 @@ class FilterData {
     newFilter.tagFilter = tagFilter ?? this.tagFilter;
     newFilter.nameFilter = nameFilter ?? this.nameFilter;
     newFilter.isCompleted = filterInCompleted ?? this.isCompleted;
-    newFilter.week = week ?? this.week;
+    newFilter.currentWeek = week ?? this.currentWeek;
     return newFilter;
   }
 
@@ -22,7 +22,7 @@ class FilterData {
   List<FilterDataItem?> tagFilter = [];
   List<FilterDataItem?> nameFilter = [];
   bool isCompleted = false;
-  int? week;
+  int? currentWeek;
 
   bool get isEmpty {
     return tagFilter.isEmpty && nameFilter.isEmpty && isCompleted != true;
@@ -50,6 +50,8 @@ class FilterData {
 
   bool get filterWithWeek =>
       tagFilter.isEmpty && nameFilter.isEmpty && isCompleted == false;
+
+  int? get week => currentWeek == null ? null : (currentWeek! + 1);
 
   LessonFilterRequest getRequest({required int type}) {
     return LessonFilterRequest(

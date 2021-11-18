@@ -49,3 +49,12 @@ class LessonTabChangeType extends LessonTabState {
     return 'LessonTabChangeType{}';
   }
 }
+
+class LessonTabWeekChanged extends LessonTabState {
+  const LessonTabWeekChanged(this.newIndex);
+  final int newIndex;
+  @override
+  String toString() {
+    return 'LessonTabWeekChanged{}';
+  }
+}

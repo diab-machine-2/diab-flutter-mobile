@@ -15,6 +15,7 @@ class CommonPage extends StatelessWidget {
   final Widget? appBarAction;
   final bool? showCloseBackButton;
   final bool? bottomSafeArea;
+  final VoidCallback? onTapAppBar;
 
   const CommonPage(
       {Key? key,
@@ -27,7 +28,8 @@ class CommonPage extends StatelessWidget {
       this.icon,
       this.appBarAction,
       this.showCloseBackButton,
-      this.bottomSafeArea})
+      this.bottomSafeArea,
+      this.onTapAppBar})
       : super(key: key);
 
   @override
@@ -39,40 +41,43 @@ class CommonPage extends StatelessWidget {
         bottom: bottomSafeArea ?? false,
         child: Column(
           children: [
-            CustomAppBar(
-              backgroundColor: appbarColor ?? R.color.transparent,
-              title: Text(
-                title ?? '',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: textColor ?? R.color.textDark,
+            GestureDetector(
+              onTap: onTapAppBar,
+              child: CustomAppBar(
+                backgroundColor: appbarColor ?? R.color.transparent,
+                title: Text(
+                  title ?? '',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: textColor ?? R.color.textDark,
+                  ),
                 ),
-              ),
-              showRightCloseButton: showCloseBackButton,
-              leadingIcon: GestureDetector(
-                onTap: onTapBack ??
-                    () {
-                      NavigationUtil.pop(context);
-                    },
-                child: Icon(
-                  icon ?? Icons.arrow_back,
-                  color: textColor ?? R.color.textDark,
+                showRightCloseButton: showCloseBackButton,
+                leadingIcon: GestureDetector(
+                  onTap: onTapBack ??
+                      () {
+                        NavigationUtil.pop(context);
+                      },
+                  child: Icon(
+                    icon ?? Icons.arrow_back,
+                    color: textColor ?? R.color.textDark,
+                  ),
                 ),
+                actions: showCloseBackButton == true
+                    ? [
+                        IconButton(
+                          icon: Icon(Icons.close, color: R.color.black),
+                          onPressed: onTapBack ??
+                              () {
+                                NavigationUtil.pop(context);
+                              },
+                        )
+                      ]
+                    : appBarAction != null
+                        ? [appBarAction!]
+                        : null,
               ),
-              actions: showCloseBackButton == true
-                  ? [
-                      IconButton(
-                        icon: Icon(Icons.close, color: R.color.black),
-                        onPressed: onTapBack ??
-                            () {
-                              NavigationUtil.pop(context);
-                            },
-                      )
-                    ]
-                  : appBarAction != null
-                      ? [appBarAction!]
-                      : null,
             ),
             Expanded(child: child)
           ],
