@@ -7,12 +7,12 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/course_quiz/course_quiz.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
 
+import '../course_quiz/course_quiz.dart';
 import 'lesson_detail.dart';
 import 'models/audio_data.dart';
 import 'widgets/bottom_sheet_widget.dart';

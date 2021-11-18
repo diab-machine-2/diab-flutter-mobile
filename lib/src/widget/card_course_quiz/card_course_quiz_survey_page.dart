@@ -150,10 +150,11 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
         child: TextFieldWidget(
           controller: _textController,
           borderColor: R.color.accentColor,
+          maxLength: 1000,
           onChanged: (text) {
             if (widget.onSubmitAnswer != null && text != null) {
               widget.onSubmitAnswer(QuestionAnswerResults(
-                  surveyQuestionId: quizData.id, content: text));
+                  surveyQuestionId: quizData.id, content: text.trim()));
             }
           },
         ),
