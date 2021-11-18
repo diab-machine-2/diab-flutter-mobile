@@ -59,6 +59,9 @@ class _LessonTabPageState extends State<LessonTabPage>
           if (state is LessonTabFailure) {
             Message.showToastMessage(context, state.error);
           }
+          if (state is LessonTabWeekChanged) {
+            animateToIndex(state.newIndex, refresh: false);
+          }
         },
         builder: (context, state) {
           return Column(
@@ -183,17 +186,25 @@ class _LessonTabPageState extends State<LessonTabPage>
     );
   }
 
-  void animateToIndex(int index) {
+  void animateToIndex(int index, {bool refresh = true}) {
     if (_cubit.weekList.isNotEmpty != true) return;
     if (index < 0) {
       index = 0;
+      refresh = false;
     }
     if (index >= _cubit.weekList.length) {
       index = _cubit.weekList.length - 1;
+      refresh = false;
     }
     final double newPosition = index * 96 + (6 * index.toDouble());
-    _scrollController.jumpTo(newPosition);
-    _cubit.onSelectWeek(index);
+    _scrollController.animateTo(
+      newPosition,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.ease,
+    );
+    if (refresh) {
+      _cubit.onSelectWeek(index);
+    }
   }
 
   Widget _buildWeekListWidget() {
@@ -266,8 +277,12 @@ class _LessonTabPageState extends State<LessonTabPage>
         width: 96,
         height: 32,
         decoration: BoxDecoration(
-          color: status.statusBackgroundColor,
-          border: isSelected ? Border.all(color: status.statusIconColor) : null,
+          color: isSelected && status == CompletionStatus.not_start_yet
+              ? R.color.greenbg
+              : status.statusBackgroundColor,
+          border: isSelected && status != CompletionStatus.not_start_yet
+              ? Border.all(color: status.statusIconColor)
+              : null,
           borderRadius: BorderRadius.circular(200),
         ),
         child: Row(
@@ -276,12 +291,15 @@ class _LessonTabPageState extends State<LessonTabPage>
             Text(
               '${R.string.week_upper_case_first.tr()} ${weekIndex + 1}',
               style: TextStyle(
-                color: status.statusIconColor,
+                color: isSelected && status == CompletionStatus.not_start_yet
+                    ? R.color.green
+                    : status.statusIconColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            status.weekStatusIcon
+            if (!(isSelected && status == CompletionStatus.not_start_yet))
+              status.weekStatusIcon
           ],
         ),
       ),

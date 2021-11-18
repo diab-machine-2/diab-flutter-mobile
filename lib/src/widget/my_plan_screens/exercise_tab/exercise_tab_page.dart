@@ -6,7 +6,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
@@ -15,10 +14,10 @@ import 'package:medical/src/widgets/video_player_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../exercise_detail/exercise_detail.dart';
-import '../my_plan/models/completion_status.dart';
 import '../my_plan/widgets/app_bar_bottom.dart';
 import '../select_road_map/select_road_map.dart';
 import 'exercise_tab.dart';
+import 'models/completion_status.dart';
 
 class ExerciseTabPage extends StatefulWidget {
   const ExerciseTabPage();
@@ -59,6 +58,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           }
           if (state is ExerciseTabRoadmapEmpty) {
             changeRoadMap();
+          }
+          if (state is ExerciseTabWeekChanged) {
+            animateToIndex(state.newIndex, refresh: false);
           }
         },
         builder: (context, state) {
@@ -175,32 +177,40 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     );
   }
 
-  void animateToIndex(int index) {
-    if (_cubit.timeData?.weekList.isNotEmpty != true) return;
+  void animateToIndex(int index, {bool refresh = true}) {
+    if (_cubit.weekList?.isNotEmpty != true) return;
     if (index < 0) {
       index = 0;
+      refresh = false;
     }
-    if (index >= _cubit.timeData!.weekList.length) {
-      index = _cubit.timeData!.weekList.length - 1;
+    if (index >= _cubit.weekList!.length) {
+      index = _cubit.weekList!.length - 1;
+      refresh = false;
     }
     final double newPosition = index * 96 + (6 * index.toDouble());
-    _scrollController.jumpTo(newPosition);
-    _cubit.onSelectWeek(index);
+    _scrollController.animateTo(
+      newPosition,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.ease,
+    );
+    if (refresh) {
+      _cubit.onSelectWeek(index);
+    }
   }
 
   Widget _buildWeekListWidget() {
-    if (_cubit.timeData == null) return const SizedBox();
+    if (_cubit.weekList == null) return const SizedBox();
     return Row(
       children: [
         InkWell(
           onTap: () {
-            if (_cubit.timeData?.currentWeekIndex == null) return;
-            animateToIndex(_cubit.timeData!.currentWeekIndex - 1);
+            if (_cubit.currentWeekIndex == null) return;
+            animateToIndex(_cubit.currentWeekIndex! - 1);
           },
           child: Icon(
             Icons.chevron_left_rounded,
             size: 24,
-            color: (_cubit.timeData?.currentWeekIndex ?? 0) <= 0
+            color: (_cubit.currentWeekIndex ?? 0) <= 0
                 ? R.color.captionColorGray
                 : R.color.greenGradientBottom,
           ),
@@ -211,11 +221,11 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             controller: _scrollController,
             child: Row(
               children: List.generate(
-                _cubit.timeData!.weekList.length,
+                _cubit.weekList!.length,
                 (index) => _buildSingleWeek(
                     weekIndex: index,
-                    status: _cubit.timeData!.weekList[index].status,
-                    isSelected: index == _cubit.timeData?.currentWeekIndex,
+                    status: _cubit.weekList![index],
+                    isSelected: index == _cubit.currentWeekIndex,
                     onSelect: () {
                       _cubit.onSelectWeek(index);
                     }),
@@ -226,14 +236,14 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         ),
         InkWell(
           onTap: () {
-            if (_cubit.timeData?.currentWeekIndex == null) return;
-            animateToIndex(_cubit.timeData!.currentWeekIndex + 1);
+            if (_cubit.currentWeekIndex == null) return;
+            animateToIndex(_cubit.currentWeekIndex! + 1);
           },
           child: Icon(
             Icons.chevron_right_rounded,
             size: 24,
-            color: (_cubit.timeData?.currentWeekIndex ?? 0) >=
-                    ((_cubit.timeData?.weekList.length ?? 1) - 1)
+            color: (_cubit.currentWeekIndex ?? 0) >=
+                    ((_cubit.weekList?.length ?? 1) - 1)
                 ? R.color.captionColorGray
                 : R.color.greenGradientBottom,
           ),
@@ -383,7 +393,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Widget _buildScheduleWidget() {
-    if (_cubit.timeData == null) return const SizedBox();
+    if (_cubit.weekList == null) return const SizedBox();
     return Padding(
       padding: const EdgeInsets.only(top: 20, bottom: 4),
       child: Column(
@@ -403,8 +413,12 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                       alignment: Alignment.bottomCenter,
                       width: 24,
                       child: Text(
-                        _cubit.timeData?.currentWeek.dayList[index].dayInWeek ??
-                            '',
+                        index == 6 ? 'CN' : 'T${index + 2}',
+                        style: TextStyle(
+                          color: R.color.grey_1,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
@@ -423,10 +437,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                                     : R.color.green,
                               ),
                             )
-                          : _buildSingleDay(
-                              day: _cubit
-                                  .timeData?.currentWeek.dayList[index ~/ 2],
-                            );
+                          : _buildSingleDay(status: CompletionStatus.completed);
                     },
                   ),
                 ),
@@ -452,8 +463,12 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         width: 96,
         height: 32,
         decoration: BoxDecoration(
-          color: status.statusBackgroundColor,
-          border: isSelected ? Border.all(color: status.statusIconColor) : null,
+          color: isSelected && status == CompletionStatus.not_start_yet
+              ? R.color.greenbg
+              : status.statusBackgroundColor,
+          border: isSelected && status != CompletionStatus.not_start_yet
+              ? Border.all(color: status.statusIconColor)
+              : null,
           borderRadius: BorderRadius.circular(200),
         ),
         child: Row(
@@ -462,20 +477,23 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             Text(
               '${R.string.week_upper_case_first.tr()} ${weekIndex + 1}',
               style: TextStyle(
-                color: status.statusIconColor,
+                color: isSelected && status == CompletionStatus.not_start_yet
+                    ? R.color.green
+                    : status.statusIconColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            status.weekStatusIcon
+            if (!(isSelected && status == CompletionStatus.not_start_yet))
+              status.weekStatusIcon
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSingleDay({required DateTime? day}) {
-    if (day == null) return const SizedBox();
+  Widget _buildSingleDay({required CompletionStatus? status}) {
+    if (status == null) return const SizedBox();
     return InkWell(
       onTap: () {},
       child: Container(

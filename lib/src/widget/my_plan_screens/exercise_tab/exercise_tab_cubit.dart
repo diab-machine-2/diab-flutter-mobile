@@ -5,27 +5,38 @@ import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/date_utils.dart';
 
-import '../my_plan/models/time_data.dart';
 import 'exercise_tab.dart';
+import 'models/completion_status.dart';
 
 class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   ExerciseTabCubit(this.repository) : super(const ExerciseTabInitial());
 
   final AppRepository repository;
 
-  TimeData? timeData;
-
   String roadmapId = '';
+  int? currentWeekIndex;
+  List? weekList;
   String packageCode = '';
   DateTime? packageTimeExpired;
   List<ExerciseMovementResponseData?>? exerciseList;
 
+  int? get week => currentWeekIndex == null ? null : (currentWeekIndex! + 1);
+
   void onSelectWeek(int newIndex) {
-    timeData?.currentWeekIndex = newIndex;
-    emit(const ExerciseTabSuccess());
-    emit(const ExerciseTabInitial());
+    currentWeekIndex = newIndex;
+    getExerciseMovement();
+  }
+
+  Future<void> generateWeek() async {
+    final int current = currentWeekIndex ?? 0;
+    weekList = List.generate(52, (index) {
+      if (index > current) return CompletionStatus.not_start_yet;
+      if (index == current)
+        return CompletionStatus.studying;
+      else
+        return CompletionStatus.completed;
+    });
   }
 
   Future<void> initData() async {
@@ -35,7 +46,8 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       emit(const ExerciseTabInitial());
       return;
     }
-    getExerciseMovement();
+    await getExerciseMovement();
+    emit(ExerciseTabWeekChanged(currentWeekIndex ?? 0));
   }
 
   Future<void> getCurrentUserInfo({bool isRefresh = false}) async {
@@ -47,19 +59,9 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     apiResult.when(success: (UserInfoResponse response) {
       packageCode = response.data?.packageCode ?? '';
       roadmapId = response.data?.roadmapId ?? '';
-      final String packageTimeExpiredText =
-          response.data?.packageTimeExpired ?? '';
-      if (packageTimeExpiredText.isNotEmpty) {
-        packageTimeExpired = DateUtil.parseStringToDate(
-          packageTimeExpiredText,
-          Const.DATE_TIME_SV_FORMAT,
-        );
-      }
-      if (packageCode == Const.PRO && packageTimeExpired != null) {
-        timeData = TimeData(
-          startDate: DateTime.now(),
-          endDate: packageTimeExpired!,
-        );
+      if (packageCode == Const.PRO && response.data?.currentStudyWeek != null) {
+        currentWeekIndex = response.data!.currentStudyWeek! - 1;
+        generateWeek();
       }
       emit(const ExerciseTabSuccess());
     }, failure: (NetworkExceptions error) {
@@ -73,7 +75,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       emit(const ExerciseTabLoading());
     }
     final ApiResult<ExerciseMovementResponse> apiResult =
-        await repository.getExerciseMovement(roadmapId);
+        await repository.getExerciseMovement(roadmapId: roadmapId, week: week);
     apiResult.when(success: (ExerciseMovementResponse response) {
       exerciseList = response.data ?? [];
       emit(const ExerciseTabSuccess());

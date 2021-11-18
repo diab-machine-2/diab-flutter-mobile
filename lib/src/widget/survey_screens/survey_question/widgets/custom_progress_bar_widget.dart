@@ -19,6 +19,7 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
   final LayerLink layerLink = LayerLink();
   OverlayEntry? messegeEntry;
   OverlayEntry? triangleEntry;
+  Timer? _timer;
 
   bool isShowing = false;
   bool showed50Message = false;
@@ -104,32 +105,35 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
     final OverlayState? overlay = Overlay.of(context);
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
     final Size? size = renderBox?.size;
-    final Offset? offset = renderBox?.localToGlobal(Offset.zero);
     if (!isShowing) {
       messegeEntry = OverlayEntry(
         builder: (context) {
           return Positioned(
-            left: progress == 50
-                ? ((size?.width ?? 0) - 240) / 2
-                : ((size?.width ?? 0) - 260),
-            top: (offset?.dy ?? 0) - 23,
             height: 18,
-            child: Material(
-              color: R.color.transparent,
-              child: Container(
-                width: 240,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-                decoration: BoxDecoration(
-                  color: R.color.mainColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  R.string.survey_progress.tr(args: [progress.toString()]),
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
+            child: CompositedTransformFollower(
+              link: layerLink,
+              offset: Offset(
+                  progress == 50
+                      ? ((size?.width ?? 0) - 240) / 2
+                      : ((size?.width ?? 0) - 260),
+                  -23),
+              child: Material(
+                color: R.color.transparent,
+                child: Container(
+                  width: 240,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: R.color.mainColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    R.string.survey_progress.tr(args: [progress.toString()]),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -140,17 +144,21 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
 
       triangleEntry = OverlayEntry(builder: (context) {
         return Positioned(
-          left: progress == 50
-              ? ((size?.width ?? 0) / 2 - 3)
-              : ((size?.width ?? 0) * 0.9 - 3),
-          top: (offset?.dy ?? 0) - 6,
           height: 6,
-          child: ClipPath(
-            clipper: CustomTriangleClipper(),
-            child: Container(
-              width: 6,
-              height: 5,
-              color: R.color.mainColor,
+          child: CompositedTransformFollower(
+            link: layerLink,
+            offset: Offset(
+                progress == 50
+                    ? ((size?.width ?? 0) / 2 - 3)
+                    : ((size?.width ?? 0) * 0.9 - 3),
+                -6),
+            child: ClipPath(
+              clipper: CustomTriangleClipper(),
+              child: Container(
+                width: 6,
+                height: 5,
+                color: R.color.mainColor,
+              ),
             ),
           ),
         );
@@ -160,9 +168,7 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
         overlay.insert(messegeEntry!);
         overlay.insert(triangleEntry!);
         isShowing = true;
-        Timer(const Duration(seconds: 5), () {
-          disposeOverlay();
-        });
+        startTimer();
       }
     }
   }
@@ -173,6 +179,19 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
     triangleEntry?.remove();
     triangleEntry = null;
     isShowing = false;
+    stopTimer();
+  }
+
+  void startTimer() {
+    _timer = Timer(const Duration(seconds: 5), () {
+      disposeOverlay();
+    });
+  }
+
+  void stopTimer() {
+    if (_timer != null && _timer?.isActive == true) {
+      _timer?.cancel();
+    }
   }
 }
 

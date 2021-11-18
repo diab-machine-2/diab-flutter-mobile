@@ -162,9 +162,10 @@ abstract class AppApi {
   );
 
   @GET("App/ExerciseMovement/All")
-  Future<ExerciseMovementResponse> getExerciseMovement(
-    @Query('roadmapId') String roadmapId,
-  );
+  Future<ExerciseMovementResponse> getExerciseMovement({
+    @Query('roadmapId') String? roadmapId,
+    @Query('week') int? week,
+  });
 
   @POST("App/ExerciseMovementReview")
   Future<CommonResponse> exerciseFeedback(

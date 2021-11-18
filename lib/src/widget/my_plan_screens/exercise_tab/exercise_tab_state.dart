@@ -49,3 +49,12 @@ class ExerciseTabRoadmapEmpty extends ExerciseTabState {
     return 'ExerciseTabRoadmapEmpty{}';
   }
 }
+
+class ExerciseTabWeekChanged extends ExerciseTabState {
+  const ExerciseTabWeekChanged(this.newIndex);
+  final int newIndex;
+  @override
+  String toString() {
+    return 'ExerciseTabWeekChanged{}';
+  }
+}
