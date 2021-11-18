@@ -1,39 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/utils.dart';
 
 class TextFieldWidget extends StatefulWidget {
-  const TextFieldWidget(
-      {required this.controller,
-//      this.key,
-      this.textInputAction: TextInputAction.next,
-      this.isEnable = true,
-      this.autoFocus = true,
-      this.isRequired = false,
-        this.borderColor,
-      this.border: 10,
-      this.onChanged,
-      this.padding = const EdgeInsets.all(20),
-      this.isPassword: false,
-      this.icon,
-      this.errorText,
-      this.labelText,
-      this.hintText,
-      this.inputFormatters,
-      this.minLines,
-      this.maxLines,
-      this.keyboardType: TextInputType.text,
-      this.focusNode,
-      this.readOnly: false,
-      this.onTap,
-      this.suffixIcon,
-      this.onTapRightIcon,
-      this.onSubmitted});
+  const TextFieldWidget({
+    required this.controller,
+    this.textInputAction = TextInputAction.next,
+    this.isEnable = true,
+    this.autoFocus = true,
+    this.isRequired = false,
+    this.borderColor,
+    this.border = 10,
+    this.onChanged,
+    this.padding = const EdgeInsets.all(20),
+    this.isPassword = false,
+    this.icon,
+    this.errorText,
+    this.labelText,
+    this.hintText,
+    this.inputFormatters,
+    this.minLines,
+    this.maxLines,
+    this.maxLength,
+    this.keyboardType = TextInputType.text,
+    this.focusNode,
+    this.readOnly = false,
+    this.onTap,
+    this.suffixIcon,
+    this.onTapRightIcon,
+    this.onSubmitted,
+  });
 
-//  final GlobalKey key;
   final TextEditingController controller;
   final bool isEnable;
   final bool autoFocus;
@@ -48,6 +47,7 @@ class TextFieldWidget extends StatefulWidget {
   final String? hintText;
   final int? minLines;
   final int? maxLines;
+  final int? maxLength;
   final Color? borderColor;
   final double border;
   final TextInputType keyboardType;
@@ -68,7 +68,6 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _obscureText = widget.isPassword;
   }
@@ -76,7 +75,6 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
   @override
   Widget build(BuildContext context) {
     return TextField(
-//      key: widget.key,
       enabled: widget.isEnable,
       autofocus: widget.autoFocus,
       focusNode: widget.focusNode,
@@ -85,23 +83,27 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       textInputAction: widget.textInputAction,
       inputFormatters: widget.inputFormatters,
       readOnly: widget.readOnly,
-      //onTap: widget.onTap,
+      maxLength: widget.maxLength,
       decoration: InputDecoration(
           hintText: widget.hintText,
           fillColor: R.color.white,
+          counterText: '',
           filled: true,
           isDense: true,
           contentPadding: widget.padding,
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: widget.borderColor ?? R.color.gray, width: 0.0),
+            borderSide: BorderSide(
+                color: widget.borderColor ?? R.color.gray, width: 0.0),
             borderRadius: BorderRadius.circular(widget.border),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: widget.borderColor ?? R.color.gray, width: 0.0),
+            borderSide: BorderSide(
+                color: widget.borderColor ?? R.color.gray, width: 0.0),
             borderRadius: BorderRadius.circular(widget.border),
           ),
           border: OutlineInputBorder(
-            borderSide: BorderSide(color: widget.borderColor ?? R.color.gray, width: 0.0),
+            borderSide: BorderSide(
+                color: widget.borderColor ?? R.color.gray, width: 0.0),
             borderRadius: BorderRadius.circular(widget.border),
           ),
           errorText: widget.errorText,
@@ -109,7 +111,6 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
             borderSide: BorderSide(color: R.color.red, width: 0.0),
             borderRadius: BorderRadius.circular(widget.border),
           ),
-          // prefixText: widget.isRequired  "*" : "",
           prefixStyle: TextStyle(
             color: R.color.red,
           ),
@@ -123,7 +124,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                         height: 5,
                         color: R.color.textDark,
                       ),
-                      padding: EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(12),
                     )
                   : Icon(
                       widget.icon,
@@ -136,7 +137,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                       ? null
                       : widget.onTapRightIcon!(),
                   child: Padding(
-                      padding: EdgeInsets.only(right: 15),
+                      padding: const EdgeInsets.only(right: 15),
                       child: widget.suffixIcon),
                 )
               : Utils.isEmpty(widget.controller.text) ||
@@ -150,7 +151,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                             });
                           },
                           child: Padding(
-                              padding: EdgeInsets.only(right: 15),
+                              padding: const EdgeInsets.only(right: 15),
                               child: Icon(
                                 _obscureText
                                     ? CupertinoIcons.eye_slash
