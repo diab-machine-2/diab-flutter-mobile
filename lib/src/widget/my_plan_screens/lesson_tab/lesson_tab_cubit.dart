@@ -53,6 +53,8 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
   int get currentWeekIndex => filterData.currentWeek ?? 1;
 
+  bool get isFiltering => !filterData.isEmpty;
+
   void changeLessonType(int newIndex) {
     currentLessonType = lessonTypeList[newIndex];
     getLessonsList();

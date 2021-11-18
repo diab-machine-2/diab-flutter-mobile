@@ -137,19 +137,23 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     emit(InitialSurveyQuestionState());
   }
 
-  Future<void> submitAnswer(
-    String surveyId,
-    String sectionId,
-  ) async {
+  Future<void> submitAnswer({
+    required String surveyId,
+    required String sectionId,
+    required String questionId,
+  }) async {
     emit(SurveyQuestionLoading());
     final List<QuestionAnswerResults> list = [];
     answer.forEach((key, value) {
       list.add(value);
     });
+    
     final PostSurveyRequest request = PostSurveyRequest(
         surveyId: surveyId,
         surveySectionId: sectionId,
-        questionAnswerResults: list);
+        questionAnswerResults: list
+            .where((element) => element.surveyQuestionId == questionId)
+            .toList());
     final ApiResult<CommonResponse> apiResult =
         await repository.submitSurvey(request);
     apiResult.when(success: (CommonResponse response) {

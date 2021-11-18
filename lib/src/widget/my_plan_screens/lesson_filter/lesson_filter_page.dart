@@ -39,12 +39,16 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: BlocProvider(
         create: (context) => _cubit,
         child: CommonPage(
           title: R.string.filter.tr(),
           background: R.drawable.bg_welcome,
           showCloseBackButton: true,
+          onTapAppBar: () {
+            FocusScope.of(context).unfocus();
+          },
           child: Stack(
             children: [
               Positioned.fill(

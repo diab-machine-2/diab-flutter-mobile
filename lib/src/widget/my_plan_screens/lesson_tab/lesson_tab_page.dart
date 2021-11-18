@@ -215,13 +215,13 @@ class _LessonTabPageState extends State<LessonTabPage>
         children: [
           InkWell(
             onTap: () {
-              if (_cubit.currentWeekIndex == null) return;
+              if (_cubit.currentWeekIndex == null || _cubit.isFiltering) return;
               animateToIndex(_cubit.currentWeekIndex - 1);
             },
             child: Icon(
               Icons.chevron_left_rounded,
               size: 24,
-              color: _cubit.currentWeekIndex <= 0
+              color: _cubit.currentWeekIndex <= 0 || _cubit.isFiltering
                   ? R.color.captionColorGray
                   : R.color.greenGradientBottom,
             ),
@@ -237,6 +237,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                       weekIndex: index,
                       status: _cubit.weekList[index],
                       isSelected: index == _cubit.currentWeekIndex,
+                      isDisable: _cubit.isFiltering,
                       onSelect: () {
                         _cubit.onSelectWeek(index);
                       }),
@@ -247,13 +248,14 @@ class _LessonTabPageState extends State<LessonTabPage>
           ),
           InkWell(
             onTap: () {
-              if (_cubit.currentWeekIndex == null) return;
+              if (_cubit.currentWeekIndex == null || _cubit.isFiltering) return;
               animateToIndex(_cubit.currentWeekIndex + 1);
             },
             child: Icon(
               Icons.chevron_right_rounded,
               size: 24,
-              color: _cubit.currentWeekIndex >= (_cubit.weekList.length - 1)
+              color: _cubit.currentWeekIndex >= (_cubit.weekList.length - 1) ||
+                      _cubit.isFiltering
                   ? R.color.captionColorGray
                   : R.color.greenGradientBottom,
             ),
@@ -267,22 +269,38 @@ class _LessonTabPageState extends State<LessonTabPage>
     required int weekIndex,
     required CompletionStatus status,
     required bool isSelected,
+    bool isDisable = false,
     VoidCallback? onSelect,
   }) {
+    final Color background =
+        isSelected && status == CompletionStatus.not_start_yet
+            ? R.color.greenbg
+            : status.statusBackgroundColor;
+    final BoxBorder? border =
+        isSelected && status != CompletionStatus.not_start_yet
+            ? Border.all(color: status.statusIconColor)
+            : null;
+    final Color textColor =
+        isSelected && status == CompletionStatus.not_start_yet
+            ? R.color.green
+            : status.statusIconColor;
+    final bool showIcon =
+        !(isSelected && status == CompletionStatus.not_start_yet);
+
     return GestureDetector(
-      onTap: onSelect,
+      onTap: isDisable
+          ? () {}
+          : () {
+              onSelect?.call();
+            },
       child: Container(
         alignment: Alignment.center,
         margin: const EdgeInsets.only(left: 6),
         width: 96,
         height: 32,
         decoration: BoxDecoration(
-          color: isSelected && status == CompletionStatus.not_start_yet
-              ? R.color.greenbg
-              : status.statusBackgroundColor,
-          border: isSelected && status != CompletionStatus.not_start_yet
-              ? Border.all(color: status.statusIconColor)
-              : null,
+          color: isDisable ? R.color.grey_6 : background,
+          border: isDisable ? null : border,
           borderRadius: BorderRadius.circular(200),
         ),
         child: Row(
@@ -291,15 +309,12 @@ class _LessonTabPageState extends State<LessonTabPage>
             Text(
               '${R.string.week_upper_case_first.tr()} ${weekIndex + 1}',
               style: TextStyle(
-                color: isSelected && status == CompletionStatus.not_start_yet
-                    ? R.color.green
-                    : status.statusIconColor,
+                color: isDisable ? R.color.grayCaption : textColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            if (!(isSelected && status == CompletionStatus.not_start_yet))
-              status.weekStatusIcon
+            if (showIcon && !isDisable) status.weekStatusIcon
           ],
         ),
       ),
@@ -341,11 +356,10 @@ class _LessonTabPageState extends State<LessonTabPage>
   }
 
   Widget _buildEmptyLessonList() {
-    final bool isFiltering = !_cubit.filterData.isEmpty;
     return Column(
       children: [
         SizedBox(height: 116.h),
-        if (isFiltering)
+        if (_cubit.isFiltering)
           Image.asset(
             R.drawable.img_lesson_locked,
             width: 200.w,
@@ -360,7 +374,7 @@ class _LessonTabPageState extends State<LessonTabPage>
         Padding(
           padding: const EdgeInsets.fromLTRB(50, 24, 50, 6),
           child: Text(
-            isFiltering
+            _cubit.isFiltering
                 ? R.string.no_matched_lesson.tr()
                 : R.string.lesson_empty_no_filter.tr(),
             style: TextStyle(
@@ -374,7 +388,7 @@ class _LessonTabPageState extends State<LessonTabPage>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 80),
           child: Text(
-            isFiltering
+            _cubit.isFiltering
                 ? R.string.no_matched_lesson_description.tr()
                 : R.string.lesson_empty_no_filter_description.tr(),
             style: TextStyle(

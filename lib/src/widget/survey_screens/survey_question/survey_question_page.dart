@@ -218,14 +218,17 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
     final bool isEnable = _cubit.nextButtonEnable;
     final VoidCallback? onTap = isEnable
         ? () {
+            if (widget.surveyData.id != null &&
+                _cubit.sectionSurvey?.id != null)
+              _cubit.submitAnswer(
+                surveyId: widget.surveyData.id!,
+                sectionId: _cubit.sectionSurvey!.id!,
+                questionId: _cubit.currentQuestion?.id ?? '',
+              );
             FocusScope.of(context).unfocus();
             if (_cubit.selectedCourseIndex == _cubit.lengthQuiz - 1) {
               final bool isLastPart =
                   widget.index + 1 == (widget.surveyData.sections?.length ?? 0);
-              if (widget.surveyData.id != null &&
-                  _cubit.sectionSurvey?.id != null)
-                _cubit.submitAnswer(
-                    widget.surveyData.id!, _cubit.sectionSurvey!.id!);
               _cubit.emit(SurveyQuestionHideProgressMessage());
               if (isLastPart) {
                 NavigationUtil.navigatePage(context, SurveyResultPage());
