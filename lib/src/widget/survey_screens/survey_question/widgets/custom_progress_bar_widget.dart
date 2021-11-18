@@ -35,6 +35,12 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
   }
 
   @override
+  void dispose() {
+    disposeOverlay();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<SurveyQuestionCubit, SurveyQuestionState>(
       listener: (context, state) {
@@ -95,9 +101,11 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
     if (_cubit.progress >= 0.9 && !showed90Message) {
       progress = 90;
       showed90Message = true;
+      disposeOverlay();
     } else if (_cubit.progress >= 0.5 && !showed50Message) {
       progress = 50;
       showed50Message = true;
+      disposeOverlay();
     } else {
       return;
     }
