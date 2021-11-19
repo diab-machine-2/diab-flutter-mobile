@@ -417,11 +417,16 @@ class _LessonTabPageState extends State<LessonTabPage>
           const SizedBox(width: 16),
           Expanded(
             child: InkWell(
-              onTap: lessonDetail?.learningStatus == Const.LESSON_LOCKED
-                  ? () {
-                      _showLockedDialog();
-                    }
-                  : onTap,
+              onTap: () {
+                if (lessonDetail?.level != 'Cấp độ 1') {
+                  //TODO: Show dialog upgrade
+                }
+                if (lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
+                  _showLockedDialog();
+                  return;
+                }
+                onTap?.call();
+              },
               child: Row(
                 children: [
                   Container(

@@ -145,9 +145,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       return Padding(
                                         padding:
                                             const EdgeInsets.only(bottom: 24),
-                                        child: BetterPlayer(
-                                            controller: _cubit.videoManager!
-                                                .controllerList[index]),
+                                        child: _buildTitleWidget(
+                                          child: BetterPlayer(
+                                              controller: _cubit.videoManager!
+                                                  .controllerList[index]),
+                                        ),
                                       );
                                     },
                                   ),
@@ -200,6 +202,24 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                 );
         },
       ),
+    );
+  }
+
+  Widget _buildTitleWidget({required Widget child, String? title}) {
+    return Column(
+      children: [
+        child,
+        if (title != null) const SizedBox(height: 6),
+        if (title != null)
+          Text(
+            title,
+            style: TextStyle(
+              color: R.color.mediaTitle,
+              fontSize: 10,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+      ],
     );
   }
 
