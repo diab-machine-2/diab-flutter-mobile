@@ -13,8 +13,8 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/video_player_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../exercise_detail/exercise_detail.dart';
-import '../my_plan/widgets/app_bar_bottom.dart';
 import '../select_road_map/select_road_map.dart';
 import 'exercise_tab.dart';
 import 'models/completion_status.dart';

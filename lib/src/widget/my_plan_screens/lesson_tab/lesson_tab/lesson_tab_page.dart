@@ -14,10 +14,10 @@ import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../lesson_detail/lesson_detail.dart';
 import '../lesson_filter/lesson_filter.dart';
 import '../lesson_filter/models/filter_data.dart';
-import '../my_plan/widgets/app_bar_bottom.dart';
 import 'lesson_tab.dart';
 import 'models/completion_status.dart';
 import 'models/lesson_type.dart';
