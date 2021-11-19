@@ -7,8 +7,8 @@ import 'package:medical/src/widget/booking_coach/booking_coach.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
-import '../../survey_screens/introduce_survey/introduce_survey.dart';
-import '../my_plan/widgets/app_bar_bottom.dart';
+import '../../../survey_screens/introduce_survey/introduce_survey.dart';
+import '../../my_plan/widgets/app_bar_bottom.dart';
 import 'activity_tab.dart';
 
 class ActivityTabPage extends StatefulWidget {
