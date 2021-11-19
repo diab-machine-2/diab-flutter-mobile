@@ -3,10 +3,9 @@ import 'package:meta/meta.dart';
 
 @immutable
 abstract class SurveyResultState extends Equatable {
-  SurveyResultState([List props = const []]) : super();
+  const SurveyResultState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -20,7 +19,7 @@ class InitialSurveyResultState extends SurveyResultState {
 class SurveyResultFailure extends SurveyResultState {
   final String error;
 
-  SurveyResultFailure(this.error);
+  const SurveyResultFailure(this.error);
 
   @override
   String toString() {

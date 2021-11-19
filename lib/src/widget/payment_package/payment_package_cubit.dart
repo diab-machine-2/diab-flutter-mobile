@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inapp_purchase/flutter_inapp_purchase.dart';
 import 'package:medical/res/R.dart';
@@ -9,7 +10,7 @@ import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/logger.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:easy_localization/easy_localization.dart';
+
 import 'payment_package.dart';
 
 class PaymentPackageCubit extends Cubit<PaymentPackageState> {
@@ -102,7 +103,6 @@ class PaymentPackageCubit extends Cubit<PaymentPackageState> {
 
   @override
   Future<void> close() async {
-    // TODO: implement dispose
     _connectionSubscription.cancel();
     _purchaseUpdatedSubscription.cancel();
     _purchaseErrorSubscription.cancel();

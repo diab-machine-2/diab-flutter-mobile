@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 abstract class MyPackageState extends Equatable {
-  MyPackageState([List props = const []]) : super();
+  const MyPackageState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 

@@ -61,7 +61,6 @@ class _Hba1cDetailTabbarControllerState
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'hba1c_change_data') {
       overviewKey.currentState!.reloadData(periodFilterType);
       if (detailKey.currentState != null) {

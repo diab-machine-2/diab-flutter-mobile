@@ -62,7 +62,6 @@ class _ExercrisesDetailTabbarControllerState
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'active_change_data') {
       overViewKey.currentState!.reloadData(periodFilterType);
       if (detailKey.currentState != null) {

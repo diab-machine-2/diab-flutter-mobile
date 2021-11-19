@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 abstract class PaymentPackageState extends Equatable {
-  PaymentPackageState([List props = const []]) : super();
+  const PaymentPackageState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -21,7 +20,7 @@ class PaymentPackageLoading extends PaymentPackageState {
 class PaymentPackageFailure extends PaymentPackageState {
   final String error;
 
-  PaymentPackageFailure(this.error);
+  const PaymentPackageFailure(this.error);
 
   @override
   String toString() => 'PaymentPackageFailure { error: $error }';

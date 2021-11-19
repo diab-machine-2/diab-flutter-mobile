@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -13,7 +14,6 @@ import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class EmotionDetailTabbarController extends StatefulWidget {
   @override
@@ -60,7 +60,6 @@ class _EmotionDetailTabbarControllerState
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'Emotion_change_data') {
       overViewKey.currentState?.reloadData(periodFilterType);
         detailKey.currentState?.reloadData(periodFilterType);

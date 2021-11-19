@@ -58,7 +58,6 @@ class NotificationControllerState extends State<NotificationController>
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'read_notification') {
       var firstValue = map?.values.first;
       setState(() {

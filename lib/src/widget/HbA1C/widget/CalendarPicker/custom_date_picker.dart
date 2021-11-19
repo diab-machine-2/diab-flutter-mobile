@@ -249,7 +249,7 @@ class _CustomCalendarDatePickerState extends State<CustomCalendarDatePicker> {
 
   Widget? _buildPicker() {
     assert(_mode != null);
-    switch (_mode) {
+    switch (_mode!) {
       case DatePickerMode.day:
         return _MonthPicker(
           key: _monthPickerKey,

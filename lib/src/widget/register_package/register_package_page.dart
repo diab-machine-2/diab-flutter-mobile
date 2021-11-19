@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/detail_package_data.dart';
@@ -36,9 +35,8 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    AppRepository repository = AppRepository();
+    final AppRepository repository = AppRepository();
     _cubit = RegisterPackageCubit(repository);
   }
 

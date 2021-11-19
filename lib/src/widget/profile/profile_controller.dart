@@ -1,9 +1,11 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/modal/user/secure.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -15,13 +17,10 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
 
 class ProfileController extends StatefulWidget {
@@ -50,7 +49,6 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'user_info_change') {
       setState(() {});
     }

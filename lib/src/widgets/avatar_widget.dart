@@ -1,6 +1,5 @@
 import 'package:avatars/avatars.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 
 class AvatarWidget extends StatelessWidget{
@@ -14,12 +13,11 @@ class AvatarWidget extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Avatar(
       name: name?.toUpperCase() ?? "",
       shape: AvatarShape.circle(size),
       useCache: true,
-      placeholderColors: [
+      placeholderColors: const [
         Color(0xFF6FD4FC),
         Color(0xFF2B9EF0),
       ],

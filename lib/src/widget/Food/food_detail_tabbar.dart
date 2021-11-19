@@ -69,7 +69,6 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'food_change_data') {
       if (overviewKey.currentState != null) {
         overviewKey.currentState!.reloadData(periodFilterType);

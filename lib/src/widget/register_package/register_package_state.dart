@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 abstract class RegisterPackageState extends Equatable {
-  RegisterPackageState([List props = const []]) : super();
+  const RegisterPackageState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -21,7 +20,7 @@ class RegisterPackageLoading extends RegisterPackageState {
 class RegisterPackageFailure extends RegisterPackageState {
   final String error;
 
-  RegisterPackageFailure(this.error);
+  const RegisterPackageFailure(this.error);
 
   @override
   String toString() => 'RegisterPackageFailure { error: $error }';

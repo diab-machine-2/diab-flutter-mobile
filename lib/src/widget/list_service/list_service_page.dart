@@ -1,20 +1,16 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/detail_package_data.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/detail_package/detail_package.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/upgrade_account/upgrade_account.dart';
-import 'package:medical/src/widgets/background_page.dart';
-import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -33,9 +29,8 @@ class _ListServicePageState extends State<ListServicePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    AppRepository repository = AppRepository();
+    final AppRepository repository = AppRepository();
     _cubit = ListServiceCubit(repository);
     _cubit.getListPackage();
   }
