@@ -61,7 +61,6 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'user_info_change') {
       setState(() {});
     }

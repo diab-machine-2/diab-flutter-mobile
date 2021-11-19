@@ -243,13 +243,13 @@ class _CustomCalendarDatePickerState extends State<CustomCalendarDatePicker> {
     _vibrate();
     setState(() {
       _selectedDate = value;
-      widget.onDateChanged?.call(_selectedDate);
+      widget.onDateChanged.call(_selectedDate);
     });
   }
 
   Widget? _buildPicker() {
     assert(_mode != null);
-    switch (_mode) {
+    switch (_mode!) {
       case DatePickerMode.day:
         return _MonthPicker(
           key: _monthPickerKey,
@@ -555,7 +555,7 @@ class _MonthPickerState extends State<_MonthPicker> {
 
   void _handleDateSelected(DateTime selectedDate) {
     _focusedDay = selectedDate;
-    widget.onChanged?.call(selectedDate);
+    widget.onChanged.call(selectedDate);
   }
 
   void _handleMonthPageChanged(int monthPage) {

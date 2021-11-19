@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -14,11 +16,9 @@ import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/version.dart';
-import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:medical/src/widget/home/home.dart';
-import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class TabbarController extends StatefulWidget {
   final _TabbarControllerState currentTabbar = _TabbarControllerState();
@@ -74,7 +74,6 @@ class _TabbarControllerState extends State<TabbarController>
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'unauthorized') {
       Message.showToastMessage(
           context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());

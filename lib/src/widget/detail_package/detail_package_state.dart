@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 abstract class DetailPackageState extends Equatable {
-  DetailPackageState([List props = const []]) : super();
+  const DetailPackageState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -21,7 +20,7 @@ class DetailPackageLoading extends DetailPackageState {
 class DetailPackageFailure extends DetailPackageState {
   final String error;
 
-  DetailPackageFailure(this.error);
+  const DetailPackageFailure(this.error);
 
   @override
   String toString() => 'DetailPackageFailure { error: $error }';

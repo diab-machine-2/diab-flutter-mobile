@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 
 @immutable
 abstract class BodyParameterState extends Equatable {
-  BodyParameterState([List props = const []]) : super();
+  const BodyParameterState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -34,10 +33,8 @@ class GetTDEESuccess extends BodyParameterState {
 class BodyParameterFailure extends BodyParameterState {
   final String error;
 
-  BodyParameterFailure(this.error);
+  const BodyParameterFailure(this.error);
 
   @override
   String toString() => 'BodyParameterFailure { error: $error }';
 }
-
-

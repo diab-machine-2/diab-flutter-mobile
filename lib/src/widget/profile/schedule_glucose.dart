@@ -55,7 +55,6 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'setup_schedule_change') {
       loadScheduleSetup();
     }

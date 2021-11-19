@@ -1,12 +1,10 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_statusbar_manager/flutter_statusbar_manager.dart';
 import 'package:medical/res/R.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/detail_package_data.dart';
 import 'package:medical/src/utils/const.dart';
@@ -23,6 +21,7 @@ import 'package:medical/src/widgets/text_field_widget.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
 import 'detail_package.dart';
 
 class DetailPackagePage extends StatefulWidget {
@@ -44,7 +43,6 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // FlutterStatusbarManager.setHidden(true);
     AppRepository repository = AppRepository();
@@ -54,7 +52,6 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     // FlutterStatusbarManager.setHidden(false);
     super.dispose();
   }

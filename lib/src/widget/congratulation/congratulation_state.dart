@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 abstract class CongratulationState extends Equatable {
-  CongratulationState([List props = const []]) : super();
+  const CongratulationState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -21,7 +20,7 @@ class CongratulationLoading extends CongratulationState {
 class CongratulationFailure extends CongratulationState {
   final String error;
 
-  CongratulationFailure(this.error);
+  const CongratulationFailure(this.error);
 
   @override
   String toString() => 'CongratulationFailure { error: $error }';

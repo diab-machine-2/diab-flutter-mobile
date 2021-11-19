@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/logger.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -32,13 +31,12 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initData();
   }
 
   void initData() {
-    String firstElement = widget.hintText ?? "Chọn";
+    final String firstElement = widget.hintText;
     if (Utils.isEmpty(widget.listData)) {
       try {
         if (list!.last != widget.listData.last) _selectedPos = null;
@@ -54,110 +52,106 @@ class _DropdownColumnWidgetState extends State<DropdownColumnWidget> {
       list!.insert(0, firstElement);
 
       if (_selectedPos == null)
-        _selectedPos = list!.indexOf(widget.currentValue) ?? 0;
+        _selectedPos = list!.indexOf(widget.currentValue);
       if (_selectedPos! < 0) {
         _selectedPos = 0;
       }
       if (Utils.isEmpty(list) && widget.selectedValue != null) {
-        String? selectedValue = _selectedPos == 0 ? null : list![_selectedPos!];
+        final String? selectedValue =
+            _selectedPos == 0 ? null : list![_selectedPos!];
         widget.selectedValue(selectedValue);
       }
     } else {
-      list = []..add(firstElement);
+      list = [firstElement];
     }
   }
 
   @override
   Widget build(BuildContext context) {
     initData();
-    int sizeList = list!.length ?? 0;
+    final int sizeList = list!.length;
 
     return Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0),
-            border: Border.all(color: R.color.gray, width: 1)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Visibility(
-                visible: Utils.isEmpty(widget.label),
-                child: Text(
-                  widget.label ?? "",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      color: widget.color ?? R.color.gray, fontSize: 30),
-                )),
-            Visibility(
-                visible: Utils.isEmpty(widget.label),
-                child: SizedBox(
-                  height: 5,
-                )),
-            sizeList == 0
-                ? Text("No data")
-                : (sizeList == 1
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Expanded(
-                            child: Text(list![0] ?? "",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: R.color.gray,
-                                )),
-                          ),
-                          Icon(
-                            Icons.arrow_drop_down,
-                            color: R.color.gray,
-                          )
-                        ],
-                      )
-                    : DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-//                            isDense: true,
-                            isExpanded: true,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5.0),
+          border: Border.all(color: R.color.gray, width: 1)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Visibility(
+              visible: Utils.isEmpty(widget.label),
+              child: Text(
+                widget.label,
+                textAlign: TextAlign.start,
+                style: TextStyle(color: widget.color, fontSize: 30),
+              )),
+          Visibility(
+              visible: Utils.isEmpty(widget.label),
+              child: const SizedBox(height: 5)),
+          if (sizeList == 0)
+            const Text("No data")
+          else
+            sizeList == 1
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(list![0] ?? "",
                             style: TextStyle(
-                              color: widget.color ?? R.color.gray,
                               fontSize: 14,
-                            ),
-                            hint: Text(
-                              widget.hintText ?? "",
-                              style: TextStyle(
-                                  fontSize: 14, color: R.color.gray),
-                            ),
-                            value: _selectedPos != null && _selectedPos! >= 0
-                                ? list![_selectedPos!]
-                                : list![0],
-                            items: list!
-                                .map((item) => DropdownMenuItem<String>(
-                                      child: Text(
-                                        item ?? "",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color:
-                                                widget.color ?? R.color.gray),
-                                      ),
-                                      value: item,
-                                    ))
-                                .toList(),
-                            onChanged: widget.selectedValue == null
-                                ? null
-                                : (value) {
-                                    print(value);
-                                    setState(() {
-                                      _selectedPos = list!.indexOf(value);
-                                    });
-                                    String? selectedValue = _selectedPos == 0
-                                        ? null
-                                        : list![_selectedPos!];
-                                    widget.selectedValue(selectedValue);
-                                  }),
-                      )),
-            //SizedBox(height: 10)
-          ],
-        ));
+                              color: R.color.gray,
+                            )),
+                      ),
+                      Icon(
+                        Icons.arrow_drop_down,
+                        color: R.color.gray,
+                      )
+                    ],
+                  )
+                : DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      style: TextStyle(
+                        color: widget.color,
+                        fontSize: 14,
+                      ),
+                      hint: Text(
+                        widget.hintText,
+                        style: TextStyle(fontSize: 14, color: R.color.gray),
+                      ),
+                      value: _selectedPos != null && _selectedPos! >= 0
+                          ? list![_selectedPos!]
+                          : list![0],
+                      items: list!
+                          .map((item) => DropdownMenuItem<String>(
+                                child: Text(
+                                  item ?? "",
+                                  style: TextStyle(
+                                      fontSize: 14, color: widget.color),
+                                ),
+                                value: item,
+                              ))
+                          .toList(),
+                      onChanged: widget.selectedValue == null
+                          ? null
+                          : (value) {
+                              print(value);
+                              setState(() {
+                                _selectedPos = list!.indexOf(value);
+                              });
+                              final String? selectedValue = _selectedPos == 0
+                                  ? null
+                                  : list![_selectedPos!];
+                              widget.selectedValue(selectedValue);
+                            },
+                    ),
+                  ),
+        ],
+      ),
+    );
   }
 }

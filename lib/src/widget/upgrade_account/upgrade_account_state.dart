@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 abstract class UpgradeAccountState extends Equatable {
-  UpgradeAccountState([List props = const []]) : super();
+  const UpgradeAccountState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 

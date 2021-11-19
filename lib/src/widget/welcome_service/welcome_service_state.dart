@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 abstract class WelcomeServiceState extends Equatable {
-  WelcomeServiceState([List props = const []]) : super();
+  const WelcomeServiceState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -21,7 +20,7 @@ class WelcomeServiceLoading extends WelcomeServiceState {
 class WelcomeServiceFailure extends WelcomeServiceState {
   final String error;
 
-  WelcomeServiceFailure(this.error);
+  const WelcomeServiceFailure(this.error);
 
   @override
   String toString() => 'WelcomeServiceFailure { error: $error }';

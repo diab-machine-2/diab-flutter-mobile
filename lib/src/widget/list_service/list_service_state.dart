@@ -1,10 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 abstract class ListServiceState extends Equatable {
-  ListServiceState([List props = const []]) : super();
+  const ListServiceState();
 
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
@@ -21,7 +20,7 @@ class ListServiceLoading extends ListServiceState {
 class ListServiceFailure extends ListServiceState {
   final String error;
 
-  ListServiceFailure(this.error);
+  const ListServiceFailure(this.error);
 
   @override
   String toString() => 'ListServiceFailure { error: $error }';

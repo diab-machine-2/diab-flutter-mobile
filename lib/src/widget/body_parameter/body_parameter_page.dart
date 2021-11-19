@@ -1,18 +1,16 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/Food/widget/intensity_food.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+
 import 'body_parameter.dart';
 
 typedef NumCallback = Function(num?);
@@ -32,8 +30,7 @@ class _BodyParameterPageState extends State<BodyParameterPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    AppRepository repository = AppRepository();
+    final AppRepository repository = AppRepository();
     _cubit = BodyParameterCubit(repository);
     _cubit.getListActivity();
     super.initState();
