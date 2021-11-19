@@ -8,11 +8,9 @@ class LessonStatusWidget extends StatelessWidget {
   const LessonStatusWidget({
     required this.learningStatus,
     this.progress,
-    required this.isRequired,
   });
   final int? learningStatus;
   final int? progress;
-  final bool isRequired;
 
   @override
   Widget build(BuildContext context) {
