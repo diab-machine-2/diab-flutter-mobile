@@ -471,8 +471,6 @@ class _LessonTabPageState extends State<LessonTabPage>
                           LessonStatusWidget(
                             learningStatus: lessonDetail?.learningStatus,
                             progress: lessonDetail?.percentComplete,
-                            isRequired:
-                                _cubit.currentLessonType == LessonType.route,
                           ),
                         ],
                       ),

@@ -297,45 +297,49 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   ],
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildCustomIconButton(
-                      title: R.string.start_exercise.tr(),
-                      icon: R.drawable.ic_start_exercise,
-                      borderColor: R.color.greenGradientBottom,
-                      backgroundColor: R.color.greenGradientBottom,
-                      textColor: R.color.white,
-                      onTap: () {
-                        NavigationUtil.navigatePage(
-                          context,
-                          ExerciseDetail(
-                            exerciseData: exerciseItem,
-                          ),
-                        );
-                      },
+                Visibility(
+                  visible: exerciseItem.exerciseMovementStates != 0,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildCustomIconButton(
+                          title: R.string.start_exercise.tr(),
+                          icon: R.drawable.ic_start_exercise,
+                          borderColor: R.color.greenGradientBottom,
+                          backgroundColor: R.color.greenGradientBottom,
+                          textColor: R.color.white,
+                          onTap: () {
+                            NavigationUtil.navigatePage(
+                              context,
+                              ExerciseDetail(
+                                exerciseData: exerciseItem,
+                              ),
+                            );
+                          },
+                        ),
+                        _buildCustomIconButton(
+                            title: R.string.show_instruction.tr(),
+                            icon: R.drawable.ic_play,
+                            borderColor: R.color.greenGradientBottom,
+                            backgroundColor: R.color.white,
+                            textColor: R.color.greenGradientBottom,
+                            onTap: () {
+                              NavigationUtil.navigatePage(
+                                context,
+                                VideoPlayerWidget(
+                                  videoUrl: exerciseItem.videoUrl ?? '',
+                                ),
+                              );
+                            }),
+                      ],
                     ),
-                    _buildCustomIconButton(
-                        title: R.string.show_instruction.tr(),
-                        icon: R.drawable.ic_play,
-                        borderColor: R.color.greenGradientBottom,
-                        backgroundColor: R.color.white,
-                        textColor: R.color.greenGradientBottom,
-                        onTap: () {
-                          NavigationUtil.navigatePage(
-                            context,
-                            VideoPlayerWidget(
-                              videoUrl: exerciseItem.videoUrl ?? '',
-                            ),
-                          );
-                        }),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 12),
-                const LessonStatusWidget(
-                  learningStatus: Const.LESSON_LEARNT,
-                  progress: null,
-                  isRequired: false,
+                LessonStatusWidget(
+                  learningStatus:
+                      getExerciseStatus(exerciseItem.exerciseMovementStates),
                 ),
               ],
             ),
@@ -343,6 +347,13 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         ],
       ),
     );
+  }
+
+  int getExerciseStatus(int? exerciseMovementStates) {
+    if (exerciseMovementStates == 0) return Const.LESSON_LOCKED;
+    if (exerciseMovementStates == 1) return Const.LESSON_NOT_LEARN;
+    if (exerciseMovementStates == 2) return Const.LESSON_LEARNT;
+    return Const.LESSON_LOCKED;
   }
 
   Widget _buildCustomIconButton({
