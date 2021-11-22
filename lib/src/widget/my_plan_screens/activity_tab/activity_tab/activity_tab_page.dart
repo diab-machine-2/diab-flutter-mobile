@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/circle_graph.dart';
 
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
+import '../create_goal/create_goal.dart';
 import 'activity_tab.dart';
 import 'models/goal_type.dart';
 import 'widgets/custom_progress_bar_widget.dart';
@@ -46,8 +48,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           if (state is ActivityTabFailure) {
             Message.showToastMessage(context, state.error);
           }
-          if (state is GoalTypeChanged) {
-          }
+          if (state is GoalTypeChanged) {}
         },
         builder: (context, state) {
           return Stack(
@@ -90,50 +91,16 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                   Expanded(
                     child: SingleChildScrollView(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
+                        padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
                         child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                const CircleGraphWidget(
-                                  percent: 40,
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Bài tập vận động',
-                                          style: TextStyle(
-                                            color: R.color.textDark,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Bài tập mềm dẻo',
-                                          style: TextStyle(
-                                            color: R.color.grey_1,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Image.asset(
-                                  R.drawable.ic_edit,
-                                  width: 20,
-                                  height: 20,
-                                ),
-                              ],
+                          children: List.generate(
+                            15,
+                            (index) => _buildSingleGoal(
+                              icon: R.drawable.ic_weight,
+                              title: 'Bài tập vận động',
+                              frequency: 'Bài tập mềm dẻo',
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
@@ -149,7 +116,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 bottom: 38 + MediaQuery.of(context).padding.bottom,
                 right: 24,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    NavigationUtil.navigatePage(
+                        context, const CreateGoalPage());
+                  },
                   child: Image.asset(
                     R.drawable.ic_button_plus_home,
                     width: 60,
@@ -192,6 +162,58 @@ class _ActivityTabPageState extends State<ActivityTabPage>
               color: isActive ? R.color.mainColor : R.color.transparent,
               borderRadius: BorderRadius.circular(10),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleGoal({
+    required String icon,
+    required String title,
+    String? frequency,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Row(
+        children: [
+          CircleGraphWidget(
+            percent: 40,
+            icon: icon,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (frequency != null) const SizedBox(height: 4),
+                  if (frequency != null)
+                    Text(
+                      frequency,
+                      style: TextStyle(
+                        color: R.color.grey_1,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          Image.asset(
+            R.drawable.ic_edit,
+            width: 20,
+            height: 20,
           ),
         ],
       ),

@@ -7,8 +7,10 @@ class CircleGraphWidget extends StatelessWidget {
   const CircleGraphWidget({
     Key? key,
     required this.percent,
+    required this.icon,
   }) : super(key: key);
   final double percent;
+  final String icon;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class CircleGraphWidget extends StatelessWidget {
               color: R.color.white,
             ),
             child: Image.asset(
-              R.drawable.ic_weight,
+              icon,
               width: 40,
               height: 40,
             ),
