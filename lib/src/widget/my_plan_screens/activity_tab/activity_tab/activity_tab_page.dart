@@ -1,0 +1,228 @@
+import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/circle_graph.dart';
+
+import '../../my_plan/my_plan.dart';
+import '../../my_plan/widgets/app_bar_bottom.dart';
+import '../create_goal/create_goal.dart';
+import 'activity_tab.dart';
+import 'models/goal_type.dart';
+import 'widgets/custom_progress_bar_widget.dart';
+
+class ActivityTabPage extends StatefulWidget {
+  const ActivityTabPage();
+
+  @override
+  _ActivityTabPageState createState() => _ActivityTabPageState();
+}
+
+class _ActivityTabPageState extends State<ActivityTabPage>
+    with AutomaticKeepAliveClientMixin<ActivityTabPage> {
+  late final ActivityTabCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
+    final AppRepository appRepository = AppRepository();
+    _cubit = ActivityTabCubit(appRepository, _myPlanCubit);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return BlocProvider(
+      create: (context) => _cubit,
+      child: BlocConsumer<ActivityTabCubit, ActivityTabState>(
+        listener: (context, state) {
+          if (state is ActivityTabLoading) {
+            BotToast.showLoading();
+          } else {
+            BotToast.closeAllLoading();
+          }
+          if (state is ActivityTabFailure) {
+            Message.showToastMessage(context, state.error);
+          }
+          if (state is GoalTypeChanged) {}
+        },
+        builder: (context, state) {
+          return Stack(
+            children: [
+              Column(
+                children: [
+                  AppBarBottom(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            ...List.generate(
+                              _cubit.goalTypeList.length,
+                              (index) {
+                                return _buildLessonTypeSelect(
+                                  title: _cubit.goalTypeList[index].title,
+                                  isActive:
+                                      _cubit.currentGoalTypeIndex == index,
+                                  onTap: () {
+                                    _cubit.changeGoalType(index);
+                                  },
+                                );
+                              },
+                            ),
+                            const Spacer(),
+                            InkWell(
+                              onTap: () {},
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: Image.asset(
+                                  R.drawable.ic_activity_process,
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
+                        child: Column(
+                          children: List.generate(
+                            15,
+                            (index) => _buildSingleGoal(
+                              icon: R.drawable.ic_weight,
+                              title: 'Bài tập vận động',
+                              frequency: 'Bài tập mềm dẻo',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).padding.bottom + 16),
+                    child: const CustomProgressBarWidget(),
+                  ),
+                ],
+              ),
+              Positioned(
+                bottom: 38 + MediaQuery.of(context).padding.bottom,
+                right: 24,
+                child: InkWell(
+                  onTap: () {
+                    NavigationUtil.navigatePage(
+                        context, const CreateGoalPage());
+                  },
+                  child: Image.asset(
+                    R.drawable.ic_button_plus_home,
+                    width: 60,
+                    height: 60,
+                  ),
+                ),
+              )
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildLessonTypeSelect({
+    required String title,
+    required bool isActive,
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: isActive
+                  ? R.color.greenGradientBottom
+                  : R.color.captionColorGray,
+              fontSize: 16,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+            ),
+          ),
+          Container(
+            width: 130,
+            height: 3,
+            margin: const EdgeInsets.only(top: 10),
+            decoration: BoxDecoration(
+              color: isActive ? R.color.mainColor : R.color.transparent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleGoal({
+    required String icon,
+    required String title,
+    String? frequency,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Row(
+        children: [
+          CircleGraphWidget(
+            percent: 40,
+            icon: icon,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (frequency != null) const SizedBox(height: 4),
+                  if (frequency != null)
+                    Text(
+                      frequency,
+                      style: TextStyle(
+                        color: R.color.grey_1,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          Image.asset(
+            R.drawable.ic_edit,
+            width: 20,
+            height: 20,
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}

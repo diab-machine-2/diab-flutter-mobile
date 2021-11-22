@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
-import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
@@ -13,11 +13,12 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/video_player_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../my_plan/models/completion_status.dart';
+import '../../my_plan/my_plan.dart';
+import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../exercise_detail/exercise_detail.dart';
-import '../my_plan/widgets/app_bar_bottom.dart';
 import '../select_road_map/select_road_map.dart';
 import 'exercise_tab.dart';
-import 'models/completion_status.dart';
 
 class ExerciseTabPage extends StatefulWidget {
   const ExerciseTabPage();
@@ -35,8 +36,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   @override
   void initState() {
     super.initState();
+    final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
     final AppRepository appRepository = AppRepository();
-    _cubit = ExerciseTabCubit(appRepository);
+    _cubit = ExerciseTabCubit(appRepository, _myPlanCubit);
     _cubit.initData();
   }
 
@@ -106,9 +108,10 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     controller: _controller,
                     onRefresh: () =>
                         _cubit.getExerciseMovement(isRefresh: true),
-                    child: _cubit.exerciseList?.isEmpty == null
+                    child: _cubit.exerciseMovementResponse?.data?.isEmpty ==
+                            null
                         ? const SizedBox.shrink()
-                        : _cubit.exerciseList!.isEmpty
+                        : _cubit.exerciseMovementResponse!.data!.isEmpty
                             ? Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 53),
@@ -153,11 +156,10 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                             : ListView.separated(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 16, vertical: 20),
-                                itemCount: _cubit.exerciseList?.length ?? 0,
+                                itemCount: 1,
                                 itemBuilder: (context, index) {
                                   return _buildActivityWidget(
-                                      exerciseItem:
-                                          _cubit.exerciseList?[index]);
+                                      exerciseItem: _cubit.currentExercise);
                                 },
                                 separatorBuilder: (context, index) {
                                   return Container(
@@ -178,13 +180,13 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   void animateToIndex(int index, {bool refresh = true}) {
-    if (_cubit.weekList?.isNotEmpty != true) return;
+    if (_cubit.weekStatesList.isEmpty) return;
     if (index < 0) {
       index = 0;
       refresh = false;
     }
-    if (index >= _cubit.weekList!.length) {
-      index = _cubit.weekList!.length - 1;
+    if (index >= _cubit.weekStatesList.length) {
+      index = _cubit.weekStatesList.length - 1;
       refresh = false;
     }
     final double newPosition = index * 96 + (6 * index.toDouble());
@@ -199,7 +201,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Widget _buildWeekListWidget() {
-    if (_cubit.weekList == null) return const SizedBox();
+    if (_cubit.weekStatesList.isEmpty) return const SizedBox();
     return Row(
       children: [
         InkWell(
@@ -220,17 +222,16 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             scrollDirection: Axis.horizontal,
             controller: _scrollController,
             child: Row(
-              children: List.generate(
-                _cubit.weekList!.length,
-                (index) => _buildSingleWeek(
-                    weekIndex: index,
-                    status: _cubit.weekList![index],
+              children: List.generate(_cubit.weekStatesList.length, (index) {
+                return _buildSingleWeek(
+                    state: _cubit.weekStatesList[index],
                     isSelected: index == _cubit.currentWeekIndex,
                     onSelect: () {
                       _cubit.onSelectWeek(index);
-                    }),
-              )..add(
-                  SizedBox(width: MediaQuery.of(context).size.width - 96 * 2)),
+                    });
+              })
+                ..add(SizedBox(
+                    width: MediaQuery.of(context).size.width - 96 * 2)),
             ),
           ),
         ),
@@ -243,7 +244,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             Icons.chevron_right_rounded,
             size: 24,
             color: (_cubit.currentWeekIndex ?? 0) >=
-                    ((_cubit.weekList?.length ?? 1) - 1)
+                    (_cubit.weekStatesList.length - 1)
                 ? R.color.captionColorGray
                 : R.color.greenGradientBottom,
           ),
@@ -320,26 +321,26 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                           },
                         ),
                         _buildCustomIconButton(
-                            title: R.string.show_instruction.tr(),
-                            icon: R.drawable.ic_play,
-                            borderColor: R.color.greenGradientBottom,
-                            backgroundColor: R.color.white,
-                            textColor: R.color.greenGradientBottom,
-                            onTap: () {
-                              NavigationUtil.navigatePage(
-                                context,
-                                VideoPlayerWidget(
-                                  videoUrl: exerciseItem.videoUrl ?? '',
-                                ),
-                              );
-                            }),
+                          title: R.string.show_instruction.tr(),
+                          icon: R.drawable.ic_play,
+                          borderColor: R.color.greenGradientBottom,
+                          backgroundColor: R.color.white,
+                          textColor: R.color.greenGradientBottom,
+                          onTap: () {
+                            NavigationUtil.navigatePage(
+                              context,
+                              VideoPlayerWidget(
+                                videoUrl: exerciseItem.videoUrl ?? '',
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
                 ),
                 LessonStatusWidget(
-                  learningStatus:
-                      getExerciseStatus(exerciseItem.exerciseMovementStates),
+                  learningStatus: exerciseItem.exerciseMovementStates,
                 ),
               ],
             ),
@@ -347,13 +348,6 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         ],
       ),
     );
-  }
-
-  int getExerciseStatus(int? exerciseMovementStates) {
-    if (exerciseMovementStates == 0) return Const.LESSON_LOCKED;
-    if (exerciseMovementStates == 1) return Const.LESSON_NOT_LEARN;
-    if (exerciseMovementStates == 2) return Const.LESSON_LEARNT;
-    return Const.LESSON_LOCKED;
   }
 
   Widget _buildCustomIconButton({
@@ -404,7 +398,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Widget _buildScheduleWidget() {
-    if (_cubit.weekList == null) return const SizedBox();
+    if (_cubit.weekStatesList.isEmpty) return const SizedBox();
     return Padding(
       padding: const EdgeInsets.only(top: 20, bottom: 4),
       child: Column(
@@ -443,12 +437,18 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                           ? Expanded(
                               child: Container(
                                 height: 1,
-                                color: index ~/ 2 >= 3
+                                color: index ~/ 2 >= _cubit.mark
                                     ? R.color.grayBorder
                                     : R.color.green,
                               ),
                             )
-                          : _buildSingleDay(status: CompletionStatus.completed);
+                          : _buildSingleDay(
+                              status: _cubit.getExerciseOfDay(index ~/ 2) ??
+                                  CompletionStatus.not_start_yet,
+                              isSelected: _cubit.currentDayIndex == index ~/ 2,
+                              onTap: () {
+                                _cubit.onSelectDay(index ~/ 2);
+                              });
                     },
                   ),
                 ),
@@ -460,9 +460,18 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     );
   }
 
+  Widget _buildSingleDay(
+      {required CompletionStatus status,
+      required bool isSelected,
+      VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: status.dayStatusIcon(isSelected),
+    );
+  }
+
   Widget _buildSingleWeek({
-    required int weekIndex,
-    required CompletionStatus status,
+    required WeekStatesResponseData state,
     required bool isSelected,
     VoidCallback? onSelect,
   }) {
@@ -474,11 +483,13 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         width: 96,
         height: 32,
         decoration: BoxDecoration(
-          color: isSelected && status == CompletionStatus.not_start_yet
+          color: isSelected &&
+                  state.completionStatus == CompletionStatus.not_start_yet
               ? R.color.greenbg
-              : status.statusBackgroundColor,
-          border: isSelected && status != CompletionStatus.not_start_yet
-              ? Border.all(color: status.statusIconColor)
+              : state.completionStatus.statusBackgroundColor,
+          border: isSelected &&
+                  state.completionStatus != CompletionStatus.not_start_yet
+              ? Border.all(color: state.completionStatus.statusIconColor)
               : null,
           borderRadius: BorderRadius.circular(200),
         ),
@@ -486,37 +497,20 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '${R.string.week_upper_case_first.tr()} ${weekIndex + 1}',
+              state.weekTitle ?? '',
               style: TextStyle(
-                color: isSelected && status == CompletionStatus.not_start_yet
+                color: isSelected &&
+                        state.completionStatus == CompletionStatus.not_start_yet
                     ? R.color.green
-                    : status.statusIconColor,
+                    : state.completionStatus.statusIconColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            if (!(isSelected && status == CompletionStatus.not_start_yet))
-              status.weekStatusIcon
+            if (!(isSelected &&
+                state.completionStatus == CompletionStatus.not_start_yet))
+              state.completionStatus.weekStatusIcon
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSingleDay({required CompletionStatus? status}) {
-    if (status == null) return const SizedBox();
-    return InkWell(
-      onTap: () {},
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: R.color.greenGradientBottom,
-        ),
-        child: Icon(
-          Icons.check_rounded,
-          color: R.color.white,
-          size: 16,
         ),
       ),
     );
@@ -528,8 +522,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     if (newRoadmapId is String &&
         newRoadmapId.isNotEmpty &&
         newRoadmapId != _cubit.roadmapId) {
-      _cubit.roadmapId = newRoadmapId;
-      _cubit.getExerciseMovement();
+      _cubit.roadmapChanged(newRoadmapId);
     }
   }
 

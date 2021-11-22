@@ -2,20 +2,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
-import 'package:medical/src/model/response/user_info_response.dart';
+import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
 
+import '../../my_plan/my_plan.dart';
 import '../lesson_filter/models/filter_data.dart';
 import 'lesson_tab.dart';
-import 'models/completion_status.dart';
 import 'models/lesson_type.dart';
 
 class LessonTabCubit extends Cubit<LessonTabState> {
-  LessonTabCubit(this.repository) : super(const LessonTabInitial());
+  LessonTabCubit(this.repository, this.myPlanCubit)
+      : super(const LessonTabInitial());
 
   final AppRepository repository;
+  final MyPlanCubit myPlanCubit;
 
   final List<LessonType> lessonTypeList = [
     LessonType.route,
@@ -28,9 +30,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
   List<MyLessonResponseData?>? lessonsList;
 
-  String packageCode = '';
-
-  List<CompletionStatus> weekList = [];
+  List<WeekStatesResponseData> weekStatesList = [];
 
   void refresh() {
     emit(const LessonTabSuccess());
@@ -62,19 +62,16 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     emit(const LessonTabInitial());
   }
 
-  void generateWeek() {
-    weekList = List.generate(52, (index) {
-      final int current = filterData.currentWeek ?? 1;
-      if (index > current) return CompletionStatus.not_start_yet;
-      if (index == current)
-        return CompletionStatus.studying;
-      else
-        return CompletionStatus.completed;
-    });
-  }
-
   Future<void> getInitData() async {
-    await getCurrentUserInfo();
+    if (myPlanCubit.userInfo == null) {
+      await myPlanCubit.getCurrentUserInfo();
+    }
+    filterData.roadmapId = myPlanCubit.roadmapId;
+    if (myPlanCubit.packageCode == Const.PRO &&
+        myPlanCubit.currentStudyWeek != null) {
+      filterData.currentWeek = myPlanCubit.currentStudyWeek! - 1;
+      await getLessonWeekStates();
+    }
     await getLessonsList();
     if (filterData.currentWeek != null) {
       emit(LessonTabWeekChanged(filterData.currentWeek!));
@@ -99,21 +96,23 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     emit(const LessonTabInitial());
   }
 
-  Future<void> getCurrentUserInfo() async {
+  Future<void> getLessonWeekStates() async {
     await Future.delayed(Duration.zero);
     emit(const LessonTabLoading());
-    final ApiResult<UserInfoResponse> apiResult =
-        await repository.getCurrentUserInfo();
-    apiResult.when(success: (UserInfoResponse response) {
-      filterData.roadmapId = response.data?.roadmapId ?? '';
-      packageCode = response.data?.packageCode ?? '';
-      if (packageCode == Const.PRO && response.data?.currentStudyWeek != null) {
-        filterData.currentWeek = response.data!.currentStudyWeek! - 1;
-        generateWeek();
+    final ApiResult<WeekStatesResponse> apiResult =
+        await repository.getLessonWeekStates();
+    apiResult.when(success: (WeekStatesResponse response) {
+      weekStatesList.clear();
+      for (final state in response.data ?? []) {
+        if (state != null) {
+          weekStatesList.add(state);
+        }
       }
+      weekStatesList.sort((a, b) => (a.week ?? 0) - (b.week ?? 0));
       emit(const LessonTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
+    emit(const LessonTabInitial());
   }
 }

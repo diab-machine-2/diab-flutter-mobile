@@ -64,6 +64,7 @@ class Colors {
 	Color get orange_6 => Color(0xffFEEDDC);
 	Color get tagColor => Color(0xffF3F6F9);
 	Color get shadowColor => Color(0xff38476D);
+	Color get mediaTitle => Color(0xff6F6F6F);
 	Color get color0xffE5E5E5 => Color(0xffE5E5E5);
 	Color get color0xff003F38 => Color(0xff003F38);
 	Color get color0xffBEC0C8 => Color(0xffBEC0C8);

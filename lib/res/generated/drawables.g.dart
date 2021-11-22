@@ -40,6 +40,7 @@ class Drawables {
 	String get ic_activity_3 => "lib/res/drawables/ic_activity_3.png";
 	String get ic_activity_4 => "lib/res/drawables/ic_activity_4.png";
 	String get ic_activity_5 => "lib/res/drawables/ic_activity_5.png";
+	String get ic_activity_process => "lib/res/drawables/ic_activity_process.png";
 	String get ic_add_excersire => "lib/res/drawables/ic_add_excersire.png";
 	String get ic_add_photo => "lib/res/drawables/ic_add_photo.png";
 	String get ic_after_eat => "lib/res/drawables/ic_after_eat.png";

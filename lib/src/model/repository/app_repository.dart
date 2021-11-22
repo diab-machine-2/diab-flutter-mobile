@@ -1,4 +1,5 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
+import 'package:medical/src/model/request/complete_exercise_request.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
@@ -30,6 +31,7 @@ import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
+import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
@@ -388,7 +390,7 @@ class AppRepository {
   }
 
   Future<ApiResult<ExerciseMovementResponse>> getExerciseMovement(
-      {required String roadmapId, int? week}) async {
+      {required String roadmapId, required int week}) async {
     try {
       final ExerciseMovementResponse response =
           await appClient.getExerciseMovement(roadmapId: roadmapId, week: week);
@@ -414,16 +416,35 @@ class AppRepository {
   }
 
   Future<ApiResult<CommonResponse>> completeExercise(
-      String exerciseMovementId) async {
+      CompleteExerciseRequest request) async {
     try {
-      final CommonResponse response =
-          await appClient.completeExercise(exerciseMovementId);
+      final CommonResponse response = await appClient.completeExercise(request);
       if (response.meta?.success == true) {
         return ApiResult.success(data: response);
       } else {
         return ApiResult.failure(
             error: NetworkExceptions.defaultError(response.message ?? ''));
       }
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<WeekStatesResponse>> getExerciseWeekStates(
+      {required String roadmapId}) async {
+    try {
+      final WeekStatesResponse response =
+          await appClient.getExerciseWeekStates(roadmapId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<WeekStatesResponse>> getLessonWeekStates() async {
+    try {
+      final WeekStatesResponse response = await appClient.getLessonWeekStates();
+      return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

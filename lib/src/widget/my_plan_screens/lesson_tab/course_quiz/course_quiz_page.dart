@@ -16,7 +16,7 @@ import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
 import 'package:medical/src/widgets/custom_scroll_physics.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
-import '../../card_course_quiz/card_course_quiz.dart';
+import '../../../card_course_quiz/card_course_quiz.dart';
 import 'course_quiz.dart';
 
 class CourseQuizPage extends StatefulWidget {

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
+import 'request/complete_exercise_request.dart';
 import 'request/create_menu_request.dart';
 import 'request/exercise_feedback_request.dart';
 import 'request/food_change_request.dart';
@@ -32,6 +33,7 @@ import 'response/save_survey_result_response.dart';
 import 'response/tdee_response.dart';
 import 'response/upgrade_account_response.dart';
 import 'response/user_info_response.dart';
+import 'response/week_states_response.dart';
 
 part 'app_api.g.dart';
 
@@ -172,11 +174,19 @@ abstract class AppApi {
     @Body() ExerciseFeedbackRequest request,
   );
 
-  @POST("/App/ExerciseMovementAccount")
+  @POST("App/ExerciseMovementAccount")
   Future<CommonResponse> completeExercise(
-    @Body() String exerciseMovementId,
+    @Body() CompleteExerciseRequest request,
   );
 
+  @GET("App/Roadmap/{roadmapId}/WeekStates")
+  Future<WeekStatesResponse> getExerciseWeekStates(
+    @Path("roadmapId") String roadmapId,
+  );
+
+  @GET("App/Lesson/GetWeekStates")
+  Future<WeekStatesResponse> getLessonWeekStates();
+  
   // Quiz
   @POST("App/Lesson/{lessonId}/Review")
   Future<CommonResponse> sendFeedbackCourse(

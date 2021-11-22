@@ -64,6 +64,7 @@ class AppColors {
   static const orange_6 = Color(0xffFEEDDC);
   static const tagColor = Color(0xffF3F6F9);
   static const shadowColor = Color(0xff38476D);
+  static const mediaTitle = Color(0xff6F6F6F);
   static const color0xffE5E5E5 = Color(0xffE5E5E5);
   static const color0xff003F38 = Color(0xff003F38);
   static const color0xffBEC0C8 = Color(0xffBEC0C8);
