@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/complete_exercise_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -27,8 +28,12 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
 
   Future<void> completeExercise(String exerciseMovementId) async {
     emit(const ExerciseDetailLoading());
+    final CompleteExerciseRequest request = CompleteExerciseRequest(
+      exerciseMovementId: exerciseMovementId,
+      roadmapid: exerciseData.roadmapId,
+    );
     final ApiResult<CommonResponse> apiResult =
-        await repository.selectRoadmap(exerciseMovementId);
+        await repository.completeExercise(request);
     apiResult.when(success: (CommonResponse response) {
       emit(const ExerciseDetailAllCompleted());
     }, failure: (NetworkExceptions error) {

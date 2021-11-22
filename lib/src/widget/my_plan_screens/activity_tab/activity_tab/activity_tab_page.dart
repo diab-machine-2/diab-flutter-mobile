@@ -77,10 +77,13 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                             const Spacer(),
                             InkWell(
                               onTap: () {},
-                              child: Image.asset(
-                                R.drawable.ic_activity_process,
-                                width: 20,
-                                height: 20,
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: Image.asset(
+                                  R.drawable.ic_activity_process,
+                                  width: 20,
+                                  height: 20,
+                                ),
                               ),
                             ),
                           ],
@@ -157,7 +160,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           Container(
             width: 130,
             height: 3,
-            margin: const EdgeInsets.only(top: 7),
+            margin: const EdgeInsets.only(top: 10),
             decoration: BoxDecoration(
               color: isActive ? R.color.mainColor : R.color.transparent,
               borderRadius: BorderRadius.circular(10),

@@ -27,8 +27,8 @@ class MyPlanCubit extends Cubit<MyPlanState> {
     return index == -1 ? 0 : index;
   }
 
-  String? get packageCode => userInfo?.data?.packageCode ?? '';
-  String? get roadmapId => userInfo?.data?.roadmapId ?? '';
+  String get packageCode => userInfo?.data?.packageCode ?? '';
+  String get roadmapId => userInfo?.data?.roadmapId ?? '';
   int? get currentStudyWeek => userInfo?.data?.currentStudyWeek;
 
   void changePlanType(int newIndex) {

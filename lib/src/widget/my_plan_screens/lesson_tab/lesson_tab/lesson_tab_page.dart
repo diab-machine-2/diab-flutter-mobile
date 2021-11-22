@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
+import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -14,13 +15,13 @@ import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../lesson_detail/lesson_detail.dart';
 import '../lesson_filter/lesson_filter.dart';
 import '../lesson_filter/models/filter_data.dart';
 import 'lesson_tab.dart';
-import 'models/completion_status.dart';
 import 'models/lesson_type.dart';
 
 class LessonTabPage extends StatefulWidget {
@@ -189,13 +190,13 @@ class _LessonTabPageState extends State<LessonTabPage>
   }
 
   void animateToIndex(int index, {bool refresh = true}) {
-    if (_cubit.weekList.isNotEmpty != true) return;
+    if (_cubit.weekStatesList.isEmpty) return;
     if (index < 0) {
       index = 0;
       refresh = false;
     }
-    if (index >= _cubit.weekList.length) {
-      index = _cubit.weekList.length - 1;
+    if (index >= _cubit.weekStatesList.length) {
+      index = _cubit.weekStatesList.length - 1;
       refresh = false;
     }
     final double newPosition = index * 96 + (6 * index.toDouble());
@@ -210,7 +211,7 @@ class _LessonTabPageState extends State<LessonTabPage>
   }
 
   Widget _buildWeekListWidget() {
-    if (_cubit.weekList.isNotEmpty != true) return const SizedBox();
+    if (_cubit.weekStatesList.isEmpty) return const SizedBox();
     return Padding(
       padding: const EdgeInsets.only(bottom: 24.0),
       child: Row(
@@ -234,10 +235,9 @@ class _LessonTabPageState extends State<LessonTabPage>
               controller: _scrollController,
               child: Row(
                 children: List.generate(
-                  _cubit.weekList.length,
+                  _cubit.weekStatesList.length,
                   (index) => _buildSingleWeek(
-                      weekIndex: index,
-                      status: _cubit.weekList[index],
+                      state: _cubit.weekStatesList[index],
                       isSelected: index == _cubit.currentWeekIndex,
                       isDisable: _cubit.isFiltering,
                       onSelect: () {
@@ -256,7 +256,8 @@ class _LessonTabPageState extends State<LessonTabPage>
             child: Icon(
               Icons.chevron_right_rounded,
               size: 24,
-              color: _cubit.currentWeekIndex >= (_cubit.weekList.length - 1) ||
+              color: _cubit.currentWeekIndex >=
+                          (_cubit.weekStatesList.length - 1) ||
                       _cubit.isFiltering
                   ? R.color.captionColorGray
                   : R.color.greenGradientBottom,
@@ -268,26 +269,25 @@ class _LessonTabPageState extends State<LessonTabPage>
   }
 
   Widget _buildSingleWeek({
-    required int weekIndex,
-    required CompletionStatus status,
+    required WeekStatesResponseData state,
     required bool isSelected,
     bool isDisable = false,
     VoidCallback? onSelect,
   }) {
     final Color background =
-        isSelected && status == CompletionStatus.not_start_yet
+        isSelected && state.completionStatus == CompletionStatus.not_start_yet
             ? R.color.greenbg
-            : status.statusBackgroundColor;
+            : state.completionStatus.statusBackgroundColor;
     final BoxBorder? border =
-        isSelected && status != CompletionStatus.not_start_yet
-            ? Border.all(color: status.statusIconColor)
+        isSelected && state.completionStatus != CompletionStatus.not_start_yet
+            ? Border.all(color: state.completionStatus.statusIconColor)
             : null;
     final Color textColor =
-        isSelected && status == CompletionStatus.not_start_yet
+        isSelected && state.completionStatus == CompletionStatus.not_start_yet
             ? R.color.green
-            : status.statusIconColor;
-    final bool showIcon =
-        !(isSelected && status == CompletionStatus.not_start_yet);
+            : state.completionStatus.statusIconColor;
+    final bool showIcon = !(isSelected &&
+        state.completionStatus == CompletionStatus.not_start_yet);
 
     return GestureDetector(
       onTap: isDisable
@@ -309,14 +309,14 @@ class _LessonTabPageState extends State<LessonTabPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '${R.string.week_upper_case_first.tr()} ${weekIndex + 1}',
+              state.weekTitle ?? '',
               style: TextStyle(
                 color: isDisable ? R.color.grayCaption : textColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            if (showIcon && !isDisable) status.weekStatusIcon
+            if (showIcon && !isDisable) state.completionStatus.weekStatusIcon
           ],
         ),
       ),
