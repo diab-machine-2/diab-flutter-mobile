@@ -637,6 +637,8 @@ class Strings {
 	String get road_map_changed => 'road_map_changed';
 	String get lesson_empty_no_filter => 'lesson_empty_no_filter';
 	String get lesson_empty_no_filter_description => 'lesson_empty_no_filter_description';
+	String get goal_of_day => 'goal_of_day';
+	String get goal_of_week => 'goal_of_week';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';

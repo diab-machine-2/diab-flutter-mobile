@@ -14,6 +14,7 @@ import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../lesson_detail/lesson_detail.dart';
 import '../lesson_filter/lesson_filter.dart';
@@ -38,8 +39,9 @@ class _LessonTabPageState extends State<LessonTabPage>
   @override
   void initState() {
     super.initState();
+    final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
     final AppRepository appRepository = AppRepository();
-    _cubit = LessonTabCubit(appRepository);
+    _cubit = LessonTabCubit(appRepository, _myPlanCubit);
     _cubit.getInitData();
   }
 

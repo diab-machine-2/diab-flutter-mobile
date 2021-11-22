@@ -41,3 +41,27 @@ class ActivityTabLoading extends ActivityTabState {
     return 'ActivityTabLoading{}';
   }
 }
+
+class GoalTypeChanged extends ActivityTabState {
+  const GoalTypeChanged();
+  @override
+  String toString() {
+    return 'GoalTypeChanged{}';
+  }
+}
+
+class ActivityTabProgressChanged extends ActivityTabState {
+  const ActivityTabProgressChanged();
+  @override
+  String toString() {
+    return 'ActivityTabProgressChanged{}';
+  }
+}
+
+class ActivityTabHideProgressMessage extends ActivityTabState {
+  const ActivityTabHideProgressMessage();
+  @override
+  String toString() {
+    return 'ActivityTabHideProgressMessage{}';
+  }
+}

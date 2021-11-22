@@ -13,6 +13,7 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/video_player_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../exercise_detail/exercise_detail.dart';
 import '../select_road_map/select_road_map.dart';
@@ -35,8 +36,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   @override
   void initState() {
     super.initState();
+    final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
     final AppRepository appRepository = AppRepository();
-    _cubit = ExerciseTabCubit(appRepository);
+    _cubit = ExerciseTabCubit(appRepository, _myPlanCubit);
     _cubit.initData();
   }
 
