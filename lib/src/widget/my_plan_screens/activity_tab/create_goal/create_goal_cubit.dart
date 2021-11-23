@@ -13,4 +13,25 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
 
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now();
+  bool isRepeat = false;
+  int calulateTypeIndex = 0;
+
+
+  void goToSetup() {
+    status = CreateGoalStatus.setup;
+    emit(const CreateGoalSuccess());
+    emit(const CreateGoalInitial());
+  }
+
+  void onToggleRepeat(bool isCheck) {
+    isRepeat = isCheck;
+    emit(const CreateGoalSuccess());
+    emit(const CreateGoalInitial());
+  }
+
+  void onChangeCalculateType(int newIndex) {
+    calulateTypeIndex = newIndex;
+    emit(const CreateGoalSuccess());
+    emit(const CreateGoalInitial());
+  }
 }

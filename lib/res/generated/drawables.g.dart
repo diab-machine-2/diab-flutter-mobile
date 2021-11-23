@@ -116,6 +116,7 @@ class Drawables {
 	String get ic_email => "lib/res/drawables/ic_email.png";
 	String get ic_emotion => "lib/res/drawables/ic_emotion.png";
 	String get ic_emotion_plus => "lib/res/drawables/ic_emotion_plus.png";
+	String get ic_enter_target_name => "lib/res/drawables/ic_enter_target_name.png";
 	String get ic_error_image => "lib/res/drawables/ic_error_image.png";
 	String get ic_excersire => "lib/res/drawables/ic_excersire.png";
 	String get ic_filter => "lib/res/drawables/ic_filter.png";

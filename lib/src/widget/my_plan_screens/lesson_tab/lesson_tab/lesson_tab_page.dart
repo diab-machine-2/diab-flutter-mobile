@@ -421,7 +421,7 @@ class _LessonTabPageState extends State<LessonTabPage>
             child: InkWell(
               onTap: () {
                 if (lessonDetail?.level != 'Cấp độ 1') {
-                  //TODO: Show dialog upgrade
+                  // TODO(Tuyen): Show dialog upgrade
                 }
                 if (lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
                   _showLockedDialog();

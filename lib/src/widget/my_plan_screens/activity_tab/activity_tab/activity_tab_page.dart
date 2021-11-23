@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/circle_graph.dart';
 
+import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../create_goal/create_goal.dart';
@@ -24,6 +26,7 @@ class ActivityTabPage extends StatefulWidget {
 class _ActivityTabPageState extends State<ActivityTabPage>
     with AutomaticKeepAliveClientMixin<ActivityTabPage> {
   late final ActivityTabCubit _cubit;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -31,6 +34,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
     final AppRepository appRepository = AppRepository();
     _cubit = ActivityTabCubit(appRepository, _myPlanCubit);
+    _cubit.initData();
   }
 
   @override
@@ -59,12 +63,13 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
+                        _buildScheduleWidget(),
                         Row(
                           children: [
                             ...List.generate(
                               _cubit.goalTypeList.length,
                               (index) {
-                                return _buildLessonTypeSelect(
+                                return _buildGoalTypeSelect(
                                   title: _cubit.goalTypeList[index].title,
                                   isActive:
                                       _cubit.currentGoalTypeIndex == index,
@@ -137,7 +142,193 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  Widget _buildLessonTypeSelect({
+  void animateToIndex(int index, {bool refresh = true}) {
+    if (_cubit.weekStatesList.isEmpty) return;
+    if (index < 0) {
+      index = 0;
+      refresh = false;
+    }
+    if (index >= _cubit.weekStatesList.length) {
+      index = _cubit.weekStatesList.length - 1;
+      refresh = false;
+    }
+    final double newPosition = index * 96 + (6 * index.toDouble());
+    _scrollController.animateTo(
+      newPosition,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.ease,
+    );
+    if (refresh) {}
+  }
+
+  Widget _buildScheduleWidget() {
+    if (_cubit.weekStatesList.isEmpty) return const SizedBox();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildWeekListWidget(),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(
+                    7,
+                    (index) => Container(
+                      alignment: Alignment.bottomCenter,
+                      width: 24,
+                      child: Text(
+                        index == 6 ? 'CN' : 'T${index + 2}',
+                        style: TextStyle(
+                          color: R.color.grey_1,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: List.generate(
+                    13,
+                    (index) {
+                      return index.isOdd
+                          ? Expanded(
+                              child: Container(
+                                height: 1,
+                                color: index ~/ 2 >= _cubit.mark
+                                    ? R.color.grayBorder
+                                    : R.color.green,
+                              ),
+                            )
+                          : _buildSingleDay(
+                              status: CompletionStatus.not_start_yet,
+                              isSelected: _cubit.currentDayIndex == index ~/ 2,
+                              onTap: () {});
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeekListWidget() {
+    if (_cubit.weekStatesList.isEmpty) return const SizedBox();
+    return Row(
+      children: [
+        InkWell(
+          onTap: () {
+            if (_cubit.currentWeekIndex == null) return;
+            animateToIndex(_cubit.currentWeekIndex! - 1);
+          },
+          child: Icon(
+            Icons.chevron_left_rounded,
+            size: 24,
+            color: (_cubit.currentWeekIndex ?? 0) <= 0
+                ? R.color.captionColorGray
+                : R.color.greenGradientBottom,
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            controller: _scrollController,
+            child: Row(
+              children: List.generate(_cubit.weekStatesList.length, (index) {
+                return _buildSingleWeek(
+                    state: _cubit.weekStatesList[index],
+                    isSelected: index == _cubit.currentWeekIndex,
+                    onSelect: () {});
+              })
+                ..add(SizedBox(
+                    width: MediaQuery.of(context).size.width - 96 * 2)),
+            ),
+          ),
+        ),
+        InkWell(
+          onTap: () {
+            if (_cubit.currentWeekIndex == null) return;
+            animateToIndex(_cubit.currentWeekIndex! + 1);
+          },
+          child: Icon(
+            Icons.chevron_right_rounded,
+            size: 24,
+            color: (_cubit.currentWeekIndex ?? 0) >=
+                    (_cubit.weekStatesList.length - 1)
+                ? R.color.captionColorGray
+                : R.color.greenGradientBottom,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSingleDay(
+      {required CompletionStatus status,
+      required bool isSelected,
+      VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: status.dayStatusIcon(isSelected),
+    );
+  }
+
+  Widget _buildSingleWeek({
+    required WeekStatesResponseData state,
+    required bool isSelected,
+    VoidCallback? onSelect,
+  }) {
+    return GestureDetector(
+      onTap: onSelect,
+      child: Container(
+        alignment: Alignment.center,
+        margin: const EdgeInsets.only(left: 6),
+        width: 96,
+        height: 32,
+        decoration: BoxDecoration(
+          color: isSelected &&
+                  state.completionStatus == CompletionStatus.not_start_yet
+              ? R.color.greenbg
+              : state.completionStatus.statusBackgroundColor,
+          border: isSelected &&
+                  state.completionStatus != CompletionStatus.not_start_yet
+              ? Border.all(color: state.completionStatus.statusIconColor)
+              : null,
+          borderRadius: BorderRadius.circular(200),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              state.weekTitle ?? '',
+              style: TextStyle(
+                color: isSelected &&
+                        state.completionStatus == CompletionStatus.not_start_yet
+                    ? R.color.green
+                    : state.completionStatus.statusIconColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            if (!(isSelected &&
+                state.completionStatus == CompletionStatus.not_start_yet))
+              state.completionStatus.weekStatusIcon
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGoalTypeSelect({
     required String title,
     required bool isActive,
     VoidCallback? onTap,

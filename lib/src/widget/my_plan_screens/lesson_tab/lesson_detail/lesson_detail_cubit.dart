@@ -44,10 +44,10 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   bool get reviewed => review?.rating != null;
 
   void onChangeSection(int newSection, {bool isFromList = false}) {
-    //Check can complete the lesson and make sure that user tap next button
+    //Check can complete the lesson and make sure that user tapped next button
     if (isAllSectionCompleted && newSection > currentSection) {
       checkSectionComplete();
-      if (isEnabledRating == true && isAllSectionCompleted && !reviewed) {
+      if (isAllSectionCompleted) {
         emit(const LessonDetailCompleted());
       }
       return;
@@ -110,7 +110,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   }
 
   bool? get canComplete {
-    if (isAllSectionCompleted) return true;
+    if (isAllSectionCompleted && sectionList.isNotEmpty == true) return true;
     if (isOtherCompleted) return false;
     return null;
   }

@@ -49,7 +49,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
               ?.quiz
               ?.quizAnswers
               ?.where((e) => e?.isCorrect == true)
-              //TODO: Tuyen should change to answerId field
+              // TODO(Tuyen): should change to answerId field
               .map((e) => e?.name)
               .toList()
               .toString()) {
