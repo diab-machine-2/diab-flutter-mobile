@@ -143,7 +143,7 @@ extension WeekStatus on CompletionStatus {
         shape: BoxShape.circle,
         color: isSelected ? R.color.green : color,
       ),
-      child: child,
+      child: isSelected ? const SizedBox(width: 16, height: 16) : child,
     );
   }
 }

@@ -430,12 +430,22 @@ class ExerciseMovementResponse {
   }
 
   int getMarkNotLearnIndex(int week) {
-    for (int i = 6; i >= 0; i--) {
-      final status =
-          getExerciseFromDayInWeek(week: week, dayInWeek: 6)?.completionStatus;
-      if (status != null && status != CompletionStatus.not_start_yet) return i;
+    for (int index = 6; index >= 0; index--) {
+      final status = getExerciseFromDayInWeek(week: week, dayInWeek: index)
+          ?.completionStatus;
+      if (status != null && status != CompletionStatus.not_start_yet)
+        return index;
     }
     return -1;
+  }
+
+  int getCurrentDayIndex(int week) {
+    for (int index = 0; index <= 6; index++) {
+      final status = getExerciseFromDayInWeek(week: week, dayInWeek: index)
+          ?.completionStatus;
+      if (status == CompletionStatus.studying) return index;
+    }
+    return 0;
   }
 
   ExerciseMovementResponse.fromJson(Map<String, dynamic> json) {

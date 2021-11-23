@@ -598,7 +598,7 @@ title_route,Lộ trình,
 title_suggest,Gợi ý,
 search_by_key,Tìm kiếm từ khoá,
 stop_exercise_warning,Bạn muốn dừng bài học?,
-stop_exercise_warning_description,Việc thoát ra sẽ gây gián đoạn quá trình học bài tập vận động, bạn vẫn chắc chắn muốn thoát?,
+stop_exercise_warning_description,"Việc thoát ra sẽ gây gián đoạn quá trình học bài tập vận động, bạn vẫn chắc chắn muốn thoát?,"
 exercise_level_1,Bài tập quá nhẹ,
 exercise_level_2,Bài tập nhẹ,
 exercise_level_3,Bài tập vừa sức,

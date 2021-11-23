@@ -34,7 +34,7 @@ class LessonStatusWidget extends StatelessWidget {
         ],
       );
     }
-    if (learningStatus == Const.LESSON_LEARNING) {
+    if (learningStatus == Const.LESSON_LEARNING && progress != null) {
       return Row(
         children: [
           Expanded(
@@ -64,7 +64,8 @@ class LessonStatusWidget extends StatelessWidget {
         ],
       );
     }
-    if (learningStatus == Const.LESSON_NOT_LEARN) {
+    if (learningStatus == Const.LESSON_NOT_LEARN ||
+        learningStatus == Const.LESSON_LEARNING && progress == null) {
       return Row(
         children: [
           Container(
