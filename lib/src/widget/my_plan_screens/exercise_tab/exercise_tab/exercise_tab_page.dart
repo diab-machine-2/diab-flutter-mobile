@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
@@ -111,64 +112,22 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     child: _cubit.exerciseMovementResponse?.data?.isEmpty ==
                             null
                         ? const SizedBox.shrink()
-                        : _cubit.exerciseMovementResponse!.data!.isEmpty
-                            ? Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 53),
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 24),
-                                      child: Image.asset(
-                                          R.drawable.img_activity_empty),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 32),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            R.string.today_is_day_off.tr(),
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: R.color.textDark,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w700),
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Text(
-                                            R.string
-                                                .today_is_day_off_description
-                                                .tr(),
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: R.color.textDark,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              )
-                            : ListView.separated(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 20),
-                                itemCount: 1,
-                                itemBuilder: (context, index) {
-                                  return _buildActivityWidget(
-                                      exerciseItem: _cubit.currentExercise);
-                                },
-                                separatorBuilder: (context, index) {
-                                  return Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        vertical: 20),
-                                    height: 1,
-                                    color: R.color.grayBorder,
-                                  );
-                                }),
+                        : ListView.separated(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 20),
+                            itemCount: 1,
+                            itemBuilder: (context, index) {
+                              return _buildExerciseWidget(
+                                  exerciseItem: _cubit.currentExercise);
+                            },
+                            separatorBuilder: (context, index) {
+                              return Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 20),
+                                height: 1,
+                                color: R.color.grayBorder,
+                              );
+                            }),
                   ),
                 ),
               ),
@@ -253,10 +212,10 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     );
   }
 
-  Widget _buildActivityWidget({
+  Widget _buildExerciseWidget({
     required ExerciseMovementResponseData? exerciseItem,
   }) {
-    if (exerciseItem == null) return const SizedBox.shrink();
+    if (exerciseItem?.code == null) return _buildDayOffWidget();
     return Container(
       color: R.color.transparent,
       child: Row(
@@ -277,7 +236,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   children: [
                     Expanded(
                       child: Text(
-                        exerciseItem.name ?? '',
+                        exerciseItem!.name ?? '',
                         style: TextStyle(
                           color: R.color.textDark,
                           fontSize: 16,
@@ -299,7 +258,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                 ),
                 const SizedBox(height: 8),
                 Visibility(
-                  visible: exerciseItem.exerciseMovementStates != 0,
+                  visible: exerciseItem.exerciseMovementStates !=
+                      Const.LESSON_LOCKED,
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Row(
@@ -345,6 +305,44 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDayOffWidget() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 53),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Image.asset(R.drawable.img_activity_empty),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              children: [
+                Text(
+                  R.string.today_is_day_off.tr(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  R.string.today_is_day_off_description.tr(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );

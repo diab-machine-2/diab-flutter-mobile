@@ -88,7 +88,8 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     apiResult.when(success: (ExerciseMovementResponse response) {
       exerciseMovementResponse = response;
       mark = exerciseMovementResponse?.getMarkNotLearnIndex(week ?? 1) ?? 0;
-      currentDayIndex = 0;
+      currentDayIndex =
+          exerciseMovementResponse?.getCurrentDayIndex(week ?? 1) ?? 1;
       emit(const ExerciseTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ExerciseTabFailure(NetworkExceptions.getErrorMessage(error)));
