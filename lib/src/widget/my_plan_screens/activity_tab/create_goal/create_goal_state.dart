@@ -41,3 +41,11 @@ class CreateGoalLoading extends CreateGoalState {
     return 'CreateGoalLoading{}';
   }
 }
+
+class CreateGoalCompleted extends CreateGoalState {
+  const CreateGoalCompleted();
+  @override
+  String toString() {
+    return 'CreateGoalCompleted{}';
+  }
+}

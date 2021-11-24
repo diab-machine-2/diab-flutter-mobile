@@ -4,14 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/custom_date_picker.dart';
 import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 
+import '../activity_tab/models/schedule_type.dart';
 import 'create_goal.dart';
 import 'models/create_goal_status.dart';
+import 'models/goal_record_type.dart';
 import 'widgets/custom_top_progress_bar.dart';
 import 'widgets/select_type_widget.dart';
 
@@ -36,69 +40,83 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => _cubit,
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: BlocConsumer<CreateGoalCubit, CreateGoalState>(
-          listener: (context, state) {
-            if (state is CreateGoalLoading) {
-              BotToast.showLoading();
-            } else {
-              BotToast.closeAllLoading();
-            }
-            if (state is CreateGoalFailure) {
-              Message.showToastMessage(context, state.error);
-            }
-          },
-          builder: (context, state) {
-            late final List<Widget> body;
-            if (_cubit.status == CreateGoalStatus.select_type) {
-              body = _buildSelectGoalType();
-            } else if (_cubit.status == CreateGoalStatus.setup) {
-              body = _buildSetupGoal();
-            } else if (_cubit.status == CreateGoalStatus.complete) {
-              body = [];
-            } else {
-              body = [];
-            }
-            return CommonPage(
-              // TODO(Tuyen): Change background
-              background: R.drawable.bg_lesson_detail,
-              title: R.string.select_road_map.tr(),
-              showCloseBackButton: true,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: CustomTopProgressBar(_cubit.status),
-                  ),
-                  Expanded(
-                    child: ListView(
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
-                      children: body,
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: BlocConsumer<CreateGoalCubit, CreateGoalState>(
+            listener: (context, state) {
+              if (state is CreateGoalLoading) {
+                BotToast.showLoading();
+              } else {
+                BotToast.closeAllLoading();
+              }
+              if (state is CreateGoalFailure) {
+                Message.showToastMessage(context, state.error);
+              }
+              if (state is CreateGoalCompleted) {
+                NavigationUtil.pop(context);
+              }
+            },
+            builder: (context, state) {
+              late final List<Widget> body;
+              if (_cubit.status == CreateGoalStatus.select_type) {
+                body = _buildSelectGoalType();
+              } else if (_cubit.status == CreateGoalStatus.setup) {
+                body = _buildSetupGoal();
+              } else if (_cubit.status == CreateGoalStatus.complete) {
+                body = _buildSetupCompleteGoal();
+              } else {
+                body = [];
+              }
+              return CommonPage(
+                // TODO(Tuyen): Change background
+                background: R.drawable.bg_lesson_detail,
+                title: R.string.select_road_map.tr(),
+                showCloseBackButton: true,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: CustomTopProgressBar(_cubit.status),
                     ),
-                  ),
-                  Visibility(
-                    visible: _cubit.status != CreateGoalStatus.select_type,
-                    child: SafeArea(
-                      top: false,
-                      child: Container(
-                        height: 48,
-                        width: 195,
-                        child: ButtonWidget(
-                          title: R.string.text_continue.tr(),
-                          textSize: 16,
-                          onPressed: () {},
+                    Expanded(
+                      child: ListView(
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
+                        children: body,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Visibility(
+                      visible: _cubit.status != CreateGoalStatus.select_type,
+                      child: SafeArea(
+                        top: false,
+                        child: Container(
+                          height: 48,
+                          width: 195,
+                          child: ButtonWidget(
+                            title: _cubit.status == CreateGoalStatus.complete
+                                ? R.string.completed.tr()
+                                : R.string.text_continue.tr(),
+                            textSize: 16,
+                            onPressed: () {
+                              FocusScope.of(context).unfocus();
+                              _cubit.onTapNext();
+                            },
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-              ),
-            );
-          },
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -118,51 +136,184 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       SelectTypeWidget(
           title: 'Tạo thói quen mới',
           onTap: () {
-            _cubit.goToSetup();
+            _cubit.setupGoal();
           }),
       SelectTypeWidget(
           title: 'Làm một việc yêu thích',
           onTap: () {
-            _cubit.goToSetup();
+            _cubit.setupGoal();
           }),
       SelectTypeWidget(
-          title: 'Tần suất theo dõi chỉ số sinh học', onTap: () {}),
-      SelectTypeWidget(title: 'Mục tiêu cá nhân', onTap: () {}),
+        title: 'Tần suất theo dõi chỉ số sinh học',
+        onSlectType: (type) {
+          _cubit.setupGoal(selectedType: type);
+        },
+        subList: const [
+          ScheduleType.blood_pressure,
+          ScheduleType.blood_sugar,
+          ScheduleType.exercise,
+          ScheduleType.weight,
+          ScheduleType.emotion,
+          ScheduleType.hba1c,
+          ScheduleType.food,
+        ],
+      ),
+      SelectTypeWidget(
+        title: 'Mục tiêu cá nhân',
+        onTap: () {},
+      ),
     ];
   }
 
   List<Widget> _buildSetupGoal() {
+    if (_cubit.type?.setupTypeUIIndex == 1) {
+      return _buildSetupGoalType1();
+    }
+    if (_cubit.type?.setupTypeUIIndex == 2) {
+      return _buildSetupGoalType2();
+    }
+    return _buildSetupGoalDefault();
+  }
+
+  List<Widget> _buildSetupCompleteGoal() {
+    return [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 50),
+        child: Image.asset(R.drawable.img_select_route_successed),
+      ),
+      Container(
+        margin: const EdgeInsets.only(top: 24, bottom: 16),
+        alignment: Alignment.center,
+        child: Text(
+          'Bạn đã cài đặt mục tiêu thành công!',
+          style: TextStyle(
+            color: R.color.textDark,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Tên hoạt động',
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'Cập nhật bữa ăn',
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Số lần thực hiện trong ngày',
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    '3 lần',
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Tần suất',
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    '2 lần / tuần',
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ];
+  }
+
+  List<Widget> _buildSetupGoalDefault() {
     return [
       _buildTextField(),
       _buildTimePicker(title: 'Chọn ngày bắt đầu hoạt động'),
-      Row(
-        children: [
-          Theme(
-            data: ThemeData(
-              unselectedWidgetColor: R.color.grayBorder,
-            ),
-            child: Transform.scale(
-              scale: 1.3,
-              child: Checkbox(
-                  value: _cubit.isRepeat,
-                  activeColor: R.color.accentColor,
-                  splashRadius: 20,
-                  onChanged: (value) {
-                    if (value != null) {
-                      _cubit.onToggleRepeat(value);
-                    }
-                  }),
-            ),
-          ),
-          Text(
-            'Lặp lại',
-            style: TextStyle(
-              color: R.color.textDark,
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ],
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: CustomCheckboxWidget(
+            isChecked: _cubit.isRepeat,
+            title: 'Lặp lại',
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              _cubit.onToggleRepeat();
+            }),
+      ),
+      Visibility(
+        visible: _cubit.isRepeat,
+        child: Column(
+          children: [
+            _buildSelectFrequency(),
+            _buildTimePicker(),
+            _buildTimePicker(title: 'Chọn ngày kết thúc'),
+            const SizedBox(height: 24)
+          ],
+        ),
       ),
       RichText(
         text: TextSpan(
@@ -188,11 +339,113 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       const SizedBox(height: 6),
       CustomMultiSelectToggle(
         toggleList: const ['Thời gian thực hiện', 'Số lần thực hiện'],
-        selectedIndex: _cubit.calulateTypeIndex,
+        selectedIndex: _cubit.goalRecordType.index,
         onChange: (newIndex) {
+          FocusScope.of(context).unfocus();
           _cubit.onChangeCalculateType(newIndex);
         },
       ),
+      _buildTimeOrFrequency(
+          title: _cubit.goalRecordType.title, unit: _cubit.goalRecordType.unit),
+    ];
+  }
+
+  List<Widget> _buildSetupGoalType1() {
+    return [
+      Text(
+        'DiaB khuyến nghị:',
+        style: TextStyle(
+          color: R.color.textDark,
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        '''
+      - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
+      - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''',
+        style: TextStyle(
+          color: R.color.textDark,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            'Tôi cần thêm thông tin',
+            style: TextStyle(
+              color: R.color.greenGradientBottom,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+      _buildTimePicker(title: 'Chọn ngày bắt đầu hoạt động'),
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: CustomCheckboxWidget(
+            isChecked: _cubit.isRepeat,
+            title: 'Lặp lại',
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              _cubit.onToggleRepeat();
+            }),
+      ),
+      Visibility(
+        visible: _cubit.isRepeat,
+        child: Column(
+          children: [
+            _buildSelectFrequency(),
+            _buildTimePicker(),
+            _buildTimePicker(title: 'Chọn ngày kết thúc'),
+            const SizedBox(height: 24)
+          ],
+        ),
+      ),
+      _buildTimeOrFrequency(title: 'Số lần thực hiện trong ngày', unit: 'lần'),
+    ];
+  }
+
+  List<Widget> _buildSetupGoalType2() {
+    return [
+      Text(
+        'DiaB khuyến nghị:',
+        style: TextStyle(
+          color: R.color.textDark,
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        '''
+      - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
+      - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''',
+        style: TextStyle(
+          color: R.color.textDark,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            'Tôi cần thêm thông tin',
+            style: TextStyle(
+              color: R.color.greenGradientBottom,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+      _buildTimeOrFrequency(title: 'Số phút vận động mỗi ngày', unit: 'phút'),
+      _buildTimeOrFrequency(title: 'Số phút vận động mỗi tuần', unit: 'phút'),
     ];
   }
 
@@ -270,6 +523,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             ),
           GestureDetector(
             onTap: () {
+              FocusScope.of(context).unfocus();
               showDialog(
                 barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                 context: context,
@@ -313,9 +567,145 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     );
   }
 
-  Widget _buildItemLayout({required Widget child}) {
+  Widget _buildTimeOrFrequency({required String title, required String unit}) {
+    return _buildItemLayout(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Image.asset(
+                R.drawable.ic_clock,
+                width: 24,
+                height: 24,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                color: R.color.transparent,
+                width: 70,
+                child: TextField(
+                  autofocus: false,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: R.color.textFieldGrey,
+                    fontSize: 40,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    hintText: '-',
+                    contentPadding: EdgeInsets.only(
+                      left: 0,
+                      bottom: 0,
+                      top: 8,
+                      right: 0,
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  unit,
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(height: 1, width: 70, color: R.color.color0xffE5E5E5),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSelectFrequency() {
+    return _buildItemLayout(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              children: [
+                Image.asset(
+                  R.drawable.ic_clock,
+                  width: 24,
+                  height: 24,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Chọn mức độ thường xuyên',
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Container(
+              color: R.color.transparent,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Hàng ngày',
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.keyboard_arrow_down,
+                        size: 24,
+                        color: R.color.primaryGreyColor,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Container(height: 1, color: R.color.color0xffE5E5E5),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItemLayout({required Widget child, EdgeInsetsGeometry? margin}) {
     return Container(
-      margin: const EdgeInsets.only(top: 16),
+      margin: margin ?? const EdgeInsets.only(top: 16),
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(16),

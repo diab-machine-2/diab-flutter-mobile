@@ -56,7 +56,7 @@ class _MyPlanPageState extends State<MyPlanPage> {
               title: R.string.my_plan.tr(),
               background: R.drawable.bg_welcome,
               appbarColor: R.color.white,
-              showCloseBackButton: true,
+              hideAllBackButton: true,
               child: Column(
                 children: [
                   Container(

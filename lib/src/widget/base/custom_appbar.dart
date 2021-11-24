@@ -10,6 +10,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final double bottomHeight;
   final Color? backgroundColor;
   final bool? showRightCloseButton;
+  final bool? hideAllBackButton;
 
   CustomAppBar(
       {Key? key,
@@ -19,7 +20,9 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
       this.bottom,
       this.bottomHeight = 50,
       this.backgroundColor,
-      this.showRightCloseButton})
+      this.showRightCloseButton,
+      this.hideAllBackButton,
+      })
       : preferredSize = Size.fromHeight(
             kToolbarHeight + (bottom == null ? 0 : bottomHeight)),
         super(key: key);
@@ -36,7 +39,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: widget.backgroundColor,
-      title: widget.showRightCloseButton == true
+      title: widget.showRightCloseButton == true || widget.hideAllBackButton == true
           ? widget.title
           : Transform(
               transform: Matrix4.translationValues(-20.0, 0.0, 0.0),
@@ -44,7 +47,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       centerTitle: false,
       automaticallyImplyLeading: false,
       actions: widget.actions,
-      leading: widget.showRightCloseButton == true
+      leading: widget.showRightCloseButton == true || widget.hideAllBackButton == true
           ? null
           : widget.leadingIcon ??
               IconButton(

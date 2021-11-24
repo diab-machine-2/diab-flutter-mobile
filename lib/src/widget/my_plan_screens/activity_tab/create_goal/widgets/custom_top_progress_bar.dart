@@ -29,6 +29,7 @@ class CustomTopProgressBar extends StatelessWidget {
             _buildSingleStatus(index: 2),
           ],
         ),
+        const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

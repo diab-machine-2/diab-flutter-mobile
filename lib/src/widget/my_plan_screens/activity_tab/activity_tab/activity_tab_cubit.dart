@@ -5,7 +5,7 @@ import 'package:medical/src/utils/const.dart';
 
 import '../../my_plan/my_plan.dart';
 import 'activity_tab.dart';
-import 'models/goal_type.dart';
+import 'models/goal_filter_type.dart';
 
 class ActivityTabCubit extends Cubit<ActivityTabState> {
   ActivityTabCubit(this.repository, this.myPlanCubit)
@@ -14,13 +14,13 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   final AppRepository repository;
   final MyPlanCubit myPlanCubit;
 
-  final List<GoalType> goalTypeList = [GoalType.day, GoalType.week];
+  final List<GoalFilterType> goalTypeList = [GoalFilterType.day, GoalFilterType.week];
   List<WeekStatesResponseData> weekStatesList = [];
   int mark = 0;
   int? currentWeekIndex;
   int currentDayIndex = 0;
 
-  GoalType currentGoalType = GoalType.day;
+  GoalFilterType currentGoalType = GoalFilterType.day;
 
   double progress = 0.4;
 

@@ -11,6 +11,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 
 import 'lesson_filter.dart';
 import 'models/filter_data.dart';
@@ -125,7 +126,21 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
           },
         ),
         const SizedBox(height: 16),
-        _buildCheckbox(),
+        Padding(
+          padding: const EdgeInsets.only(left: 4.0),
+          child: CustomCheckboxWidget(
+            isChecked: _cubit.filterData.isCompleted,
+            title: R.string.filter_not_learnt_lesson_yet.tr(),
+            titleStyle: TextStyle(
+              color: R.color.grey_1,
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
+            onTap: () {
+              _cubit.onToggleCheckBox();
+            },
+          ),
+        ),
         const Spacer(),
         _buildButtonFilter(),
         const SizedBox(height: 20),
@@ -468,49 +483,6 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildCheckbox() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        InkWell(
-          onTap: () {
-            _cubit.onToggleCheckBox();
-          },
-          child: Container(
-            alignment: Alignment.center,
-            margin: const EdgeInsets.only(left: 4, right: 14),
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              color: _cubit.filterData.isCompleted
-                  ? R.color.accentColor
-                  : R.color.white,
-              border: _cubit.filterData.isCompleted
-                  ? null
-                  : Border.all(width: 2, color: R.color.grayComponentBorder),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: _cubit.filterData.isCompleted
-                ? Icon(
-                    Icons.check,
-                    color: R.color.white,
-                    size: 24,
-                  )
-                : const SizedBox(),
-          ),
-        ),
-        Text(
-          R.string.filter_not_learnt_lesson_yet.tr(),
-          style: TextStyle(
-            color: R.color.grey_1,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-        )
-      ],
     );
   }
 }

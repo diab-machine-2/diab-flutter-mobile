@@ -84,14 +84,15 @@ class _BottomTabbar extends State<BottomTabbar> {
             ),
           ),
           onTap: () {
-            if (screenIndex == 1) {
-              NavigationUtil.navigatePage(context, const MyPlanPage());
-            } else {
-              setState(() {
+            setState(() {
                 index = screenIndex;
                 widget.callback(index);
               });
-            }
+            // if (screenIndex == 1) {
+            //   NavigationUtil.navigatePage(context, const MyPlanPage());
+            // } else {
+              
+            // }
           }),
     );
   }

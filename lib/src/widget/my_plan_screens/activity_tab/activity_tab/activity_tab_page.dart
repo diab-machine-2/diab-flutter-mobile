@@ -6,6 +6,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/circle_graph.dart';
 
 import '../../my_plan/models/completion_status.dart';
@@ -13,7 +14,8 @@ import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../create_goal/create_goal.dart';
 import 'activity_tab.dart';
-import 'models/goal_type.dart';
+import 'models/goal_filter_type.dart';
+import 'models/schedule_type.dart';
 import 'widgets/custom_progress_bar_widget.dart';
 
 class ActivityTabPage extends StatefulWidget {
@@ -100,16 +102,89 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
-                        child: Column(
-                          children: List.generate(
-                            15,
-                            (index) => _buildSingleGoal(
-                              icon: R.drawable.ic_weight,
+                        child: Column(children: [
+                          _buildSingleGoal(
+                              icon: ScheduleType.exercise_movement.icon,
                               title: 'Bài tập vận động',
                               frequency: 'Bài tập mềm dẻo',
-                            ),
-                          ),
-                        ),
+                              onTap: () {
+                                onSelectGoal(ScheduleType.exercise_movement);
+                              }),
+                          _buildSingleGoal(
+                              icon: ScheduleType.blood_sugar.icon,
+                              title: 'Đo đường huyết',
+                              frequency: '2 lần/ngày',
+                              onTap: () {
+                                onSelectGoal(ScheduleType.blood_sugar);
+                              }),
+                          _buildSingleGoal(
+                              icon: ScheduleType.meditate.icon,
+                              title: 'Ngồi thiền',
+                              frequency: 'Còn 7 ngày để hoàn thành',
+                              onTap: () {
+                                onSelectGoal(ScheduleType.meditate);
+                              }),
+                          _buildSingleGoal(
+                              icon: ScheduleType.exercise.icon,
+                              title: 'Vận động',
+                              frequency: '30 phút',
+                              onTap: () {
+                                onSelectGoal(ScheduleType.exercise);
+                              }),
+                          _buildSingleGoal(
+                              icon: ScheduleType.weight.icon,
+                              title: 'Đo cân nặng',
+                              onTap: () {
+                                onSelectGoal(ScheduleType.weight);
+                              }),
+                          _buildSingleGoal(
+                              icon: ScheduleType.emotion.icon,
+                              title: 'Cảm xúc',
+                              onTap: () {
+                                onSelectGoal(ScheduleType.emotion);
+                              }),
+                          _buildSingleGoal(
+                              icon: ScheduleType.hba1c.icon,
+                              title: 'Đo HbA1C',
+                              onTap: () {
+                                onSelectGoal(ScheduleType.hba1c);
+                              }),
+                          _buildSingleGoal(
+                              icon: ScheduleType.food.icon,
+                              title: 'Nhập món ăn',
+                              frequency: '3 lần/ngày',
+                              onTap: () {
+                                onSelectGoal(ScheduleType.food);
+                              }),
+                          _buildSingleGoal(
+                              icon: ScheduleType.blood_pressure.icon,
+                              title: 'Huyết áp',
+                              frequency: '10:00 am - 11:00 am',
+                              onTap: () {
+                                onSelectGoal(ScheduleType.blood_pressure);
+                              }),
+                          _buildSingleGoal(
+                              icon: ScheduleType.coaching.icon,
+                              title: 'Tư vấn với huấn luyện viên',
+                              frequency: '10:00 am - 11:00 am',
+                              onTap: () {
+                                onSelectGoal(ScheduleType.coaching);
+                              }),
+                          _buildSingleGoal(
+                              icon: ScheduleType.group.icon,
+                              title: 'Sinh hoạt nhóm',
+                              frequency: '19h15',
+                              onTap: () {
+                                onSelectGoal(ScheduleType.group);
+                              }),
+                          _buildSingleGoal(
+                              icon: ScheduleType.survey.icon,
+                              title: 'Khảo sát',
+                              frequency: 'Khảo sát tháng',
+                              onTap: () {
+                                onSelectGoal(ScheduleType.survey);
+                              }),
+                        ]),
                       ),
                     ),
                   ),
@@ -366,52 +441,199 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     required String icon,
     required String title,
     String? frequency,
+    VoidCallback? onTap,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
-      child: Row(
-        children: [
-          CircleGraphWidget(
-            percent: 40,
-            icon: icon,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (frequency != null) const SizedBox(height: 4),
-                  if (frequency != null)
+      child: InkWell(
+        onTap: onTap,
+        child: Row(
+          children: [
+            CircleGraphWidget(
+              percent: 40,
+              icon: icon,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      frequency,
+                      title,
                       style: TextStyle(
-                        color: R.color.grey_1,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                        color: R.color.textDark,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                ],
+                    if (frequency != null) const SizedBox(height: 4),
+                    if (frequency != null)
+                      Text(
+                        frequency,
+                        style: TextStyle(
+                          color: R.color.grey_1,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            Image.asset(
+              R.drawable.ic_edit,
+              width: 20,
+              height: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showPopup({
+    required BuildContext context,
+    required Widget child,
+  }) {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => GestureDetector(
+        onTap: () {
+          NavigationUtil.pop(context);
+        },
+        child: Scaffold(
+          backgroundColor: R.color.transparent,
+          body: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      R.color.white,
+                      R.color.main_6,
+                    ],
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      child,
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: 245,
+                        child: ButtonWidget(
+                          title: 'Tham gia',
+                          textSize: 14,
+                          onPressed: () {
+                            NavigationUtil.pop(context);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-          Image.asset(
-            R.drawable.ic_edit,
-            width: 20,
-            height: 20,
-          ),
-        ],
+        ),
       ),
     );
+  }
+
+  void onSelectGoal(ScheduleType type) {
+    switch (type) {
+      case ScheduleType.blood_sugar:
+        break;
+      case ScheduleType.blood_pressure:
+        break;
+      case ScheduleType.weight:
+        break;
+      case ScheduleType.emotion:
+        break;
+      case ScheduleType.food:
+        break;
+      case ScheduleType.exercise:
+        break;
+      case ScheduleType.hba1c:
+        break;
+      case ScheduleType.exercise_movement:
+        break;
+      case ScheduleType.meditate:
+        break;
+      case ScheduleType.coaching:
+        showPopup(
+          context: context,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Thứ 6, 12/7/2021',
+                style: TextStyle(
+                    color: R.color.main_1,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700),
+              ),
+              Text(
+                '10:00 am - 11:00 am',
+                style: TextStyle(
+                    color: R.color.main_1,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Buổi Coaching 1 - 1 lập kế hoạch học tập cho user sử dụng gói thấu cảm',
+                style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Container(width: 44, height: 44, color: R.color.blue),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Coach',
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Văn Hùng Trần',
+                        style: TextStyle(
+                            color: R.color.main_1,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  )
+                ],
+              )
+            ],
+          ),
+        );
+        break;
+      case ScheduleType.group:
+        break;
+      case ScheduleType.survey:
+        break;
+    }
   }
 
   @override

@@ -22,7 +22,7 @@ class ActionListPanel extends StatelessWidget {
     },
     {
       'name': R.string.van_dong.tr(),
-      'icon': R.drawable.ic_excersire,
+      'icon': R.drawable.ic_exercise,
     },
     {
       'name': R.string.dinh_duong.tr(),
