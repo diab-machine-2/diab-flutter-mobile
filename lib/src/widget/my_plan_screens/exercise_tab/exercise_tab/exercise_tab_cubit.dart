@@ -28,6 +28,14 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   int? get week =>
       currentWeekIndex == null ? null : weekStatesList[currentWeekIndex!].week;
 
+  bool get isPremium => myPlanCubit.packageCode == Const.PREMIUM;
+
+  bool get isDayOff {
+    if (isPremium && currentExercise == null) return true;
+    if (!isPremium && exerciseMovementResponse?.data?.isNotEmpty != true) return true;
+    return false;
+  }
+
   ExerciseMovementResponseData? get currentExercise => exerciseMovementResponse
       ?.getExerciseFromDayInWeek(week: week ?? 1, dayInWeek: currentDayIndex);
 

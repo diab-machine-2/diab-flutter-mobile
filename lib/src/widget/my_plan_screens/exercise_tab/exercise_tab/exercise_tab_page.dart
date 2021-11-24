@@ -109,25 +109,34 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     controller: _controller,
                     onRefresh: () =>
                         _cubit.getExerciseMovement(isRefresh: true),
-                    child: _cubit.exerciseMovementResponse?.data?.isEmpty ==
-                            null
-                        ? const SizedBox.shrink()
-                        : ListView.separated(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 20),
-                            itemCount: 1,
-                            itemBuilder: (context, index) {
-                              return _buildExerciseWidget(
-                                  exerciseItem: _cubit.currentExercise);
-                            },
-                            separatorBuilder: (context, index) {
-                              return Container(
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 20),
-                                height: 1,
-                                color: R.color.grayBorder,
-                              );
-                            }),
+                    child:
+                        _cubit.exerciseMovementResponse?.data?.isEmpty == null
+                            ? const SizedBox.shrink()
+                            : _cubit.isDayOff
+                                ? _buildDayOffWidget()
+                                : ListView.separated(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 20),
+                                    itemCount: _cubit.isPremium
+                                        ? 1
+                                        : (_cubit.exerciseMovementResponse?.data
+                                                ?.length ??
+                                            0),
+                                    itemBuilder: (context, index) {
+                                      return _buildExerciseWidget(
+                                          exerciseItem: _cubit.isPremium
+                                              ? _cubit.currentExercise
+                                              : _cubit.exerciseMovementResponse
+                                                  ?.data?[index]);
+                                    },
+                                    separatorBuilder: (context, index) {
+                                      return Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 20),
+                                        height: 1,
+                                        color: R.color.grayBorder,
+                                      );
+                                    }),
                   ),
                 ),
               ),
@@ -215,7 +224,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   Widget _buildExerciseWidget({
     required ExerciseMovementResponseData? exerciseItem,
   }) {
-    if (exerciseItem?.code == null) return _buildDayOffWidget();
+    if (exerciseItem?.code == null) return const SizedBox();
     return Container(
       color: R.color.transparent,
       child: Row(
