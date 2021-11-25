@@ -7,7 +7,6 @@ import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
 
 import 'lesson_detail.dart';
 import 'models/audio_manager.dart';
@@ -27,9 +26,6 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   VideoManager? videoManager;
   AudioManager? audioManager;
   SectionStatusData? sectionStatus;
-
-  List<String> videoUrls = [];
-  List<String> audioUrls = [];
 
   LessonSectionListResponseDataLessonSections? get currentSectionDetail =>
       sectionList.isEmpty ? null : sectionList[currentSection];
@@ -56,14 +52,12 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
     currentSection = newSection;
 
-    updateUrlSource();
-
-    videoManager?.refreshSourceList(
-      urls: videoUrls,
+    videoManager?.refreshUrl(
+      url: currentSectionDetail?.videoAddressLink,
     );
 
-    audioManager?.refreshSourceList(
-      urls: audioUrls,
+    audioManager?.refreshUrl(
+      url: currentSectionDetail?.audioAddressLink,
     );
 
     sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
@@ -74,20 +68,6 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
     emit(const LessonDetailSuccess());
     emit(const LessonDetailInitial());
-  }
-
-  void updateUrlSource() {
-    if (currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_VIDEO) {
-      videoUrls = currentSectionDetail?.sourceUrls ?? [];
-    } else {
-      videoUrls = [];
-    }
-
-    if (currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_AUDIO) {
-      audioUrls = currentSectionDetail?.sourceUrls ?? [];
-    } else {
-      audioUrls = [];
-    }
   }
 
   bool get isAllSectionCompleted {
@@ -127,21 +107,19 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       }
     }
 
-    updateUrlSource();
-
     sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
 
     videoManager = VideoManager(
-        urls: videoUrls,
+        url: currentSectionDetail!.videoAddressLink,
         onExitFullScreen: () {},
-        onAllFinished: () {
+        onCompleted: () {
           sectionStatus?.isVideoCompleted = true;
           checkSectionComplete();
         });
 
     audioManager = AudioManager(
-        urls: audioUrls,
-        onAllFinished: () {
+        url: currentSectionDetail?.audioAddressLink,
+        onCompleted: () {
           sectionStatus?.isAudioCompleted = true;
           checkSectionComplete();
         });

@@ -1,81 +1,56 @@
-import 'package:audioplayers/audioplayers_api.dart';
 import 'package:flutter/material.dart';
 
 import 'audio_data.dart';
 
 class AudioManager {
-  AudioManager({required this.urls, this.onAllFinished}) {
-    refreshSourceList(urls: urls);
+  AudioManager({required this.url, this.onCompleted}) {
+    refreshUrl(url: url);
   }
 
-  final List<String> urls;
-  final VoidCallback? onAllFinished;
+  final String? url;
+  final VoidCallback? onCompleted;
 
-  final List<AudioController> controllerList = [];
-  List<bool> finishedAudio = [];
+  AudioController? _controller;
+  bool finishedAudio = false;
 
-  bool isAllFinished = false;
-  int urlsLength = -1;
+  bool hasAudio = false;
 
-  AudioController getController(index) => controllerList[index];
+  AudioController? get controller => hasAudio ? _controller : null;
 
-  int get audioAmount =>
-      urlsLength == -1 ? this.controllerList.length : urlsLength;
+  void refreshUrl({required String? url}) {
+    _controller?.stop();
+    finishedAudio = false;
 
-  void refreshSourceList({required List<String> urls}) {
-    stopAll();
-    urlsLength = urls.length;
-    finishedAudio = List.generate(urls.length, (index) => false);
-    if (urls.length > controllerList.length) {
-      for (int index = 0;
-          index < urls.length - controllerList.length + 1;
-          index++) {
-        final AudioController newAudioController = AudioController(
-          url: urls[index],
-        );
-        newAudioController.audioPlayer.onPlayerStateChanged.listen((state) {
-          if (state == PlayerState.PLAYING) {
-            pauseAudioExcept(index);
-          }
-        });
-        newAudioController.audioPlayer.onPlayerCompletion.listen((_) {
-          onFinished(index);
-        });
-        controllerList.add(newAudioController);
-      }
+    if (url == null) {
+      _controller?.pause();
+      _controller?.seekTo(0);
+      hasAudio = false;
+      return;
+    } else {
+      hasAudio = true;
     }
 
-    for (int index = 0; index < urls.length; index++) {
-      controllerList[index].changeUrl(urls[index]);
+    if (_controller == null) {
+      final AudioController newAudioController = AudioController(
+        url: url,
+      );
+      newAudioController.audioPlayer.onPlayerStateChanged.listen((state) {});
+      newAudioController.audioPlayer.onPlayerCompletion.listen((_) {
+        finishedAudio = true;
+        onCompleted?.call();
+      });
+      _controller = newAudioController;
     }
-  }
 
-  void onFinished(int index) {
-    finishedAudio[index] = true;
-    for (final bool isFinised in finishedAudio) {
-      if (!isFinised) return;
-    }
-    isAllFinished = true;
-    onAllFinished?.call();
-  }
-
-  void pauseAudioExcept(int exceptIndex) {
-    for (int index = 0; index < controllerList.length; index++) {
-      if (index == exceptIndex) continue;
-      controllerList[index].pause();
-    }
-  }
-
-  void stopAll() {
-    for (final player in controllerList) {
-      player.stop();
+    if (url != _controller?.url) {
+      _controller?.changeUrl(
+        url,
+      );
     }
   }
 
   void disposeAllAudio() {
-    stopAll();
-    for (final player in controllerList) {
-      player.dispose();
-    }
+    _controller?.stop();
+    _controller?.dispose();
   }
 }

@@ -420,8 +420,10 @@ class _LessonTabPageState extends State<LessonTabPage>
           Expanded(
             child: InkWell(
               onTap: () {
-                if (lessonDetail?.level != 'Cấp độ 1') {
+                if (lessonDetail?.level == 'Cấp độ 1') {
                   // TODO(Tuyen): Show dialog upgrade
+                  showUpdateRequirePopup(context: context);
+                  return;
                 }
                 if (lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
                   _showLockedDialog();
@@ -565,6 +567,100 @@ class _LessonTabPageState extends State<LessonTabPage>
                     ),
                   )
                 ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void showUpdateRequirePopup({
+    required BuildContext context,
+  }) {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => GestureDetector(
+        onTap: () {
+          NavigationUtil.pop(context);
+        },
+        child: Scaffold(
+          backgroundColor: R.color.transparent,
+          body: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      R.color.white,
+                      R.color.main_6,
+                    ],
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50.0, vertical: 30),
+                        child: Image.asset(R.drawable.img_upgrade_package),
+                      ),
+                      Text(
+                        'Bài học chưa mở khoá!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Vui lòng nâng cấp tài khoản lên gói Đồng hành để tiếp tục học!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: 149,
+                            child: ButtonWidget(
+                              title: 'Để sau',
+                              textSize: 16,
+                              backgroundColor: R.color.grayBorder,
+                              textColor: R.color.textDark,
+                              onPressed: () {
+                                NavigationUtil.pop(context);
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: 149,
+                            child: ButtonWidget(
+                              title: 'Tìm hiểu thêm',
+                              textSize: 16,
+                              onPressed: () {
+                                NavigationUtil.pop(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
