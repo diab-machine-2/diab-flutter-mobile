@@ -1,10 +1,12 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -20,7 +22,8 @@ import 'widgets/custom_top_progress_bar.dart';
 import 'widgets/select_type_widget.dart';
 
 class CreateGoalPage extends StatefulWidget {
-  const CreateGoalPage();
+  const CreateGoalPage({this.type});
+  final ScheduleType? type;
 
   @override
   _CreateGoalPageState createState() => _CreateGoalPageState();
@@ -34,6 +37,9 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = CreateGoalCubit(appRepository);
+    if (widget.type != null) {
+      _cubit.setupGoal(selectedType: widget.type);
+    }
   }
 
   @override
@@ -45,7 +51,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
+          resizeToAvoidBottomInset: true,
           body: BlocConsumer<CreateGoalCubit, CreateGoalState>(
             listener: (context, state) {
               if (state is CreateGoalLoading) {
@@ -146,7 +152,11 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       SelectTypeWidget(
         title: 'Tần suất theo dõi chỉ số sinh học',
         onSlectType: (type) {
-          _cubit.setupGoal(selectedType: type);
+          if (type == ScheduleType.blood_sugar) {
+            Navigator.pushNamed(context, NavigatorName.schedule_glucose);
+          } else {
+            _cubit.setupGoal(selectedType: type);
+          }
         },
         subList: const [
           ScheduleType.blood_pressure,
@@ -160,7 +170,9 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       ),
       SelectTypeWidget(
         title: 'Mục tiêu cá nhân',
-        onTap: () {},
+        onTap: () {
+          Navigator.pushNamed(context, NavigatorName.goal_setting);
+        },
       ),
     ];
   }
@@ -352,38 +364,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
   List<Widget> _buildSetupGoalType1() {
     return [
-      Text(
-        'DiaB khuyến nghị:',
-        style: TextStyle(
-          color: R.color.textDark,
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      const SizedBox(height: 8),
-      Text(
-        '''
-      - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
-      - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''',
-        style: TextStyle(
-          color: R.color.textDark,
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            'Tôi cần thêm thông tin',
-            style: TextStyle(
-              color: R.color.greenGradientBottom,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
+      _buildTextDescription(),
       _buildTimePicker(title: 'Chọn ngày bắt đầu hoạt động'),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -412,38 +393,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
   List<Widget> _buildSetupGoalType2() {
     return [
-      Text(
-        'DiaB khuyến nghị:',
-        style: TextStyle(
-          color: R.color.textDark,
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      const SizedBox(height: 8),
-      Text(
-        '''
-      - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
-      - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''',
-        style: TextStyle(
-          color: R.color.textDark,
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            'Tôi cần thêm thông tin',
-            style: TextStyle(
-              color: R.color.greenGradientBottom,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
+      _buildTextDescription(),
       _buildTimeOrFrequency(title: 'Số phút vận động mỗi ngày', unit: 'phút'),
       _buildTimeOrFrequency(title: 'Số phút vận động mỗi tuần', unit: 'phút'),
     ];
@@ -540,12 +490,13 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       if (title == null)
                         Image.asset(R.drawable.ic_calendar,
                             width: 24, height: 24),
                       const SizedBox(width: 8),
+                      if (title == null) const Spacer(),
                       Text(
                         DateFormat('dd/MM/yyyy').format(_cubit.startDate),
                         style: const TextStyle(
@@ -604,6 +555,12 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     fontSize: 40,
                     fontWeight: FontWeight.w400,
                   ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[0-9]'),
+                    ),
+                  ],
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
@@ -700,6 +657,47 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           )
         ],
       ),
+    );
+  }
+
+  Widget _buildTextDescription() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'DiaB khuyến nghị:',
+          style: TextStyle(
+            color: R.color.textDark,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '''
+      - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
+      - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''',
+          style: TextStyle(
+            color: R.color.textDark,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        const SizedBox(height: 14),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              'Tôi cần thêm thông tin',
+              style: TextStyle(
+                color: R.color.greenGradientBottom,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

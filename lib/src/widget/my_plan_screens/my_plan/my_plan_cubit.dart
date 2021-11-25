@@ -3,6 +3,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/const.dart';
 import 'models/plan_type.dart';
 
 import 'my_plan.dart';
@@ -30,6 +31,10 @@ class MyPlanCubit extends Cubit<MyPlanState> {
   String get packageCode => userInfo?.data?.packageCode ?? '';
   String get roadmapId => userInfo?.data?.roadmapId ?? '';
   int? get currentStudyWeek => userInfo?.data?.currentStudyWeek;
+
+  bool get isBasicUser => packageCode == Const.BASIC;
+  bool get isProUser => packageCode == Const.PRO;
+  bool get isPremiumUser => packageCode == Const.PREMIUM;
 
   void changePlanType(int newIndex) {
     currentPlanType = planTypeList[newIndex];

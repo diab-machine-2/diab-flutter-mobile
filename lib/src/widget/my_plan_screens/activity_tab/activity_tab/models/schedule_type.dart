@@ -102,4 +102,33 @@ extension ScheduleTypeExtend on ScheduleType {
         return -1;
     }
   }
+
+  bool get editable {
+    switch (this) {
+      case ScheduleType.blood_sugar:
+        return true;
+      case ScheduleType.blood_pressure:
+        return true;
+      case ScheduleType.weight:
+        return true;
+      case ScheduleType.emotion:
+        return true;
+      case ScheduleType.food:
+        return true;
+      case ScheduleType.exercise:
+        return true;
+      case ScheduleType.hba1c:
+        return true;
+      case ScheduleType.exercise_movement:
+        return false;
+      case ScheduleType.meditate:
+        return true;
+      case ScheduleType.coaching:
+        return false;
+      case ScheduleType.group:
+        return false;
+      case ScheduleType.survey:
+        return false;
+    }
+  }
 }

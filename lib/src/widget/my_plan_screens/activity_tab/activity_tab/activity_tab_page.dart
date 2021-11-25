@@ -5,6 +5,8 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/circle_graph.dart';
@@ -66,34 +68,37 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         _buildScheduleWidget(),
-                        Row(
-                          children: [
-                            ...List.generate(
-                              _cubit.goalTypeList.length,
-                              (index) {
-                                return _buildGoalTypeSelect(
-                                  title: _cubit.goalTypeList[index].title,
-                                  isActive:
-                                      _cubit.currentGoalTypeIndex == index,
-                                  onTap: () {
-                                    _cubit.changeGoalType(index);
-                                  },
-                                );
-                              },
-                            ),
-                            const Spacer(),
-                            InkWell(
-                              onTap: () {},
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 12.0),
-                                child: Image.asset(
-                                  R.drawable.ic_activity_process,
-                                  width: 20,
-                                  height: 20,
+                        Visibility(
+                          visible: _cubit.myPlanCubit.isPremiumUser,
+                          child: Row(
+                            children: [
+                              ...List.generate(
+                                _cubit.goalTypeList.length,
+                                (index) {
+                                  return _buildGoalTypeSelect(
+                                    title: _cubit.goalTypeList[index].title,
+                                    isActive:
+                                        _cubit.currentGoalTypeIndex == index,
+                                    onTap: () {
+                                      _cubit.changeGoalType(index);
+                                    },
+                                  );
+                                },
+                              ),
+                              const Spacer(),
+                              InkWell(
+                                onTap: () {},
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 12.0),
+                                  child: Image.asset(
+                                    R.drawable.ic_activity_process,
+                                    width: 20,
+                                    height: 20,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -104,86 +109,62 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                         padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
                         child: Column(children: [
                           _buildSingleGoal(
-                              icon: ScheduleType.exercise_movement.icon,
-                              title: 'Bài tập vận động',
-                              frequency: 'Bài tập mềm dẻo',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.exercise_movement);
-                              }),
+                            type: ScheduleType.exercise_movement,
+                            title: 'Bài tập vận động',
+                            frequency: 'Bài tập mềm dẻo',
+                          ),
                           _buildSingleGoal(
-                              icon: ScheduleType.blood_sugar.icon,
-                              title: 'Đo đường huyết',
-                              frequency: '2 lần/ngày',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.blood_sugar);
-                              }),
+                            type: ScheduleType.blood_sugar,
+                            title: 'Đo đường huyết',
+                            frequency: '2 lần/ngày',
+                          ),
                           _buildSingleGoal(
-                              icon: ScheduleType.meditate.icon,
-                              title: 'Ngồi thiền',
-                              frequency: 'Còn 7 ngày để hoàn thành',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.meditate);
-                              }),
+                            type: ScheduleType.meditate,
+                            title: 'Ngồi thiền',
+                            frequency: 'Còn 7 ngày để hoàn thành',
+                          ),
                           _buildSingleGoal(
-                              icon: ScheduleType.exercise.icon,
-                              title: 'Vận động',
-                              frequency: '30 phút',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.exercise);
-                              }),
+                            type: ScheduleType.exercise,
+                            title: 'Vận động',
+                            frequency: '30 phút',
+                          ),
                           _buildSingleGoal(
-                              icon: ScheduleType.weight.icon,
-                              title: 'Đo cân nặng',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.weight);
-                              }),
+                            type: ScheduleType.weight,
+                            title: 'Đo cân nặng',
+                          ),
                           _buildSingleGoal(
-                              icon: ScheduleType.emotion.icon,
-                              title: 'Cảm xúc',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.emotion);
-                              }),
+                            type: ScheduleType.emotion,
+                            title: 'Cảm xúc',
+                          ),
                           _buildSingleGoal(
-                              icon: ScheduleType.hba1c.icon,
-                              title: 'Đo HbA1C',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.hba1c);
-                              }),
+                            type: ScheduleType.hba1c,
+                            title: 'Đo HbA1C',
+                          ),
                           _buildSingleGoal(
-                              icon: ScheduleType.food.icon,
-                              title: 'Nhập món ăn',
-                              frequency: '3 lần/ngày',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.food);
-                              }),
+                            type: ScheduleType.food,
+                            title: 'Nhập món ăn',
+                            frequency: '3 lần/ngày',
+                          ),
                           _buildSingleGoal(
-                              icon: ScheduleType.blood_pressure.icon,
-                              title: 'Huyết áp',
-                              frequency: '10:00 am - 11:00 am',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.blood_pressure);
-                              }),
+                            type: ScheduleType.blood_pressure,
+                            title: 'Huyết áp',
+                            frequency: '10:00 am - 11:00 am',
+                          ),
                           _buildSingleGoal(
-                              icon: ScheduleType.coaching.icon,
-                              title: 'Tư vấn với huấn luyện viên',
-                              frequency: '10:00 am - 11:00 am',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.coaching);
-                              }),
+                            type: ScheduleType.coaching,
+                            title: 'Tư vấn với huấn luyện viên',
+                            frequency: '10:00 am - 11:00 am',
+                          ),
                           _buildSingleGoal(
-                              icon: ScheduleType.group.icon,
-                              title: 'Sinh hoạt nhóm',
-                              frequency: '19h15',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.group);
-                              }),
+                            type: ScheduleType.group,
+                            title: 'Sinh hoạt nhóm',
+                            frequency: '19h15',
+                          ),
                           _buildSingleGoal(
-                              icon: ScheduleType.survey.icon,
-                              title: 'Khảo sát',
-                              frequency: 'Khảo sát tháng',
-                              onTap: () {
-                                onSelectGoal(ScheduleType.survey);
-                              }),
+                            type: ScheduleType.survey,
+                            title: 'Khảo sát',
+                            frequency: 'Khảo sát tháng',
+                          ),
                         ]),
                       ),
                     ),
@@ -243,8 +224,13 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildWeekListWidget(),
-          const SizedBox(height: 20),
+          Visibility(
+            visible: _cubit.myPlanCubit.isPremiumUser,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: _buildWeekListWidget(),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
@@ -438,20 +424,21 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   Widget _buildSingleGoal({
-    required String icon,
+    required ScheduleType type,
     required String title,
     String? frequency,
-    VoidCallback? onTap,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: InkWell(
-        onTap: onTap,
+        onTap: () {
+          onSelectGoal(type);
+        },
         child: Row(
           children: [
             CircleGraphWidget(
               percent: 40,
-              icon: icon,
+              icon: type.icon,
             ),
             Expanded(
               child: Padding(
@@ -482,10 +469,18 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 ),
               ),
             ),
-            Image.asset(
-              R.drawable.ic_edit,
-              width: 20,
-              height: 20,
+            InkWell(
+              onTap: () {
+                onEditGoal(type);
+              },
+              child: Visibility(
+                visible: type.editable,
+                child: Image.asset(
+                  R.drawable.ic_edit,
+                  width: 20,
+                  height: 20,
+                ),
+              ),
             ),
           ],
         ),
@@ -496,18 +491,34 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   void onSelectGoal(ScheduleType type) {
     switch (type) {
       case ScheduleType.blood_sugar:
+        Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+            arguments: {'type': 'input'});
         break;
       case ScheduleType.blood_pressure:
+        Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
+            arguments: {'type': 'input'});
         break;
       case ScheduleType.weight:
+        Navigator.pushNamed(context, NavigatorName.add_bmi,
+            arguments: {'type': 'input'});
         break;
       case ScheduleType.emotion:
+        Navigator.pushNamed(context, NavigatorName.add_emo,
+            arguments: {'type': 'input'});
         break;
       case ScheduleType.food:
+        NavigationUtil.navigatePage(
+          context,
+          const DailyNutritionPage(type: 'input', id: null),
+        );
         break;
       case ScheduleType.exercise:
+        Navigator.pushNamed(context, NavigatorName.add_exercrises,
+            arguments: {'type': 'input'});
         break;
       case ScheduleType.hba1c:
+        Navigator.pushNamed(context, NavigatorName.add_hba1c,
+            arguments: {'type': 'input'});
         break;
       case ScheduleType.exercise_movement:
         _cubit.goToExerciseTab();
@@ -522,6 +533,43 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         break;
       case ScheduleType.survey:
         showSurveyPopup();
+        break;
+    }
+  }
+
+  void onEditGoal(ScheduleType type) {
+    switch (type) {
+      case ScheduleType.blood_sugar:
+        Navigator.pushNamed(context, NavigatorName.schedule_glucose);
+        break;
+      case ScheduleType.blood_pressure:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.weight:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.emotion:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.food:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.exercise:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.hba1c:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.exercise_movement:
+        break;
+      case ScheduleType.meditate:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.coaching:
+        break;
+      case ScheduleType.group:
+        break;
+      case ScheduleType.survey:
         break;
     }
   }
