@@ -25,7 +25,8 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
 
   bool get isBasicUser {
     final String packageCode = userInfo?.packageCode ?? '';
-    return packageCode.isEmpty || packageCode == Const.BASIC;
+    // return packageCode.isEmpty || packageCode == Const.BASIC;
+    return false;
   }
 
   MenuResponseListdayfood? get currentDayData {
