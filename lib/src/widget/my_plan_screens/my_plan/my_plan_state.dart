@@ -43,7 +43,8 @@ class MyPlanLoading extends MyPlanState {
 }
 
 class MyPlanChangeType extends MyPlanState {
-  const MyPlanChangeType();
+  const MyPlanChangeType(this.index);
+  final int index;
   @override
   String toString() {
     return 'MyPlanChangeType{}';

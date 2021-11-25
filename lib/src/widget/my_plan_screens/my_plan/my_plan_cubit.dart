@@ -33,7 +33,7 @@ class MyPlanCubit extends Cubit<MyPlanState> {
 
   void changePlanType(int newIndex) {
     currentPlanType = planTypeList[newIndex];
-    emit(const MyPlanChangeType());
+    emit(MyPlanChangeType(newIndex));
     emit(const MyPlanInitial());
   }
 

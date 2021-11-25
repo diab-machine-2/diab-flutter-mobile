@@ -25,7 +25,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   ExerciseMovementResponse? exerciseMovementResponse;
 
   int? get week =>
-      currentWeekIndex == null ? null : weekStatesList[currentWeekIndex!].week;
+       !isPremiumUser || currentWeekIndex == null ? null : weekStatesList[currentWeekIndex!].week;
 
   bool get isPremiumUser => myPlanCubit.packageCode == Const.PREMIUM;
 
@@ -99,7 +99,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       emit(const ExerciseTabLoading());
     }
     final ApiResult<ExerciseMovementResponse> apiResult = await repository
-        .getExerciseMovement(roadmapId: roadmapId, week: week ?? 1);
+        .getExerciseMovement(roadmapId: roadmapId, week: week);
     apiResult.when(success: (ExerciseMovementResponse response) {
       exerciseMovementResponse = response;
       mark = exerciseMovementResponse?.getMarkNotLearnIndex(

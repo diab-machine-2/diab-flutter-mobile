@@ -41,16 +41,20 @@ class _MyPlanPageState extends State<MyPlanPage> {
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocConsumer<MyPlanCubit, MyPlanState>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            if (state is MyPlanFailure) {
+              Message.showToastMessage(context, state.error);
+            }
+            if (state is MyPlanChangeType) {
+              _pageController.jumpToPage(state.index);
+            }
+          },
           builder: (context, state) {
             if (state is MyPlanLoading) {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
               _controller.refreshCompleted();
-            }
-            if (state is MyPlanFailure) {
-              Message.showToastMessage(context, state.error);
             }
             return CommonPage(
               title: R.string.my_plan.tr(),
@@ -68,7 +72,6 @@ class _MyPlanPageState extends State<MyPlanPage> {
                       selectedIndex: _cubit.currentPlanTypeIndex,
                       onChange: (index) {
                         _cubit.changePlanType(index);
-                        _pageController.jumpToPage(index);
                       },
                     ),
                   ),

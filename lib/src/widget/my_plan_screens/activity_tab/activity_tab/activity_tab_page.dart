@@ -493,9 +493,43 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
+  void onSelectGoal(ScheduleType type) {
+    switch (type) {
+      case ScheduleType.blood_sugar:
+        break;
+      case ScheduleType.blood_pressure:
+        break;
+      case ScheduleType.weight:
+        break;
+      case ScheduleType.emotion:
+        break;
+      case ScheduleType.food:
+        break;
+      case ScheduleType.exercise:
+        break;
+      case ScheduleType.hba1c:
+        break;
+      case ScheduleType.exercise_movement:
+        _cubit.goToExerciseTab();
+        break;
+      case ScheduleType.meditate:
+        showCustomGoalPopup();
+        break;
+      case ScheduleType.coaching:
+        showCoachingPopup();
+        break;
+      case ScheduleType.group:
+        break;
+      case ScheduleType.survey:
+        showSurveyPopup();
+        break;
+    }
+  }
+
   void showPopup({
     required BuildContext context,
     required Widget child,
+    required String buttonTitle,
   }) {
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
@@ -532,7 +566,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       SizedBox(
                         width: 245,
                         child: ButtonWidget(
-                          title: 'Tham gia',
+                          title: buttonTitle,
                           textSize: 14,
                           onPressed: () {
                             NavigationUtil.pop(context);
@@ -550,90 +584,127 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  void onSelectGoal(ScheduleType type) {
-    switch (type) {
-      case ScheduleType.blood_sugar:
-        break;
-      case ScheduleType.blood_pressure:
-        break;
-      case ScheduleType.weight:
-        break;
-      case ScheduleType.emotion:
-        break;
-      case ScheduleType.food:
-        break;
-      case ScheduleType.exercise:
-        break;
-      case ScheduleType.hba1c:
-        break;
-      case ScheduleType.exercise_movement:
-        break;
-      case ScheduleType.meditate:
-        break;
-      case ScheduleType.coaching:
-        showPopup(
-          context: context,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  showCustomGoalPopup() {
+    return showPopup(
+      context: context,
+      buttonTitle: 'Hoàn thành',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 57, vertical: 10),
+            child: Image.asset(R.drawable.img_custom_goal),
+          ),
+          Text(
+            'Ngồi thiền',
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Thời gian: 30 phút',
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 14,
+                fontWeight: FontWeight.w400),
+          ),
+        ],
+      ),
+    );
+  }
+
+  showCoachingPopup() {
+    return showPopup(
+      context: context,
+      buttonTitle: 'Tham gia',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Thứ 6, 12/7/2021',
+            style: TextStyle(
+                color: R.color.main_1,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
+          ),
+          Text(
+            '10:00 am - 11:00 am',
+            style: TextStyle(
+                color: R.color.main_1,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Buổi Coaching 1 - 1 lập kế hoạch học tập cho user sử dụng gói thấu cảm',
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 16,
+                fontWeight: FontWeight.w400),
+          ),
+          const SizedBox(height: 16),
+          Row(
             children: [
-              Text(
-                'Thứ 6, 12/7/2021',
-                style: TextStyle(
-                    color: R.color.main_1,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700),
-              ),
-              Text(
-                '10:00 am - 11:00 am',
-                style: TextStyle(
-                    color: R.color.main_1,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Buổi Coaching 1 - 1 lập kế hoạch học tập cho user sử dụng gói thấu cảm',
-                style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400),
-              ),
-              const SizedBox(height: 16),
-              Row(
+              Container(width: 44, height: 44, color: R.color.blue),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(width: 44, height: 44, color: R.color.blue),
-                  const SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Coach',
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Văn Hùng Trần',
-                        style: TextStyle(
-                            color: R.color.main_1,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  )
+                  Text(
+                    'Coach',
+                    style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Văn Hùng Trần',
+                    style: TextStyle(
+                        color: R.color.main_1,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700),
+                  ),
                 ],
               )
             ],
+          )
+        ],
+      ),
+    );
+  }
+
+  showSurveyPopup() {
+    return showPopup(
+      context: context,
+      buttonTitle: 'Bắt đầu khảo sát',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 57, vertical: 10),
+            child: Image.asset(R.drawable.img_survey_4),
           ),
-        );
-        break;
-      case ScheduleType.group:
-        break;
-      case ScheduleType.survey:
-        break;
-    }
+          Text(
+            'Khảo sát',
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Tìm hiểu về thói quen sinh hoạt',
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 14,
+                fontWeight: FontWeight.w400),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

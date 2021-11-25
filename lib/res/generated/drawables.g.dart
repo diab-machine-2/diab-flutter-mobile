@@ -240,6 +240,7 @@ class Drawables {
 	String get img_congrat => "lib/res/drawables/img_congrat.png";
 	String get img_cooking => "lib/res/drawables/img_cooking.png";
 	String get img_course_feedback => "lib/res/drawables/img_course_feedback.png";
+	String get img_custom_goal => "lib/res/drawables/img_custom_goal.png";
 	String get img_des => "lib/res/drawables/img_des.png";
 	String get img_des_person => "lib/res/drawables/img_des_person.png";
 	String get img_email_support => "lib/res/drawables/img_email_support.png";

@@ -420,7 +420,8 @@ class _LessonTabPageState extends State<LessonTabPage>
           Expanded(
             child: InkWell(
               onTap: () {
-                if (lessonDetail?.level == 'Cấp độ 1') {
+                if (_cubit.myPlanCubit.packageCode == Const.BASIC &&
+                    lessonDetail?.level == 'Cấp độ 1') {
                   // TODO(Tuyen): Show dialog upgrade
                   showUpdateRequirePopup(context: context);
                   return;

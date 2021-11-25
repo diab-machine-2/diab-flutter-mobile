@@ -14,7 +14,10 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   final AppRepository repository;
   final MyPlanCubit myPlanCubit;
 
-  final List<GoalFilterType> goalTypeList = [GoalFilterType.day, GoalFilterType.week];
+  final List<GoalFilterType> goalTypeList = [
+    GoalFilterType.day,
+    GoalFilterType.week
+  ];
   List<WeekStatesResponseData> weekStatesList = [];
   int mark = 0;
   int? currentWeekIndex;
@@ -33,6 +36,10 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     currentGoalType = goalTypeList[newIndex];
     emit(const GoalTypeChanged());
     emit(const ActivityTabInitial());
+  }
+
+  void goToExerciseTab() {
+    myPlanCubit.changePlanType(2);
   }
 
   Future<void> initData() async {
