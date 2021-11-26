@@ -228,10 +228,7 @@ class _SearchExercrisesControllerState
                                             top: 2.0, left: 2),
                                         child: Text(
                                           R.string.kcal.tr(),
-                                          style: TextStyle(
-                                              color: R.color.textDark,
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 14.0),
+                                          style: R.style.normalTextStyle,
                                         ),
                                       ),
                                     ],
@@ -470,22 +467,14 @@ class _SearchExercrisesControllerState
                                                           : selectedModel
                                                               .duration
                                                               .toString(),
-                                                  style: TextStyle(
-                                                      color: R.color.textDark,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400)),
+                                                  style: R.style.normalTextStyle),
                                               SizedBox(
                                                 width: 4,
                                               ),
                                               selectedModel == null
                                                   ? SizedBox()
                                                   : Text('${R.string.minute.tr()},',
-                                                      style: TextStyle(
-                                                          color: R.color.textDark,
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w400)),
+                                                      style: R.style.normalTextStyle),
                                               SizedBox(
                                                 width: 4,
                                               ),
@@ -495,11 +484,7 @@ class _SearchExercrisesControllerState
                                                       : formatNumber(
                                                           selectedModel
                                                               .burnedCalorie),
-                                                  style: TextStyle(
-                                                      color: R.color.textDark,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400)),
+                                                  style: R.style.normalTextStyle),
                                               SizedBox(
                                                 width: 2,
                                               ),
@@ -508,11 +493,7 @@ class _SearchExercrisesControllerState
                                                       ? ''
                                                       : selectedModel.unit
                                                           .toString(),
-                                                  style: TextStyle(
-                                                      color: R.color.textDark,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400)),
+                                                  style: R.style.normalTextStyle),
                                             ],
                                           )
                                   ],

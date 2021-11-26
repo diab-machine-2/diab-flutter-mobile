@@ -390,7 +390,7 @@ class AppRepository {
   }
 
   Future<ApiResult<ExerciseMovementResponse>> getExerciseMovement(
-      {required String roadmapId, required int week}) async {
+      {required String roadmapId, int? week}) async {
     try {
       final ExerciseMovementResponse response =
           await appClient.getExerciseMovement(roadmapId: roadmapId, week: week);

@@ -9,6 +9,7 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/video_player_widget.dart';
@@ -115,10 +116,17 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                         : ListView.separated(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 20),
-                            itemCount: 1,
+                            itemCount: _cubit.isPremiumUser
+                                ? 1
+                                : (_cubit.exerciseMovementResponse?.data
+                                        ?.length ??
+                                    0),
                             itemBuilder: (context, index) {
                               return _buildExerciseWidget(
-                                  exerciseItem: _cubit.currentExercise);
+                                  exerciseItem: _cubit.isPremiumUser
+                                      ? _cubit.currentExercise
+                                      : _cubit.exerciseMovementResponse
+                                          ?.data?[index]);
                             },
                             separatorBuilder: (context, index) {
                               return Container(
@@ -272,6 +280,11 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                           backgroundColor: R.color.greenGradientBottom,
                           textColor: R.color.white,
                           onTap: () {
+                            if (_cubit.isFreeUser &&
+                                exerciseItem.isFree != true) {
+                              showUpdateRequirePopup(context: context);
+                              return;
+                            }
                             NavigationUtil.navigatePage(
                               context,
                               ExerciseDetail(
@@ -287,6 +300,11 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                           backgroundColor: R.color.white,
                           textColor: R.color.greenGradientBottom,
                           onTap: () {
+                            if (_cubit.isFreeUser &&
+                                exerciseItem.isFree != true) {
+                              showUpdateRequirePopup(context: context);
+                              return;
+                            }
                             NavigationUtil.navigatePage(
                               context,
                               VideoPlayerWidget(
@@ -311,6 +329,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Widget _buildDayOffWidget() {
+    if (!_cubit.isPremiumUser) return const SizedBox();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 53),
       child: Column(
@@ -335,10 +354,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                 Text(
                   R.string.today_is_day_off_description.tr(),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400),
+                  style: R.style.normalTextStyle,
                 ),
               ],
             ),
@@ -522,6 +538,100 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         newRoadmapId != _cubit.roadmapId) {
       _cubit.roadmapChanged(newRoadmapId);
     }
+  }
+
+  void showUpdateRequirePopup({
+    required BuildContext context,
+  }) {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => GestureDetector(
+        onTap: () {
+          NavigationUtil.pop(context);
+        },
+        child: Scaffold(
+          backgroundColor: R.color.transparent,
+          body: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      R.color.white,
+                      R.color.main_6,
+                    ],
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50.0, vertical: 30),
+                        child: Image.asset(R.drawable.img_upgrade_package),
+                      ),
+                      Text(
+                        'Bài học chưa mở khoá!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Vui lòng nâng cấp tài khoản lên gói Đồng hành để tiếp tục học!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: 149,
+                            child: ButtonWidget(
+                              title: 'Để sau',
+                              textSize: 16,
+                              backgroundColor: R.color.grayBorder,
+                              textColor: R.color.textDark,
+                              onPressed: () {
+                                NavigationUtil.pop(context);
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: 149,
+                            child: ButtonWidget(
+                              title: 'Tìm hiểu thêm',
+                              textSize: 16,
+                              onPressed: () {
+                                NavigationUtil.pop(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override

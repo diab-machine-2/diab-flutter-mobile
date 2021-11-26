@@ -9,7 +9,6 @@ import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
 
 import 'food_menu.dart';
 
@@ -25,7 +24,8 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
 
   bool get isBasicUser {
     final String packageCode = userInfo?.packageCode ?? '';
-    return packageCode.isEmpty || packageCode == Const.BASIC;
+    // return packageCode.isEmpty || packageCode == Const.BASIC;
+    return false;
   }
 
   MenuResponseListdayfood? get currentDayData {

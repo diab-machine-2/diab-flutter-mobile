@@ -21,15 +21,30 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   int? currentWeekIndex;
   int currentDayIndex = 0;
   int mark = 0;
-  DateTime? packageTimeExpired;
   List<WeekStatesResponseData> weekStatesList = [];
   ExerciseMovementResponse? exerciseMovementResponse;
 
   int? get week =>
-      currentWeekIndex == null ? null : weekStatesList[currentWeekIndex!].week;
+       !isPremiumUser || currentWeekIndex == null ? null : weekStatesList[currentWeekIndex!].week;
 
-  ExerciseMovementResponseData? get currentExercise => exerciseMovementResponse
-      ?.getExerciseFromDayInWeek(week: week ?? 1, dayInWeek: currentDayIndex);
+  bool get isPremiumUser => myPlanCubit.packageCode == Const.PREMIUM;
+
+  bool get isFreeUser => myPlanCubit.packageCode == Const.BASIC;
+
+  bool get isDayOff {
+    if (isPremiumUser && currentExercise == null) return true;
+    if (!isPremiumUser && exerciseMovementResponse?.data?.isNotEmpty != true) {
+      return true;
+    }
+    return false;
+  }
+
+  ExerciseMovementResponseData? get currentExercise {
+    final ExerciseMovementResponseData? exercise = exerciseMovementResponse
+        ?.getExerciseFromDayInWeek(week: week ?? 1, dayInWeek: currentDayIndex);
+    if (exercise?.isBlank == true) return null;
+    return exercise;
+  }
 
   CompletionStatus? getExerciseOfDay(int dayIndex) {
     if (week == null) return null;
@@ -69,7 +84,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       emit(const ExerciseTabInitial());
       return;
     }
-    if (myPlanCubit.packageCode == Const.PRO &&
+    if (myPlanCubit.packageCode == Const.PREMIUM &&
         myPlanCubit.currentStudyWeek != null) {
       currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
       await getWeekStates();
@@ -84,10 +99,13 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       emit(const ExerciseTabLoading());
     }
     final ApiResult<ExerciseMovementResponse> apiResult = await repository
-        .getExerciseMovement(roadmapId: roadmapId, week: week ?? 1);
+        .getExerciseMovement(roadmapId: roadmapId, week: week);
     apiResult.when(success: (ExerciseMovementResponse response) {
       exerciseMovementResponse = response;
-      mark = exerciseMovementResponse?.getMarkNotLearnIndex(week ?? 1) ?? 0;
+      mark = exerciseMovementResponse?.getMarkNotLearnIndex(
+              week: week ?? 1,
+              userCurrentWeek: myPlanCubit.currentStudyWeek ?? 1) ??
+          0;
       currentDayIndex =
           exerciseMovementResponse?.getCurrentDayIndex(week ?? 1) ?? 1;
       emit(const ExerciseTabSuccess());

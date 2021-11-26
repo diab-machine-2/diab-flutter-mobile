@@ -1,6 +1,6 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class EmotionStatisticItemModel {
   final String? colorCode;
   final String? id;
@@ -8,7 +8,7 @@ class EmotionStatisticItemModel {
   final String? text;
   final ImagesModel icon;
 
-  EmotionStatisticItemModel({
+  const EmotionStatisticItemModel({
     required this.colorCode,
     required this.id,
     required this.count,

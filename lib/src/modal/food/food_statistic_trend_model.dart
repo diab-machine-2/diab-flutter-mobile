@@ -1,10 +1,10 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class FoodTrendModel {
   final EnergyTrendModel energyChart;
   final EnergyTrendModel carbChart;
 
-  FoodTrendModel({required this.carbChart, required this.energyChart});
+  const FoodTrendModel({required this.carbChart, required this.energyChart});
   @override
   factory FoodTrendModel.fromJson(Map<String, dynamic> json) {
     return FoodTrendModel(

@@ -1,10 +1,10 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class TrendItemWieightModel {
   final double? value;
   final int? date;
 
-  TrendItemWieightModel({
+  const TrendItemWieightModel({
     required this.value,
     required this.date,
   });

@@ -1,6 +1,6 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class FoodModel {
   final String? id;
   final String? code;
@@ -20,7 +20,7 @@ class FoodModel {
   final double? quantity;
   final String? mealId;
 
-  FoodModel({
+  const FoodModel({
     required this.id,
      this.code,
      this.name,

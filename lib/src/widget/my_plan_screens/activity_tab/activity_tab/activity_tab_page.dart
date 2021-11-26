@@ -3,15 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/circle_graph.dart';
 
+import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../create_goal/create_goal.dart';
 import 'activity_tab.dart';
-import 'models/goal_type.dart';
+import 'models/goal_filter_type.dart';
+import 'models/schedule_type.dart';
 import 'widgets/custom_progress_bar_widget.dart';
 
 class ActivityTabPage extends StatefulWidget {
@@ -24,6 +30,7 @@ class ActivityTabPage extends StatefulWidget {
 class _ActivityTabPageState extends State<ActivityTabPage>
     with AutomaticKeepAliveClientMixin<ActivityTabPage> {
   late final ActivityTabCubit _cubit;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -31,6 +38,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
     final AppRepository appRepository = AppRepository();
     _cubit = ActivityTabCubit(appRepository, _myPlanCubit);
+    _cubit.initData();
   }
 
   @override
@@ -59,34 +67,38 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            ...List.generate(
-                              _cubit.goalTypeList.length,
-                              (index) {
-                                return _buildLessonTypeSelect(
-                                  title: _cubit.goalTypeList[index].title,
-                                  isActive:
-                                      _cubit.currentGoalTypeIndex == index,
-                                  onTap: () {
-                                    _cubit.changeGoalType(index);
-                                  },
-                                );
-                              },
-                            ),
-                            const Spacer(),
-                            InkWell(
-                              onTap: () {},
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 12.0),
-                                child: Image.asset(
-                                  R.drawable.ic_activity_process,
-                                  width: 20,
-                                  height: 20,
+                        _buildScheduleWidget(),
+                        Visibility(
+                          visible: _cubit.myPlanCubit.isPremiumUser,
+                          child: Row(
+                            children: [
+                              ...List.generate(
+                                _cubit.goalTypeList.length,
+                                (index) {
+                                  return _buildGoalTypeSelect(
+                                    title: _cubit.goalTypeList[index].title,
+                                    isActive:
+                                        _cubit.currentGoalTypeIndex == index,
+                                    onTap: () {
+                                      _cubit.changeGoalType(index);
+                                    },
+                                  );
+                                },
+                              ),
+                              const Spacer(),
+                              InkWell(
+                                onTap: () {},
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 12.0),
+                                  child: Image.asset(
+                                    R.drawable.ic_activity_process,
+                                    width: 20,
+                                    height: 20,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -95,16 +107,65 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
-                        child: Column(
-                          children: List.generate(
-                            15,
-                            (index) => _buildSingleGoal(
-                              icon: R.drawable.ic_weight,
-                              title: 'Bài tập vận động',
-                              frequency: 'Bài tập mềm dẻo',
-                            ),
+                        child: Column(children: [
+                          _buildSingleGoal(
+                            type: ScheduleType.exercise_movement,
+                            title: 'Bài tập vận động',
+                            frequency: 'Bài tập mềm dẻo',
                           ),
-                        ),
+                          _buildSingleGoal(
+                            type: ScheduleType.blood_sugar,
+                            title: 'Đo đường huyết',
+                            frequency: '2 lần/ngày',
+                          ),
+                          _buildSingleGoal(
+                            type: ScheduleType.meditate,
+                            title: 'Ngồi thiền',
+                            frequency: 'Còn 7 ngày để hoàn thành',
+                          ),
+                          _buildSingleGoal(
+                            type: ScheduleType.exercise,
+                            title: 'Vận động',
+                            frequency: '30 phút',
+                          ),
+                          _buildSingleGoal(
+                            type: ScheduleType.weight,
+                            title: 'Đo cân nặng',
+                          ),
+                          _buildSingleGoal(
+                            type: ScheduleType.emotion,
+                            title: 'Cảm xúc',
+                          ),
+                          _buildSingleGoal(
+                            type: ScheduleType.hba1c,
+                            title: 'Đo HbA1C',
+                          ),
+                          _buildSingleGoal(
+                            type: ScheduleType.food,
+                            title: 'Nhập món ăn',
+                            frequency: '3 lần/ngày',
+                          ),
+                          _buildSingleGoal(
+                            type: ScheduleType.blood_pressure,
+                            title: 'Huyết áp',
+                            frequency: '10:00 am - 11:00 am',
+                          ),
+                          _buildSingleGoal(
+                            type: ScheduleType.coaching,
+                            title: 'Tư vấn với huấn luyện viên',
+                            frequency: '10:00 am - 11:00 am',
+                          ),
+                          _buildSingleGoal(
+                            type: ScheduleType.group,
+                            title: 'Sinh hoạt nhóm',
+                            frequency: '19h15',
+                          ),
+                          _buildSingleGoal(
+                            type: ScheduleType.survey,
+                            title: 'Khảo sát',
+                            frequency: 'Khảo sát tháng',
+                          ),
+                        ]),
                       ),
                     ),
                   ),
@@ -137,7 +198,198 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  Widget _buildLessonTypeSelect({
+  void animateToIndex(int index, {bool refresh = true}) {
+    if (_cubit.weekStatesList.isEmpty) return;
+    if (index < 0) {
+      index = 0;
+      refresh = false;
+    }
+    if (index >= _cubit.weekStatesList.length) {
+      index = _cubit.weekStatesList.length - 1;
+      refresh = false;
+    }
+    final double newPosition = index * 96 + (6 * index.toDouble());
+    _scrollController.animateTo(
+      newPosition,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.ease,
+    );
+    if (refresh) {}
+  }
+
+  Widget _buildScheduleWidget() {
+    if (_cubit.weekStatesList.isEmpty) return const SizedBox();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Visibility(
+            visible: _cubit.myPlanCubit.isPremiumUser,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: _buildWeekListWidget(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(
+                    7,
+                    (index) => Container(
+                      alignment: Alignment.bottomCenter,
+                      width: 24,
+                      child: Text(
+                        index == 6 ? 'CN' : 'T${index + 2}',
+                        style: TextStyle(
+                          color: R.color.grey_1,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: List.generate(
+                    13,
+                    (index) {
+                      return index.isOdd
+                          ? Expanded(
+                              child: Container(
+                                height: 1,
+                                color: index ~/ 2 >= _cubit.mark
+                                    ? R.color.grayBorder
+                                    : R.color.green,
+                              ),
+                            )
+                          : _buildSingleDay(
+                              status: CompletionStatus.not_start_yet,
+                              isSelected: _cubit.currentDayIndex == index ~/ 2,
+                              onTap: () {});
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeekListWidget() {
+    if (_cubit.weekStatesList.isEmpty) return const SizedBox();
+    return Row(
+      children: [
+        InkWell(
+          onTap: () {
+            if (_cubit.currentWeekIndex == null) return;
+            animateToIndex(_cubit.currentWeekIndex! - 1);
+          },
+          child: Icon(
+            Icons.chevron_left_rounded,
+            size: 24,
+            color: (_cubit.currentWeekIndex ?? 0) <= 0
+                ? R.color.captionColorGray
+                : R.color.greenGradientBottom,
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            controller: _scrollController,
+            child: Row(
+              children: List.generate(_cubit.weekStatesList.length, (index) {
+                return _buildSingleWeek(
+                    state: _cubit.weekStatesList[index],
+                    isSelected: index == _cubit.currentWeekIndex,
+                    onSelect: () {});
+              })
+                ..add(SizedBox(
+                    width: MediaQuery.of(context).size.width - 96 * 2)),
+            ),
+          ),
+        ),
+        InkWell(
+          onTap: () {
+            if (_cubit.currentWeekIndex == null) return;
+            animateToIndex(_cubit.currentWeekIndex! + 1);
+          },
+          child: Icon(
+            Icons.chevron_right_rounded,
+            size: 24,
+            color: (_cubit.currentWeekIndex ?? 0) >=
+                    (_cubit.weekStatesList.length - 1)
+                ? R.color.captionColorGray
+                : R.color.greenGradientBottom,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSingleDay(
+      {required CompletionStatus status,
+      required bool isSelected,
+      VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: status.dayStatusIcon(isSelected),
+    );
+  }
+
+  Widget _buildSingleWeek({
+    required WeekStatesResponseData state,
+    required bool isSelected,
+    VoidCallback? onSelect,
+  }) {
+    return GestureDetector(
+      onTap: onSelect,
+      child: Container(
+        alignment: Alignment.center,
+        margin: const EdgeInsets.only(left: 6),
+        width: 96,
+        height: 32,
+        decoration: BoxDecoration(
+          color: isSelected &&
+                  state.completionStatus == CompletionStatus.not_start_yet
+              ? R.color.greenbg
+              : state.completionStatus.statusBackgroundColor,
+          border: isSelected &&
+                  state.completionStatus != CompletionStatus.not_start_yet
+              ? Border.all(color: state.completionStatus.statusIconColor)
+              : null,
+          borderRadius: BorderRadius.circular(200),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              state.weekTitle ?? '',
+              style: TextStyle(
+                color: isSelected &&
+                        state.completionStatus == CompletionStatus.not_start_yet
+                    ? R.color.green
+                    : state.completionStatus.statusIconColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            if (!(isSelected &&
+                state.completionStatus == CompletionStatus.not_start_yet))
+              state.completionStatus.weekStatusIcon
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGoalTypeSelect({
     required String title,
     required bool isActive,
     VoidCallback? onTap,
@@ -172,51 +424,331 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   Widget _buildSingleGoal({
-    required String icon,
+    required ScheduleType type,
     required String title,
     String? frequency,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
-      child: Row(
-        children: [
-          CircleGraphWidget(
-            percent: 40,
-            icon: icon,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (frequency != null) const SizedBox(height: 4),
-                  if (frequency != null)
+      child: InkWell(
+        onTap: () {
+          onSelectGoal(type);
+        },
+        child: Row(
+          children: [
+            CircleGraphWidget(
+              percent: 40,
+              icon: type.icon,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      frequency,
+                      title,
                       style: TextStyle(
-                        color: R.color.grey_1,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                        color: R.color.textDark,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                ],
+                    if (frequency != null) const SizedBox(height: 4),
+                    if (frequency != null)
+                      Text(
+                        frequency,
+                        style: TextStyle(
+                          color: R.color.grey_1,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                onEditGoal(type);
+              },
+              child: Visibility(
+                visible: type.editable,
+                child: Image.asset(
+                  R.drawable.ic_edit,
+                  width: 20,
+                  height: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void onSelectGoal(ScheduleType type) {
+    switch (type) {
+      case ScheduleType.blood_sugar:
+        Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+            arguments: {'type': 'input'});
+        break;
+      case ScheduleType.blood_pressure:
+        Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
+            arguments: {'type': 'input'});
+        break;
+      case ScheduleType.weight:
+        Navigator.pushNamed(context, NavigatorName.add_bmi,
+            arguments: {'type': 'input'});
+        break;
+      case ScheduleType.emotion:
+        Navigator.pushNamed(context, NavigatorName.add_emo,
+            arguments: {'type': 'input'});
+        break;
+      case ScheduleType.food:
+        NavigationUtil.navigatePage(
+          context,
+          const DailyNutritionPage(type: 'input', id: null),
+        );
+        break;
+      case ScheduleType.exercise:
+        Navigator.pushNamed(context, NavigatorName.add_exercrises,
+            arguments: {'type': 'input'});
+        break;
+      case ScheduleType.hba1c:
+        Navigator.pushNamed(context, NavigatorName.add_hba1c,
+            arguments: {'type': 'input'});
+        break;
+      case ScheduleType.exercise_movement:
+        _cubit.goToExerciseTab();
+        break;
+      case ScheduleType.meditate:
+        showCustomGoalPopup();
+        break;
+      case ScheduleType.coaching:
+        showCoachingPopup();
+        break;
+      case ScheduleType.group:
+        break;
+      case ScheduleType.survey:
+        showSurveyPopup();
+        break;
+    }
+  }
+
+  void onEditGoal(ScheduleType type) {
+    switch (type) {
+      case ScheduleType.blood_sugar:
+        Navigator.pushNamed(context, NavigatorName.schedule_glucose);
+        break;
+      case ScheduleType.blood_pressure:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.weight:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.emotion:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.food:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.exercise:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.hba1c:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.exercise_movement:
+        break;
+      case ScheduleType.meditate:
+        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        break;
+      case ScheduleType.coaching:
+        break;
+      case ScheduleType.group:
+        break;
+      case ScheduleType.survey:
+        break;
+    }
+  }
+
+  void showPopup({
+    required BuildContext context,
+    required Widget child,
+    required String buttonTitle,
+  }) {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => GestureDetector(
+        onTap: () {
+          NavigationUtil.pop(context);
+        },
+        child: Scaffold(
+          backgroundColor: R.color.transparent,
+          body: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      R.color.white,
+                      R.color.main_6,
+                    ],
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      child,
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: 245,
+                        child: ButtonWidget(
+                          title: buttonTitle,
+                          textSize: 14,
+                          onPressed: () {
+                            NavigationUtil.pop(context);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-          Image.asset(
-            R.drawable.ic_edit,
-            width: 20,
-            height: 20,
+        ),
+      ),
+    );
+  }
+
+  showCustomGoalPopup() {
+    return showPopup(
+      context: context,
+      buttonTitle: 'Hoàn thành',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 57, vertical: 10),
+            child: Image.asset(R.drawable.img_custom_goal),
+          ),
+          Text(
+            'Ngồi thiền',
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Thời gian: 30 phút',
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 14,
+                fontWeight: FontWeight.w400),
+          ),
+        ],
+      ),
+    );
+  }
+
+  showCoachingPopup() {
+    return showPopup(
+      context: context,
+      buttonTitle: 'Tham gia',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Thứ 6, 12/7/2021',
+            style: TextStyle(
+                color: R.color.main_1,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
+          ),
+          Text(
+            '10:00 am - 11:00 am',
+            style: TextStyle(
+                color: R.color.main_1,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Buổi Coaching 1 - 1 lập kế hoạch học tập cho user sử dụng gói thấu cảm',
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 16,
+                fontWeight: FontWeight.w400),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Container(width: 44, height: 44, color: R.color.blue),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Coach',
+                    style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Văn Hùng Trần',
+                    style: TextStyle(
+                        color: R.color.main_1,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ],
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  showSurveyPopup() {
+    return showPopup(
+      context: context,
+      buttonTitle: 'Bắt đầu khảo sát',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 57, vertical: 10),
+            child: Image.asset(R.drawable.img_survey_4),
+          ),
+          Text(
+            'Khảo sát',
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Tìm hiểu về thói quen sinh hoạt',
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 14,
+                fontWeight: FontWeight.w400),
           ),
         ],
       ),

@@ -592,6 +592,7 @@ class Strings {
 	String get food_from_menu => 'food_from_menu';
 	String get myplanscreen => 'MyPlanScreen';
 	String get my_plan => 'my_plan';
+	String get schedule => 'schedule';
 	String get activity => 'activity';
 	String get title_lesson => 'title_lesson';
 	String get title_activity => 'title_activity';

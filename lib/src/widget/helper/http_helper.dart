@@ -1,12 +1,11 @@
 import 'dart:io';
-import 'package:http/http.dart' as http;
+
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class FetchClient {
   static String get identifyBaseURL {

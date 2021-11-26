@@ -2,14 +2,17 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
@@ -18,10 +21,6 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class AddHBA1CController extends StatefulWidget {
   final String? type;
@@ -540,10 +539,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                         child: Text(
                             R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400)),
+                            style: R.style.normalTextStyle),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 16),
@@ -660,10 +656,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                         child: Text(
                             R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400)),
+                            style: R.style.normalTextStyle),
                       ),
                       SizedBox(height: 16),
                       Row(

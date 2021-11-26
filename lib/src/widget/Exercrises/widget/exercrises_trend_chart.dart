@@ -158,10 +158,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(R.string.tong_cong.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14.0)),
+                                                style: R.style.normalTextStyle),
                                             Row(
                                               children: [
                                                 Text(
@@ -180,11 +177,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                           right: 2),
                                                   child: Text(
                                                     R.string.hour.tr(),
-                                                    style: TextStyle(
-                                                        color: R.color.textDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14.0),
+                                                    style: R.style.normalTextStyle,
                                                   ),
                                                 ),
                                                 Text(
@@ -202,11 +195,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                           top: 6.0, left: 2),
                                                   child: Text(
                                                     R.string.minute.tr(),
-                                                    style: TextStyle(
-                                                        color: R.color.textDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14.0),
+                                                    style: R.style.normalTextStyle,
                                                   ),
                                                 ),
                                               ],
@@ -221,10 +210,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(model.targetTitle ?? '',
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14.0)),
+                                                style: R.style.normalTextStyle),
                                             Row(
                                               children: [
                                                 Text(
@@ -243,11 +229,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                           top: 6.0, left: 2),
                                                   child: Text(
                                                     model.targetUnit ?? '',
-                                                    style: TextStyle(
-                                                        color: R.color.textDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14.0),
+                                                    style: R.style.normalTextStyle,
                                                   ),
                                                 ),
                                               ],
@@ -327,11 +309,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                                           .trendItems
                                                           .items[touchIndex!]
                                                           .targetDescription!,
-                                                  style: TextStyle(
-                                                      color: R.color.textDark,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      fontSize: 14.0)),
+                                                  style: R.style.normalTextStyle),
                                             ],
                                           ),
                                         )
@@ -483,10 +461,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                           .round()
                                           .toString() +
                                       R.string.kcal.tr(),
-                                  TextStyle(
-                                      color: R.color.textDark,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14),
+                                  R.style.normalTextStyle,
                                 );
                               }),
                           touchCallback: (FlTouchEvent event, BarTouchResponse? barTouch) {

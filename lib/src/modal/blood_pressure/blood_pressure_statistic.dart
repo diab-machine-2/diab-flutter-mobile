@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class BloodPressureStatisticModel {
   final int? systolicLowest;
   final int? systolicHighest;
@@ -14,7 +14,7 @@ class BloodPressureStatisticModel {
   final String? highestColor;
   final String? lowestColor;
 
-  BloodPressureStatisticModel({
+  const BloodPressureStatisticModel({
     required this.systolicLowest,
     required this.systolicHighest,
     required this.systolicAverage,

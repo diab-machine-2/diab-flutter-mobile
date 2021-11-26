@@ -40,7 +40,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
       create: (context) => _cubit,
       child: Scaffold(
         body: CommonPage(
-          //TODO: Change background
+          // TODO(Tuyen): Change background
           background: R.drawable.bg_lesson_detail,
           title: R.string.select_road_map.tr(),
           bottomSafeArea: true,

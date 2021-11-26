@@ -3,7 +3,6 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
 
 import 'blood_sugar_start_survey.dart';
 import 'blood_sugar_start_survey_state.dart';
@@ -14,7 +13,7 @@ class BloodSugarStartSurveyCubit extends Cubit<BloodSugarStartSurveyState> {
 
   final AppRepository repository;
 
-  bool isBasicUser = true;
+  bool isBasicUser = false;
   String surveyCode = '';
 
   Future<void> getCurrentUserInfo() async {
@@ -23,7 +22,7 @@ class BloodSugarStartSurveyCubit extends Cubit<BloodSugarStartSurveyState> {
         await repository.getCurrentUserInfo();
     apiResult.when(success: (UserInfoResponse response) {
       final String packageCode = response.data?.packageCode ?? '';
-      isBasicUser = packageCode.isEmpty || packageCode == Const.BASIC;
+      // isBasicUser = packageCode.isEmpty || packageCode == Const.BASIC;
       surveyCode = response.data?.bloodSugarTemplates ?? '';
       emit(const BloodSugarStartSurveySuccess());
     }, failure: (NetworkExceptions error) {

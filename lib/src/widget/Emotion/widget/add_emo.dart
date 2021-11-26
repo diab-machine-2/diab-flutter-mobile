@@ -152,10 +152,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
                           Center(
                             child: Text(
                                 R.string.scroll_to_select_emotion.tr(),
-                                style: TextStyle(
-                                    color: R.color.textDark,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400)),
+                                style: R.style.normalTextStyle),
                           ),
                           SizedBox(height: 30),
                           Column(

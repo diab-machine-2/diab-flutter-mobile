@@ -17,13 +17,14 @@ import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/version.dart';
 import 'package:medical/src/widget/home/home.dart';
+import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
+import 'package:medical/src/widget/profile/profile_controller.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TabbarController extends StatefulWidget {
-  final _TabbarControllerState currentTabbar = _TabbarControllerState();
   @override
-  _TabbarControllerState createState() => currentTabbar;
+  _TabbarControllerState createState() => _TabbarControllerState();
   static _TabbarControllerState? of(BuildContext context) {
     final _TabbarControllerState? navigator =
         context.findAncestorStateOfType<_TabbarControllerState>();
@@ -38,6 +39,9 @@ class _TabbarControllerState extends State<TabbarController>
 
   final List<Widget> tabs = [
     HomeController(),
+    const MyPlanPage(),
+    Container(),
+    const ProfileController(hideAllBackButton: true),
   ];
 
   @override
@@ -54,29 +58,21 @@ class _TabbarControllerState extends State<TabbarController>
       }
     });
 
-    // DartNotificationCenter.subscribe(
-    //     channel: 'unauthorized',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       Message.showToastMessage(
-    //           context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
-    //       AppSettings.logout();
-    //     });
-
     getNewVersion();
   }
 
-  // @override
-  // void dispose() {
-  //   Observable.instance.removeObserver(this);
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'unauthorized') {
-      Message.showToastMessage(
-          context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+      Message.showToastMessage(context,
+          R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
       AppSettings.logout();
     }
   }
@@ -92,7 +88,7 @@ class _TabbarControllerState extends State<TabbarController>
       extendBody: true,
       backgroundColor: R.color.white,
       body: PageView(
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           controller: pageController,
           children: tabs),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -147,7 +143,8 @@ class _TabbarControllerState extends State<TabbarController>
             builder: (BuildContext context) => CupertinoAlertDialog(
                   title: Text(R.string.cap_nhat.tr()),
                   content: Text(
-                    R.string.mes_new_version_available.tr(args: ['${status.storeVersion}']),
+                      R.string.mes_new_version_available
+                          .tr(args: ['${status.storeVersion}']),
                       textAlign: TextAlign.center),
                   actions: <Widget>[
                     CupertinoDialogAction(
@@ -220,7 +217,8 @@ showPopupWeight() {
             await UserClient()
                 .updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();
-            Navigator.pushNamed(navigatorKey.currentContext!, NavigatorName.add_exercrises,
+            Navigator.pushNamed(
+                navigatorKey.currentContext!, NavigatorName.add_exercrises,
                 arguments: {'type': 'input'});
             BotToast.closeAllLoading();
           } catch (e, _) {
@@ -234,8 +232,7 @@ showPopupWeight() {
           }
         },
         title: R.string.update_weight.tr(),
-        subTitle:
-            R.string.update_weight_description.tr(),
+        subTitle: R.string.update_weight_description.tr(),
         max: 200,
         numberDefault: 50,
         unit: R.string.kg.tr()),

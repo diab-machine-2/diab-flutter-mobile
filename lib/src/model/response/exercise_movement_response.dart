@@ -168,6 +168,7 @@ class ExerciseMovementResponseData {
   "name": "string",
   "description": "string",
   "isFree": true,
+  "isBlank": true,
   "practiceTime": 0,
   "videoUrl": "string",
   "day": 0,
@@ -216,6 +217,7 @@ class ExerciseMovementResponseData {
   String? name;
   String? description;
   bool? isFree;
+  bool? isBlank;
   int? practiceTime;
   String? videoUrl;
   int? day;
@@ -234,6 +236,7 @@ class ExerciseMovementResponseData {
     this.name,
     this.description,
     this.isFree,
+    this.isBlank,
     this.practiceTime,
     this.videoUrl,
     this.day,
@@ -262,6 +265,7 @@ class ExerciseMovementResponseData {
     name = json['name']?.toString();
     description = json['description']?.toString();
     isFree = json['isFree'];
+    isBlank = json['isBlank'];
     practiceTime = json['practiceTime']?.toInt();
     videoUrl = json['videoUrl']?.toString();
     day = json['day']?.toInt();
@@ -299,6 +303,7 @@ class ExerciseMovementResponseData {
     data['name'] = name;
     data['description'] = description;
     data['isFree'] = isFree;
+    data['isBlank'] = isBlank;
     data['practiceTime'] = practiceTime;
     data['videoUrl'] = videoUrl;
     data['day'] = day;
@@ -341,6 +346,7 @@ class ExerciseMovementResponseMeta {
   ExerciseMovementResponseMeta({
     this.success,
   });
+
   ExerciseMovementResponseMeta.fromJson(Map<String, dynamic> json) {
     success = json['success'];
   }
@@ -366,6 +372,7 @@ class ExerciseMovementResponse {
       "name": "string",
       "description": "string",
       "isFree": true,
+      "isBlank": true,
       "practiceTime": 0,
       "videoUrl": "string",
       "day": 0,
@@ -429,14 +436,17 @@ class ExerciseMovementResponse {
     return data?[exerciseIndex];
   }
 
-  int getMarkNotLearnIndex(int week) {
-    for (int index = 6; index >= 0; index--) {
+  int getMarkNotLearnIndex({required int week, required int userCurrentWeek}) {
+    if (week < userCurrentWeek) return 6;
+    if (week > userCurrentWeek) return 0;
+
+    for (int index = 0; index <= 6; index++) {
       final status = getExerciseFromDayInWeek(week: week, dayInWeek: index)
           ?.completionStatus;
-      if (status != null && status != CompletionStatus.not_start_yet)
-        return index;
+      if (status == CompletionStatus.studying) return index;
     }
-    return -1;
+
+    return 0;
   }
 
   int getCurrentDayIndex(int week) {

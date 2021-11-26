@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class ExercriseSummaryModel {
   final double? targetDuration;
   final double? factDuration;
@@ -12,7 +12,7 @@ class ExercriseSummaryModel {
   final String? otherExerciseName;
   final double? otherExerciseDuration;
 
-  ExercriseSummaryModel({
+  const ExercriseSummaryModel({
     required this.targetDuration,
     required this.factDuration,
     required this.durationRatio,

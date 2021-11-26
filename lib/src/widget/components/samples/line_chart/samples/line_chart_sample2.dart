@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/theme/app_theme.dart';
 
 class LineChartSample2 extends StatefulWidget {
   @override

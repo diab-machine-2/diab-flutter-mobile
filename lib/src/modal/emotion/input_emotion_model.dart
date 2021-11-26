@@ -2,7 +2,7 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/emotion/activity_model.dart';
 import 'package:medical/src/modal/emotion/symptom_model.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class InputEmotionModel {
   final String? id;
   final int? date;
@@ -21,7 +21,7 @@ class InputEmotionModel {
   final List<ActivityModel> activities;
   final List<ImagesModel> images;
 
-  InputEmotionModel({
+  const InputEmotionModel({
     required this.id,
     required this.date,
     required this.emotionScore,

@@ -1,6 +1,6 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class BloodPressureModel {
   final String? id;
   final double? systolic;
@@ -18,7 +18,7 @@ class BloodPressureModel {
   final String? borderColor;
   final List<ImagesModel> images;
 
-  BloodPressureModel({
+  const BloodPressureModel({
     required this.id,
     required this.systolic,
     required this.diastolic,

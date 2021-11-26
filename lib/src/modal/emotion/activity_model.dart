@@ -1,12 +1,12 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class ActivityModel {
   final String? id;
   final String? name;
   final ImagesModel icon;
 
-  ActivityModel({
+  const ActivityModel({
     required this.id,
     required this.name,
     required this.icon,

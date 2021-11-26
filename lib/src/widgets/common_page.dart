@@ -14,6 +14,7 @@ class CommonPage extends StatelessWidget {
   final IconData? icon;
   final Widget? appBarAction;
   final bool? showCloseBackButton;
+  final bool? hideAllBackButton;
   final bool? bottomSafeArea;
   final VoidCallback? onTapAppBar;
 
@@ -28,6 +29,7 @@ class CommonPage extends StatelessWidget {
       this.icon,
       this.appBarAction,
       this.showCloseBackButton,
+      this.hideAllBackButton,
       this.bottomSafeArea,
       this.onTapAppBar})
       : super(key: key);
@@ -54,6 +56,7 @@ class CommonPage extends StatelessWidget {
                   ),
                 ),
                 showRightCloseButton: showCloseBackButton,
+                hideAllBackButton: hideAllBackButton,
                 leadingIcon: GestureDetector(
                   onTap: onTapBack ??
                       () {

@@ -116,8 +116,9 @@ class Drawables {
 	String get ic_email => "lib/res/drawables/ic_email.png";
 	String get ic_emotion => "lib/res/drawables/ic_emotion.png";
 	String get ic_emotion_plus => "lib/res/drawables/ic_emotion_plus.png";
+	String get ic_enter_target_name => "lib/res/drawables/ic_enter_target_name.png";
 	String get ic_error_image => "lib/res/drawables/ic_error_image.png";
-	String get ic_excersire => "lib/res/drawables/ic_excersire.png";
+	String get ic_exercise => "lib/res/drawables/ic_exercise.png";
 	String get ic_filter => "lib/res/drawables/ic_filter.png";
 	String get ic_filter_lesson => "lib/res/drawables/ic_filter_lesson.png";
 	String get ic_fire_exe => "lib/res/drawables/ic_fire_exe.png";
@@ -194,6 +195,14 @@ class Drawables {
 	String get ic_ruler_fill => "lib/res/drawables/ic_ruler_fill.png";
 	String get ic_sad => "lib/res/drawables/ic_sad.png";
 	String get ic_scale => "lib/res/drawables/ic_scale.png";
+	String get ic_schedule_blood_pressure => "lib/res/drawables/ic_schedule_blood_pressure.png";
+	String get ic_schedule_coaching => "lib/res/drawables/ic_schedule_coaching.png";
+	String get ic_schedule_custom => "lib/res/drawables/ic_schedule_custom.png";
+	String get ic_schedule_emotion => "lib/res/drawables/ic_schedule_emotion.png";
+	String get ic_schedule_food => "lib/res/drawables/ic_schedule_food.png";
+	String get ic_schedule_group => "lib/res/drawables/ic_schedule_group.png";
+	String get ic_schedule_hba1c => "lib/res/drawables/ic_schedule_hba1c.png";
+	String get ic_schedule_survey => "lib/res/drawables/ic_schedule_survey.png";
 	String get ic_search => "lib/res/drawables/ic_search.png";
 	String get ic_security => "lib/res/drawables/ic_security.png";
 	String get ic_set_goal => "lib/res/drawables/ic_set_goal.png";
@@ -231,6 +240,7 @@ class Drawables {
 	String get img_congrat => "lib/res/drawables/img_congrat.png";
 	String get img_cooking => "lib/res/drawables/img_cooking.png";
 	String get img_course_feedback => "lib/res/drawables/img_course_feedback.png";
+	String get img_custom_goal => "lib/res/drawables/img_custom_goal.png";
 	String get img_des => "lib/res/drawables/img_des.png";
 	String get img_des_person => "lib/res/drawables/img_des_person.png";
 	String get img_email_support => "lib/res/drawables/img_email_support.png";

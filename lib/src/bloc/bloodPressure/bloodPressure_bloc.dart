@@ -1,15 +1,16 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_distribution.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_heart_rate.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:meta/meta.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 part 'bloodPressure_bloc_event.dart';
 part 'bloodPressure_bloc_state.dart';

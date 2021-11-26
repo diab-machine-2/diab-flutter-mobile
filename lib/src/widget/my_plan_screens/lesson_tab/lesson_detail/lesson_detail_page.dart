@@ -1,5 +1,6 @@
 import 'package:better_player/better_player.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -139,43 +140,64 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  ...List.generate(
-                                    _cubit.videoManager?.videoAmount ?? 0,
-                                    (index) {
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 24),
-                                        child: _buildTitleWidget(
-                                          child: BetterPlayer(
-                                              controller: _cubit.videoManager!
-                                                  .controllerList[index]),
-                                        ),
-                                      );
-                                    },
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 24),
+                                    child: WidgetHtmlText(_cubit
+                                            .currentSectionDetail
+                                            ?.firstContent ??
+                                        ''),
                                   ),
-                                  ...List.generate(
-                                      _cubit.audioManager?.audioAmount ?? 0,
-                                      (index) {
-                                    final AudioController? _controller = _cubit
-                                        .audioManager
-                                        ?.getController(index);
-                                    return StreamBuilder<AudioData>(
-                                        stream: _controller?.onChanged.stream,
-                                        builder: (context, snapshot) {
-                                          return _buildAudioController(
-                                            audioData: snapshot.data,
-                                            seektoPosition: (newPosition) {
-                                              _controller?.seekTo(newPosition);
-                                            },
-                                            onTogglePlay: () {
-                                              _controller?.togglePlay();
-                                            },
-                                          );
-                                        });
-                                  }).toList(),
-                                  WidgetHtmlText(
-                                      _cubit.currentSectionDetail?.content ??
-                                          ''),
+                                  if (_cubit.currentSectionDetail?.image?.url
+                                          ?.isNotEmpty ==
+                                      true)
+                                    _buildTitleWidget(
+                                      child: CachedNetworkImage(
+                                          imageUrl: _cubit.currentSectionDetail!
+                                              .image!.url!),
+                                      title: _cubit
+                                          .currentSectionDetail?.imageTitle,
+                                    ),
+                                  if (_cubit.currentSectionDetail?.secondContent
+                                          ?.isNotEmpty ==
+                                      true)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 24),
+                                      child: WidgetHtmlText(_cubit
+                                          .currentSectionDetail!
+                                          .secondContent!),
+                                    ),
+                                  if (_cubit.videoManager?.controller != null)
+                                    _buildTitleWidget(
+                                      child: BetterPlayer(
+                                          controller:
+                                              _cubit.videoManager!.controller!),
+                                      title: _cubit.currentSectionDetail
+                                          ?.videoDescription,
+                                    ),
+                                  if (_cubit.audioManager?.controller != null)
+                                    _buildTitleWidget(
+                                        child: StreamBuilder<AudioData>(
+                                            stream: _cubit.audioManager
+                                                ?.controller!.onChanged.stream,
+                                            builder: (context, snapshot) {
+                                              return _buildAudioController(
+                                                audioData: snapshot.data,
+                                                seektoPosition: (newPosition) {
+                                                  _cubit
+                                                      .audioManager?.controller!
+                                                      .seekTo(newPosition);
+                                                },
+                                                onTogglePlay: () {
+                                                  _cubit
+                                                      .audioManager?.controller!
+                                                      .togglePlay();
+                                                },
+                                              );
+                                            }),
+                                        title: _cubit.currentSectionDetail
+                                            ?.audioDescription),
                                 ],
                               ),
                             ),
@@ -239,11 +261,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         ),
         Text(
           audioData?.timeText ?? '00:00 / 00:00',
-          style: TextStyle(
-            color: R.color.textDark,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
+          style: R.style.normalTextStyle
         ),
         Expanded(
           child: Slider(

@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class ProvinceModel {
   final String? id;
   final String? name;

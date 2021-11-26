@@ -324,11 +324,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
             child: RichText(
               text: TextSpan(
                 text: R.string.latest_hba1c_is.tr(),
-                style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
+                style: R.style.normalTextStyle,
                 children: [
                   TextSpan(
                     text: ' ${R.string.unit_percent.tr(args: ['$hba1c'])}',

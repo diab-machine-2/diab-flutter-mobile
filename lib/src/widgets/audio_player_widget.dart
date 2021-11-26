@@ -75,11 +75,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
               : _duration != null
                   ? _durationText
                   : '',
-          style: TextStyle(
-            color: R.color.textDark,
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w400,
-          ),
+          style: R.style.normalTextStyle
         ),
         Expanded(
           child: Slider(

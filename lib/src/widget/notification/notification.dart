@@ -369,10 +369,7 @@ class NotificationControllerState extends State<NotificationController>
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.mes_detele_notificaiton.tr(),
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400)),
+                            style: R.style.normalTextStyle),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 16),

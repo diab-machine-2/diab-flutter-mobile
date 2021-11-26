@@ -590,6 +590,7 @@ energy_use_per_day,Mức tiêu hao năng lượng/ngày của bạn,
 food_from_menu,"Theo thực đơn mẫu, có phải bạn đã ăn",
 MyPlanScreen,============================================MyPlan screen====================================================
 my_plan,Lịch trình của tôi,
+schedule,Lịch trình,
 activity,Hoạt động,
 title_lesson,Bài học,
 title_activity,Hoạt động,

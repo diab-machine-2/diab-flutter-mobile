@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class ExercriseActiveModel {
   final String? id;
   final String? name;
@@ -8,7 +8,7 @@ class ExercriseActiveModel {
   final String? intensityId;
   final String? intensityName;
 
-  ExercriseActiveModel({
+  const ExercriseActiveModel({
     required this.id,
     required this.name,
     required this.mets,

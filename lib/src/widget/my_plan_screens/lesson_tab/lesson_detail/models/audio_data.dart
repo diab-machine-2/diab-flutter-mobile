@@ -23,6 +23,8 @@ class AudioController {
       this.currentTime = event;
       onChanged.sink.add(audioData);
     });
+    audioPlayer.onPlayerError.listen((event) {
+    });
   }
   String url;
   PlayerState currentState;

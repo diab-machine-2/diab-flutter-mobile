@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class BloodPressureDistributionModel {
   final int? total;
   final int? low;
@@ -21,7 +21,7 @@ class BloodPressureDistributionModel {
   final String? increaseLevelThreeColor;
   final String? increaseLevelThreeFontColor;
 
-  BloodPressureDistributionModel({
+  const BloodPressureDistributionModel({
     required this.total,
     required this.low,
     required this.lowColor,

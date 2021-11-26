@@ -44,17 +44,8 @@ class _ExercrisesDetailTabbarControllerState
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(vsync: this, length: 2);
+    _tabController = TabController(vsync: this, length: 2);
     Observable.instance.addObserver(this);
-    // DartNotificationCenter.subscribe(
-    //     channel: 'active_change_data',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       overViewKey.currentState!.reloadData(periodFilterType);
-    //       if (detailKey.currentState != null) {
-    //         detailKey.currentState!.reloadData(periodFilterType);
-    //       }
-    //     });
     checkShowDes();
     loadDescription();
   }
@@ -73,8 +64,6 @@ class _ExercrisesDetailTabbarControllerState
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'active_change_data', observer: this);
     super.dispose();
   }
 
@@ -83,7 +72,7 @@ class _ExercrisesDetailTabbarControllerState
   }
 
   checkShowDes() async {
-    Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
     final showDes = prefs.getBool('show_des_exercises');
     prefs.setBool('show_des_exercises', false);
@@ -100,68 +89,64 @@ class _ExercrisesDetailTabbarControllerState
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: CustomAppBar(
-              backgroundColor: R.color.white,
-              title: Text(R.string.van_dong.tr(),
-                  style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.textDark)),
-              leadingIcon: GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      barrierColor: R.color.color0xff003F38.withOpacity(0.3),
-                      useSafeArea: false,
-                      context: context,
-                      builder: (_) => ActionListPanel(selectedIndex: 3),
-                    );
-                  },
-                  child: Icon(Icons.format_list_bulleted, color: R.color.textDark)),
-              actions: [
-                CustomActionDescription(
-                    key: customActionDesKey,
-                    callback: (value) {
-                      customTabbarKey.currentState!.showDescription();
-                    }),
-                IconButton(
-                    icon: Icon(Icons.close, color: R.color.black),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }),
-                SizedBox(
-                  width: 12,
-                )
-              ]),
-          body: Column(children: [
-            CustomTabbarImage(
-                key: customTabbarKey,
-                tabController: _tabController,
-                data: des,
-                callback: (periodFilter) {
-                  periodFilterType = periodFilter;
-                  overViewKey.currentState!.reloadData(periodFilterType);
-                  if (detailKey.currentState != null) {
-                    detailKey.currentState!.reloadData(periodFilterType);
-                  }
-                }),
-            Expanded(
-                child: TabBarView(controller: _tabController, children: [
-              ExercrisesOverviewController(key: overViewKey),
-              ExercrisesDetailController(key: detailKey)
-            ])),
-          ]),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              _showMaterialDialog();
-            },
-            child: Image.asset(R.drawable.ic_button_plus,
-                width: 80, height: 80),
-          )),
-    );
+    return Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: CustomAppBar(
+            backgroundColor: R.color.white,
+            title: Text(R.string.van_dong.tr(),
+                style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.textDark)),
+            leadingIcon: GestureDetector(
+                onTap: () {
+                  showDialog(
+                    barrierColor: R.color.color0xff003F38.withOpacity(0.3),
+                    useSafeArea: false,
+                    context: context,
+                    builder: (_) => ActionListPanel(selectedIndex: 3),
+                  );
+                },
+                child:
+                    Icon(Icons.format_list_bulleted, color: R.color.textDark)),
+            actions: [
+              CustomActionDescription(
+                  key: customActionDesKey,
+                  callback: (value) {
+                    customTabbarKey.currentState!.showDescription();
+                  }),
+              IconButton(
+                  icon: Icon(Icons.close, color: R.color.black),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              const SizedBox(width: 12)
+            ]),
+        body: Column(children: [
+          CustomTabbarImage(
+              key: customTabbarKey,
+              tabController: _tabController,
+              data: des,
+              callback: (periodFilter) {
+                periodFilterType = periodFilter;
+                overViewKey.currentState!.reloadData(periodFilterType);
+                if (detailKey.currentState != null) {
+                  detailKey.currentState!.reloadData(periodFilterType);
+                }
+              }),
+          Expanded(
+              child: TabBarView(controller: _tabController, children: [
+            ExercrisesOverviewController(key: overViewKey),
+            ExercrisesDetailController(key: detailKey)
+          ])),
+        ]),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _showMaterialDialog();
+          },
+          child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
+        ));
   }
 
   _showMaterialDialog() {
@@ -172,17 +157,11 @@ class _ExercrisesDetailTabbarControllerState
       Navigator.pushNamed(context, NavigatorName.add_exercrises,
           arguments: {'type': 'input'});
     }
-    // showDialog(
-    //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
-    //   useSafeArea: false,
-    //   context: context,
-    //   builder: (_) => FunkyOverlay(),
-    // );
   }
 }
 
 class CustomTabbarImage extends StatefulWidget {
-  CustomTabbarImage(
+  const CustomTabbarImage(
       {Key? key,
       required this.tabController,
       this.callback,
@@ -212,15 +191,17 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
       color: R.color.white,
       child: Column(
         children: [
-          showDes
-              ? Padding(
-                  padding: EdgeInsets.only(left: 16, right: 16),
-                  child: Description(
-                      input: false,
-                      data: widget.data,
-                      titleDetail: R.string.che_do_tap_luyen_doi_voi_benh_tieu_duong.tr()),
-                )
-              : SizedBox(),
+          if (showDes)
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: Description(
+                  input: false,
+                  data: widget.data,
+                  titleDetail:
+                      R.string.che_do_tap_luyen_doi_voi_benh_tieu_duong.tr()),
+            )
+          else
+            const SizedBox(),
           Row(
               //alignment: Alignment.centerLeft,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -233,8 +214,8 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                         fontWeight: FontWeight.w600,
                         color: R.color.mainColor),
                     unselectedLabelColor: R.color.captionColorGray,
-                    unselectedLabelStyle:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                    unselectedLabelStyle: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
                       Tab(text: R.string.bieu_do.tr()),
                       Tab(text: R.string.detail.tr()),
@@ -258,7 +239,7 @@ typedef ActionFilterCallback = Function(int);
 
 class ActionFilter extends StatefulWidget {
   final ActionFilterCallback? callback;
-  ActionFilter({this.callback});
+  const ActionFilter({this.callback});
   @override
   _ActionFilterState createState() => _ActionFilterState();
 }
@@ -275,11 +256,11 @@ class _ActionFilterState extends State<ActionFilter> {
       },
       child: Container(
         color: R.color.transparent,
-        padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
+        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
         child: Row(
           children: [
             Image.asset(R.drawable.ic_filter, width: 24, height: 24),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             Padding(
               padding: const EdgeInsets.only(top: 6),
               child: Text(name,
@@ -296,7 +277,7 @@ class _ActionFilterState extends State<ActionFilter> {
 
   showActionFilter(BuildContext context) {
     showModalBottomSheet(
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
         backgroundColor: R.color.white,
         context: context,
@@ -304,13 +285,13 @@ class _ActionFilterState extends State<ActionFilter> {
         builder: (context) => FillterBloodPanel(
             selectedIndex: selectedIndex,
             callback: (value, index) {
-    if (index != null) {
-      setState(() {
-        name = value;
-        selectedIndex = index;
-      });
-      widget.callback!(index + 1);
-    }
+              if (index != null) {
+                setState(() {
+                  name = value;
+                  selectedIndex = index;
+                });
+                widget.callback!(index + 1);
+              }
             }));
   }
 }

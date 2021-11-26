@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class PatientTimeFrameModel {
   final String? timeFrameId;
   final String? timeFrameName;

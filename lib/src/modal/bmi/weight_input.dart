@@ -1,6 +1,6 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class InputWeightModel {
   final String? id;
   final double? weight;
@@ -20,7 +20,7 @@ class InputWeightModel {
   final String? waistColorCode;
   final List<ImagesModel> images;
 
-  InputWeightModel({
+  const InputWeightModel({
     required this.id,
     required this.weight,
     required this.waist,

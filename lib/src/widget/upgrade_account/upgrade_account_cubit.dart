@@ -4,7 +4,6 @@ import 'package:medical/src/model/request/send_interest_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/detail_package_data.dart';
 import 'package:medical/src/model/response/detail_package_response.dart';
-import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';

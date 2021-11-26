@@ -156,10 +156,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(R.string.tong_cong.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14.0)),
+                                                style: R.style.normalTextStyle),
                                             Row(
                                               children: [
                                                 Text(formatNumber(model.total),
@@ -175,11 +172,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                                           top: 6.0, left: 2),
                                                   child: Text(
                                                     R.string.kcal.tr(),
-                                                    style: TextStyle(
-                                                        color: R.color.textDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14.0),
+                                                    style: R.style.normalTextStyle,
                                                   ),
                                                 ),
                                               ],
@@ -194,10 +187,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(model.targetTitle ?? '',
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14.0)),
+                                                style: R.style.normalTextStyle),
                                             Row(
                                               children: [
                                                 Text(
@@ -216,11 +206,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                                           top: 6.0, left: 2),
                                                   child: Text(
                                                     model.targetUnit ?? '',
-                                                    style: TextStyle(
-                                                        color: R.color.textDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14.0),
+                                                    style: R.style.normalTextStyle,
                                                   ),
                                                 ),
                                               ],
@@ -300,11 +286,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                                           .trendItems
                                                           .items[touchIndex!]
                                                           .targetDescription!,
-                                                  style: TextStyle(
-                                                      color: R.color.textDark,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      fontSize: 14.0))
+                                                  style: R.style.normalTextStyle)
                                             ],
                                           ),
                                         )
