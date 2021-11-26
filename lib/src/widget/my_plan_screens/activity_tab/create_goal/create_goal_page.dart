@@ -8,6 +8,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/models/day_in_week.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
@@ -18,7 +19,9 @@ import '../activity_tab/models/schedule_type.dart';
 import 'create_goal.dart';
 import 'models/create_goal_status.dart';
 import 'models/goal_record_type.dart';
+import 'models/repeat_type.dart';
 import 'widgets/custom_top_progress_bar.dart';
+import 'widgets/select_bottom_sheet_widget.dart';
 import 'widgets/select_type_widget.dart';
 
 class CreateGoalPage extends StatefulWidget {
@@ -316,17 +319,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               _cubit.onToggleRepeat();
             }),
       ),
-      Visibility(
-        visible: _cubit.isRepeat,
-        child: Column(
-          children: [
-            _buildSelectFrequency(),
-            _buildTimePicker(),
-            _buildTimePicker(title: 'Chọn ngày kết thúc'),
-            const SizedBox(height: 24)
-          ],
-        ),
-      ),
+      _buildSetupRepeat(),
       RichText(
         text: TextSpan(
           text: 'Tính mục tiêu đề ra',
@@ -376,17 +369,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               _cubit.onToggleRepeat();
             }),
       ),
-      Visibility(
-        visible: _cubit.isRepeat,
-        child: Column(
-          children: [
-            _buildSelectFrequency(),
-            _buildTimePicker(),
-            _buildTimePicker(title: 'Chọn ngày kết thúc'),
-            const SizedBox(height: 24)
-          ],
-        ),
-      ),
+      _buildSetupRepeat(),
       _buildTimeOrFrequency(title: 'Số lần thực hiện trong ngày', unit: 'lần'),
     ];
   }
@@ -445,32 +428,194 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     );
   }
 
-  Widget _buildTimePicker({String? title}) {
-    return _buildItemLayout(
+  Widget _buildSetupRepeat() {
+    return Visibility(
+      visible: _cubit.isRepeat,
       child: Column(
         children: [
-          if (title != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                children: [
-                  Image.asset(
-                    R.drawable.ic_calendar,
-                    width: 24,
-                    height: 24,
+          _buildItemLayout(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        R.drawable.ic_clock,
+                        width: 24,
+                        height: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Chọn mức độ thường xuyên',
+                        style: TextStyle(
+                          color: R.color.textDark,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                    showActionFilter(
+                        context: context,
+                        builder: (context) {
+                          return SelectBottomSheetWidget(
+                            title: 'Chọn mức độ thường xuyên',
+                            selectedList: [_cubit.repeatType.title],
+                            elementList: [
+                              RepeatType.day.title,
+                              RepeatType.week.title
+                            ],
+                            onSelected: (typeList) {
+                              if (typeList.isNotEmpty) {
+                                _cubit.onChangeRepeatType(
+                                  typeList.first
+                                );
+                              }
+                            },
+                          );
+                        });
+                  },
+                  child: Container(
+                    color: R.color.transparent,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _cubit.repeatType.title,
+                                style: TextStyle(
+                                    color: R.color.textDark,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 24,
+                              color: R.color.primaryGreyColor,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Container(height: 1, color: R.color.color0xffE5E5E5),
+                        const SizedBox(height: 8),
+                      ],
                     ),
                   ),
+                )
+              ],
+            ),
+          ),
+          Visibility(
+            visible: _cubit.repeatType == RepeatType.week,
+            child: _buildItemLayout(
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      FocusScope.of(context).unfocus();
+                      showActionFilter(
+                          context: context,
+                          builder: (context) {
+                            return SelectBottomSheetWidget(
+                              title: 'Chọn mức độ thường xuyên',
+                              selectedList: _cubit.repeatDayList
+                                  .map((e) => e.title)
+                                  .toList(),
+                              elementList: DayInWeekExtend.dayInWeekList
+                                  .map((e) => e.title)
+                                  .toList(),
+                              onSelected: (dayList) {
+                                if (dayList != null) {
+                                  _cubit.onChangeRepeatDay(dayList);
+                                }
+                              },
+                              isMultipleChoice: true,
+                            );
+                          });
+                    },
+                    child: Container(
+                      color: R.color.transparent,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Image.asset(R.drawable.ic_calendar,
+                                  width: 24, height: 24),
+                             Expanded(child: Row(
+                               mainAxisAlignment: MainAxisAlignment.end,
+                               children: _cubit.repeatDayList
+                                  .map(
+                                    (day) => Container(
+                                      height: 24,
+                                      alignment: Alignment.center,
+                                      margin: const EdgeInsets.only(left: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 4),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          border: Border.all(
+                                              color: R.color.grayBorder),),
+                                      child: Text(day.shortTitle,
+                                          style: R.style.normalTextStyle),
+                                    ),
+                                  )
+                                  .toList(),),)
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Container(height: 1, color: R.color.color0xffE5E5E5),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
+          ),
+          _buildTimePicker(title: 'Chọn ngày kết thúc'),
+          const SizedBox(height: 24)
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimePicker({required String title}) {
+    return _buildItemLayout(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              children: [
+                Image.asset(
+                  R.drawable.ic_calendar,
+                  width: 24,
+                  height: 24,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
           GestureDetector(
             onTap: () {
               FocusScope.of(context).unfocus();
@@ -492,11 +637,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      if (title == null)
-                        Image.asset(R.drawable.ic_calendar,
-                            width: 24, height: 24),
                       const SizedBox(width: 8),
-                      if (title == null) const Spacer(),
                       Text(
                         DateFormat('dd/MM/yyyy').format(_cubit.startDate),
                         style: const TextStyle(
@@ -595,71 +736,6 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     );
   }
 
-  Widget _buildSelectFrequency() {
-    return _buildItemLayout(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Row(
-              children: [
-                Image.asset(
-                  R.drawable.ic_clock,
-                  width: 24,
-                  height: 24,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Chọn mức độ thường xuyên',
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: Container(
-              color: R.color.transparent,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Hàng ngày',
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        size: 24,
-                        color: R.color.primaryGreyColor,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Container(height: 1, color: R.color.color0xffE5E5E5),
-                  const SizedBox(height: 8),
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
   Widget _buildTextDescription() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -673,12 +749,10 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          '''
+        Text('''
       - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
       - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''',
-          style: R.style.normalTextStyle
-        ),
+            style: R.style.normalTextStyle),
         const SizedBox(height: 14),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -709,6 +783,22 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         vertical: 16,
       ),
       child: child,
+    );
+  }
+
+  showActionFilter(
+      {required BuildContext context,
+      required Widget Function(BuildContext) builder}) {
+    showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(15),
+        ),
+      ),
+      backgroundColor: R.color.white,
+      context: context,
+      isScrollControlled: true,
+      builder: builder,
     );
   }
 }
