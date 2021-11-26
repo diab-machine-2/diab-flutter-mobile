@@ -1,12 +1,12 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class TrendBmiModel {
   final double? value;
   final CurrentLedendModel? currentLedend;
 
   final List<LegendsModel> legends;
 
-  TrendBmiModel({
+  const TrendBmiModel({
     required this.value,
     required this.currentLedend,
     required this.legends,

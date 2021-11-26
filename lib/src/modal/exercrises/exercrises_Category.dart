@@ -1,12 +1,12 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class ExercrisesListCategoryModel {
   final List<ExercrisesCategoryModel> exerciseCategories;
   final List<ExercrisesCategoryModel> exerciseCategoryCommons;
   final List<ExercrisesCategoryModel> exerciseCategoryRegularlies;
 
-  ExercrisesListCategoryModel(
+  const ExercrisesListCategoryModel(
       {required this.exerciseCategories,
       required this.exerciseCategoryCommons,
       required this.exerciseCategoryRegularlies});

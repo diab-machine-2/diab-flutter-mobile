@@ -1,6 +1,6 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class InputBmiModel {
   final int? date;
   final double? weight;
@@ -13,7 +13,7 @@ class InputBmiModel {
 
   final List<ImagesModel> images;
 
-  InputBmiModel({
+  const InputBmiModel({
     required this.date,
     required this.weight,
     required this.waits,

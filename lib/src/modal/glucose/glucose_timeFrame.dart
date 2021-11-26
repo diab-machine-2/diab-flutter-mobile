@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 class TimeFrameModel {
   final String? id;
   final String? code;

@@ -1,12 +1,12 @@
 import 'package:medical/src/modal/food/food_statistic_diet_model.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class FoodDistributeModel {
   final List<LegendModel> legends;
   final List<EnergyItemModel> energyChart;
   final List<EnergyItemModel> carbChart;
 
-  FoodDistributeModel(
+  const FoodDistributeModel(
       {required this.legends,
       required this.energyChart,
       required this.carbChart});

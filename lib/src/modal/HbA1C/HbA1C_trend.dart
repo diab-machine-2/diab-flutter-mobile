@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
-
 class TrendModel {
   final TrendItemModel? trendItems;
   final List? legends;

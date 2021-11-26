@@ -1,6 +1,6 @@
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class DistributionModel {
   final double? lowest;
   final String? lowestColor;
@@ -27,7 +27,7 @@ class DistributionModel {
   final AttributeColorModel veryHighAttributesColor;
   final int? totalCount;
 
-  DistributionModel({
+  const DistributionModel({
     required this.lowest,
     required this.lowestColor,
     required this.lowestId,

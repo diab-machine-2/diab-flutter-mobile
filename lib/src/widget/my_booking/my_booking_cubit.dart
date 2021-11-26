@@ -1,9 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/request/send_feedback_course_request.dart';
-import 'package:medical/src/model/response/common_response.dart';
-import 'package:medical/src/model/service/api_result.dart';
-import 'package:medical/src/model/service/network_exceptions.dart';
 
 import 'my_booking.dart';
 

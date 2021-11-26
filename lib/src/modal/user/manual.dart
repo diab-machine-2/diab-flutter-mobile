@@ -1,11 +1,11 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class ManualModel {
   final String? id;
   final String? question;
   final String? answer;
 
-  ManualModel(
+  const ManualModel(
       {required this.id, required this.question, required this.answer});
 
   factory ManualModel.fromJson(Map<String, dynamic> json) {

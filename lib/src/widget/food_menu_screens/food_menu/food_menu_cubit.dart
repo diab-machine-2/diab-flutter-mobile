@@ -9,7 +9,6 @@ import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
 
 import 'food_menu.dart';
 

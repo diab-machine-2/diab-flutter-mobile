@@ -1,12 +1,12 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class FoodCategoryModel {
   final String? id;
   final String? name;
   final List<FoodSubCategoryModel> subCategories;
 
-  FoodCategoryModel({
+  const FoodCategoryModel({
     required this.id,
     required this.name,
     required this.subCategories,

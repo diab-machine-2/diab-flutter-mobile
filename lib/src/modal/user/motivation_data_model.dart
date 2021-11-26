@@ -1,6 +1,6 @@
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class MotivationDataModel {
   final List<MotivationModel> models;
   final bool? hasMore;

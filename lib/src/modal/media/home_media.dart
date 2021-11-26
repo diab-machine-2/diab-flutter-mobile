@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class HomeMediaModel {
   final String? id;
   final String? mimeType;

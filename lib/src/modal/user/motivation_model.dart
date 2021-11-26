@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class MotivationModel {
   final String? content;
   final String? id;

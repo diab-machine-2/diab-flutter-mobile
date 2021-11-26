@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class ExercriseTrendTimeModel {
   final double? total;
   final double? target;
@@ -7,7 +7,7 @@ class ExercriseTrendTimeModel {
   final String? targetUnit;
   final TrendItemModel trendItems;
 
-  ExercriseTrendTimeModel({
+  const ExercriseTrendTimeModel({
     required this.total,
     required this.target,
     required this.targetTitle,

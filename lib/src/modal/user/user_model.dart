@@ -1,6 +1,7 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
 
+@immutable
 class UserModel {
   final String? id;
   final String? username;

@@ -1,11 +1,11 @@
 import 'package:medical/src/modal/glucose/glucose_trend.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class TrendDataModel {
   final TrendItemsModel trendItems;
   final GoodRangeModel goodRange;
 
-  TrendDataModel({required this.trendItems, required this.goodRange});
+  const TrendDataModel({required this.trendItems, required this.goodRange});
   @override
   factory TrendDataModel.fromJson(Map<String, dynamic> json) {
     return TrendDataModel(

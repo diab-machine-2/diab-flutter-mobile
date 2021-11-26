@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class ScheduleGlucoseModel {
   final ScheduleModel? monday;
   final ScheduleModel? tuesday;

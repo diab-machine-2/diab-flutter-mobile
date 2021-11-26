@@ -1,7 +1,3 @@
-import 'package:medical/src/modal/notification/notification_data_model.dart';
-import 'package:meta/meta.dart';
-import 'dart:convert';
-
 class NotificationModel {
   final String? id;
   final String? title;

@@ -1,7 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:meta/meta.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class ComparerModel {
   final int? date;

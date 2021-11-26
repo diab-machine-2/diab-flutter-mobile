@@ -1,6 +1,6 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class FoodCaloModel {
   final double? percent;
   final double? total;
@@ -10,7 +10,7 @@ class FoodCaloModel {
   final ImagesModel? image;
   final List<MealModel> mealDetails;
 
-  FoodCaloModel({
+  const FoodCaloModel({
     required this.percent,
     required this.total,
     required this.goal,

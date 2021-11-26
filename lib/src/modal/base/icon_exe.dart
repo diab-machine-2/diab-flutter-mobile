@@ -1,10 +1,10 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class IconModel {
   final String? id;
   final String? url;
 
-  IconModel({
+  const IconModel({
     required this.id,
     required this.url,
   });

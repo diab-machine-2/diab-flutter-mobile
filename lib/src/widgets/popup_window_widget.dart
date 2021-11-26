@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PopupWindowWidget extends StatelessWidget {
   final Widget child;

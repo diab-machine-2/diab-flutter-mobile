@@ -1,11 +1,11 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class CaculateBMIModel {
   final double? bmi;
   final String? note;
   final String? colorCode;
 
-  CaculateBMIModel({
+  const CaculateBMIModel({
     required this.bmi,
     required this.colorCode,
     required this.note,

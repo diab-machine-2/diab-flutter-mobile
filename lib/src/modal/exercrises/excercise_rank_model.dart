@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class ExerciseRankModel {
   final double? averagePercent;
   final double? highestPercent;
@@ -7,7 +7,7 @@ class ExerciseRankModel {
   final double? partientPercent;
   final String? description;
 
-  ExerciseRankModel(
+  const ExerciseRankModel(
       {required this.averagePercent,
       required this.highestPercent,
       required this.lowestPercent,

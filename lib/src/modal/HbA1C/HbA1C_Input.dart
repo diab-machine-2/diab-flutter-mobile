@@ -1,6 +1,6 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class InputHbA1CModel {
   final String? id;
   final int? date;
@@ -16,7 +16,7 @@ class InputHbA1CModel {
   final String? percentColor;
   final List<ImagesModel> images;
 
-  InputHbA1CModel({
+  const InputHbA1CModel({
     required this.id,
     required this.date,
     required this.type,
