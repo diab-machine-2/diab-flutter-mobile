@@ -677,11 +677,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           '''
       - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
       - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''',
-          style: TextStyle(
-            color: R.color.textDark,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
+          style: R.style.normalTextStyle
         ),
         const SizedBox(height: 14),
         Row(

@@ -91,11 +91,7 @@ class _BloodSugarScheduleTemplatePageState
                                       trimExpandedText: R.string.show_less.tr(),
                                       trimCollapsedText:
                                           R.string.show_more.tr(),
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                        color: R.color.textDark,
-                                      ),
+                                      style: R.style.normalTextStyle,
                                       moreStyle: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w700,

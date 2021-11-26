@@ -66,7 +66,7 @@ class CustomMultiSelectToggle extends StatelessWidget {
               toggleList[currentIndex],
               style: TextStyle(
                 color: isSelected ? R.color.white : R.color.textDark,
-                fontSize: 14.sp,
+                fontSize: 14,
                 fontWeight: FontWeight.w400,
               ),
             ),

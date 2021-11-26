@@ -354,10 +354,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                 Text(
                   R.string.today_is_day_off_description.tr(),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400),
+                  style: R.style.normalTextStyle,
                 ),
               ],
             ),

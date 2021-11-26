@@ -1211,10 +1211,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400)),
+                            style: R.style.normalTextStyle),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 16),
@@ -1330,10 +1327,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController> {
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400)),
+                            style: R.style.normalTextStyle),
                       ),
                       SizedBox(height: 16),
                       Row(

@@ -156,10 +156,7 @@ class _AddWorkControllerState extends BaseState<AddWorkController> {
                         Center(
                           child: Text(
                               R.string.nhan_tiep_tuc_neu_ban_khong_co_hoat_dong_nao.tr(),
-                              style: TextStyle(
-                                  color: R.color.textDark,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400)),
+                              style: R.style.normalTextStyle),
                         ),
                         SizedBox(height: 20),
                         Padding(

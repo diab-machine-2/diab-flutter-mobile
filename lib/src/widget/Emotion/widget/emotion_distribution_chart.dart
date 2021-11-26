@@ -145,12 +145,7 @@ class EmotionDistributionChartState extends State<EmotionDistributionChart>
                                                   ),
                                                   Expanded(
                                                     child: Text(model.note!,
-                                                        style: TextStyle(
-                                                            color: R.color.black,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400)),
+                                                        style: R.style.normalTextStyle),
                                                   ),
                                                 ],
                                               ),

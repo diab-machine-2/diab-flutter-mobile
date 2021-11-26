@@ -18,30 +18,28 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
 
+import '../food_menu_screens/food_menu/food_menu_page.dart';
+
 class ProfileController extends StatefulWidget {
+  const ProfileController({this.hideAllBackButton = false});
+  final bool hideAllBackButton;
   @override
   _ProfileControllerState createState() => _ProfileControllerState();
 }
 
 class _ProfileControllerState extends State<ProfileController> with Observer {
-  bool isPro = false;
+  bool isPro = true;
   SecureModel? secureModel;
   final AppRepository _appRepository = AppRepository();
 
+  @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    // DartNotificationCenter.subscribe(
-    //     channel: 'user_info_change',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       setState(() {});
-    //     });
     loadData();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Profile');
   }
@@ -55,11 +53,10 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   }
 
   loadData() async {
-    await checkPackage();
     try {
       BotToast.showLoading();
       secureModel = await UserClient().fetchInfoSecure();
-      await checkPackage();
+      // await checkPackage();
       BotToast.closeAllLoading();
       setState(() {});
     } catch (_) {
@@ -81,8 +78,6 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'user_info_change', observer: this);
     super.dispose();
   }
 
@@ -92,6 +87,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
     return Scaffold(
         appBar: CustomAppBar(
           backgroundColor: R.color.color0xffB1DDDB.withOpacity(0.2),
+          hideAllBackButton: widget.hideAllBackButton,
           title: Text(R.string.profile_file.tr(),
               style: TextStyle(
                   fontSize: 18,
@@ -107,10 +103,9 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
         ),
         body: Container(
             color: R.color.color0xffB1DDDB.withOpacity(0.2),
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Center(
               child: ListView(
-                //crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(children: [
                     Container(
@@ -137,13 +132,13 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(R.string.user_id.tr(args: [user.code ?? '0']),
                                 style: TextStyle(
                                     color: R.color.primaryGreyColor,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Row(
                               children: [
                                 Container(
@@ -151,7 +146,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                                   decoration: BoxDecoration(
                                       color: R.color.white,
                                       borderRadius: BorderRadius.circular(16)),
-                                  padding: EdgeInsets.only(left: 16, right: 16),
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16),
                                   child: Row(
                                     children: [
                                       Image.asset(
@@ -160,7 +156,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                                               : R.drawable.ic_crown_green,
                                           width: 20,
                                           height: 20),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                       Text(R.string.coaching_package.tr(),
                                           style: TextStyle(
                                               color: R.color.textDark,
@@ -220,7 +216,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           title: R.string.food_menu.tr(),
                           image: R.drawable.ic_food_menu,
                           onTap: () {
-                            NavigationUtil.navigatePage(context, const FoodMenuPage());
+                            NavigationUtil.navigatePage(
+                                context, const FoodMenuPage());
                           }),
                     )
                   ]),
@@ -320,7 +317,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
     return GestureDetector(
       onTap: () {
         if (index == 0) {
-          String phoneNumber = AppSettings.userInfo?.phoneNumber ?? '';
+          final String phoneNumber = AppSettings.userInfo?.phoneNumber ?? '';
           if (phoneNumber.isEmpty || phoneNumber.contains('User')) {
             showPopupUpdatePhone();
           } else {
@@ -344,19 +341,19 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
       },
       child: Container(
           color: R.color.transparent,
-          padding: EdgeInsets.only(left: 16, right: 16, top: 20),
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
           child: Column(
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Row(children: [
                   Image.asset(icon, width: 20, height: 20),
-                  SizedBox(width: 16),
-                  Text(title, style: TextStyle(fontSize: 16))
+                  const SizedBox(width: 16),
+                  Text(title, style: const TextStyle(fontSize: 16))
                 ]),
                 Icon(Icons.arrow_forward_ios,
                     color: R.color.mainColor, size: 16)
               ]),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Container(height: 1, color: R.color.grey.withOpacity(0.2))
             ],
           )),
@@ -366,122 +363,119 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
   showPopupUpdatePhone() {
     FocusScope.of(context).unfocus();
     final width = MediaQuery.of(context).size.width;
-    TextEditingController textEditingController = TextEditingController();
+    final TextEditingController textEditingController = TextEditingController();
     textEditingController.text = AppSettings.userInfo?.secondPhoneNumber ?? '';
     showDialog(
         context: context,
-        builder: (context) => Container(
-              child: AlertDialog(
-                  content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+        builder: (context) => AlertDialog(
+                content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(R.string.update_phone_number.tr(),
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
+                      GestureDetector(
+                          child:
+                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                          onTap: () {
+                            Navigator.pop(context);
+                          })
+                    ]),
+                const SizedBox(height: 16),
+                Container(
+                    height: 54,
+                    width: width - 36,
+                    child: TextField(
+                        controller: textEditingController,
+                        keyboardType: TextInputType.number,
+                        minLines: 1,
+                        maxLines: 1,
+                        obscureText: false,
+                        decoration: InputDecoration(
+                          fillColor: R.color.textDark,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: R.color.grayComponentBorder, width: 1.0),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: R.color.mainColor, width: 1.0),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          contentPadding: const EdgeInsets.only(
+                              top: 0, left: 16, right: 16),
+                          hintText: R.string.nhap_so_dien_thoai.tr(),
+                        ),
+                        onChanged: (value) {})),
+                Container(
+                  margin: const EdgeInsets.only(top: 16),
+                  child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(R.string.update_phone_number.tr(),
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600)),
                         GestureDetector(
-                            child: Icon(Icons.close,
-                                color: R.color.color0xffBEC0C8),
-                            onTap: () {
-                              Navigator.pop(context);
-                            })
-                      ]),
-                  SizedBox(height: 16),
-                  Container(
-                      height: 54,
-                      width: width - 36,
-                      child: TextField(
-                          controller: textEditingController,
-                          keyboardType: TextInputType.number,
-                          minLines: 1,
-                          maxLines: 1,
-                          obscureText: false,
-                          decoration: InputDecoration(
-                            fillColor: R.color.textDark,
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: R.color.grayComponentBorder,
-                                  width: 1.0),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: R.color.mainColor, width: 1.0),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            contentPadding:
-                                EdgeInsets.only(top: 0, left: 16, right: 16),
-                            hintText: R.string.nhap_so_dien_thoai.tr(),
-                          ),
-                          onChanged: (value) {})),
-                  Container(
-                    margin: EdgeInsets.only(top: 16),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.pushNamed(
-                                  context, NavigatorName.profile_info);
-                            },
-                            child: Container(
-                                height: 48,
-                                width: 119,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(200),
-                                    color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                )),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              final phone = textEditingController.text;
-                              if (phone.isEmpty) {
-                                Message.showToastMessage(context,
-                                    R.string.ban_chua_nhap_so_dien_thoai.tr());
-                                return;
-                              } else {
-                                updatePhone(phone);
-                              }
-                            },
-                            child: Container(
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(
+                                context, NavigatorName.profile_info);
+                          },
+                          child: Container(
                               height: 48,
                               width: 119,
                               decoration: BoxDecoration(
-                                  color: R.color.red,
                                   borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
+                                  color: R.color.grayBorder),
                               child: Center(
-                                child: Text(R.string.save.tr(),
+                                child: Text(R.string.cancel.tr(),
                                     style: TextStyle(
-                                        color: R.color.white,
+                                        color: R.color.textDark,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600)),
-                              ),
+                              )),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            final phone = textEditingController.text;
+                            if (phone.isEmpty) {
+                              Message.showToastMessage(context,
+                                  R.string.ban_chua_nhap_so_dien_thoai.tr());
+                              return;
+                            } else {
+                              updatePhone(phone);
+                            }
+                          },
+                          child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration: BoxDecoration(
+                                color: R.color.red,
+                                borderRadius: BorderRadius.circular(200),
+                                gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
+                                    ])),
+                            child: Center(
+                              child: Text(R.string.save.tr(),
+                                  style: TextStyle(
+                                      color: R.color.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
                             ),
                           ),
-                        ]),
-                  ),
-                ],
-              )),
-            ));
+                        ),
+                      ]),
+                ),
+              ],
+            )));
   }
 
   updatePhone(String phone) async {

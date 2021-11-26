@@ -686,10 +686,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400)),
+                            style: R.style.normalTextStyle),
                       ),
                       SizedBox(height: 16),
                       Row(

@@ -161,10 +161,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(R.string.hien_tai.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14.0)),
+                                                style: R.style.normalTextStyle),
                                             SizedBox(height: 4),
                                             Row(
                                               children: [
@@ -196,11 +193,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                                           right: 2),
                                                   child: Text(
                                                     R.string.kg.tr(),
-                                                    style: TextStyle(
-                                                        color: R.color.textDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14.0),
+                                                    style: R.style.normalTextStyle,
                                                   ),
                                                 ),
                                               ],
@@ -215,10 +208,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(R.string.muc_tieu.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14.0)),
+                                                style: R.style.normalTextStyle),
                                             SizedBox(height: 4),
                                             Row(
                                               children: [
@@ -246,11 +236,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                                           top: 6.0, left: 2),
                                                   child: Text(
                                                     R.string.kg.tr(),
-                                                    style: TextStyle(
-                                                        color: R.color.textDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14.0),
+                                                    style: R.style.normalTextStyle,
                                                   ),
                                                 ),
                                               ],
@@ -389,10 +375,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(number.length, (index) {
                     return Text(number[index].toString(),
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: R.color.black,
-                            fontWeight: FontWeight.normal));
+                        style: R.style.normalTextStyle);
                   })),
             ),
             Expanded(
@@ -609,10 +592,7 @@ class BmiTrendChartState extends State<BmiTrendChart>
                 ),
                 Expanded(
                   child: Text(model.message!,
-                      style: TextStyle(
-                          color: R.color.textDark,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14.0)),
+                      style: R.style.normalTextStyle),
                 ),
               ],
             ),

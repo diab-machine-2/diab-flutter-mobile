@@ -261,11 +261,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         ),
         Text(
           audioData?.timeText ?? '00:00 / 00:00',
-          style: TextStyle(
-            color: R.color.textDark,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
+          style: R.style.normalTextStyle
         ),
         Expanded(
           child: Slider(

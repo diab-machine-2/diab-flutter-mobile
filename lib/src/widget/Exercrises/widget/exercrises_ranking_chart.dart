@@ -224,11 +224,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                               ),
                                               Text(
                                                   '${R.string.binh_quan_trong_nhom_tuoi_cua_toi.tr()}: ',
-                                                  style: TextStyle(
-                                                      color: R.color.textDark,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      fontSize: 14.0)),
+                                                  style: R.style.normalTextStyle),
                                               Text(
                                                   model.averagePercent!
                                                           .round()
@@ -256,10 +252,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                         children: [
                                           Expanded(
                                             child: Text(model.description!,
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14.0)),
+                                                style: R.style.normalTextStyle),
                                           ),
                                         ],
                                       ),
