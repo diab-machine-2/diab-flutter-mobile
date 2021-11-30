@@ -165,12 +165,13 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       ),
     );
     apiResult.when(success: (CommonResponse response) {
-      currentSectionDetail?.isComplete = true;
+      if (response.meta?.success == true) {
+        currentSectionDetail?.isComplete = true;
+      }
       emit(const LessonDetailSuccess());
     }, failure: (NetworkExceptions error) {
       emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));
     });
-    currentSectionDetail?.isComplete = true;
     emit(const LessonDetailInitial());
   }
 }

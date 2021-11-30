@@ -38,6 +38,10 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     emit(const ActivityTabInitial());
   }
 
+  void goToLessonTab() {
+    myPlanCubit.changePlanType(1);
+  }
+
   void goToExerciseTab() {
     myPlanCubit.changePlanType(2);
   }

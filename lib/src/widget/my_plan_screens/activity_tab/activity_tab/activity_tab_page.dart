@@ -8,13 +8,15 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
-import 'package:medical/src/widgets/circle_graph.dart';
+import 'package:medical/src/widgets/circle_progress_widget.dart';
 
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../create_goal/create_goal.dart';
+import '../my_progress/my_progress.dart';
 import 'activity_tab.dart';
 import 'models/goal_filter_type.dart';
 import 'models/schedule_type.dart';
@@ -69,7 +71,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       children: [
                         _buildScheduleWidget(),
                         Visibility(
-                          visible: _cubit.myPlanCubit.isPremiumUser,
+                          // visible: _cubit.myPlanCubit.isPremiumUser,
                           child: Row(
                             children: [
                               ...List.generate(
@@ -87,7 +89,18 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                               ),
                               const Spacer(),
                               InkWell(
-                                onTap: () {},
+                                onTap: () async {
+                                  final result =
+                                      await NavigationUtil.navigatePage(
+                                          context, const MyProgressPage());
+                                  if (result is int) {
+                                    if (result == 1) {
+                                      _cubit.goToLessonTab();
+                                    } else if (result == 2) {
+                                      _cubit.goToExerciseTab();
+                                    }
+                                  }
+                                },
                                 child: Padding(
                                   padding: const EdgeInsets.only(bottom: 12.0),
                                   child: Image.asset(
@@ -119,7 +132,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                             frequency: '2 lần/ngày',
                           ),
                           _buildSingleGoal(
-                            type: ScheduleType.meditate,
+                            type: ScheduleType.custom,
                             title: 'Ngồi thiền',
                             frequency: 'Còn 7 ngày để hoàn thành',
                           ),
@@ -436,7 +449,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         },
         child: Row(
           children: [
-            CircleGraphWidget(
+            CircleProgressWidget(
               percent: 40,
               icon: type.icon,
             ),
@@ -523,7 +536,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       case ScheduleType.exercise_movement:
         _cubit.goToExerciseTab();
         break;
-      case ScheduleType.meditate:
+      case ScheduleType.custom:
         showCustomGoalPopup();
         break;
       case ScheduleType.coaching:
@@ -562,7 +575,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         break;
       case ScheduleType.exercise_movement:
         break;
-      case ScheduleType.meditate:
+      case ScheduleType.custom:
         NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
         break;
       case ScheduleType.coaching:
@@ -578,6 +591,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     required BuildContext context,
     required Widget child,
     required String buttonTitle,
+    required VoidCallback onTap,
   }) {
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
@@ -616,9 +630,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                         child: ButtonWidget(
                           title: buttonTitle,
                           textSize: 14,
-                          onPressed: () {
-                            NavigationUtil.pop(context);
-                          },
+                          onPressed: onTap,
                         ),
                       ),
                     ],
@@ -636,6 +648,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     return showPopup(
       context: context,
       buttonTitle: 'Hoàn thành',
+      onTap: () {},
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -667,6 +680,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     return showPopup(
       context: context,
       buttonTitle: 'Tham gia',
+      onTap: () {},
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -728,6 +742,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     return showPopup(
       context: context,
       buttonTitle: 'Bắt đầu khảo sát',
+      onTap: () {
+        NavigationUtil.pop(context);
+        NavigationUtil.navigatePage(context, const IntroduceSurveyPage());
+      },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

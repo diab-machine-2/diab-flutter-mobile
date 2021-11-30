@@ -22,7 +22,7 @@ class IntroduceSurveyPage extends StatefulWidget {
 
 class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
   late IntroduceSurveyCubit _cubit;
-  final String surveyId = "b2f19b0e-3948-42d7-cf75-08d9aa3622b0";
+  final String surveyId = "f055aec1-9a28-4727-f690-08d9b2db4b60";
 
   @override
   void initState() {
