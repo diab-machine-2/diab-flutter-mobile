@@ -67,22 +67,13 @@ extension DayInWeekExtend on DayInWeek {
   }
 
   static DayInWeek getDayInWeekFromString(String text) {
-    switch (text) {
-      case 'Thứ hai':
-        return DayInWeek.mon;
-      case 'Thứ ba':
-        return DayInWeek.tue;
-      case 'Thứ tư':
-        return DayInWeek.wed;
-      case 'Thứ năm':
-        return DayInWeek.thu;
-      case 'Thứ sáu':
-        return DayInWeek.fri;
-      case 'Thứ bảy':
-        return DayInWeek.sat;
-      case 'Chủ nhật':
-        return DayInWeek.sun;
-    }
+    if (text == DayInWeek.mon.title) return DayInWeek.mon;
+    if (text == DayInWeek.tue.title) return DayInWeek.tue;
+    if (text == DayInWeek.wed.title) return DayInWeek.wed;
+    if (text == DayInWeek.thu.title) return DayInWeek.thu;
+    if (text == DayInWeek.fri.title) return DayInWeek.fri;
+    if (text == DayInWeek.sat.title) return DayInWeek.sat;
+    if (text == DayInWeek.sun.title) return DayInWeek.sun;
     return DayInWeek.mon;
   }
 
