@@ -10,7 +10,6 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
-import '../../my_plan_screens/my_plan/my_plan.dart';
 import 'survey_result.dart';
 
 class SurveyResultPage extends StatefulWidget {
@@ -108,7 +107,7 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
               child: ButtonWidget(
                 title: R.string.completed.tr(),
                 onPressed: () {
-                  NavigationUtil.popUtil(context, MyPlanPage);
+                  NavigationUtil.popToFirst(context);
                 },
               ),
             ),
