@@ -52,7 +52,7 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Cho phép diaB truy cập camera để gửi thông tin các chỉ số</string>
+	<string>This app needs camera access to scan QR codes</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Cho phép diaB truy cập thư viện để gửi thông tin các chỉ số</string>
 	<key>UILaunchStoryboardName</key>
@@ -74,5 +74,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
 </dict>
 </plist>

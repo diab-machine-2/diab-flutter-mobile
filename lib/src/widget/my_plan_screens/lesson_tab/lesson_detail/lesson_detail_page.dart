@@ -141,8 +141,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 24),
+                                    padding: const EdgeInsets.only(bottom: 24),
                                     child: WidgetHtmlText(_cubit
                                             .currentSectionDetail
                                             ?.firstContent ??
@@ -151,19 +150,25 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   if (_cubit.currentSectionDetail?.image?.url
                                           ?.isNotEmpty ==
                                       true)
-                                    _buildTitleWidget(
-                                      child: CachedNetworkImage(
-                                          imageUrl: _cubit.currentSectionDetail!
-                                              .image!.url!),
-                                      title: _cubit
-                                          .currentSectionDetail?.imageTitle,
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 24),
+                                      child: _buildTitleWidget(
+                                        child: CachedNetworkImage(
+                                            imageUrl: _cubit
+                                                .currentSectionDetail!
+                                                .image!
+                                                .url!),
+                                        title: _cubit
+                                            .currentSectionDetail?.imageTitle,
+                                      ),
                                     ),
                                   if (_cubit.currentSectionDetail?.secondContent
                                           ?.isNotEmpty ==
                                       true)
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 24),
+                                      padding:
+                                          const EdgeInsets.only(bottom: 24),
                                       child: WidgetHtmlText(_cubit
                                           .currentSectionDetail!
                                           .secondContent!),
@@ -259,10 +264,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               : const Icon(Icons.play_arrow),
           iconSize: 24,
         ),
-        Text(
-          audioData?.timeText ?? '00:00 / 00:00',
-          style: R.style.normalTextStyle
-        ),
+        Text(audioData?.timeText ?? '00:00 / 00:00',
+            style: R.style.normalTextStyle),
         Expanded(
           child: Slider(
             inactiveColor: R.color.gray,

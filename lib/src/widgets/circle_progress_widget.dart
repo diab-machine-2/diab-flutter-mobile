@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
-class CircleGraphWidget extends StatelessWidget {
-  const CircleGraphWidget({
+class CircleProgressWidget extends StatelessWidget {
+  const CircleProgressWidget({
     Key? key,
     required this.percent,
     required this.icon,

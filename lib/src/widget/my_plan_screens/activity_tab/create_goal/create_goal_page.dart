@@ -8,20 +8,20 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/models/day_in_week.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/custom_date_picker.dart';
 import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 
+import '../../../../widgets/select_bottom_sheet_widget.dart';
 import '../activity_tab/models/schedule_type.dart';
 import 'create_goal.dart';
 import 'models/create_goal_status.dart';
+import 'models/day_in_week.dart';
 import 'models/goal_record_type.dart';
 import 'models/repeat_type.dart';
 import 'widgets/custom_top_progress_bar.dart';
-import 'widgets/select_bottom_sheet_widget.dart';
 import 'widgets/select_type_widget.dart';
 
 class CreateGoalPage extends StatefulWidget {

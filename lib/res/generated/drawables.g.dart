@@ -190,6 +190,7 @@ class Drawables {
 	String get ic_remind => "lib/res/drawables/ic_remind.png";
 	String get ic_remove_excersire => "lib/res/drawables/ic_remove_excersire.png";
 	String get ic_repeat => "lib/res/drawables/ic_repeat.png";
+	String get ic_report => "lib/res/drawables/ic_report.png";
 	String get ic_right => "lib/res/drawables/ic_right.png";
 	String get ic_ruler => "lib/res/drawables/ic_ruler.png";
 	String get ic_ruler_fill => "lib/res/drawables/ic_ruler_fill.png";
@@ -207,6 +208,7 @@ class Drawables {
 	String get ic_security => "lib/res/drawables/ic_security.png";
 	String get ic_set_goal => "lib/res/drawables/ic_set_goal.png";
 	String get ic_shoe_exe => "lib/res/drawables/ic_shoe_exe.png";
+	String get ic_show => "lib/res/drawables/ic_show.png";
 	String get ic_sick => "lib/res/drawables/ic_sick.png";
 	String get ic_sleeping => "lib/res/drawables/ic_sleeping.png";
 	String get ic_stack => "lib/res/drawables/ic_stack.png";

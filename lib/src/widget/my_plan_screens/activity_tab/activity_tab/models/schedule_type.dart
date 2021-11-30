@@ -9,7 +9,7 @@ enum ScheduleType {
   exercise,
   hba1c,
   exercise_movement,
-  meditate,
+  custom,
   coaching,
   group,
   survey,
@@ -34,7 +34,7 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.drawable.ic_schedule_hba1c;
       case ScheduleType.exercise_movement:
         return R.drawable.ic_exercise;
-      case ScheduleType.meditate:
+      case ScheduleType.custom:
         return R.drawable.ic_schedule_custom;
       case ScheduleType.coaching:
         return R.drawable.ic_schedule_coaching;
@@ -63,7 +63,7 @@ extension ScheduleTypeExtend on ScheduleType {
         return 'Đo HbA1C';
       case ScheduleType.exercise_movement:
         return '';
-      case ScheduleType.meditate:
+      case ScheduleType.custom:
         return '';
       case ScheduleType.coaching:
         return '';
@@ -92,7 +92,7 @@ extension ScheduleTypeExtend on ScheduleType {
         return 1;
       case ScheduleType.exercise_movement:
         return -1;
-      case ScheduleType.meditate:
+      case ScheduleType.custom:
         return -1;
       case ScheduleType.coaching:
         return -1;
@@ -121,7 +121,7 @@ extension ScheduleTypeExtend on ScheduleType {
         return true;
       case ScheduleType.exercise_movement:
         return false;
-      case ScheduleType.meditate:
+      case ScheduleType.custom:
         return true;
       case ScheduleType.coaching:
         return false;
