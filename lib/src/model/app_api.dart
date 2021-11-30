@@ -4,6 +4,7 @@ import 'package:retrofit/retrofit.dart';
 
 import 'request/complete_exercise_request.dart';
 import 'request/create_menu_request.dart';
+import 'request/create_smart_goal_request.dart';
 import 'request/exercise_feedback_request.dart';
 import 'request/food_change_request.dart';
 import 'request/ios_receipt_request.dart';
@@ -15,6 +16,7 @@ import 'request/update_lesson_section_request.dart';
 import 'response/blood_sugar_template_response.dart';
 import 'response/common_response.dart';
 import 'response/create_menu_response.dart';
+import 'response/create_smart_goal_response.dart';
 import 'response/detail_package_response.dart';
 import 'response/detail_survey_response.dart';
 import 'response/diabetes_status_response.dart';
@@ -152,6 +154,8 @@ abstract class AppApi {
     @Body() UpdateLessonSectionRequest request,
   );
 
+  //Exercise
+
   @GET("App/Roadmap/MyRoadmap")
   Future<ListRoadmapResponse> getRoadMap(
     @Query('page') int page,
@@ -186,6 +190,12 @@ abstract class AppApi {
 
   @GET("App/Lesson/GetWeekStates")
   Future<WeekStatesResponse> getLessonWeekStates();
+
+  //Activity
+  @POST("/App/Target")
+  Future<CreateSmartGoalResponse> createSmartGoal(
+    @Body() CreateSmartGoalRequest request,
+  );
   
   // Quiz
   @POST("App/Lesson/{lessonId}/Review")

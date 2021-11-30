@@ -1,5 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/create_smart_goal_request.dart';
+import 'package:medical/src/model/response/create_smart_goal_response.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 
 import '../activity_tab/models/schedule_type.dart';
 import 'create_goal.dart';
@@ -22,21 +28,87 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
   ScheduleType? type;
   RepeatType repeatType = RepeatType.day;
   List<DayInWeek> repeatDayList = [];
+  String name = '';
+  String goalTimeOrFrequency = '';
+
+  GoalInfoModel? userInfo;
+
+  String dailyTargetDuration = '';
+  String weeklyTargetDuration = '';
+
+  bool get isValid {
+    if (type == null || type == ScheduleType.custom) {
+      if (name.isEmpty) return false;
+      if (isRepeat && repeatType == RepeatType.week && repeatDayList.isEmpty)
+        return false;
+      if (goalTimeOrFrequency.isEmpty) return false;
+    } else if (type == ScheduleType.exercise) {
+      if (userInfo?.dailyTargetDuration == null ||
+          userInfo?.weeklyTargetDuration == null) return false;
+    } else {
+      if (isRepeat && repeatType == RepeatType.week && repeatDayList.isEmpty)
+        return false;
+      if (goalTimeOrFrequency.isEmpty) return false;
+    }
+    return true;
+  }
+
+  int get repeatTypeIndex {
+    if (isRepeat == false) return 0;
+    if (repeatType == RepeatType.day) return 1;
+    if (repeatType == RepeatType.week) return 2;
+    return 3;
+  }
+
+  int parseString(String text) {
+    try {
+      final int number = double.parse(text).toInt();
+      return number;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  List<CustomWeekList?> get targetSchedulerWeeks => List.generate(
+        repeatDayList.length,
+        (index) => CustomWeekList(dayInWeek: repeatDayList[index].index),
+      );
+
+  CreateSmartGoalRequest? get request {
+    if (type == ScheduleType.exercise) return null;
+    if (type == null || type == ScheduleType.custom) {
+      return CreateSmartGoalRequest(
+        name: name,
+        type: type?.typeIndex ?? 0,
+        appointmentDate: (startDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+        executeType: goalRecordType.index,
+        executeDayTimes: parseString(goalTimeOrFrequency),
+        targetScheduler: CustomScheduler(
+            repeatTime: 1,
+            repeatType: repeatTypeIndex,
+            endDate: (endDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+            targetSchedulerWeeks: targetSchedulerWeeks),
+      );
+    } else {
+      return CreateSmartGoalRequest(
+        name: type?.title ?? '',
+        type: type?.typeIndex,
+        appointmentDate: (startDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+        executeType: GoalRecordType.time.index,
+        executeDayTimes: parseString(goalTimeOrFrequency),
+        targetScheduler: CustomScheduler(
+            repeatTime: 1,
+            repeatType: repeatTypeIndex,
+            endDate: (endDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+            targetSchedulerWeeks: targetSchedulerWeeks),
+      );
+    }
+  }
 
   void setupGoal({ScheduleType? selectedType}) {
     type = selectedType;
     status = CreateGoalStatus.setup;
     emit(const CreateGoalSuccess());
-    emit(const CreateGoalInitial());
-  }
-
-  void onTapNext() {
-    if (status == CreateGoalStatus.setup) {
-      status = CreateGoalStatus.complete;
-      emit(const CreateGoalSuccess());
-    } else if (status == CreateGoalStatus.complete) {
-      emit(const CreateGoalCompleted());
-    }
     emit(const CreateGoalInitial());
   }
 
@@ -67,6 +139,64 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
         .toList();
     repeatDayList.sort((a, b) => a.index - b.index);
     emit(const CreateGoalSuccess());
+    emit(const CreateGoalInitial());
+  }
+
+  Future<void> onTapNext() async {
+    if (status == CreateGoalStatus.setup) {
+      if (!isValid) return;
+      status = CreateGoalStatus.complete;
+      emit(const CreateGoalSuccess());
+    } else if (status == CreateGoalStatus.complete) {
+      if (type == ScheduleType.exercise) {
+        await updateUserTarget();
+      } else {
+        await createSmartGoal();
+      }
+
+      emit(const CreateGoalCompleted());
+    }
+    emit(const CreateGoalInitial());
+  }
+
+  Future<void> createSmartGoal() async {
+    emit(const CreateGoalLoading());
+    final ApiResult<CreateSmartGoalResponse> apiResult =
+        await repository.createSmartGoal(request ?? CreateSmartGoalRequest());
+    apiResult.when(success: (CreateSmartGoalResponse response) {
+      emit(const CreateGoalSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(CreateGoalFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    emit(const CreateGoalInitial());
+  }
+
+  Future<void> getUserTarget() async {
+    await Future.delayed(Duration.zero);
+    emit(const CreateGoalLoading());
+    try {
+      userInfo = await UserClient().fetchGoalInfo();
+      dailyTargetDuration = '${userInfo?.dailyTargetDuration ?? 0}';
+      weeklyTargetDuration = '${userInfo?.weeklyTargetDuration ?? 0}';
+    } catch (error) {
+      emit(CreateGoalFailure(error.toString()));
+    }
+    emit(const CreateGoalInitial());
+  }
+
+  Future<void> updateUserTarget() async {
+    if (userInfo == null) return;
+    await Future.delayed(Duration.zero);
+    emit(const CreateGoalLoading());
+    final GoalInfoModel request = userInfo!.copyWith(
+      dailyTargetDuration: parseString(this.dailyTargetDuration).toDouble(),
+      weeklyTargetDuration: parseString(this.weeklyTargetDuration).toDouble(),
+    );
+    try {
+      await UserClient().updateGoalInfo(request);
+    } catch (error) {
+      emit(CreateGoalFailure(error.toString()));
+    }
     emit(const CreateGoalInitial());
   }
 }

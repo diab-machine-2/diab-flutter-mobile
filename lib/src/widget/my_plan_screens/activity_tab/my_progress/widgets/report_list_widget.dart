@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import '../models/report_data.dart';
@@ -65,52 +64,19 @@ class ReportListWidget extends StatelessWidget {
             const SizedBox(height: 8),
             Expanded(
               child: ListView.builder(
-                  physics: countHight > height
-                      ? const AlwaysScrollableScrollPhysics()
-                      : const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.only(
-                      left: 10, right: 10, bottom: 8, top: 10),
-                  itemCount: reportList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return _buildItem(
-                        data: reportList[index],
-                        isLast: index == reportList.length - 1,
-                        onSelected: onSelected);
-                  }),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Center(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    height: 48,
-                    width: 195,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            R.color.greenGradientTop,
-                            R.color.greenGradientBottom
-                          ]),
-                      borderRadius: BorderRadius.circular(200),
-                    ),
-                    child: Center(
-                      child: Text(
-                        R.string.save.tr(),
-                        style: TextStyle(
-                            color: R.color.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                  ),
-                ),
+                physics: countHight > height
+                    ? const AlwaysScrollableScrollPhysics()
+                    : const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                padding: const EdgeInsets.only(
+                    left: 10, right: 10, bottom: 8, top: 10),
+                itemCount: reportList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return _buildItem(
+                      data: reportList[index],
+                      isLast: index == reportList.length - 1,
+                      onSelected: onSelected);
+                },
               ),
             ),
           ],

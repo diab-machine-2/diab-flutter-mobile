@@ -103,6 +103,35 @@ extension ScheduleTypeExtend on ScheduleType {
     }
   }
 
+  int get typeIndex {
+    switch (this) {
+      case ScheduleType.blood_sugar:
+        return 2;
+      case ScheduleType.blood_pressure:
+        return 1;
+      case ScheduleType.weight:
+        return 4;
+      case ScheduleType.emotion:
+        return 5;
+      case ScheduleType.food:
+        return 7;
+      case ScheduleType.exercise:
+        return 3;
+      case ScheduleType.hba1c:
+        return 6;
+      case ScheduleType.exercise_movement:
+        return 8;
+      case ScheduleType.custom:
+        return 0;
+      case ScheduleType.coaching:
+        return 9;
+      case ScheduleType.group:
+        return 10;
+      case ScheduleType.survey:
+        return 11;
+    }
+  }
+
   bool get editable {
     switch (this) {
       case ScheduleType.blood_sugar:

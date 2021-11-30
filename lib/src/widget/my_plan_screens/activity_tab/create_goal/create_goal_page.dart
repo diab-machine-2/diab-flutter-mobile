@@ -154,10 +154,13 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           }),
       SelectTypeWidget(
         title: 'Tần suất theo dõi chỉ số sinh học',
-        onSlectType: (type) {
+        onSlectType: (type) async {
           if (type == ScheduleType.blood_sugar) {
             Navigator.pushNamed(context, NavigatorName.schedule_glucose);
           } else {
+            if (type == ScheduleType.exercise) {
+              await _cubit.getUserTarget();
+            }
             _cubit.setupGoal(selectedType: type);
           }
         },
@@ -209,96 +212,36 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         ),
       ),
       Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
         decoration: BoxDecoration(
           color: R.color.white,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Tên hoạt động',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  flex: 3,
-                  child: Text(
-                    'Cập nhật bữa ăn',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Số lần thực hiện trong ngày',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  flex: 3,
-                  child: Text(
-                    '3 lần',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Tần suất',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  flex: 3,
-                  child: Text(
-                    '2 lần / tuần',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            if (_cubit.type == null || _cubit.type == ScheduleType.custom)
+              _buildSingleResultDetail(
+                  title: 'Tên hoạt động', description: _cubit.name),
+            if (_cubit.goalRecordType == GoalRecordType.time &&
+                _cubit.type != ScheduleType.exercise)
+              _buildSingleResultDetail(
+                  title: 'Thời gian thực hiện',
+                  description: '${_cubit.goalTimeOrFrequency} phút'),
+            if (_cubit.goalRecordType == GoalRecordType.frequency &&
+                _cubit.type != ScheduleType.exercise)
+              _buildSingleResultDetail(
+                  title: 'Số lần thực hiện',
+                  description: '${_cubit.goalTimeOrFrequency} lần'),
+            if (_cubit.type == ScheduleType.exercise)
+              _buildSingleResultDetail(
+                  title: 'Số phút vận động mỗi ngày',
+                  description:
+                      '${_cubit.parseString(_cubit.dailyTargetDuration)} phút'),
+            if (_cubit.type == ScheduleType.exercise)
+              _buildSingleResultDetail(
+                  title: 'Số phút vận động mỗi tuần',
+                  description:
+                      '${_cubit.parseString(_cubit.weeklyTargetDuration)} phút'),
           ],
         ),
       ),
@@ -351,7 +294,12 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         },
       ),
       _buildTimeOrFrequency(
-          title: _cubit.goalRecordType.title, unit: _cubit.goalRecordType.unit),
+        title: _cubit.goalRecordType.title,
+        unit: _cubit.goalRecordType.unit,
+        onChanged: (text) {
+          _cubit.goalTimeOrFrequency = text;
+        },
+      ),
     ];
   }
 
@@ -370,15 +318,35 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             }),
       ),
       _buildSetupRepeat(),
-      _buildTimeOrFrequency(title: 'Số lần thực hiện trong ngày', unit: 'lần'),
+      _buildTimeOrFrequency(
+        title: 'Số lần thực hiện trong ngày',
+        unit: 'lần',
+        onChanged: (text) {
+          _cubit.goalTimeOrFrequency = text;
+        },
+      ),
     ];
   }
 
   List<Widget> _buildSetupGoalType2() {
     return [
       _buildTextDescription(),
-      _buildTimeOrFrequency(title: 'Số phút vận động mỗi ngày', unit: 'phút'),
-      _buildTimeOrFrequency(title: 'Số phút vận động mỗi tuần', unit: 'phút'),
+      _buildTimeOrFrequency(
+          title: 'Số phút vận động mỗi ngày',
+          unit: 'phút',
+          onChanged: (text) {
+            _cubit.dailyTargetDuration = text;
+          },
+          controller: TextEditingController()
+            ..text = '${_cubit.userInfo?.dailyTargetDuration?.toInt() ?? 0}'),
+      _buildTimeOrFrequency(
+          title: 'Số phút vận động mỗi tuần',
+          unit: 'phút',
+          onChanged: (text) {
+            _cubit.weeklyTargetDuration = text;
+          },
+          controller: TextEditingController()
+            ..text = '${_cubit.userInfo?.weeklyTargetDuration?.toInt() ?? 0}'),
     ];
   }
 
@@ -408,15 +376,18 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             color: R.color.transparent,
             child: Column(
               children: [
-                const TextField(
+                TextField(
                   autofocus: false,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       contentPadding:
                           EdgeInsets.only(left: 0, bottom: 0, top: 8, right: 0),
                       hintText: 'Nhập tên hoạt động'),
+                  onChanged: (text) {
+                    _cubit.name = text;
+                  },
                 ),
                 Container(height: 1, color: R.color.color0xffE5E5E5),
                 const SizedBox(height: 8),
@@ -472,9 +443,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                             ],
                             onSelected: (typeList) {
                               if (typeList.isNotEmpty) {
-                                _cubit.onChangeRepeatType(
-                                  typeList.first
-                                );
+                                _cubit.onChangeRepeatType(typeList.first);
                               }
                             },
                           );
@@ -551,26 +520,31 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                             children: [
                               Image.asset(R.drawable.ic_calendar,
                                   width: 24, height: 24),
-                             Expanded(child: Row(
-                               mainAxisAlignment: MainAxisAlignment.end,
-                               children: _cubit.repeatDayList
-                                  .map(
-                                    (day) => Container(
-                                      height: 24,
-                                      alignment: Alignment.center,
-                                      margin: const EdgeInsets.only(left: 8),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 4),
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          border: Border.all(
-                                              color: R.color.grayBorder),),
-                                      child: Text(day.shortTitle,
-                                          style: R.style.normalTextStyle),
-                                    ),
-                                  )
-                                  .toList(),),)
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: _cubit.repeatDayList
+                                      .map(
+                                        (day) => Container(
+                                          height: 24,
+                                          alignment: Alignment.center,
+                                          margin:
+                                              const EdgeInsets.only(left: 8),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 4),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            border: Border.all(
+                                                color: R.color.grayBorder),
+                                          ),
+                                          child: Text(day.shortTitle,
+                                              style: R.style.normalTextStyle),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              )
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -659,7 +633,11 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     );
   }
 
-  Widget _buildTimeOrFrequency({required String title, required String unit}) {
+  Widget _buildTimeOrFrequency(
+      {required String title,
+      required String unit,
+      required Function(String text) onChanged,
+      TextEditingController? controller}) {
     return _buildItemLayout(
       child: Column(
         children: [
@@ -689,32 +667,33 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 color: R.color.transparent,
                 width: 70,
                 child: TextField(
-                  autofocus: false,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: R.color.textFieldGrey,
-                    fontSize: 40,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'[0-9]'),
+                    controller: controller,
+                    autofocus: false,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textFieldGrey,
+                      fontSize: 40,
+                      fontWeight: FontWeight.w400,
                     ),
-                  ],
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    hintText: '-',
-                    contentPadding: EdgeInsets.only(
-                      left: 0,
-                      bottom: 0,
-                      top: 8,
-                      right: 0,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[0-9]'),
+                      ),
+                    ],
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      hintText: '-',
+                      contentPadding: EdgeInsets.only(
+                        left: 0,
+                        bottom: 0,
+                        top: 8,
+                        right: 0,
+                      ),
                     ),
-                  ),
-                ),
+                    onChanged: onChanged),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -731,6 +710,42 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           ),
           Container(height: 1, width: 70, color: R.color.color0xffE5E5E5),
           const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleResultDetail({
+    required String title,
+    required String description,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              title,
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            flex: 3,
+            child: Text(
+              description,
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -771,12 +786,16 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     );
   }
 
-  Widget _buildItemLayout({required Widget child, EdgeInsetsGeometry? margin}) {
+  Widget _buildItemLayout(
+      {required Widget child,
+      EdgeInsetsGeometry? margin,
+      bool isValid = true}) {
     return Container(
       margin: margin ?? const EdgeInsets.only(top: 16),
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(16),
+        border: isValid ? null : Border.all(color: Colors.red),
       ),
       padding: const EdgeInsets.symmetric(
         horizontal: 16,

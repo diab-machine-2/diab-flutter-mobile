@@ -1,6 +1,7 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
+import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
@@ -12,6 +13,7 @@ import 'package:medical/src/model/request/update_lesson_section_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
+import 'package:medical/src/model/response/create_smart_goal_response.dart';
 import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
@@ -368,6 +370,8 @@ class AppRepository {
     }
   }
 
+  //Exercise
+
   Future<ApiResult<ListRoadmapResponse>> getRoadMap(
       {required int page, required int size}) async {
     try {
@@ -444,6 +448,17 @@ class AppRepository {
   Future<ApiResult<WeekStatesResponse>> getLessonWeekStates() async {
     try {
       final WeekStatesResponse response = await appClient.getLessonWeekStates();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  //Activity
+  Future<ApiResult<CreateSmartGoalResponse>> createSmartGoal(
+      CreateSmartGoalRequest request) async {
+    try {
+      final CreateSmartGoalResponse response = await appClient.createSmartGoal(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

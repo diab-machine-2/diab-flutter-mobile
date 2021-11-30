@@ -50,19 +50,19 @@ extension DayInWeekExtend on DayInWeek {
   int get index {
     switch (this) {
       case DayInWeek.mon:
-        return 1;
+        return 0;
       case DayInWeek.tue:
-        return 2;
+        return 1;
       case DayInWeek.wed:
-        return 3;
+        return 2;
       case DayInWeek.thu:
-        return 4;
+        return 3;
       case DayInWeek.fri:
-        return 5;
+        return 4;
       case DayInWeek.sat:
-        return 6;
+        return 5;
       case DayInWeek.sun:
-        return 7;
+        return 6;
     }
   }
 
