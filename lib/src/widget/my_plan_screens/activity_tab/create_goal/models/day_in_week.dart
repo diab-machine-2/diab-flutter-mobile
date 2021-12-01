@@ -1,3 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/res/R.dart';
+
 enum DayInWeek {
   mon,
   tue,
@@ -12,19 +15,19 @@ extension DayInWeekExtend on DayInWeek {
   String get title {
     switch (this) {
       case DayInWeek.mon:
-        return 'Thứ hai';
+        return R.string.day_in_week_monday.tr();
       case DayInWeek.tue:
-        return 'Thứ ba';
+        return R.string.day_in_week_tuesday.tr();
       case DayInWeek.wed:
-        return 'Thứ tư';
+        return R.string.day_in_week_wednesday.tr();
       case DayInWeek.thu:
-        return 'Thứ năm';
+        return R.string.day_in_week_thursday.tr();
       case DayInWeek.fri:
-        return 'Thứ sáu';
+        return R.string.day_in_week_friday.tr();
       case DayInWeek.sat:
-        return 'Thứ bảy';
+        return R.string.day_in_week_saturday.tr();
       case DayInWeek.sun:
-        return 'Chủ nhật';
+        return R.string.day_in_week_sunday.tr();
     }
   }
 

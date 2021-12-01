@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
@@ -43,11 +45,11 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
   bool get isValid {
     if (type == null || type == ScheduleType.custom) {
       if (name.isEmpty) {
-        showError('Chưa nhập tên mục tiêu');
+        showError(R.string.smart_goal_name_empty.tr());
         return false;
       }
       if (isRepeat && repeatType == RepeatType.week && repeatDayList.isEmpty) {
-        showError('Chưa chọn ngày lặp lại');
+        showError(R.string.smart_goal_repeat_day_empty.tr());
         return false;
       }
       if (goalTimeOrFrequency.isEmpty) {
@@ -58,16 +60,16 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     } else if (type == ScheduleType.exercise) {
       if (userInfo?.dailyTargetDuration == null ||
           userInfo?.weeklyTargetDuration == null) {
-        showError('Chưa nhập số phút vận động');
+        showError(R.string.smart_goal_exercise_time_empty.tr());
         return false;
       }
     } else {
       if (isRepeat && repeatType == RepeatType.week && repeatDayList.isEmpty) {
-        showError('Chưa chọn ngày lặp lại');
+        showError(R.string.smart_goal_repeat_day_empty.tr());
         return false;
       }
       if (goalTimeOrFrequency.isEmpty) {
-        showError('Chưa nhập số lần thực hiện');
+        showError(R.string.smart_goal_exercise_frequency_empty.tr());
         return false;
       }
     }

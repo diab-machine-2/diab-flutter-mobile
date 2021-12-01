@@ -6,6 +6,8 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -21,6 +23,7 @@ class GoalSettingController extends StatefulWidget {
 }
 
 class _GoalSettingControllerState extends State<GoalSettingController> {
+  final AppRepository _appRepository = AppRepository();
   GoalInfoModel? model;
   int total = 0;
 
@@ -279,6 +282,12 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
               onClick: () {
                 Future.delayed(const Duration(milliseconds: 200), () {
                   // TODO(Tuyen): Call API to update foodmenu
+                  _appRepository.createMenu(CreateMenuRequest(
+                    kcal: double.parse(weeklyTargetBurnedCalorie.text).toInt(),
+                    includeBreakfast: true,
+                    includeLunch: true,
+                    includeDinner: true,
+                  ));
                 });
                 NavigationUtil.pop(context, result: true);
               }),

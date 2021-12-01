@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -614,7 +615,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   showCustomGoalPopup() {
     return showPopup(
       context: context,
-      buttonTitle: 'Hoàn thành',
+      buttonTitle: R.string.complete_lesson.tr(),
       onTap: () {},
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -646,7 +647,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   showCoachingPopup() {
     return showPopup(
       context: context,
-      buttonTitle: 'Tham gia',
+      buttonTitle: R.string.join.tr(),
       onTap: () {},
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -708,7 +709,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   showSurveyPopup() {
     return showPopup(
       context: context,
-      buttonTitle: 'Bắt đầu khảo sát',
+      buttonTitle: R.string.start_survey.tr(),
       onTap: () {
         NavigationUtil.pop(context);
         NavigationUtil.navigatePage(context, const IntroduceSurveyPage());

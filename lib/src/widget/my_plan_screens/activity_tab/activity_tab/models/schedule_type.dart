@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 
 enum ScheduleType {
@@ -48,19 +49,19 @@ extension ScheduleTypeExtend on ScheduleType {
   String get title {
     switch (this) {
       case ScheduleType.blood_sugar:
-        return 'Đo đường huyết';
+        return R.string.smart_goal_blood_sugar.tr();
       case ScheduleType.blood_pressure:
-        return 'Đo huyết áp';
+        return R.string.smart_goal_blood_sugar.tr();
       case ScheduleType.weight:
-        return 'Đo cân nặng';
+        return R.string.smart_goal_blood_sugar.tr();
       case ScheduleType.emotion:
-        return 'Nhập cảm xúc';
+        return R.string.smart_goal_blood_sugar.tr();
       case ScheduleType.food:
-        return 'Cập nhật bữa ăn';
+        return R.string.smart_goal_blood_sugar.tr();
       case ScheduleType.exercise:
-        return 'Vận động';
+        return R.string.smart_goal_blood_sugar.tr();
       case ScheduleType.hba1c:
-        return 'Đo HbA1C';
+        return R.string.smart_goal_blood_sugar.tr();
       case ScheduleType.exercise_movement:
         return '';
       case ScheduleType.custom:
