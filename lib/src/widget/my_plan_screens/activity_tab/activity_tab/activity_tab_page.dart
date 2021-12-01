@@ -1,8 +1,10 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -11,6 +13,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/circle_progress_widget.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
@@ -32,6 +35,7 @@ class ActivityTabPage extends StatefulWidget {
 class _ActivityTabPageState extends State<ActivityTabPage>
     with AutomaticKeepAliveClientMixin<ActivityTabPage> {
   late final ActivityTabCubit _cubit;
+  final RefreshController _controller = RefreshController();
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -54,11 +58,15 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             BotToast.showLoading();
           } else {
             BotToast.closeAllLoading();
+            _controller.refreshCompleted();
           }
           if (state is ActivityTabFailure) {
             Message.showToastMessage(context, state.error);
           }
           if (state is GoalTypeChanged) {}
+          if (state is ActivityTabWeekChanged) {
+            animateToIndex(state.newIndex, refresh: false);
+          }
         },
         builder: (context, state) {
           return Stack(
@@ -71,7 +79,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       children: [
                         _buildScheduleWidget(),
                         Visibility(
-                          // visible: _cubit.myPlanCubit.isPremiumUser,
+                          visible: _cubit.myPlanCubit.isPremiumUser,
                           child: Row(
                             children: [
                               ...List.generate(
@@ -117,68 +125,20 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     ),
                   ),
                   Expanded(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
-                        child: Column(children: [
-                          _buildSingleGoal(
-                            type: ScheduleType.exercise_movement,
-                            title: 'Bài tập vận động',
-                            frequency: 'Bài tập mềm dẻo',
+                    child: SmartRefresher(
+                      controller: _controller,
+                      onRefresh: () => _cubit.getListSmartGoal(isRefresh: true),
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
+                          child: Column(
+                            children: _cubit.smartGoalData?.data
+                                    ?.map((smartGoal) =>
+                                        _buildSingleGoal(data: smartGoal))
+                                    .toList() ??
+                                [],
                           ),
-                          _buildSingleGoal(
-                            type: ScheduleType.blood_sugar,
-                            title: 'Đo đường huyết',
-                            frequency: '2 lần/ngày',
-                          ),
-                          _buildSingleGoal(
-                            type: ScheduleType.custom,
-                            title: 'Ngồi thiền',
-                            frequency: 'Còn 7 ngày để hoàn thành',
-                          ),
-                          _buildSingleGoal(
-                            type: ScheduleType.exercise,
-                            title: 'Vận động',
-                            frequency: '30 phút',
-                          ),
-                          _buildSingleGoal(
-                            type: ScheduleType.weight,
-                            title: 'Đo cân nặng',
-                          ),
-                          _buildSingleGoal(
-                            type: ScheduleType.emotion,
-                            title: 'Cảm xúc',
-                          ),
-                          _buildSingleGoal(
-                            type: ScheduleType.hba1c,
-                            title: 'Đo HbA1C',
-                          ),
-                          _buildSingleGoal(
-                            type: ScheduleType.food,
-                            title: 'Nhập món ăn',
-                            frequency: '3 lần/ngày',
-                          ),
-                          _buildSingleGoal(
-                            type: ScheduleType.blood_pressure,
-                            title: 'Huyết áp',
-                            frequency: '10:00 am - 11:00 am',
-                          ),
-                          _buildSingleGoal(
-                            type: ScheduleType.coaching,
-                            title: 'Tư vấn với huấn luyện viên',
-                            frequency: '10:00 am - 11:00 am',
-                          ),
-                          _buildSingleGoal(
-                            type: ScheduleType.group,
-                            title: 'Sinh hoạt nhóm',
-                            frequency: '19h15',
-                          ),
-                          _buildSingleGoal(
-                            type: ScheduleType.survey,
-                            title: 'Khảo sát',
-                            frequency: 'Khảo sát tháng',
-                          ),
-                        ]),
+                        ),
                       ),
                     ),
                   ),
@@ -193,9 +153,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 bottom: 38 + MediaQuery.of(context).padding.bottom,
                 right: 24,
                 child: InkWell(
-                  onTap: () {
-                    NavigationUtil.navigatePage(
+                  onTap: () async {
+                    await NavigationUtil.navigatePage(
                         context, const CreateGoalPage());
+                    _cubit.getListSmartGoal();
                   },
                   child: Image.asset(
                     R.drawable.ic_button_plus_home,
@@ -437,10 +398,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   Widget _buildSingleGoal({
-    required ScheduleType type,
-    required String title,
-    String? frequency,
+    required SmartGoalListReponseData? data,
   }) {
+    final type = ScheduleTypeExtend.getTypeFromIndex(data?.type);
+    const frequency = null;
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: InkWell(
@@ -450,7 +411,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         child: Row(
           children: [
             CircleProgressWidget(
-              percent: 40,
+              percent: data?.progress ?? 0,
               icon: type.icon,
             ),
             Expanded(
@@ -461,7 +422,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      data?.name ?? '',
                       style: TextStyle(
                         color: R.color.textDark,
                         fontSize: 16,
@@ -484,7 +445,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             ),
             InkWell(
               onTap: () {
-                onEditGoal(type);
+                onEditGoal(type, data: data);
               },
               child: Visibility(
                 visible: type.editable,
@@ -550,33 +511,40 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     }
   }
 
-  void onEditGoal(ScheduleType type) {
+  void onEditGoal(ScheduleType type, {SmartGoalListReponseData? data}) {
     switch (type) {
       case ScheduleType.blood_sugar:
         Navigator.pushNamed(context, NavigatorName.schedule_glucose);
         break;
       case ScheduleType.blood_pressure:
-        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        NavigationUtil.navigatePage(
+            context, CreateGoalPage(smartGoalData: data));
         break;
       case ScheduleType.weight:
-        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        NavigationUtil.navigatePage(
+            context, CreateGoalPage(smartGoalData: data));
         break;
       case ScheduleType.emotion:
-        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        NavigationUtil.navigatePage(
+            context, CreateGoalPage(smartGoalData: data));
         break;
       case ScheduleType.food:
-        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        NavigationUtil.navigatePage(
+            context, CreateGoalPage(smartGoalData: data));
         break;
       case ScheduleType.exercise:
-        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        NavigationUtil.navigatePage(
+            context, CreateGoalPage(smartGoalData: data));
         break;
       case ScheduleType.hba1c:
-        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        NavigationUtil.navigatePage(
+            context, CreateGoalPage(smartGoalData: data));
         break;
       case ScheduleType.exercise_movement:
         break;
       case ScheduleType.custom:
-        NavigationUtil.navigatePage(context, CreateGoalPage(type: type));
+        NavigationUtil.navigatePage(
+            context, CreateGoalPage(smartGoalData: data));
         break;
       case ScheduleType.coaching:
         break;
@@ -647,7 +615,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   showCustomGoalPopup() {
     return showPopup(
       context: context,
-      buttonTitle: 'Hoàn thành',
+      buttonTitle: R.string.complete_lesson.tr(),
       onTap: () {},
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -679,7 +647,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   showCoachingPopup() {
     return showPopup(
       context: context,
-      buttonTitle: 'Tham gia',
+      buttonTitle: R.string.join.tr(),
       onTap: () {},
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -741,7 +709,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   showSurveyPopup() {
     return showPopup(
       context: context,
-      buttonTitle: 'Bắt đầu khảo sát',
+      buttonTitle: R.string.start_survey.tr(),
       onTap: () {
         NavigationUtil.pop(context);
         NavigationUtil.navigatePage(context, const IntroduceSurveyPage());

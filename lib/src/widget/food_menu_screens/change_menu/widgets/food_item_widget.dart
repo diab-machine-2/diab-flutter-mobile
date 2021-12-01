@@ -45,14 +45,14 @@ class FoodItemWidget extends StatelessWidget {
           ),
           child: Row(children: [
             Container(
+              width: 50,
+              height: 50,
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
               child: NetWorkImageWidget(
                 imageUrl: newFoodModel.image == null
                     ? ''
                     : newFoodModel.image!.url ?? '',
-                width: 50,
-                height: 50,
               ),
             ),
             const SizedBox(width: 16),

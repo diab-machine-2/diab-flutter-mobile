@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+
 import '../models/create_goal_status.dart';
 
 class CustomTopProgressBar extends StatelessWidget {
@@ -34,15 +36,15 @@ class CustomTopProgressBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildTextLayout(
-                text: 'Chọn loại\nmục tiêu',
+                text: R.string.select_smart_goal.tr(),
                 alignment: Alignment.centerLeft,
                 textAlign: TextAlign.left),
             _buildTextLayout(
-                text: 'Chi tiết\nmục tiêu',
+                text: R.string.setup_smart_goal.tr(),
                 alignment: Alignment.center,
                 textAlign: TextAlign.center),
             _buildTextLayout(
-                text: 'Hoàn thành',
+                text: R.string.complete_lesson.tr(),
                 alignment: Alignment.centerRight,
                 textAlign: TextAlign.right),
           ],

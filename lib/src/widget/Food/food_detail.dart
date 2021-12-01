@@ -292,23 +292,27 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                                 child: Row(
                                                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                                   children: [
-                                                                                    Row(children: [
-                                                                                      Container(
-                                                                                        width: 50,
-                                                                                        height: 50,
-                                                                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
-                                                                                        child: Image.network(food.image!.url ?? ''),
-                                                                                      ),
-                                                                                      SizedBox(width: 12),
-                                                                                      Column(
-                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                        children: [
-                                                                                          Text(food.name!, style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w500)),
-                                                                                          SizedBox(height: 4),
-                                                                                          food.code == 'OtherUneditable' ? SizedBox() :Text(food.text!, style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal))
-                                                                                        ],
-                                                                                      )
-                                                                                    ]),
+                                                                                    Expanded(
+                                                                                      child: Row(children: [
+                                                                                        Container(
+                                                                                          width: 50,
+                                                                                          height: 50,
+                                                                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
+                                                                                          child: Image.network(food.image!.url ?? ''),
+                                                                                        ),
+                                                                                        SizedBox(width: 12),
+                                                                                        Expanded(
+                                                                                          child: Column(
+                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                            children: [
+                                                                                              Text(food.name!, style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w500)),
+                                                                                              SizedBox(height: 4),
+                                                                                              food.code == 'OtherUneditable' ? SizedBox() :Text(food.text!, style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal))
+                                                                                            ],
+                                                                                          ),
+                                                                                        )
+                                                                                      ]),
+                                                                                    ),
                                                                                     Row(
                                                                                       children: [
                                                                                         Text(food.calorie!.round().toString(), style: TextStyle(fontFamily: 'Viga', color: R.color.black, fontSize: 20, fontWeight: FontWeight.w400)),

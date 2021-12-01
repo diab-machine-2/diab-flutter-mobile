@@ -225,14 +225,22 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<FoodSuggestResponse> getSuggestionFood(id) async {
+  Future<FoodSuggestResponse> getSuggestionFood(
+      {foodMenuCode, foodId, dateCode, timeCode, isUseReplacedFood}) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'foodMenuCode': foodMenuCode,
+      r'foodId': foodId,
+      r'dateCode': dateCode,
+      r'timeCode': timeCode,
+      r'isUseReplacedFood': isUseReplacedFood
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<FoodSuggestResponse>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, 'App/PatientFoodMenu/SuggestionFood/$id',
+                .compose(_dio.options, 'App/PatientFoodMenu/SuggestionFood',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = FoodSuggestResponse.fromJson(_result.data!);
@@ -490,6 +498,68 @@ class _AppApi implements AppApi {
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = WeekStatesResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CreateSmartGoalResponse> createSmartGoal(request) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CreateSmartGoalResponse>(
+            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/App/Target',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CreateSmartGoalResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<SmartGoalListReponse> getListSmartGoal({week, day}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'week': week, r'day': day};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SmartGoalListReponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/Target',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SmartGoalListReponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<SmartGoalStatisticResponse> getSmartGoalStatistics() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SmartGoalStatisticResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/Target/GetTargetWeekStatistics',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SmartGoalStatisticResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<SmartGoalDetailResponse> getSmartGoalDetail(id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SmartGoalDetailResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/Target/$id',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SmartGoalDetailResponse.fromJson(_result.data!);
     return value;
   }
 

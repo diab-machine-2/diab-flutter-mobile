@@ -1,3 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/res/R.dart';
+
 enum GoalRecordType {
   time,
   frequency,
@@ -7,18 +10,18 @@ extension GoalRecordTypeExtend on GoalRecordType {
   String get title {
     switch (this) {
       case GoalRecordType.time:
-        return 'Thời gian thực hiện';
+        return R.string.goal_record_type_time.tr();
       case GoalRecordType.frequency:
-        return 'Số lần thực hiện';
+        return R.string.goal_record_type_frequency.tr();
     }
   }
 
   String get unit {
     switch (this) {
       case GoalRecordType.time:
-        return 'phút';
+        return R.string.minute.tr();
       case GoalRecordType.frequency:
-        return 'lần';
+        return R.string.single_time.tr();
     }
   }
 

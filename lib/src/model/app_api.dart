@@ -4,6 +4,7 @@ import 'package:retrofit/retrofit.dart';
 
 import 'request/complete_exercise_request.dart';
 import 'request/create_menu_request.dart';
+import 'request/create_smart_goal_request.dart';
 import 'request/exercise_feedback_request.dart';
 import 'request/food_change_request.dart';
 import 'request/ios_receipt_request.dart';
@@ -15,6 +16,7 @@ import 'request/update_lesson_section_request.dart';
 import 'response/blood_sugar_template_response.dart';
 import 'response/common_response.dart';
 import 'response/create_menu_response.dart';
+import 'response/create_smart_goal_response.dart';
 import 'response/detail_package_response.dart';
 import 'response/detail_survey_response.dart';
 import 'response/diabetes_status_response.dart';
@@ -30,6 +32,9 @@ import 'response/list_transaction_response.dart';
 import 'response/menu_response.dart';
 import 'response/my_lesson_response.dart';
 import 'response/save_survey_result_response.dart';
+import 'response/smart_goal_detail_response.dart';
+import 'response/smart_goal_list_reponse.dart';
+import 'response/smart_goal_statistic_response.dart';
 import 'response/tdee_response.dart';
 import 'response/upgrade_account_response.dart';
 import 'response/user_info_response.dart';
@@ -105,10 +110,14 @@ abstract class AppApi {
   @GET("App/PatientFoodMenu/GetUserFoodMenu")
   Future<MenuResponse> getUserFoodMenu();
 
-  @GET("App/PatientFoodMenu/SuggestionFood/{id}")
-  Future<FoodSuggestResponse> getSuggestionFood(
-    @Path("id") String id,
-  );
+  @GET("App/PatientFoodMenu/SuggestionFood")
+  Future<FoodSuggestResponse> getSuggestionFood({
+    @Query("foodMenuCode") String? foodMenuCode,
+    @Query("foodId") String? foodId,
+    @Query("dateCode") String? dateCode,
+    @Query("timeCode") int? timeCode,
+    @Query("isUseReplacedFood") bool? isUseReplacedFood,
+  });
 
   @PUT("App/PatientFoodMenu/Input")
   Future<CommonResponse> changeFood(
@@ -152,6 +161,8 @@ abstract class AppApi {
     @Body() UpdateLessonSectionRequest request,
   );
 
+  //Exercise
+
   @GET("App/Roadmap/MyRoadmap")
   Future<ListRoadmapResponse> getRoadMap(
     @Query('page') int page,
@@ -186,6 +197,26 @@ abstract class AppApi {
 
   @GET("App/Lesson/GetWeekStates")
   Future<WeekStatesResponse> getLessonWeekStates();
+
+  //Activity
+  @POST("/App/Target")
+  Future<CreateSmartGoalResponse> createSmartGoal(
+    @Body() CreateSmartGoalRequest request,
+  );
+
+  @GET("App/Target")
+  Future<SmartGoalListReponse> getListSmartGoal({
+    @Query('week') int? week,
+    @Query('day') int? day,
+  });
+
+  @GET("App/Target/GetTargetWeekStatistics")
+  Future<SmartGoalStatisticResponse> getSmartGoalStatistics();
+
+  @GET("App/Target/{id}")
+  Future<SmartGoalDetailResponse> getSmartGoalDetail(
+    @Path("id") String id,
+  );
   
   // Quiz
   @POST("App/Lesson/{lessonId}/Review")

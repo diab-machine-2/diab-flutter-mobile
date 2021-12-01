@@ -1,3 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/res/R.dart';
+
 enum DayInWeek {
   mon,
   tue,
@@ -12,19 +15,19 @@ extension DayInWeekExtend on DayInWeek {
   String get title {
     switch (this) {
       case DayInWeek.mon:
-        return 'Thứ hai';
+        return R.string.day_in_week_monday.tr();
       case DayInWeek.tue:
-        return 'Thứ ba';
+        return R.string.day_in_week_tuesday.tr();
       case DayInWeek.wed:
-        return 'Thứ tư';
+        return R.string.day_in_week_wednesday.tr();
       case DayInWeek.thu:
-        return 'Thứ năm';
+        return R.string.day_in_week_thursday.tr();
       case DayInWeek.fri:
-        return 'Thứ sáu';
+        return R.string.day_in_week_friday.tr();
       case DayInWeek.sat:
-        return 'Thứ bảy';
+        return R.string.day_in_week_saturday.tr();
       case DayInWeek.sun:
-        return 'Chủ nhật';
+        return R.string.day_in_week_sunday.tr();
     }
   }
 
@@ -50,19 +53,19 @@ extension DayInWeekExtend on DayInWeek {
   int get index {
     switch (this) {
       case DayInWeek.mon:
-        return 1;
+        return 0;
       case DayInWeek.tue:
-        return 2;
+        return 1;
       case DayInWeek.wed:
-        return 3;
+        return 2;
       case DayInWeek.thu:
-        return 4;
+        return 3;
       case DayInWeek.fri:
-        return 5;
+        return 4;
       case DayInWeek.sat:
-        return 6;
+        return 5;
       case DayInWeek.sun:
-        return 7;
+        return 6;
     }
   }
 
@@ -74,6 +77,17 @@ extension DayInWeekExtend on DayInWeek {
     if (text == DayInWeek.fri.title) return DayInWeek.fri;
     if (text == DayInWeek.sat.title) return DayInWeek.sat;
     if (text == DayInWeek.sun.title) return DayInWeek.sun;
+    return DayInWeek.mon;
+  }
+
+  static DayInWeek getDayInWeekFromIndex(int? index) {
+    if (index == DayInWeek.mon.index) return DayInWeek.mon;
+    if (index == DayInWeek.tue.index) return DayInWeek.tue;
+    if (index == DayInWeek.wed.index) return DayInWeek.wed;
+    if (index == DayInWeek.thu.index) return DayInWeek.thu;
+    if (index == DayInWeek.fri.index) return DayInWeek.fri;
+    if (index == DayInWeek.sat.index) return DayInWeek.sat;
+    if (index == DayInWeek.sun.index) return DayInWeek.sun;
     return DayInWeek.mon;
   }
 

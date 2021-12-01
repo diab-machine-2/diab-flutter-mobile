@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -25,8 +26,8 @@ import 'widgets/custom_top_progress_bar.dart';
 import 'widgets/select_type_widget.dart';
 
 class CreateGoalPage extends StatefulWidget {
-  const CreateGoalPage({this.type});
-  final ScheduleType? type;
+  const CreateGoalPage({this.smartGoalData});
+  final SmartGoalListReponseData? smartGoalData;
 
   @override
   _CreateGoalPageState createState() => _CreateGoalPageState();
@@ -35,13 +36,22 @@ class CreateGoalPage extends StatefulWidget {
 class _CreateGoalPageState extends State<CreateGoalPage> {
   late final CreateGoalCubit _cubit;
 
+  final TextEditingController? _nameController = TextEditingController();
+  final TextEditingController? _timeOrFrequency = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = CreateGoalCubit(appRepository);
-    if (widget.type != null) {
-      _cubit.setupGoal(selectedType: widget.type);
+    final ScheduleType? type = widget.smartGoalData?.goalType;
+    if (type != null) {
+      _cubit.setupGoal(selectedType: type);
+      _nameController?.text = widget.smartGoalData?.name ?? '';
+      if (widget.smartGoalData?.executeDayTimes != null) {
+        _timeOrFrequency?.text = '${widget.smartGoalData?.executeDayTimes!}';
+      }
+      _cubit.fillData(widget.smartGoalData!);
     }
   }
 
@@ -134,7 +144,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   List<Widget> _buildSelectGoalType() {
     return [
       Text(
-        'Chọn loại mục tiêu',
+        R.string.select_smart_goal_type.tr(),
         style: TextStyle(
           color: R.color.textDark,
           fontSize: 20,
@@ -143,21 +153,24 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       ),
       const SizedBox(height: 24),
       SelectTypeWidget(
-          title: 'Tạo thói quen mới',
+          title: R.string.create_new_habit.tr(),
           onTap: () {
             _cubit.setupGoal();
           }),
       SelectTypeWidget(
-          title: 'Làm một việc yêu thích',
+          title: R.string.do_a_favorite_thing.tr(),
           onTap: () {
             _cubit.setupGoal();
           }),
       SelectTypeWidget(
-        title: 'Tần suất theo dõi chỉ số sinh học',
-        onSlectType: (type) {
+        title: R.string.biometric_monitoring_frequency,
+        onSlectType: (type) async {
           if (type == ScheduleType.blood_sugar) {
             Navigator.pushNamed(context, NavigatorName.schedule_glucose);
           } else {
+            if (type == ScheduleType.exercise) {
+              await _cubit.getUserTarget();
+            }
             _cubit.setupGoal(selectedType: type);
           }
         },
@@ -172,7 +185,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         ],
       ),
       SelectTypeWidget(
-        title: 'Mục tiêu cá nhân',
+        title: R.string.personal_smart_goal.tr(),
         onTap: () {
           Navigator.pushNamed(context, NavigatorName.goal_setting);
         },
@@ -200,7 +213,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         margin: const EdgeInsets.only(top: 24, bottom: 16),
         alignment: Alignment.center,
         child: Text(
-          'Bạn đã cài đặt mục tiêu thành công!',
+          R.string.smart_setup_completed.tr(),
           style: TextStyle(
             color: R.color.textDark,
             fontSize: 16,
@@ -209,96 +222,36 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         ),
       ),
       Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
         decoration: BoxDecoration(
           color: R.color.white,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Tên hoạt động',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  flex: 3,
-                  child: Text(
-                    'Cập nhật bữa ăn',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Số lần thực hiện trong ngày',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  flex: 3,
-                  child: Text(
-                    '3 lần',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Tần suất',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  flex: 3,
-                  child: Text(
-                    '2 lần / tuần',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            if (_cubit.type == null || _cubit.type == ScheduleType.custom)
+              _buildSingleResultDetail(
+                  title: R.string.smart_goal_name.tr(), description: _cubit.name),
+            if (_cubit.goalRecordType == GoalRecordType.time &&
+                _cubit.type != ScheduleType.exercise)
+              _buildSingleResultDetail(
+                  title: R.string.goal_record_type_time.tr(),
+                  description: '${_cubit.goalTimeOrFrequency} phút'),
+            if (_cubit.goalRecordType == GoalRecordType.frequency &&
+                _cubit.type != ScheduleType.exercise)
+              _buildSingleResultDetail(
+                  title: R.string.goal_record_type_frequency.tr(),
+                  description: '${_cubit.goalTimeOrFrequency} lần'),
+            if (_cubit.type == ScheduleType.exercise)
+              _buildSingleResultDetail(
+                  title: R.string.so_phut_van_dong_moi_ngay.tr(),
+                  description:
+                      '${_cubit.parseString(_cubit.dailyTargetDuration)} phút'),
+            if (_cubit.type == ScheduleType.exercise)
+              _buildSingleResultDetail(
+                  title: R.string.so_phut_van_dong_moi_tuan.tr(),
+                  description:
+                      '${_cubit.parseString(_cubit.weeklyTargetDuration)} phút'),
           ],
         ),
       ),
@@ -308,12 +261,20 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   List<Widget> _buildSetupGoalDefault() {
     return [
       _buildTextField(),
-      _buildTimePicker(title: 'Chọn ngày bắt đầu hoạt động'),
+      _buildTimePicker(
+        initDate: _cubit.startDate,
+        title: R.string.select_start_date.tr(),
+        onPickDate: (dateTime) {
+          _cubit.startDate = dateTime;
+          _cubit.endDate = _cubit.startDate;
+        },
+        minDate: DateTime.now(),
+      ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: CustomCheckboxWidget(
             isChecked: _cubit.isRepeat,
-            title: 'Lặp lại',
+            title: R.string.repeat.tr(),
             onTap: () {
               FocusScope.of(context).unfocus();
               _cubit.onToggleRepeat();
@@ -322,7 +283,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       _buildSetupRepeat(),
       RichText(
         text: TextSpan(
-          text: 'Tính mục tiêu đề ra',
+          text: R.string.smart_goal_record_type_title.tr(),
           style: TextStyle(
             color: R.color.textDark,
             fontSize: 16,
@@ -331,7 +292,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           children: [
             const TextSpan(text: ' '),
             TextSpan(
-              text: '(Vui lòng chọn 1 trong 2 cách)',
+              text: R.string.smart_goal_record_type_description.tr(),
               style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 12,
@@ -343,7 +304,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       ),
       const SizedBox(height: 6),
       CustomMultiSelectToggle(
-        toggleList: const ['Thời gian thực hiện', 'Số lần thực hiện'],
+        toggleList: [R.string.goal_record_type_time.tr(), R.string.goal_record_type_frequency.tr()],
         selectedIndex: _cubit.goalRecordType.index,
         onChange: (newIndex) {
           FocusScope.of(context).unfocus();
@@ -351,34 +312,67 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         },
       ),
       _buildTimeOrFrequency(
-          title: _cubit.goalRecordType.title, unit: _cubit.goalRecordType.unit),
+        title: _cubit.goalRecordType.title,
+        unit: _cubit.goalRecordType.unit,
+        onChanged: (text) {
+          _cubit.goalTimeOrFrequency = text;
+        },
+      ),
     ];
   }
 
   List<Widget> _buildSetupGoalType1() {
     return [
       _buildTextDescription(),
-      _buildTimePicker(title: 'Chọn ngày bắt đầu hoạt động'),
+      _buildTimePicker(
+        initDate: _cubit.startDate,
+        title: R.string.select_start_date.tr(),
+        onPickDate: (dateTime) {
+          _cubit.startDate = dateTime;
+          _cubit.endDate = _cubit.startDate;
+        },
+        minDate: DateTime.now(),
+      ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: CustomCheckboxWidget(
             isChecked: _cubit.isRepeat,
-            title: 'Lặp lại',
+            title: R.string.repeat.tr(),
             onTap: () {
               FocusScope.of(context).unfocus();
               _cubit.onToggleRepeat();
             }),
       ),
       _buildSetupRepeat(),
-      _buildTimeOrFrequency(title: 'Số lần thực hiện trong ngày', unit: 'lần'),
+      _buildTimeOrFrequency(
+        title: R.string.frequency_per_day.tr(),
+        unit: 'lần',
+        onChanged: (text) {
+          _cubit.goalTimeOrFrequency = text;
+        },
+      ),
     ];
   }
 
   List<Widget> _buildSetupGoalType2() {
     return [
       _buildTextDescription(),
-      _buildTimeOrFrequency(title: 'Số phút vận động mỗi ngày', unit: 'phút'),
-      _buildTimeOrFrequency(title: 'Số phút vận động mỗi tuần', unit: 'phút'),
+      _buildTimeOrFrequency(
+          title: R.string.so_phut_van_dong_moi_ngay.tr(),
+          unit: 'phút',
+          onChanged: (text) {
+            _cubit.dailyTargetDuration = text;
+          },
+          controller: TextEditingController()
+            ..text = '${_cubit.userInfo?.dailyTargetDuration?.toInt() ?? 0}'),
+      _buildTimeOrFrequency(
+          title: R.string.so_phut_van_dong_moi_tuan.tr(),
+          unit: 'phút',
+          onChanged: (text) {
+            _cubit.weeklyTargetDuration = text;
+          },
+          controller: TextEditingController()
+            ..text = '${_cubit.userInfo?.weeklyTargetDuration?.toInt() ?? 0}'),
     ];
   }
 
@@ -395,7 +389,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Tên hoạt động',
+                R.string.smart_goal_name.tr(),
                 style: TextStyle(
                   color: R.color.textDark,
                   fontSize: 16,
@@ -408,15 +402,19 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             color: R.color.transparent,
             child: Column(
               children: [
-                const TextField(
+                TextField(
+                  controller: _nameController,
                   autofocus: false,
                   decoration: InputDecoration(
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       contentPadding:
-                          EdgeInsets.only(left: 0, bottom: 0, top: 8, right: 0),
-                      hintText: 'Nhập tên hoạt động'),
+                          const EdgeInsets.only(left: 0, bottom: 0, top: 8, right: 0),
+                      hintText: R.string.enter_smart_goal_name.tr()),
+                  onChanged: (text) {
+                    _cubit.name = text;
+                  },
                 ),
                 Container(height: 1, color: R.color.color0xffE5E5E5),
                 const SizedBox(height: 8),
@@ -447,7 +445,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'Chọn mức độ thường xuyên',
+                        R.string.select_frequency.tr(),
                         style: TextStyle(
                           color: R.color.textDark,
                           fontSize: 16,
@@ -464,7 +462,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                         context: context,
                         builder: (context) {
                           return SelectBottomSheetWidget(
-                            title: 'Chọn mức độ thường xuyên',
+                            title: R.string.select_frequency.tr(),
                             selectedList: [_cubit.repeatType.title],
                             elementList: [
                               RepeatType.day.title,
@@ -472,9 +470,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                             ],
                             onSelected: (typeList) {
                               if (typeList.isNotEmpty) {
-                                _cubit.onChangeRepeatType(
-                                  typeList.first
-                                );
+                                _cubit.onChangeRepeatType(typeList.first);
                               }
                             },
                           );
@@ -526,7 +522,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           context: context,
                           builder: (context) {
                             return SelectBottomSheetWidget(
-                              title: 'Chọn mức độ thường xuyên',
+                              title: R.string.select_frequency.tr(),
                               selectedList: _cubit.repeatDayList
                                   .map((e) => e.title)
                                   .toList(),
@@ -551,26 +547,31 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                             children: [
                               Image.asset(R.drawable.ic_calendar,
                                   width: 24, height: 24),
-                             Expanded(child: Row(
-                               mainAxisAlignment: MainAxisAlignment.end,
-                               children: _cubit.repeatDayList
-                                  .map(
-                                    (day) => Container(
-                                      height: 24,
-                                      alignment: Alignment.center,
-                                      margin: const EdgeInsets.only(left: 8),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 4),
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          border: Border.all(
-                                              color: R.color.grayBorder),),
-                                      child: Text(day.shortTitle,
-                                          style: R.style.normalTextStyle),
-                                    ),
-                                  )
-                                  .toList(),),)
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: _cubit.repeatDayList
+                                      .map(
+                                        (day) => Container(
+                                          height: 24,
+                                          alignment: Alignment.center,
+                                          margin:
+                                              const EdgeInsets.only(left: 8),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 4),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            border: Border.all(
+                                                color: R.color.grayBorder),
+                                          ),
+                                          child: Text(day.shortTitle,
+                                              style: R.style.normalTextStyle),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              )
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -584,14 +585,27 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               ),
             ),
           ),
-          _buildTimePicker(title: 'Chọn ngày kết thúc'),
+          _buildTimePicker(
+            initDate: _cubit.endDate,
+            title: R.string.select_end_date.tr(),
+            onPickDate: (dateTime) {
+              _cubit.endDate = dateTime;
+            },
+            minDate: _cubit.startDate,
+          ),
           const SizedBox(height: 24)
         ],
       ),
     );
   }
 
-  Widget _buildTimePicker({required String title}) {
+  Widget _buildTimePicker({
+    required String title,
+    required DateTime initDate,
+    required Function(DateTime dateTime) onPickDate,
+    required DateTime? minDate,
+    DateTime? maxDate,
+  }) {
     return _buildItemLayout(
       child: Column(
         children: [
@@ -623,10 +637,13 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                 context: context,
                 builder: (_) => CustomDatePicker(
-                  initDate: _cubit.startDate,
+                  initDate: initDate,
                   callback: (DateTime date) {
-                    _cubit.startDate = date;
+                    onPickDate(date);
+                    _cubit.emit(CreateGoalPickedDate(date));
                   },
+                  minDate: minDate,
+                  maxDate: maxDate,
                 ),
               );
             },
@@ -639,7 +656,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     children: [
                       const SizedBox(width: 8),
                       Text(
-                        DateFormat('dd/MM/yyyy').format(_cubit.startDate),
+                        DateFormat('dd/MM/yyyy').format(initDate),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -659,7 +676,11 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     );
   }
 
-  Widget _buildTimeOrFrequency({required String title, required String unit}) {
+  Widget _buildTimeOrFrequency(
+      {required String title,
+      required String unit,
+      required Function(String text) onChanged,
+      TextEditingController? controller}) {
     return _buildItemLayout(
       child: Column(
         children: [
@@ -689,32 +710,33 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 color: R.color.transparent,
                 width: 70,
                 child: TextField(
-                  autofocus: false,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: R.color.textFieldGrey,
-                    fontSize: 40,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'[0-9]'),
+                    controller: controller ?? _timeOrFrequency,
+                    autofocus: false,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textFieldGrey,
+                      fontSize: 40,
+                      fontWeight: FontWeight.w400,
                     ),
-                  ],
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    hintText: '-',
-                    contentPadding: EdgeInsets.only(
-                      left: 0,
-                      bottom: 0,
-                      top: 8,
-                      right: 0,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[0-9]'),
+                      ),
+                    ],
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      hintText: '-',
+                      contentPadding: EdgeInsets.only(
+                        left: 0,
+                        bottom: 0,
+                        top: 8,
+                        right: 0,
+                      ),
                     ),
-                  ),
-                ),
+                    onChanged: onChanged),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -731,6 +753,42 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           ),
           Container(height: 1, width: 70, color: R.color.color0xffE5E5E5),
           const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleResultDetail({
+    required String title,
+    required String description,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              title,
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            flex: 3,
+            child: Text(
+              description,
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -771,12 +829,16 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     );
   }
 
-  Widget _buildItemLayout({required Widget child, EdgeInsetsGeometry? margin}) {
+  Widget _buildItemLayout(
+      {required Widget child,
+      EdgeInsetsGeometry? margin,
+      bool isValid = true}) {
     return Container(
       margin: margin ?? const EdgeInsets.only(top: 16),
       decoration: BoxDecoration(
         color: R.color.white,
         borderRadius: BorderRadius.circular(16),
+        border: isValid ? null : Border.all(color: Colors.red),
       ),
       padding: const EdgeInsets.symmetric(
         horizontal: 16,

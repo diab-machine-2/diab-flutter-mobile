@@ -65,3 +65,12 @@ class ActivityTabHideProgressMessage extends ActivityTabState {
     return 'ActivityTabHideProgressMessage{}';
   }
 }
+
+class ActivityTabWeekChanged extends ActivityTabState {
+  const ActivityTabWeekChanged(this.newIndex);
+  final int newIndex;
+  @override
+  String toString() {
+    return 'ActivityTabWeekChanged{}';
+  }
+}

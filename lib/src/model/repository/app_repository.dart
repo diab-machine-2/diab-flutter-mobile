@@ -1,6 +1,7 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
+import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
@@ -12,6 +13,7 @@ import 'package:medical/src/model/request/update_lesson_section_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
+import 'package:medical/src/model/response/create_smart_goal_response.dart';
 import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
@@ -27,6 +29,8 @@ import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
+import 'package:medical/src/model/response/smart_goal_detail_response.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
@@ -201,10 +205,21 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<FoodSuggestResponse>> getSuggestionFood(String id) async {
+  Future<ApiResult<FoodSuggestResponse>> getSuggestionFood({
+    required String foodMenuCode,
+    required String foodId,
+    required String dateCode,
+    required int timeCode,
+    required bool isUseReplacedFood,
+  }) async {
     try {
-      final FoodSuggestResponse response =
-          await appClient.getSuggestionFood(id);
+      final FoodSuggestResponse response = await appClient.getSuggestionFood(
+        foodMenuCode: foodMenuCode,
+        foodId: foodId,
+        dateCode: dateCode,
+        timeCode: timeCode,
+        isUseReplacedFood: isUseReplacedFood,
+      );
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -368,6 +383,8 @@ class AppRepository {
     }
   }
 
+  //Exercise
+
   Future<ApiResult<ListRoadmapResponse>> getRoadMap(
       {required int page, required int size}) async {
     try {
@@ -444,6 +461,42 @@ class AppRepository {
   Future<ApiResult<WeekStatesResponse>> getLessonWeekStates() async {
     try {
       final WeekStatesResponse response = await appClient.getLessonWeekStates();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  //Activity
+  Future<ApiResult<CreateSmartGoalResponse>> createSmartGoal(
+      CreateSmartGoalRequest request) async {
+    try {
+      final CreateSmartGoalResponse response =
+          await appClient.createSmartGoal(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<SmartGoalListReponse>> getListSmartGoal({
+    int? week,
+    int? day,
+  }) async {
+    try {
+      final SmartGoalListReponse response =
+          await appClient.getListSmartGoal(week: week, day: day);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<SmartGoalDetailResponse>> getSmartGoalDetail(
+      {required String id}) async {
+    try {
+      final SmartGoalDetailResponse response =
+          await appClient.getSmartGoalDetail(id);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

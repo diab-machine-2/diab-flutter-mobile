@@ -4,10 +4,17 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker.dart';
 
 class CustomDatePicker extends StatefulWidget {
-  const CustomDatePicker({this.initDate, required this.callback});
+  const CustomDatePicker({
+    this.initDate,
+    required this.callback,
+    this.minDate,
+    this.maxDate,
+  });
 
   final DateTime? initDate;
   final Function(DateTime) callback;
+  final DateTime? minDate;
+  final DateTime? maxDate;
 
   @override
   _CustomDatePickerState createState() => _CustomDatePickerState();
@@ -71,8 +78,10 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                         initialDate: widget.initDate == null
                             ? DateTime.now()
                             : widget.initDate!,
-                        firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
-                        lastDate: DateTime.now(),
+                        firstDate: widget.minDate ??
+                            DateTime.parse("1969-07-20 20:18:04Z"),
+                        lastDate:
+                            widget.maxDate ?? DateTime.utc(275760, 09, 13),
                         onDateChanged: (datetime) {
                           selectedDate = datetime ?? DateTime.now();
                         }),
