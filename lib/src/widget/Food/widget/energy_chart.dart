@@ -284,7 +284,6 @@ class EnergyChartState extends State<EnergyChart>
       UserClient().fetchUser();
       _refresh();
       Observable.instance.notifyObservers([], notifyName : "goal_calo_changed");
-      // DartNotificationCenter.post(channel: 'goal_calo_changed');
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();

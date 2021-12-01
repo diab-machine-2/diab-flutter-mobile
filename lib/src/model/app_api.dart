@@ -107,10 +107,14 @@ abstract class AppApi {
   @GET("App/PatientFoodMenu/GetUserFoodMenu")
   Future<MenuResponse> getUserFoodMenu();
 
-  @GET("App/PatientFoodMenu/SuggestionFood/{id}")
-  Future<FoodSuggestResponse> getSuggestionFood(
-    @Path("id") String id,
-  );
+  @GET("App/PatientFoodMenu/SuggestionFood")
+  Future<FoodSuggestResponse> getSuggestionFood({
+    @Query("foodMenuCode") String? foodMenuCode,
+    @Query("foodId") String? foodId,
+    @Query("dateCode") String? dateCode,
+    @Query("timeCode") int? timeCode,
+    @Query("isUseReplacedFood") bool? isUseReplacedFood,
+  });
 
   @PUT("App/PatientFoodMenu/Input")
   Future<CommonResponse> changeFood(

@@ -209,6 +209,8 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                                                   preFoodModel:
                                                       foodDetail?.foodModel,
                                                   hasSelectQuantity: false,
+                                                  dateCode: foodDetail?.dateCode,
+                                                  timeCode: foodDetail?.timeCode,
                                                 ),
                                               );
                                               if (result is FoodModel) {

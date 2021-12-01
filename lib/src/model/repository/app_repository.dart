@@ -203,10 +203,21 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<FoodSuggestResponse>> getSuggestionFood(String id) async {
+  Future<ApiResult<FoodSuggestResponse>> getSuggestionFood({
+    required String foodMenuCode,
+    required String foodId,
+    required String dateCode,
+    required int timeCode,
+    required bool isUseReplacedFood,
+  }) async {
     try {
-      final FoodSuggestResponse response =
-          await appClient.getSuggestionFood(id);
+      final FoodSuggestResponse response = await appClient.getSuggestionFood(
+        foodMenuCode: foodMenuCode,
+        foodId: foodId,
+        dateCode: dateCode,
+        timeCode: timeCode,
+        isUseReplacedFood: isUseReplacedFood,
+      );
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -458,7 +469,8 @@ class AppRepository {
   Future<ApiResult<CreateSmartGoalResponse>> createSmartGoal(
       CreateSmartGoalRequest request) async {
     try {
-      final CreateSmartGoalResponse response = await appClient.createSmartGoal(request);
+      final CreateSmartGoalResponse response =
+          await appClient.createSmartGoal(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

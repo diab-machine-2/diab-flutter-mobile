@@ -340,9 +340,9 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                   if (lineTouch!.lineBarSpots!.length == 1 &&
                                       event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
-                                    final value = lineTouch.lineBarSpots![0].x;
+                                    final value = lineTouch.lineBarSpots?[0].x;
                                     setState(() {
-                                      touchIndex = value.toInt();
+                                      touchIndex = value?.toInt() ?? -1;
                                     });
                                   } else {
                                     touchIndex = -1;
@@ -404,7 +404,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
         : [
             LineChartBarData(
               spots: List.generate(model.items.length, (index) {
-                return FlSpot((index).toDouble(), model.items[index].value!);
+                return FlSpot(index.toDouble(), model.items[index].value!);
               }),
               isCurved: false,
               colors: [R.color.black],

@@ -1,17 +1,19 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/horizontal_picker/horizontal_numberpicker_wrapper.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 
 class GoalSettingController extends StatefulWidget {
   @override
@@ -29,6 +31,8 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
   TextEditingController goalWeight = TextEditingController();
   TextEditingController weeklyTargetBurnedCalorie = TextEditingController();
   TextEditingController weeklyTargetDuration = TextEditingController();
+
+  String? initDailyKcal;
 
   @override
   void initState() {
@@ -67,6 +71,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
     if (model!.dailyEnergyGoal != 0) {
       total += 1;
       weeklyTargetBurnedCalorie.text = roundNumber1(model!.dailyEnergyGoal!);
+      initDailyKcal = roundNumber1(model!.dailyEnergyGoal!);
     }
     if (model!.weeklyTargetDuration != 0) {
       total += 1;
@@ -265,6 +270,23 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
 
   submitData() async {
     try {
+      if (initDailyKcal != weeklyTargetBurnedCalorie.text) {
+        final result = await showDialog(
+          barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+          context: context,
+          builder: (_) => NoticeChangePage(
+              description: R.string.consumption.tr(),
+              onClick: () {
+                Future.delayed(const Duration(milliseconds: 200), () {
+                  // TODO(Tuyen): Call API to update foodmenu
+                });
+                NavigationUtil.pop(context, result: true);
+              }),
+        );
+        if (result is! bool || !result) {
+          return;
+        }
+      }
       BotToast.showLoading();
       await UserClient().updateGoalInfo(GoalInfoModel(
           dailyWalkTargetDuration: double.parse(
@@ -287,7 +309,6 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
           goalWaist: goalWaist,
           goalWeight:
               double.parse(goalWeight.text.isEmpty ? '0' : goalWeight.text)));
-      // DartNotificationCenter.post(channel: 'goal_calo_changed');
       Observable.instance.notifyObservers([], notifyName : "goal_calo_changed");
       BotToast.closeAllLoading();
       Navigator.pop(context);

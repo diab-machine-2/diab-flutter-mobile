@@ -225,14 +225,22 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<FoodSuggestResponse> getSuggestionFood(id) async {
+  Future<FoodSuggestResponse> getSuggestionFood(
+      {foodMenuCode, foodId, dateCode, timeCode, isUseReplacedFood}) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'foodMenuCode': foodMenuCode,
+      r'foodId': foodId,
+      r'dateCode': dateCode,
+      r'timeCode': timeCode,
+      r'isUseReplacedFood': isUseReplacedFood
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<FoodSuggestResponse>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, 'App/PatientFoodMenu/SuggestionFood/$id',
+                .compose(_dio.options, 'App/PatientFoodMenu/SuggestionFood',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = FoodSuggestResponse.fromJson(_result.data!);

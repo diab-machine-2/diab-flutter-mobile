@@ -410,6 +410,10 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                                 index],
                                                             hasSelectQuantity:
                                                                 true,
+                                                            dateCode:
+                                                                'T${_cubit.selectedDate.weekday + 1}',
+                                                            timeCode:
+                                                                _cubit.timeCode,
                                                           ),
                                                         );
                                                         if (result

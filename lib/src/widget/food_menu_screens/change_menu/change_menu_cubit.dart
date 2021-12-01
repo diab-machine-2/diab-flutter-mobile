@@ -28,10 +28,19 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
     emit(const ChangeMenuLoading());
   }
 
-  Future<void> fetchSuggestFood() async {
+  Future<void> fetchSuggestFood({
+    required String dateCode,
+    required int timeCode,
+  }) async {
     await showLoading();
     final ApiResult<FoodSuggestResponse> apiResult =
-        await repository.getSuggestionFood(initFood?.id ?? '');
+        await repository.getSuggestionFood(
+      foodMenuCode: initFood?.mealId ?? '',
+      foodId: initFood?.id ?? '',
+      dateCode: dateCode,
+      timeCode: timeCode,
+      isUseReplacedFood: true,
+    );
     apiResult.when(success: (response) {
       if (response.data != null) {
         suggestFoods = response.foodModelList;

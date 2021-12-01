@@ -143,7 +143,7 @@ class FoodChartState extends State<FoodChart>
     return Row(children: [
       Container(width: 14, height: 14, color: toColor(model.colorCode)),
       SizedBox(width: 4),
-      Text(model.text!)
+      Text(model.text ?? '')
     ]);
   }
 
@@ -165,7 +165,9 @@ class FoodChartState extends State<FoodChart>
     //   total += element.value;
     // });
     data.details.forEach((element) {
+      if (element.percentValue != null) {
       numbers.add(element.percentValue!.toStringAsFixed(1) + '%');
+      }
     });
     return '${R.string.total.tr()}: ${formatNumber(data.value)} ${isEnergyTab ? R.string.kcal.tr() : 'g'}\n' +
         numbers.join(' - ');
@@ -348,9 +350,9 @@ class FoodChartState extends State<FoodChart>
                               if (event is! FlLongPressEnd &&
                                   event is! FlPanEndEvent) {
                                 final value =
-                                    barTouch!.spot!.touchedBarGroupIndex;
+                                    barTouch?.spot?.touchedBarGroupIndex;
                                 setState(() {
-                                  touchIndex = value.toInt();
+                                  touchIndex = value?.toInt() ?? -1;
                                 });
                               } else {
                                 touchIndex = -1;

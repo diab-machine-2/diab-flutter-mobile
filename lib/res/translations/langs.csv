@@ -824,7 +824,7 @@ text_warning_change_param,"cân, hãy điều chỉnh số kcal phù hợp theo 
 confirm_change,Xác nhận thay đổi?,
 diab_parameter,Cho diaB biết thông số của bạn,
 recipe,Hoặc tính theo công thức,
-consumption,"Mức tiêu thụ năng lượng của bạn đã thay đổi. Xác nhận tiếp tục đề cập thực đơn mẫu mới",
+consumption,"Mức tiêu thụ năng lượng của bạn đã thay đổi. Xác nhận tiếp tục để cập nhật thực đơn mẫu mới.",
 next,Tiếp tục,
 next_lesson,Tiếp theo,
 complete_lesson,Hoàn thành,

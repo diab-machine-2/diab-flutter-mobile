@@ -18,9 +18,13 @@ class ChangeMenuPage extends StatefulWidget {
   const ChangeMenuPage({
     required this.preFoodModel,
     required this.hasSelectQuantity,
+    required this.dateCode,
+    required this.timeCode,
   });
   final FoodModel? preFoodModel;
   final bool hasSelectQuantity;
+  final String? dateCode;
+  final int? timeCode;
 
   @override
   _ChangeMenuPageState createState() => _ChangeMenuPageState();
@@ -34,7 +38,10 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = ChangeMenuCubit(appRepository, initFood: widget.preFoodModel);
-    _cubit.fetchSuggestFood();
+    _cubit.fetchSuggestFood(
+      dateCode: widget.dateCode ?? 'T2',
+      timeCode: widget.timeCode ?? 1,
+    );
   }
 
   @override
@@ -70,7 +77,10 @@ class _ChangeMenuPageState extends State<ChangeMenuPage> {
                       emptyImage: R.drawable.img_empty_food_suggestion,
                       emptyText: R.string.suggest_food_empty.tr(),
                       onRefresh: () {
-                        _cubit.fetchSuggestFood();
+                        _cubit.fetchSuggestFood(
+                          dateCode: widget.dateCode ?? 'T2',
+                          timeCode: widget.timeCode ?? 1,
+                        );
                       },
                     ),
                   ),
