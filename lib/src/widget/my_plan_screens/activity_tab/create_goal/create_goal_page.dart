@@ -163,7 +163,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             _cubit.setupGoal();
           }),
       SelectTypeWidget(
-        title: R.string.biometric_monitoring_frequency,
+        title: R.string.biometric_monitoring_frequency.tr(),
         onSlectType: (type) async {
           if (type == ScheduleType.blood_sugar) {
             Navigator.pushNamed(context, NavigatorName.schedule_glucose);

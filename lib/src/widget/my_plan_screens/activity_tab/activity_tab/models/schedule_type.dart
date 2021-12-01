@@ -51,17 +51,17 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.blood_sugar:
         return R.string.smart_goal_blood_sugar.tr();
       case ScheduleType.blood_pressure:
-        return R.string.smart_goal_blood_sugar.tr();
+        return R.string.smart_goal_blood_pressure.tr();
       case ScheduleType.weight:
-        return R.string.smart_goal_blood_sugar.tr();
+        return R.string.smart_goal_weight.tr();
       case ScheduleType.emotion:
-        return R.string.smart_goal_blood_sugar.tr();
+        return R.string.smart_goal_emotion.tr();
       case ScheduleType.food:
-        return R.string.smart_goal_blood_sugar.tr();
+        return R.string.smart_goal_food.tr();
       case ScheduleType.exercise:
-        return R.string.smart_goal_blood_sugar.tr();
+        return R.string.smart_goal_exercise.tr();
       case ScheduleType.hba1c:
-        return R.string.smart_goal_blood_sugar.tr();
+        return R.string.smart_goal_hba1c.tr();
       case ScheduleType.exercise_movement:
         return '';
       case ScheduleType.custom:
