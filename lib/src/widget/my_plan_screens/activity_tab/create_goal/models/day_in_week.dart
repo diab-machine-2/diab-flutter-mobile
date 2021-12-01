@@ -77,6 +77,17 @@ extension DayInWeekExtend on DayInWeek {
     return DayInWeek.mon;
   }
 
+  static DayInWeek getDayInWeekFromIndex(int? index) {
+    if (index == DayInWeek.mon.index) return DayInWeek.mon;
+    if (index == DayInWeek.tue.index) return DayInWeek.tue;
+    if (index == DayInWeek.wed.index) return DayInWeek.wed;
+    if (index == DayInWeek.thu.index) return DayInWeek.thu;
+    if (index == DayInWeek.fri.index) return DayInWeek.fri;
+    if (index == DayInWeek.sat.index) return DayInWeek.sat;
+    if (index == DayInWeek.sun.index) return DayInWeek.sun;
+    return DayInWeek.mon;
+  }
+
   static List<DayInWeek> get dayInWeekList => [
         DayInWeek.mon,
         DayInWeek.tue,

@@ -49,3 +49,15 @@ class CreateGoalCompleted extends CreateGoalState {
     return 'CreateGoalCompleted{}';
   }
 }
+
+class CreateGoalPickedDate extends CreateGoalState {
+  const CreateGoalPickedDate(this.dateTime);
+  final DateTime dateTime;
+  @override
+  String toString() {
+    return 'CreateGoalPickedDate{}';
+  }
+
+  @override
+  List<Object> get props => [this.dateTime];
+}

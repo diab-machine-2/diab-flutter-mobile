@@ -32,6 +32,9 @@ import 'response/list_transaction_response.dart';
 import 'response/menu_response.dart';
 import 'response/my_lesson_response.dart';
 import 'response/save_survey_result_response.dart';
+import 'response/smart_goal_detail_response.dart';
+import 'response/smart_goal_list_reponse.dart';
+import 'response/smart_goal_statistic_response.dart';
 import 'response/tdee_response.dart';
 import 'response/upgrade_account_response.dart';
 import 'response/user_info_response.dart';
@@ -199,6 +202,20 @@ abstract class AppApi {
   @POST("/App/Target")
   Future<CreateSmartGoalResponse> createSmartGoal(
     @Body() CreateSmartGoalRequest request,
+  );
+
+  @GET("App/Target")
+  Future<SmartGoalListReponse> getListSmartGoal({
+    @Query('week') int? week,
+    @Query('day') int? day,
+  });
+
+  @GET("App/Target/GetTargetWeekStatistics")
+  Future<SmartGoalStatisticResponse> getSmartGoalStatistics();
+
+  @GET("App/Target/{id}")
+  Future<SmartGoalDetailResponse> getSmartGoalDetail(
+    @Path("id") String id,
   );
   
   // Quiz

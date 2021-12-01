@@ -160,4 +160,22 @@ extension ScheduleTypeExtend on ScheduleType {
         return false;
     }
   }
+
+  static ScheduleType getTypeFromIndex(int? index) {
+    if (index == ScheduleType.blood_pressure.typeIndex)
+      return ScheduleType.blood_pressure;
+    if (index == ScheduleType.blood_sugar.typeIndex)
+      return ScheduleType.blood_sugar;
+    if (index == ScheduleType.exercise.typeIndex) return ScheduleType.exercise;
+    if (index == ScheduleType.weight.typeIndex) return ScheduleType.weight;
+    if (index == ScheduleType.emotion.typeIndex) return ScheduleType.emotion;
+    if (index == ScheduleType.hba1c.typeIndex) return ScheduleType.hba1c;
+    if (index == ScheduleType.food.typeIndex) return ScheduleType.food;
+    if (index == ScheduleType.exercise_movement.typeIndex)
+      return ScheduleType.exercise_movement;
+    if (index == ScheduleType.coaching.typeIndex) return ScheduleType.coaching;
+    if (index == ScheduleType.group.typeIndex) return ScheduleType.group;
+    if (index == ScheduleType.survey.typeIndex) return ScheduleType.survey;
+    return ScheduleType.custom;
+  }
 }

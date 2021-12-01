@@ -4,21 +4,26 @@
 class CustomWeekList {
 /*
 {
-  "dayInWeek": 1
+  "dayInWeek": 0,
+  "targetSchedulerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 } 
 */
 
   int? dayInWeek;
+  String? targetSchedulerId;
 
   CustomWeekList({
     this.dayInWeek,
+    this.targetSchedulerId,
   });
   CustomWeekList.fromJson(Map<String, dynamic> json) {
     dayInWeek = json['dayInWeek']?.toInt();
+    targetSchedulerId = json['targetSchedulerId']?.toString();
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['dayInWeek'] = dayInWeek;
+    if (targetSchedulerId != null) data['targetSchedulerId'] = targetSchedulerId;
     return data;
   }
 }
@@ -26,29 +31,34 @@ class CustomWeekList {
 class CustomScheduler {
 /*
 {
-  "repeatTime": 1,
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "repeatTime": 0,
   "repeatType": 0,
-  "endDate": 1641003360,
+  "endDate": 0,
   "targetSchedulerWeeks": [
     {
-      "dayInWeek": 1
+      "dayInWeek": 0,
+      "targetSchedulerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
     }
   ]
 } 
 */
 
+  String? id;
   int? repeatTime;
   int? repeatType;
   int? endDate;
   List<CustomWeekList?>? targetSchedulerWeeks;
 
   CustomScheduler({
+    this.id,
     this.repeatTime,
     this.repeatType,
     this.endDate,
     this.targetSchedulerWeeks,
   });
   CustomScheduler.fromJson(Map<String, dynamic> json) {
+    id = json['id']?.toString();
     repeatTime = json['repeatTime']?.toInt();
     repeatType = json['repeatType']?.toInt();
     endDate = json['endDate']?.toInt();
@@ -63,6 +73,7 @@ class CustomScheduler {
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
+    if (id != null) data['id'] = id;
     data['repeatTime'] = repeatTime;
     data['repeatType'] = repeatType;
     data['endDate'] = endDate;
@@ -81,24 +92,30 @@ class CustomScheduler {
 class CreateSmartGoalRequest {
 /*
 {
-  "name": "Mục tiêu mới 1",
-  "type": 1,
-  "appointmentDate": 1638238609,
-  "executeType": 1,
-  "executeDayTimes": 3,
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "targetSchedulerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "name": "string",
+  "type": 0,
+  "appointmentDate": 0,
+  "executeType": 0,
+  "executeDayTimes": 0,
   "targetScheduler": {
-    "repeatTime": 1,
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "repeatTime": 0,
     "repeatType": 0,
-    "endDate": 1641003360,
+    "endDate": 0,
     "targetSchedulerWeeks": [
       {
-        "dayInWeek": 1
+        "dayInWeek": 0,
+        "targetSchedulerId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
       }
     ]
   }
 } 
 */
 
+  String? id;
+  String? targetSchedulerId;
   String? name;
   int? type;
   int? appointmentDate;
@@ -107,6 +124,8 @@ class CreateSmartGoalRequest {
   CustomScheduler? targetScheduler;
 
   CreateSmartGoalRequest({
+    this.id,
+    this.targetSchedulerId,
     this.name,
     this.type,
     this.appointmentDate,
@@ -115,6 +134,8 @@ class CreateSmartGoalRequest {
     this.targetScheduler,
   });
   CreateSmartGoalRequest.fromJson(Map<String, dynamic> json) {
+    id = json['id']?.toString();
+    targetSchedulerId = json['targetSchedulerId']?.toString();
     name = json['name']?.toString();
     type = json['type']?.toInt();
     appointmentDate = json['appointmentDate']?.toInt();
@@ -126,6 +147,8 @@ class CreateSmartGoalRequest {
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
+    if (id != null) data['id'] = id;
+    if (targetSchedulerId != null) data['targetSchedulerId'] = targetSchedulerId;
     data['name'] = name;
     data['type'] = type;
     data['appointmentDate'] = appointmentDate;

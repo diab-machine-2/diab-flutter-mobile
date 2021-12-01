@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -25,8 +26,8 @@ import 'widgets/custom_top_progress_bar.dart';
 import 'widgets/select_type_widget.dart';
 
 class CreateGoalPage extends StatefulWidget {
-  const CreateGoalPage({this.type});
-  final ScheduleType? type;
+  const CreateGoalPage({this.smartGoalData});
+  final SmartGoalListReponseData? smartGoalData;
 
   @override
   _CreateGoalPageState createState() => _CreateGoalPageState();
@@ -35,13 +36,22 @@ class CreateGoalPage extends StatefulWidget {
 class _CreateGoalPageState extends State<CreateGoalPage> {
   late final CreateGoalCubit _cubit;
 
+  final TextEditingController? _nameController = TextEditingController();
+  final TextEditingController? _timeOrFrequency = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = CreateGoalCubit(appRepository);
-    if (widget.type != null) {
-      _cubit.setupGoal(selectedType: widget.type);
+    final ScheduleType? type = widget.smartGoalData?.goalType;
+    if (type != null) {
+      _cubit.setupGoal(selectedType: type);
+      _nameController?.text = widget.smartGoalData?.name ?? '';
+      if (widget.smartGoalData?.executeDayTimes != null) {
+        _timeOrFrequency?.text = '${widget.smartGoalData?.executeDayTimes!}';
+      }
+      _cubit.fillData(widget.smartGoalData!);
     }
   }
 
@@ -251,7 +261,15 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   List<Widget> _buildSetupGoalDefault() {
     return [
       _buildTextField(),
-      _buildTimePicker(title: 'Chọn ngày bắt đầu hoạt động'),
+      _buildTimePicker(
+        initDate: _cubit.startDate,
+        title: 'Chọn ngày bắt đầu hoạt động',
+        onPickDate: (dateTime) {
+          _cubit.startDate = dateTime;
+          _cubit.endDate = _cubit.startDate;
+        },
+        minDate: DateTime.now(),
+      ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: CustomCheckboxWidget(
@@ -306,7 +324,15 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   List<Widget> _buildSetupGoalType1() {
     return [
       _buildTextDescription(),
-      _buildTimePicker(title: 'Chọn ngày bắt đầu hoạt động'),
+      _buildTimePicker(
+        initDate: _cubit.startDate,
+        title: 'Chọn ngày bắt đầu hoạt động',
+        onPickDate: (dateTime) {
+          _cubit.startDate = dateTime;
+          _cubit.endDate = _cubit.startDate;
+        },
+        minDate: DateTime.now(),
+      ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: CustomCheckboxWidget(
@@ -377,6 +403,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             child: Column(
               children: [
                 TextField(
+                  controller: _nameController,
                   autofocus: false,
                   decoration: const InputDecoration(
                       border: InputBorder.none,
@@ -558,14 +585,27 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               ),
             ),
           ),
-          _buildTimePicker(title: 'Chọn ngày kết thúc'),
+          _buildTimePicker(
+            initDate: _cubit.endDate,
+            title: 'Chọn ngày kết thúc',
+            onPickDate: (dateTime) {
+              _cubit.endDate = dateTime;
+            },
+            minDate: _cubit.startDate,
+          ),
           const SizedBox(height: 24)
         ],
       ),
     );
   }
 
-  Widget _buildTimePicker({required String title}) {
+  Widget _buildTimePicker({
+    required String title,
+    required DateTime initDate,
+    required Function(DateTime dateTime) onPickDate,
+    required DateTime? minDate,
+    DateTime? maxDate,
+  }) {
     return _buildItemLayout(
       child: Column(
         children: [
@@ -597,10 +637,13 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                 context: context,
                 builder: (_) => CustomDatePicker(
-                  initDate: _cubit.startDate,
+                  initDate: initDate,
                   callback: (DateTime date) {
-                    _cubit.startDate = date;
+                    onPickDate(date);
+                    _cubit.emit(CreateGoalPickedDate(date));
                   },
+                  minDate: minDate,
+                  maxDate: maxDate,
                 ),
               );
             },
@@ -613,7 +656,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     children: [
                       const SizedBox(width: 8),
                       Text(
-                        DateFormat('dd/MM/yyyy').format(_cubit.startDate),
+                        DateFormat('dd/MM/yyyy').format(initDate),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -667,7 +710,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 color: R.color.transparent,
                 width: 70,
                 child: TextField(
-                    controller: controller,
+                    controller: controller ?? _timeOrFrequency,
                     autofocus: false,
                     textAlign: TextAlign.center,
                     style: TextStyle(

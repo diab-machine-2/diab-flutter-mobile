@@ -19,4 +19,11 @@ extension RepeatTypeExtend on RepeatType {
     else
       return RepeatType.day;
   }
+
+  static RepeatType getTypeFromNumber(int? index) {
+    if (index == 1)
+      return RepeatType.week;
+    else
+      return RepeatType.day;
+  }
 }
