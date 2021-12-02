@@ -517,34 +517,27 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         Navigator.pushNamed(context, NavigatorName.schedule_glucose);
         break;
       case ScheduleType.blood_pressure:
-        NavigationUtil.navigatePage(
-            context, CreateGoalPage(smartGoalData: data));
+        editSmartGoal(data);
         break;
       case ScheduleType.weight:
-        NavigationUtil.navigatePage(
-            context, CreateGoalPage(smartGoalData: data));
+        editSmartGoal(data);
         break;
       case ScheduleType.emotion:
-        NavigationUtil.navigatePage(
-            context, CreateGoalPage(smartGoalData: data));
+        editSmartGoal(data);
         break;
       case ScheduleType.food:
-        NavigationUtil.navigatePage(
-            context, CreateGoalPage(smartGoalData: data));
+        editSmartGoal(data);
         break;
       case ScheduleType.exercise:
-        NavigationUtil.navigatePage(
-            context, CreateGoalPage(smartGoalData: data));
+        editSmartGoal(data);
         break;
       case ScheduleType.hba1c:
-        NavigationUtil.navigatePage(
-            context, CreateGoalPage(smartGoalData: data));
+        editSmartGoal(data);
         break;
       case ScheduleType.exercise_movement:
         break;
       case ScheduleType.custom:
-        NavigationUtil.navigatePage(
-            context, CreateGoalPage(smartGoalData: data));
+        editSmartGoal(data);
         break;
       case ScheduleType.coaching:
         break;
@@ -553,6 +546,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       case ScheduleType.survey:
         break;
     }
+  }
+
+  Future<void> editSmartGoal(SmartGoalListReponseData? data) async {
+    await NavigationUtil.navigatePage(
+        context, CreateGoalPage(smartGoalData: data));
+    _cubit.getListSmartGoal();
   }
 
   void showPopup({
