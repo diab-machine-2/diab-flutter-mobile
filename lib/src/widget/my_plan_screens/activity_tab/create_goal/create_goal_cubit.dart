@@ -101,6 +101,14 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
         (index) => CustomWeekList(dayInWeek: repeatDayList[index].index),
       );
 
+  CustomScheduler? get schedule => isRepeat
+      ? CustomScheduler(
+          repeatTime: 1,
+          repeatType: repeatTypeIndex,
+          endDate: (endDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          targetSchedulerWeeks: targetSchedulerWeeks)
+      : null;
+
   CreateSmartGoalRequest? get request {
     if (type == ScheduleType.exercise) return null;
     if (type == null || type == ScheduleType.custom) {
@@ -109,14 +117,9 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
         name: name,
         type: type?.typeIndex ?? 0,
         appointmentDate: (startDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-        targetSchedulerId: smartGoalDetail?.targetSchedulerId,
         executeType: goalRecordType.index,
         executeDayTimes: parseString(goalTimeOrFrequency),
-        targetScheduler: CustomScheduler(
-            repeatTime: 1,
-            repeatType: repeatTypeIndex,
-            endDate: (endDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-            targetSchedulerWeeks: targetSchedulerWeeks),
+        targetScheduler: schedule,
       );
     } else {
       return CreateSmartGoalRequest(
@@ -124,14 +127,9 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
         name: type?.title ?? '',
         type: type?.typeIndex,
         appointmentDate: (startDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-        targetSchedulerId: smartGoalDetail?.targetSchedulerId,
         executeType: GoalRecordType.time.index,
         executeDayTimes: parseString(goalTimeOrFrequency),
-        targetScheduler: CustomScheduler(
-            repeatTime: 1,
-            repeatType: repeatTypeIndex,
-            endDate: (endDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-            targetSchedulerWeeks: targetSchedulerWeeks),
+        targetScheduler: schedule,
       );
     }
   }
@@ -211,8 +209,15 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
 
   Future<void> createSmartGoal() async {
     emit(const CreateGoalLoading());
-    final ApiResult<CreateSmartGoalResponse> apiResult =
-        await repository.createSmartGoal(request ?? CreateSmartGoalRequest());
+    late final ApiResult<CreateSmartGoalResponse> apiResult;
+    if (smartGoalDetail == null) {
+      apiResult =
+          await repository.createSmartGoal(request ?? CreateSmartGoalRequest());
+    } else {
+      apiResult = await repository.updateSmartGoal(
+          id: smartGoalDetail?.id ?? '',
+          request: request ?? CreateSmartGoalRequest());
+    }
     apiResult.when(success: (CreateSmartGoalResponse response) {
       emit(const CreateGoalSuccess());
     }, failure: (NetworkExceptions error) {
