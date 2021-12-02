@@ -132,11 +132,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
                           child: Column(
-                            children: _cubit.smartGoalData?.data
-                                    ?.map((smartGoal) =>
-                                        _buildSingleGoal(data: smartGoal))
-                                    .toList() ??
-                                [],
+                            children: _cubit.smartGoalList
+                                .map((smartGoal) =>
+                                    _buildSingleGoal(data: smartGoal))
+                                .toList(),
                           ),
                         ),
                       ),
@@ -183,16 +182,19 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       refresh = false;
     }
     final double newPosition = index * 96 + (6 * index.toDouble());
+    if (!_scrollController.hasClients) return;
     _scrollController.animateTo(
       newPosition,
       duration: const Duration(milliseconds: 400),
       curve: Curves.ease,
     );
-    if (refresh) {}
+    if (refresh) {
+      _cubit.onSelectWeek(index);
+    }
   }
 
   Widget _buildScheduleWidget() {
-    if (_cubit.weekStatesList.isEmpty) return const SizedBox();
+    if (_cubit.dayStatesList.isEmpty) return const SizedBox();
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
@@ -242,9 +244,13 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                               ),
                             )
                           : _buildSingleDay(
-                              status: CompletionStatus.not_start_yet,
+                              status: _cubit.dayStatesList[index ~/ 2]
+                                      ?.completionStatus ??
+                                  CompletionStatus.not_start_yet,
                               isSelected: _cubit.currentDayIndex == index ~/ 2,
-                              onTap: () {});
+                              onTap: () {
+                                _cubit.onSelectDay(index ~/ 2);
+                              });
                     },
                   ),
                 ),
@@ -282,7 +288,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 return _buildSingleWeek(
                     state: _cubit.weekStatesList[index],
                     isSelected: index == _cubit.currentWeekIndex,
-                    onSelect: () {});
+                    onSelect: () {
+                      animateToIndex(index);
+                    });
               })
                 ..add(SizedBox(
                     width: MediaQuery.of(context).size.width - 96 * 2)),
@@ -318,7 +326,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   Widget _buildSingleWeek({
-    required WeekStatesResponseData state,
+    required WeekStatesResponseData? state,
     required bool isSelected,
     VoidCallback? onSelect,
   }) {
@@ -331,12 +339,13 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         height: 32,
         decoration: BoxDecoration(
           color: isSelected &&
-                  state.completionStatus == CompletionStatus.not_start_yet
+                  state?.completionStatus == CompletionStatus.not_start_yet
               ? R.color.greenbg
-              : state.completionStatus.statusBackgroundColor,
+              : state?.completionStatus.statusBackgroundColor,
           border: isSelected &&
-                  state.completionStatus != CompletionStatus.not_start_yet
-              ? Border.all(color: state.completionStatus.statusIconColor)
+                  state?.completionStatus != null &&
+                  state?.completionStatus != CompletionStatus.not_start_yet
+              ? Border.all(color: state!.completionStatus.statusIconColor)
               : null,
           borderRadius: BorderRadius.circular(200),
         ),
@@ -344,19 +353,20 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              state.weekTitle ?? '',
+              state?.weekTitle ?? '',
               style: TextStyle(
                 color: isSelected &&
-                        state.completionStatus == CompletionStatus.not_start_yet
+                        state?.completionStatus ==
+                            CompletionStatus.not_start_yet
                     ? R.color.green
-                    : state.completionStatus.statusIconColor,
+                    : state?.completionStatus.statusIconColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
             if (!(isSelected &&
-                state.completionStatus == CompletionStatus.not_start_yet))
-              state.completionStatus.weekStatusIcon
+                state?.completionStatus == CompletionStatus.not_start_yet))
+              state!.completionStatus.weekStatusIcon
           ],
         ),
       ),

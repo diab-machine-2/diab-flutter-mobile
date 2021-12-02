@@ -217,7 +217,9 @@ abstract class AppApi {
   });
 
   @GET("App/Target/GetTargetWeekStatistics")
-  Future<SmartGoalStatisticResponse> getSmartGoalStatistics();
+  Future<SmartGoalStatisticResponse> getSmartGoalStatistics({
+    @Query('week') int? week,
+  });
 
   @GET("App/Target/{id}")
   Future<SmartGoalDetailResponse> getSmartGoalDetail(
