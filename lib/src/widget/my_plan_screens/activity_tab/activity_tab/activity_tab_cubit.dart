@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -21,7 +24,9 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     GoalFilterType.day,
     GoalFilterType.week
   ];
-  List<WeekStatesResponseData> weekStatesList = [];
+
+  SmartGoalStatisticResponseData? statistic;
+
   int mark = 0;
   int? currentWeekIndex;
   int currentDayIndex = 0;
@@ -32,12 +37,22 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   double progress = 0.4;
 
+  List<WeekStatesResponseData?> get weekStatesList => statistic?.weeks ?? [];
+  List<DayStatesResponseData?> get dayStatesList =>
+      statistic?.daysInCurrentWeek ?? [];
+
+  List<SmartGoalListReponseData?> get smartGoalList =>
+      smartGoalData?.data ?? [];
+
   int get currentGoalTypeIndex {
     final int index = goalTypeList.indexOf(currentGoalType);
     return index == -1 ? 0 : index;
   }
 
-  int? get week => currentWeekIndex == null ? null : currentWeekIndex! + 1;
+  int? get currentWeek =>
+      currentWeekIndex == null ? null : currentWeekIndex! + 1;
+
+  int? get currentDay => dayStatesList[currentDayIndex]?.day;
 
   void changeGoalType(int newIndex) {
     currentGoalType = goalTypeList[newIndex];
@@ -53,26 +68,28 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     myPlanCubit.changePlanType(2);
   }
 
-  void generateWeek() {
-    weekStatesList = List.generate(
-      9,
-      (index) => WeekStatesResponseData(
-        week: index + 1,
-        weekTitle: 'Tuần ${index + 1}',
-        state: 1,
-      ),
-    );
+  Future<void> onSelectWeek(int newWeekIndex) async {
+    currentWeekIndex = newWeekIndex;
+    await getSmartGoalStatistics(hideLoadingAfterDone: false);
+    getListSmartGoal();
+  }
+
+  void onSelectDay(int newDayIndex) {
+    currentDayIndex = newDayIndex;
+    getListSmartGoal();
   }
 
   Future<void> initData() async {
     await myPlanCubit.checkUserInfo();
     if (myPlanCubit.packageCode == Const.PREMIUM &&
         myPlanCubit.currentStudyWeek != null) {
-      generateWeek();
       currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
     }
+    await getSmartGoalStatistics(hideLoadingAfterDone: false);
     await getListSmartGoal();
-    emit(ActivityTabWeekChanged(currentWeekIndex ?? 0));
+    Timer(const Duration(milliseconds: 100), () {
+      emit(ActivityTabWeekChanged(currentWeekIndex ?? 0));
+    });
   }
 
   Future<void> getListSmartGoal({bool isRefresh = false}) async {
@@ -81,7 +98,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       emit(const ActivityTabLoading());
     }
     final ApiResult<SmartGoalListReponse> apiResult =
-        await repository.getListSmartGoal(week: week);
+        await repository.getListSmartGoal(day: currentDay);
     apiResult.when(success: (SmartGoalListReponse response) {
       smartGoalData = response;
       emit(const ActivityTabSuccess());
@@ -89,5 +106,24 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
     emit(const ActivityTabInitial());
+  }
+
+  Future<void> getSmartGoalStatistics(
+      {bool hideLoadingAfterDone = true}) async {
+    await Future.delayed(Duration.zero);
+    emit(const ActivityTabLoading());
+    final ApiResult<SmartGoalStatisticResponse> apiResult =
+        await repository.getSmartGoalStatistics(week: currentWeek);
+    apiResult.when(success: (SmartGoalStatisticResponse response) {
+      statistic = response.data;
+      currentDayIndex = response.initDayIndex;
+      mark = response.getCompletedMarkIndex(
+          currentWeek: currentWeek,
+          userCurrentWeek: myPlanCubit.currentStudyWeek);
+      if (hideLoadingAfterDone) emit(const ActivityTabSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    if (hideLoadingAfterDone) emit(const ActivityTabInitial());
   }
 }
