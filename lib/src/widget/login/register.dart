@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -10,11 +11,12 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class RegisterController extends StatefulWidget {
   @override
@@ -25,10 +27,12 @@ class _RegisterControllerState extends State<RegisterController> {
   final GlobalKey<TextFieldCustomState> phoneKey = GlobalKey();
   final GlobalKey<TextFieldCustomState> passwordKey = GlobalKey();
   final GlobalKey<TextFieldCustomState> confirmPasswordKey = GlobalKey();
+  final GlobalKey<TextFieldCustomState> sharedCodeKey = GlobalKey();
 
   String phone = '';
   String password = '';
   String confirmPassword = '';
+  String sharedCode = '';
 
   bool checked = false;
 
@@ -51,13 +55,9 @@ class _RegisterControllerState extends State<RegisterController> {
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 30),
-                      ),
-                    ]),
+                    const SizedBox(height: 30),
                     Padding(
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -70,16 +70,17 @@ class _RegisterControllerState extends State<RegisterController> {
                                   onChanged: (value) {
                                     phone = value;
                                   }),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               TextFieldCustom(
                                   key: passwordKey,
                                   title: R.string.password.tr(),
-                                  placeholder: R.string.password_least_character.tr(),
+                                  placeholder:
+                                      R.string.password_least_character.tr(),
                                   isPassword: true,
                                   onChanged: (value) {
                                     password = value;
                                   }),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               TextFieldCustom(
                                   key: confirmPasswordKey,
                                   title: R.string.xac_nhan_mat_khau.tr(),
@@ -88,7 +89,15 @@ class _RegisterControllerState extends State<RegisterController> {
                                   onChanged: (value) {
                                     confirmPassword = value;
                                   }),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
+                              TextFieldCustom(
+                                  key: sharedCodeKey,
+                                  title: 'Mã giới thiệu',
+                                  placeholder: 'Nhập mã giới thiệu',
+                                  onChanged: (value) {
+                                    sharedCode = value;
+                                  }),
+                              const SizedBox(height: 20),
                               GestureDetector(
                                 onTap: () {
                                   phoneKey.currentState!.focusNode
@@ -126,6 +135,31 @@ class _RegisterControllerState extends State<RegisterController> {
                             ])
                           ]),
                     ),
+                    InkWell(
+                      onTap: () {
+                        NavigationUtil.navigatePage(
+                            context, const QRScanWidget());
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            R.drawable.ic_account,
+                            width: 26,
+                            height: 26,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Quét mã giới thiệu',
+                            style: TextStyle(
+                              color: R.color.mainColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     SafeArea(
                       child: Column(
                         children: [
@@ -134,44 +168,45 @@ class _RegisterControllerState extends State<RegisterController> {
                                   color: R.color.textDark,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400)),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Platform.isIOS
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          loginApple();
-                                        },
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                              left: 8, right: 8),
-                                          child: Container(
-                                              height: 50,
-                                              width: 50,
-                                              decoration: BoxDecoration(
-                                                  color: R.color.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          25)),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Image.asset(
-                                                        R.drawable.ic_login_apple,
-                                                        width: 26,
-                                                        height: 26),
-                                                  ])),
-                                        ),
-                                      )
-                                    : SizedBox(),
+                                if (Platform.isIOS)
+                                  GestureDetector(
+                                    onTap: () {
+                                      loginApple();
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8, right: 8),
+                                      child: Container(
+                                          height: 50,
+                                          width: 50,
+                                          decoration: BoxDecoration(
+                                              color: R.color.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
+                                          child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Image.asset(
+                                                    R.drawable.ic_login_apple,
+                                                    width: 26,
+                                                    height: 26),
+                                              ])),
+                                    ),
+                                  )
+                                else
+                                  const SizedBox(),
                                 GestureDetector(
                                   onTap: () {
                                     loginGG();
                                   },
                                   child: Padding(
-                                    padding: EdgeInsets.only(left: 8, right: 8),
+                                    padding: const EdgeInsets.only(
+                                        left: 8, right: 8),
                                     child: Container(
                                         height: 50,
                                         width: 50,
@@ -183,15 +218,13 @@ class _RegisterControllerState extends State<RegisterController> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              Image.asset(
-                                                  R.drawable.ic_google,
-                                                  width: 26,
-                                                  height: 26),
+                                              Image.asset(R.drawable.ic_google,
+                                                  width: 26, height: 26),
                                             ])),
                                   ),
                                 )
                               ]),
-                          SizedBox(height: 16)
+                          const SizedBox(height: 16)
                         ],
                       ),
                     )
@@ -215,7 +248,7 @@ class _RegisterControllerState extends State<RegisterController> {
             //             })
             //       ]),
             // ),
-            new Positioned(
+            Positioned(
                 //Place it at the top, and not use the entire screen
                 top: 0,
                 left: 0,
@@ -247,7 +280,8 @@ class _RegisterControllerState extends State<RegisterController> {
 
   verify() async {
     if (phone.isEmpty) {
-      phoneKey.currentState!.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
+      phoneKey.currentState!
+          .validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
     if (password.isEmpty) {
@@ -255,15 +289,18 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
     if (password.contains(' ')) {
-      passwordKey.currentState!.validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
+      passwordKey.currentState!
+          .validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
       return;
     }
     if (password.length < 6) {
-      passwordKey.currentState!.validate(R.string.password_least_character.tr());
+      passwordKey.currentState!
+          .validate(R.string.password_least_character.tr());
       return;
     }
     if (confirmPassword.isEmpty) {
-      confirmPasswordKey.currentState!.validate(R.string.ban_chua_nhap_lai_mat_khau.tr());
+      confirmPasswordKey.currentState!
+          .validate(R.string.ban_chua_nhap_lai_mat_khau.tr());
       return;
     }
     if (confirmPassword != password) {
@@ -272,8 +309,8 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
 
-    String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
-    RegExp regExp = new RegExp(pattern);
+    const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
+    final RegExp regExp = RegExp(pattern);
     final isCorrect = regExp.hasMatch(phone);
     if (!isCorrect) {
       phoneKey.currentState!.validate(R.string.phone_not_valid.tr());
@@ -301,13 +338,15 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == 'USER002') {
-          phoneKey.currentState!.validate(
-              R.string.so_dien_thoai_da_ton_tai.tr());
+          phoneKey.currentState!
+              .validate(R.string.so_dien_thoai_da_ton_tai.tr());
         } else {
-          Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
+          Message.showToastMessage(
+              context, R.string.error_can_not_connect_to_server.tr());
         }
       } else {
-        Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
+        Message.showToastMessage(
+            context, R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -318,13 +357,12 @@ class _RegisterControllerState extends State<RegisterController> {
       builder: (context) {
         return AlertDialog(
             content: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(R.drawable.ic_check_error,
-                  width: 64, height: 64),
-              SizedBox(height: 8),
+              Image.asset(R.drawable.ic_check_error, width: 64, height: 64),
+              const SizedBox(height: 8),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
@@ -333,11 +371,10 @@ class _RegisterControllerState extends State<RegisterController> {
                   children: <TextSpan>[
                     TextSpan(
                         text: phone,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
-                        text:
-                            R.string.dang_ky_lai_hom_sau.tr(),
+                        text: R.string.dang_ky_lai_hom_sau.tr(),
                         style:
                             TextStyle(color: R.color.textDark, fontSize: 16)),
                   ],
@@ -372,8 +409,12 @@ class _RegisterControllerState extends State<RegisterController> {
           final user = await UserClient().fetchUser();
           BotToast.closeAllLoading();
           if (user == null) {
-            registerAccount(result.accessToken?.userId, result.accessToken?.token,
-                'Facebook', profile['name'] ?? R.string.user_name_default.tr(), true);
+            registerAccount(
+                result.accessToken?.userId,
+                result.accessToken?.token,
+                'Facebook',
+                profile['name'] ?? R.string.user_name_default.tr(),
+                true);
             // Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
             //   'type': 'facebook',
             //   'facebookAccount': result,
@@ -415,7 +456,7 @@ class _RegisterControllerState extends State<RegisterController> {
   }
 
   loginGG() async {
-    GoogleSignIn _googleSignIn = GoogleSignIn(
+    final GoogleSignIn _googleSignIn = GoogleSignIn(
       scopes: [
         R.string.email.tr(),
         'profile',
@@ -496,8 +537,12 @@ class _RegisterControllerState extends State<RegisterController> {
       if (user == null) {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'apple', 'appleAccount': credential});
-        registerAccount(credential.userIdentifier, credential.identityToken,
-            'Apple', credential.givenName ?? R.string.user_name_default.tr(), true);
+        registerAccount(
+            credential.userIdentifier,
+            credential.identityToken,
+            'Apple',
+            credential.givenName ?? R.string.user_name_default.tr(),
+            true);
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
@@ -508,8 +553,12 @@ class _RegisterControllerState extends State<RegisterController> {
         if (error.code == '5' && credential != null) {
           // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
           //     arguments: {'type': 'apple', 'appleAccount': credential});
-          registerAccount(credential.userIdentifier, credential.identityToken,
-              'Apple', credential.givenName ?? R.string.user_name_default.tr(), false);
+          registerAccount(
+              credential.userIdentifier,
+              credential.identityToken,
+              'Apple',
+              credential.givenName ?? R.string.user_name_default.tr(),
+              false);
         }
       } else {
         // Message.showToastMessage(context, error.toString());
@@ -534,15 +583,15 @@ class _RegisterControllerState extends State<RegisterController> {
         });
       }
 
-      final diabeteStates = await (UserClient().fetchDiabeteStates() as Future<List<dynamic>>);
+      final diabeteStates =
+          await (UserClient().fetchDiabeteStates() as Future<List<dynamic>>);
 
       final result = await LoginClient().createPatient({
         'fullName': userName,
         'dateOfBirth': '0',
         'gender': '1',
-        'diabetesStatus': diabeteStates.length == 0
-            ? '1'
-            : diabeteStates.first['key'].toString(),
+        'diabetesStatus':
+            diabeteStates.isEmpty ? '1' : diabeteStates.first['key'].toString(),
         'diabetesDate':
             (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
       });
