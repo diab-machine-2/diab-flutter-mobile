@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
@@ -89,6 +91,9 @@ class LessonTabCubit extends Cubit<LessonTabState> {
         await repository.getLessonsList(request);
     apiResult.when(success: (MyLessonResponse response) {
       lessonsList = response.data ?? [];
+      Timer(const Duration(milliseconds: 100), () {
+        emit(LessonTabScrollToLesson(response.firstLessonIndex));
+      });
       emit(const LessonTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
