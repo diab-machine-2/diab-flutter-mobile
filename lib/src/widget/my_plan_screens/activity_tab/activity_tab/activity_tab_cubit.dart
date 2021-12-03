@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
+import 'package:medical/src/model/response/week_smart_goal_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -34,6 +35,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   GoalFilterType currentGoalType = GoalFilterType.day;
 
   SmartGoalListReponse? smartGoalData;
+  WeekSmartGoalResponse? weekSmartGoalData;
 
   double get progress => smartGoalData?.progressOfDay ?? 0.0;
 
@@ -43,6 +45,9 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   List<SmartGoalListReponseData?> get smartGoalList =>
       smartGoalData?.data ?? [];
+
+  List<WeekSmartGoalData> get weekSmartGoalList =>
+      weekSmartGoalData?.weekSmartGoalList ?? [];
 
   int get currentGoalTypeIndex {
     final int index = goalTypeList.indexOf(currentGoalType);
@@ -56,8 +61,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   void changeGoalType(int newIndex) {
     currentGoalType = goalTypeList[newIndex];
-    emit(const GoalTypeChanged());
-    emit(const ActivityTabInitial());
+    refreshData();
   }
 
   void goToLessonTab() {
@@ -92,6 +96,14 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     });
   }
 
+  void refreshData({bool isRefresh = false}) {
+    if (currentGoalType == GoalFilterType.day) {
+      getListSmartGoal(isRefresh: isRefresh);
+    } else {
+      getWeekSmartGoal();
+    }
+  }
+
   Future<void> getListSmartGoal({bool isRefresh = false}) async {
     if (!isRefresh) {
       await Future.delayed(Duration.zero);
@@ -101,6 +113,22 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         await repository.getListSmartGoal(day: currentDay);
     apiResult.when(success: (SmartGoalListReponse response) {
       smartGoalData = response;
+      emit(const ActivityTabSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    emit(const ActivityTabInitial());
+  }
+
+  Future<void> getWeekSmartGoal({bool isRefresh = false}) async {
+    if (!isRefresh) {
+      await Future.delayed(Duration.zero);
+      emit(const ActivityTabLoading());
+    }
+    final ApiResult<WeekSmartGoalResponse> apiResult =
+        await repository.getWeekSmartGoal(week: 5);
+    apiResult.when(success: (WeekSmartGoalResponse response) {
+      weekSmartGoalData = response;
       emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));

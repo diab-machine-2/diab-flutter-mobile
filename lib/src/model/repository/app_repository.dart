@@ -36,6 +36,7 @@ import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
+import 'package:medical/src/model/response/week_smart_goal_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -520,6 +521,16 @@ class AppRepository {
     try {
       final SmartGoalStatisticResponse response =
           await appClient.getSmartGoalStatistics(week: week);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<WeekSmartGoalResponse>> getWeekSmartGoal({int? week}) async {
+    try {
+      final WeekSmartGoalResponse response =
+          await appClient.getWeekSmartGoal(week: week);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
