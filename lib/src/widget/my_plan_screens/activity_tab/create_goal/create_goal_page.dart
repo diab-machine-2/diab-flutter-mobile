@@ -229,9 +229,13 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         ),
         child: Column(
           children: [
-            if (_cubit.type == null || _cubit.type == ScheduleType.custom)
-              _buildSingleResultDetail(
-                  title: R.string.smart_goal_name.tr(), description: _cubit.name),
+            _buildSingleResultDetail(
+              title: R.string.smart_goal_name.tr(),
+              description:
+                  _cubit.type == null || _cubit.type == ScheduleType.custom
+                      ? _cubit.name
+                      : (_cubit.type?.title ?? ''),
+            ),
             if (_cubit.goalRecordType == GoalRecordType.time &&
                 _cubit.type != ScheduleType.exercise)
               _buildSingleResultDetail(
@@ -304,7 +308,10 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       ),
       const SizedBox(height: 6),
       CustomMultiSelectToggle(
-        toggleList: [R.string.goal_record_type_time.tr(), R.string.goal_record_type_frequency.tr()],
+        toggleList: [
+          R.string.goal_record_type_time.tr(),
+          R.string.goal_record_type_frequency.tr()
+        ],
         selectedIndex: _cubit.goalRecordType.index,
         onChange: (newIndex) {
           FocusScope.of(context).unfocus();
@@ -409,8 +416,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
-                      contentPadding:
-                          const EdgeInsets.only(left: 0, bottom: 0, top: 8, right: 0),
+                      contentPadding: const EdgeInsets.only(
+                          left: 0, bottom: 0, top: 8, right: 0),
                       hintText: R.string.enter_smart_goal_name.tr()),
                   onChanged: (text) {
                     _cubit.name = text;

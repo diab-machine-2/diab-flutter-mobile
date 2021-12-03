@@ -35,7 +35,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   SmartGoalListReponse? smartGoalData;
 
-  double progress = 0.4;
+  double get progress => smartGoalData?.progressOfDay ?? 0.0;
 
   List<WeekStatesResponseData?> get weekStatesList => statistic?.weeks ?? [];
   List<DayStatesResponseData?> get dayStatesList =>

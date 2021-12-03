@@ -76,19 +76,17 @@ class CircleGraphPainter extends CustomPainter {
       ),
     );
     canvas.drawArc(rect, 0, 2 * pi, false, inActivePainter);
-    canvas.drawArc(
+    if (percent > 0) canvas.drawArc(
       rect,
       -pi / 2,
       percent * pi / 50,
       false,
       activePainter,
     );
-    canvas.save();
-    canvas.restore();
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+    return true;
   }
 }

@@ -411,7 +411,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     required SmartGoalListReponseData? data,
   }) {
     final type = ScheduleTypeExtend.getTypeFromIndex(data?.type);
-    const frequency = null;
+    final String frequency = getSmartGoalDescription(type, data: data);
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: InkWell(
@@ -421,7 +421,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         child: Row(
           children: [
             CircleProgressWidget(
-              percent: data?.progress ?? 0,
+              percent: (data?.progress ?? 0) * 100,
               icon: type.icon,
             ),
             Expanded(
@@ -432,15 +432,17 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      data?.name ?? '',
+                      type == ScheduleType.custom
+                          ? data?.name ?? ''
+                          : type.title,
                       style: TextStyle(
                         color: R.color.textDark,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    if (frequency != null) const SizedBox(height: 4),
-                    if (frequency != null)
+                    if (frequency.isNotEmpty) const SizedBox(height: 4),
+                    if (frequency.isNotEmpty)
                       Text(
                         frequency,
                         style: TextStyle(
@@ -472,37 +474,44 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  void onSelectGoal(ScheduleType type) {
+  Future<void> onSelectGoal(ScheduleType type) async {
     switch (type) {
       case ScheduleType.blood_sugar:
-        Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
+        await Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
             arguments: {'type': 'input'});
+        _cubit.getListSmartGoal();
         break;
       case ScheduleType.blood_pressure:
-        Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
+        await Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
             arguments: {'type': 'input'});
+        _cubit.getListSmartGoal();
         break;
       case ScheduleType.weight:
-        Navigator.pushNamed(context, NavigatorName.add_bmi,
+        await Navigator.pushNamed(context, NavigatorName.add_bmi,
             arguments: {'type': 'input'});
+        _cubit.getListSmartGoal();
         break;
       case ScheduleType.emotion:
-        Navigator.pushNamed(context, NavigatorName.add_emo,
+        await Navigator.pushNamed(context, NavigatorName.add_emo,
             arguments: {'type': 'input'});
+        _cubit.getListSmartGoal();
         break;
       case ScheduleType.food:
-        NavigationUtil.navigatePage(
+        await NavigationUtil.navigatePage(
           context,
           const DailyNutritionPage(type: 'input', id: null),
         );
+        _cubit.getListSmartGoal();
         break;
       case ScheduleType.exercise:
-        Navigator.pushNamed(context, NavigatorName.add_exercrises,
+        await Navigator.pushNamed(context, NavigatorName.add_exercrises,
             arguments: {'type': 'input'});
+        _cubit.getListSmartGoal();
         break;
       case ScheduleType.hba1c:
-        Navigator.pushNamed(context, NavigatorName.add_hba1c,
+        await Navigator.pushNamed(context, NavigatorName.add_hba1c,
             arguments: {'type': 'input'});
+        _cubit.getListSmartGoal();
         break;
       case ScheduleType.exercise_movement:
         _cubit.goToExerciseTab();
@@ -521,10 +530,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     }
   }
 
-  void onEditGoal(ScheduleType type, {SmartGoalListReponseData? data}) {
+  Future<void> onEditGoal(ScheduleType type,
+      {SmartGoalListReponseData? data}) async {
     switch (type) {
       case ScheduleType.blood_sugar:
-        Navigator.pushNamed(context, NavigatorName.schedule_glucose);
+        await Navigator.pushNamed(context, NavigatorName.schedule_glucose);
+        _cubit.getListSmartGoal();
         break;
       case ScheduleType.blood_pressure:
         editSmartGoal(data);
@@ -555,6 +566,36 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         break;
       case ScheduleType.survey:
         break;
+    }
+  }
+
+  String getSmartGoalDescription(ScheduleType type,
+      {SmartGoalListReponseData? data}) {
+    switch (type) {
+      case ScheduleType.blood_sugar:
+        return '${data?.executeDayTimes ?? 0} lần/ngày';
+      case ScheduleType.blood_pressure:
+        return '${data?.executeDayTimes ?? 0} lần/ngày';
+      case ScheduleType.weight:
+        return '${data?.executeDayTimes ?? 0} lần/ngày';
+      case ScheduleType.emotion:
+        return '${data?.executeDayTimes ?? 0} lần/ngày';
+      case ScheduleType.food:
+        return '${data?.executeDayTimes ?? 0} lần/ngày';
+      case ScheduleType.exercise:
+        return '${data?.executeDayTimes ?? 0} phút';
+      case ScheduleType.hba1c:
+        return '${data?.executeDayTimes ?? 0} lần/ngày';
+      case ScheduleType.exercise_movement:
+        return '';
+      case ScheduleType.custom:
+        return '';
+      case ScheduleType.coaching:
+        return '';
+      case ScheduleType.group:
+        return '';
+      case ScheduleType.survey:
+        return '';
     }
   }
 
