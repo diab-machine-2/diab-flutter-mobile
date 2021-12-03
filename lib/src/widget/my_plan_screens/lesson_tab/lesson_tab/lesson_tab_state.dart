@@ -58,3 +58,12 @@ class LessonTabWeekChanged extends LessonTabState {
     return 'LessonTabWeekChanged{}';
   }
 }
+
+class LessonTabScrollToLesson extends LessonTabState {
+  const LessonTabScrollToLesson(this.newIndex);
+  final int newIndex;
+  @override
+  String toString() {
+    return 'LessonTabScrollToLesson{}';
+  }
+}

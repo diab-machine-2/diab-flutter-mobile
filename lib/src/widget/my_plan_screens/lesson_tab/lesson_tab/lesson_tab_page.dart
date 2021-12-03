@@ -35,7 +35,8 @@ class _LessonTabPageState extends State<LessonTabPage>
     with AutomaticKeepAliveClientMixin<LessonTabPage> {
   late final LessonTabCubit _cubit;
   final RefreshController _controller = RefreshController();
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _lessonScrollController = ScrollController();
+  final ScrollController _weekScrollController = ScrollController();
 
   @override
   void initState() {
@@ -64,6 +65,15 @@ class _LessonTabPageState extends State<LessonTabPage>
           }
           if (state is LessonTabWeekChanged) {
             animateToIndex(state.newIndex, refresh: false);
+          }
+          if (state is LessonTabScrollToLesson) {
+            if (_lessonScrollController.hasClients) {
+              _lessonScrollController.animateTo(
+                127.0 * state.newIndex,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.ease,
+              );
+            }
           }
         },
         builder: (context, state) {
@@ -150,6 +160,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                         top: false,
                         child: SmartRefresher(
                           controller: _controller,
+                          scrollController: _lessonScrollController,
                           onRefresh: () =>
                               _cubit.getLessonsList(isRefresh: true),
                           child: _cubit.lessonsList!.isEmpty
@@ -200,7 +211,7 @@ class _LessonTabPageState extends State<LessonTabPage>
       refresh = false;
     }
     final double newPosition = index * 96 + (6 * index.toDouble());
-    _scrollController.animateTo(
+    _weekScrollController.animateTo(
       newPosition,
       duration: const Duration(milliseconds: 400),
       curve: Curves.ease,
@@ -232,7 +243,7 @@ class _LessonTabPageState extends State<LessonTabPage>
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              controller: _scrollController,
+              controller: _weekScrollController,
               child: Row(
                 children: List.generate(
                   _cubit.weekStatesList.length,
