@@ -38,6 +38,7 @@ import 'response/smart_goal_statistic_response.dart';
 import 'response/tdee_response.dart';
 import 'response/upgrade_account_response.dart';
 import 'response/user_info_response.dart';
+import 'response/week_smart_goal_response.dart';
 import 'response/week_states_response.dart';
 
 part 'app_api.g.dart';
@@ -225,6 +226,11 @@ abstract class AppApi {
   Future<SmartGoalDetailResponse> getSmartGoalDetail(
     @Path("id") String id,
   );
+
+  @GET("/App/Target/GetTargetWeek")
+  Future<WeekSmartGoalResponse> getWeekSmartGoal({
+    @Query('week') int? week,
+  });
   
   // Quiz
   @POST("App/Lesson/{lessonId}/Review")
