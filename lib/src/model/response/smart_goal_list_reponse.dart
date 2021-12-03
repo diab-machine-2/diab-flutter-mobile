@@ -271,6 +271,16 @@ class SmartGoalListReponse {
     this.meta,
     this.data,
   });
+
+  double get progressOfDay {
+    if (data?.isNotEmpty != true) return 0; 
+    double progressOfDay = 0;
+    for (final SmartGoalListReponseData? smartGoal in data ?? []) {
+      progressOfDay += smartGoal?.progress ?? 0;
+    }
+    return progressOfDay / (data?.length.toDouble() ?? 1);
+  }
+
   SmartGoalListReponse.fromJson(Map<String, dynamic> json) {
     meta = (json['meta'] != null)
         ? SmartGoalListReponseMeta.fromJson(json['meta'])
