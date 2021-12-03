@@ -4,12 +4,14 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class QRScanWidget extends StatefulWidget {
-  const QRScanWidget({Key? key}) : super(key: key);
-
+  const QRScanWidget({Key? key, this.onCameraAccessDenied}) : super(key: key);
+  final VoidCallback? onCameraAccessDenied;
   @override
   State<StatefulWidget> createState() => _QRScanWidgetState();
 }
@@ -31,15 +33,34 @@ class _QRScanWidgetState extends State<QRScanWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildQrView(context),
+      body: Stack(
+        children: [
+          _buildQrView(context),
+          Positioned(
+            top: MediaQuery.of(context).padding.top,
+            right: 16,
+            child: IconButton(
+              onPressed: () {
+                NavigationUtil.pop(context);
+              },
+              icon: const Icon(
+                Icons.close_rounded,
+              ),
+              color: R.color.white,
+              iconSize: 24,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildQrView(BuildContext context) {
-    final double _scanArea = (MediaQuery.of(context).size.width < 400 ||
+    final double scanArea = (MediaQuery.of(context).size.width < 400 ||
             MediaQuery.of(context).size.height < 400)
         ? 150.0
         : 300.0;
+
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
@@ -48,7 +69,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
           borderRadius: 10,
           borderLength: 30,
           borderWidth: 10,
-          cutOutSize: _scanArea),
+          cutOutSize: scanArea),
       onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
     );
   }
@@ -76,9 +97,13 @@ class _QRScanWidgetState extends State<QRScanWidget> {
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
     if (!p) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('no Permission')),
-      );
+      if (widget.onCameraAccessDenied != null) {
+        widget.onCameraAccessDenied!.call();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Không có quyền truy cập camera')),
+        );
+      }
     }
   }
 

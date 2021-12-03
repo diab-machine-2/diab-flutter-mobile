@@ -96,6 +96,7 @@ class Strings {
 	String get input_name => 'input_name';
 	String get references_code => 'references_code';
 	String get input_references_code => 'input_references_code';
+	String get scan_references_code => 'scan_references_code';
 	String get update_profile_failure => 'update_profile_failure';
 	String get detail_address => 'detail_address';
 	String get input_phone => 'input_phone';

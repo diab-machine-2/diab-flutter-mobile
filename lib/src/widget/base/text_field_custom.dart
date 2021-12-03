@@ -2,21 +2,21 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
-typedef OnChangeCallback = Function(String);
-
 class TextFieldCustom extends StatefulWidget {
   final String title;
   final String placeholder;
   final bool isPassword;
+  final bool isSharedCode;
   final bool autoFocus;
   final bool showStar;
-  final OnChangeCallback? onChanged;
+  final Function(String)? onChanged;
 
   const TextFieldCustom(
       {Key? key,
       this.title = '',
       this.placeholder = '',
       this.isPassword = false,
+      this.isSharedCode = false,
       this.autoFocus = false,
       this.showStar = false,
       this.onChanged})
@@ -46,7 +46,11 @@ class TextFieldCustomState extends State<TextFieldCustom> {
   @override
   void initState() {
     super.initState();
-    icon = widget.isPassword ? R.drawable.ic_lock : R.drawable.ic_phone;
+    if (widget.isSharedCode) {
+      icon = R.drawable.ic_account;
+    } else {
+      icon = widget.isPassword ? R.drawable.ic_lock : R.drawable.ic_phone;
+    }
   }
 
   @override
@@ -76,7 +80,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                   width: 2,
-                  color: isCorrect
+                  color: isCorrect && !widget.isSharedCode
                       ? R.color.greenGradientBottom
                       : (showValidate
                           ? R.color.color0xffFF5756
@@ -90,7 +94,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (widget.isPassword)
+                    if (widget.isPassword || widget.isSharedCode)
                       Container(
                         height: 25,
                         width: width - 167,
@@ -119,7 +123,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                               onChanged: (value) {
                                 isCorrect =
                                     value.isNotEmpty && value.length >= 6;
-                                if (value.length < 6) {
+                                if (value.length < 6 && !widget.isSharedCode) {
                                   showValidate = true;
                                   validateText =
                                       R.string.password_least_character.tr();
@@ -210,7 +214,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                 style: TextStyle(color: R.color.grey_2))))
                   else
                     const SizedBox(),
-                  if (isCorrect)
+                  if (isCorrect && !widget.isSharedCode)
                     Padding(
                       padding: const EdgeInsets.only(left: 8),
                       child: Image.asset(R.drawable.ic_correct,

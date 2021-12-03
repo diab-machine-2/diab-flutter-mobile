@@ -56,91 +56,87 @@ class _RegisterControllerState extends State<RegisterController> {
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 60),
                     Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Column(children: [
-                              TextFieldCustom(
-                                  key: phoneKey,
-                                  title: R.string.so_dien_thoai.tr(),
-                                  placeholder: R.string.nhap_so_dien_thoai.tr(),
-                                  autoFocus: true,
-                                  onChanged: (value) {
-                                    phone = value;
-                                  }),
-                              const SizedBox(height: 20),
-                              TextFieldCustom(
-                                  key: passwordKey,
-                                  title: R.string.password.tr(),
-                                  placeholder:
-                                      R.string.password_least_character.tr(),
-                                  isPassword: true,
-                                  onChanged: (value) {
-                                    password = value;
-                                  }),
-                              const SizedBox(height: 20),
-                              TextFieldCustom(
-                                  key: confirmPasswordKey,
-                                  title: R.string.xac_nhan_mat_khau.tr(),
-                                  placeholder: R.string.nhap_lai_mat_khau.tr(),
-                                  isPassword: true,
-                                  onChanged: (value) {
-                                    confirmPassword = value;
-                                  }),
-                              const SizedBox(height: 20),
-                              TextFieldCustom(
-                                  key: sharedCodeKey,
-                                  title: 'Mã giới thiệu',
-                                  placeholder: 'Nhập mã giới thiệu',
-                                  onChanged: (value) {
-                                    sharedCode = value;
-                                  }),
-                              const SizedBox(height: 20),
-                              GestureDetector(
-                                onTap: () {
-                                  phoneKey.currentState!.focusNode
-                                      .requestFocus();
+                      child: Column(children: [
+                        TextFieldCustom(
+                            key: phoneKey,
+                            title: R.string.so_dien_thoai.tr(),
+                            placeholder: R.string.nhap_so_dien_thoai.tr(),
+                            autoFocus: true,
+                            onChanged: (value) {
+                              phone = value;
+                            }),
+                        const SizedBox(height: 20),
+                        TextFieldCustom(
+                            key: passwordKey,
+                            title: R.string.password.tr(),
+                            placeholder: R.string.password_least_character.tr(),
+                            isPassword: true,
+                            onChanged: (value) {
+                              password = value;
+                            }),
+                        const SizedBox(height: 20),
+                        TextFieldCustom(
+                            key: confirmPasswordKey,
+                            title: R.string.xac_nhan_mat_khau.tr(),
+                            placeholder: R.string.nhap_lai_mat_khau.tr(),
+                            isPassword: true,
+                            onChanged: (value) {
+                              confirmPassword = value;
+                            }),
+                        const SizedBox(height: 20),
+                        TextFieldCustom(
+                            key: sharedCodeKey,
+                            title: R.string.references_code.tr(),
+                            placeholder: R.string.input_references_code.tr(),
+                            isSharedCode: true,
+                            onChanged: (value) {
+                              sharedCode = value;
+                            }),
+                        const SizedBox(height: 20),
+                        GestureDetector(
+                          onTap: () {
+                            phoneKey.currentState!.focusNode.requestFocus();
 
-                                  verify();
-                                },
-                                child: Stack(children: [
-                                  Container(
-                                      height: 48,
-                                      width: 195,
-                                      decoration: BoxDecoration(
-                                          color: R.color.mainColor,
-                                          borderRadius:
-                                              BorderRadius.circular(200),
-                                          gradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.centerRight,
-                                              colors: [
-                                                R.color.greenGradientTop,
-                                                R.color.greenGradientBottom
-                                              ])),
-                                      child: Center(
-                                        child: Text(R.string.tiep_tuc.tr(),
-                                            style: TextStyle(
-                                                color: R.color.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                      )),
-                                  // Positioned.fill(
-                                  //     child: Container(
-                                  //         color: R.color.white.withOpacity(0.5)))
-                                ]),
-                              )
-                            ])
+                            verify();
+                          },
+                          child: Stack(children: [
+                            Container(
+                                height: 48,
+                                width: 195,
+                                decoration: BoxDecoration(
+                                    color: R.color.mainColor,
+                                    borderRadius: BorderRadius.circular(200),
+                                    gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.centerRight,
+                                        colors: [
+                                          R.color.greenGradientTop,
+                                          R.color.greenGradientBottom
+                                        ])),
+                                child: Center(
+                                  child: Text(R.string.tiep_tuc.tr(),
+                                      style: TextStyle(
+                                          color: R.color.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                )),
                           ]),
+                        )
+                      ]),
                     ),
                     InkWell(
                       onTap: () async {
                         final dynamic scanResult =
-                            await NavigationUtil.navigatePage(
-                                context, const QRScanWidget());
+                            await NavigationUtil.navigatePage(context,
+                                QRScanWidget(
+                          onCameraAccessDenied: () {
+                            Message.showToastMessage(
+                                context, 'Không có quyền truy cập camera');
+                          },
+                        ));
                         if (scanResult is String) {
                           await launch(scanResult);
                         }
@@ -155,7 +151,7 @@ class _RegisterControllerState extends State<RegisterController> {
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            'Quét mã giới thiệu',
+                            R.string.scan_references_code.tr(),
                             style: TextStyle(
                               color: R.color.mainColor,
                               fontSize: 16,
@@ -235,24 +231,6 @@ class _RegisterControllerState extends State<RegisterController> {
                     )
                   ]),
             ),
-            // new Positioned(
-            //   //Place it at the top, and not use the entire screen
-            //   top: 0,
-            //   left: 0,
-            //   right: 0,
-            //   child: AppBar(
-            //       leading: SizedBox(),
-            //       backgroundColor: R.color.transparent, //No more green
-            //       elevation: 0.0, //Shadow gone
-            //       actions: [
-            //         IconButton(
-            //             padding: EdgeInsets.only(right: 30),
-            //             icon: Icon(Icons.close, color: R.color.black),
-            //             onPressed: () {
-            //               Navigator.pop(context);
-            //             })
-            //       ]),
-            // ),
             Positioned(
                 //Place it at the top, and not use the entire screen
                 top: 0,
