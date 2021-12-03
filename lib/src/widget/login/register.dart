@@ -17,6 +17,7 @@ import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RegisterController extends StatefulWidget {
   @override
@@ -136,9 +137,13 @@ class _RegisterControllerState extends State<RegisterController> {
                           ]),
                     ),
                     InkWell(
-                      onTap: () {
-                        NavigationUtil.navigatePage(
-                            context, const QRScanWidget());
+                      onTap: () async {
+                        final dynamic scanResult =
+                            await NavigationUtil.navigatePage(
+                                context, const QRScanWidget());
+                        if (scanResult is String) {
+                          await launch(scanResult);
+                        }
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
