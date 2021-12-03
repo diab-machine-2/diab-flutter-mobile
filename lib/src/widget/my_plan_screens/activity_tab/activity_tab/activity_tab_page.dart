@@ -79,48 +79,45 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         _buildScheduleWidget(),
-                        Visibility(
-                          visible: _cubit.myPlanCubit.isPremiumUser,
-                          child: Row(
-                            children: [
-                              ...List.generate(
-                                _cubit.goalTypeList.length,
-                                (index) {
-                                  return _buildGoalTypeSelect(
-                                    title: _cubit.goalTypeList[index].title,
-                                    isActive:
-                                        _cubit.currentGoalTypeIndex == index,
-                                    onTap: () {
-                                      _cubit.changeGoalType(index);
-                                    },
-                                  );
-                                },
-                              ),
-                              const Spacer(),
-                              InkWell(
-                                onTap: () async {
-                                  final result =
-                                      await NavigationUtil.navigatePage(
-                                          context, const MyProgressPage());
-                                  if (result is int) {
-                                    if (result == 1) {
-                                      _cubit.goToLessonTab();
-                                    } else if (result == 2) {
-                                      _cubit.goToExerciseTab();
-                                    }
+                        Row(
+                          children: [
+                            ...List.generate(
+                              _cubit.goalTypeList.length,
+                              (index) {
+                                return _buildGoalTypeSelect(
+                                  title: _cubit.goalTypeList[index].title,
+                                  isActive:
+                                      _cubit.currentGoalTypeIndex == index,
+                                  onTap: () {
+                                    _cubit.changeGoalType(index);
+                                  },
+                                );
+                              },
+                            ),
+                            const Spacer(),
+                            InkWell(
+                              onTap: () async {
+                                final result =
+                                    await NavigationUtil.navigatePage(
+                                        context, const MyProgressPage());
+                                if (result is int) {
+                                  if (result == 1) {
+                                    _cubit.goToLessonTab();
+                                  } else if (result == 2) {
+                                    _cubit.goToExerciseTab();
                                   }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 12.0),
-                                  child: Image.asset(
-                                    R.drawable.ic_activity_process,
-                                    width: 20,
-                                    height: 20,
-                                  ),
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: Image.asset(
+                                  R.drawable.ic_activity_process,
+                                  width: 20,
+                                  height: 20,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -531,7 +528,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             InkWell(
               onTap: () {
                 if (type == ScheduleType.exercise) {
-                  onEditGoal(type, data: SmartGoalListReponseData(type: ScheduleType.exercise.typeIndex));
+                  onEditGoal(type,
+                      data: SmartGoalListReponseData(
+                          type: ScheduleType.exercise.typeIndex));
                 }
               },
               child: Visibility(

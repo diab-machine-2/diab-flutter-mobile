@@ -163,6 +163,16 @@ class WeekSmartGoalResponse {
     return weekSmartGoalList;
   }
 
+  double get progressOfDay {
+    final List<WeekSmartGoalData> smartGoalList = weekSmartGoalList;
+    if (smartGoalList.isNotEmpty != true) return 0;
+    double progressOfDay = 0;
+    for (final WeekSmartGoalData? smartGoal in smartGoalList) {
+      progressOfDay += smartGoal?.progress ?? 0;
+    }
+    return progressOfDay / (smartGoalList.length.toDouble());
+  }
+
   WeekSmartGoalResponse.fromJson(Map<String, dynamic> json) {
     meta = (json['meta'] != null)
         ? WeekSmartGoalResponseMeta.fromJson(json['meta'])

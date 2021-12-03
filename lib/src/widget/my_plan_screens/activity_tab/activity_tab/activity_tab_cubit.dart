@@ -37,7 +37,9 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   SmartGoalListReponse? smartGoalData;
   WeekSmartGoalResponse? weekSmartGoalData;
 
-  double get progress => smartGoalData?.progressOfDay ?? 0.0;
+  double get progress => currentGoalType == GoalFilterType.day
+      ? smartGoalData?.progressOfDay ?? 0.0
+      : weekSmartGoalData?.progressOfDay ?? 0;
 
   List<WeekStatesResponseData?> get weekStatesList => statistic?.weeks ?? [];
   List<DayStatesResponseData?> get dayStatesList =>
@@ -126,7 +128,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       emit(const ActivityTabLoading());
     }
     final ApiResult<WeekSmartGoalResponse> apiResult =
-        await repository.getWeekSmartGoal(week: 5);
+        await repository.getWeekSmartGoal(week: currentWeek);
     apiResult.when(success: (WeekSmartGoalResponse response) {
       weekSmartGoalData = response;
       emit(const ActivityTabSuccess());
