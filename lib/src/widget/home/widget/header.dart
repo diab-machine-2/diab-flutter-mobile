@@ -9,9 +9,11 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widgets/qr_scan_widget.dart';
 
 class HomeHeader extends StatefulWidget {
   @override
@@ -198,6 +200,30 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                     : R.drawable.ic_bell,
                                 width: 24,
                                 height: 24),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        InkWell(
+                          onTap: () async {
+                            final scanedResult =
+                                await NavigationUtil.navigatePage(
+                              context,
+                              const QRScanWidget(),
+                            );
+                            if (scanedResult is String) {
+                              // TODO(Tuyen): Show popup to confirm share profile
+                              print('LOG $scanedResult');
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            color: R.color.transparent,
+                            child: Image.asset(
+                              R.drawable.ic_qr_scan,
+                              color: R.color.white,
+                              width: 24,
+                              height: 24,
+                            ),
                           ),
                         ),
                       ],

@@ -130,13 +130,8 @@ class _RegisterControllerState extends State<RegisterController> {
                     InkWell(
                       onTap: () async {
                         final dynamic scanResult =
-                            await NavigationUtil.navigatePage(context,
-                                QRScanWidget(
-                          onCameraAccessDenied: () {
-                            Message.showToastMessage(
-                                context, 'Không có quyền truy cập camera');
-                          },
-                        ));
+                            await NavigationUtil.navigatePage(
+                                context, const QRScanWidget());
                         if (scanResult is String) {
                           await launch(scanResult);
                         }
@@ -145,7 +140,7 @@ class _RegisterControllerState extends State<RegisterController> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                            R.drawable.ic_account,
+                            R.drawable.ic_qr_scan,
                             width: 26,
                             height: 26,
                           ),

@@ -6,12 +6,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class QRScanWidget extends StatefulWidget {
-  const QRScanWidget({Key? key, this.onCameraAccessDenied}) : super(key: key);
-  final VoidCallback? onCameraAccessDenied;
+  const QRScanWidget({Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => _QRScanWidgetState();
 }
@@ -97,13 +97,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
     if (!p) {
-      if (widget.onCameraAccessDenied != null) {
-        widget.onCameraAccessDenied!.call();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Không có quyền truy cập camera')),
-        );
-      }
+      Message.showToastMessage(context, 'Không có quyền truy cập camera');
     }
   }
 

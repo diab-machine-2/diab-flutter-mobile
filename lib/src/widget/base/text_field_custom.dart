@@ -47,7 +47,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
   void initState() {
     super.initState();
     if (widget.isSharedCode) {
-      icon = R.drawable.ic_account;
+      icon = R.drawable.ic_share;
     } else {
       icon = widget.isPassword ? R.drawable.ic_lock : R.drawable.ic_phone;
     }

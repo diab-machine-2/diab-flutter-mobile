@@ -135,6 +135,7 @@ class Strings {
 	String get show => 'show';
 	String get hide => 'hide';
 	String get camera_permission_required => 'camera_permission_required';
+	String get shared_profile_list => 'shared_profile_list';
 	String get bloodpressurescreen => 'BloodPressureScreen';
 	String get blood_pressure_trend => 'blood_pressure_trend';
 	String get lowest => 'lowest';

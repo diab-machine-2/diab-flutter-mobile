@@ -133,6 +133,7 @@ yes,Đồng ý,
 show,Hiện,
 hide,Ẩn,
 camera_permission_required,Bạn cần cấp quyền truy cập camera để sử dụng tính năng này,
+shared_profile_list,Danh sách đã chia sẻ profile,
 BloodPressureScreen,============================================BloodPressure screen====================================================
 blood_pressure_trend,Xu hướng huyết áp,
 lowest,Thấp nhất,
