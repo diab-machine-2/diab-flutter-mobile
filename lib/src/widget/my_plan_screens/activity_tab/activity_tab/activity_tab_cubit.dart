@@ -156,4 +156,11 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     });
     if (hideLoadingAfterDone) emit(const ActivityTabInitial());
   }
+
+  Future<void> loadingTest() async {
+    emit(const ActivityTabLoading());
+    await Future.delayed(const Duration(seconds: 2));
+    emit(const ActivityTabSuccess());
+    emit(const ActivityTabInitial());
+  }
 }

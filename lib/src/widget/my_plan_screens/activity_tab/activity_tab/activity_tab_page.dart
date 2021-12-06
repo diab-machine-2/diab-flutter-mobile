@@ -212,54 +212,69 @@ class _ActivityTabPageState extends State<ActivityTabPage>
               child: _buildWeekListWidget(),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(
-                    7,
-                    (index) => Container(
-                      alignment: Alignment.bottomCenter,
-                      width: 24,
-                      child: Text(
-                        index == 6 ? 'CN' : 'T${index + 2}',
-                        style: TextStyle(
-                          color: R.color.grey_1,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
+          GestureDetector(
+            onHorizontalDragEnd: (DragEndDetails details) {
+              if (details.primaryVelocity! > 0) {
+                // User swiped Left
+                print('LOG User swiped Left');
+                _cubit.loadingTest();
+              } else if (details.primaryVelocity! < 0) {
+                // User swiped Right
+                print('LOG User swiped Right');
+                _cubit.loadingTest();
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              color: R.color.transparent,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                      7,
+                      (index) => Container(
+                        alignment: Alignment.bottomCenter,
+                        width: 24,
+                        child: Text(
+                          index == 6 ? 'CN' : 'T${index + 2}',
+                          style: TextStyle(
+                            color: R.color.grey_1,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: List.generate(
-                    13,
-                    (index) {
-                      return index.isOdd
-                          ? Expanded(
-                              child: Container(
-                                height: 1,
-                                color: index ~/ 2 >= _cubit.mark
-                                    ? R.color.grayBorder
-                                    : R.color.green,
-                              ),
-                            )
-                          : _buildSingleDay(
-                              status: _cubit.dayStatesList[index ~/ 2]
-                                      ?.completionStatus ??
-                                  CompletionStatus.not_start_yet,
-                              isSelected: _cubit.currentDayIndex == index ~/ 2,
-                              onTap: () {
-                                _cubit.onSelectDay(index ~/ 2);
-                              });
-                    },
+                  const SizedBox(height: 4),
+                  Row(
+                    children: List.generate(
+                      13,
+                      (index) {
+                        return index.isOdd
+                            ? Expanded(
+                                child: Container(
+                                  height: 1,
+                                  color: index ~/ 2 >= _cubit.mark
+                                      ? R.color.grayBorder
+                                      : R.color.green,
+                                ),
+                              )
+                            : _buildSingleDay(
+                                status: _cubit.dayStatesList[index ~/ 2]
+                                        ?.completionStatus ??
+                                    CompletionStatus.not_start_yet,
+                                isSelected:
+                                    _cubit.currentDayIndex == index ~/ 2,
+                                onTap: () {
+                                  _cubit.onSelectDay(index ~/ 2);
+                                });
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
