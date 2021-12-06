@@ -8,7 +8,6 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -21,6 +20,8 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RegisterController extends StatefulWidget {
+  const RegisterController(this.sharedCode);
+  final String sharedCode;
   @override
   _RegisterControllerState createState() => _RegisterControllerState();
 }
@@ -41,7 +42,7 @@ class _RegisterControllerState extends State<RegisterController> {
   @override
   void initState() {
     super.initState();
-    sharedCode = DeepLinkConfig.instance.sharedCode ?? '';
+    sharedCode = widget.sharedCode;
   }
 
   @override
@@ -96,6 +97,7 @@ class _RegisterControllerState extends State<RegisterController> {
                         const SizedBox(height: 20),
                         TextFieldCustom(
                             key: sharedCodeKey,
+                            initText: sharedCode,
                             title: R.string.references_code.tr(),
                             placeholder: R.string.input_references_code.tr(),
                             isSharedCode: true,

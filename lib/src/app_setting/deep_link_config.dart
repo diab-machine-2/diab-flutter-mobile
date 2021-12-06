@@ -11,21 +11,22 @@ class DeepLinkConfig {
 
   String? sharedCode;
 
-  Future<void> initUniLinks() async {
+  Future<String?> getInitLink() async {
     try {
       final String? initialLink = await getInitialLink();
       print('LOG onInit link: $initialLink');
-      sharedCode = initialLink;
+      sharedCode = getShareCodeFromUrl(initialLink);
+      return sharedCode;
     } on PlatformException {}
     try {
       final Uri? initialUri = await getInitialUri();
-      print('LOG onInit uri.host ${initialUri?.host}');
-      sharedCode = initialUri?.scheme;
+      print('LOG onInit uri.host ${initialUri?.path}');
+      sharedCode = getShareCodeFromUrl(initialUri?.path);
+      return sharedCode;
     } on FormatException {}
   }
 
   Future<void> handleDeepLink() async {
-    initUniLinks();
     _subLink = linkStream.listen((String? link) {
       print('LOG onChanged link: $link');
     }, onError: (err) {});
@@ -38,5 +39,10 @@ class DeepLinkConfig {
   void dispose() {
     _subLink.cancel();
     _subUni.cancel();
+  }
+
+  String getShareCodeFromUrl(String? url) {
+    if (url == null) return '';
+    return url.substring(url.length - 6, url.length);
   }
 }

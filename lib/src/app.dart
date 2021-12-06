@@ -78,7 +78,7 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     AppClient();
-    DeepLinkConfig.instance.handleDeepLink();
+    // DeepLinkConfig.instance.handleDeepLink();
   }
 
   @override
@@ -121,7 +121,11 @@ class _AppState extends State<App> {
                   return _buildRoute(settings, LoginController(),
                       isPresent: true);
                 case NavigatorName.register:
-                  return _buildRoute(settings, RegisterController(),
+                String sharedCode = '';
+                if (settings.arguments != null) {
+                sharedCode = settings.arguments! as String;
+                }
+                  return _buildRoute(settings, RegisterController(sharedCode),
                       isPresent: true);
                 case NavigatorName.register_success:
                   final data = settings.arguments as Map<String, dynamic>?;
@@ -169,7 +173,11 @@ class _AppState extends State<App> {
                   return _buildRoute(settings, PolicyController(),
                       isPresent: true);
                 case NavigatorName.step_list:
-                  return _buildRoute(settings, StepListController(),
+                String sharedCode = '';
+                if (settings.arguments != null) {
+                sharedCode = settings.arguments! as String;
+                }
+                  return _buildRoute(settings, StepListController(sharedCode),
                       isPresent: true);
                 case NavigatorName.rules:
                   return _buildRoute(settings, RulesController());

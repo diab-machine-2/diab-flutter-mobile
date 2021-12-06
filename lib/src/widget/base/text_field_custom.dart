@@ -9,6 +9,7 @@ class TextFieldCustom extends StatefulWidget {
   final bool isSharedCode;
   final bool autoFocus;
   final bool showStar;
+  final String? initText;
   final Function(String)? onChanged;
 
   const TextFieldCustom(
@@ -19,6 +20,7 @@ class TextFieldCustom extends StatefulWidget {
       this.isSharedCode = false,
       this.autoFocus = false,
       this.showStar = false,
+      this.initText,
       this.onChanged})
       : super(key: key);
 
@@ -50,6 +52,9 @@ class TextFieldCustomState extends State<TextFieldCustom> {
       icon = R.drawable.ic_share;
     } else {
       icon = widget.isPassword ? R.drawable.ic_lock : R.drawable.ic_phone;
+    }
+    if (widget.initText?.isNotEmpty == true) {
+      textEditingController.text = widget.initText!;
     }
   }
 
@@ -103,7 +108,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                               controller: textEditingController,
                               //keyboardType: TextInputType,
                               autofocus: widget.autoFocus,
-                              obscureText: !showPassword,
+                              obscureText: !showPassword && widget.isPassword,
                               style: TextStyle(
                                   fontFamily: 'Viga',
                                   color: R.color.textDark,

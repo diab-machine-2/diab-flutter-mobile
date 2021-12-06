@@ -1,15 +1,17 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 // ignore: must_be_immutable
 class StepListController extends StatefulWidget {
+  const StepListController(this.sharedCode);
+  final String sharedCode;
   @override
   _StepListControllerState createState() => _StepListControllerState();
 }
@@ -52,6 +54,9 @@ class _StepListControllerState extends State<StepListController> {
     super.initState();
     //startTimer();
     getVersion();
+    if (widget.sharedCode.isNotEmpty) {
+      Navigator.pushNamed(context, NavigatorName.register);
+    }
   }
 
   void startTimer() {
