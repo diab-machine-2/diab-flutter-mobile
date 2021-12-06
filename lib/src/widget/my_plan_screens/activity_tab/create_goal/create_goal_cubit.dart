@@ -134,12 +134,15 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     }
   }
 
-  void setupGoal({ScheduleType? selectedType}) {
+  Future<void> setupGoal({ScheduleType? selectedType}) async {
     type = selectedType;
     if (selectedType != null && selectedType != ScheduleType.custom) {
       goalRecordType = GoalRecordType.frequency;
     }
     status = CreateGoalStatus.setup;
+    if (selectedType == ScheduleType.exercise) {
+      await getUserTarget();
+    }
     emit(const CreateGoalSuccess());
     emit(const CreateGoalInitial());
   }
@@ -174,8 +177,10 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     emit(const CreateGoalInitial());
   }
 
-  Future<void> fillData(SmartGoalListReponseData datai) async {
-    await getSmartGoalDetail(id: datai.id ?? '');
+  Future<void> fillData(SmartGoalListReponseData data) async {
+    if (data.type == ScheduleType.exercise.typeIndex) return;
+    await getSmartGoalDetail(id: data.id ?? '');
+
     if (smartGoalDetail == null) return;
     name = smartGoalDetail?.name ?? '';
     startDate = smartGoalDetail?.startDate ?? DateTime.now();

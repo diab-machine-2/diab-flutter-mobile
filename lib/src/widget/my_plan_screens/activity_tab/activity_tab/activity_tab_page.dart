@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/model/response/week_smart_goal_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -78,48 +79,45 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         _buildScheduleWidget(),
-                        Visibility(
-                          visible: _cubit.myPlanCubit.isPremiumUser,
-                          child: Row(
-                            children: [
-                              ...List.generate(
-                                _cubit.goalTypeList.length,
-                                (index) {
-                                  return _buildGoalTypeSelect(
-                                    title: _cubit.goalTypeList[index].title,
-                                    isActive:
-                                        _cubit.currentGoalTypeIndex == index,
-                                    onTap: () {
-                                      _cubit.changeGoalType(index);
-                                    },
-                                  );
-                                },
-                              ),
-                              const Spacer(),
-                              InkWell(
-                                onTap: () async {
-                                  final result =
-                                      await NavigationUtil.navigatePage(
-                                          context, const MyProgressPage());
-                                  if (result is int) {
-                                    if (result == 1) {
-                                      _cubit.goToLessonTab();
-                                    } else if (result == 2) {
-                                      _cubit.goToExerciseTab();
-                                    }
+                        Row(
+                          children: [
+                            ...List.generate(
+                              _cubit.goalTypeList.length,
+                              (index) {
+                                return _buildGoalTypeSelect(
+                                  title: _cubit.goalTypeList[index].title,
+                                  isActive:
+                                      _cubit.currentGoalTypeIndex == index,
+                                  onTap: () {
+                                    _cubit.changeGoalType(index);
+                                  },
+                                );
+                              },
+                            ),
+                            const Spacer(),
+                            InkWell(
+                              onTap: () async {
+                                final result =
+                                    await NavigationUtil.navigatePage(
+                                        context, const MyProgressPage());
+                                if (result is int) {
+                                  if (result == 1) {
+                                    _cubit.goToLessonTab();
+                                  } else if (result == 2) {
+                                    _cubit.goToExerciseTab();
                                   }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 12.0),
-                                  child: Image.asset(
-                                    R.drawable.ic_activity_process,
-                                    width: 20,
-                                    height: 20,
-                                  ),
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: Image.asset(
+                                  R.drawable.ic_activity_process,
+                                  width: 20,
+                                  height: 20,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -127,15 +125,22 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                   Expanded(
                     child: SmartRefresher(
                       controller: _controller,
-                      onRefresh: () => _cubit.getListSmartGoal(isRefresh: true),
+                      onRefresh: () => _cubit.refreshData(isRefresh: true),
                       child: SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
                           child: Column(
-                            children: _cubit.smartGoalList
-                                .map((smartGoal) =>
-                                    _buildSingleGoal(data: smartGoal))
-                                .toList(),
+                            children:
+                                _cubit.currentGoalType == GoalFilterType.day
+                                    ? _cubit.smartGoalList
+                                        .map((smartGoal) =>
+                                            _buildSingleGoal(data: smartGoal))
+                                        .toList()
+                                    : _cubit.weekSmartGoalList
+                                        .map((weekSmartGoal) =>
+                                            _buildSingleWeekGoal(
+                                                data: weekSmartGoal))
+                                        .toList(),
                           ),
                         ),
                       ),
@@ -155,7 +160,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                   onTap: () async {
                     await NavigationUtil.navigatePage(
                         context, const CreateGoalPage());
-                    _cubit.getListSmartGoal();
+                    _cubit.refreshData();
                   },
                   child: Image.asset(
                     R.drawable.ic_button_plus_home,
@@ -474,44 +479,113 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
+  Widget _buildSingleWeekGoal({
+    required WeekSmartGoalData? data,
+  }) {
+    final type = ScheduleTypeExtend.getTypeFromIndex(data?.type);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: InkWell(
+        onTap: () {},
+        child: Row(
+          children: [
+            CircleProgressWidget(
+              percent: (data?.progress ?? 0) * 100,
+              icon: type.icon,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      type == ScheduleType.custom
+                          ? data?.name ?? ''
+                          : type.title,
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    if (data?.description?.isNotEmpty == true)
+                      const SizedBox(height: 4),
+                    if (data?.description?.isNotEmpty == true)
+                      Text(
+                        data?.description ?? '',
+                        style: TextStyle(
+                          color: R.color.grey_1,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                if (type == ScheduleType.exercise) {
+                  onEditGoal(type,
+                      data: SmartGoalListReponseData(
+                          type: ScheduleType.exercise.typeIndex));
+                }
+              },
+              child: Visibility(
+                visible: type.editable,
+                child: Image.asset(
+                  R.drawable.ic_edit,
+                  width: 20,
+                  height: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> onSelectGoal(ScheduleType type) async {
     switch (type) {
       case ScheduleType.blood_sugar:
         await Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
             arguments: {'type': 'input'});
-        _cubit.getListSmartGoal();
+        _cubit.refreshData();
         break;
       case ScheduleType.blood_pressure:
         await Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
             arguments: {'type': 'input'});
-        _cubit.getListSmartGoal();
+        _cubit.refreshData();
         break;
       case ScheduleType.weight:
         await Navigator.pushNamed(context, NavigatorName.add_bmi,
             arguments: {'type': 'input'});
-        _cubit.getListSmartGoal();
+        _cubit.refreshData();
         break;
       case ScheduleType.emotion:
         await Navigator.pushNamed(context, NavigatorName.add_emo,
             arguments: {'type': 'input'});
-        _cubit.getListSmartGoal();
+        _cubit.refreshData();
         break;
       case ScheduleType.food:
         await NavigationUtil.navigatePage(
           context,
           const DailyNutritionPage(type: 'input', id: null),
         );
-        _cubit.getListSmartGoal();
+        _cubit.refreshData();
         break;
       case ScheduleType.exercise:
         await Navigator.pushNamed(context, NavigatorName.add_exercrises,
             arguments: {'type': 'input'});
-        _cubit.getListSmartGoal();
+        _cubit.refreshData();
         break;
       case ScheduleType.hba1c:
         await Navigator.pushNamed(context, NavigatorName.add_hba1c,
             arguments: {'type': 'input'});
-        _cubit.getListSmartGoal();
+        _cubit.refreshData();
         break;
       case ScheduleType.exercise_movement:
         _cubit.goToExerciseTab();
@@ -527,6 +601,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       case ScheduleType.survey:
         showSurveyPopup();
         break;
+      case ScheduleType.lesson:
+        break;
     }
   }
 
@@ -535,7 +611,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     switch (type) {
       case ScheduleType.blood_sugar:
         await Navigator.pushNamed(context, NavigatorName.schedule_glucose);
-        _cubit.getListSmartGoal();
+        _cubit.refreshData();
         break;
       case ScheduleType.blood_pressure:
         editSmartGoal(data);
@@ -565,6 +641,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       case ScheduleType.group:
         break;
       case ScheduleType.survey:
+        break;
+      case ScheduleType.lesson:
         break;
     }
   }
@@ -596,13 +674,15 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         return '';
       case ScheduleType.survey:
         return '';
+      case ScheduleType.lesson:
+        return '';
     }
   }
 
   Future<void> editSmartGoal(SmartGoalListReponseData? data) async {
     await NavigationUtil.navigatePage(
         context, CreateGoalPage(smartGoalData: data));
-    _cubit.getListSmartGoal();
+    _cubit.refreshData();
   }
 
   void showPopup({

@@ -14,6 +14,7 @@ enum ScheduleType {
   coaching,
   group,
   survey,
+  lesson,
 }
 
 extension ScheduleTypeExtend on ScheduleType {
@@ -43,6 +44,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.drawable.ic_schedule_group;
       case ScheduleType.survey:
         return R.drawable.ic_schedule_survey;
+      case ScheduleType.lesson:
+        return R.drawable.ic_exercise;
     }
   }
 
@@ -72,6 +75,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return '';
       case ScheduleType.survey:
         return '';
+      case ScheduleType.lesson:
+        return R.string.smart_goal_lesson.tr();
     }
   }
 
@@ -100,6 +105,8 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.group:
         return -1;
       case ScheduleType.survey:
+        return -1;
+      case ScheduleType.lesson:
         return -1;
     }
   }
@@ -130,6 +137,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return 10;
       case ScheduleType.survey:
         return 11;
+      case ScheduleType.lesson:
+        return 12;
     }
   }
 
@@ -159,6 +168,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return false;
       case ScheduleType.survey:
         return false;
+      case ScheduleType.lesson:
+        return false;
     }
   }
 
@@ -177,6 +188,7 @@ extension ScheduleTypeExtend on ScheduleType {
     if (index == ScheduleType.coaching.typeIndex) return ScheduleType.coaching;
     if (index == ScheduleType.group.typeIndex) return ScheduleType.group;
     if (index == ScheduleType.survey.typeIndex) return ScheduleType.survey;
+    if (index == ScheduleType.lesson.typeIndex) return ScheduleType.lesson;
     return ScheduleType.custom;
   }
 }
