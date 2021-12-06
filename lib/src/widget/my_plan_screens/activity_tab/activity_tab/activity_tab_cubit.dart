@@ -74,10 +74,10 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     myPlanCubit.changePlanType(2);
   }
 
-  Future<void> onSelectWeek(int newWeekIndex) async {
+  Future<void> onSelectWeek(int newWeekIndex, {bool hideLoadingAfterDone = false}) async {
     currentWeekIndex = newWeekIndex;
-    await getSmartGoalStatistics(hideLoadingAfterDone: false);
-    getListSmartGoal();
+    await getSmartGoalStatistics(hideLoadingAfterDone: hideLoadingAfterDone);
+    if (weekStatesList.isNotEmpty) getListSmartGoal();
   }
 
   void onSelectDay(int newDayIndex) {
@@ -90,6 +90,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     if (myPlanCubit.packageCode == Const.PREMIUM &&
         myPlanCubit.currentStudyWeek != null) {
       currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
+    } else {
+      currentWeekIndex = -1;
     }
     await getSmartGoalStatistics(hideLoadingAfterDone: false);
     await getListSmartGoal();
@@ -149,11 +151,18 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       currentDayIndex = response.initDayIndex;
       mark = response.getCompletedMarkIndex(
           currentWeek: currentWeek,
-          userCurrentWeek: myPlanCubit.currentStudyWeek);
+          userCurrentWeek: weekStatesList.isNotEmpty ? myPlanCubit.currentStudyWeek : 0);
       if (hideLoadingAfterDone) emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
     if (hideLoadingAfterDone) emit(const ActivityTabInitial());
+  }
+
+  Future<void> loadingTest() async {
+    emit(const ActivityTabLoading());
+    await Future.delayed(const Duration(seconds: 2));
+    emit(const ActivityTabSuccess());
+    emit(const ActivityTabInitial());
   }
 }
