@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -20,6 +21,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   }
 
   getData() async {
+    final bool hasSharedCode =
+        DeepLinkConfig.instance.sharedCode?.isNotEmpty == true;
     try {
       final token = await AppSettings.getToken();
       if (token.isNotEmpty) {
@@ -32,19 +35,21 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         });
         final user = await UserClient().fetchUser();
         if (user == null) {
-          Message.showToastMessage(
-              context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+          Message.showToastMessage(context,
+              R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
           AppSettings.logout();
-          Navigator.pushReplacementNamed(context, NavigatorName.step_list);
+          Navigator.pushReplacementNamed(context,
+              hasSharedCode ? NavigatorName.register : NavigatorName.step_list);
         } else {
           Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
         }
       } else {
-        Navigator.pushReplacementNamed(context, NavigatorName.step_list);
+        Navigator.pushReplacementNamed(context,
+            hasSharedCode ? NavigatorName.register : NavigatorName.step_list);
       }
     } catch (e) {
-      Message.showToastMessage(
-          context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+      Message.showToastMessage(context,
+          R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
       AppSettings.logout();
     }
   }
@@ -71,8 +76,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
             children: [
               SizedBox(),
               Center(
-                  child: Image.asset(R.drawable.img_logo,
-                      width: 190, height: 95)),
+                  child:
+                      Image.asset(R.drawable.img_logo, width: 190, height: 95)),
               Padding(
                 padding: EdgeInsets.only(bottom: 16),
                 child: RichText(

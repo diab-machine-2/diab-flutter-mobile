@@ -108,6 +108,8 @@ dependencies:
   flutter_cached_pdfview: ^0.4.0-nullsafety
   #QR code scan
   qr_code_scanner: ^0.6.1
+  #Deep link
+  uni_links: ^0.5.1
 
 dev_dependencies:
   flutter_test:

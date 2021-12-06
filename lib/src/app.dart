@@ -59,6 +59,7 @@ import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'app_setting/deep_link_config.dart';
 import 'model/service/app_client.dart';
 import 'utils/navigator_name.dart';
 import 'widget/Food/add_food.dart';
@@ -77,6 +78,13 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     AppClient();
+    DeepLinkConfig.instance.handleDeepLink();
+  }
+
+  @override
+  void dispose() {
+    DeepLinkConfig.instance.dispose();
+    super.dispose();
   }
 
   @override

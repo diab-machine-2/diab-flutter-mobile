@@ -14,6 +14,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeHeader extends StatefulWidget {
   @override
@@ -66,7 +67,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     if (notifyName == 'user_info_change') {
       setState(() {});
     }
-    if (notifyName == 'reload_notification' || notifyName == 'read_notification_success') {
+    if (notifyName == 'reload_notification' ||
+        notifyName == 'read_notification_success') {
       loadNotification();
     }
     if (notifyName == 'motivation_change') {
@@ -122,7 +124,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                 alignment: AlignmentDirectional.bottomEnd,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsets.only(right: 4, bottom: 4),
+                                    padding:
+                                        EdgeInsets.only(right: 4, bottom: 4),
                                     child: Container(
                                         clipBehavior: Clip.hardEdge,
                                         decoration: BoxDecoration(
@@ -131,7 +134,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                                 BorderRadius.circular(21)),
                                         child: user.imageUrl!.url == null
                                             ? Icon(Icons.person,
-                                                size: 42, color: R.color.mainColor)
+                                                size: 42,
+                                                color: R.color.mainColor)
                                             : Image.network(user.imageUrl!.url!,
                                                 width: 42, height: 42)),
                                   ),
@@ -144,7 +148,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                       shape: BoxShape.circle,
                                       color: R.color.white,
                                     ),
-                                    child: Image.asset(R.drawable.ic_crown_green),
+                                    child:
+                                        Image.asset(R.drawable.ic_crown_green),
                                   )
                                 ]),
                             SizedBox(width: 8),
@@ -154,9 +159,10 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                   children: [
                                     Text(user.fullName!.trim(),
                                         style: TextStyle(
-                                            color: R.color.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,)),
+                                          color: R.color.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        )),
                                     SizedBox(height: 4),
                                     Text(R.string.thanh_vien_co_ban.tr(),
                                         style: TextStyle(
@@ -189,7 +195,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                         SizedBox(width: 8),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, NavigatorName.notification);
+                            Navigator.pushNamed(
+                                context, NavigatorName.notification);
                           },
                           child: Container(
                             padding: EdgeInsets.all(4),
@@ -212,7 +219,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                             );
                             if (scanedResult is String) {
                               // TODO(Tuyen): Show popup to confirm share profile
-                              print('LOG $scanedResult');
+                              launch(scanedResult);
                             }
                           },
                           child: Container(
@@ -245,8 +252,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                         : Column(children: [
                             Padding(
                               padding: EdgeInsets.only(top: 16),
-                              child: Text(
-                                  R.string.share_with_diab.tr(),
+                              child: Text(R.string.share_with_diab.tr(),
                                   style: TextStyle(
                                       color: R.color.white,
                                       fontSize: 14,
@@ -275,10 +281,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.w600)),
                                           SizedBox(width: 4),
-                                          Image.asset(
-                                              R.drawable.ic_arrow_right,
-                                              width: 24,
-                                              height: 24)
+                                          Image.asset(R.drawable.ic_arrow_right,
+                                              width: 24, height: 24)
                                         ])),
                               ),
                             )

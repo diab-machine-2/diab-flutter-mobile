@@ -8,6 +8,7 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/deep_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -33,9 +34,15 @@ class _RegisterControllerState extends State<RegisterController> {
   String phone = '';
   String password = '';
   String confirmPassword = '';
-  String sharedCode = '';
+  late String sharedCode;
 
   bool checked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    sharedCode = DeepLinkConfig.instance.sharedCode ?? '';
+  }
 
   @override
   Widget build(BuildContext context) {
