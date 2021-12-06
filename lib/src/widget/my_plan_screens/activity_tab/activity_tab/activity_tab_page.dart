@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
 import 'package:medical/src/model/response/week_smart_goal_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -213,17 +214,17 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             ),
           ),
           GestureDetector(
-            onHorizontalDragEnd: (DragEndDetails details) {
-              if (details.primaryVelocity! > 0) {
-                // User swiped Left
-                print('LOG User swiped Left');
-                _cubit.loadingTest();
-              } else if (details.primaryVelocity! < 0) {
-                // User swiped Right
-                print('LOG User swiped Right');
-                _cubit.loadingTest();
-              }
-            },
+            onHorizontalDragEnd: _cubit.weekStatesList.isNotEmpty
+                ? null
+                : (DragEndDetails details) {
+                    if (details.primaryVelocity! > 0) {
+                      _cubit.onSelectWeek(_cubit.currentWeekIndex! - 1,
+                          hideLoadingAfterDone: true);
+                    } else if (details.primaryVelocity! < 0) {
+                      _cubit.onSelectWeek(_cubit.currentWeekIndex! + 1,
+                          hideLoadingAfterDone: true);
+                    }
+                  },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               color: R.color.transparent,
@@ -233,44 +234,72 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(
                       7,
-                      (index) => Container(
-                        alignment: Alignment.bottomCenter,
-                        width: 24,
-                        child: Text(
-                          index == 6 ? 'CN' : 'T${index + 2}',
-                          style: TextStyle(
-                            color: R.color.grey_1,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                      (index) {
+                        final DayStatesResponseData? dayData =
+                            _cubit.dayStatesList[index];
+                        final DateTime today =
+                            DateTime.fromMillisecondsSinceEpoch(
+                                (dayData?.day ?? 0) * 1000);
+                        final String dayTitle = '${today.day}/${today.month}';
+                        return Container(
+                          alignment: Alignment.bottomCenter,
+                          width: 30,
+                          child: Column(
+                            children: [
+                              Text(
+                                index == 6 ? 'CN' : 'T${index + 2}',
+                                style: TextStyle(
+                                  color: R.color.grey_1,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Visibility(
+                                visible: _cubit.weekStatesList.isEmpty,
+                                child: Text(
+                                  dayTitle,
+                                  style: TextStyle(
+                                    color: R.color.grey_1,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: List.generate(
-                      13,
-                      (index) {
-                        return index.isOdd
-                            ? Expanded(
-                                child: Container(
-                                  height: 1,
-                                  color: index ~/ 2 >= _cubit.mark
-                                      ? R.color.grayBorder
-                                      : R.color.green,
-                                ),
-                              )
-                            : _buildSingleDay(
-                                status: _cubit.dayStatesList[index ~/ 2]
-                                        ?.completionStatus ??
-                                    CompletionStatus.not_start_yet,
-                                isSelected:
-                                    _cubit.currentDayIndex == index ~/ 2,
-                                onTap: () {
-                                  _cubit.onSelectDay(index ~/ 2);
-                                });
-                      },
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3.5),
+                    child: Row(
+                      children: List.generate(
+                        13,
+                        (index) {
+                          return index.isOdd
+                              ? Expanded(
+                                  child: Container(
+                                    height: 1,
+                                    color: index ~/ 2 >= _cubit.mark
+                                        ? R.color.grayBorder
+                                        : R.color.green,
+                                  ),
+                                )
+                              : _buildSingleDay(
+                                  status: _cubit.dayStatesList[index ~/ 2]
+                                          ?.completionStatus ??
+                                      CompletionStatus.not_start_yet,
+                                  isSelected:
+                                      _cubit.currentDayIndex == index ~/ 2,
+                                  onTap: () {
+                                    _cubit.onSelectDay(index ~/ 2);
+                                  });
+                        },
+                      ),
                     ),
                   ),
                 ],
