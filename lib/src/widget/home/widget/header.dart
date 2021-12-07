@@ -19,6 +19,8 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
 
 class HomeHeader extends StatefulWidget {
+  const HomeHeader({this.sharedCode});
+  final String? sharedCode;
   @override
   _HomeHeaderState createState() => _HomeHeaderState();
 }
@@ -33,8 +35,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    loadNotification();
-    loadMotivation();
+    initData();
   }
 
   @override
@@ -58,12 +59,22 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     super.dispose();
   }
 
-  loadNotification() async {
+  Future<void> initData() async {
+    await Future.wait([
+      loadNotification(),
+      loadMotivation(),
+    ]);
+    if (widget.sharedCode?.isNotEmpty == true) {
+      _onHasSharedCode();
+    } 
+  }
+
+  Future<void> loadNotification() async {
     notificationCount = await NotificationClient().fetchNotificationCount();
     setState(() {});
   }
 
-  loadMotivation() async {
+  Future<void> loadMotivation() async {
     final result = await UserClient().fetchMotivationDiary(1);
     motivation = result.models.isEmpty ? null : result.models.first;
     setState(() {});
@@ -189,7 +200,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                               const QRScanWidget(),
                             );
                             if (scanedResult is String) {
-                              onHasSharedCode();
+                              _onHasSharedCode();
                             }
                           },
                           child: Container(
@@ -292,8 +303,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     }
   }
 
-  void onHasSharedCode() {
-    showPopup(context,
+  void _onHasSharedCode() {
+    _showPopup(context,
         image: R.drawable.img_sharing_profile,
         title:
             'Bạn muốn chia sẻ profile cho bác sĩ <<tên bác sĩ>> thuộc <<tên bệnh viện>>?',
@@ -307,7 +318,7 @@ Bạn có muốn tiếp tục chia sẻ không?''', onTapCancel: () {
       await Future.delayed(const Duration(seconds: 2));
       BotToast.closeAllLoading();
       NavigationUtil.pop(context);
-      showPopup(context,
+      _showPopup(context,
           image: R.drawable.img_survey_completed,
           title: 'Bạn đã chia sẻ thành công!',
           description: '''
@@ -321,7 +332,7 @@ cho bác sĩ <<tên bác sĩ>>. Bạn có thể dừng chia sẻ tại “danh s
     });
   }
 
-  Future<void> showPopup(
+  Future<void> _showPopup(
     context, {
     required String image,
     required String title,

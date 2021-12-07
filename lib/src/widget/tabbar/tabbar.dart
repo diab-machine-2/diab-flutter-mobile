@@ -39,16 +39,17 @@ class _TabbarControllerState extends State<TabbarController>
   PageController? pageController;
   BottomTabbar? _bottomTabbar;
 
-  final List<Widget> tabs = [
-    HomeController(),
-    const MyPlanPage(),
-    Container(),
-    const ProfileController(hideAllBackButton: true),
-  ];
+  late final List<Widget> tabs;
 
   @override
   void initState() {
     super.initState();
+    tabs = [
+      HomeController(sharedCode: widget.sharedCode),
+      const MyPlanPage(),
+      Container(),
+      const ProfileController(hideAllBackButton: true),
+    ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken();
     pageController = PageController();

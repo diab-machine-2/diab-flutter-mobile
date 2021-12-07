@@ -17,6 +17,8 @@ import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/list_service/list_service_page.dart';
 
 class HomeController extends StatefulWidget {
+  const HomeController({this.sharedCode});
+  final String? sharedCode;
   @override
   _HomeControllerState createState() => _HomeControllerState();
 }
@@ -169,7 +171,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 )),
                 child: Column(
                   children: [
-                    HomeHeader(),
+                    HomeHeader(sharedCode: widget.sharedCode),
                     Expanded(
                       child: SafeArea(
                         top: false,
