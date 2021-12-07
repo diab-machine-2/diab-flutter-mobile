@@ -116,7 +116,11 @@ class _AppState extends State<App> {
             onGenerateRoute: (settings) {
               switch (settings.name) {
                 case NavigatorName.tabbar:
-                  return _buildRoute(settings, TabbarController());
+                String sharedCode = '';
+                if (settings.arguments != null) {
+                sharedCode = settings.arguments! as String;
+                }
+                  return _buildRoute(settings, TabbarController(sharedCode: sharedCode,));
                 case NavigatorName.login:
                   return _buildRoute(settings, LoginController(),
                       isPresent: true);

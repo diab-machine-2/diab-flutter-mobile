@@ -23,6 +23,8 @@ import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TabbarController extends StatefulWidget {
+  const TabbarController({this.sharedCode});
+  final String? sharedCode;
   @override
   _TabbarControllerState createState() => _TabbarControllerState();
   static _TabbarControllerState? of(BuildContext context) {

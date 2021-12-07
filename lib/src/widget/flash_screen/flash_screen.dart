@@ -43,7 +43,11 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
             arguments: sharedCode,
           );
         } else {
-          Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+          Navigator.pushReplacementNamed(
+            context,
+            NavigatorName.tabbar,
+            arguments: sharedCode,
+          );
         }
       } else {
         Navigator.pushReplacementNamed(

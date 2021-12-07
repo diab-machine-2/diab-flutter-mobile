@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -13,8 +14,9 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/shared_profile/shared_profile.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomeHeader extends StatefulWidget {
   @override
@@ -31,32 +33,6 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    // DartNotificationCenter.subscribe(
-    //     channel: 'user_info_change',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       setState(() {});
-    //     });
-    //
-    // DartNotificationCenter.subscribe(
-    //     channel: 'reload_notification',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       loadNotification();
-    //     });
-    // DartNotificationCenter.subscribe(
-    //     channel: 'read_notification_success',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       loadNotification();
-    //     });
-    //
-    // DartNotificationCenter.subscribe(
-    //     channel: 'motivation_change',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       loadMotivation();
-    //     });
     loadNotification();
     loadMotivation();
   }
@@ -79,12 +55,6 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'user_info_change', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'reload_notification', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'read_notification_success', observer: this);
     super.dispose();
   }
 
@@ -95,7 +65,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
 
   loadMotivation() async {
     final result = await UserClient().fetchMotivationDiary(1);
-    motivation = result.models.length == 0 ? null : result.models.first;
+    motivation = result.models.isEmpty ? null : result.models.first;
     setState(() {});
   }
 
@@ -105,7 +75,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     return SafeArea(
         bottom: false,
         child: Container(
-            padding: EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+            padding:
+                const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -124,8 +95,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                 alignment: AlignmentDirectional.bottomEnd,
                                 children: [
                                   Padding(
-                                    padding:
-                                        EdgeInsets.only(right: 4, bottom: 4),
+                                    padding: const EdgeInsets.only(
+                                        right: 4, bottom: 4),
                                     child: Container(
                                         clipBehavior: Clip.hardEdge,
                                         decoration: BoxDecoration(
@@ -152,7 +123,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                         Image.asset(R.drawable.ic_crown_green),
                                   )
                                 ]),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Expanded(
                               child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,7 +134,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,
                                         )),
-                                    SizedBox(height: 4),
+                                    const SizedBox(height: 4),
                                     Text(R.string.thanh_vien_co_ban.tr(),
                                         style: TextStyle(
                                             color: R.color.white,
@@ -192,14 +163,14 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                               : Image.asset(R.drawable.ic_book_question,
                                   width: 24, height: 24),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         GestureDetector(
                           onTap: () {
                             Navigator.pushNamed(
                                 context, NavigatorName.notification);
                           },
                           child: Container(
-                            padding: EdgeInsets.all(4),
+                            padding: const EdgeInsets.all(4),
                             color: R.color.transparent,
                             child: Image.asset(
                                 notificationCount! > 0
@@ -218,8 +189,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                               const QRScanWidget(),
                             );
                             if (scanedResult is String) {
-                              // TODO(Tuyen): Show popup to confirm share profile
-                              launch(scanedResult);
+                              onHasSharedCode();
                             }
                           },
                           child: Container(
@@ -238,55 +208,55 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                   ],
                 ),
                 // SizedBox(height: 30),
-                !isChoose
-                    ? SizedBox()
-                    : (motivation != null
-                        ? Padding(
-                            padding: EdgeInsets.only(top: 16),
-                            child: Text(motivation!.content!,
+                if (!isChoose)
+                  const SizedBox()
+                else
+                  motivation != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text(motivation!.content!,
+                              style: TextStyle(
+                                  color: R.color.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400)),
+                        )
+                      : Column(children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text(R.string.share_with_diab.tr(),
                                 style: TextStyle(
                                     color: R.color.white,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400)),
-                          )
-                        : Column(children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 16),
-                              child: Text(R.string.share_with_diab.tr(),
-                                  style: TextStyle(
+                          ),
+                          const SizedBox(height: 8),
+                          Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                _showDialogUpdateMotivation(null);
+                              },
+                              child: Container(
+                                  height: 32,
+                                  decoration: BoxDecoration(
                                       color: R.color.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400)),
+                                      borderRadius: BorderRadius.circular(16)),
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16),
+                                  child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(R.string.viet_dong_luc.tr(),
+                                            style: TextStyle(
+                                                color: R.color.mainColor,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600)),
+                                        const SizedBox(width: 4),
+                                        Image.asset(R.drawable.ic_arrow_right,
+                                            width: 24, height: 24)
+                                      ])),
                             ),
-                            SizedBox(height: 8),
-                            Center(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _showDialogUpdateMotivation(null);
-                                },
-                                child: Container(
-                                    height: 32,
-                                    decoration: BoxDecoration(
-                                        color: R.color.white,
-                                        borderRadius:
-                                            BorderRadius.circular(16)),
-                                    padding:
-                                        EdgeInsets.only(left: 16, right: 16),
-                                    child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(R.string.viet_dong_luc.tr(),
-                                              style: TextStyle(
-                                                  color: R.color.mainColor,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w600)),
-                                          SizedBox(width: 4),
-                                          Image.asset(R.drawable.ic_arrow_right,
-                                              width: 24, height: 24)
-                                        ])),
-                              ),
-                            )
-                          ]))
+                          )
+                        ])
               ],
             )));
   }
@@ -294,8 +264,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   _showDialogUpdateMotivation(MotivationModel? model) {
     showDialog(
         context: context,
-        builder: (context) => Container(
-                child: AlertDialog(
+        builder: (context) => AlertDialog(
               content: MotivationPopup(
                 model: model,
                 callback: (data) {
@@ -304,7 +273,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                   }
                 },
               ),
-            )));
+            ));
   }
 
   addMotivation(MotivationModel model) async {
@@ -320,6 +289,142 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
       } else {
         Message.showToastMessage(context, e.toString());
       }
+    }
+  }
+
+  void onHasSharedCode() {
+    showPopup(context,
+        image: R.drawable.img_sharing_profile,
+        title:
+            'Bạn muốn chia sẻ profile cho bác sĩ <<tên bác sĩ>> thuộc <<tên bệnh viện>>?',
+        description: '''
+Việc chia sẽ hồ sơ giúp bác sĩ có thêm thông tin để hỗ trợ chấn đoán và điều trị. Bạn có thể dừng chia sẻ hồ sơ khi không có nhu cầu.
+Bạn có muốn tiếp tục chia sẻ không?''', onTapCancel: () {
+      NavigationUtil.pop(context);
+    }, onTapYes: () async {
+      // TODO(Tuyen): Call API to share code
+      BotToast.showLoading();
+      await Future.delayed(const Duration(seconds: 2));
+      BotToast.closeAllLoading();
+      NavigationUtil.pop(context);
+      showPopup(context,
+          image: R.drawable.img_survey_completed,
+          title: 'Bạn đã chia sẻ thành công!',
+          description: '''
+Bạn đã chia sẻ thành công profile 
+cho bác sĩ <<tên bác sĩ>>. Bạn có thể dừng chia sẻ tại “danh sách đã chia sẻ”.''',
+          onTapYes: () {
+        NavigationUtil.pop(context, result: true);
+      }, afterShow: () {
+        NavigationUtil.navigatePage(context, const SharedProfilePage());
+      });
+    });
+  }
+
+  Future<void> showPopup(
+    context, {
+    required String image,
+    required String title,
+    required String description,
+    VoidCallback? onTapCancel,
+    required VoidCallback onTapYes,
+    VoidCallback? afterShow,
+  }) async {
+    final result = await showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => GestureDetector(
+        onTap: () {
+          NavigationUtil.pop(context);
+        },
+        child: Scaffold(
+          backgroundColor: R.color.transparent,
+          body: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      R.color.white,
+                      R.color.main_6,
+                    ],
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Image.asset(image),
+                      const SizedBox(height: 24),
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700),
+                      ),
+                      Text(
+                        description,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(height: 20),
+                      if (onTapCancel != null)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 130.w,
+                              height: 43,
+                              child: ButtonWidget(
+                                  title: 'Huỷ',
+                                  textSize: 14,
+                                  backgroundColor: R.color.grayBorder,
+                                  textColor: R.color.textDark,
+                                  onPressed: onTapCancel),
+                            ),
+                            const SizedBox(width: 14),
+                            SizedBox(
+                              width: 130.w,
+                              height: 43,
+                              child: ButtonWidget(
+                                title: 'Xác nhận',
+                                textSize: 14,
+                                onPressed: onTapYes,
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        SizedBox(
+                          width: 245.w,
+                          height: 43,
+                          child: ButtonWidget(
+                              title: 'Xem danh sách đã chia sẻ',
+                              textSize: 14,
+                              onPressed: onTapYes),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    if (result is bool && result && afterShow != null) {
+      afterShow.call();
     }
   }
 }
