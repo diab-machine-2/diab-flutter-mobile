@@ -9,8 +9,8 @@ class CustomCircleChart extends StatelessWidget {
     required this.mark1,
     required this.mark2,
   }) : super(key: key);
-  final int mark1;
-  final int mark2;
+  final double mark1;
+  final double mark2;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +23,8 @@ class CustomCircleChart extends StatelessWidget {
 class CircleGraphPainter extends CustomPainter {
   CircleGraphPainter({required this.mark1, required this.mark2});
 
-  final int mark1;
-  final int mark2;
+  final double mark1;
+  final double mark2;
 
   final Paint mark1Paint = Paint()
     ..color = R.color.greenGradientBottom

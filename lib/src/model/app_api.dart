@@ -32,6 +32,7 @@ import 'response/list_roadmap_response.dart';
 import 'response/list_transaction_response.dart';
 import 'response/menu_response.dart';
 import 'response/my_lesson_response.dart';
+import 'response/my_progress_response.dart';
 import 'response/save_survey_result_response.dart';
 import 'response/smart_goal_detail_response.dart';
 import 'response/smart_goal_list_reponse.dart';
@@ -248,4 +249,8 @@ abstract class AppApi {
   @GET("App/Lesson/{lessonId}/LessonQuizDetail")
   Future<LessonSectionListResponse> getListQuiz(
       @Path("lessonId") String lessonId);
+
+  // My Progress
+  @GET("App/MyProgress")
+  Future<MyProgressResponse> getMyProgress({@Query('type') int? type});
 }

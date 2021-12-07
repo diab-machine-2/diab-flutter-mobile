@@ -1,7 +1,7 @@
 enum FilterType {
   day14,
   day30,
-  begin,
+  all,
 }
 
 extension FilterTypeExtends on FilterType {
@@ -11,7 +11,7 @@ extension FilterTypeExtends on FilterType {
         return '14 ngày';
       case FilterType.day30:
         return '30 ngày';
-      case FilterType.begin:
+      case FilterType.all:
         return 'Từ đầu lộ trình';
     }
   }
@@ -19,7 +19,7 @@ extension FilterTypeExtends on FilterType {
   static FilterType? getTypeFromString(String text) {
     if (text == FilterType.day14.title) return FilterType.day14;
     if (text == FilterType.day30.title) return FilterType.day30;
-    if (text == FilterType.begin.title) return FilterType.begin;
+    if (text == FilterType.all.title) return FilterType.all;
     return null;
   }
 }

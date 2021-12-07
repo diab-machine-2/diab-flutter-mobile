@@ -670,6 +670,14 @@ class Strings {
 	String get frequency_per_day => 'frequency_per_day';
 	String get enter_smart_goal_name => 'enter_smart_goal_name';
 	String get select_frequency => 'select_frequency';
+	String get my_progress => 'my_progress';
+	String get report => 'report';
+	String get goal => 'goal';
+	String get coach11 => 'coach11';
+	String get coach1n => 'coach1n';
+	String get lesson_learned => 'lesson_learned';
+	String get lesson_unlocked => 'lesson_unlocked';
+	String get lesson_not_learned => 'lesson_not_learned';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';

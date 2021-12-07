@@ -1,13 +1,17 @@
+import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/custom_circle_chart.dart';
 import 'package:medical/src/widgets/custom_progress_chart.dart';
 import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'models/filter_type.dart';
 import 'models/report_data.dart';
@@ -23,12 +27,14 @@ class MyProgressPage extends StatefulWidget {
 
 class _MyProgressPageState extends State<MyProgressPage> {
   late MyProgressCubit _cubit;
+  final RefreshController _controller = RefreshController();
 
   @override
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = MyProgressCubit(appRepository);
+    _cubit.initData();
   }
 
   @override
@@ -38,11 +44,21 @@ class _MyProgressPageState extends State<MyProgressPage> {
       child: Scaffold(
         body: CommonPage(
           background: R.drawable.bg_lesson_detail,
-          title: 'Tiến độ của tôi',
+          title: R.string.my_progress.tr(),
           appbarColor: R.color.white,
           showCloseBackButton: true,
           child: BlocConsumer<MyProgressCubit, MyProgressState>(
-            listener: (context, state) {},
+            listener: (context, state) {
+              if (state is MyProgressLoading) {
+                BotToast.showLoading();
+              } else {
+                BotToast.closeAllLoading();
+                _controller.refreshCompleted();
+              }
+              if (state is MyProgressFailure) {
+                Message.showToastMessage(context, state.error);
+              }
+            },
             builder: (context, state) {
               return Column(
                 children: [
@@ -63,7 +79,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                 context: context,
                                 builder: (context) {
                                   return ReportListWidget(
-                                    title: 'Báo cáo',
+                                    title: R.string.report.tr(),
                                     reportList: [
                                       ReportData(
                                         title: 'Báo cáo đầu vào',
@@ -90,7 +106,6 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                       ),
                                     ],
                                     onSelected: (url) {
-                                      print('LOG $url');
                                       NavigationUtil.navigatePage(
                                           context, PDFViewerWidget(url: url));
                                     },
@@ -106,7 +121,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                'Báo cáo',
+                                R.string.report.tr(),
                                 style: TextStyle(
                                   color: R.color.textDark,
                                   fontSize: 14,
@@ -123,7 +138,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                 context: context,
                                 builder: (context) {
                                   return SelectBottomSheetWidget(
-                                    title: 'Lọc theo thời gian',
+                                    title: R.string.loc_theo_thoi_gian.tr(),
                                     isMultipleChoice: false,
                                     selectedList: [
                                       if (_cubit.filterType?.title != null)
@@ -132,7 +147,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
                                     elementList: [
                                       FilterType.day14.title,
                                       FilterType.day30.title,
-                                      FilterType.begin.title,
+                                      FilterType.all.title,
                                     ],
                                     onSelected: (filter) {
                                       if (filter.isNotEmpty)
@@ -183,74 +198,119 @@ class _MyProgressPageState extends State<MyProgressPage> {
                     ),
                   ),
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 24),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            _buildCustomCardLayout(
-                              title: 'Hoạt động',
-                              onTapShowDetail: () {
-                                NavigationUtil.pop(context, result: 0);
-                              },
-                              child: Column(
-                                children: const [
-                                  CustomProgressChart(
-                                    title: 'Mục tiêu',
-                                    mark_1: 30,
-                                    mark_2: 50,
-                                    mark_3: 100,
-                                  ),
-                                  CustomProgressChart(
-                                    title: 'Coach 1 -1',
-                                    mark_1: 30,
-                                    mark_2: 60,
-                                    mark_3: 100,
-                                  ),
-                                  CustomProgressChart(
-                                    title: 'Coach 1 -n',
-                                    mark_1: 20,
-                                    mark_2: 50,
-                                    mark_3: 90,
-                                  ),
-                                  CustomProgressChart(
-                                    title: 'Livestream',
-                                    mark_1: 70,
-                                    mark_2: 72,
-                                    mark_3: 75,
-                                  ),
-                                ],
+                    child: _cubit.myProgressData == null
+                        ? const SizedBox()
+                        : Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 24),
+                            child: SmartRefresher(
+                              controller: _controller,
+                              onRefresh: () =>
+                                  _cubit.getMyProgress(isRefresh: true),
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    _buildCustomCardLayout(
+                                      title: R.string.hoat_dong.tr(),
+                                      onTapShowDetail: () {
+                                        NavigationUtil.pop(context, result: 0);
+                                      },
+                                      child: Column(
+                                        children: [
+                                          CustomProgressChart(
+                                            title: R.string.goal.tr(),
+                                            mark_1: _cubit.myProgressData?.data
+                                                    ?.target?.completed ??
+                                                0,
+                                            mark_2: _cubit.myProgressData?.data
+                                                    ?.target?.unlocked ??
+                                                0,
+                                            mark_3: _cubit.myProgressData?.data
+                                                    ?.target?.total ??
+                                                0,
+                                          ),
+                                          CustomProgressChart(
+                                            title: R.string.coach11.tr(),
+                                            mark_1: _cubit.myProgressData?.data
+                                                    ?.coach11?.completed ??
+                                                0,
+                                            mark_2: _cubit.myProgressData?.data
+                                                    ?.coach11?.unlocked ??
+                                                0,
+                                            mark_3: _cubit.myProgressData?.data
+                                                    ?.coach11?.total ??
+                                                0,
+                                          ),
+                                          CustomProgressChart(
+                                            title: R.string.coach1n.tr(),
+                                            mark_1: _cubit.myProgressData?.data
+                                                    ?.coach1N?.completed ??
+                                                0,
+                                            mark_2: _cubit.myProgressData?.data
+                                                    ?.coach1N?.unlocked ??
+                                                0,
+                                            mark_3: _cubit.myProgressData?.data
+                                                    ?.coach1N?.total ??
+                                                0,
+                                          ),
+                                          // CustomProgressChart(
+                                          //   title: 'Livestream',
+                                          //   mark_1: _cubit.myProgressData?.data?.coach1N?.completed ?? 0,
+                                          //   mark_2: _cubit.myProgressData?.data?.coach1N?.unlocked ?? 0,
+                                          //   mark_3: _cubit.myProgressData?.data?.coach1N?.total ?? 0,
+                                          // ),
+                                        ],
+                                      ),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.bottomLeft,
+                                        end: Alignment.topRight,
+                                        colors: <Color>[
+                                          const Color(0xffF7F0C0)
+                                              .withOpacity(0.8),
+                                          const Color(0xffFEDABA)
+                                              .withOpacity(0.8),
+                                        ],
+                                      ),
+                                    ),
+                                    _buildCustomCardLayout(
+                                      title: R.string.title_lesson.tr(),
+                                      onTapShowDetail: () {
+                                        NavigationUtil.pop(context, result: 1);
+                                      },
+                                      child: _buildCircleChartCard(
+                                        mark1: _cubit.myProgressData?.data
+                                                ?.lesson?.completed ??
+                                            0,
+                                        mark2: _cubit.myProgressData?.data
+                                                ?.lesson?.unlocked ??
+                                            0,
+                                        mark3: _cubit.myProgressData?.data
+                                                ?.lesson?.total ??
+                                            0,
+                                      ),
+                                    ),
+                                    _buildCustomCardLayout(
+                                      title: R.string.title_exercise.tr(),
+                                      onTapShowDetail: () {
+                                        NavigationUtil.pop(context, result: 2);
+                                      },
+                                      child: _buildCircleChartCard(
+                                        mark1: _cubit.myProgressData?.data
+                                                ?.exerciseMovement?.completed ??
+                                            0,
+                                        mark2: _cubit.myProgressData?.data
+                                                ?.exerciseMovement?.unlocked ??
+                                            0,
+                                        mark3: _cubit.myProgressData?.data
+                                                ?.exerciseMovement?.total ??
+                                            0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              gradient: LinearGradient(
-                                begin: Alignment.bottomLeft,
-                                end: Alignment.topRight,
-                                colors: <Color>[
-                                  const Color(0xffF7F0C0).withOpacity(0.8),
-                                  const Color(0xffFEDABA).withOpacity(0.8),
-                                ],
-                              ),
                             ),
-                            _buildCustomCardLayout(
-                              title: 'Bài học',
-                              onTapShowDetail: () {
-                                NavigationUtil.pop(context, result: 1);
-                              },
-                              child: _buildCircleChartCard(
-                                  mark1: 10, mark2: 20, mark3: 70),
-                            ),
-                            _buildCustomCardLayout(
-                              title: 'Vận động',
-                              onTapShowDetail: () {
-                                NavigationUtil.pop(context, result: 2);
-                              },
-                              child: _buildCircleChartCard(
-                                  mark1: 30, mark2: 50, mark3: 20),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                          ),
                   )
                 ],
               );
@@ -266,6 +326,9 @@ class _MyProgressPageState extends State<MyProgressPage> {
     required int mark2,
     required int mark3,
   }) {
+    final double mark1Percent = mark3 == 0 ? 0 : (mark1 / mark3) * 100;
+    final double mark2Percent = mark3 == 0 ? 0 : (mark2 / mark3) * 100;
+    final double mark3Percent = 100 - mark1Percent - mark2Percent;
     return Column(
       children: [
         const SizedBox(height: 30),
@@ -276,8 +339,8 @@ class _MyProgressPageState extends State<MyProgressPage> {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 20, 30, 20),
                 child: CustomCircleChart(
-                  mark1: mark1,
-                  mark2: mark2,
+                  mark1: mark1Percent,
+                  mark2: mark2Percent,
                 ),
               ),
             ),
@@ -287,25 +350,25 @@ class _MyProgressPageState extends State<MyProgressPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Chú thích:',
+                    R.string.note.tr(),
                     style: R.style.normalTextStyle,
                   ),
                   const SizedBox(height: 10),
                   _buildSingle(
-                      percent: mark1,
-                      title: 'Bài học đã học',
+                      percent: mark1Percent.toInt(),
+                      title: R.string.lesson_learned.tr(),
                       backgroundColor: R.color.greenGradientBottom,
                       textColor: R.color.white),
                   const SizedBox(height: 8),
                   _buildSingle(
-                      percent: mark2,
-                      title: 'Bài học đã mở khoá',
+                      percent: mark2Percent.toInt(),
+                      title: R.string.lesson_unlocked.tr(),
                       backgroundColor: R.color.orange_1,
                       textColor: R.color.white),
                   const SizedBox(height: 8),
                   _buildSingle(
-                      percent: mark3,
-                      title: 'Bài học chưa học',
+                      percent: mark3Percent.toInt(),
+                      title: R.string.lesson_not_learned.tr(),
                       backgroundColor: R.color.white,
                       textColor: R.color.textDark),
                 ],
@@ -395,7 +458,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
               InkWell(
                 onTap: onTapShowDetail,
                 child: Text(
-                  'Xem chi tiết',
+                  R.string.xem_chi_tiet.tr(),
                   style: TextStyle(
                     color: R.color.mainColor,
                     fontSize: 14,
