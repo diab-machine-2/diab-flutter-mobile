@@ -1,5 +1,6 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
+import 'package:medical/src/model/request/complete_smart_goal_request.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
@@ -475,6 +476,17 @@ class AppRepository {
     try {
       final CreateSmartGoalResponse response =
           await appClient.createSmartGoal(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> completeSmartGoal(
+      CompleteSmartGoalRequest request) async {
+    try {
+      final CommonResponse response =
+          await appClient.completeSmartGoal(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

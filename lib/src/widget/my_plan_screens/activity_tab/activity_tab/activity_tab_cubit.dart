@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/complete_smart_goal_request.dart';
+import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
 import 'package:medical/src/model/response/week_smart_goal_response.dart';
@@ -74,7 +76,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     myPlanCubit.changePlanType(2);
   }
 
-  Future<void> onSelectWeek(int newWeekIndex, {bool hideLoadingAfterDone = false}) async {
+  Future<void> onSelectWeek(int newWeekIndex,
+      {bool hideLoadingAfterDone = false}) async {
     currentWeekIndex = newWeekIndex;
     await getSmartGoalStatistics(hideLoadingAfterDone: hideLoadingAfterDone);
     if (weekStatesList.isNotEmpty) getListSmartGoal();
@@ -151,7 +154,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       currentDayIndex = response.initDayIndex;
       mark = response.getCompletedMarkIndex(
           currentWeek: currentWeek,
-          userCurrentWeek: weekStatesList.isNotEmpty ? myPlanCubit.currentStudyWeek : 0);
+          userCurrentWeek:
+              weekStatesList.isNotEmpty ? myPlanCubit.currentStudyWeek : 0);
       if (hideLoadingAfterDone) emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
@@ -159,10 +163,19 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     if (hideLoadingAfterDone) emit(const ActivityTabInitial());
   }
 
-  Future<void> loadingTest() async {
+  Future<void> completeSmartGoal(String? smartGoalId) async {
+    if (smartGoalId == null) return;
     emit(const ActivityTabLoading());
-    await Future.delayed(const Duration(seconds: 2));
-    emit(const ActivityTabSuccess());
+    final CompleteSmartGoalRequest request =
+        CompleteSmartGoalRequest(id: smartGoalId);
+    final ApiResult<CommonResponse> apiResult =
+        await repository.completeSmartGoal(request);
+    apiResult.when(success: (CommonResponse response) {
+      refreshData();
+      emit(const ActivityTabSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
+    });
     emit(const ActivityTabInitial());
   }
 }

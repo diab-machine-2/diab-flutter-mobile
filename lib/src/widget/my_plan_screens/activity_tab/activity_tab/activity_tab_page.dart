@@ -465,7 +465,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       padding: const EdgeInsets.only(bottom: 20.0),
       child: InkWell(
         onTap: () {
-          onSelectGoal(type);
+          onSelectGoal(type, smartGoal: data);
         },
         child: Row(
           children: [
@@ -592,7 +592,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  Future<void> onSelectGoal(ScheduleType type) async {
+  Future<void> onSelectGoal(ScheduleType type,
+      {SmartGoalListReponseData? smartGoal}) async {
     switch (type) {
       case ScheduleType.blood_sugar:
         await Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
@@ -635,7 +636,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _cubit.goToExerciseTab();
         break;
       case ScheduleType.custom:
-        showCustomGoalPopup();
+        showCustomGoalPopup(
+          smartGoal: smartGoal,
+        );
         break;
       case ScheduleType.coaching:
         showCoachingPopup();
@@ -723,9 +726,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     }
   }
 
-  Future<void> editSmartGoal(SmartGoalListReponseData? data) async {
+  Future<void> editSmartGoal(SmartGoalListReponseData? smartGoal) async {
     await NavigationUtil.navigatePage(
-        context, CreateGoalPage(smartGoalData: data));
+        context, CreateGoalPage(smartGoalData: smartGoal));
     _cubit.refreshData();
   }
 
@@ -733,7 +736,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     required BuildContext context,
     required Widget child,
     required String buttonTitle,
-    required VoidCallback onTap,
+    VoidCallback? onTap,
   }) {
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
@@ -767,12 +770,15 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     children: [
                       child,
                       const SizedBox(height: 16),
-                      SizedBox(
-                        width: 245,
-                        child: ButtonWidget(
-                          title: buttonTitle,
-                          textSize: 14,
-                          onPressed: onTap,
+                      Visibility(
+                        visible: onTap != null,
+                        child: SizedBox(
+                          width: 245,
+                          child: ButtonWidget(
+                            title: buttonTitle,
+                            textSize: 14,
+                            onPressed: onTap,
+                          ),
                         ),
                       ),
                     ],
@@ -786,11 +792,22 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  showCustomGoalPopup() {
+  showCustomGoalPopup({SmartGoalListReponseData? smartGoal}) {
+    String description = '';
+    if (smartGoal?.executeType == 0) {
+      description = 'Thời gian: ${smartGoal?.executeDayTimes} phút';
+    } else if (smartGoal?.executeType == 1) {
+      description = 'Số lần: ${smartGoal?.executeDayTimes} lần';
+    }
     return showPopup(
       context: context,
       buttonTitle: R.string.complete_lesson.tr(),
-      onTap: () {},
+      onTap: smartGoal?.isCompleted == true
+          ? null
+          : () {
+              _cubit.completeSmartGoal(smartGoal?.id);
+              NavigationUtil.pop(context);
+            },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -799,7 +816,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             child: Image.asset(R.drawable.img_custom_goal),
           ),
           Text(
-            'Ngồi thiền',
+            smartGoal?.name ?? '',
             style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 20,
@@ -807,7 +824,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           ),
           const SizedBox(height: 6),
           Text(
-            'Thời gian: 30 phút',
+            description,
             style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 14,

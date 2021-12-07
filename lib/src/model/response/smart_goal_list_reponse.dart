@@ -156,6 +156,8 @@ class SmartGoalListReponseData {
     return progress;
   }
 
+  bool get isCompleted => progress >= 1;
+
   ScheduleType get goalType => ScheduleTypeExtend.getTypeFromIndex(type);
 
   DateTime? get startDate => appointmentDate == null
