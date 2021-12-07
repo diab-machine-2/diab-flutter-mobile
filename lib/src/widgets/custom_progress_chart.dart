@@ -70,10 +70,13 @@ class MyPainter extends CustomPainter {
     final Paint paint2 = Paint()..color = R.color.orange_1;
     final Paint paint3 = Paint()..color = R.color.white;
 
+    final String completedPercent =
+        mark_2 == 0 ? '' : '${((mark_1 / mark_2) * 100).toInt()}%';
+
     final double mark1Position =
-        (mark_1.toDouble() / mark_3.toDouble()) * size.width;
+        mark_3 == 0 ? 0 : (mark_1.toDouble() / mark_3.toDouble()) * size.width;
     final double mark2Position =
-        (mark_2.toDouble() / mark_3.toDouble()) * size.width;
+        mark_3 == 0 ? 0 : (mark_2.toDouble() / mark_3.toDouble()) * size.width;
     final double mark3Position = size.width;
 
     final textStyle = TextStyle(
@@ -81,6 +84,20 @@ class MyPainter extends CustomPainter {
       fontSize: 12,
       fontWeight: FontWeight.w400,
     );
+
+    final TextPainter percentTextPainter = TextPainter(
+      text: TextSpan(
+        text: completedPercent,
+        style: textStyle.copyWith(
+          color: R.color.white,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout(
+        minWidth: 0,
+        maxWidth: size.width,
+      );
 
     final TextPainter text1Painter = TextPainter(
       text: TextSpan(
@@ -114,6 +131,10 @@ class MyPainter extends CustomPainter {
         minWidth: 0,
         maxWidth: size.width,
       );
+
+    final Offset percentTextPosition = Offset(
+        (mark1Position / 2) - (percentTextPainter.width / 2),
+        (size.height - percentTextPainter.height) / 2);
 
     Offset mark1TextPosition = Offset(
         mark1Position - (text1Painter.width / 2), -text1Painter.height - 4);
@@ -156,6 +177,7 @@ class MyPainter extends CustomPainter {
     text1Painter.paint(canvas, mark1TextPosition);
     text2Painter.paint(canvas, mark2TextPosition);
     text3Painter.paint(canvas, mark3TextPosition);
+    percentTextPainter.paint(canvas, percentTextPosition);
   }
 
   @override
