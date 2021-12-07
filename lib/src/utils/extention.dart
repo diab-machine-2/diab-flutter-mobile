@@ -29,4 +29,10 @@ extension DateTimeUntil on DateTime {
     if (this.weekday == 7) return 'CN';
     return 'T${this.weekday + 1}';
   }
+
+  bool isSameDayWith(DateTime dateTime) {
+    return this.year == dateTime.year &&
+        this.month == dateTime.month &&
+        this.day == dateTime.day;
+  }
 }

@@ -11,10 +11,12 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/extention.dart';
 
 import '../../my_plan/my_plan.dart';
 import 'activity_tab.dart';
 import 'models/goal_filter_type.dart';
+import 'models/message_state.dart';
 
 class ActivityTabCubit extends Cubit<ActivityTabState> {
   ActivityTabCubit(this.repository, this.myPlanCubit)
@@ -63,8 +65,13 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   int? get currentDay => dayStatesList[currentDayIndex]?.day;
 
+  MessageState get messageState => currentGoalType == GoalFilterType.day
+      ? myPlanCubit.dayMessageState
+      : myPlanCubit.weekMessageState;
+
   void changeGoalType(int newIndex) {
     currentGoalType = goalTypeList[newIndex];
+    emit(const GoalTypeChanged());
     refreshData();
   }
 
@@ -88,6 +95,14 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     getListSmartGoal();
   }
 
+  void checkMessageDay() {
+    if (!messageState.dateTime.isSameDayWith(DateTime.now())) {
+      messageState.dateTime = DateTime.now();
+      messageState.showed50Message = false;
+      messageState.showed90Message = false;
+    }
+  }
+
   Future<void> initData() async {
     await myPlanCubit.checkUserInfo();
     if (myPlanCubit.packageCode == Const.PREMIUM &&
@@ -101,6 +116,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     Timer(const Duration(milliseconds: 100), () {
       emit(ActivityTabWeekChanged(currentWeekIndex ?? 0));
     });
+    emit(const ActivityTabProgressChanged());
   }
 
   void refreshData({bool isRefresh = false}) {
@@ -120,6 +136,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         await repository.getListSmartGoal(day: currentDay);
     apiResult.when(success: (SmartGoalListReponse response) {
       smartGoalData = response;
+      checkMessageDay();
       emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
@@ -136,7 +153,9 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         await repository.getWeekSmartGoal(week: currentWeek);
     apiResult.when(success: (WeekSmartGoalResponse response) {
       weekSmartGoalData = response;
+      checkMessageDay();
       emit(const ActivityTabSuccess());
+      emit(const ActivityTabProgressChanged());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
@@ -157,6 +176,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
           userCurrentWeek:
               weekStatesList.isNotEmpty ? myPlanCubit.currentStudyWeek : 0);
       if (hideLoadingAfterDone) emit(const ActivityTabSuccess());
+      emit(const ActivityTabProgressChanged());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });

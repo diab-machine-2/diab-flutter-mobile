@@ -2,12 +2,14 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
 import 'package:medical/src/model/response/week_smart_goal_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
@@ -98,6 +100,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                             const Spacer(),
                             InkWell(
                               onTap: () async {
+                                Observable.instance.notifyObservers([],
+                                    notifyName: Const.HIDE_OVERLAY_KEY);
                                 final result =
                                     await NavigationUtil.navigatePage(
                                         context, const MyProgressPage());
@@ -159,6 +163,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 right: 24,
                 child: InkWell(
                   onTap: () async {
+                    Observable.instance.notifyObservers([],
+                        notifyName: Const.HIDE_OVERLAY_KEY);
                     await NavigationUtil.navigatePage(
                         context, const CreateGoalPage());
                     _cubit.refreshData();
@@ -217,6 +223,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             onHorizontalDragEnd: _cubit.weekStatesList.isNotEmpty
                 ? null
                 : (DragEndDetails details) {
+                    Observable.instance.notifyObservers([],
+                        notifyName: Const.HIDE_OVERLAY_KEY);
                     if (details.primaryVelocity! > 0) {
                       _cubit.onSelectWeek(_cubit.currentWeekIndex! - 1,
                           hideLoadingAfterDone: true);
@@ -317,6 +325,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       children: [
         InkWell(
           onTap: () {
+            Observable.instance
+                .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
             if (_cubit.currentWeekIndex == null) return;
             animateToIndex(_cubit.currentWeekIndex! - 1);
           },
@@ -338,6 +348,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     state: _cubit.weekStatesList[index],
                     isSelected: index == _cubit.currentWeekIndex,
                     onSelect: () {
+                      Observable.instance.notifyObservers([],
+                          notifyName: Const.HIDE_OVERLAY_KEY);
                       animateToIndex(index);
                     });
               })
@@ -348,6 +360,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         ),
         InkWell(
           onTap: () {
+            Observable.instance
+                .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
             if (_cubit.currentWeekIndex == null) return;
             animateToIndex(_cubit.currentWeekIndex! + 1);
           },
@@ -594,6 +608,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
 
   Future<void> onSelectGoal(ScheduleType type,
       {SmartGoalListReponseData? smartGoal}) async {
+    Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
     switch (type) {
       case ScheduleType.blood_sugar:
         await Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
@@ -655,6 +670,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
 
   Future<void> onEditGoal(ScheduleType type,
       {SmartGoalListReponseData? data}) async {
+    Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
     switch (type) {
       case ScheduleType.blood_sugar:
         await Navigator.pushNamed(context, NavigatorName.schedule_glucose);

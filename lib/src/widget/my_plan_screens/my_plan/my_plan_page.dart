@@ -3,8 +3,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
@@ -71,6 +73,8 @@ class _MyPlanPageState extends State<MyPlanPage> {
                           _cubit.planTypeList.map((e) => e.title).toList(),
                       selectedIndex: _cubit.currentPlanTypeIndex,
                       onChange: (index) {
+                        Observable.instance.notifyObservers([],
+                            notifyName: Const.HIDE_OVERLAY_KEY);
                         _cubit.changePlanType(index);
                       },
                     ),
