@@ -8,7 +8,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class QRScanWidget extends StatefulWidget {
   const QRScanWidget({Key? key}) : super(key: key);
@@ -87,9 +86,14 @@ class _QRScanWidgetState extends State<QRScanWidget> {
 
   Future<void> checkValidLink(String scanedText) async {
     subcription.pause();
-    if (await canLaunch(scanedText)) {
+    // if (await canLaunch(scanedText)) {
+    //   subcription.cancel();
+    //   Navigator.pop(context, scanedText);
+    // }
+    if (scanedText.contains('https://diab.com.vn')) {
       subcription.cancel();
-      Navigator.pop(context, scanedText);
+      Navigator.pop(context,
+          scanedText.substring(scanedText.length - 6, scanedText.length));
     }
     subcription.resume();
   }

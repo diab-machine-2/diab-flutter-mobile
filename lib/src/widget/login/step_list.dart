@@ -54,9 +54,7 @@ class _StepListControllerState extends State<StepListController> {
     super.initState();
     //startTimer();
     getVersion();
-    if (widget.sharedCode.isNotEmpty) {
-      Navigator.pushNamed(context, NavigatorName.register);
-    }
+    
   }
 
   void startTimer() {
@@ -76,6 +74,13 @@ class _StepListControllerState extends State<StepListController> {
     version = packageInfo.version;
     buildNumber = packageInfo.buildNumber;
     setState(() {});
+    if (widget.sharedCode.isNotEmpty) {
+      Navigator.pushNamed(
+        context,
+        NavigatorName.register,
+        arguments: widget.sharedCode,
+      );
+    }
   }
 
   @override

@@ -17,7 +17,6 @@ import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class RegisterController extends StatefulWidget {
   const RegisterController(this.sharedCode);
@@ -61,126 +60,177 @@ class _RegisterControllerState extends State<RegisterController> {
                 image: AssetImage(R.drawable.bg_splash),
                 fit: BoxFit.cover,
               )),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SizedBox(height: 60),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(children: [
-                        TextFieldCustom(
-                            key: phoneKey,
-                            title: R.string.so_dien_thoai.tr(),
-                            placeholder: R.string.nhap_so_dien_thoai.tr(),
-                            autoFocus: true,
-                            onChanged: (value) {
-                              phone = value;
+              child: SingleChildScrollView(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AppBar(
+                        leading: IconButton(
+                            splashColor: R.color.transparent,
+                            highlightColor: R.color.transparent,
+                            icon: Icon(Icons.arrow_back, color: R.color.black),
+                            onPressed: () {
+                              Navigator.pop(context);
                             }),
-                        const SizedBox(height: 20),
-                        TextFieldCustom(
-                            key: passwordKey,
-                            title: R.string.password.tr(),
-                            placeholder: R.string.password_least_character.tr(),
-                            isPassword: true,
-                            onChanged: (value) {
-                              password = value;
-                            }),
-                        const SizedBox(height: 20),
-                        TextFieldCustom(
-                            key: confirmPasswordKey,
-                            title: R.string.xac_nhan_mat_khau.tr(),
-                            placeholder: R.string.nhap_lai_mat_khau.tr(),
-                            isPassword: true,
-                            onChanged: (value) {
-                              confirmPassword = value;
-                            }),
-                        const SizedBox(height: 20),
-                        TextFieldCustom(
-                            key: sharedCodeKey,
-                            initText: sharedCode,
-                            title: R.string.references_code.tr(),
-                            placeholder: R.string.input_references_code.tr(),
-                            isSharedCode: true,
-                            onChanged: (value) {
-                              sharedCode = value;
-                            }),
-                        const SizedBox(height: 20),
-                        GestureDetector(
-                          onTap: () {
-                            phoneKey.currentState!.focusNode.requestFocus();
-
-                            verify();
-                          },
-                          child: Stack(children: [
-                            Container(
-                                height: 48,
-                                width: 195,
-                                decoration: BoxDecoration(
-                                    color: R.color.mainColor,
-                                    borderRadius: BorderRadius.circular(200),
-                                    gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.centerRight,
-                                        colors: [
-                                          R.color.greenGradientTop,
-                                          R.color.greenGradientBottom
-                                        ])),
-                                child: Center(
-                                  child: Text(R.string.tiep_tuc.tr(),
-                                      style: TextStyle(
-                                          color: R.color.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                )),
-                          ]),
-                        )
-                      ]),
-                    ),
-                    InkWell(
-                      onTap: () async {
-                        final dynamic scanResult =
-                            await NavigationUtil.navigatePage(
-                                context, const QRScanWidget());
-                        if (scanResult is String) {
-                          await launch(scanResult);
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            R.drawable.ic_qr_scan,
-                            width: 26,
-                            height: 26,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            R.string.scan_references_code.tr(),
+                        title: Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            R.string.tao_tai_khoan.tr(),
                             style: TextStyle(
-                              color: R.color.mainColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
+                                color: R.color.textDark,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600),
                           ),
-                        ],
+                        ),
+                        backgroundColor: R.color.transparent, //No more green
+                        elevation: 0.0, //Shadow gone
                       ),
-                    ),
-                    SafeArea(
-                      child: Column(
-                        children: [
-                          Text(R.string.hoac_dang_nhap_bang.tr(),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(children: [
+                          TextFieldCustom(
+                              key: phoneKey,
+                              title: R.string.so_dien_thoai.tr(),
+                              placeholder: R.string.nhap_so_dien_thoai.tr(),
+                              autoFocus: true,
+                              onChanged: (value) {
+                                phone = value;
+                              }),
+                          const SizedBox(height: 20),
+                          TextFieldCustom(
+                              key: passwordKey,
+                              title: R.string.password.tr(),
+                              placeholder:
+                                  R.string.password_least_character.tr(),
+                              isPassword: true,
+                              onChanged: (value) {
+                                password = value;
+                              }),
+                          const SizedBox(height: 20),
+                          TextFieldCustom(
+                              key: confirmPasswordKey,
+                              title: R.string.xac_nhan_mat_khau.tr(),
+                              placeholder: R.string.nhap_lai_mat_khau.tr(),
+                              isPassword: true,
+                              onChanged: (value) {
+                                confirmPassword = value;
+                              }),
+                          const SizedBox(height: 20),
+                          TextFieldCustom(
+                              key: sharedCodeKey,
+                              initText: sharedCode,
+                              title: R.string.references_code.tr(),
+                              placeholder: R.string.input_references_code.tr(),
+                              isSharedCode: true,
+                              onChanged: (value) {
+                                sharedCode = value;
+                              }),
+                          const SizedBox(height: 20),
+                          GestureDetector(
+                            onTap: () {
+                              phoneKey.currentState!.focusNode.requestFocus();
+
+                              verify();
+                            },
+                            child: Stack(children: [
+                              Container(
+                                  height: 48,
+                                  width: 195,
+                                  decoration: BoxDecoration(
+                                      color: R.color.mainColor,
+                                      borderRadius: BorderRadius.circular(200),
+                                      gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.centerRight,
+                                          colors: [
+                                            R.color.greenGradientTop,
+                                            R.color.greenGradientBottom
+                                          ])),
+                                  child: Center(
+                                    child: Text(R.string.tiep_tuc.tr(),
+                                        style: TextStyle(
+                                            color: R.color.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600)),
+                                  )),
+                            ]),
+                          )
+                        ]),
+                      ),
+                      InkWell(
+                        onTap: () async {
+                          final dynamic scanResult =
+                              await NavigationUtil.navigatePage(
+                                  context, const QRScanWidget());
+                          if (scanResult is String) {
+                            sharedCode = scanResult;
+                            sharedCodeKey.currentState?.textEditingController
+                                .text = sharedCode;
+                          }
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              R.drawable.ic_qr_scan,
+                              width: 26,
+                              height: 26,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              R.string.scan_references_code.tr(),
                               style: TextStyle(
-                                  color: R.color.textDark,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400)),
-                          const SizedBox(height: 16),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if (Platform.isIOS)
+                                color: R.color.mainColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SafeArea(
+                        child: Column(
+                          children: [
+                            Text(R.string.hoac_dang_nhap_bang.tr(),
+                                style: TextStyle(
+                                    color: R.color.textDark,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400)),
+                            const SizedBox(height: 16),
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (Platform.isIOS)
+                                    GestureDetector(
+                                      onTap: () {
+                                        loginApple();
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8, right: 8),
+                                        child: Container(
+                                            height: 50,
+                                            width: 50,
+                                            decoration: BoxDecoration(
+                                                color: R.color.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(25)),
+                                            child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Image.asset(
+                                                      R.drawable.ic_login_apple,
+                                                      width: 26,
+                                                      height: 26),
+                                                ])),
+                                      ),
+                                    )
+                                  else
+                                    const SizedBox(),
                                   GestureDetector(
                                     onTap: () {
-                                      loginApple();
+                                      loginGG();
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.only(
@@ -197,70 +247,20 @@ class _RegisterControllerState extends State<RegisterController> {
                                                   MainAxisAlignment.center,
                                               children: [
                                                 Image.asset(
-                                                    R.drawable.ic_login_apple,
+                                                    R.drawable.ic_google,
                                                     width: 26,
                                                     height: 26),
                                               ])),
                                     ),
                                   )
-                                else
-                                  const SizedBox(),
-                                GestureDetector(
-                                  onTap: () {
-                                    loginGG();
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8, right: 8),
-                                    child: Container(
-                                        height: 50,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            color: R.color.white,
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                        child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Image.asset(R.drawable.ic_google,
-                                                  width: 26, height: 26),
-                                            ])),
-                                  ),
-                                )
-                              ]),
-                          const SizedBox(height: 16)
-                        ],
-                      ),
-                    )
-                  ]),
+                                ]),
+                            const SizedBox(height: 16)
+                          ],
+                        ),
+                      )
+                    ]),
+              ),
             ),
-            Positioned(
-                //Place it at the top, and not use the entire screen
-                top: 0,
-                left: 0,
-                right: 0,
-                child: AppBar(
-                  leading: IconButton(
-                      splashColor: R.color.transparent,
-                      highlightColor: R.color.transparent,
-                      icon: Icon(Icons.arrow_back, color: R.color.black),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                  title: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      R.string.tao_tai_khoan.tr(),
-                      style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  backgroundColor: R.color.transparent, //No more green
-                  elevation: 0.0, //Shadow gone
-                )),
           ])),
     );
   }
