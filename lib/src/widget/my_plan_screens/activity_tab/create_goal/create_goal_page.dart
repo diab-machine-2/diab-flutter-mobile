@@ -94,9 +94,9 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               return CommonPage(
                 // TODO(Tuyen): Change background
                 background: R.drawable.bg_lesson_detail,
-                title: R.string.select_road_map.tr(),
-                showCloseBackButton: _cubit.showDetail,
-                onShowDetail: () {
+                title: R.string.setup_smart_goal_title.tr(),
+                showCloseBackButton: true,
+                onShowDetail: !_cubit.showDetail ? null : () {
                   showDescriptionPopup('''
 - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
 - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần
@@ -863,7 +863,7 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
                 const SizedBox(width: 16),
                 Expanded(
                   child: Center(
-                    child: Text(R.string.explain.tr(),
+                    child: Text(R.string.dia_recommand.tr(),
                         style: TextStyle(
                             color: R.color.black,
                             fontSize: 20,
