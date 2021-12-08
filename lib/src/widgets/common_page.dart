@@ -16,6 +16,7 @@ class CommonPage extends StatelessWidget {
   final bool? showCloseBackButton;
   final bool? hideAllBackButton;
   final bool? bottomSafeArea;
+  final VoidCallback? onShowDetail;
   final VoidCallback? onTapAppBar;
 
   const CommonPage(
@@ -31,6 +32,7 @@ class CommonPage extends StatelessWidget {
       this.showCloseBackButton,
       this.hideAllBackButton,
       this.bottomSafeArea,
+      this.onShowDetail,
       this.onTapAppBar})
       : super(key: key);
 
@@ -69,6 +71,16 @@ class CommonPage extends StatelessWidget {
                 ),
                 actions: showCloseBackButton == true
                     ? [
+                        if (onShowDetail != null)
+                          GestureDetector(
+                            onTap: onShowDetail,
+                            child: Image.asset(
+                              R.drawable.ic_question_circle,
+                              width: 24,
+                              height: 24,
+                              color: R.color.grayCaption,
+                            ),
+                          ),
                         IconButton(
                           icon: Icon(Icons.close, color: R.color.black),
                           onPressed: onTapBack ??
