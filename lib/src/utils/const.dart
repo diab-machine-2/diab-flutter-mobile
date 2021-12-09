@@ -56,6 +56,8 @@ class Const {
 
   static const String key_app_language = "AppLanguage";
 
+  static const String HIDE_OVERLAY_KEY = "HideOverlayKey";
+
   static const int TYPE_WEB = 0;
   static const int TYPE_EMAIL = 1;
   static const int TYPE_PHONE = 2;

@@ -52,7 +52,8 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
         showError(R.string.smart_goal_repeat_day_empty.tr());
         return false;
       }
-      if (goalTimeOrFrequency.isEmpty) {
+      if (goalTimeOrFrequency.isEmpty ||
+          parseString(goalTimeOrFrequency) == 0) {
         showError(
             'Chưa nhập ${goalRecordType == GoalRecordType.time ? 'thời gian thực hiện' : 'số lần thực hiện'}');
         return false;
@@ -68,7 +69,8 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
         showError(R.string.smart_goal_repeat_day_empty.tr());
         return false;
       }
-      if (goalTimeOrFrequency.isEmpty) {
+      if (goalTimeOrFrequency.isEmpty ||
+          parseString(goalTimeOrFrequency) == 0) {
         showError(R.string.smart_goal_exercise_frequency_empty.tr());
         return false;
       }
@@ -127,12 +129,15 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
         name: type?.title ?? '',
         type: type?.typeIndex,
         appointmentDate: (startDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-        executeType: GoalRecordType.time.index,
+        executeType: GoalRecordType.frequency.index,
         executeDayTimes: parseString(goalTimeOrFrequency),
         targetScheduler: schedule,
       );
     }
   }
+
+  bool get showDetail =>
+      !(status != CreateGoalStatus.setup || type == ScheduleType.custom);
 
   Future<void> setupGoal({ScheduleType? selectedType}) async {
     type = selectedType;

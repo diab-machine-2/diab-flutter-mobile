@@ -13,6 +13,7 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/custom_date_picker.dart';
+import 'package:medical/src/widgets/popup_window_widget.dart';
 import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 
 import '../../../../widgets/select_bottom_sheet_widget.dart';
@@ -93,8 +94,15 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               return CommonPage(
                 // TODO(Tuyen): Change background
                 background: R.drawable.bg_lesson_detail,
-                title: R.string.select_road_map.tr(),
+                title: R.string.setup_smart_goal_title.tr(),
                 showCloseBackButton: true,
+                onShowDetail: !_cubit.showDetail ? null : () {
+                  showDescriptionPopup('''
+- Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
+- Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần
+Dù chưa biết lý do vì sao có sự tương quan đáng kể giữa đái tháo đường và tăng huyết áp nhưng người ta giả định rằng béo phì, chế độ ăn uống nhiều natri và lười vận động dẫn đến sự gia tăng đồng thời cả hai bệnh trên.
+Tăng huyết áp được biết đến như một “kẻ giết người thầm lặng” vì nó không có triệu chứng rõ ràng. Một cuộc khảo sát năm 2002 của Hiệp hội Đái tháo đường Hoa Kỳ (ADA) cho thấy, khoảng 68% những người bị bệnh đái tháo đường không biết họ cũng có nguy cơ gia tăng bệnh tim và đột quỵ vì liên quan đến tăng huyết áp mạn tính.''');
+                },
                 child: Column(
                   children: [
                     Padding(
@@ -330,7 +338,6 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
   List<Widget> _buildSetupGoalType1() {
     return [
-      _buildTextDescription(),
       _buildTimePicker(
         initDate: _cubit.startDate,
         title: R.string.select_start_date.tr(),
@@ -363,7 +370,6 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
   List<Widget> _buildSetupGoalType2() {
     return [
-      _buildTextDescription(),
       _buildTimeOrFrequency(
           title: R.string.so_phut_van_dong_moi_ngay.tr(),
           unit: 'phút',
@@ -801,41 +807,6 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     );
   }
 
-  Widget _buildTextDescription() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'DiaB khuyến nghị:',
-          style: TextStyle(
-            color: R.color.textDark,
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text('''
-      - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
-      - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''',
-            style: R.style.normalTextStyle),
-        const SizedBox(height: 14),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              'Tôi cần thêm thông tin',
-              style: TextStyle(
-                color: R.color.greenGradientBottom,
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   Widget _buildItemLayout(
       {required Widget child,
       EdgeInsetsGeometry? margin,
@@ -868,6 +839,58 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       context: context,
       isScrollControlled: true,
       builder: builder,
+    );
+  }
+
+  void showDescriptionPopup(String? message) {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.9),
+      useSafeArea: true,
+      barrierDismissible: true,
+      context: context,
+      builder: (_) => PopupWindowWidget(
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: [
+                Image.asset(
+                  R.drawable.img_des,
+                  height: 80,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Center(
+                    child: Text(R.string.dia_recommand.tr(),
+                        style: TextStyle(
+                            color: R.color.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                )
+              ]),
+              const SizedBox(height: 16),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    message ?? "",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 16,
+                      letterSpacing: 0.4,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

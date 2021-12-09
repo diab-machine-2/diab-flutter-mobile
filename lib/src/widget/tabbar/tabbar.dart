@@ -10,6 +10,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
@@ -97,6 +98,8 @@ class _TabbarControllerState extends State<TabbarController>
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
           onPressed: () {
+            Observable.instance
+                .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
             _showMaterialDialog();
           },
           child: Image.asset(

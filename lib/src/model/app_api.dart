@@ -3,6 +3,7 @@ import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
 import 'request/complete_exercise_request.dart';
+import 'request/complete_smart_goal_request.dart';
 import 'request/create_menu_request.dart';
 import 'request/create_smart_goal_request.dart';
 import 'request/exercise_feedback_request.dart';
@@ -31,6 +32,7 @@ import 'response/list_roadmap_response.dart';
 import 'response/list_transaction_response.dart';
 import 'response/menu_response.dart';
 import 'response/my_lesson_response.dart';
+import 'response/my_progress_response.dart';
 import 'response/save_survey_result_response.dart';
 import 'response/smart_goal_detail_response.dart';
 import 'response/smart_goal_list_reponse.dart';
@@ -205,6 +207,11 @@ abstract class AppApi {
     @Body() CreateSmartGoalRequest request,
   );
 
+  @POST("App/Target/MarkCompletedTarget")
+  Future<CommonResponse> completeSmartGoal(
+    @Body() CompleteSmartGoalRequest request,
+  );
+
   @PUT("/App/Target/{id}")
   Future<CreateSmartGoalResponse> updateSmartGoal({
     @Path("id") String? id,
@@ -242,4 +249,8 @@ abstract class AppApi {
   @GET("App/Lesson/{lessonId}/LessonQuizDetail")
   Future<LessonSectionListResponse> getListQuiz(
       @Path("lessonId") String lessonId);
+
+  // My Progress
+  @GET("App/MyProgress")
+  Future<MyProgressResponse> getMyProgress({@Query('type') int? type});
 }

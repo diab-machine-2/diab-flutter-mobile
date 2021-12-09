@@ -3,7 +3,10 @@ import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/const.dart';
 
 import '../activity_tab.dart';
 
@@ -15,7 +18,8 @@ class CustomProgressBarWidget extends StatefulWidget {
       _CustomProgressBarWidgetState();
 }
 
-class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
+class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget>
+    with Observer {
   late final ActivityTabCubit _cubit;
   final LayerLink layerLink = LayerLink();
   OverlayEntry? messegeEntry;
@@ -23,21 +27,21 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
   Timer? _timer;
 
   bool isShowing = false;
-  bool showed50Message = false;
-  bool showed90Message = false;
 
   @override
   void initState() {
+    super.initState();
     _cubit = context.read<ActivityTabCubit>();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       showOverlay();
     });
-    super.initState();
+    Observable.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     disposeOverlay();
+    Observable.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -48,9 +52,12 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
         if (state is ActivityTabProgressChanged) {
           showOverlay();
         }
+        if (state is GoalTypeChanged) {
+          disposeOverlay();
+          showOverlay();
+        }
         if (state is ActivityTabHideProgressMessage) {
           disposeOverlay();
-          checkOverlayStatus();
         }
       },
       builder: (context, state) {
@@ -87,25 +94,16 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
     );
   }
 
-  void checkOverlayStatus() {
-    if (_cubit.progress < 0.9) {
-      showed90Message = false;
-    }
-    if (_cubit.progress < 0.5) {
-      showed50Message = false;
-    }
-  }
-
   void showOverlay() {
-    checkOverlayStatus();
     late final int progress;
-    if (_cubit.progress >= 0.9 && !showed90Message) {
+    if (_cubit.progress >= 0.9 && !_cubit.messageState.showed90Message) {
       progress = 90;
-      showed90Message = true;
+      _cubit.messageState.showed90Message = true;
+      _cubit.messageState.showed50Message = true;
       disposeOverlay();
-    } else if (_cubit.progress >= 0.5 && !showed50Message) {
+    } else if (_cubit.progress >= 0.5 && !_cubit.messageState.showed50Message) {
       progress = 50;
-      showed50Message = true;
+      _cubit.messageState.showed50Message = true;
       disposeOverlay();
     } else {
       return;
@@ -200,6 +198,13 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget> {
   void stopTimer() {
     if (_timer != null && _timer?.isActive == true) {
       _timer?.cancel();
+    }
+  }
+
+  @override
+  update(Observable observable, String? notifyName, Map? map) {
+    if (notifyName == Const.HIDE_OVERLAY_KEY) {
+      disposeOverlay();
     }
   }
 }

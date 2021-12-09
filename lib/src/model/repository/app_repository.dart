@@ -1,5 +1,6 @@
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/request/complete_exercise_request.dart';
+import 'package:medical/src/model/request/complete_smart_goal_request.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
@@ -28,6 +29,7 @@ import 'package:medical/src/model/response/list_roadmap_response.dart';
 import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
+import 'package:medical/src/model/response/my_progress_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/smart_goal_detail_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
@@ -481,6 +483,17 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<CommonResponse>> completeSmartGoal(
+      CompleteSmartGoalRequest request) async {
+    try {
+      final CommonResponse response =
+          await appClient.completeSmartGoal(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<CreateSmartGoalResponse>> updateSmartGoal(
       {required String id, required CreateSmartGoalRequest request}) async {
     try {
@@ -531,6 +544,17 @@ class AppRepository {
     try {
       final WeekSmartGoalResponse response =
           await appClient.getWeekSmartGoal(week: week);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  // My Progress
+  Future<ApiResult<MyProgressResponse>> getMyProgress({int? type}) async {
+    try {
+      final MyProgressResponse response =
+          await appClient.getMyProgress(type: type);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
