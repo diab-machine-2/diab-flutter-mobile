@@ -344,40 +344,60 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                         fontWeight: FontWeight.w600)),
                                 const SizedBox(height: 8),
                                 buildItem(
-                                  R.drawable.ic_person,
-                                  user.fullName!,
-                                  R.string.last_name_and_first_name.tr(),
-                                  Image.asset(R.drawable.ic_right,
+                                  image: R.drawable.ic_person,
+                                  title: user.fullName!,
+                                  subTitle:
+                                      R.string.last_name_and_first_name.tr(),
+                                  subIcon: Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
-                                  0,
                                   callback: () {
                                     _showDialogUpdateName();
                                   },
                                 ),
                                 buildItem(
-                                  R.drawable.ic_birthday,
-                                  convertToUTC(user.dateOfBirth!, 'dd/MM/yyyy'),
-                                  R.string.ngay_sinh.tr(),
-                                  Image.asset(R.drawable.ic_right,
+                                  image: R.drawable.ic_birthday,
+                                  title: convertToUTC(
+                                      user.dateOfBirth!, 'dd/MM/yyyy'),
+                                  subTitle: R.string.ngay_sinh.tr(),
+                                  subIcon: Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
-                                  1,
                                   callback: () {
                                     _showDialogUpdateBirthday();
                                   },
                                 ),
                                 buildItem(
-                                  R.drawable.ic_gender,
-                                  user.gender == null || user.gender!.isEmpty
+                                  image: R.drawable.ic_gender,
+                                  title: user.gender == null ||
+                                          user.gender!.isEmpty
                                       ? R.string.updating.tr()
                                       : user.gender!,
-                                  R.string.gioi_tinh.tr(),
-                                  Image.asset(R.drawable.ic_right,
+                                  subTitle: R.string.gioi_tinh.tr(),
+                                  subIcon: Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
-                                  2,
                                   callback: () {
                                     _showDialogUpdateGender();
                                   },
-                                )
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_person,
+                                  title: 'Giáo viên',
+                                  subTitle: 'Nghề nghiệp',
+                                  subIcon: Image.asset(R.drawable.ic_right,
+                                      width: 18, height: 18),
+                                  callback: () {
+                                    // TODO(Tuyen): Update Nghề nghiệp
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_person,
+                                  title: 'Đại học',
+                                  subTitle: 'Trình độ văn hoá',
+                                  subIcon: Image.asset(R.drawable.ic_right,
+                                      width: 18, height: 18),
+                                  callback: () {
+                                    // TODO(Tuyen): Update Trình độ văn hoá
+                                  },
+                                ),
                               ]),
                         ),
                         const SizedBox(height: 16),
@@ -395,21 +415,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                         fontWeight: FontWeight.w600)),
                                 const SizedBox(height: 8),
                                 buildItem(
-                                  R.drawable.ic_folder,
-                                  user.diabetesName ?? R.string.updating.tr(),
-                                  R.string.loai_benh.tr(),
-                                  null,
-                                  3,
+                                  image: R.drawable.ic_folder,
+                                  title: user.diabetesName ??
+                                      R.string.updating.tr(),
+                                  subTitle: R.string.loai_benh.tr(),
                                   callback: () {
                                     _showDialogUpdateDiabetesStatus();
                                   },
                                 ),
                                 buildItem(
-                                  R.drawable.ic_year,
-                                  convertToUTC(user.diabetesDate ?? 0, 'yyyy'),
-                                  R.string.year_illness_start.tr(),
-                                  null,
-                                  4,
+                                  image: R.drawable.ic_year,
+                                  title: convertToUTC(
+                                      user.diabetesDate ?? 0, 'yyyy'),
+                                  subTitle: R.string.year_illness_start.tr(),
                                   callback: () {
                                     _showDialogUpdateDiabetesStatusDate();
                                   },
@@ -431,29 +449,193 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                         fontWeight: FontWeight.w600)),
                                 const SizedBox(height: 8),
                                 buildItem(
-                                  R.drawable.ic_kg,
-                                  user.weight == null
+                                  image: R.drawable.ic_kg,
+                                  title: user.weight == null
                                       ? R.string.not_updated_yet.tr()
                                       : '${user.weight!.round()} kg',
-                                  R.string.can_nang.tr(),
-                                  null,
-                                  5,
+                                  subTitle: R.string.can_nang.tr(),
                                   callback: () {
                                     showDialogWeight();
                                   },
                                 ),
                                 buildItem(
-                                  R.drawable.ic_ruler_fill,
-                                  user.height == null
+                                  image: R.drawable.ic_ruler_fill,
+                                  title: user.height == null
                                       ? R.string.not_updated_yet.tr()
                                       : '${user.height!.round()} cm',
-                                  R.string.chieu_cao.tr(),
-                                  null,
-                                  6,
+                                  subTitle: R.string.chieu_cao.tr(),
                                   callback: () {
                                     showDialogHeight();
                                   },
-                                )
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_ruler_fill,
+                                  title: '27.2',
+                                  subTitle: 'BMI',
+                                  callback: () {
+                                    // TODO(Tuyen): Update BMI
+                                  },
+                                ),
+                              ]),
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: R.color.white,
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Tiêu chí chọn huấn luyện viên sức khỏe',
+                                    style: TextStyle(
+                                        color: R.color.black,
+                                        fontWeight: FontWeight.w600)),
+                                const SizedBox(height: 8),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Hướng ngoại',
+                                  subTitle: 'Tính cách',
+                                  subIcon: Image.asset(R.drawable.ic_right,
+                                      width: 18, height: 18),
+                                  callback: () {
+                                    // TODO(Tuyen): Update Tính cách
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Chơi game, đọc sách',
+                                  subTitle: 'Sở thích cá nhân',
+                                  subIcon: Image.asset(R.drawable.ic_right,
+                                      width: 18, height: 18),
+                                  callback: () {
+                                    // TODO(Tuyen): Update Sở thích cá nhân
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Cầu lông, xe đạp',
+                                  subTitle: 'Môn thể thao yêu thích',
+                                  subIcon: Image.asset(R.drawable.ic_right,
+                                      width: 18, height: 18),
+                                  callback: () {
+                                    // TODO(Tuyen): Update Môn thể thao yêu thích
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Không',
+                                  subTitle: 'Thực hành tâm thức',
+                                  subIcon: Image.asset(R.drawable.ic_right,
+                                      width: 18, height: 18),
+                                  callback: () {
+                                    // TODO(Tuyen): Update Thực hành tâm thức
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Không',
+                                  subTitle: 'Tôn giáo',
+                                  subIcon: Image.asset(R.drawable.ic_right,
+                                      width: 18, height: 18),
+                                  callback: () {
+                                    // TODO(Tuyen): Update Tôn giáo
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Không',
+                                  subTitle: 'Ăn chay',
+                                  subIcon: Image.asset(R.drawable.ic_right,
+                                      width: 18, height: 18),
+                                  callback: () {
+                                    // TODO(Tuyen): Update Ăn chay
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Buổi sáng; Bao gồm thứ 7',
+                                  subTitle:
+                                      'Khung giờ làm việc với huấn luyện viên',
+                                  subIcon: Image.asset(R.drawable.ic_right,
+                                      width: 18, height: 18),
+                                  callback: () {
+                                    // TODO(Tuyen): Update Khung giờ làm việc với huấn luyện viên
+                                  },
+                                ),
+                              ]),
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: R.color.white,
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Cơ sở dịch vụ đã giới thiệu',
+                                    style: TextStyle(
+                                        color: R.color.black,
+                                        fontWeight: FontWeight.w600)),
+                                const SizedBox(height: 8),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Bệnh viện Hồng Ngọc',
+                                  subTitle: 'Bệnh viện / Phòng khám',
+                                  callback: () {
+                                    // TODO(Tuyen): Update Bệnh viện / Phòng khám
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Đặng Vân Nga',
+                                  subTitle: 'Bác sĩ giới thiệu',
+                                  callback: () {
+                                    // TODO(Tuyen): Update Sở thích cá nhân
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Cầu lông, xe đạp',
+                                  subTitle: 'Môn thể thao yêu thích',
+                                  callback: () {
+                                    // TODO(Tuyen): Update Môn thể thao yêu thích
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Không',
+                                  subTitle: 'Thực hành tâm thức',
+                                  callback: () {
+                                    // TODO(Tuyen): Update Thực hành tâm thức
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Không',
+                                  subTitle: 'Tôn giáo',
+                                  callback: () {
+                                    // TODO(Tuyen): Update Tôn giáo
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Không',
+                                  subTitle: 'Ăn chay',
+                                  callback: () {
+                                    // TODO(Tuyen): Update Ăn chay
+                                  },
+                                ),
+                                buildItem(
+                                  image: R.drawable.ic_folder,
+                                  title: 'Buổi sáng; Bao gồm thứ 7',
+                                  subTitle:
+                                      'Khung giờ làm việc với huấn luyện viên',
+                                  callback: () {
+                                    // TODO(Tuyen): Update Khung giờ làm việc với huấn luyện viên
+                                  },
+                                ),
                               ]),
                         ),
                         const SizedBox(height: 16),
@@ -471,36 +653,32 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                         fontWeight: FontWeight.w600)),
                                 const SizedBox(height: 8),
                                 buildItem(
-                                    R.drawable.ic_phone_info,
-                                    user.phoneNumber!,
-                                    R.string.phone_number_1.tr(),
-                                    Image.asset(R.drawable.ic_ok,
-                                        width: 24, height: 24),
-                                    7),
+                                  image: R.drawable.ic_phone_info,
+                                  title: user.phoneNumber!,
+                                  subTitle: R.string.phone_number_1.tr(),
+                                  subIcon: Image.asset(R.drawable.ic_ok,
+                                      width: 24, height: 24),
+                                ),
                                 buildItem(
-                                  R.drawable.ic_phone_info,
-                                  user.secondPhoneNumber == null ||
+                                  image: R.drawable.ic_phone_info,
+                                  title: user.secondPhoneNumber == null ||
                                           user.secondPhoneNumber!.isEmpty
                                       ? R.string.not_updated_yet.tr()
                                       : user.secondPhoneNumber!,
-                                  R.string.phone_number_2.tr(),
-                                  null,
-                                  8,
+                                  subTitle: R.string.phone_number_2.tr(),
                                   callback: () {
                                     _showDialogUpdatePhone2();
                                   },
                                 ),
                                 buildItem(
-                                  R.drawable.ic_email,
-                                  user.isLinkedGoogle == true
+                                  image: R.drawable.ic_email,
+                                  title: user.isLinkedGoogle == true
                                       ? (user.googleEmail ?? '')
                                       : (user.email == null ||
                                               user.email!.isEmpty
                                           ? R.string.not_updated_yet.tr()
                                           : user.email!),
-                                  R.string.email.tr(),
-                                  null,
-                                  9,
+                                  subTitle: R.string.email.tr(),
                                   callback: () {
                                     if (user.isLinkedGoogle == true) {
                                       return;
@@ -509,8 +687,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                   },
                                 ),
                                 buildItem(
-                                    R.drawable.ic_location,
-                                    ((user.address ?? '') +
+                                    image: R.drawable.ic_location,
+                                    title: ((user.address ?? '') +
                                                 (user.address == null ||
                                                         user.address!.isEmpty
                                                     ? ''
@@ -557,27 +735,26 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                             (user.province == null
                                                 ? ''
                                                 : user.province!.name!)),
-                                    R.string.address.tr(),
-                                    null,
-                                    10, callback: () {
-                                  _showDialogUpdateAddress();
-                                }),
+                                    subTitle: R.string.address.tr(),
+                                    callback: () {
+                                      _showDialogUpdateAddress();
+                                    }),
                                 buildItem(
-                                    R.drawable.ic_google,
-                                    user.isLinkedGoogle == null ||
-                                            !user.isLinkedGoogle!
-                                        ? R.string.not_connected_yet.tr()
-                                        : user.fullName!,
-                                    'Google',
-                                    CupertinoSwitch(
-                                      activeColor: R.color.mainColor,
-                                      value: user.isLinkedGoogle ?? false,
-                                      onChanged: (value) {
-                                        print(value);
-                                        linkedGoogle();
-                                      },
-                                    ),
-                                    11),
+                                  image: R.drawable.ic_google,
+                                  title: user.isLinkedGoogle == null ||
+                                          !user.isLinkedGoogle!
+                                      ? R.string.not_connected_yet.tr()
+                                      : user.fullName!,
+                                  subTitle: 'Google',
+                                  subIcon: CupertinoSwitch(
+                                    activeColor: R.color.mainColor,
+                                    value: user.isLinkedGoogle ?? false,
+                                    onChanged: (value) {
+                                      print(value);
+                                      linkedGoogle();
+                                    },
+                                  ),
+                                ),
                               ]),
                         ),
                         const SizedBox(height: 16),
@@ -606,9 +783,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
         )));
   }
 
-  Widget buildItem(
-      String image, String title, String subTitle, Widget? subIcon, int index,
-      {VoidCallback? callback}) {
+  Widget buildItem({
+    required String image,
+    required String title,
+    required String subTitle,
+    Widget? subIcon,
+    VoidCallback? callback,
+  }) {
     return GestureDetector(
       onTap: callback,
       child: Container(
@@ -632,7 +813,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               )
             ]),
           ),
-          if (subIcon == null) const SizedBox() else subIcon
+          if (subIcon != null) subIcon
         ]),
       ),
     );
@@ -1220,43 +1401,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                   context, R.string.mes_name_empty.tr());
                               return;
                             } else {
-                              UserModel userInfo = AppSettings.userInfo!;
-                              userInfo = UserModel(
-                                  id: userInfo.id,
-                                  username: userInfo.username,
+                              final UserModel userInfo = AppSettings.userInfo!;
+                              updateUserInfo(
+                                userInfo.copyWith(
                                   fullName: name,
-                                  age: userInfo.age,
-                                  phoneNumber: userInfo.phoneNumber,
-                                  secondPhoneNumber: userInfo.secondPhoneNumber,
-                                  gender: userInfo.gender,
-                                  genderType: userInfo.genderType,
-                                  createDatetime: userInfo.createDatetime,
-                                  isActive: userInfo.isActive,
-                                  province: userInfo.province,
-                                  district: userInfo.district,
-                                  height: userInfo.height,
-                                  weight: userInfo.weight,
-                                  ward: userInfo.ward,
-                                  dateOfBirth: userInfo.dateOfBirth,
-                                  diabetesStatus: userInfo.diabetesStatus,
-                                  diabetesName: userInfo.diabetesName,
-                                  diabetesDate: userInfo.diabetesDate,
-                                  imageUrl: userInfo.imageUrl,
-                                  code: userInfo.code,
-                                  email: userInfo.email,
-                                  address: userInfo.address,
-                                  goalWaist: userInfo.goalWaist,
-                                  goalWeight: userInfo.goalWeight,
-                                  isLinkedFacebook: userInfo.isLinkedFacebook,
-                                  isLinkedGoogle: userInfo.isLinkedGoogle,
-                                  isMobileAccount: userInfo.isMobileAccount,
-                                  firstLinkedAccount:
-                                      userInfo.firstLinkedAccount,
-                                  googleEmail: userInfo.googleEmail,
-                                  glucoseUnit: userInfo.glucoseUnit,
-                                  activityLevelRate:
-                                      userInfo.activityLevelRate);
-                              updateUserInfo(userInfo);
+                                ),
+                              );
                               Navigator.pop(context);
                             }
                           },
@@ -1350,42 +1500,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         ),
                         GestureDetector(
                           onTap: () {
-                            UserModel userInfo = AppSettings.userInfo!;
-                            userInfo = UserModel(
-                                id: userInfo.id,
-                                username: userInfo.username,
-                                fullName: userInfo.fullName,
-                                age: userInfo.age,
-                                phoneNumber: userInfo.phoneNumber,
-                                secondPhoneNumber: userInfo.secondPhoneNumber,
-                                gender: userInfo.gender,
-                                genderType: userInfo.genderType,
-                                createDatetime: userInfo.createDatetime,
-                                isActive: userInfo.isActive,
-                                province: userInfo.province,
-                                district: userInfo.district,
-                                height: userInfo.height,
-                                weight: userInfo.weight,
-                                ward: userInfo.ward,
+                            final UserModel userInfo = AppSettings.userInfo!;
+                            updateUserInfo(
+                              userInfo.copyWith(
                                 dateOfBirth:
                                     selectedDate.millisecondsSinceEpoch ~/ 1000,
-                                diabetesStatus: userInfo.diabetesStatus,
-                                diabetesName: userInfo.diabetesName,
-                                diabetesDate: userInfo.diabetesDate,
-                                imageUrl: userInfo.imageUrl,
-                                code: userInfo.code,
-                                email: userInfo.email,
-                                address: userInfo.address,
-                                goalWaist: userInfo.goalWaist,
-                                goalWeight: userInfo.goalWeight,
-                                isLinkedFacebook: userInfo.isLinkedFacebook,
-                                isLinkedGoogle: userInfo.isLinkedGoogle,
-                                isMobileAccount: userInfo.isMobileAccount,
-                                firstLinkedAccount: userInfo.firstLinkedAccount,
-                                googleEmail: userInfo.googleEmail,
-                                glucoseUnit: userInfo.glucoseUnit,
-                                activityLevelRate: userInfo.activityLevelRate);
-                            updateUserInfo(userInfo);
+                              ),
+                            );
                             Navigator.pop(context);
                           },
                           child: Container(
@@ -1472,42 +1593,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         ),
                         GestureDetector(
                           onTap: () {
-                            UserModel userInfo = AppSettings.userInfo!;
-                            userInfo = UserModel(
-                                id: userInfo.id,
-                                username: userInfo.username,
-                                fullName: userInfo.fullName,
-                                age: userInfo.age,
-                                phoneNumber: userInfo.phoneNumber,
-                                secondPhoneNumber: userInfo.secondPhoneNumber,
-                                gender: userInfo.gender,
+                            final UserModel userInfo = AppSettings.userInfo!;
+                            updateUserInfo(
+                              userInfo.copyWith(
                                 genderType:
                                     controller.selectedItem == 0 ? 1 : 2,
-                                createDatetime: userInfo.createDatetime,
-                                isActive: userInfo.isActive,
-                                province: userInfo.province,
-                                district: userInfo.district,
-                                height: userInfo.height,
-                                weight: userInfo.weight,
-                                ward: userInfo.ward,
-                                dateOfBirth: userInfo.dateOfBirth,
-                                diabetesStatus: userInfo.diabetesStatus,
-                                diabetesName: userInfo.diabetesName,
-                                diabetesDate: userInfo.diabetesDate,
-                                imageUrl: userInfo.imageUrl,
-                                code: userInfo.code,
-                                email: userInfo.email,
-                                address: userInfo.address,
-                                goalWaist: userInfo.goalWaist,
-                                goalWeight: userInfo.goalWeight,
-                                isLinkedFacebook: userInfo.isLinkedFacebook,
-                                isLinkedGoogle: userInfo.isLinkedGoogle,
-                                isMobileAccount: userInfo.isMobileAccount,
-                                firstLinkedAccount: userInfo.firstLinkedAccount,
-                                googleEmail: userInfo.googleEmail,
-                                glucoseUnit: userInfo.glucoseUnit,
-                                activityLevelRate: userInfo.activityLevelRate);
-                            updateUserInfo(userInfo);
+                              ),
+                            );
                             Navigator.pop(context);
                           },
                           child: Container(
@@ -1598,41 +1690,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         ),
                         GestureDetector(
                           onTap: () {
-                            UserModel userInfo = AppSettings.userInfo!;
-                            userInfo = UserModel(
-                                id: userInfo.id,
-                                username: userInfo.username,
-                                fullName: userInfo.fullName,
-                                age: userInfo.age,
-                                phoneNumber: userInfo.phoneNumber,
-                                secondPhoneNumber: userInfo.secondPhoneNumber,
-                                gender: userInfo.gender,
-                                genderType: userInfo.genderType,
-                                createDatetime: userInfo.createDatetime,
-                                isActive: userInfo.isActive,
-                                province: userInfo.province,
-                                district: userInfo.district,
-                                height: userInfo.height,
-                                weight: userInfo.weight,
-                                ward: userInfo.ward,
-                                dateOfBirth: userInfo.dateOfBirth,
+                            final UserModel userInfo = AppSettings.userInfo!;
+                            updateUserInfo(
+                              userInfo.copyWith(
                                 diabetesStatus: diabetesStatus,
-                                diabetesName: userInfo.diabetesName,
-                                diabetesDate: userInfo.diabetesDate,
-                                imageUrl: userInfo.imageUrl,
-                                code: userInfo.code,
-                                email: userInfo.email,
-                                address: userInfo.address,
-                                goalWaist: userInfo.goalWaist,
-                                goalWeight: userInfo.goalWeight,
-                                isLinkedFacebook: userInfo.isLinkedFacebook,
-                                isLinkedGoogle: userInfo.isLinkedGoogle,
-                                isMobileAccount: userInfo.isMobileAccount,
-                                firstLinkedAccount: userInfo.firstLinkedAccount,
-                                googleEmail: userInfo.googleEmail,
-                                glucoseUnit: userInfo.glucoseUnit,
-                                activityLevelRate: userInfo.activityLevelRate);
-                            updateUserInfo(userInfo);
+                              ),
+                            );
                             Navigator.pop(context);
                           },
                           child: Container(
@@ -1724,43 +1787,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         ),
                         GestureDetector(
                           onTap: () {
-                            UserModel userInfo = AppSettings.userInfo!;
-                            userInfo = UserModel(
-                                id: userInfo.id,
-                                username: userInfo.username,
-                                fullName: userInfo.fullName,
-                                age: userInfo.age,
-                                phoneNumber: userInfo.phoneNumber,
-                                secondPhoneNumber: userInfo.secondPhoneNumber,
-                                gender: userInfo.gender,
-                                genderType: userInfo.genderType,
-                                createDatetime: userInfo.createDatetime,
-                                isActive: userInfo.isActive,
-                                province: userInfo.province,
-                                district: userInfo.district,
-                                height: userInfo.height,
-                                weight: userInfo.weight,
-                                ward: userInfo.ward,
-                                dateOfBirth: userInfo.dateOfBirth,
-                                diabetesStatus: userInfo.diabetesStatus,
-                                diabetesName: userInfo.diabetesName,
+                            final UserModel userInfo = AppSettings.userInfo!;
+                            updateUserInfo(
+                              userInfo.copyWith(
                                 diabetesDate: DateTime.utc(year!)
                                         .millisecondsSinceEpoch ~/
                                     1000,
-                                imageUrl: userInfo.imageUrl,
-                                code: userInfo.code,
-                                email: userInfo.email,
-                                address: userInfo.address,
-                                goalWaist: userInfo.goalWaist,
-                                goalWeight: userInfo.goalWeight,
-                                isLinkedFacebook: userInfo.isLinkedFacebook,
-                                isLinkedGoogle: userInfo.isLinkedGoogle,
-                                isMobileAccount: userInfo.isMobileAccount,
-                                firstLinkedAccount: userInfo.firstLinkedAccount,
-                                googleEmail: userInfo.googleEmail,
-                                glucoseUnit: userInfo.glucoseUnit,
-                                activityLevelRate: userInfo.activityLevelRate);
-                            updateUserInfo(userInfo);
+                              ),
+                            );
                             Navigator.pop(context);
                           },
                           child: Container(
@@ -1796,47 +1830,18 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => CustomWeightPicker(
-          callback: (number) {
-            if (number == null || number <= 0) {
+          callback: (weight) {
+            if (weight == null || weight <= 0) {
               Message.showToastMessage(
                   context, R.string.mes_weight_must_greater_than_zero.tr());
               return;
             }
-            UserModel userInfo = AppSettings.userInfo!;
-            userInfo = UserModel(
-                id: userInfo.id,
-                username: userInfo.username,
-                fullName: userInfo.fullName,
-                age: userInfo.age,
-                phoneNumber: userInfo.phoneNumber,
-                secondPhoneNumber: userInfo.secondPhoneNumber,
-                gender: userInfo.gender,
-                genderType: userInfo.genderType,
-                createDatetime: userInfo.createDatetime,
-                isActive: userInfo.isActive,
-                province: userInfo.province,
-                district: userInfo.district,
-                height: userInfo.height,
-                weight: number.toDouble(),
-                ward: userInfo.ward,
-                dateOfBirth: userInfo.dateOfBirth,
-                diabetesStatus: userInfo.diabetesStatus,
-                diabetesName: userInfo.diabetesName,
-                diabetesDate: userInfo.diabetesDate,
-                imageUrl: userInfo.imageUrl,
-                code: userInfo.code,
-                email: userInfo.email,
-                address: userInfo.address,
-                goalWaist: userInfo.goalWaist,
-                goalWeight: userInfo.goalWeight,
-                isLinkedFacebook: userInfo.isLinkedFacebook,
-                isLinkedGoogle: userInfo.isLinkedGoogle,
-                isMobileAccount: userInfo.isMobileAccount,
-                firstLinkedAccount: userInfo.firstLinkedAccount,
-                googleEmail: userInfo.googleEmail,
-                glucoseUnit: userInfo.glucoseUnit,
-                activityLevelRate: userInfo.activityLevelRate);
-            updateUserInfo(userInfo);
+            final UserModel userInfo = AppSettings.userInfo!;
+            updateUserInfo(
+              userInfo.copyWith(
+                weight: weight.toDouble(),
+              ),
+            );
           },
           title: R.string.enter_weight.tr(),
           max: 180,
@@ -1860,41 +1865,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                   context, R.string.mes_height_must_greater_than_zero.tr());
               return;
             }
-            UserModel userInfo = AppSettings.userInfo!;
-            userInfo = UserModel(
-                id: userInfo.id,
-                username: userInfo.username,
-                fullName: userInfo.fullName,
-                age: userInfo.age,
-                phoneNumber: userInfo.phoneNumber,
-                secondPhoneNumber: userInfo.secondPhoneNumber,
-                gender: userInfo.gender,
-                genderType: userInfo.genderType,
-                createDatetime: userInfo.createDatetime,
-                isActive: userInfo.isActive,
-                province: userInfo.province,
-                district: userInfo.district,
-                height: data * 1.0,
-                weight: userInfo.weight,
-                ward: userInfo.ward,
-                dateOfBirth: userInfo.dateOfBirth,
-                diabetesStatus: userInfo.diabetesStatus,
-                diabetesName: userInfo.diabetesName,
-                diabetesDate: userInfo.diabetesDate,
-                imageUrl: userInfo.imageUrl,
-                code: userInfo.code,
-                email: userInfo.email,
-                address: userInfo.address,
-                goalWaist: userInfo.goalWaist,
-                goalWeight: userInfo.goalWeight,
-                isLinkedFacebook: userInfo.isLinkedFacebook,
-                isLinkedGoogle: userInfo.isLinkedGoogle,
-                isMobileAccount: userInfo.isMobileAccount,
-                firstLinkedAccount: userInfo.firstLinkedAccount,
-                googleEmail: userInfo.googleEmail,
-                glucoseUnit: userInfo.glucoseUnit,
-                activityLevelRate: userInfo.activityLevelRate);
-            updateUserInfo(userInfo);
+            final UserModel userInfo = AppSettings.userInfo!;
+            updateUserInfo(
+              userInfo.copyWith(
+                height: data.toDouble(),
+              ),
+            );
           },
           title: R.string.enter_height.tr(),
           max: 250,
@@ -1991,43 +1967,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                   R.string.ban_chua_nhap_so_dien_thoai.tr());
                               return;
                             } else {
-                              UserModel userInfo = AppSettings.userInfo!;
-                              userInfo = UserModel(
-                                  id: userInfo.id,
-                                  username: userInfo.username,
-                                  fullName: userInfo.fullName,
-                                  age: userInfo.age,
-                                  phoneNumber: userInfo.phoneNumber,
+                              final UserModel userInfo = AppSettings.userInfo!;
+                              updateUserInfo(
+                                userInfo.copyWith(
                                   secondPhoneNumber: phone,
-                                  gender: userInfo.gender,
-                                  genderType: userInfo.genderType,
-                                  createDatetime: userInfo.createDatetime,
-                                  isActive: userInfo.isActive,
-                                  province: userInfo.province,
-                                  district: userInfo.district,
-                                  height: userInfo.height,
-                                  weight: userInfo.weight,
-                                  ward: userInfo.ward,
-                                  dateOfBirth: userInfo.dateOfBirth,
-                                  diabetesStatus: userInfo.diabetesStatus,
-                                  diabetesName: userInfo.diabetesName,
-                                  diabetesDate: userInfo.diabetesDate,
-                                  imageUrl: userInfo.imageUrl,
-                                  code: userInfo.code,
-                                  email: userInfo.email,
-                                  address: userInfo.address,
-                                  goalWaist: userInfo.goalWaist,
-                                  goalWeight: userInfo.goalWeight,
-                                  isLinkedFacebook: userInfo.isLinkedFacebook,
-                                  isLinkedGoogle: userInfo.isLinkedGoogle,
-                                  isMobileAccount: userInfo.isMobileAccount,
-                                  firstLinkedAccount:
-                                      userInfo.firstLinkedAccount,
-                                  googleEmail: userInfo.googleEmail,
-                                  glucoseUnit: userInfo.glucoseUnit,
-                                  activityLevelRate:
-                                      userInfo.activityLevelRate);
-                              updateUserInfo(userInfo);
+                                ),
+                              );
                               Navigator.pop(context);
                             }
                           },
@@ -2063,97 +2008,44 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
     final TextEditingController textEditingController = TextEditingController();
     textEditingController.text = AppSettings.userInfo!.email ?? '';
     showDialog(
-        context: context,
-        builder: (context) => EmailValidate(
-              controller: textEditingController,
-              completion: (email) {
-                UserModel userInfo = AppSettings.userInfo!;
-                userInfo = UserModel(
-                    id: userInfo.id,
-                    username: userInfo.username,
-                    fullName: userInfo.fullName,
-                    age: userInfo.age,
-                    phoneNumber: userInfo.phoneNumber,
-                    secondPhoneNumber: userInfo.secondPhoneNumber,
-                    gender: userInfo.gender,
-                    genderType: userInfo.genderType,
-                    createDatetime: userInfo.createDatetime,
-                    isActive: userInfo.isActive,
-                    province: userInfo.province,
-                    district: userInfo.district,
-                    height: userInfo.height,
-                    weight: userInfo.weight,
-                    ward: userInfo.ward,
-                    dateOfBirth: userInfo.dateOfBirth,
-                    diabetesStatus: userInfo.diabetesStatus,
-                    diabetesName: userInfo.diabetesName,
-                    diabetesDate: userInfo.diabetesDate,
-                    imageUrl: userInfo.imageUrl,
-                    code: userInfo.code,
-                    email: email,
-                    address: userInfo.address,
-                    goalWaist: userInfo.goalWaist,
-                    goalWeight: userInfo.goalWeight,
-                    isLinkedFacebook: userInfo.isLinkedFacebook,
-                    isLinkedGoogle: userInfo.isLinkedGoogle,
-                    isMobileAccount: userInfo.isMobileAccount,
-                    firstLinkedAccount: userInfo.firstLinkedAccount,
-                    googleEmail: userInfo.googleEmail,
-                    glucoseUnit: userInfo.glucoseUnit,
-                    activityLevelRate: userInfo.activityLevelRate);
-                updateUserInfo(userInfo);
-                Navigator.pop(context);
-              },
-            ));
+      context: context,
+      builder: (context) => EmailValidate(
+        controller: textEditingController,
+        completion: (email) {
+          final UserModel userInfo = AppSettings.userInfo!;
+          updateUserInfo(
+            userInfo.copyWith(
+              email: email,
+            ),
+          );
+          Navigator.pop(context);
+        },
+      ),
+    );
   }
 
   _showDialogUpdateAddress() {
-    UserModel? userInfo = AppSettings.userInfo;
+    final UserModel userInfo = AppSettings.userInfo!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-          content: AddressController(
-        address: userInfo!.address,
-        province: userInfo!.province,
-        district: userInfo!.district,
-        ward: userInfo!.ward,
-        callback: (address, province, district, ward) {
-          userInfo = UserModel(
-              id: userInfo!.id,
-              username: userInfo!.username,
-              fullName: userInfo!.fullName,
-              age: userInfo!.age,
-              phoneNumber: userInfo!.phoneNumber,
-              secondPhoneNumber: userInfo!.secondPhoneNumber,
-              gender: userInfo!.gender,
-              genderType: userInfo!.genderType,
-              createDatetime: userInfo!.createDatetime,
-              isActive: userInfo!.isActive,
-              province: province,
-              district: district,
-              height: userInfo!.height,
-              weight: userInfo!.weight,
-              ward: ward,
-              dateOfBirth: userInfo!.dateOfBirth,
-              diabetesStatus: userInfo!.diabetesStatus,
-              diabetesName: userInfo!.diabetesName,
-              diabetesDate: userInfo!.diabetesDate,
-              imageUrl: userInfo!.imageUrl,
-              code: userInfo!.code,
-              email: userInfo!.email,
-              address: address,
-              goalWaist: userInfo!.goalWaist,
-              goalWeight: userInfo!.goalWeight,
-              isLinkedFacebook: userInfo!.isLinkedFacebook,
-              isLinkedGoogle: userInfo!.isLinkedGoogle,
-              isMobileAccount: userInfo!.isMobileAccount,
-              firstLinkedAccount: userInfo!.firstLinkedAccount,
-              googleEmail: userInfo!.googleEmail,
-              glucoseUnit: userInfo!.glucoseUnit,
-              activityLevelRate: userInfo!.activityLevelRate);
-          updateUserInfo(userInfo!);
-        },
-      )),
+        content: AddressController(
+          address: userInfo.address,
+          province: userInfo.province,
+          district: userInfo.district,
+          ward: userInfo.ward,
+          callback: (address, province, district, ward) {
+            updateUserInfo(
+              userInfo.copyWith(
+                province: province,
+                district: district,
+                ward: ward,
+                address: address,
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
