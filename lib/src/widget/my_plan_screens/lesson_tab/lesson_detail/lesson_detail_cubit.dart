@@ -110,7 +110,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
 
     videoManager = VideoManager(
-        url: currentSectionDetail!.videoAddressLink,
+        url: currentSectionDetail?.videoAddressLink,
         onExitFullScreen: () {},
         onCompleted: () {
           sectionStatus?.isVideoCompleted = true;
