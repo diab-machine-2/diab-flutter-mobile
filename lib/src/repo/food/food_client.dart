@@ -231,7 +231,7 @@ class FoodClient extends FetchClient {
         params['foods[$i].portion'] = foods[i].portion.toString();
       }
       final response = await super
-          .postHttps(path: '/App/Diet/Input', params: params, files: files);
+          .postHttp(path: '/App/Diet/Input', params: params, files: files);
       if (response.statusCode == 200) {
         return true;
       } else {
