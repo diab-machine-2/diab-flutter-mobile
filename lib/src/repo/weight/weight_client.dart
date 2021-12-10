@@ -25,7 +25,7 @@ class WeightClient extends FetchClient {
         params['waist'] = waist;
       }
       final response = await super
-          .postHttp(path: '/App/Weight/Input', params: params, files: files);
+          .postHttps(path: '/App/Weight/Input', params: params, files: files);
       if (response.statusCode == 200) {
         return true;
       } else {

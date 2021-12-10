@@ -140,7 +140,7 @@ class GlucoseClient extends FetchClient {
         params['reason'] = reason;
       }
       final response = await super
-          .postHttp(path: '/App/Glucose/Input', params: params, files: files);
+          .postHttps(path: '/App/Glucose/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
         print(await response.stream.bytesToString());
