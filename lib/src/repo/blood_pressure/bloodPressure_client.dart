@@ -174,7 +174,7 @@ class BloodPressureClient extends FetchClient {
         'reason': reason,
         'note': note,
       };
-      final response = await super.postHttp(
+      final response = await super.postHttps(
           path: '/App/BloodPressure/Input', params: params, files: files);
       if (response.statusCode == 200) {
         return true;

@@ -643,6 +643,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           SizedBox(
+                            height: 43,
                             width: 149,
                             child: ButtonWidget(
                               title: 'Để sau',
@@ -655,6 +656,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                             ),
                           ),
                           SizedBox(
+                            height: 43,
                             width: 149,
                             child: ButtonWidget(
                               title: 'Tìm hiểu thêm',

@@ -339,453 +339,361 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                   ]),
                             ),
                           ),
-                        const SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(R.string.general_info.tr(),
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 8),
-                                buildItem(
-                                  image: R.drawable.ic_person,
-                                  title: user.fullName!,
-                                  subTitle:
-                                      R.string.last_name_and_first_name.tr(),
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    _showDialogUpdateName();
-                                  },
-                                ),
-                                buildItem(
-                                  image: R.drawable.ic_birthday,
-                                  title: convertToUTC(
-                                      user.dateOfBirth!, 'dd/MM/yyyy'),
-                                  subTitle: R.string.ngay_sinh.tr(),
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    _showDialogUpdateBirthday();
-                                  },
-                                ),
-                                buildItem(
-                                  image: R.drawable.ic_gender,
-                                  title: user.gender == null ||
-                                          user.gender!.isEmpty
-                                      ? R.string.updating.tr()
-                                      : user.gender!,
-                                  subTitle: R.string.gioi_tinh.tr(),
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    _showDialogUpdateGender();
-                                  },
-                                ),
-                                buildItem(
-                                  icon: R.drawable.ic_user_job,
-                                  title: 'Giáo viên',
-                                  subTitle: 'Nghề nghiệp',
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    // TODO(Tuyen): Update Nghề nghiệp
-                                    showActionFilter(
-                                        context: context,
-                                        builder: (context) {
-                                          return SelectBottomSheetWidget(
-                                            title: 'Chọn nghề nghiệp',
-                                            selectedList: [],
-                                            elementList: [],
-                                            onSelected: (typeList) {
-                                              if (typeList.isNotEmpty) {}
-                                            },
-                                          );
-                                        });
-                                  },
-                                ),
-                                buildItem(
-                                  icon: R.drawable.ic_user_education,
-                                  title: 'Đại học',
-                                  subTitle: 'Trình độ văn hoá',
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    // TODO(Tuyen): Update Trình độ văn hoá
-                                    showActionFilter(
-                                        context: context,
-                                        builder: (context) {
-                                          return SelectBottomSheetWidget(
-                                            title: 'Chọn học vấn',
-                                            selectedList: [],
-                                            elementList: [],
-                                            onSelected: (typeList) {
-                                              if (typeList.isNotEmpty) {}
-                                            },
-                                          );
-                                        });
-                                  },
-                                ),
-                              ]),
+                        _buildCardLayout(
+                            title: R.string.general_info.tr(),
+                            children: [
+                              buildItem(
+                                image: R.drawable.ic_person,
+                                title: user.fullName!,
+                                subTitle:
+                                    R.string.last_name_and_first_name.tr(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                callback: () {
+                                  _showDialogUpdateName();
+                                },
+                              ),
+                              buildItem(
+                                image: R.drawable.ic_birthday,
+                                title: convertToUTC(
+                                    user.dateOfBirth!, 'dd/MM/yyyy'),
+                                subTitle: R.string.ngay_sinh.tr(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                callback: () {
+                                  _showDialogUpdateBirthday();
+                                },
+                              ),
+                              buildItem(
+                                image: R.drawable.ic_gender,
+                                title:
+                                    user.gender == null || user.gender!.isEmpty
+                                        ? R.string.updating.tr()
+                                        : user.gender!,
+                                subTitle: R.string.gioi_tinh.tr(),
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                callback: () {
+                                  _showDialogUpdateGender();
+                                },
+                              ),
+                              buildItem(
+                                icon: R.drawable.ic_user_job,
+                                title: 'Giáo viên',
+                                subTitle: 'Nghề nghiệp',
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                callback: () {
+                                  // TODO(Tuyen): Update Nghề nghiệp
+                                  showActionFilter(
+                                      context: context,
+                                      builder: (context) {
+                                        return SelectBottomSheetWidget(
+                                          title: 'Chọn nghề nghiệp',
+                                          selectedList: [],
+                                          elementList: [],
+                                          onSelected: (typeList) {
+                                            if (typeList.isNotEmpty) {}
+                                          },
+                                        );
+                                      });
+                                },
+                              ),
+                              buildItem(
+                                icon: R.drawable.ic_user_education,
+                                title: 'Đại học',
+                                subTitle: 'Trình độ văn hoá',
+                                subIcon: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+                                callback: () {
+                                  // TODO(Tuyen): Update Trình độ văn hoá
+                                  showActionFilter(
+                                      context: context,
+                                      builder: (context) {
+                                        return SelectBottomSheetWidget(
+                                          title: 'Chọn học vấn',
+                                          selectedList: [],
+                                          elementList: [],
+                                          onSelected: (typeList) {
+                                            if (typeList.isNotEmpty) {}
+                                          },
+                                        );
+                                      });
+                                },
+                              ),
+                            ]),
+                        _buildCardLayout(
+                            title: R.string.pathological_info.tr(),
+                            children: [
+                              buildItem(
+                                image: R.drawable.ic_folder,
+                                title:
+                                    user.diabetesName ?? R.string.updating.tr(),
+                                subTitle: R.string.loai_benh.tr(),
+                                callback: () {
+                                  _showDialogUpdateDiabetesStatus();
+                                },
+                              ),
+                              buildItem(
+                                image: R.drawable.ic_year,
+                                title: convertToUTC(
+                                    user.diabetesDate ?? 0, 'yyyy'),
+                                subTitle: R.string.year_illness_start.tr(),
+                                callback: () {
+                                  _showDialogUpdateDiabetesStatusDate();
+                                },
+                              )
+                            ]),
+                        _buildCardLayout(
+                          title: R.string.body_info.tr(),
+                          children: [
+                            buildItem(
+                              image: R.drawable.ic_kg,
+                              title: user.weight == null
+                                  ? R.string.not_updated_yet.tr()
+                                  : '${user.weight!.round()} kg',
+                              subTitle: R.string.can_nang.tr(),
+                              callback: () {
+                                showDialogWeight();
+                              },
+                            ),
+                            buildItem(
+                              image: R.drawable.ic_ruler_fill,
+                              title: user.height == null
+                                  ? R.string.not_updated_yet.tr()
+                                  : '${user.height!.round()} cm',
+                              subTitle: R.string.chieu_cao.tr(),
+                              callback: () {
+                                showDialogHeight();
+                              },
+                            ),
+                            buildItem(
+                              icon: R.drawable.ic_user_bmi,
+                              title: '27.2',
+                              subTitle: 'BMI',
+                              callback: () {},
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(R.string.pathological_info.tr(),
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 8),
-                                buildItem(
-                                  image: R.drawable.ic_folder,
-                                  title: user.diabetesName ??
-                                      R.string.updating.tr(),
-                                  subTitle: R.string.loai_benh.tr(),
-                                  callback: () {
-                                    _showDialogUpdateDiabetesStatus();
-                                  },
-                                ),
-                                buildItem(
-                                  image: R.drawable.ic_year,
-                                  title: convertToUTC(
-                                      user.diabetesDate ?? 0, 'yyyy'),
-                                  subTitle: R.string.year_illness_start.tr(),
-                                  callback: () {
-                                    _showDialogUpdateDiabetesStatusDate();
-                                  },
-                                )
-                              ]),
+                        _buildCardLayout(
+                          title: 'Tiêu chí chọn huấn luyện viên sức khỏe',
+                          description:
+                              'Hãy mô tả chi tiết hơn về bản thân để diaB tìm huấn luyện viên phù hợp với bạn',
+                          children: [
+                            buildItem(
+                              image: R.drawable.ic_person,
+                              title: 'Hướng ngoại',
+                              subTitle: 'Tính cách',
+                              subIcon: Image.asset(R.drawable.ic_right,
+                                  width: 18, height: 18),
+                              callback: () {
+                                // TODO(Tuyen): Update Tính cách
+                                showActionFilter(
+                                    context: context,
+                                    builder: (context) {
+                                      return SelectBottomSheetWidget(
+                                        title: 'Chọn tính cách',
+                                        selectedList: [],
+                                        elementList: [],
+                                        onSelected: (typeList) {
+                                          if (typeList.isNotEmpty) {}
+                                        },
+                                      );
+                                    });
+                              },
+                            ),
+                            buildItem(
+                              icon: R.drawable.ic_user_habit,
+                              title: 'Chơi game, đọc sách',
+                              subTitle: 'Sở thích cá nhân',
+                              subIcon: Image.asset(R.drawable.ic_right,
+                                  width: 18, height: 18),
+                              callback: () {
+                                // TODO(Tuyen): Update Sở thích cá nhân
+                                showActionFilter(
+                                    context: context,
+                                    builder: (context) {
+                                      return SelectBottomSheetWidget(
+                                        title: 'Chọn sở thích',
+                                        selectedList: [],
+                                        elementList: [],
+                                        onSelected: (typeList) {
+                                          if (typeList.isNotEmpty) {}
+                                        },
+                                      );
+                                    });
+                              },
+                            ),
+                            buildItem(
+                              icon: R.drawable.ic_user_exercise,
+                              title: 'Cầu lông, xe đạp',
+                              subTitle: 'Môn thể thao yêu thích',
+                              subIcon: Image.asset(R.drawable.ic_right,
+                                  width: 18, height: 18),
+                              callback: () {
+                                // TODO(Tuyen): Update Môn thể thao yêu thích
+                                showActionFilter(
+                                    context: context,
+                                    builder: (context) {
+                                      return SelectBottomSheetWidget(
+                                        title: 'Chọn môn thể thao',
+                                        selectedList: [],
+                                        elementList: [],
+                                        onSelected: (typeList) {
+                                          if (typeList.isNotEmpty) {}
+                                        },
+                                      );
+                                    });
+                              },
+                            ),
+                            buildItem(
+                              icon: R.drawable.ic_user_mental_exercise,
+                              title: 'Không',
+                              subTitle: 'Thực hành tâm thức',
+                              subIcon: Image.asset(R.drawable.ic_right,
+                                  width: 18, height: 18),
+                              callback: () {
+                                // TODO(Tuyen): Update Thực hành tâm thức
+                                showActionFilter(
+                                    context: context,
+                                    builder: (context) {
+                                      return SelectBottomSheetWidget(
+                                        title: 'Chọn thực hành tâm thức',
+                                        selectedList: [],
+                                        elementList: [],
+                                        onSelected: (typeList) {
+                                          if (typeList.isNotEmpty) {}
+                                        },
+                                      );
+                                    });
+                              },
+                            ),
+                            buildItem(
+                              icon: R.drawable.ic_user_religion,
+                              title: 'Không',
+                              subTitle: 'Tôn giáo',
+                              subIcon: Image.asset(R.drawable.ic_right,
+                                  width: 18, height: 18),
+                              callback: () {
+                                // TODO(Tuyen): Update Tôn giáo
+                                showActionFilter(
+                                    context: context,
+                                    builder: (context) {
+                                      return SelectBottomSheetWidget(
+                                        title: 'Chọn tôn giáo',
+                                        selectedList: [],
+                                        elementList: [],
+                                        onSelected: (typeList) {
+                                          if (typeList.isNotEmpty) {}
+                                        },
+                                      );
+                                    });
+                              },
+                            ),
+                            buildItem(
+                              icon: R.drawable.ic_user_in_diet,
+                              title: 'Không',
+                              subTitle: 'Ăn chay',
+                              subIcon: Image.asset(R.drawable.ic_right,
+                                  width: 18, height: 18),
+                              callback: () {
+                                // TODO(Tuyen): Update Ăn chay
+                                showActionFilter(
+                                    context: context,
+                                    builder: (context) {
+                                      return SelectBottomSheetWidget(
+                                        title: 'Chọn ăn chay',
+                                        selectedList: [],
+                                        elementList: [],
+                                        onSelected: (typeList) {
+                                          if (typeList.isNotEmpty) {}
+                                        },
+                                      );
+                                    });
+                              },
+                            ),
+                            buildItem(
+                              icon: R.drawable.ic_user_schedule,
+                              title: 'Buổi sáng; Bao gồm thứ 7',
+                              subTitle:
+                                  'Khung giờ làm việc với huấn luyện viên',
+                              subIcon: Image.asset(R.drawable.ic_right,
+                                  width: 18, height: 18),
+                              callback: () {
+                                // TODO(Tuyen): Update Khung giờ làm việc với huấn luyện viên
+                                showActionFilter(
+                                    context: context,
+                                    builder: (context) {
+                                      return SelectBottomSheetWidget(
+                                        title:
+                                            'Chọn khung giờ trao đổi với coach ưa thích',
+                                        selectedList: [],
+                                        elementList: [],
+                                        onSelected: (typeList) {
+                                          if (typeList.isNotEmpty) {}
+                                        },
+                                      );
+                                    });
+                              },
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(R.string.body_info.tr(),
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 8),
-                                buildItem(
-                                  image: R.drawable.ic_kg,
-                                  title: user.weight == null
+                        _buildCardLayout(
+                          title: 'Cơ sở dịch vụ đã giới thiệu',
+                          children: [
+                            buildItem(
+                              icon: R.drawable.ic_user_hospital,
+                              title: 'Bệnh viện Hồng Ngọc',
+                              subTitle: 'Bệnh viện / Phòng khám',
+                              callback: () {},
+                            ),
+                            buildItem(
+                              icon: R.drawable.ic_user_doctor,
+                              title: 'Đặng Vân Nga',
+                              subTitle: 'Bác sĩ giới thiệu',
+                              callback: () {},
+                            ),
+                          ],
+                        ),
+                        _buildCardLayout(
+                          title: R.string.contact_info.tr(),
+                          children: [
+                            buildItem(
+                              image: R.drawable.ic_phone_info,
+                              title: user.phoneNumber!,
+                              subTitle: R.string.phone_number_1.tr(),
+                              subIcon: Image.asset(R.drawable.ic_ok,
+                                  width: 24, height: 24),
+                            ),
+                            buildItem(
+                              image: R.drawable.ic_phone_info,
+                              title: user.secondPhoneNumber == null ||
+                                      user.secondPhoneNumber!.isEmpty
+                                  ? R.string.not_updated_yet.tr()
+                                  : user.secondPhoneNumber!,
+                              subTitle: R.string.phone_number_2.tr(),
+                              callback: () {
+                                _showDialogUpdatePhone2();
+                              },
+                            ),
+                            buildItem(
+                              image: R.drawable.ic_email,
+                              title: user.isLinkedGoogle == true
+                                  ? (user.googleEmail ?? '')
+                                  : (user.email == null || user.email!.isEmpty
                                       ? R.string.not_updated_yet.tr()
-                                      : '${user.weight!.round()} kg',
-                                  subTitle: R.string.can_nang.tr(),
-                                  callback: () {
-                                    showDialogWeight();
-                                  },
-                                ),
-                                buildItem(
-                                  image: R.drawable.ic_ruler_fill,
-                                  title: user.height == null
-                                      ? R.string.not_updated_yet.tr()
-                                      : '${user.height!.round()} cm',
-                                  subTitle: R.string.chieu_cao.tr(),
-                                  callback: () {
-                                    showDialogHeight();
-                                  },
-                                ),
-                                buildItem(
-                                  icon: R.drawable.ic_user_bmi,
-                                  title: '27.2',
-                                  subTitle: 'BMI',
-                                  callback: () {},
-                                ),
-                              ]),
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Tiêu chí chọn huấn luyện viên sức khỏe',
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 8),
-                                buildItem(
-                                  image: R.drawable.ic_person,
-                                  title: 'Hướng ngoại',
-                                  subTitle: 'Tính cách',
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    // TODO(Tuyen): Update Tính cách
-                                    showActionFilter(
-                                        context: context,
-                                        builder: (context) {
-                                          return SelectBottomSheetWidget(
-                                            title: 'Chọn tính cách',
-                                            selectedList: [],
-                                            elementList: [],
-                                            onSelected: (typeList) {
-                                              if (typeList.isNotEmpty) {}
-                                            },
-                                          );
-                                        });
-                                  },
-                                ),
-                                buildItem(
-                                  icon: R.drawable.ic_user_habit,
-                                  title: 'Chơi game, đọc sách',
-                                  subTitle: 'Sở thích cá nhân',
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    // TODO(Tuyen): Update Sở thích cá nhân
-                                    showActionFilter(
-                                        context: context,
-                                        builder: (context) {
-                                          return SelectBottomSheetWidget(
-                                            title: 'Chọn sở thích',
-                                            selectedList: [],
-                                            elementList: [],
-                                            onSelected: (typeList) {
-                                              if (typeList.isNotEmpty) {}
-                                            },
-                                          );
-                                        });
-                                  },
-                                ),
-                                buildItem(
-                                  icon: R.drawable.ic_user_exercise,
-                                  title: 'Cầu lông, xe đạp',
-                                  subTitle: 'Môn thể thao yêu thích',
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    // TODO(Tuyen): Update Môn thể thao yêu thích
-                                    showActionFilter(
-                                        context: context,
-                                        builder: (context) {
-                                          return SelectBottomSheetWidget(
-                                            title: 'Chọn môn thể thao',
-                                            selectedList: [],
-                                            elementList: [],
-                                            onSelected: (typeList) {
-                                              if (typeList.isNotEmpty) {}
-                                            },
-                                          );
-                                        });
-                                  },
-                                ),
-                                buildItem(
-                                  icon: R.drawable.ic_user_mental_exercise,
-                                  title: 'Không',
-                                  subTitle: 'Thực hành tâm thức',
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    // TODO(Tuyen): Update Thực hành tâm thức
-                                    showActionFilter(
-                                        context: context,
-                                        builder: (context) {
-                                          return SelectBottomSheetWidget(
-                                            title: 'Chọn thực hành tâm thức',
-                                            selectedList: [],
-                                            elementList: [],
-                                            onSelected: (typeList) {
-                                              if (typeList.isNotEmpty) {}
-                                            },
-                                          );
-                                        });
-                                  },
-                                ),
-                                buildItem(
-                                  icon: R.drawable.ic_user_religion,
-                                  title: 'Không',
-                                  subTitle: 'Tôn giáo',
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    // TODO(Tuyen): Update Tôn giáo
-                                    showActionFilter(
-                                        context: context,
-                                        builder: (context) {
-                                          return SelectBottomSheetWidget(
-                                            title: 'Chọn tôn giáo',
-                                            selectedList: [],
-                                            elementList: [],
-                                            onSelected: (typeList) {
-                                              if (typeList.isNotEmpty) {}
-                                            },
-                                          );
-                                        });
-                                  },
-                                ),
-                                buildItem(
-                                  icon: R.drawable.ic_user_in_diet,
-                                  title: 'Không',
-                                  subTitle: 'Ăn chay',
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    // TODO(Tuyen): Update Ăn chay
-                                    showActionFilter(
-                                        context: context,
-                                        builder: (context) {
-                                          return SelectBottomSheetWidget(
-                                            title: 'Chọn ăn chay',
-                                            selectedList: [],
-                                            elementList: [],
-                                            onSelected: (typeList) {
-                                              if (typeList.isNotEmpty) {}
-                                            },
-                                          );
-                                        });
-                                  },
-                                ),
-                                buildItem(
-                                  icon: R.drawable.ic_user_schedule,
-                                  title: 'Buổi sáng; Bao gồm thứ 7',
-                                  subTitle:
-                                      'Khung giờ làm việc với huấn luyện viên',
-                                  subIcon: Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  callback: () {
-                                    // TODO(Tuyen): Update Khung giờ làm việc với huấn luyện viên
-                                    showActionFilter(
-                                        context: context,
-                                        builder: (context) {
-                                          return SelectBottomSheetWidget(
-                                            title:
-                                                'Chọn khung giờ trao đổi với coach ưa thích',
-                                            selectedList: [],
-                                            elementList: [],
-                                            onSelected: (typeList) {
-                                              if (typeList.isNotEmpty) {}
-                                            },
-                                          );
-                                        });
-                                  },
-                                ),
-                              ]),
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Cơ sở dịch vụ đã giới thiệu',
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 8),
-                                buildItem(
-                                  icon: R.drawable.ic_user_hospital,
-                                  title: 'Bệnh viện Hồng Ngọc',
-                                  subTitle: 'Bệnh viện / Phòng khám',
-                                  callback: () {},
-                                ),
-                                buildItem(
-                                  icon: R.drawable.ic_user_doctor,
-                                  title: 'Đặng Vân Nga',
-                                  subTitle: 'Bác sĩ giới thiệu',
-                                  callback: () {},
-                                ),
-                              ]),
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(R.string.contact_info.tr(),
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 8),
-                                buildItem(
-                                  image: R.drawable.ic_phone_info,
-                                  title: user.phoneNumber!,
-                                  subTitle: R.string.phone_number_1.tr(),
-                                  subIcon: Image.asset(R.drawable.ic_ok,
-                                      width: 24, height: 24),
-                                ),
-                                buildItem(
-                                  image: R.drawable.ic_phone_info,
-                                  title: user.secondPhoneNumber == null ||
-                                          user.secondPhoneNumber!.isEmpty
-                                      ? R.string.not_updated_yet.tr()
-                                      : user.secondPhoneNumber!,
-                                  subTitle: R.string.phone_number_2.tr(),
-                                  callback: () {
-                                    _showDialogUpdatePhone2();
-                                  },
-                                ),
-                                buildItem(
-                                  image: R.drawable.ic_email,
-                                  title: user.isLinkedGoogle == true
-                                      ? (user.googleEmail ?? '')
-                                      : (user.email == null ||
-                                              user.email!.isEmpty
-                                          ? R.string.not_updated_yet.tr()
-                                          : user.email!),
-                                  subTitle: R.string.email.tr(),
-                                  callback: () {
-                                    if (user.isLinkedGoogle == true) {
-                                      return;
-                                    }
-                                    _showDialogUpdateEmail();
-                                  },
-                                ),
-                                buildItem(
-                                    image: R.drawable.ic_location,
-                                    title: ((user.address ?? '') +
-                                                (user.address == null ||
-                                                        user.address!.isEmpty
-                                                    ? ''
-                                                    : ', ') +
-                                                (user.ward == null
-                                                    ? ''
-                                                    : user.ward!.name!) +
-                                                (user.ward == null ||
-                                                        user.ward!.name!.isEmpty
-                                                    ? ''
-                                                    : ', ') +
-                                                (user.district == null
-                                                    ? ''
-                                                    : user.district!.name!) +
-                                                (user.district == null ||
-                                                        user.district!.name!
-                                                            .isEmpty
-                                                    ? ''
-                                                    : ', ') +
-                                                (user.province == null
-                                                    ? ''
-                                                    : user.province!.name!))
-                                            .isEmpty
-                                        ? R.string.not_updated_yet.tr()
-                                        : ((user.address ?? '') +
+                                      : user.email!),
+                              subTitle: R.string.email.tr(),
+                              callback: () {
+                                if (user.isLinkedGoogle == true) {
+                                  return;
+                                }
+                                _showDialogUpdateEmail();
+                              },
+                            ),
+                            buildItem(
+                                image: R.drawable.ic_location,
+                                title: ((user.address ?? '') +
                                             (user.address == null ||
                                                     user.address!.isEmpty
                                                 ? ''
@@ -806,28 +714,52 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                                 : ', ') +
                                             (user.province == null
                                                 ? ''
-                                                : user.province!.name!)),
-                                    subTitle: R.string.address.tr(),
-                                    callback: () {
-                                      _showDialogUpdateAddress();
-                                    }),
-                                buildItem(
-                                  image: R.drawable.ic_google,
-                                  title: user.isLinkedGoogle == null ||
-                                          !user.isLinkedGoogle!
-                                      ? R.string.not_connected_yet.tr()
-                                      : user.fullName!,
-                                  subTitle: 'Google',
-                                  subIcon: CupertinoSwitch(
-                                    activeColor: R.color.mainColor,
-                                    value: user.isLinkedGoogle ?? false,
-                                    onChanged: (value) {
-                                      print(value);
-                                      linkedGoogle();
-                                    },
-                                  ),
-                                ),
-                              ]),
+                                                : user.province!.name!))
+                                        .isEmpty
+                                    ? R.string.not_updated_yet.tr()
+                                    : ((user.address ?? '') +
+                                        (user.address == null ||
+                                                user.address!.isEmpty
+                                            ? ''
+                                            : ', ') +
+                                        (user.ward == null
+                                            ? ''
+                                            : user.ward!.name!) +
+                                        (user.ward == null ||
+                                                user.ward!.name!.isEmpty
+                                            ? ''
+                                            : ', ') +
+                                        (user.district == null
+                                            ? ''
+                                            : user.district!.name!) +
+                                        (user.district == null ||
+                                                user.district!.name!.isEmpty
+                                            ? ''
+                                            : ', ') +
+                                        (user.province == null
+                                            ? ''
+                                            : user.province!.name!)),
+                                subTitle: R.string.address.tr(),
+                                callback: () {
+                                  _showDialogUpdateAddress();
+                                }),
+                            buildItem(
+                              image: R.drawable.ic_google,
+                              title: user.isLinkedGoogle == null ||
+                                      !user.isLinkedGoogle!
+                                  ? R.string.not_connected_yet.tr()
+                                  : user.fullName!,
+                              subTitle: 'Google',
+                              subIcon: CupertinoSwitch(
+                                activeColor: R.color.mainColor,
+                                value: user.isLinkedGoogle ?? false,
+                                onChanged: (value) {
+                                  print(value);
+                                  linkedGoogle();
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 16),
                         GestureDetector(
@@ -843,8 +775,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                 Image.asset(R.drawable.ic_logout,
                                     width: 33, height: 33),
                                 const SizedBox(width: 12),
-                                Text(R.string.logout.tr(),
-                                    style: TextStyle(color: R.color.black))
+                                Text(
+                                  R.string.logout.tr(),
+                                  style: TextStyle(
+                                    color: R.color.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                )
                               ])),
                         )
                       ]),
@@ -883,10 +821,22 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: TextStyle(color: R.color.black)),
+                      Text(
+                        title,
+                        style: TextStyle(
+                            color: R.color.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
+                      ),
                       const SizedBox(height: 2),
-                      Text(subTitle,
-                          style: TextStyle(color: R.color.captionColorGray))
+                      Text(
+                        subTitle,
+                        style: TextStyle(
+                          color: R.color.captionColorGray,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      )
                     ]),
               )
             ]),
@@ -894,6 +844,47 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
           if (subIcon != null) subIcon
         ]),
       ),
+    );
+  }
+
+  Widget _buildCardLayout({
+    required List<Widget> children,
+    required String title,
+    String description = '',
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(
+          title,
+          style: TextStyle(
+            color: R.color.black,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Visibility(
+          visible: description.isNotEmpty,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Text(
+              description,
+              style: TextStyle(
+                color: R.color.captionColorGray,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+        ...children,
+      ]),
     );
   }
 
@@ -1834,7 +1825,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                     height: 150,
                     width: width - 36,
                     child: DiabetesStatusDatePicker(
-                      year: DateTime.fromMillisecondsSinceEpoch((year ?? 0) * 1000)
+                      year: DateTime.fromMillisecondsSinceEpoch(
+                              (year ?? 0) * 1000)
                           .year,
                       onChanged: (data) {
                         year = data;

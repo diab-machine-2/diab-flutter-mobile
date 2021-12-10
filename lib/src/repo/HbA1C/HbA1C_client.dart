@@ -99,7 +99,7 @@ class HbA1CClient extends FetchClient {
   Future<bool> postIndexHbA1C(int date, String hbA1CIndex, String description,
       List<String> files) async {
     try {
-      final response = await super.postHttp(
+      final response = await super.postHttps(
           path: '/App/HbA1C/Input',
           params: {
             'date': date.toString(),
