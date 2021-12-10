@@ -177,21 +177,53 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w400),
                           ),
-                        if (isSelected)
+                        if (isSelected && widget.isMultipleChoice)
                           Image.asset(R.drawable.ic_check_mark,
-                              width: 24, height: 24)
-                        else
-                          const SizedBox()
+                              width: 24, height: 24),
+                        if (isSelected && !widget.isMultipleChoice)
+                          Container(
+                            width: 24,
+                            height: 24,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: R.color.white,
+                              border: Border.all(
+                                width: 2,
+                                color: R.color.greenGradientBottom,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Container(
+                              width: 14,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                color: R.color.greenGradientBottom,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        if (!isSelected && !widget.isMultipleChoice)
+                          Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 2,
+                                color: R.color.primaryGreyColor,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                          )
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
                 Container(
-                    height: 1,
-                    width: 373,
-                    color:
-                        isSelected ? R.color.greenbg : R.color.color0xffD6D8E0)
+                  height: 1,
+                  width: 373,
+                  color: isSelected ? R.color.greenbg : R.color.color0xffD6D8E0,
+                )
               ],
             ),
           ),

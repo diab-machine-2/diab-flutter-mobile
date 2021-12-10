@@ -11,7 +11,7 @@ import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/profile/widgets/motivation_popup_widget.dart';
 
 class HomeHeader extends StatefulWidget {
   @override

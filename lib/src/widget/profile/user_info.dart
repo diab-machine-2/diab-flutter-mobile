@@ -19,6 +19,7 @@ import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -26,7 +27,16 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/profile/address.dart';
+import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
+import 'package:medical/src/widgets/user_icon_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import 'widgets/birth_day_picker.dart';
+import 'widgets/diabetes_status_date_picker.dart';
+import 'widgets/diabetes_status_picker.dart';
+import 'widgets/email_validate.dart';
+import 'widgets/gender_picker.dart';
+import 'widgets/motivation_popup_widget.dart';
 
 class ProfileInfoController extends StatefulWidget {
   @override
@@ -379,23 +389,47 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                   },
                                 ),
                                 buildItem(
-                                  image: R.drawable.ic_person,
+                                  icon: R.drawable.ic_user_job,
                                   title: 'Giáo viên',
                                   subTitle: 'Nghề nghiệp',
                                   subIcon: Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   callback: () {
                                     // TODO(Tuyen): Update Nghề nghiệp
+                                    showActionFilter(
+                                        context: context,
+                                        builder: (context) {
+                                          return SelectBottomSheetWidget(
+                                            title: 'Chọn nghề nghiệp',
+                                            selectedList: [],
+                                            elementList: [],
+                                            onSelected: (typeList) {
+                                              if (typeList.isNotEmpty) {}
+                                            },
+                                          );
+                                        });
                                   },
                                 ),
                                 buildItem(
-                                  image: R.drawable.ic_person,
+                                  icon: R.drawable.ic_user_education,
                                   title: 'Đại học',
                                   subTitle: 'Trình độ văn hoá',
                                   subIcon: Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   callback: () {
                                     // TODO(Tuyen): Update Trình độ văn hoá
+                                    showActionFilter(
+                                        context: context,
+                                        builder: (context) {
+                                          return SelectBottomSheetWidget(
+                                            title: 'Chọn học vấn',
+                                            selectedList: [],
+                                            elementList: [],
+                                            onSelected: (typeList) {
+                                              if (typeList.isNotEmpty) {}
+                                            },
+                                          );
+                                        });
                                   },
                                 ),
                               ]),
@@ -469,12 +503,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                   },
                                 ),
                                 buildItem(
-                                  image: R.drawable.ic_ruler_fill,
+                                  icon: R.drawable.ic_user_bmi,
                                   title: '27.2',
                                   subTitle: 'BMI',
-                                  callback: () {
-                                    // TODO(Tuyen): Update BMI
-                                  },
+                                  callback: () {},
                                 ),
                               ]),
                         ),
@@ -493,67 +525,139 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                         fontWeight: FontWeight.w600)),
                                 const SizedBox(height: 8),
                                 buildItem(
-                                  image: R.drawable.ic_folder,
+                                  image: R.drawable.ic_person,
                                   title: 'Hướng ngoại',
                                   subTitle: 'Tính cách',
                                   subIcon: Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   callback: () {
                                     // TODO(Tuyen): Update Tính cách
+                                    showActionFilter(
+                                        context: context,
+                                        builder: (context) {
+                                          return SelectBottomSheetWidget(
+                                            title: 'Chọn tính cách',
+                                            selectedList: [],
+                                            elementList: [],
+                                            onSelected: (typeList) {
+                                              if (typeList.isNotEmpty) {}
+                                            },
+                                          );
+                                        });
                                   },
                                 ),
                                 buildItem(
-                                  image: R.drawable.ic_folder,
+                                  icon: R.drawable.ic_user_habit,
                                   title: 'Chơi game, đọc sách',
                                   subTitle: 'Sở thích cá nhân',
                                   subIcon: Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   callback: () {
                                     // TODO(Tuyen): Update Sở thích cá nhân
+                                    showActionFilter(
+                                        context: context,
+                                        builder: (context) {
+                                          return SelectBottomSheetWidget(
+                                            title: 'Chọn sở thích',
+                                            selectedList: [],
+                                            elementList: [],
+                                            onSelected: (typeList) {
+                                              if (typeList.isNotEmpty) {}
+                                            },
+                                          );
+                                        });
                                   },
                                 ),
                                 buildItem(
-                                  image: R.drawable.ic_folder,
+                                  icon: R.drawable.ic_user_exercise,
                                   title: 'Cầu lông, xe đạp',
                                   subTitle: 'Môn thể thao yêu thích',
                                   subIcon: Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   callback: () {
                                     // TODO(Tuyen): Update Môn thể thao yêu thích
+                                    showActionFilter(
+                                        context: context,
+                                        builder: (context) {
+                                          return SelectBottomSheetWidget(
+                                            title: 'Chọn môn thể thao',
+                                            selectedList: [],
+                                            elementList: [],
+                                            onSelected: (typeList) {
+                                              if (typeList.isNotEmpty) {}
+                                            },
+                                          );
+                                        });
                                   },
                                 ),
                                 buildItem(
-                                  image: R.drawable.ic_folder,
+                                  icon: R.drawable.ic_user_mental_exercise,
                                   title: 'Không',
                                   subTitle: 'Thực hành tâm thức',
                                   subIcon: Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   callback: () {
                                     // TODO(Tuyen): Update Thực hành tâm thức
+                                    showActionFilter(
+                                        context: context,
+                                        builder: (context) {
+                                          return SelectBottomSheetWidget(
+                                            title: 'Chọn thực hành tâm thức',
+                                            selectedList: [],
+                                            elementList: [],
+                                            onSelected: (typeList) {
+                                              if (typeList.isNotEmpty) {}
+                                            },
+                                          );
+                                        });
                                   },
                                 ),
                                 buildItem(
-                                  image: R.drawable.ic_folder,
+                                  icon: R.drawable.ic_user_religion,
                                   title: 'Không',
                                   subTitle: 'Tôn giáo',
                                   subIcon: Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   callback: () {
                                     // TODO(Tuyen): Update Tôn giáo
+                                    showActionFilter(
+                                        context: context,
+                                        builder: (context) {
+                                          return SelectBottomSheetWidget(
+                                            title: 'Chọn tôn giáo',
+                                            selectedList: [],
+                                            elementList: [],
+                                            onSelected: (typeList) {
+                                              if (typeList.isNotEmpty) {}
+                                            },
+                                          );
+                                        });
                                   },
                                 ),
                                 buildItem(
-                                  image: R.drawable.ic_folder,
+                                  icon: R.drawable.ic_user_in_diet,
                                   title: 'Không',
                                   subTitle: 'Ăn chay',
                                   subIcon: Image.asset(R.drawable.ic_right,
                                       width: 18, height: 18),
                                   callback: () {
                                     // TODO(Tuyen): Update Ăn chay
+                                    showActionFilter(
+                                        context: context,
+                                        builder: (context) {
+                                          return SelectBottomSheetWidget(
+                                            title: 'Chọn ăn chay',
+                                            selectedList: [],
+                                            elementList: [],
+                                            onSelected: (typeList) {
+                                              if (typeList.isNotEmpty) {}
+                                            },
+                                          );
+                                        });
                                   },
                                 ),
                                 buildItem(
-                                  image: R.drawable.ic_folder,
+                                  icon: R.drawable.ic_user_schedule,
                                   title: 'Buổi sáng; Bao gồm thứ 7',
                                   subTitle:
                                       'Khung giờ làm việc với huấn luyện viên',
@@ -561,6 +665,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                       width: 18, height: 18),
                                   callback: () {
                                     // TODO(Tuyen): Update Khung giờ làm việc với huấn luyện viên
+                                    showActionFilter(
+                                        context: context,
+                                        builder: (context) {
+                                          return SelectBottomSheetWidget(
+                                            title:
+                                                'Chọn khung giờ trao đổi với coach ưa thích',
+                                            selectedList: [],
+                                            elementList: [],
+                                            onSelected: (typeList) {
+                                              if (typeList.isNotEmpty) {}
+                                            },
+                                          );
+                                        });
                                   },
                                 ),
                               ]),
@@ -580,61 +697,16 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                         fontWeight: FontWeight.w600)),
                                 const SizedBox(height: 8),
                                 buildItem(
-                                  image: R.drawable.ic_folder,
+                                  icon: R.drawable.ic_user_hospital,
                                   title: 'Bệnh viện Hồng Ngọc',
                                   subTitle: 'Bệnh viện / Phòng khám',
-                                  callback: () {
-                                    // TODO(Tuyen): Update Bệnh viện / Phòng khám
-                                  },
+                                  callback: () {},
                                 ),
                                 buildItem(
-                                  image: R.drawable.ic_folder,
+                                  icon: R.drawable.ic_user_doctor,
                                   title: 'Đặng Vân Nga',
                                   subTitle: 'Bác sĩ giới thiệu',
-                                  callback: () {
-                                    // TODO(Tuyen): Update Sở thích cá nhân
-                                  },
-                                ),
-                                buildItem(
-                                  image: R.drawable.ic_folder,
-                                  title: 'Cầu lông, xe đạp',
-                                  subTitle: 'Môn thể thao yêu thích',
-                                  callback: () {
-                                    // TODO(Tuyen): Update Môn thể thao yêu thích
-                                  },
-                                ),
-                                buildItem(
-                                  image: R.drawable.ic_folder,
-                                  title: 'Không',
-                                  subTitle: 'Thực hành tâm thức',
-                                  callback: () {
-                                    // TODO(Tuyen): Update Thực hành tâm thức
-                                  },
-                                ),
-                                buildItem(
-                                  image: R.drawable.ic_folder,
-                                  title: 'Không',
-                                  subTitle: 'Tôn giáo',
-                                  callback: () {
-                                    // TODO(Tuyen): Update Tôn giáo
-                                  },
-                                ),
-                                buildItem(
-                                  image: R.drawable.ic_folder,
-                                  title: 'Không',
-                                  subTitle: 'Ăn chay',
-                                  callback: () {
-                                    // TODO(Tuyen): Update Ăn chay
-                                  },
-                                ),
-                                buildItem(
-                                  image: R.drawable.ic_folder,
-                                  title: 'Buổi sáng; Bao gồm thứ 7',
-                                  subTitle:
-                                      'Khung giờ làm việc với huấn luyện viên',
-                                  callback: () {
-                                    // TODO(Tuyen): Update Khung giờ làm việc với huấn luyện viên
-                                  },
+                                  callback: () {},
                                 ),
                               ]),
                         ),
@@ -784,7 +856,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
   }
 
   Widget buildItem({
-    required String image,
+    String? image,
+    String? icon,
     required String title,
     required String subTitle,
     Widget? subIcon,
@@ -799,7 +872,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Expanded(
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Image.asset(image, width: 33, height: 33),
+              if (image != null)
+                Image.asset(image, width: 33, height: 33)
+              else
+                UserIconWidget(
+                  icon: icon!,
+                ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -1316,7 +1394,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
   _showDialogUpdateName() {
     final width = MediaQuery.of(context).size.width;
     final TextEditingController textEditingController = TextEditingController();
-    textEditingController.text = AppSettings.userInfo!.fullName!;
+    textEditingController.text = AppSettings.userInfo?.fullName ?? '';
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -1756,7 +1834,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                     height: 150,
                     width: width - 36,
                     child: DiabetesStatusDatePicker(
-                      year: DateTime.fromMillisecondsSinceEpoch(year! * 1000)
+                      year: DateTime.fromMillisecondsSinceEpoch((year ?? 0) * 1000)
                           .year,
                       onChanged: (data) {
                         year = data;
@@ -1790,7 +1868,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                             final UserModel userInfo = AppSettings.userInfo!;
                             updateUserInfo(
                               userInfo.copyWith(
-                                diabetesDate: DateTime.utc(year!)
+                                diabetesDate: DateTime.utc(year ?? 0)
                                         .millisecondsSinceEpoch ~/
                                     1000,
                               ),
@@ -2048,529 +2126,20 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
       ),
     );
   }
-}
 
-typedef EmailValidateCallback = Function(String);
-
-class EmailValidate extends StatefulWidget {
-  final TextEditingController? controller;
-  final EmailValidateCallback? completion;
-  const EmailValidate({this.controller, this.completion});
-  @override
-  _EmailValidateState createState() => _EmailValidateState();
-}
-
-class _EmailValidateState extends State<EmailValidate> {
-  bool showValidate = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    return AlertDialog(
-        content: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(R.string.email.tr(),
-              style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600)),
-          GestureDetector(
-              child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-              onTap: () {
-                Navigator.pop(context);
-              })
-        ]),
-        const SizedBox(height: 16),
-        Container(
-            height: 54,
-            width: width - 36,
-            child: TextField(
-                controller: widget.controller,
-                keyboardType: TextInputType.emailAddress,
-                minLines: 1,
-                maxLines: 1,
-                obscureText: false,
-                decoration: InputDecoration(
-                  fillColor: R.color.textDark,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: R.color.grayComponentBorder, width: 1.0),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: R.color.mainColor, width: 1.0),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  contentPadding:
-                      const EdgeInsets.only(top: 0, left: 16, right: 16),
-                  hintText: R.string.enter_your_email.tr(),
-                ),
-                onChanged: (email) {
-                  const String pattern =
-                      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
-
-                  final RegExp regExp = RegExp(pattern);
-                  final isCorrect = regExp.hasMatch(email);
-                  if (!isCorrect) {
-                    setState(() {
-                      showValidate = true;
-                    });
-                  } else {
-                    setState(() {
-                      showValidate = false;
-                    });
-                  }
-                })),
-        if (showValidate)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(R.string.mes_invalid_email.tr(),
-                style: TextStyle(
-                    color: R.color.color0xffFF5756,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400)),
-          )
-        else
-          const SizedBox(),
-        Container(
-          margin: const EdgeInsets.only(top: 16),
-          child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                  height: 48,
-                  width: 119,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(200),
-                      color: R.color.grayBorder),
-                  child: Center(
-                    child: Text(R.string.cancel.tr(),
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600)),
-                  )),
-            ),
-            GestureDetector(
-              onTap: () {
-                FocusScope.of(context).unfocus();
-                final email = widget.controller!.text;
-                if (email.isEmpty) {
-                  Message.showToastMessage(context, 'Bạn chưa nhập email');
-                  return;
-                }
-                const String pattern =
-                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
-
-                final RegExp regExp = RegExp(pattern);
-                final isCorrect = regExp.hasMatch(email);
-                if (!isCorrect) {
-                  Message.showToastMessage(
-                      context, R.string.mes_invalid_email.tr());
-                  return;
-                }
-
-                widget.completion!(email);
-              },
-              child: Container(
-                height: 48,
-                width: 119,
-                decoration: BoxDecoration(
-                    color: R.color.red,
-                    borderRadius: BorderRadius.circular(200),
-                    gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          R.color.greenGradientTop,
-                          R.color.greenGradientBottom
-                        ])),
-                child: Center(
-                  child: Text(R.string.save.tr(),
-                      style: TextStyle(
-                          color: R.color.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600)),
-                ),
-              ),
-            ),
-          ]),
+  showActionFilter(
+      {required BuildContext context,
+      required Widget Function(BuildContext) builder}) {
+    showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(15),
         ),
-      ],
-    ));
-  }
-}
-
-typedef BirthDayPickerCallback = Function(DateTime);
-
-class BirthDayPicker extends StatefulWidget {
-  final DateTime? selectedDate;
-  final BirthDayPickerCallback? onChanged;
-  const BirthDayPicker({this.selectedDate, this.onChanged});
-  @override
-  _BirthDayPickerState createState() => _BirthDayPickerState();
-}
-
-class _BirthDayPickerState extends State<BirthDayPicker> {
-  DateTime? selectedDate;
-  @override
-  void initState() {
-    super.initState();
-    selectedDate = widget.selectedDate;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoDatePicker(
-        initialDateTime: selectedDate,
-        maximumYear: DateTime.now().year,
-        minimumYear: 1900,
-        mode: CupertinoDatePickerMode.date,
-        onDateTimeChanged: (value) {
-          widget.onChanged!(value);
-          setState(() {
-            selectedDate = value;
-          });
-        });
-  }
-}
-
-class GenderPicker extends StatefulWidget {
-  final FixedExtentScrollController? controller;
-  const GenderPicker({this.controller});
-
-  @override
-  _GenderPickerState createState() => _GenderPickerState();
-}
-
-class _GenderPickerState extends State<GenderPicker> {
-  int selectedItem = 0;
-  @override
-  void initState() {
-    super.initState();
-    selectedItem = widget.controller!.initialItem;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoPicker(
-        scrollController: widget.controller,
-        selectionOverlay: null,
-        onSelectedItemChanged: (value) {
-          setState(() {
-            selectedItem = value;
-          });
-        },
-        itemExtent: 47.0,
-        children: List<int>.generate(2, (i) => i)
-            .map((e) => Center(
-                  child: Text(e == 0 ? R.string.nam.tr() : R.string.nu.tr(),
-                      style: TextStyle(
-                          color: selectedItem == e
-                              ? R.color.mainColor
-                              : R.color.color0xffC0C2C5,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold)),
-                ))
-            .toList());
-  }
-}
-
-typedef DiabetesStatusCallback = Function(dynamic);
-
-class DiabetesStatusPicker extends StatefulWidget {
-  final int? state;
-  final DiabetesStatusCallback? onChanged;
-  const DiabetesStatusPicker({this.state, this.onChanged});
-
-  @override
-  _DiabetesStatusPickerState createState() => _DiabetesStatusPickerState();
-}
-
-class _DiabetesStatusPickerState extends State<DiabetesStatusPicker> {
-  FixedExtentScrollController? scrollController;
-  int selectedItem = 0;
-
-  List<dynamic>? diabeteStates = [];
-  @override
-  void initState() {
-    super.initState();
-    scrollController = FixedExtentScrollController(
-        initialItem: widget.state == null ? 0 : (widget.state! - 1));
-    selectedItem = widget.state == null ? 0 : (widget.state! - 1);
-    loadData();
-  }
-
-  loadData() async {
-    BotToast.showLoading();
-    diabeteStates = await UserClient().fetchDiabeteStates();
-    if (widget.state == null) {
-      widget.onChanged!(diabeteStates![0]);
-      selectedItem = 0;
-    }
-
-    BotToast.closeAllLoading();
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return diabeteStates!.isEmpty
-        ? const SizedBox()
-        : CupertinoPicker(
-            scrollController: scrollController,
-            selectionOverlay: null,
-            onSelectedItemChanged: (value) {
-              widget.onChanged!(diabeteStates![value]);
-              setState(() {
-                selectedItem = value;
-              });
-            },
-            itemExtent: 47.0,
-            children: List<int>.generate(diabeteStates!.length, (i) => i)
-                .map((e) => Center(
-                      child: Text(diabeteStates![e]['value'],
-                          style: TextStyle(
-                              color: selectedItem == e
-                                  ? R.color.mainColor
-                                  : R.color.color0xffC0C2C5,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold)),
-                    ))
-                .toList());
-  }
-}
-
-typedef DiabetesStatusDateCallback = Function(int);
-
-class DiabetesStatusDatePicker extends StatefulWidget {
-  final int? year;
-  final DiabetesStatusDateCallback? onChanged;
-  const DiabetesStatusDatePicker({this.year, this.onChanged});
-
-  @override
-  _DiabetesStatusDatePickerState createState() =>
-      _DiabetesStatusDatePickerState();
-}
-
-class _DiabetesStatusDatePickerState extends State<DiabetesStatusDatePicker> {
-  FixedExtentScrollController? scrollController;
-  int selectedYear = 0;
-  @override
-  void initState() {
-    super.initState();
-    scrollController =
-        FixedExtentScrollController(initialItem: widget.year! - 1900);
-    selectedYear = widget.year! - 1900;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoPicker(
-        scrollController: scrollController,
-        selectionOverlay: null,
-        onSelectedItemChanged: (value) {
-          widget.onChanged!(value + 1900);
-          setState(() {
-            selectedYear = value;
-          });
-        },
-        itemExtent: 47.0,
-        children: List<int>.generate(DateTime.now().year + 1 - 1900, (i) => i)
-            .map((e) => Center(
-                  child: Text((e + 1900).toString(),
-                      style: TextStyle(
-                          color: selectedYear == e
-                              ? R.color.mainColor
-                              : R.color.color0xffC0C2C5,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold)),
-                ))
-            .toList());
-  }
-}
-
-typedef MotivationCallback = Function(MotivationModel model);
-
-class MotivationPopup extends StatefulWidget {
-  final MotivationModel? model;
-  final MotivationCallback? callback;
-  const MotivationPopup({this.model, this.callback});
-  @override
-  _MotivationPopupState createState() => _MotivationPopupState();
-}
-
-class _MotivationPopupState extends State<MotivationPopup> {
-  TextEditingController textEditingController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    textEditingController.text =
-        widget.model == null ? '' : widget.model!.content!;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(
-                    widget.model == null
-                        ? R.string.new_motivation.tr()
-                        : R.string.edit_motivation.tr(),
-                    style: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600)),
-                const SizedBox(height: 8),
-                Text(
-                    R.string.letters_left_count.tr(
-                        args: ['${100 - textEditingController.text.length}']),
-                    style: TextStyle(
-                        color: R.color.primaryGreyColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400))
-              ]),
-              GestureDetector(
-                  child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                  onTap: () {
-                    Navigator.pop(context);
-                  })
-            ]),
-        const SizedBox(height: 16),
-        Container(
-            width: MediaQuery.of(context).size.width - 36,
-            child: TextField(
-                controller: textEditingController,
-                minLines: 3,
-                maxLines: 3,
-                maxLength: 100,
-                inputFormatters: [
-                  LengthLimitingTextFieldFormatterFixed(100),
-                ],
-                obscureText: false,
-                decoration: InputDecoration(
-                    fillColor: R.color.textDark,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: R.color.grayComponentBorder, width: 1.0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: R.color.mainColor, width: 1.0),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    hintText: R.string.add_new_motivation.tr(),
-                    counterText: '',
-                    contentPadding: const EdgeInsets.all(16)),
-                onChanged: (value) {
-                  setState(() {});
-                })),
-        Container(
-          margin: const EdgeInsets.only(top: 16),
-          child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                  height: 48,
-                  width: 119,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(200),
-                      color: R.color.grayBorder),
-                  child: Center(
-                    child: Text(R.string.cancel.tr(),
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600)),
-                  )),
-            ),
-            GestureDetector(
-              onTap: () {
-                FocusScope.of(context).unfocus();
-                final content = textEditingController.text;
-                if (content.isEmpty) {
-                  Message.showToastMessage(
-                      context, R.string.mes_motivation_content_empty.tr());
-                  return;
-                } else {
-                  widget.callback!(widget.model == null
-                      ? MotivationModel(
-                          content: content, id: null, createDateTime: null)
-                      : MotivationModel(
-                          content: content,
-                          id: widget.model!.id,
-                          createDateTime: widget.model!.createDateTime));
-                  Navigator.pop(context);
-                }
-              },
-              child: Container(
-                height: 48,
-                width: 119,
-                decoration: BoxDecoration(
-                    color: R.color.red,
-                    borderRadius: BorderRadius.circular(200),
-                    gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          R.color.greenGradientTop,
-                          R.color.greenGradientBottom
-                        ])),
-                child: Center(
-                  child: Text(R.string.save.tr(),
-                      style: TextStyle(
-                          color: R.color.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600)),
-                ),
-              ),
-            ),
-          ]),
-        ),
-      ],
+      ),
+      backgroundColor: R.color.white,
+      context: context,
+      isScrollControlled: true,
+      builder: builder,
     );
-  }
-}
-
-class LengthLimitingTextFieldFormatterFixed
-    extends LengthLimitingTextInputFormatter {
-  LengthLimitingTextFieldFormatterFixed(int maxLength) : super(maxLength);
-
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    if (maxLength != null &&
-        maxLength! > 0 &&
-        newValue.text.characters.length > maxLength!) {
-      // If already at the maximum and tried to enter even more, keep the old
-      // value.
-      if (oldValue.text.characters.length == maxLength) {
-        return oldValue;
-      }
-      // ignore: invalid_use_of_visible_for_testing_member
-      return LengthLimitingTextInputFormatter.truncate(newValue, maxLength!);
-    }
-    return newValue;
   }
 }

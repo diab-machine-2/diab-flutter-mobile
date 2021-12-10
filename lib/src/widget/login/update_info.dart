@@ -1,20 +1,22 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
+import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker2.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_year_picker.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/profile/widgets/diabetes_status_picker.dart';
+import 'package:medical/src/widget/profile/widgets/gender_picker.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class UpdateInfoController extends StatefulWidget {
   final String? type;
