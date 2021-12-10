@@ -302,7 +302,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                               Future.delayed(const Duration(milliseconds: 200),
                                   () {
                                 if (widget.callback != null && number != null) {
-                                  _cubit.createMenuRequest.setKcal = number;
+                                  _cubit.createMenuRequest.kcal = number;
                                   widget.callback!(_cubit.createMenuRequest);
                                 }
                               });
