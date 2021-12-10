@@ -151,7 +151,7 @@ class EmotionClient extends FetchClient {
         params['otherActivity'] = otherActivity;
       }
       final response = await super
-          .postHttp(path: '/App/Emotion/Input', params: params, files: files);
+          .postHttps(path: '/App/Emotion/Input', params: params, files: files);
       if (response.statusCode == 200) {
         return true;
       } else {

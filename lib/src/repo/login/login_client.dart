@@ -158,7 +158,7 @@ class LoginClient extends FetchClient {
   Future<bool> createPatient(Map<String, String> params) async {
     try {
       final response = await super
-          .postHttp(path: '/App/Patient/Input', params: params);
+          .postHttps(path: '/App/Patient/Input', params: params);
       logger.i(response.request);
       logger.i(response.headers);
       if (response.statusCode == 200) {
