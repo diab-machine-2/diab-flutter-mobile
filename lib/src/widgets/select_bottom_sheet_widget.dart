@@ -60,10 +60,12 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    widget.title,
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.w700),
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w700),
+                    ),
                   ),
                   GestureDetector(
                     onTap: () {

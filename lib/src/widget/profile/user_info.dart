@@ -476,6 +476,25 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                           ],
                         ),
                         _buildCardLayout(
+                          title: 'Chủ đề quan tâm',
+                          description: 'Hãy chọn các chủ đề mà bạn quan tâm để diaB gợi ý các bài học phù hợp nhất với bạn.',
+                           showIcon: true,
+                          children: [
+                            const SizedBox(height: 6),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                _buildTopicItem('Bệnh lý'),
+                                _buildTopicItem('Dinh dưỡng'),
+                                _buildTopicItem('Vận động'),
+                                _buildTopicItem('Xây dựng lối sống lành mạnh'),
+                                _buildTopicItem('Tâm lý'),
+                                _buildTopicItem('Theo dõi chỉ số sinh học'),
+                              ]
+                            ),
+                          ],),
+                        _buildCardLayout(
                           title: 'Tiêu chí chọn huấn luyện viên sức khỏe',
                           description:
                               'Hãy mô tả chi tiết hơn về bản thân để diaB tìm huấn luyện viên phù hợp với bạn',
@@ -847,10 +866,26 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
     );
   }
 
+  Widget _buildTopicItem(String title) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: R.color.main_6,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(title, style: TextStyle(
+        color: R.color.textDark,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+      ),),
+    );
+  }
+
   Widget _buildCardLayout({
     required List<Widget> children,
     required String title,
     String description = '',
+    bool showIcon = false,
   }) {
     return Container(
       margin: const EdgeInsets.only(top: 16),
@@ -860,13 +895,24 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
       ),
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(
-          title,
-          style: TextStyle(
-            color: R.color.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: R.color.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            if (showIcon) Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Image.asset(R.drawable.ic_right,
+                                    width: 18, height: 18),
+            )
+          ],
         ),
         const SizedBox(height: 8),
         Visibility(
