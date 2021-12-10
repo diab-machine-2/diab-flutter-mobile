@@ -10,7 +10,7 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 class FetchClient {
   static String get identifyBaseURL {
     // return 'is.diab.com.vn';
-    return '139.162.21.142:6001';
+    return 'diab-id-dev.savvycom.vn';
     // return 'is.stg.diab.cptech.vn';
     // return 'is.dev.diab.cptech.vn';
     // return '139.162.21.142:6001';
@@ -112,15 +112,6 @@ class FetchClient {
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
-    if (baseIdentify) {
-      return dio.postUri(
-          Uri.http(
-            domain,
-            url,
-          ),
-          data: params,
-          options: option);
-    }
     return dio.postUri(
         Uri.https(
           domain,
