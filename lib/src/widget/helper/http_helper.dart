@@ -10,10 +10,10 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 class FetchClient {
   static String get identifyBaseURL {
     // return 'is.diab.com.vn';
-    return 'diab-id-dev.savvycom.vn';
+    // return 'diab-id-dev.savvycom.vn';
     // return 'is.stg.diab.cptech.vn';
     // return 'is.dev.diab.cptech.vn';
-    // return '139.162.21.142:6001';
+    return '139.162.21.142:6001';
   }
 
   static String get baseURL {
@@ -81,7 +81,7 @@ class FetchClient {
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
-    return dio.getUri(Uri.https(domain, url, params), options: option);
+    return dio.getUri(Uri.http(domain, url, params), options: option);
   }
 
   Future<Response> postData({
@@ -95,7 +95,7 @@ class FetchClient {
     final Dio dio = Dio();
     logRequest(dio);
     return dio.postUri(
-        Uri.https(
+        Uri.http(
           domain,
           url,
         ),
@@ -113,7 +113,7 @@ class FetchClient {
     final Dio dio = Dio();
     logRequest(dio);
     return dio.postUri(
-        Uri.https(
+        Uri.http(
           domain,
           url,
         ),
@@ -121,7 +121,7 @@ class FetchClient {
         options: option);
   }
 
-  Future<http.StreamedResponse> postHttps(
+  Future<http.StreamedResponse> postHttp(
       {bool baseIdentify = false,
       required String path,
       required dynamic params,
@@ -131,7 +131,7 @@ class FetchClient {
     final request = http.MultipartRequest(
         'POST',
         Uri.parse(
-            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+            'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.fields.addAll(params);
 
     for (final file in files ?? []) {
@@ -156,7 +156,7 @@ class FetchClient {
     final request = http.Request(
         'POST',
         Uri.parse(
-            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+            'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.body = params;
     request.headers.addAll(headers);
 
@@ -174,7 +174,7 @@ class FetchClient {
     final request = http.MultipartRequest(
         'PUT',
         Uri.parse(
-            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+            'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.fields.addAll(params);
 
     for (final file in files) {
@@ -197,7 +197,7 @@ class FetchClient {
     final Dio dio = Dio();
     logRequest(dio);
     return dio.putUri(
-        Uri.https(
+        Uri.http(
           domain,
           url,
         ),
@@ -214,7 +214,7 @@ class FetchClient {
     final Dio dio = Dio();
     logRequest(dio);
     return dio.deleteUri(
-        Uri.https(
+        Uri.http(
           domain,
           url,
         ),
