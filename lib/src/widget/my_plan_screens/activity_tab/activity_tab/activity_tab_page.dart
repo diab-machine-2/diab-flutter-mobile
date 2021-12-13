@@ -16,7 +16,6 @@ import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
-import 'package:medical/src/widgets/circle_progress_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../my_plan/models/completion_status.dart';
@@ -25,9 +24,9 @@ import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../create_goal/create_goal.dart';
 import '../my_progress/my_progress.dart';
 import 'activity_tab.dart';
-import 'models/goal_filter_type.dart';
 import 'models/schedule_type.dart';
-import 'widgets/custom_progress_bar_widget.dart';
+import 'widgets/custom_progress_widget.dart';
+import 'widgets/smart_goal_item.dart';
 
 class ActivityTabPage extends StatefulWidget {
   const ActivityTabPage();
@@ -67,9 +66,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           if (state is ActivityTabFailure) {
             Message.showToastMessage(context, state.error);
           }
-          if (state is GoalTypeChanged) {}
           if (state is ActivityTabWeekChanged) {
-            animateToIndex(state.newIndex, refresh: false);
+            _animateToIndex(state.newIndex, refresh: false);
           }
         },
         builder: (context, state) {
@@ -82,47 +80,45 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         _buildScheduleWidget(),
-                        Row(
-                          children: [
-                            ...List.generate(
-                              _cubit.goalTypeList.length,
-                              (index) {
-                                return _buildGoalTypeSelect(
-                                  title: _cubit.goalTypeList[index].title,
-                                  isActive:
-                                      _cubit.currentGoalTypeIndex == index,
-                                  onTap: () {
-                                    _cubit.changeGoalType(index);
-                                  },
-                                );
-                              },
-                            ),
-                            const Spacer(),
-                            InkWell(
-                              onTap: () async {
-                                Observable.instance.notifyObservers([],
-                                    notifyName: Const.HIDE_OVERLAY_KEY);
-                                final result =
-                                    await NavigationUtil.navigatePage(
-                                        context, const MyProgressPage());
-                                if (result is int) {
-                                  if (result == 1) {
-                                    _cubit.goToLessonTab();
-                                  } else if (result == 2) {
-                                    _cubit.goToExerciseTab();
-                                  }
+                        Container(
+                          alignment: Alignment.centerRight,
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: InkWell(
+                            onTap: () async {
+                              Observable.instance.notifyObservers([],
+                                  notifyName: Const.HIDE_OVERLAY_KEY);
+                              final result = await NavigationUtil.navigatePage(
+                                  context, const MyProgressPage());
+                              if (result is int) {
+                                if (result == 1) {
+                                  _cubit.goToLessonTab();
+                                } else if (result == 2) {
+                                  _cubit.goToExerciseTab();
                                 }
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 12.0),
-                                child: Image.asset(
+                              }
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Tiến độ của tôi',
+                                  style: TextStyle(
+                                    color: R.color.greenGradientBottom,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Image.asset(
                                   R.drawable.ic_activity_process,
                                   width: 20,
                                   height: 20,
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
@@ -133,33 +129,26 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       onRefresh: () => _cubit.refreshData(isRefresh: true),
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
+                          padding: EdgeInsets.fromLTRB(16, 32, 16,
+                              MediaQuery.of(context).padding.bottom + 75),
                           child: Column(
-                            children:
-                                _cubit.currentGoalType == GoalFilterType.day
-                                    ? _cubit.smartGoalList
-                                        .map((smartGoal) =>
-                                            _buildSingleGoal(data: smartGoal))
-                                        .toList()
-                                    : _cubit.weekSmartGoalList
-                                        .map((weekSmartGoal) =>
-                                            _buildSingleWeekGoal(
-                                                data: weekSmartGoal))
-                                        .toList(),
+                            children: [
+                              ..._buildSmartGoalDayList(
+                                smartGoalList: _cubit.smartGoalList,
+                              ),
+                              const SizedBox(height: 32),
+                              ..._buildSmartGoalWeekList(
+                                  smartGoalList: _cubit.weekSmartGoalList)
+                            ],
                           ),
                         ),
                       ),
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).padding.bottom + 16),
-                    child: const CustomProgressBarWidget(),
-                  ),
                 ],
               ),
               Positioned(
-                bottom: 38 + MediaQuery.of(context).padding.bottom,
+                bottom: 24 + MediaQuery.of(context).padding.bottom,
                 right: 24,
                 child: InkWell(
                   onTap: () async {
@@ -169,10 +158,21 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                         context, const CreateGoalPage());
                     _cubit.refreshData();
                   },
-                  child: Image.asset(
-                    R.drawable.ic_button_plus_home,
-                    width: 60,
-                    height: 60,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: R.color.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        width: 6,
+                        color: R.color.buttonRoundColor,
+                      ),
+                    ),
+                    child: Image.asset(
+                      R.drawable.ic_create_smart_goal,
+                      width: 28,
+                      height: 28,
+                    ),
                   ),
                 ),
               )
@@ -183,7 +183,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  void animateToIndex(int index, {bool refresh = true}) {
+  void _animateToIndex(int index, {bool refresh = true}) {
     if (_cubit.weekStatesList.isEmpty) return;
     if (index < 0) {
       index = 0;
@@ -328,7 +328,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             Observable.instance
                 .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
             if (_cubit.currentWeekIndex == null) return;
-            animateToIndex(_cubit.currentWeekIndex! - 1);
+            _animateToIndex(_cubit.currentWeekIndex! - 1);
           },
           child: Icon(
             Icons.chevron_left_rounded,
@@ -350,7 +350,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     onSelect: () {
                       Observable.instance.notifyObservers([],
                           notifyName: Const.HIDE_OVERLAY_KEY);
-                      animateToIndex(index);
+                      _animateToIndex(index);
                     });
               })
                 ..add(SizedBox(
@@ -363,7 +363,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             Observable.instance
                 .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
             if (_cubit.currentWeekIndex == null) return;
-            animateToIndex(_cubit.currentWeekIndex! + 1);
+            _animateToIndex(_cubit.currentWeekIndex! + 1);
           },
           child: Icon(
             Icons.chevron_right_rounded,
@@ -436,177 +436,94 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  Widget _buildGoalTypeSelect({
-    required String title,
-    required bool isActive,
-    VoidCallback? onTap,
+  List<Widget> _buildSmartGoalDayList({
+    required List<SmartGoalListReponseData?> smartGoalList,
   }) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final countDone =
+        smartGoalList.where((element) => element?.progress == 1).length;
+    final List<Widget> children = [
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: isActive
-                  ? R.color.greenGradientBottom
-                  : R.color.captionColorGray,
-              fontSize: 16,
-              fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+          Expanded(
+            child: Text(
+              'Mục tiêu ngày',
+              style: TextStyle(
+                  color: R.color.grey_1,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700),
             ),
           ),
-          Container(
-            width: 130,
-            height: 3,
-            margin: const EdgeInsets.only(top: 10),
-            decoration: BoxDecoration(
-              color: isActive ? R.color.mainColor : R.color.transparent,
-              borderRadius: BorderRadius.circular(10),
-            ),
+          CustomProgressWidget(
+            count: countDone,
+            total: smartGoalList.length,
           ),
         ],
       ),
-    );
+      const SizedBox(height: 20),
+      ...smartGoalList.map((smartGoal) {
+        final ScheduleType type =
+            ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type);
+        final String frequency =
+            _getSmartGoalDescription(type, data: smartGoal);
+        return SmartGoalItem(
+          type: type,
+          name: smartGoal?.name ?? '',
+          frequency: frequency,
+          isDone: smartGoal?.progress == 1,
+          onTap: () {
+            _onSelectGoal(
+              type,
+              smartGoal: smartGoal,
+            );
+          },
+          onRemove: () {},
+        );
+      }).toList(),
+    ];
+    return children;
   }
 
-  Widget _buildSingleGoal({
-    required SmartGoalListReponseData? data,
+  List<Widget> _buildSmartGoalWeekList({
+    required List<WeekSmartGoalData?> smartGoalList,
   }) {
-    final type = ScheduleTypeExtend.getTypeFromIndex(data?.type);
-    final String frequency = getSmartGoalDescription(type, data: data);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
-      child: InkWell(
-        onTap: () {
-          onSelectGoal(type, smartGoal: data);
-        },
-        child: Row(
-          children: [
-            CircleProgressWidget(
-              percent: (data?.progress ?? 0) * 100,
-              icon: type.icon,
+    final countDone =
+        smartGoalList.where((element) => element?.progress == 1).length;
+    final List<Widget> children = [
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Text(
+              'Mục tiêu tuần',
+              style: TextStyle(
+                  color: R.color.grey_1,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      type == ScheduleType.custom
-                          ? data?.name ?? ''
-                          : type.title,
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    if (frequency.isNotEmpty) const SizedBox(height: 4),
-                    if (frequency.isNotEmpty)
-                      Text(
-                        frequency,
-                        style: TextStyle(
-                          color: R.color.grey_1,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            InkWell(
-              onTap: () {
-                onEditGoal(type, data: data);
-              },
-              child: Visibility(
-                visible: type.editable,
-                child: Image.asset(
-                  R.drawable.ic_edit,
-                  width: 20,
-                  height: 20,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+          CustomProgressWidget(
+            count: countDone,
+            total: smartGoalList.length,
+          ),
+        ],
       ),
-    );
+      const SizedBox(height: 20),
+      ...smartGoalList.map((smartGoal) {
+        return SmartGoalItem(
+          type: ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type),
+          name: smartGoal?.name ?? '',
+          frequency: smartGoal?.description ?? '',
+          isDone: smartGoal?.progress == 1,
+          onTap: () {},
+          onRemove: () {},
+        );
+      }).toList(),
+    ];
+    return children;
   }
 
-  Widget _buildSingleWeekGoal({
-    required WeekSmartGoalData? data,
-  }) {
-    final type = ScheduleTypeExtend.getTypeFromIndex(data?.type);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
-      child: InkWell(
-        onTap: () {},
-        child: Row(
-          children: [
-            CircleProgressWidget(
-              percent: (data?.progress ?? 0) * 100,
-              icon: type.icon,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      type == ScheduleType.custom
-                          ? data?.name ?? ''
-                          : type.title,
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    if (data?.description?.isNotEmpty == true)
-                      const SizedBox(height: 4),
-                    if (data?.description?.isNotEmpty == true)
-                      Text(
-                        data?.description ?? '',
-                        style: TextStyle(
-                          color: R.color.grey_1,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            InkWell(
-              onTap: () {
-                if (type == ScheduleType.exercise) {
-                  onEditGoal(type,
-                      data: SmartGoalListReponseData(
-                          type: ScheduleType.exercise.typeIndex));
-                }
-              },
-              child: Visibility(
-                visible: type.editable,
-                child: Image.asset(
-                  R.drawable.ic_edit,
-                  width: 20,
-                  height: 20,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> onSelectGoal(ScheduleType type,
+  Future<void> _onSelectGoal(ScheduleType type,
       {SmartGoalListReponseData? smartGoal}) async {
     Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
     switch (type) {
@@ -651,66 +568,24 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _cubit.goToExerciseTab();
         break;
       case ScheduleType.custom:
-        showCustomGoalPopup(
+        _showCustomGoalPopup(
           smartGoal: smartGoal,
         );
         break;
       case ScheduleType.coaching:
-        showCoachingPopup();
+        _showCoachingPopup();
         break;
       case ScheduleType.group:
         break;
       case ScheduleType.survey:
-        showSurveyPopup();
+        _showSurveyPopup();
         break;
       case ScheduleType.lesson:
         break;
     }
   }
 
-  Future<void> onEditGoal(ScheduleType type,
-      {SmartGoalListReponseData? data}) async {
-    Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
-    switch (type) {
-      case ScheduleType.blood_sugar:
-        await Navigator.pushNamed(context, NavigatorName.schedule_glucose);
-        _cubit.refreshData();
-        break;
-      case ScheduleType.blood_pressure:
-        editSmartGoal(data);
-        break;
-      case ScheduleType.weight:
-        editSmartGoal(data);
-        break;
-      case ScheduleType.emotion:
-        editSmartGoal(data);
-        break;
-      case ScheduleType.food:
-        editSmartGoal(data);
-        break;
-      case ScheduleType.exercise:
-        editSmartGoal(data);
-        break;
-      case ScheduleType.hba1c:
-        editSmartGoal(data);
-        break;
-      case ScheduleType.exercise_movement:
-        break;
-      case ScheduleType.custom:
-        editSmartGoal(data);
-        break;
-      case ScheduleType.coaching:
-        break;
-      case ScheduleType.group:
-        break;
-      case ScheduleType.survey:
-        break;
-      case ScheduleType.lesson:
-        break;
-    }
-  }
-
-  String getSmartGoalDescription(ScheduleType type,
+  String _getSmartGoalDescription(ScheduleType type,
       {SmartGoalListReponseData? data}) {
     switch (type) {
       case ScheduleType.blood_sugar:
@@ -742,13 +617,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     }
   }
 
-  Future<void> editSmartGoal(SmartGoalListReponseData? smartGoal) async {
-    await NavigationUtil.navigatePage(
-        context, CreateGoalPage(smartGoalData: smartGoal));
-    _cubit.refreshData();
-  }
-
-  void showPopup({
+  void _showPopup({
     required BuildContext context,
     required Widget child,
     required String buttonTitle,
@@ -808,14 +677,14 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  showCustomGoalPopup({SmartGoalListReponseData? smartGoal}) {
+  _showCustomGoalPopup({SmartGoalListReponseData? smartGoal}) {
     String description = '';
     if (smartGoal?.executeType == 0) {
       description = 'Thời gian: ${smartGoal?.executeDayTimes} phút';
     } else if (smartGoal?.executeType == 1) {
       description = 'Số lần: ${smartGoal?.executeDayTimes} lần';
     }
-    return showPopup(
+    return _showPopup(
       context: context,
       buttonTitle: R.string.complete_lesson.tr(),
       onTap: smartGoal?.isCompleted == true
@@ -851,8 +720,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  showCoachingPopup() {
-    return showPopup(
+  _showCoachingPopup() {
+    return _showPopup(
       context: context,
       buttonTitle: R.string.join.tr(),
       onTap: () {},
@@ -913,8 +782,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  showSurveyPopup() {
-    return showPopup(
+  _showSurveyPopup() {
+    return _showPopup(
       context: context,
       buttonTitle: R.string.start_survey.tr(),
       onTap: () {

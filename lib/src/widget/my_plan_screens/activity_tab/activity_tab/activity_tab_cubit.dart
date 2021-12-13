@@ -69,12 +69,6 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       ? myPlanCubit.dayMessageState
       : myPlanCubit.weekMessageState;
 
-  void changeGoalType(int newIndex) {
-    currentGoalType = goalTypeList[newIndex];
-    emit(const GoalTypeChanged());
-    refreshData();
-  }
-
   void goToLessonTab() {
     myPlanCubit.changePlanType(1);
   }
@@ -87,7 +81,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       {bool hideLoadingAfterDone = false}) async {
     currentWeekIndex = newWeekIndex;
     await getSmartGoalStatistics(hideLoadingAfterDone: hideLoadingAfterDone);
-    if (weekStatesList.isNotEmpty) getListSmartGoal();
+    refreshData();
+    // if (weekStatesList.isNotEmpty) getListSmartGoal();
   }
 
   void onSelectDay(int newDayIndex) {
@@ -112,19 +107,16 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       currentWeekIndex = -1;
     }
     await getSmartGoalStatistics(hideLoadingAfterDone: false);
-    await getListSmartGoal();
+    await refreshData();
     Timer(const Duration(milliseconds: 100), () {
       emit(ActivityTabWeekChanged(currentWeekIndex ?? 0));
     });
     emit(const ActivityTabProgressChanged());
   }
 
-  void refreshData({bool isRefresh = false}) {
-    if (currentGoalType == GoalFilterType.day) {
-      getListSmartGoal(isRefresh: isRefresh);
-    } else {
-      getWeekSmartGoal();
-    }
+  Future<void> refreshData({bool isRefresh = false}) async {
+    await getListSmartGoal(isRefresh: isRefresh);
+    getWeekSmartGoal();
   }
 
   Future<void> getListSmartGoal({bool isRefresh = false}) async {
