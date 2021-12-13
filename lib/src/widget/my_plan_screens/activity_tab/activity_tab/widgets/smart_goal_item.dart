@@ -36,10 +36,13 @@ class SmartGoalItem extends StatelessWidget {
                   children: [
                     Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
                     const SizedBox(height: 4),
-                    Text('Xoá mục tiêu',
-                        style: TextStyle(
-                            color: R.color.white, fontWeight: FontWeight.w500),
-                        textAlign: TextAlign.center),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text('Xoá mục tiêu',
+                          style: TextStyle(
+                              color: R.color.white, fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.center),
+                    ),
                   ]),
               onTap: () {},
             ),
