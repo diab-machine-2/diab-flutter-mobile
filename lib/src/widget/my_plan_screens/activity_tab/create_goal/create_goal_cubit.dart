@@ -37,7 +37,6 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
   GoalInfoModel? userInfo;
 
   String dailyTargetDuration = '';
-  String weeklyTargetDuration = '';
 
   SmartGoalListReponseData? smartGoalDetail;
 
@@ -154,12 +153,6 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     emit(const CreateGoalInitial());
   }
 
-  void onChangeCalculateType(int newIndex) {
-    goalRecordType = GoalRecordTypeExtend.getGoalRecordTypeFromIndex(newIndex);
-    emit(const CreateGoalSuccess());
-    emit(const CreateGoalInitial());
-  }
-
   void onChangeRepeatType(String selectedRepeatType) {
     repeatType = RepeatTypeExtend.getTypeFromString(selectedRepeatType);
     if (repeatType == RepeatType.day) {
@@ -184,7 +177,11 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
       status = CreateGoalStatus.complete;
       emit(const CreateGoalSuccess());
     } else if (status == CreateGoalStatus.complete) {
-      await createSmartGoal();
+      if (type == ScheduleType.exercise) {
+        updateUserTarget();
+      } else {
+        await createSmartGoal();
+      }
       emit(const CreateGoalCompleted());
     }
     emit(const CreateGoalInitial());
@@ -215,7 +212,6 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     try {
       userInfo = await UserClient().fetchGoalInfo();
       dailyTargetDuration = '${userInfo?.dailyTargetDuration ?? 0}';
-      weeklyTargetDuration = '${userInfo?.weeklyTargetDuration ?? 0}';
     } catch (error) {
       emit(CreateGoalFailure(error.toString()));
     }
@@ -228,7 +224,6 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     emit(const CreateGoalLoading());
     final GoalInfoModel request = userInfo!.copyWith(
       dailyTargetDuration: parseString(this.dailyTargetDuration).toDouble(),
-      weeklyTargetDuration: parseString(this.weeklyTargetDuration).toDouble(),
     );
     try {
       await UserClient().updateGoalInfo(request);
