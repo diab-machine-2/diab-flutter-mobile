@@ -60,6 +60,9 @@ class _MyProgressPageState extends State<MyProgressPage> {
             title: R.string.my_progress.tr(),
             appbarColor: R.color.white,
             showCloseBackButton: true,
+            onTapClose: () {
+              _messageController.sink.add(true);
+            },
             child: BlocConsumer<MyProgressCubit, MyProgressState>(
               listener: (context, state) {
                 if (state is MyProgressLoading) {
