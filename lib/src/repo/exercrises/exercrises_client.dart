@@ -200,7 +200,7 @@ class ExercrisesClient extends FetchClient {
             exercises[i].burnedCalorie.toString();
       }
       final response = await super
-          .postHttps(path: '/App/Exercise/Input', params: params, files: files);
+          .postHttp(path: '/App/Exercise/Input', params: params, files: files);
       if (response.statusCode == 200) {
         return true;
       } else {

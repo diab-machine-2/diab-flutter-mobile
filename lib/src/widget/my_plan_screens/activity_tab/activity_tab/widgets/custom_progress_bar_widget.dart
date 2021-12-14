@@ -52,10 +52,6 @@ class _CustomProgressBarWidgetState extends State<CustomProgressBarWidget>
         if (state is ActivityTabProgressChanged) {
           showOverlay();
         }
-        if (state is GoalTypeChanged) {
-          disposeOverlay();
-          showOverlay();
-        }
         if (state is ActivityTabHideProgressMessage) {
           disposeOverlay();
         }

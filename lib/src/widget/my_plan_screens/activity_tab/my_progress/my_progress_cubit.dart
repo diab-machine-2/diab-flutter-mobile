@@ -12,7 +12,7 @@ class MyProgressCubit extends Cubit<MyProgressState> {
 
   final AppRepository repository;
 
-  FilterType? filterType = FilterType.day14;
+  FilterType? filterType = FilterType.week2;
 
   MyProgressResponse? myProgressData;
 

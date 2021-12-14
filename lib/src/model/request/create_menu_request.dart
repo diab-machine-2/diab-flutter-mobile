@@ -23,30 +23,6 @@ class CreateMenuRequest {
     required this.includeDinner,
   });
 
-  set setKcal(int value) {
-    if (900 <= value && value <= 1100) {
-      this.kcal = 1000;
-    } else if (1101 <= value && value <= 1300) {
-      this.kcal = 1200;
-    } else if (1301 <= value && value <= 1500) {
-      this.kcal = 1400;
-    } else if (1501 <= value && value <= 1700) {
-      this.kcal = 1600;
-    } else if (1701 <= value && value <= 1900) {
-      this.kcal = 1800;
-    } else if (1901 <= value && value <= 2100) {
-      this.kcal = 2000;
-    } else if (2101 <= value && value <= 2300) {
-      this.kcal = 2200;
-    } else if (2301 <= value && value <= 2500) {
-      this.kcal = 2400;
-    } else if (2501 <= value && value <= 2700) {
-      this.kcal = 2600;
-    } else {
-      this.kcal = 0;
-    }
-  }
-
   CreateMenuRequest.emptyRequest() {
     kcal = 0;
     includeBreakfast = false;

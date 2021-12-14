@@ -66,6 +66,7 @@ class Colors {
 	Color get shadowColor => Color(0xff38476D);
 	Color get mediaTitle => Color(0xff6F6F6F);
 	Color get textFieldGrey => Color(0xff8D8D8D);
+	Color get buttonRoundColor => Color(0xffDBF0EE);
 	Color get color0xffE5E5E5 => Color(0xffE5E5E5);
 	Color get color0xff003F38 => Color(0xff003F38);
 	Color get color0xffBEC0C8 => Color(0xffBEC0C8);

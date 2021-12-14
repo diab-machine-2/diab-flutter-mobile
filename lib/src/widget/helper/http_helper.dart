@@ -121,7 +121,7 @@ class FetchClient {
         options: option);
   }
 
-  Future<http.StreamedResponse> postHttps(
+  Future<http.StreamedResponse> postHttp(
       {bool baseIdentify = false,
       required String path,
       required dynamic params,
