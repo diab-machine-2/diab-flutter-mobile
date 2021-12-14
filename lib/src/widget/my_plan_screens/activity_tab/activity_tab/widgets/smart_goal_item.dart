@@ -38,7 +38,7 @@ class SmartGoalItem extends StatelessWidget {
                     const SizedBox(height: 4),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('Xoá mục tiêu',
+                      child: Text('Huỷ mục tiêu',
                           style: TextStyle(
                               color: R.color.white, fontWeight: FontWeight.w500),
                           textAlign: TextAlign.center),
