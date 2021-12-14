@@ -486,7 +486,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Image.network(model.icon!.url ?? '',
+                      Image.network(model.icon?.url ?? '',
                           width: 25, height: 25),
                       const SizedBox(width: 4),
                       Padding(
@@ -566,7 +566,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.network(model.icon!.url ?? '', width: 25, height: 25),
+                    Image.network(model.icon?.url ?? '', width: 25, height: 25),
                     const SizedBox(width: 4),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
@@ -772,7 +772,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Image.network(model.icon!.url ?? '',
+                            Image.network(model.icon?.url ?? '',
                                 width: 25, height: 25),
                             const SizedBox(width: 4),
                             Padding(

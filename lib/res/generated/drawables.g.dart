@@ -108,6 +108,7 @@ class Drawables {
 	String get ic_copy => "lib/res/drawables/ic_copy.png";
 	String get ic_correct => "lib/res/drawables/ic_correct.png";
 	String get ic_course => "lib/res/drawables/ic_course.png";
+	String get ic_create_smart_goal => "lib/res/drawables/ic_create_smart_goal.png";
 	String get ic_crown_green => "lib/res/drawables/ic_crown_green.png";
 	String get ic_dinh_duong => "lib/res/drawables/ic_dinh_duong.png";
 	String get ic_duong_huyet => "lib/res/drawables/ic_duong_huyet.png";
