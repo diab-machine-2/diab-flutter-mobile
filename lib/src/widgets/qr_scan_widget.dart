@@ -90,7 +90,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
     //   subcription.cancel();
     //   Navigator.pop(context, scanedText);
     // }
-    if (scanedText.contains('https://diab.com.vn')) {
+    if (scanedText.contains('https://diab-portal-dev.savvycom.vn')) {
       subcription.cancel();
       Navigator.pop(context,
           scanedText.substring(scanedText.length - 6, scanedText.length));
