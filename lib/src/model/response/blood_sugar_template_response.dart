@@ -119,13 +119,13 @@ class BloodSugarTemplateResponseData {
   ScheduleGlucoseModel get scheduleGlucoseModel {
     if (this.isWeekTemplate == true) {
       return ScheduleGlucoseModel(
-        monday: getScheduleModelByIndex(0),
-        tuesday: getScheduleModelByIndex(1),
-        wednesday: getScheduleModelByIndex(2),
-        thursday: getScheduleModelByIndex(3),
-        friday: getScheduleModelByIndex(4),
-        saturday: getScheduleModelByIndex(5),
-        sunday: getScheduleModelByIndex(6),
+        monday: getScheduleModelByIndex(1),
+        tuesday: getScheduleModelByIndex(2),
+        wednesday: getScheduleModelByIndex(3),
+        thursday: getScheduleModelByIndex(4),
+        friday: getScheduleModelByIndex(5),
+        saturday: getScheduleModelByIndex(6),
+        sunday: getScheduleModelByIndex(7),
       );
     } else {
       final ScheduleModel? scheduleModel = this.schedules?.first?.scheduleModel;
@@ -142,8 +142,11 @@ class BloodSugarTemplateResponseData {
   }
 
   ScheduleModel? getScheduleModelByIndex(int dayIndex) {
+    final int? index =
+        this.schedules?.indexWhere((schedule) => dayIndex == schedule?.day);
+    if (index == -1) return null;
     final BloodSugarTemplateResponseDataSchedules? data =
-        this.schedules?.firstWhere((schedule) => dayIndex == schedule?.day);
+        this.schedules?[index!];
     return data?.scheduleModel;
   }
 

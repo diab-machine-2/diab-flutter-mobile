@@ -18,6 +18,8 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
 
 class ScheduleGlucoseController extends StatefulWidget {
+  const ScheduleGlucoseController({this.doSurvey});
+  final bool? doSurvey;
   @override
   _ScheduleGlucoseControllerState createState() =>
       _ScheduleGlucoseControllerState();
@@ -44,12 +46,10 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
     loadSchedule();
     loadScheduleSetup();
     Observable.instance.addObserver(this);
-    // DartNotificationCenter.subscribe(
-    //     channel: 'setup_schedule_change',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       loadScheduleSetup();
-    //     });
+
+    if (widget.doSurvey == true) {
+      doSurvey();
+    }
   }
 
   @override
@@ -246,15 +246,13 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                             }),
                                         const SizedBox(width: 16),
                                         _buildButton(
-                                            title: R.string.testing_schedule_suggest.tr(),
-                                            icon: R.drawable.ic_blood_sugar_testing_suggest,
-                                            onTap: () async {
-                                              await NavigationUtil.navigatePage(
-                                                context,
-                                                const BloodSugarStartSurveyPage(),
-                                              );
-                                              loadSchedule();
-                                            })
+                                          title: R
+                                              .string.testing_schedule_suggest
+                                              .tr(),
+                                          icon: R.drawable
+                                              .ic_blood_sugar_testing_suggest,
+                                          onTap: doSurvey,
+                                        )
                                       ],
                                     )
                                   ],
@@ -298,16 +296,18 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                                   : R.color.main_6)),
                                       borderRadius: BorderRadius.circular(18)),
                                   child: Center(
-                                      child: Text(index == 6 ? R.string.sunday.tr() : R.string.day_in_week.tr(args: ['${index + 2}']),
+                                      child: Text(
+                                          index == 6
+                                              ? R.string.sunday.tr()
+                                              : R.string.day_in_week
+                                                  .tr(args: ['${index + 2}']),
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: selected == index
                                                   ? (!hasData[index]
                                                       ? R.color.black
                                                       : R.color.mainColor)
-                                                  : (!hasData[index]
-                                                      ? R.color.primaryGreyColor
-                                                      : R.color.mainColor))))),
+                                                  : (!hasData[index] ? R.color.primaryGreyColor : R.color.mainColor))))),
                             );
                           }),
                         )),
@@ -493,6 +493,15 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
     );
   }
 
+  Future<void> doSurvey() async {
+    await Future.delayed(Duration.zero);
+    await NavigationUtil.navigatePage(
+      context,
+      const BloodSugarStartSurveyPage(),
+    );
+    loadSchedule();
+  }
+
   Widget buildItem(bool highlight, String title, String icon, int index) {
     return Expanded(
       child: GestureDetector(
@@ -632,22 +641,17 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
         child: Container(
             height: 60,
             decoration: BoxDecoration(
-                color: highlight
-                    ? R.color.color0xffF4DBBD
-                    : R.color.grey_6,
+                color: highlight ? R.color.color0xffF4DBBD : R.color.grey_6,
                 border: Border.all(
-                    color: highlight
-                        ? R.color.color0xffE5B440
-                        : R.color.grey_6),
+                    color:
+                        highlight ? R.color.color0xffE5B440 : R.color.grey_6),
                 borderRadius: BorderRadius.circular(12)),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Image.asset(icon, width: 51, height: 34),
               SizedBox(width: 8),
               Text(title,
                   style: TextStyle(
-                      color: highlight
-                          ? R.color.mainColor
-                          : R.color.gray,
+                      color: highlight ? R.color.mainColor : R.color.gray,
                       fontSize: 16))
             ])),
       ),
@@ -786,7 +790,7 @@ Widget _buildButton({
     child: Container(
       height: 36,
       decoration: BoxDecoration(
-          color: R.color.white,
+        color: R.color.white,
         borderRadius: BorderRadius.circular(18),
       ),
       padding: const EdgeInsets.only(left: 16, right: 16),
