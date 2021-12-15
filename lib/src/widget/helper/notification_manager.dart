@@ -23,8 +23,8 @@ class NotificationManager {
 
   Future requestFirebaseToken() async {
     firebaseConfigure();
-    final deviceInfor = await getDeviceInformation();
-    var deviceId = deviceInfor != null ? deviceInfor['uuid'] : '';
+    final Map<String, dynamic>? deviceInfor = await getDeviceInformation();
+    final String deviceId = deviceInfor != null ? deviceInfor['uuid'] : '';
     if (Platform.isIOS) {
       await FirebaseMessaging.instance.requestPermission();
     }
@@ -40,37 +40,38 @@ class NotificationManager {
   static Future<dynamic> myBackgroundMessageHandler(
       RemoteMessage message) async {
     final model = NotificationModel(
-        title: message.notification!.title,
-        body: message.notification!.body ?? '',
+        title: message.notification?.title,
+        body: message.notification?.body ?? '',
         data: NotificationData.fromJson(message.data));
-    Observable.instance.notifyObservers([], notifyName : "reload_notification");
-    // DartNotificationCenter.post(channel: 'reload_notification');
+    Observable.instance.notifyObservers([], notifyName: "reload_notification");
     NotificationManager.instance.navigateNotification(model);
   }
 
-  void firebaseConfigure() async {
+  Future<void> firebaseConfigure() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print(message);
       final model = NotificationModel(
-          title: message.notification!.title,
-          body: message.notification!.body ?? '',
+          title: message.notification?.title,
+          body: message.notification?.body ?? '',
           data: NotificationData.fromJson(message.data));
-      Observable.instance.notifyObservers([], notifyName : "reload_notification");
-      // DartNotificationCenter.post(channel: 'reload_notification');
+      Observable.instance
+          .notifyObservers([], notifyName: "reload_notification");
       Message.showNotificationMessage(
           model: model,
           callback: (model) {
-            navigateNotification(model!);
+            if (model != null) {
+              navigateNotification(model);
+            }
           });
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       final model = NotificationModel(
-          title: message.notification!.title,
-          body: message.notification!.body ?? '',
+          title: message.notification?.title,
+          body: message.notification?.body ?? '',
           data: NotificationData.fromJson(message.data));
-      Observable.instance.notifyObservers([], notifyName : "reload_notification");
-      // DartNotificationCenter.post(channel: 'reload_notification');
+      Observable.instance
+          .notifyObservers([], notifyName: "reload_notification");
       navigateNotification(model);
     });
 
@@ -90,29 +91,31 @@ class NotificationManager {
 
   navigateNotification(NotificationModel model) {
     NotificationClient().readNotification(
-        model.id == null ? model.data!.communicationId : model.id,
-        AppSettings.userInfo!.id,
-        model.data!.notificationType,
+        model.id ?? model.data?.communicationId,
+        AppSettings.userInfo?.id,
+        model.data?.notificationType,
         true);
-    if (model.data!.notificationType == 1) {
+    if (model.data?.notificationType == 1) {
       Navigator.pushNamed(
           navigatorKey.currentState!.context, NavigatorName.notification_detail,
-          arguments: {'id': model.data!.communicationId});
-    } else if (model.data!.notificationType == 2) {
-      Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_reminder,
-          arguments: {'type': 'update', 'id': model.data!.remindId});
-    } else if (model.data!.notificationType == 3) {
-      Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
+          arguments: {'id': model.data?.communicationId});
+    } else if (model.data?.notificationType == 2) {
+      Navigator.pushNamed(
+          navigatorKey.currentState!.context, NavigatorName.add_reminder,
+          arguments: {'type': 'update', 'id': model.data?.remindId});
+    } else if (model.data?.notificationType == 3) {
+      Navigator.pushNamed(
+          navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
           arguments: {'type': 'input', 'id': null});
     }
   }
 
   Future<Map<String, dynamic>?> getDeviceInformation() async {
     Map<String, dynamic>? deviceInformation;
-    DeviceInfoPlugin infor = DeviceInfoPlugin();
+    final DeviceInfoPlugin info = DeviceInfoPlugin();
     try {
       if (Platform.isIOS) {
-        IosDeviceInfo iosDeviceInfo = await infor.iosInfo;
+        final IosDeviceInfo iosDeviceInfo = await info.iosInfo;
         deviceInformation = {
           'uuid': iosDeviceInfo.identifierForVendor,
           'localizedModel': iosDeviceInfo.localizedModel,
@@ -124,7 +127,7 @@ class NotificationManager {
           'isPhysicalDevice': iosDeviceInfo.isPhysicalDevice
         };
       } else {
-        AndroidDeviceInfo androidDeviceInfo = await infor.androidInfo;
+        final AndroidDeviceInfo androidDeviceInfo = await info.androidInfo;
         deviceInformation = {
           'uuid': androidDeviceInfo.id,
           'androidId': androidDeviceInfo.androidId,
