@@ -9,6 +9,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -306,8 +307,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
 
         final authen = await widget.googleAccount!.authentication;
         await LoginClient().login({
-          "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
-          "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
+          "client_id": Const.CLIENT_ID,
+          "client_secret": Const.CLIENT_SECRET,
           "grant_type": "external",
           "external_token": authen.accessToken,
           "provider": 'Google'
@@ -321,8 +322,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       } else if (widget.type == 'facebook') {
         await LoginClient().verifyOTP(widget.phone, otpCode);
         await LoginClient().login({
-          "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
-          "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
+          "client_id": Const.CLIENT_ID,
+          "client_secret": Const.CLIENT_SECRET,
           "grant_type": "external",
           "external_token": widget.facebookAccount!.accessToken?.token,
           "provider": 'Facebook'
@@ -335,8 +336,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
       } else if (widget.type == 'apple') {
         await LoginClient().verifyOTP(widget.phone, otpCode);
         await LoginClient().login({
-          "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
-          "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
+          "client_id": Const.CLIENT_ID,
+          "client_secret": Const.CLIENT_SECRET,
           "grant_type": "external",
           "external_token": widget.appleAccount!.identityToken,
           "provider": 'Apple'
@@ -356,8 +357,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final refreshToken = await AppSettings.getRefreshToken();
         await LoginClient().login({
-          "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
-          "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
+          "client_id": Const.CLIENT_ID,
+          "client_secret": Const.CLIENT_SECRET,
           "grant_type": "refresh_token",
           "refresh_token": refreshToken
         });
@@ -373,8 +374,8 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         });
         final token = await AppSettings.getToken();
         await LoginClient().login({
-          "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
-          "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
+          "client_id": Const.CLIENT_ID,
+          "client_secret": Const.CLIENT_SECRET,
           "grant_type": "refresh_token",
           "refresh_token": token
         });
