@@ -13,8 +13,8 @@ class SimpleBlocObserver extends BlocObserver {
 
   @override
   void onChange(BlocBase bloc, Change change) {
-    super.onChange(bloc, change);
-    logger.i('${bloc.runtimeType} $change');
+    // super.onChange(bloc, change);
+    // logger.i('${bloc.runtimeType} $change');
   }
 
   @override
