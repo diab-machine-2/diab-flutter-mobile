@@ -35,6 +35,13 @@ class NavigationUtil {
     });
   }
 
+  static void popPassScreen(BuildContext context, Type type) {
+    Navigator.of(context).popUntil((route) {
+      return route.settings.name == type.toString();
+    });
+    Navigator.pop(context);
+  }
+
   static void popDialog(BuildContext context) {
     return Navigator.of(context, rootNavigator: true).pop('dialog');
   }

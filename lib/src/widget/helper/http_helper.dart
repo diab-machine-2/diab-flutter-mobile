@@ -18,6 +18,7 @@ class FetchClient {
 
   static String get baseURL {
     // return 'api.diab.com.vn';
+    // return 'diab-api-staging.savvycom.vn';
     return 'diab-api-dev.savvycom.vn';
     // return 'api.stg.diab.cptech.vn';
     // return 'api.mobile.dev.diab.cptech.vn';
