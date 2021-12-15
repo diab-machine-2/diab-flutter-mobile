@@ -869,10 +869,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
         ],
       );
       await _googleSignIn.signOut();
-      GoogleSignInAccount account = await (_googleSignIn.signIn() as FutureOr<GoogleSignInAccount>);
+      GoogleSignInAccount? account = await _googleSignIn.signIn();
       final result = await LoginClient().linkedAccountOTP({
         'providerName': 'Google',
-        'providerKey': account.id,
+        'providerKey': account?.id,
         'phoneNumber': user.phoneNumber
       });
       BotToast.closeAllLoading();

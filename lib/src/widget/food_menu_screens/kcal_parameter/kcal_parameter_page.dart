@@ -43,38 +43,43 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
     return Scaffold(
       backgroundColor: R.color.transparent,
       body: Center(
-        child: Container(
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: R.color.white,
-          ),
-          child: BlocProvider(
-            create: (context) => _cubit,
-            child: BlocConsumer<KcalParameterCubit, KcalParameterState>(
-              listener: (context, state) {
-                if (state is KcalParameterFailure) {
-                  Message.showToastMessage(context, state.error);
-                }
-                if (state is KcalParameterLoading) {
-                  BotToast.showLoading();
-                } else {
-                  BotToast.closeAllLoading();
-                }
-                if (state is KcalParameterKcalChanged) {
-                  if (state.kcal != null) {
-                    _controller.text = '${state.kcal}';
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Container(
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: R.color.white,
+            ),
+            child: BlocProvider(
+              create: (context) => _cubit,
+              child: BlocConsumer<KcalParameterCubit, KcalParameterState>(
+                listener: (context, state) {
+                  if (state is KcalParameterFailure) {
+                    Message.showToastMessage(context, state.error);
                   }
-                }
-              },
-              builder: (
-                BuildContext context,
-                KcalParameterState state,
-              ) {
-                return buildPage(context, state);
-              },
+                  if (state is KcalParameterLoading) {
+                    BotToast.showLoading();
+                  } else {
+                    BotToast.closeAllLoading();
+                  }
+                  if (state is KcalParameterKcalChanged) {
+                    if (state.kcal != null) {
+                      _controller.text = '${state.kcal}';
+                    }
+                  }
+                },
+                builder: (
+                  BuildContext context,
+                  KcalParameterState state,
+                ) {
+                  return buildPage(context, state);
+                },
+              ),
             ),
           ),
         ),
@@ -157,6 +162,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
           const SizedBox(height: 25),
           GestureDetector(
             onTap: () async {
+              FocusScope.of(context).unfocus();
               await showDialog(
                 barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                 context: context,
@@ -289,6 +295,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                   title: R.string.agree.tr(),
                   height: 43,
                   onPressed: () {
+                    FocusScope.of(context).unfocus();
                     final String text = _controller.text.trim();
                     int? number;
                     if (!Utils.isEmpty(text)) {
@@ -383,6 +390,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
             checkColor: R.color.white,
             activeColor: R.color.accentColor,
             onChanged: (isChecked) {
+              FocusScope.of(context).unfocus();
               onChecked(isChecked ?? false);
             },
           ),
