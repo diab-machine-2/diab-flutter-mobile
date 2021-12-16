@@ -12,10 +12,11 @@ import 'package:medical/src/widget/BloodSugar/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
-import 'package:medical/src/widget/profile/schedule_glucose.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
 
 class BloodSugarDetailTabbarController extends StatefulWidget {
   @override
@@ -208,9 +209,9 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
               icon: R.drawable.ic_blood_sugar_testing_suggest,
               onTap: () async {
                 await NavigationUtil.navigatePage(
-                  context,
-                  const ScheduleGlucoseController(doSurvey: true),
-                );
+                    context,
+                    const BloodSugarStartSurveyPage(
+                        comeFromBloodSugarScreen: true));
               }),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             TabBar(

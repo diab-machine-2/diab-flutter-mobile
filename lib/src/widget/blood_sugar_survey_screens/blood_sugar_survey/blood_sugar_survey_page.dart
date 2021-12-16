@@ -14,7 +14,8 @@ import '../models/question_data.dart';
 import 'blood_sugar_survey.dart';
 
 class BloodSugarSurveyPage extends StatefulWidget {
-  const BloodSugarSurveyPage();
+  const BloodSugarSurveyPage({this.comeFromBloodSugarScreen = false});
+  final bool comeFromBloodSugarScreen;
 
   @override
   State<BloodSugarSurveyPage> createState() => _BloodSugarSurveyPageState();
@@ -56,8 +57,9 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
                 NavigationUtil.navigatePage(
                   context,
                   BloodSugarScheduleTemplatePage(
-                    templateCode: state.templateCode!,
-                  ),
+                      templateCode: state.templateCode!,
+                      comeFromBloodSugarScreen:
+                          widget.comeFromBloodSugarScreen),
                 );
               }
             },
