@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+
 @immutable
 class ScheduleGlucoseModel {
   final ScheduleModel? monday;
@@ -17,6 +18,25 @@ class ScheduleGlucoseModel {
       required this.friday,
       required this.saturday,
       required this.sunday});
+
+  ScheduleGlucoseModel copyWith({
+    ScheduleModel? monday,
+    ScheduleModel? tuesday,
+    ScheduleModel? wednesday,
+    ScheduleModel? thursday,
+    ScheduleModel? friday,
+    ScheduleModel? saturday,
+    ScheduleModel? sunday,
+  }) =>
+      ScheduleGlucoseModel(
+        monday: monday ?? this.monday,
+        tuesday: tuesday ?? this.tuesday,
+        wednesday: wednesday ?? this.wednesday,
+        thursday: thursday ?? this.thursday,
+        friday: friday ?? this.friday,
+        saturday: saturday ?? this.saturday,
+        sunday: sunday ?? this.sunday,
+      );
 
   factory ScheduleGlucoseModel.fromJson(Map<String, dynamic> json) {
     return ScheduleGlucoseModel(
@@ -62,6 +82,33 @@ class ScheduleModel {
       required this.isBeforeDinner,
       required this.isAfterDinner,
       required this.isBeforeSleeping});
+
+  ScheduleModel copyWith({
+    bool? isBeforeBreakfast,
+    bool? isAfterBreakfast,
+    bool? isBeforeLunch,
+    bool? isAfterLunch,
+    bool? isBeforeDinner,
+    bool? isAfterDinner,
+    bool? isBeforeSleeping,
+  }) =>
+      ScheduleModel(
+          isBeforeBreakfast: isBeforeBreakfast ?? this.isBeforeBreakfast,
+          isAfterBreakfast: isAfterBreakfast ?? this.isAfterBreakfast,
+          isBeforeLunch: isBeforeLunch ?? this.isBeforeLunch,
+          isAfterLunch: isAfterLunch ?? this.isAfterLunch,
+          isBeforeDinner: isBeforeDinner ?? this.isBeforeDinner,
+          isAfterDinner: isAfterDinner ?? this.isAfterDinner,
+          isBeforeSleeping: isBeforeSleeping ?? this.isBeforeSleeping);
+
+  bool get hasData =>
+      this.isBeforeBreakfast == true ||
+      this.isAfterBreakfast == true ||
+      this.isBeforeLunch == true ||
+      this.isAfterLunch == true ||
+      this.isBeforeDinner == true ||
+      this.isAfterDinner == true ||
+      this.isBeforeSleeping == true;
 
   factory ScheduleModel.fromJson(Map<String, dynamic> json) {
     return ScheduleModel(
