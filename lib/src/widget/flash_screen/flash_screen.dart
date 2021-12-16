@@ -1,11 +1,12 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class FlashScreenController extends StatefulWidget {
   @override
@@ -25,8 +26,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       if (token.isNotEmpty) {
         final refreshToken = await AppSettings.getRefreshToken();
         await LoginClient().login({
-          "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
-          "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
+          "client_id": Const.CLIENT_ID,
+          "client_secret": Const.CLIENT_SECRET,
           "grant_type": "refresh_token",
           "refresh_token": refreshToken
         });
@@ -64,17 +65,17 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
                 ],
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft, //FractionalOffset(1.0, 0.0),
-                stops: [0.0, 0.3, 0.8, 1.0])),
+                stops: const [0.0, 0.3, 0.8, 1.0])),
         child: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(),
+              const SizedBox(),
               Center(
                   child: Image.asset(R.drawable.img_logo,
                       width: 190, height: 95)),
               Padding(
-                padding: EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.only(bottom: 16),
                 child: RichText(
                   text: TextSpan(
                     text: '${R.string.cong_ty_co_phan_cong_nghe_y_te.tr()} ',

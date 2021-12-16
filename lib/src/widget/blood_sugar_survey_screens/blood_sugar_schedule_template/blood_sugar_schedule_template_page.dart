@@ -6,13 +6,14 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/blood_sugar_result_layout_widget.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/expandable_rich_text.dart';
 
+import '../blood_sugar_start_survey/blood_sugar_start_survey.dart';
 import 'blood_sugar_schedule_template.dart';
 import 'widgets/blood_sugar_survey_empty.dart';
 
@@ -51,8 +52,8 @@ class _BloodSugarScheduleTemplatePageState
             Message.showToastMessage(context, state.error ?? '');
           }
           if (state is BloodSugarScheduleSaveSuccess) {
-            Navigator.popUntil(
-                context, ModalRoute.withName(NavigatorName.schedule_glucose));
+            NavigationUtil.popPassScreen(
+                context, BloodSugarStartSurveyPage);
           }
         },
         builder: (context, state) {

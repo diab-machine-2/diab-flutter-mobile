@@ -9,7 +9,7 @@ class ScheduleGlucoseModel {
   final ScheduleModel? saturday;
   final ScheduleModel? sunday;
 
-  ScheduleGlucoseModel(
+  const ScheduleGlucoseModel(
       {required this.monday,
       required this.tuesday,
       required this.wednesday,

@@ -1,12 +1,15 @@
 import 'dart:ui' as ui;
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
-import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/expandable_rich_text.dart';
+
+import '../../blood_sugar_start_survey/blood_sugar_start_survey.dart';
 
 class BloodSugarSurveyEmpty extends StatelessWidget {
   const BloodSugarSurveyEmpty({required this.templateDetail});
@@ -92,12 +95,8 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
                 child: ButtonWidget(
                     title: R.string.back_to_schedule.tr(),
                     onPressed: () {
-                      Navigator.popUntil(
-                        context,
-                        ModalRoute.withName(
-                          NavigatorName.schedule_glucose,
-                        ),
-                      );
+                      NavigationUtil.popPassScreen(
+                          context, BloodSugarStartSurveyPage);
                     }),
               ),
             ),

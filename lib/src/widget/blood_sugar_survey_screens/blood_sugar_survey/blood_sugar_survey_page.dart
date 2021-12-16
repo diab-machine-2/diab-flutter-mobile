@@ -170,7 +170,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
               children: answerList,
             ),
           if (question.hasExtendDetail && _cubit.hba1c != -1)
-            _builddExtendDetail(_cubit.hba1c)
+            _buildExtendDetail(_cubit.hba1c)
         ],
       ),
     );
@@ -301,7 +301,7 @@ class _BloodSugarSurveyPageState extends State<BloodSugarSurveyPage> {
     );
   }
 
-  Widget _builddExtendDetail(double hba1c) {
+  Widget _buildExtendDetail(double hba1c) {
     return Container(
       margin: const EdgeInsets.only(top: 20),
       padding: const EdgeInsets.symmetric(vertical: 8),

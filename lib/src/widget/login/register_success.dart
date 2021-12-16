@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/login/login_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 
 class RegisterSuccess extends StatefulWidget {
@@ -87,8 +88,8 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
   getToken() async {
     BotToast.showLoading();
     final result = await LoginClient().login({
-      "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
-      "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
+      "client_id": Const.CLIENT_ID,
+      "client_secret": Const.CLIENT_SECRET,
       "grant_type": "phone_number_password",
       "password": widget.password,
       "phone_number": widget.phone
