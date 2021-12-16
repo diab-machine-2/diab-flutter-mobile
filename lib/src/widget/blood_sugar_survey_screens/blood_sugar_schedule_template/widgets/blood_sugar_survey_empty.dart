@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/profile/schedule_glucose.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/expandable_rich_text.dart';
@@ -12,8 +13,12 @@ import 'package:medical/src/widgets/expandable_rich_text.dart';
 import '../../blood_sugar_start_survey/blood_sugar_start_survey.dart';
 
 class BloodSugarSurveyEmpty extends StatelessWidget {
-  const BloodSugarSurveyEmpty({required this.templateDetail});
+  const BloodSugarSurveyEmpty({
+    required this.templateDetail,
+    required this.comeFromBloodSugarScreen,
+  });
   final BloodSugarTemplateResponseData? templateDetail;
+  final bool comeFromBloodSugarScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -95,8 +100,15 @@ class BloodSugarSurveyEmpty extends StatelessWidget {
                 child: ButtonWidget(
                     title: R.string.back_to_schedule.tr(),
                     onPressed: () {
-                      NavigationUtil.popPassScreen(
-                          context, BloodSugarStartSurveyPage);
+                      if (!comeFromBloodSugarScreen) {
+                        NavigationUtil.popPassScreen(
+                            context, BloodSugarStartSurveyPage);
+                      } else {
+                        NavigationUtil.popUtil(
+                            context, BloodSugarStartSurveyPage);
+                        NavigationUtil.replace(
+                            context, const ScheduleGlucoseController());
+                      }
                     }),
               ),
             ),

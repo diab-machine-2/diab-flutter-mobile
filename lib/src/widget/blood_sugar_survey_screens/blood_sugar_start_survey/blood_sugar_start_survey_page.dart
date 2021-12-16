@@ -14,7 +14,10 @@ import '../blood_sugar_survey/blood_sugar_survey.dart';
 import 'blood_sugar_start_survey.dart';
 
 class BloodSugarStartSurveyPage extends StatefulWidget {
-  const BloodSugarStartSurveyPage();
+  const BloodSugarStartSurveyPage({
+    this.comeFromBloodSugarScreen = false,
+  });
+  final bool comeFromBloodSugarScreen;
 
   @override
   State<BloodSugarStartSurveyPage> createState() =>
@@ -55,14 +58,15 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
                     background: R.drawable.bg_detail_pro,
                     child: SingleChildScrollView(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(28 , 51, 28, 32),
+                        padding: const EdgeInsets.fromLTRB(28, 51, 28, 32),
                         child: Column(
                           children: [
                             const SizedBox(height: 51),
                             Image.asset(
                                 R.drawable.img_blood_sugar_start_survey),
                             Padding(
-                              padding: const EdgeInsets.only(top: 51, bottom: 24),
+                              padding:
+                                  const EdgeInsets.only(top: 51, bottom: 24),
                               child: Text(
                                 _cubit.surveyCode.isEmpty
                                     ? R.string.blood_sugar_survey_description
@@ -80,13 +84,19 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
                             _buildButton(
                               onTakeSurvey: () {
                                 NavigationUtil.navigatePage(
-                                    context, const BloodSugarSurveyPage());
+                                    context,
+                                    BloodSugarSurveyPage(
+                                      comeFromBloodSugarScreen:
+                                          widget.comeFromBloodSugarScreen,
+                                    ));
                               },
                               onShowResult: () {
                                 NavigationUtil.navigatePage(
                                   context,
                                   BloodSugarScheduleTemplatePage(
                                     templateCode: _cubit.surveyCode,
+                                    comeFromBloodSugarScreen:
+                                        widget.comeFromBloodSugarScreen,
                                   ),
                                 );
                               },
@@ -106,7 +116,7 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
       {VoidCallback? onTakeSurvey, VoidCallback? onShowResult}) {
     return _cubit.surveyCode.isEmpty
         ? Container(
-            width: 195 ,
+            width: 195,
             child: ButtonWidget(
               title: R.string.start.tr(),
               onPressed: onTakeSurvey,
@@ -115,7 +125,7 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
         : Column(
             children: [
               Container(
-                width: 195 ,
+                width: 195,
                 child: ButtonWidget(
                   title: R.string.show_result.tr(),
                   onPressed: onShowResult,
@@ -123,7 +133,7 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
               ),
               const SizedBox(height: 16),
               Container(
-                width: 195 ,
+                width: 195,
                 child: ButtonWidget(
                   title: R.string.survey_again.tr(),
                   onPressed: onTakeSurvey,
