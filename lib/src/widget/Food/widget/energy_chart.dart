@@ -152,7 +152,6 @@ class EnergyChartState extends State<EnergyChart>
                                 );
                                 if (newInputEnergy is int &&
                                     newInputEnergy != inputEnergy) {
-                                  // TODO(Tuyen): Show popup change menu
                                   showDialog(
                                     barrierColor: R.color.color0xff003F38
                                         .withOpacity(0.5),
