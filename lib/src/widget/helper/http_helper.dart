@@ -10,7 +10,7 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 class FetchClient {
   static String get identifyBaseURL {
     // return 'is.diab.com.vn';
-    return '139.162.21.142:6001';
+    return 'diab-id-dev.savvycom.vn';
     // return 'is.stg.diab.cptech.vn';
     // return 'is.dev.diab.cptech.vn';
     // return '139.162.21.142:6001';
@@ -18,6 +18,7 @@ class FetchClient {
 
   static String get baseURL {
     // return 'api.diab.com.vn';
+    // return 'diab-api-staging.savvycom.vn';
     return 'diab-api-dev.savvycom.vn';
     // return 'api.stg.diab.cptech.vn';
     // return 'api.mobile.dev.diab.cptech.vn';
@@ -28,7 +29,7 @@ class FetchClient {
     await checkNetwork();
     final token = await AppSettings.getToken();
 
-    var option = Options(
+    final Options option = Options(
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json; charset=UTF-8'
@@ -44,7 +45,7 @@ class FetchClient {
   Future<Options> options1() async {
     await checkNetwork();
     final token = await AppSettings.getToken();
-    var option = Options(
+    final Options option = Options(
         contentType: "application/x-www-form-urlencoded",
         headers: {
           'Authorization': token,
@@ -60,7 +61,7 @@ class FetchClient {
     await checkNetwork();
     final token = await AppSettings.getToken();
     print(token);
-    var option = Options(
+    final Options option = Options(
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':
@@ -79,9 +80,9 @@ class FetchClient {
       Map<String, String?>? params}) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    Dio dio = Dio();
+    final Dio dio = Dio();
     logRequest(dio);
-    return await dio.getUri(Uri.http(domain, url, params), options: option);
+    return dio.getUri(Uri.https(domain, url, params), options: option);
   }
 
   Future<Response> postData({
@@ -92,10 +93,10 @@ class FetchClient {
   }) async {
     final option = await options2();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    Dio dio = Dio();
+    final Dio dio = Dio();
     logRequest(dio);
-    return await dio.postUri(
-        Uri.http(
+    return dio.postUri(
+        Uri.https(
           domain,
           url,
         ),
@@ -108,12 +109,12 @@ class FetchClient {
       bool baseOption = false,
       required String url,
       Map<String, dynamic>? params}) async {
-    final option = baseOption ? await options() : await options1();
+    final Options option = baseOption ? await options() : await options1();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    Dio dio = Dio();
+    final Dio dio = Dio();
     logRequest(dio);
-    return await dio.postUri(
-        Uri.http(
+    return dio.postUri(
+        Uri.https(
           domain,
           url,
         ),
@@ -124,40 +125,43 @@ class FetchClient {
   Future<http.StreamedResponse> postHttp(
       {bool baseIdentify = false,
       required String path,
-      required dynamic params, List<String>? files}) async {
+      required dynamic params,
+      List<String>? files}) async {
     final token = await AppSettings.getToken();
-    var headers = {'Authorization': 'Bearer $token'};
-    var request = http.MultipartRequest(
+    final headers = {'Authorization': 'Bearer $token'};
+    final request = http.MultipartRequest(
         'POST',
         Uri.parse(
-            'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.fields.addAll(params);
 
-    for (var file in files ?? []) {
+    for (final file in files ?? []) {
       final value = await http.MultipartFile.fromPath('images', file);
       request.files.add(value);
     }
 
     request.headers.addAll(headers);
 
-    return await request.send();
+    return request.send();
   }
 
   Future<http.StreamedResponse> postHttp2(
-      {bool baseIdentify = false, required String path, required dynamic params}) async {
+      {bool baseIdentify = false,
+      required String path,
+      required dynamic params}) async {
     final token = await AppSettings.getToken();
-    var headers = {
+    final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json'
     };
-    var request = http.Request(
+    final request = http.Request(
         'POST',
         Uri.parse(
-            'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.body = params;
     request.headers.addAll(headers);
 
-    return await request.send();
+    return request.send();
   }
 
   Future<http.StreamedResponse> putHttp(
@@ -167,22 +171,22 @@ class FetchClient {
       required List<String> files,
       String? fileName}) async {
     final token = await AppSettings.getToken();
-    var headers = {'Authorization': 'Bearer $token'};
-    var request = http.MultipartRequest(
+    final headers = {'Authorization': 'Bearer $token'};
+    final request = http.MultipartRequest(
         'PUT',
         Uri.parse(
-            'http://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.fields.addAll(params);
 
-    for (var file in files) {
-      final value = await http.MultipartFile.fromPath(
-          fileName == null ? 'images' : fileName, file);
+    for (final file in files) {
+      final value =
+          await http.MultipartFile.fromPath(fileName ?? 'images', file);
       request.files.add(value);
     }
 
     request.headers.addAll(headers);
 
-    return await request.send();
+    return request.send();
   }
 
   Future<Response> putData(
@@ -191,10 +195,10 @@ class FetchClient {
       Map<String, dynamic>? params}) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    Dio dio = Dio();
+    final Dio dio = Dio();
     logRequest(dio);
-    return await dio.putUri(
-        Uri.http(
+    return dio.putUri(
+        Uri.https(
           domain,
           url,
         ),
@@ -208,10 +212,10 @@ class FetchClient {
       Map<String, dynamic>? params}) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
-    Dio dio = Dio();
+    final Dio dio = Dio();
     logRequest(dio);
-    return await dio.deleteUri(
-        Uri.http(
+    return dio.deleteUri(
+        Uri.https(
           domain,
           url,
         ),
@@ -221,13 +225,12 @@ class FetchClient {
 
   logRequest(Dio dio) {
     dio.interceptors.add(PrettyDioLogger(
-      requestHeader: true,
-      requestBody: true,
-      responseBody: true,
-      responseHeader: true,
-      compact: true,
-      error: true
-    ));
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: true,
+        compact: true,
+        error: true));
   }
 
   checkNetwork() async {

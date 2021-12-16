@@ -35,7 +35,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
   TextEditingController weeklyTargetBurnedCalorie = TextEditingController();
   TextEditingController weeklyTargetDuration = TextEditingController();
 
-  String? initDailyKcal;
+  String initDailyKcal = '';
 
   @override
   void initState() {

@@ -1,11 +1,9 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -14,7 +12,6 @@ import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/custom_date_picker.dart';
 import 'package:medical/src/widgets/popup_window_widget.dart';
-import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 
 import '../../../../widgets/select_bottom_sheet_widget.dart';
 import '../activity_tab/models/schedule_type.dart';
@@ -24,11 +21,12 @@ import 'models/day_in_week.dart';
 import 'models/goal_record_type.dart';
 import 'models/repeat_type.dart';
 import 'widgets/custom_top_progress_bar.dart';
+import 'widgets/enter_time_widget.dart';
+import 'widgets/exercise_time_widget.dart';
 import 'widgets/select_type_widget.dart';
 
 class CreateGoalPage extends StatefulWidget {
-  const CreateGoalPage({this.smartGoalData});
-  final SmartGoalListReponseData? smartGoalData;
+  const CreateGoalPage();
 
   @override
   _CreateGoalPageState createState() => _CreateGoalPageState();
@@ -37,23 +35,11 @@ class CreateGoalPage extends StatefulWidget {
 class _CreateGoalPageState extends State<CreateGoalPage> {
   late final CreateGoalCubit _cubit;
 
-  final TextEditingController? _nameController = TextEditingController();
-  final TextEditingController? _timeOrFrequency = TextEditingController();
-
   @override
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = CreateGoalCubit(appRepository);
-    final ScheduleType? type = widget.smartGoalData?.goalType;
-    if (type != null) {
-      _cubit.setupGoal(selectedType: type);
-      _nameController?.text = widget.smartGoalData?.name ?? '';
-      if (widget.smartGoalData?.executeDayTimes != null) {
-        _timeOrFrequency?.text = '${widget.smartGoalData?.executeDayTimes!}';
-      }
-      _cubit.fillData(widget.smartGoalData!);
-    }
   }
 
   @override
@@ -96,13 +82,6 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 background: R.drawable.bg_lesson_detail,
                 title: R.string.setup_smart_goal_title.tr(),
                 showCloseBackButton: true,
-                onShowDetail: !_cubit.showDetail ? null : () {
-                  showDescriptionPopup('''
-- Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
-- Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần
-Dù chưa biết lý do vì sao có sự tương quan đáng kể giữa đái tháo đường và tăng huyết áp nhưng người ta giả định rằng béo phì, chế độ ăn uống nhiều natri và lười vận động dẫn đến sự gia tăng đồng thời cả hai bệnh trên.
-Tăng huyết áp được biết đến như một “kẻ giết người thầm lặng” vì nó không có triệu chứng rõ ràng. Một cuộc khảo sát năm 2002 của Hiệp hội Đái tháo đường Hoa Kỳ (ADA) cho thấy, khoảng 68% những người bị bệnh đái tháo đường không biết họ cũng có nguy cơ gia tăng bệnh tim và đột quỵ vì liên quan đến tăng huyết áp mạn tính.''');
-                },
                 child: Column(
                   children: [
                     Padding(
@@ -188,7 +167,6 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
           ScheduleType.exercise,
           ScheduleType.weight,
           ScheduleType.emotion,
-          ScheduleType.hba1c,
           ScheduleType.food,
         ],
       ),
@@ -259,11 +237,6 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
                   title: R.string.so_phut_van_dong_moi_ngay.tr(),
                   description:
                       '${_cubit.parseString(_cubit.dailyTargetDuration)} phút'),
-            if (_cubit.type == ScheduleType.exercise)
-              _buildSingleResultDetail(
-                  title: R.string.so_phut_van_dong_moi_tuan.tr(),
-                  description:
-                      '${_cubit.parseString(_cubit.weeklyTargetDuration)} phút'),
           ],
         ),
       ),
@@ -273,14 +246,15 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
   List<Widget> _buildSetupGoalDefault() {
     return [
       _buildTextField(),
-      _buildTimePicker(
-        initDate: _cubit.startDate,
-        title: R.string.select_start_date.tr(),
-        onPickDate: (dateTime) {
-          _cubit.startDate = dateTime;
-          _cubit.endDate = _cubit.startDate;
+      EnterTimeWidget(
+        title: _cubit.goalRecordType.title,
+        type: _cubit.goalRecordType,
+        onChangedTime: (text) {
+          _cubit.goalTimeOrFrequency = text;
         },
-        minDate: DateTime.now(),
+        onChangeUnit: (type) {
+          _cubit.goalRecordType = type;
+        },
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -293,59 +267,19 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
             }),
       ),
       _buildSetupRepeat(),
-      RichText(
-        text: TextSpan(
-          text: R.string.smart_goal_record_type_title.tr(),
-          style: TextStyle(
-            color: R.color.textDark,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
-          children: [
-            const TextSpan(text: ' '),
-            TextSpan(
-              text: R.string.smart_goal_record_type_description.tr(),
-              style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-      ),
-      const SizedBox(height: 6),
-      CustomMultiSelectToggle(
-        toggleList: [
-          R.string.goal_record_type_time.tr(),
-          R.string.goal_record_type_frequency.tr()
-        ],
-        selectedIndex: _cubit.goalRecordType.index,
-        onChange: (newIndex) {
-          FocusScope.of(context).unfocus();
-          _cubit.onChangeCalculateType(newIndex);
-        },
-      ),
-      _buildTimeOrFrequency(
-        title: _cubit.goalRecordType.title,
-        unit: _cubit.goalRecordType.unit,
-        onChanged: (text) {
-          _cubit.goalTimeOrFrequency = text;
-        },
-      ),
     ];
   }
 
   List<Widget> _buildSetupGoalType1() {
     return [
-      _buildTimePicker(
-        initDate: _cubit.startDate,
-        title: R.string.select_start_date.tr(),
-        onPickDate: (dateTime) {
-          _cubit.startDate = dateTime;
-          _cubit.endDate = _cubit.startDate;
+      _buildTextDescription(),
+      EnterTimeWidget(
+        title: R.string.frequency_per_day.tr(),
+        type: GoalRecordType.frequency,
+        selectable: false,
+        onChangedTime: (text) {
+          _cubit.goalTimeOrFrequency = text;
         },
-        minDate: DateTime.now(),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -358,34 +292,17 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
             }),
       ),
       _buildSetupRepeat(),
-      _buildTimeOrFrequency(
-        title: R.string.frequency_per_day.tr(),
-        unit: 'lần',
-        onChanged: (text) {
-          _cubit.goalTimeOrFrequency = text;
-        },
-      ),
     ];
   }
 
   List<Widget> _buildSetupGoalType2() {
     return [
-      _buildTimeOrFrequency(
-          title: R.string.so_phut_van_dong_moi_ngay.tr(),
-          unit: 'phút',
-          onChanged: (text) {
-            _cubit.dailyTargetDuration = text;
-          },
-          controller: TextEditingController()
-            ..text = '${_cubit.userInfo?.dailyTargetDuration?.toInt() ?? 0}'),
-      _buildTimeOrFrequency(
-          title: R.string.so_phut_van_dong_moi_tuan.tr(),
-          unit: 'phút',
-          onChanged: (text) {
-            _cubit.weeklyTargetDuration = text;
-          },
-          controller: TextEditingController()
-            ..text = '${_cubit.userInfo?.weeklyTargetDuration?.toInt() ?? 0}'),
+      _buildTextDescription(),
+      ExerciseTimeWidget(
+          totalMinutes: _cubit.userInfo?.dailyTargetDuration?.toInt() ?? 0,
+          onChangedTime: (totalMinutes) {
+            _cubit.dailyTargetDuration = totalMinutes.toString();
+          }),
     ];
   }
 
@@ -416,7 +333,6 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
             child: Column(
               children: [
                 TextField(
-                  controller: _nameController,
                   autofocus: false,
                   decoration: InputDecoration(
                       border: InputBorder.none,
@@ -689,88 +605,6 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
     );
   }
 
-  Widget _buildTimeOrFrequency(
-      {required String title,
-      required String unit,
-      required Function(String text) onChanged,
-      TextEditingController? controller}) {
-    return _buildItemLayout(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Image.asset(
-                R.drawable.ic_clock,
-                width: 24,
-                height: 24,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Container(
-                color: R.color.transparent,
-                width: 70,
-                child: TextField(
-                    controller: controller ?? _timeOrFrequency,
-                    autofocus: false,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: R.color.textFieldGrey,
-                      fontSize: 40,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                        RegExp(r'[0-9]'),
-                      ),
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      hintText: '-',
-                      contentPadding: EdgeInsets.only(
-                        left: 0,
-                        bottom: 0,
-                        top: 8,
-                        right: 0,
-                      ),
-                    ),
-                    onChanged: onChanged),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  unit,
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Container(height: 1, width: 70, color: R.color.color0xffE5E5E5),
-          const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSingleResultDetail({
     required String title,
     required String description,
@@ -804,6 +638,50 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildTextDescription() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'DiaB khuyến nghị:',
+          style: TextStyle(
+            color: R.color.textDark,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text('''
+      - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
+      - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''',
+            style: R.style.normalTextStyle),
+        const SizedBox(height: 14),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            InkWell(
+              onTap: () {
+                showDescriptionPopup('''
+- Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
+- Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần
+Dù chưa biết lý do vì sao có sự tương quan đáng kể giữa đái tháo đường và tăng huyết áp nhưng người ta giả định rằng béo phì, chế độ ăn uống nhiều natri và lười vận động dẫn đến sự gia tăng đồng thời cả hai bệnh trên.
+Tăng huyết áp được biết đến như một “kẻ giết người thầm lặng” vì nó không có triệu chứng rõ ràng. Một cuộc khảo sát năm 2002 của Hiệp hội Đái tháo đường Hoa Kỳ (ADA) cho thấy, khoảng 68% những người bị bệnh đái tháo đường không biết họ cũng có nguy cơ gia tăng bệnh tim và đột quỵ vì liên quan đến tăng huyết áp mạn tính.''');
+              },
+              child: Text(
+                'Tôi cần thêm thông tin',
+                style: TextStyle(
+                  color: R.color.greenGradientBottom,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

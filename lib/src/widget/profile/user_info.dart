@@ -19,6 +19,7 @@ import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -869,10 +870,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
         ],
       );
       await _googleSignIn.signOut();
-      GoogleSignInAccount account = await (_googleSignIn.signIn() as FutureOr<GoogleSignInAccount>);
+      GoogleSignInAccount? account = await _googleSignIn.signIn();
       final result = await LoginClient().linkedAccountOTP({
         'providerName': 'Google',
-        'providerKey': account.id,
+        'providerKey': account?.id,
         'phoneNumber': user.phoneNumber
       });
       BotToast.closeAllLoading();
@@ -960,8 +961,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       await LoginClient().unLinkedAccount({'providerName': 'Google'});
       final refreshToken = await AppSettings.getRefreshToken();
       await LoginClient().login({
-        "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
-        "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
+        "client_id": Const.CLIENT_ID,
+        "client_secret": Const.CLIENT_SECRET,
         "grant_type": "refresh_token",
         "refresh_token": refreshToken
       });
@@ -984,8 +985,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       await LoginClient().unLinkedAccount({'providerName': 'Facebook'});
       final refreshToken = await AppSettings.getRefreshToken();
       await LoginClient().login({
-        "client_id": '4A293E78-4513-4DAF-958E-A04F93978332',
-        "client_secret": "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=",
+        "client_id": Const.CLIENT_ID,
+        "client_secret": Const.CLIENT_SECRET,
         "grant_type": "refresh_token",
         "refresh_token": refreshToken
       });

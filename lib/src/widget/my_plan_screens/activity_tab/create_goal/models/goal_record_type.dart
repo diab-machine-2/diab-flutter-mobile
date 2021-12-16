@@ -8,12 +8,13 @@ enum GoalRecordType {
 
 extension GoalRecordTypeExtend on GoalRecordType {
   String get title {
-    switch (this) {
-      case GoalRecordType.time:
-        return R.string.goal_record_type_time.tr();
-      case GoalRecordType.frequency:
-        return R.string.goal_record_type_frequency.tr();
-    }
+    return 'Bạn thực hiện bao lâu';
+    // switch (this) {
+    //   case GoalRecordType.time:
+    //     return R.string.goal_record_type_time.tr();
+    //   case GoalRecordType.frequency:
+    //     return R.string.goal_record_type_frequency.tr();
+    // }
   }
 
   String get unit {

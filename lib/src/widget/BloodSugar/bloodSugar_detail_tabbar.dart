@@ -5,6 +5,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail.dart';
 import 'package:medical/src/widget/BloodSugar/overview.dart';
@@ -14,6 +15,8 @@ import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
 
 class BloodSugarDetailTabbarController extends StatefulWidget {
   @override
@@ -48,14 +51,6 @@ class _BloodSugarDetailTabbarControllerState
     super.initState();
     _tabController = TabController(vsync: this, length: 2);
     Observable.instance.addObserver(this);
-    // DartNotificationCenter.subscribe(
-    //     channel: 'glucose_change_data',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       overViewKey.currentState!.reloadData(periodFilterType);
-    //       detailKey.currentState!.reloadData(periodFilterType);
-    //     });
-
     checkShowDes();
     loadDescription();
   }
@@ -72,8 +67,6 @@ class _BloodSugarDetailTabbarControllerState
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'glucose_change_data', observer: this);
     super.dispose();
   }
 
@@ -87,7 +80,7 @@ class _BloodSugarDetailTabbarControllerState
   }
 
   checkShowDes() async {
-    Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
     final showDes = prefs.getBool('show_des_glucose');
     prefs.setBool('show_des_glucose', false);
@@ -104,131 +97,83 @@ class _BloodSugarDetailTabbarControllerState
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: CustomAppBar(
-            backgroundColor: R.color.white,
-            title: Text(R.string.duong_huyet.tr(),
-                style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.textDark)),
-            leadingIcon: GestureDetector(
-                onTap: () {
-                  showDialog(
-                    barrierColor: R.color.color0xff003F38.withOpacity(0.3),
-                    useSafeArea: false,
-                    context: context,
-                    builder: (_) => ActionListPanel(selectedIndex: 1),
-                  );
-                },
-                child: Icon(Icons.format_list_bulleted, color: R.color.textDark)),
-            actions: [
-              CustomActionDescription(
-                  key: customActionDesKey,
-                  callback: (value) {
-                    customTabbarKey.currentState!.showDescription();
-                  }),
-              IconButton(
-                  icon: Icon(Icons.close, color: R.color.black),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-              SizedBox(
-                width: 12,
-              ),
-            ],
-            // bottom: PreferredSize(
-            //   preferredSize: Size.fromHeight(40),
-            //   child: Align(
-            //     // alignment: Alignment.centerLeft,
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //       children: [
-            //         TabBar(
-            //             isScrollable: true,
-            //             labelColor: main,
-            //             labelStyle: TextStyle(
-            //                 fontSize: 14,
-            //                 fontWeight: FontWeight.w600,
-            //                 color: main),
-            //             unselectedLabelColor: R.color.captionColorGray,
-            //             unselectedLabelStyle: TextStyle(
-            //                 fontSize: 14, fontWeight: FontWeight.w400),
-            //             tabs: [
-            //               Tab(text: R.string.bieu_do.tr()),
-            //               Tab(text: R.string.detail.tr()),
-            //             ],
-            //             controller: _tabController,
-            //             indicatorColor: main,
-            //             indicatorWeight: 3),
-            //         ActionFilter(
-            //           callback: (periodFilter) {
-            //             periodFilterType = periodFilter;
-            //             overViewKey.currentState.reloadData(periodFilterType);
-            //             if (detailKey.currentState != null) {
-            //               detailKey.currentState.reloadData(periodFilterType);
-            //             }
-            //           },
-            //         )
-            //       ],
-            //     ),
-            //   ),
-            // )
-          ),
-          body: Column(children: [
-            CustomTabbarImage(
-                key: customTabbarKey,
-                tabController: _tabController,
-                data: des,
-                callback: (periodFilter) {
-                  periodFilterType = periodFilter;
-                  overViewKey.currentState!.reloadData(periodFilterType);
-                  if (detailKey.currentState != null) {
-                    detailKey.currentState!.reloadData(periodFilterType);
-                  }
+    return Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: CustomAppBar(
+          backgroundColor: R.color.white,
+          title: Text(R.string.duong_huyet.tr(),
+              style: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.textDark)),
+          leadingIcon: GestureDetector(
+              onTap: () {
+                showDialog(
+                  barrierColor: R.color.color0xff003F38.withOpacity(0.3),
+                  useSafeArea: false,
+                  context: context,
+                  builder: (_) => ActionListPanel(selectedIndex: 1),
+                );
+              },
+              child: Icon(Icons.format_list_bulleted, color: R.color.textDark)),
+          actions: [
+            CustomActionDescription(
+                key: customActionDesKey,
+                callback: (value) {
+                  customTabbarKey.currentState!.showDescription();
                 }),
-            Expanded(
-              child: TabBarView(controller: _tabController, children: [
-                BloodSugarOverviewController(key: overViewKey),
-                BloodSugarDetailController(key: detailKey)
-              ]),
-            ),
-          ]),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: R.color.transparent,
-            onPressed: () {
-              _showMaterialDialog();
-            },
-            child: Image.asset(R.drawable.ic_button_plus,
-                width: 80, height: 80),
-          )),
-    );
+            IconButton(
+                icon: Icon(Icons.close, color: R.color.black),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            const SizedBox(width: 12),
+          ],
+        ),
+        body: Column(children: [
+          CustomTabbarImage(
+              key: customTabbarKey,
+              tabController: _tabController,
+              data: des,
+              callback: (periodFilter) {
+                periodFilterType = periodFilter;
+                overViewKey.currentState!.reloadData(periodFilterType);
+                if (detailKey.currentState != null) {
+                  detailKey.currentState!.reloadData(periodFilterType);
+                }
+              }),
+          Expanded(
+            child: TabBarView(controller: _tabController, children: [
+              BloodSugarOverviewController(key: overViewKey),
+              BloodSugarDetailController(key: detailKey)
+            ]),
+          ),
+        ]),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: R.color.transparent,
+          onPressed: () {
+            _showMaterialDialog();
+          },
+          child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
+        ));
   }
 
   _showMaterialDialog() {
     Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
         arguments: {'type': 'input'});
-    // showDialog(
-    //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
-    //   useSafeArea: false,
-    //   context: context,
-    //   builder: (_) => FunkyOverlay(),
-    // );
   }
 }
 
 class CustomTabbarImage extends StatefulWidget {
-  CustomTabbarImage(
+  const CustomTabbarImage(
       {Key? key,
       required this.tabController,
       this.callback,
       required this.data})
       : super(key: key);
 
-  final ActionFilterCallback? callback;
+  final Function(int)? callback;
   final TabController? tabController;
   final ShortGuiModel? data;
 
@@ -251,53 +196,56 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
       color: R.color.white,
       child: Column(
         children: [
-          showDes
-              ? Padding(
-                  padding: EdgeInsets.only(left: 16, right: 16),
-                  child: Description(
-                      input: false,
-                      data: widget.data,
-                      titleDetail: R.string.blood_sugar_for_diabetes.tr()),
-                )
-              : SizedBox(),
-          Row(
-              //alignment: Alignment.centerLeft,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TabBar(
-                    isScrollable: true,
-                    labelColor: R.color.mainColor,
-                    labelStyle: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: R.color.mainColor),
-                    unselectedLabelColor: R.color.captionColorGray,
-                    unselectedLabelStyle:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                    tabs: [
-                      Tab(text: R.string.bieu_do.tr()),
-                      Tab(text: R.string.detail.tr()),
-                    ],
-                    controller: widget.tabController,
-                    indicatorColor: R.color.mainColor,
-                    indicatorWeight: 3),
-                ActionFilter(
-                  callback: (periodFilter) {
-                    widget.callback!(periodFilter);
-                  },
-                )
-              ]),
+          if (showDes)
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: Description(
+                  input: false,
+                  data: widget.data,
+                  titleDetail: R.string.blood_sugar_for_diabetes.tr()),
+            ),
+          _buildButton(
+              title: R.string.testing_schedule_suggest.tr(),
+              icon: R.drawable.ic_blood_sugar_testing_suggest,
+              onTap: () async {
+                await NavigationUtil.navigatePage(
+                    context,
+                    const BloodSugarStartSurveyPage(
+                        comeFromBloodSugarScreen: true));
+              }),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            TabBar(
+                isScrollable: true,
+                labelColor: R.color.mainColor,
+                labelStyle: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: R.color.mainColor),
+                unselectedLabelColor: R.color.captionColorGray,
+                unselectedLabelStyle:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                tabs: [
+                  Tab(text: R.string.bieu_do.tr()),
+                  Tab(text: R.string.detail.tr()),
+                ],
+                controller: widget.tabController,
+                indicatorColor: R.color.mainColor,
+                indicatorWeight: 3),
+            ActionFilter(
+              callback: (periodFilter) {
+                widget.callback!(periodFilter);
+              },
+            )
+          ]),
         ],
       ),
     );
   }
 }
 
-typedef ActionFilterCallback = Function(int);
-
 class ActionFilter extends StatefulWidget {
-  final ActionFilterCallback? callback;
-  ActionFilter({this.callback});
+  final Function(int)? callback;
+  const ActionFilter({this.callback});
   @override
   _ActionFilterState createState() => _ActionFilterState();
 }
@@ -314,11 +262,11 @@ class _ActionFilterState extends State<ActionFilter> {
       },
       child: Container(
         color: R.color.transparent,
-        padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
+        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
         child: Row(
           children: [
             Image.asset(R.drawable.ic_filter, width: 24, height: 24),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             Padding(
               padding: const EdgeInsets.only(top: 6),
               child: Text(name,
@@ -334,11 +282,8 @@ class _ActionFilterState extends State<ActionFilter> {
   }
 
   showActionFilter(BuildContext context) {
-    // setState(() {
-    //   this.isChoose = !isChoose;
-    // });
     showModalBottomSheet(
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
         backgroundColor: R.color.white,
         context: context,
@@ -355,4 +300,46 @@ class _ActionFilterState extends State<ActionFilter> {
               }
             }));
   }
+}
+
+Widget _buildButton({
+  required String title,
+  required String icon,
+  required VoidCallback onTap,
+}) {
+  return Row(
+    children: [
+      InkWell(
+        onTap: onTap,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: R.color.white,
+            borderRadius: BorderRadius.circular(25),
+            boxShadow: [
+              BoxShadow(
+                color: R.color.greenGradientBottom.withOpacity(0.08),
+                spreadRadius: 2,
+                blurRadius: 4,
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Image.asset(icon, width: 24, height: 24),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                    color: R.color.mainColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
 }

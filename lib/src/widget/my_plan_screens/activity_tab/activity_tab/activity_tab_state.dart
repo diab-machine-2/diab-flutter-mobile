@@ -42,14 +42,6 @@ class ActivityTabLoading extends ActivityTabState {
   }
 }
 
-class GoalTypeChanged extends ActivityTabState {
-  const GoalTypeChanged();
-  @override
-  String toString() {
-    return 'GoalTypeChanged{}';
-  }
-}
-
 class ActivityTabProgressChanged extends ActivityTabState {
   const ActivityTabProgressChanged();
   @override

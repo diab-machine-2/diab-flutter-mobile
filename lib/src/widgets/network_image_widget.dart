@@ -33,6 +33,7 @@ class NetWorkImageWidget extends StatelessWidget {
               width: width,
               height: height,
               imageUrl: imageUrl!,
+              fit: BoxFit.fill,
               placeholder: showLoading
                   ? (_, __) {
                       return const Center(child: CircularProgressIndicator());

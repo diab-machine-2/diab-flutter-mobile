@@ -5,7 +5,6 @@ import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/response/create_smart_goal_response.dart';
-import 'package:medical/src/model/response/smart_goal_detail_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -38,7 +37,6 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
   GoalInfoModel? userInfo;
 
   String dailyTargetDuration = '';
-  String weeklyTargetDuration = '';
 
   SmartGoalListReponseData? smartGoalDetail;
 
@@ -145,21 +143,12 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
       goalRecordType = GoalRecordType.frequency;
     }
     status = CreateGoalStatus.setup;
-    if (selectedType == ScheduleType.exercise) {
-      await getUserTarget();
-    }
     emit(const CreateGoalSuccess());
     emit(const CreateGoalInitial());
   }
 
   void onToggleRepeat() {
     isRepeat = !isRepeat;
-    emit(const CreateGoalSuccess());
-    emit(const CreateGoalInitial());
-  }
-
-  void onChangeCalculateType(int newIndex) {
-    goalRecordType = GoalRecordTypeExtend.getGoalRecordTypeFromIndex(newIndex);
     emit(const CreateGoalSuccess());
     emit(const CreateGoalInitial());
   }
@@ -182,24 +171,6 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     emit(const CreateGoalInitial());
   }
 
-  Future<void> fillData(SmartGoalListReponseData data) async {
-    if (data.type == ScheduleType.exercise.typeIndex) return;
-    await getSmartGoalDetail(id: data.id ?? '');
-
-    if (smartGoalDetail == null) return;
-    name = smartGoalDetail?.name ?? '';
-    startDate = smartGoalDetail?.startDate ?? DateTime.now();
-    endDate = startDate;
-    if (smartGoalDetail?.targetScheduler != null) {
-      isRepeat = true;
-      repeatType = RepeatTypeExtend.getTypeFromNumber(
-          smartGoalDetail?.targetScheduler?.repeatType);
-      repeatDayList = smartGoalDetail?.repeatDayList ?? [];
-    }
-    goalRecordType = smartGoalDetail!.goalRecordType;
-    goalTimeOrFrequency = '${smartGoalDetail?.executeDayTimes ?? 0}';
-  }
-
   Future<void> onTapNext() async {
     if (status == CreateGoalStatus.setup) {
       if (!isValid) return;
@@ -207,11 +178,10 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
       emit(const CreateGoalSuccess());
     } else if (status == CreateGoalStatus.complete) {
       if (type == ScheduleType.exercise) {
-        await updateUserTarget();
+        updateUserTarget();
       } else {
         await createSmartGoal();
       }
-
       emit(const CreateGoalCompleted());
     }
     emit(const CreateGoalInitial());
@@ -242,7 +212,6 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     try {
       userInfo = await UserClient().fetchGoalInfo();
       dailyTargetDuration = '${userInfo?.dailyTargetDuration ?? 0}';
-      weeklyTargetDuration = '${userInfo?.weeklyTargetDuration ?? 0}';
     } catch (error) {
       emit(CreateGoalFailure(error.toString()));
     }
@@ -255,27 +224,12 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     emit(const CreateGoalLoading());
     final GoalInfoModel request = userInfo!.copyWith(
       dailyTargetDuration: parseString(this.dailyTargetDuration).toDouble(),
-      weeklyTargetDuration: parseString(this.weeklyTargetDuration).toDouble(),
     );
     try {
       await UserClient().updateGoalInfo(request);
     } catch (error) {
       emit(CreateGoalFailure(error.toString()));
     }
-    emit(const CreateGoalInitial());
-  }
-
-  Future<void> getSmartGoalDetail({required String id}) async {
-    await Future.delayed(Duration.zero);
-    emit(const CreateGoalLoading());
-    final ApiResult<SmartGoalDetailResponse> apiResult =
-        await repository.getSmartGoalDetail(id: id);
-    apiResult.when(success: (SmartGoalDetailResponse response) {
-      smartGoalDetail = response.data;
-      emit(const CreateGoalSuccess());
-    }, failure: (NetworkExceptions error) {
-      emit(CreateGoalFailure(NetworkExceptions.getErrorMessage(error)));
-    });
     emit(const CreateGoalInitial());
   }
 }

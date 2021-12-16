@@ -16,6 +16,7 @@ class CommonPage extends StatelessWidget {
   final bool? showCloseBackButton;
   final bool? hideAllBackButton;
   final bool? bottomSafeArea;
+  final VoidCallback? onTapClose;
   final VoidCallback? onShowDetail;
   final VoidCallback? onTapAppBar;
 
@@ -32,6 +33,7 @@ class CommonPage extends StatelessWidget {
       this.showCloseBackButton,
       this.hideAllBackButton,
       this.bottomSafeArea,
+      this.onTapClose,
       this.onShowDetail,
       this.onTapAppBar})
       : super(key: key);
@@ -85,6 +87,7 @@ class CommonPage extends StatelessWidget {
                           icon: Icon(Icons.close, color: R.color.black),
                           onPressed: onTapBack ??
                               () {
+                                onTapClose?.call();
                                 NavigationUtil.pop(context);
                               },
                         )
