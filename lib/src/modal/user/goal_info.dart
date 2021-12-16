@@ -1,3 +1,4 @@
+import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -9,15 +10,22 @@ class GoalInfoModel {
   final double? dailyEnergyGoal;
   final double? goalWaist;
   final double? goalWeight;
+  final bool? includeBreakfast;
+  final bool? includeLunch;
+  final bool? includeDinner;
 
-  const GoalInfoModel(
-      {required this.dailyWalkTargetDuration,
-      required this.dailyTargetDuration,
-      required this.weeklyTargetDuration,
-      required this.dailyTargetBurnedCalorie,
-      required this.dailyEnergyGoal,
-      required this.goalWaist,
-      required this.goalWeight});
+  const GoalInfoModel({
+    required this.dailyWalkTargetDuration,
+    required this.dailyTargetDuration,
+    required this.weeklyTargetDuration,
+    required this.dailyTargetBurnedCalorie,
+    required this.dailyEnergyGoal,
+    required this.goalWaist,
+    required this.goalWeight,
+    this.includeBreakfast,
+    this.includeLunch,
+    this.includeDinner,
+  });
 
   GoalInfoModel copyWith({
     double? dailyWalkTargetDuration,
@@ -27,6 +35,9 @@ class GoalInfoModel {
     double? dailyEnergyGoal,
     double? goalWaist,
     double? goalWeight,
+    bool? includeBreakfast,
+    bool? includeLunch,
+    bool? includeDinner,
   }) {
     return GoalInfoModel(
       dailyWalkTargetDuration:
@@ -38,18 +49,32 @@ class GoalInfoModel {
       dailyEnergyGoal: dailyEnergyGoal ?? this.dailyEnergyGoal,
       goalWaist: goalWaist ?? this.goalWaist,
       goalWeight: goalWeight ?? this.goalWeight,
+      includeBreakfast: includeBreakfast ?? this.includeBreakfast,
+      includeLunch: includeLunch ?? this.includeLunch,
+      includeDinner: includeDinner ?? this.includeDinner,
     );
   }
 
+  CreateMenuRequest createMenuRequest(int kcal) => CreateMenuRequest(
+        kcal: kcal,
+        includeBreakfast: this.includeBreakfast ?? false,
+        includeLunch: this.includeLunch ?? false,
+        includeDinner: this.includeDinner ?? false,
+      );
+
   factory GoalInfoModel.fromJson(Map<String, dynamic> json) {
     return GoalInfoModel(
-        dailyWalkTargetDuration: json['dailyWalkTargetDuration'],
-        dailyTargetDuration: json['dailyTargetDuration'],
-        weeklyTargetDuration: json['weeklyTargetDuration'],
-        dailyTargetBurnedCalorie: json['dailyTargetBurnedCalorie'],
-        dailyEnergyGoal: json['dailyEnergyGoal'],
-        goalWaist: json['goalWaist'],
-        goalWeight: json['goalWeight']);
+      dailyWalkTargetDuration: json['dailyWalkTargetDuration'],
+      dailyTargetDuration: json['dailyTargetDuration'],
+      weeklyTargetDuration: json['weeklyTargetDuration'],
+      dailyTargetBurnedCalorie: json['dailyTargetBurnedCalorie'],
+      dailyEnergyGoal: json['dailyEnergyGoal'],
+      goalWaist: json['goalWaist'],
+      goalWeight: json['goalWeight'],
+      includeBreakfast: json['hasBreakfastSnack'],
+      includeLunch: json['hasLunchSnack'],
+      includeDinner: json['hasDinnerSnack'],
+    );
   }
 
   static List<GoalInfoModel> toList(List<dynamic> items) {
