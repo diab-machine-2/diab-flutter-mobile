@@ -9,8 +9,9 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NotificationDetailController extends StatefulWidget {
+  const NotificationDetailController({this.id});
+
   final String? id;
-  NotificationDetailController({this.id});
   @override
   _NotificationDetailControllerState createState() =>
       _NotificationDetailControllerState();
@@ -20,15 +21,15 @@ class _NotificationDetailControllerState
     extends State<NotificationDetailController> {
   NotificationModel? notification;
 
+  @override
   void initState() {
     super.initState();
-    loadData();
+    _loadData();
   }
 
-  loadData() async {
+  _loadData() async {
     notification =
         await NotificationClient().fetchNotificationDetail(widget.id);
-
     setState(() {});
   }
 
@@ -36,48 +37,51 @@ class _NotificationDetailControllerState
   Widget build(BuildContext context) {
     return Scaffold(
         body: notification == null
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Container(
                 color: R.color.color0xfff5f5f5,
                 child: Stack(children: [
                   Column(
                     children: [
                       Expanded(
-                        child: ListView(padding: EdgeInsets.all(0), children: [
-                          Image.network(notification!.imageUrl ?? ''),
-                          Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(notification!.title!,
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: R.color.black)),
-                                  SizedBox(height: 8),
-                                  Html(
-                                      data: notification!.body,
-                                      onLinkTap: (url, context, attributes,
-                                          element) async {
-                                        await canLaunch(url!)
-                                            ? await launch(url,
-                                                forceSafariVC: false,
-                                                forceWebView: false)
-                                            : throw 'Could not launch $url';
-                                      })
-                                ]),
-                          )
-                        ]),
+                        child: ListView(
+                            padding: const EdgeInsets.all(0),
+                            children: [
+                              Image.network(notification?.imageUrl ?? ''),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(notification?.title ?? '',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                              color: R.color.black)),
+                                      const SizedBox(height: 8),
+                                      Html(
+                                          data: notification?.body ?? '',
+                                          onLinkTap: (url, context, attributes,
+                                              element) async {
+                                            await canLaunch(url!)
+                                                ? await launch(url,
+                                                    forceSafariVC: false,
+                                                    forceWebView: false)
+                                                : throw 'Could not launch $url';
+                                          })
+                                    ]),
+                              )
+                            ]),
                       ),
                       GestureDetector(
                         onTap: () {
-                          _launchInBrowser(notification!.hyperLink!);
+                          _launchInBrowser(notification?.hyperLink ?? '');
                         },
                         child: SafeArea(
                           top: false,
                           child: Container(
-                              margin: EdgeInsets.all(16),
+                              margin: const EdgeInsets.all(16),
                               height: 48,
                               width: 195,
                               decoration: BoxDecoration(
@@ -91,7 +95,7 @@ class _NotificationDetailControllerState
                                         R.color.greenGradientBottom
                                       ])),
                               child: Center(
-                                  child: Text(notification!.hyperText!,
+                                  child: Text(notification?.hyperText ?? '',
                                       style: TextStyle(
                                           color: R.color.white,
                                           fontWeight: FontWeight.w600,
@@ -104,7 +108,7 @@ class _NotificationDetailControllerState
                     children: [
                       CustomAppBar(
                         backgroundColor: R.color.transparent,
-                        title: Text(''),
+                        title: const Text(''),
                         leadingIcon: IconButton(
                             splashColor: R.color.transparent,
                             highlightColor: R.color.transparent,

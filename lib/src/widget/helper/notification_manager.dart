@@ -9,6 +9,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
+// import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
@@ -27,6 +28,12 @@ class NotificationManager {
     final String deviceId = deviceInfor != null ? deviceInfor['uuid'] : '';
     if (Platform.isIOS) {
       await FirebaseMessaging.instance.requestPermission();
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
     }
     try {
       final token = await FirebaseMessaging.instance.getToken();
@@ -45,6 +52,9 @@ class NotificationManager {
         data: NotificationData.fromJson(message.data));
     Observable.instance.notifyObservers([], notifyName: "reload_notification");
     NotificationManager.instance.navigateNotification(model);
+    // NavigationUtil.navigatePage(navigatorKey.currentState!.context, const Scaffold(
+    //   body: Center(child: Text('myBackgroundMessageHandler')),
+    // ));
   }
 
   Future<void> firebaseConfigure() async {
@@ -63,6 +73,9 @@ class NotificationManager {
               navigateNotification(model);
             }
           });
+      //   NavigationUtil.navigatePage(navigatorKey.currentState!.context, const Scaffold(
+      //   body: Center(child: Text('firebaseConfigure')),
+      // ));
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -73,6 +86,9 @@ class NotificationManager {
       Observable.instance
           .notifyObservers([], notifyName: "reload_notification");
       navigateNotification(model);
+      //   NavigationUtil.navigatePage(navigatorKey.currentState!.context, const Scaffold(
+      //   body: Center(child: Text('listen')),
+      // ));
     });
 
     FirebaseMessaging.onBackgroundMessage(
