@@ -7,7 +7,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -35,7 +34,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
   TextEditingController weeklyTargetBurnedCalorie = TextEditingController();
   TextEditingController weeklyTargetDuration = TextEditingController();
 
-  String? initDailyKcal;
+  String initDailyKcal = '';
 
   @override
   void initState() {
@@ -98,9 +97,9 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                         R.color.color0xFFFDC798.withOpacity(0.3),
                         R.color.greenbg.withOpacity(0.9),
                       ],
-                      begin: FractionalOffset(1, 1),
-                      end: FractionalOffset(0.9, 0.5),
-                      stops: [0.0, 1.0])),
+                      begin: const FractionalOffset(1, 1),
+                      end: const FractionalOffset(0.9, 0.5),
+                      stops: const [0.0, 1.0])),
               child: Column(children: [
                 CustomAppBar(
                   backgroundColor: R.color.transparent,
@@ -119,7 +118,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                 ),
                 Expanded(
                   child: ListView(
-                      padding: EdgeInsets.all(0),
+                      padding: const EdgeInsets.all(0),
                       keyboardDismissBehavior:
                           ScrollViewKeyboardDismissBehavior.onDrag,
                       children: [
@@ -128,43 +127,45 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                             children: [
                               Image.asset(R.drawable.img_goal),
                               Padding(
-                                padding: EdgeInsets.only(left: 16, top: 20),
+                                padding:
+                                    const EdgeInsets.only(left: 16, top: 20),
                                 child: Row(children: [
                                   Image.asset(R.drawable.ic_fist,
                                       width: 44, height: 47),
-                                  SizedBox(width: 16),
+                                  const SizedBox(width: 16),
                                   Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(R.string.goal_setting_done.tr()),
-                                        SizedBox(height: 4),
+                                        const SizedBox(height: 4),
                                         Row(children: [
                                           Text('$total/7',
                                               style: TextStyle(
                                                   color: R.color.mainColor,
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w700)),
-                                          SizedBox(width: 4),
+                                          const SizedBox(width: 4),
                                           Text(R.string.muc_tieu.tr())
                                         ])
                                       ])
                                 ]),
                               )
                             ]),
-                        buildItem(R.string.so_phut_di_bo_moi_ngay.tr(), R.string.minute.tr(),
-                            dailyWalkTargetDuration),
-                        buildItem(R.string.so_phut_van_dong_moi_ngay.tr(), R.string.minute.tr(),
-                            dailyTargetDuration),
-                        buildItem(R.string.minutes_exercise_per_week.tr(), R.string.minute.tr(),
-                            weeklyTargetDuration),
-                        buildItem(R.string.nang_luong_dot_chay_tren_ngay.tr(), R.string.kcal.tr(),
-                            dailyTargetBurnedCalorie),
-                        buildItem(R.string.energy_take_per_day.tr(), R.string.kcal.tr(),
-                            weeklyTargetBurnedCalorie),
-                        buildItem(R.string.muc_tieu_can_nang.tr(), R.string.kg.tr(), goalWeight),
+                        buildItem(R.string.so_phut_di_bo_moi_ngay.tr(),
+                            R.string.minute.tr(), dailyWalkTargetDuration),
+                        buildItem(R.string.so_phut_van_dong_moi_ngay.tr(),
+                            R.string.minute.tr(), dailyTargetDuration),
+                        buildItem(R.string.minutes_exercise_per_week.tr(),
+                            R.string.minute.tr(), weeklyTargetDuration),
+                        buildItem(R.string.nang_luong_dot_chay_tren_ngay.tr(),
+                            R.string.kcal.tr(), dailyTargetBurnedCalorie),
+                        buildItem(R.string.energy_take_per_day.tr(),
+                            R.string.kcal.tr(), weeklyTargetBurnedCalorie),
+                        buildItem(R.string.muc_tieu_can_nang.tr(),
+                            R.string.kg.tr(), goalWeight),
                         Padding(
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                               top: 32, left: 16, right: 16, bottom: 16),
                           child: Text(R.string.muc_tieu_vong_eo.tr(),
                               style: TextStyle(
@@ -172,25 +173,26 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700)),
                         ),
-                        goalWaist == null
-                            ? SizedBox()
-                            : HorizontalNumberPickerWrapper(
-                                initialValue: goalWaist!.toInt(),
-                                minValue: 0,
-                                maxValue: 200,
-                                step: 1,
-                                unit: R.string.cm.tr(),
-                                widgetWidth:
-                                    MediaQuery.of(context).size.width.round(),
-                                subGridCountPerGrid: 10,
-                                subGridWidth: 8,
-                                titleTextColor: R.color.black,
-                                scaleColor: R.color.grayComponentBorder,
-                                indicatorColor: R.color.mainColor,
-                                onSelectedChanged: (value) {
-                                  goalWaist = value.toDouble();
-                                },
-                              )
+                        if (goalWaist == null)
+                          const SizedBox()
+                        else
+                          HorizontalNumberPickerWrapper(
+                            initialValue: goalWaist!.toInt(),
+                            minValue: 0,
+                            maxValue: 200,
+                            step: 1,
+                            unit: R.string.cm.tr(),
+                            widgetWidth:
+                                MediaQuery.of(context).size.width.round(),
+                            subGridCountPerGrid: 10,
+                            subGridWidth: 8,
+                            titleTextColor: R.color.black,
+                            scaleColor: R.color.grayComponentBorder,
+                            indicatorColor: R.color.mainColor,
+                            onSelectedChanged: (value) {
+                              goalWaist = value.toDouble();
+                            },
+                          )
                       ]),
                 ),
                 GestureDetector(
@@ -200,7 +202,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                   child: SafeArea(
                     top: false,
                     child: Container(
-                        margin: EdgeInsets.only(top: 16, bottom: 16),
+                        margin: const EdgeInsets.only(top: 16, bottom: 16),
                         height: 48,
                         width: 195,
                         decoration: BoxDecoration(
@@ -228,13 +230,13 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
   Widget buildItem(
       String title, String unit, TextEditingController controller) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 0, top: 16, left: 16, right: 16),
+      padding: const EdgeInsets.only(bottom: 0, top: 16, left: 16, right: 16),
       child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: 8),
               child: Text(title,
                   style: TextStyle(
                       color: R.color.black,
@@ -262,7 +264,8 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                             fontSize: 24,
                             fontWeight: FontWeight.w700)),
                   ),
-                  Container(height: 1, width: 72, color: R.color.grayComponentBorder)
+                  Container(
+                      height: 1, width: 72, color: R.color.grayComponentBorder)
                 ]),
                 Text(unit)
               ]),
@@ -272,6 +275,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
   }
 
   submitData() async {
+    if (model == null) return;
     try {
       if (initDailyKcal != weeklyTargetBurnedCalorie.text) {
         final result = await showDialog(
@@ -281,13 +285,8 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
               description: R.string.consumption.tr(),
               onClick: () {
                 Future.delayed(const Duration(milliseconds: 200), () {
-                  // TODO(Tuyen): Call API to update foodmenu
-                  _appRepository.createMenu(CreateMenuRequest(
-                    kcal: double.parse(weeklyTargetBurnedCalorie.text).toInt(),
-                    includeBreakfast: true,
-                    includeLunch: true,
-                    includeDinner: true,
-                  ));
+                  _appRepository.createMenu(model!.createMenuRequest(
+                      double.parse(weeklyTargetBurnedCalorie.text).toInt()));
                 });
                 NavigationUtil.pop(context, result: true);
               }),
@@ -318,7 +317,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
           goalWaist: goalWaist,
           goalWeight:
               double.parse(goalWeight.text.isEmpty ? '0' : goalWeight.text)));
-      Observable.instance.notifyObservers([], notifyName : "goal_calo_changed");
+      Observable.instance.notifyObservers([], notifyName: "goal_calo_changed");
       BotToast.closeAllLoading();
       Navigator.pop(context);
     } catch (e, _) {
