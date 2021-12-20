@@ -403,7 +403,7 @@ class _AppState extends State<App> {
                       AddReminderController(
                           type: data?['type'], id: data?['id']));
                 case NavigatorName.schedule_glucose:
-                  return _buildRoute(settings, ScheduleGlucoseController());
+                  return _buildRoute(settings, const ScheduleGlucoseController());
                 case NavigatorName.setting_schedule_glucose:
                   return _buildRoute(
                       settings, SettingScheduleGlucoseController());

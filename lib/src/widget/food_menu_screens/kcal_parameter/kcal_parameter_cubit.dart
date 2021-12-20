@@ -36,6 +36,9 @@ class KcalParameterCubit extends Cubit<KcalParameterState> {
     emit(const KcalParameterLoading());
     try {
       final GoalInfoModel? data = await UserClient().fetchGoalInfo();
+      createMenuRequest.includeBreakfast = data?.includeBreakfast ?? false;
+      createMenuRequest.includeLunch = data?.includeLunch ?? false;
+      createMenuRequest.includeDinner = data?.includeDinner ?? false;
       emit(KcalParameterKcalChanged(data?.dailyEnergyGoal?.toInt()));
     } catch (error) {
       emit(KcalParameterFailure(error.toString()));
