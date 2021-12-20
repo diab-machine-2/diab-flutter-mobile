@@ -56,7 +56,12 @@ class _RegisterControllerState extends State<RegisterController> {
         backgroundColor: R.color.white,
         body: Stack(
           children: [
-            Image.asset(R.drawable.bg_splash),
+            Positioned.fill(
+              child: Image.asset(
+                R.drawable.bg_splash,
+                fit: BoxFit.fill,
+              ),
+            ),
             SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

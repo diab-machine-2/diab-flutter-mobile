@@ -9,7 +9,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
-// import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
@@ -52,9 +51,6 @@ class NotificationManager {
         data: NotificationData.fromJson(message.data));
     Observable.instance.notifyObservers([], notifyName: "reload_notification");
     NotificationManager.instance.navigateNotification(model);
-    // NavigationUtil.navigatePage(navigatorKey.currentState!.context, const Scaffold(
-    //   body: Center(child: Text('myBackgroundMessageHandler')),
-    // ));
   }
 
   Future<void> firebaseConfigure() async {
@@ -73,9 +69,6 @@ class NotificationManager {
               navigateNotification(model);
             }
           });
-      //   NavigationUtil.navigatePage(navigatorKey.currentState!.context, const Scaffold(
-      //   body: Center(child: Text('firebaseConfigure')),
-      // ));
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -86,23 +79,21 @@ class NotificationManager {
       Observable.instance
           .notifyObservers([], notifyName: "reload_notification");
       navigateNotification(model);
-      //   NavigationUtil.navigatePage(navigatorKey.currentState!.context, const Scaffold(
-      //   body: Center(child: Text('listen')),
-      // ));
+    });
+
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message == null) return;
+      final model = NotificationModel(
+          title: message.notification?.title,
+          body: message.notification?.body ?? '',
+          data: NotificationData.fromJson(message.data));
+      Observable.instance
+          .notifyObservers([], notifyName: "reload_notification");
+      navigateNotification(model);
     });
 
     FirebaseMessaging.onBackgroundMessage(
         (message) => myBackgroundMessageHandler(message));
-
-    // RemoteMessage initialMessage =
-    //     await FirebaseMessaging.instance.getInitialMessage();
-    // if (initialMessage != null) {
-    //   final model = NotificationModel(
-    //       title: initialMessage.notification.title,
-    //       body: initialMessage.notification.body ?? '',
-    //       data: NotificationData.fromJson(initialMessage.data));
-    //   navigateNotification(model);
-    // }
   }
 
   navigateNotification(NotificationModel model) {
