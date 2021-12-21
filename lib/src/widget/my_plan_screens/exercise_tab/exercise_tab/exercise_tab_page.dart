@@ -295,7 +295,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                           borderColor: R.color.greenGradientBottom,
                           backgroundColor: R.color.greenGradientBottom,
                           textColor: R.color.white,
-                          onTap: () {
+                          onTap: () async {
                             if (_cubit.isFreeUser &&
                                 exerciseItem.isFree != true) {
                               showUpdateRequirePopup(context: context);
@@ -306,12 +306,13 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                               _showLockedDialog();
                               return;
                             }
-                            NavigationUtil.navigatePage(
+                            await NavigationUtil.navigatePage(
                               context,
                               ExerciseDetail(
                                 exerciseData: exerciseItem,
                               ),
                             );
+                            _cubit.getExerciseMovement();
                           },
                         ),
                         _buildCustomIconButton(

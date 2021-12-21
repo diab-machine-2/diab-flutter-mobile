@@ -21,6 +21,7 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
     videoManager = VideoManager.fromExerciseData(
       exerciseData,
       onDone: () {
+        videoManager.controller?.pause();
         completeExercise(exerciseData.id ?? '');
       },
     );
