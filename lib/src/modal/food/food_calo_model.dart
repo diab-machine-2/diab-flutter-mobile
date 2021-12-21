@@ -1,7 +1,11 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
+
 @immutable
 class FoodCaloModel {
+  final bool? includeBreakfast;
+  final bool? includeLunch;
+  final bool? includeDinner;
   final double? percent;
   final double? total;
   final double? goal;
@@ -11,6 +15,9 @@ class FoodCaloModel {
   final List<MealModel> mealDetails;
 
   const FoodCaloModel({
+    this.includeBreakfast,
+    this.includeLunch,
+    this.includeDinner,
     required this.percent,
     required this.total,
     required this.goal,
@@ -22,6 +29,9 @@ class FoodCaloModel {
   @override
   factory FoodCaloModel.fromJson(Map<String, dynamic> json) {
     return FoodCaloModel(
+        includeBreakfast: json['hasBreakfastSnack'],
+        includeLunch: json['hasLunchSnack'],
+        includeDinner: json['hasDinnerSnack'],
         percent: json['percent'],
         total: json['total'],
         goal: json['goal'],
