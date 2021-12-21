@@ -4,6 +4,7 @@ enum NotificationActionType {
   add_reminder,
   add_blood_sugar,
   none,
+  share_profile,
 }
 
 extension NotificationActionExtend on NotificationActionType {
@@ -18,6 +19,8 @@ extension NotificationActionExtend on NotificationActionType {
       return NotificationActionType.add_blood_sugar;
     if (index == NotificationActionType.none.index)
       return NotificationActionType.none;
+    if (index == NotificationActionType.share_profile.index)
+      return NotificationActionType.share_profile;
     return NotificationActionType.redirect_to_url;
   }
 }

@@ -12,12 +12,12 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/notification/notification_bloc.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
+import 'package:medical/src/modal/notification/notification_type.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/notification/models/notification_type.dart';
 
 class NotificationController extends StatefulWidget {
   const NotificationController({required this.isRemovealbe});
@@ -294,6 +294,8 @@ class NotificationControllerState extends State<NotificationController>
             arguments: {'type': 'input', 'id': null});
         break;
       case NotificationActionType.none:
+        break;
+      case NotificationActionType.share_profile:
         break;
     }
   }

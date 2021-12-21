@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -14,9 +13,8 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
-import 'package:medical/src/widget/shared_profile/shared_profile.dart';
-import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
+import 'package:medical/src/widgets/share_profile_popup.dart';
 
 class HomeHeader extends StatefulWidget {
   const HomeHeader({this.sharedCode});
@@ -65,8 +63,10 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
       loadMotivation(),
     ]);
     if (widget.sharedCode?.isNotEmpty == true) {
-      _onHasSharedCode();
-    } 
+      ShareProfilePopup.onHasSharedCode(
+          sharingTitle:
+              'Bạn muốn chia sẻ profile cho bác sĩ <<tên bác sĩ>> thuộc <<tên bệnh viện>>?');
+    }
   }
 
   Future<void> loadNotification() async {
@@ -200,7 +200,9 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                               const QRScanWidget(),
                             );
                             if (scanedResult is String) {
-                              _onHasSharedCode();
+                              ShareProfilePopup.onHasSharedCode(
+                                  sharingTitle:
+                                      'Bạn muốn chia sẻ profile cho bác sĩ <<tên bác sĩ>> thuộc <<tên bệnh viện>>?');
                             }
                           },
                           child: Container(
@@ -300,142 +302,6 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
       } else {
         Message.showToastMessage(context, e.toString());
       }
-    }
-  }
-
-  void _onHasSharedCode() {
-    _showPopup(context,
-        image: R.drawable.img_sharing_profile,
-        title:
-            'Bạn muốn chia sẻ profile cho bác sĩ <<tên bác sĩ>> thuộc <<tên bệnh viện>>?',
-        description: '''
-Việc chia sẽ hồ sơ giúp bác sĩ có thêm thông tin để hỗ trợ chấn đoán và điều trị. Bạn có thể dừng chia sẻ hồ sơ khi không có nhu cầu.
-Bạn có muốn tiếp tục chia sẻ không?''', onTapCancel: () {
-      NavigationUtil.pop(context);
-    }, onTapYes: () async {
-      // TODO(Tuyen): Call API to share code
-      BotToast.showLoading();
-      await Future.delayed(const Duration(seconds: 2));
-      BotToast.closeAllLoading();
-      NavigationUtil.pop(context);
-      _showPopup(context,
-          image: R.drawable.img_survey_completed,
-          title: 'Bạn đã chia sẻ thành công!',
-          description: '''
-Bạn đã chia sẻ thành công profile 
-cho bác sĩ <<tên bác sĩ>>. Bạn có thể dừng chia sẻ tại “danh sách đã chia sẻ”.''',
-          onTapYes: () {
-        NavigationUtil.pop(context, result: true);
-      }, afterShow: () {
-        NavigationUtil.navigatePage(context, const SharedProfilePage());
-      });
-    });
-  }
-
-  Future<void> _showPopup(
-    context, {
-    required String image,
-    required String title,
-    required String description,
-    VoidCallback? onTapCancel,
-    required VoidCallback onTapYes,
-    VoidCallback? afterShow,
-  }) async {
-    final result = await showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      context: context,
-      barrierDismissible: true,
-      builder: (_) => GestureDetector(
-        onTap: () {
-          NavigationUtil.pop(context);
-        },
-        child: Scaffold(
-          backgroundColor: R.color.transparent,
-          body: Center(
-            child: GestureDetector(
-              onTap: () {},
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      R.color.white,
-                      R.color.main_6,
-                    ],
-                  ),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Image.asset(image),
-                      const SizedBox(height: 24),
-                      Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700),
-                      ),
-                      Text(
-                        description,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      const SizedBox(height: 20),
-                      if (onTapCancel != null)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 130.w,
-                              height: 43,
-                              child: ButtonWidget(
-                                  title: 'Huỷ',
-                                  textSize: 14,
-                                  backgroundColor: R.color.grayBorder,
-                                  textColor: R.color.textDark,
-                                  onPressed: onTapCancel),
-                            ),
-                            const SizedBox(width: 14),
-                            SizedBox(
-                              width: 130.w,
-                              height: 43,
-                              child: ButtonWidget(
-                                title: 'Xác nhận',
-                                textSize: 14,
-                                onPressed: onTapYes,
-                              ),
-                            ),
-                          ],
-                        )
-                      else
-                        SizedBox(
-                          width: 245.w,
-                          height: 43,
-                          child: ButtonWidget(
-                              title: 'Xem danh sách đã chia sẻ',
-                              textSize: 14,
-                              onPressed: onTapYes),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-    if (result is bool && result && afterShow != null) {
-      afterShow.call();
     }
   }
 }

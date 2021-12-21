@@ -7,10 +7,13 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/notification/notification_model.dart';
+import 'package:medical/src/modal/notification/notification_type.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/notification/notification_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/share_profile_popup.dart';
 
 class NotificationManager {
   static final NotificationManager instance = NotificationManager._internal();
@@ -45,75 +48,90 @@ class NotificationManager {
 
   static Future<dynamic> myBackgroundMessageHandler(
       RemoteMessage message) async {
-    final model = NotificationModel(
-        title: message.notification?.title,
-        body: message.notification?.body ?? '',
-        data: NotificationData.fromJson(message.data));
-    Observable.instance.notifyObservers([], notifyName: "reload_notification");
-    NotificationManager.instance.navigateNotification(model);
+    NotificationManager.instance.navigateNotification(message);
   }
 
   Future<void> firebaseConfigure() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print(message);
       final model = NotificationModel(
           title: message.notification?.title,
           body: message.notification?.body ?? '',
           data: NotificationData.fromJson(message.data));
-      Observable.instance
-          .notifyObservers([], notifyName: "reload_notification");
+
+      if (model.actionType == NotificationActionType.share_profile) {
+        ShareProfilePopup.onHasSharedCode(
+            sharingTitle:
+                'Bác sĩ <<tên bác sĩ>> muốn xem profile của bạn. Bạn có đồng ý chia sẻ không?');
+        return;
+      }
       Message.showNotificationMessage(
           model: model,
           callback: (model) {
             if (model != null) {
-              navigateNotification(model);
+              navigateNotification(message);
             }
           });
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      final model = NotificationModel(
-          title: message.notification?.title,
-          body: message.notification?.body ?? '',
-          data: NotificationData.fromJson(message.data));
-      Observable.instance
-          .notifyObservers([], notifyName: "reload_notification");
-      navigateNotification(model);
+      navigateNotification(message);
     });
 
     FirebaseMessaging.instance.getInitialMessage().then((message) {
-      if (message == null) return;
-      final model = NotificationModel(
-          title: message.notification?.title,
-          body: message.notification?.body ?? '',
-          data: NotificationData.fromJson(message.data));
-      Observable.instance
-          .notifyObservers([], notifyName: "reload_notification");
-      navigateNotification(model);
+      navigateNotification(message);
     });
 
     FirebaseMessaging.onBackgroundMessage(
         (message) => myBackgroundMessageHandler(message));
   }
 
-  navigateNotification(NotificationModel model) {
+  navigateNotification(RemoteMessage? message) {
+    if (message == null) return;
+    Observable.instance.notifyObservers([], notifyName: "reload_notification");
+
+    final NotificationModel model = NotificationModel(
+      title: message.notification?.title,
+      body: message.notification?.body ?? '',
+      data: NotificationData.fromJson(message.data),
+    );
+
+    if (model.actionType == NotificationActionType.share_profile) {
+      ShareProfilePopup.onHasSharedCode(
+          sharingTitle:
+              'Bác sĩ <<tên bác sĩ>> muốn xem profile của bạn. Bạn có đồng ý chia sẻ không?');
+      return;
+    }
+
     NotificationClient().readNotification(
         model.id ?? model.data?.communicationId,
         AppSettings.userInfo?.id,
         model.data?.notificationType,
         true);
-    if (model.data?.notificationType == 1) {
-      Navigator.pushNamed(
-          navigatorKey.currentState!.context, NavigatorName.notification_detail,
-          arguments: {'id': model.data?.communicationId});
-    } else if (model.data?.notificationType == 2) {
-      Navigator.pushNamed(
-          navigatorKey.currentState!.context, NavigatorName.add_reminder,
-          arguments: {'type': 'update', 'id': model.data?.remindId});
-    } else if (model.data?.notificationType == 3) {
-      Navigator.pushNamed(
-          navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
-          arguments: {'type': 'input', 'id': null});
+
+    switch (model.actionType) {
+      case NotificationActionType.redirect_to_activity_tab:
+        Observable.instance
+            .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+        break;
+      case NotificationActionType.redirect_to_url:
+        Navigator.pushNamed(navigatorKey.currentState!.context,
+            NavigatorName.notification_detail,
+            arguments: {'id': model.data?.communicationId});
+        break;
+      case NotificationActionType.add_reminder:
+        Navigator.pushNamed(
+            navigatorKey.currentState!.context, NavigatorName.add_reminder,
+            arguments: {'type': 'update', 'id': model.data?.remindId});
+        break;
+      case NotificationActionType.add_blood_sugar:
+        Navigator.pushNamed(
+            navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
+            arguments: {'type': 'input', 'id': null});
+        break;
+      case NotificationActionType.none:
+        break;
+      case NotificationActionType.share_profile:
+        break;
     }
   }
 

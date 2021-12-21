@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
@@ -330,37 +331,36 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
 
   Widget _buildDayOffWidget() {
     if (!_cubit.isPremiumUser) return const SizedBox();
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 53),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Image.asset(R.drawable.img_activity_empty),
+    return Column(
+      children: [
+        SizedBox(height: 116.h),
+        Image.asset(
+          R.drawable.img_activity_empty,
+          width: 268.w,
+          height: 200.w,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            children: [
+              Text(
+                R.string.today_is_day_off.tr(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                R.string.today_is_day_off_description.tr(),
+                textAlign: TextAlign.center,
+                style: R.style.normalTextStyle,
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Column(
-              children: [
-                Text(
-                  R.string.today_is_day_off.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  R.string.today_is_day_off_description.tr(),
-                  textAlign: TextAlign.center,
-                  style: R.style.normalTextStyle,
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 

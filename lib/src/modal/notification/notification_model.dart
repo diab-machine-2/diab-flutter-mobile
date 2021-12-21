@@ -1,4 +1,4 @@
-import 'package:medical/src/widget/notification/models/notification_type.dart';
+import 'notification_type.dart';
 
 class NotificationModel {
   final String? id;
@@ -26,7 +26,9 @@ class NotificationModel {
       this.data,
       this.notificationType});
 
-  NotificationActionType get actionType => NotificationActionExtend.getNotificationActionTypeFromIndex(notificationType);
+  NotificationActionType get actionType =>
+      NotificationActionExtend.getNotificationActionTypeFromIndex(
+          notificationType);
 
   @override
   factory NotificationModel.fromJson(Map<String, dynamic> json) {

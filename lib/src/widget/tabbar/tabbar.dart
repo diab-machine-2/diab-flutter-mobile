@@ -11,6 +11,7 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
@@ -72,12 +73,21 @@ class _TabbarControllerState extends State<TabbarController>
   }
 
   @override
-  void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  Future<void> update(Observable observable, String? notifyName,
+      Map<dynamic, dynamic>? map) async {
     if (notifyName == 'unauthorized') {
       Message.showToastMessage(context,
           R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
       AppSettings.logout();
+    }
+    if (notifyName == Const.NAVIGATE_TO_MY_PLAN_TAB) {
+      NavigationUtil.popToFirst(context);
+      jumpTo(1);
+      await Future.delayed(
+        const Duration(milliseconds: 100),
+      );
+      Observable.instance
+          .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
     }
   }
 
