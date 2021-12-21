@@ -141,21 +141,26 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
               ),
             ),
             if (itemData.joined == true)
-              Container(
-                height: 24,
-                alignment: Alignment.center,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                decoration: BoxDecoration(
-                  color: R.color.green,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  R.string.joining.tr(),
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
+              InkWell(
+                onTap: (){
+                  NavigationUtil.pop(context);
+                },
+                child: Container(
+                  height: 24,
+                  alignment: Alignment.center,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: R.color.green,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    R.string.joining.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               )

@@ -424,6 +424,17 @@ class ExerciseMovementResponse {
     this.data,
   });
 
+  int get firstExerciseIndex {
+    if (data?.isNotEmpty != true) return 0;
+    for (int index = 0; index < (data?.length ?? 0); index++) {
+      if (data?[index]?.exerciseMovementStates != null &&
+          data?[index]?.exerciseMovementStates != Const.LESSON_LEARNT) {
+        return index;
+      }
+    }
+    return 0;
+  }
+
   ExerciseMovementResponseData? getExerciseFromDayInWeek({
     required int week,
     required int dayInWeek,
