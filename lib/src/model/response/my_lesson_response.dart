@@ -88,6 +88,7 @@ class MyLessonResponseData {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "name": "string",
   "status": 0,
+  "type": 1,
   "level": "string",
   "module": "string",
   "learningStatus": 0,
@@ -119,6 +120,7 @@ class MyLessonResponseData {
   String? id;
   String? name;
   int? status;
+  int? type;
   String? level;
   String? module;
   int? learningStatus;
@@ -135,6 +137,7 @@ class MyLessonResponseData {
     this.id,
     this.name,
     this.status,
+    this.type,
     this.level,
     this.module,
     this.learningStatus,
@@ -157,6 +160,7 @@ class MyLessonResponseData {
     id = json['id']?.toString();
     name = json['name']?.toString();
     status = json['status']?.toInt();
+    type = json['type']?.toInt();
     level = json['level']?.toString();
     module = json['module']?.toString();
     learningStatus = json['learningStatus']?.toInt();
@@ -182,6 +186,7 @@ class MyLessonResponseData {
     data['id'] = id;
     data['name'] = name;
     data['status'] = status;
+    data['type'] = type;
     data['level'] = level;
     data['module'] = module;
     data['learningStatus'] = learningStatus;

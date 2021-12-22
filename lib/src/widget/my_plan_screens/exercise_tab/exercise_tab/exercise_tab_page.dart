@@ -139,9 +139,11 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                                             : _cubit.exerciseMovementResponse
                                                 ?.data?[index])
                                     : SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height -
-                                                300,
+                                        height: MediaQuery.of(context)
+                                                .size
+                                                .height -
+                                            MediaQuery.of(context).padding.top -
+                                            300,
                                       ),
                               );
                             },

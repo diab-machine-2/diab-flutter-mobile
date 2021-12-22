@@ -6,25 +6,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/quiz_lesson.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
 import 'package:medical/src/widgets/custom_scroll_physics.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../../card_course_quiz/card_course_quiz.dart';
 import 'course_quiz.dart';
+import 'widgets/quiz_result_popup.dart';
 
 class CourseQuizPage extends StatefulWidget {
-  final String lessonId;
-  final Function(bool isPassed)? onDone;
-
-  const CourseQuizPage({Key? key, required this.lessonId, this.onDone})
+  const CourseQuizPage(
+      {Key? key, required this.lessonId, this.lessonSectionItem, this.onDone})
       : super(key: key);
+
+  final String lessonId;
+  final LessonSectionItem? lessonSectionItem;
+  final Function(bool isPassed)? onDone;
 
   @override
   _CourseQuizPageState createState() => _CourseQuizPageState();
@@ -40,7 +43,10 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
   void initState() {
     final AppRepository repository = AppRepository();
     _cubit = CourseQuizCubit(repository);
-    _cubit.getListQuiz(widget.lessonId);
+    _cubit.initData(
+      lessonId: widget.lessonId,
+      lessonSectionItem: widget.lessonSectionItem,
+    );
     Utils.onWidgetDidBuild(() {
       _controller.position.isScrollingNotifier.addListener(() {
         if (!_controller.position.isScrollingNotifier.value) {
@@ -137,7 +143,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              R.string.overview_of_diabetes.tr(),
+              _cubit.quizName,
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -213,9 +219,11 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 return;
               }
               if (_cubit.canComplete == true) {
-                buildDialogCompleted(context,
-                    rightAnswer: _cubit.countAnswerRight,
-                    totalQuiz: lengthQuiz, seeResultCallback: () {
+                if (_cubit.isShowResult) {
+                  onDoneQuiz();
+                  return;
+                }
+                _buildDialogCompleted(seeResultCallback: () {
                   _cubit.showAnswer();
                   _controller.scrollToIndex(0,
                       duration: const Duration(milliseconds: 200),
@@ -225,7 +233,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   _controller.scrollToIndex(0,
                       duration: const Duration(milliseconds: 200),
                       preferPosition: AutoScrollPosition.begin);
-                }, continueLearnCallback: () async {
+                }, continueLearnCallback: () {
                   onDoneQuiz();
                 });
               } else {
@@ -319,142 +327,21 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     );
   }
 
-  void buildDialogCompleted(
-    BuildContext context, {
-    required int rightAnswer,
-    required int totalQuiz,
+  void _buildDialogCompleted({
     required VoidCallback seeResultCallback,
-    VoidCallback? retryCallback,
+    required VoidCallback retryCallback,
     required VoidCallback continueLearnCallback,
   }) {
-    final double rate = rightAnswer / totalQuiz;
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
-      builder: (_) => Scaffold(
-        backgroundColor: R.color.transparent,
-        body: Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: R.color.white,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Image.asset(
-                    rate < _cubit.minCompletePercent
-                        ? R.drawable.img_learn_result_medium
-                        : R.drawable.img_learn_result_high,
-                    height: 150,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    R.string.completed_quiz.tr(),
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.textDark,
-                        height: 1.4),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    child: RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        text: rate < _cubit.minCompletePercent
-                            ? "Rất tiếc! Bạn cần trả lời đúng"
-                            : "Bạn đã${rate == 1 ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
-                        style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 16,
-                          height: 1.375,
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: rate < _cubit.minCompletePercent
-                                  ? " ${(_cubit.minCompletePercent * 100).round()}% "
-                                  : "$rightAnswer/$totalQuiz",
-                              style: TextStyle(
-                                color: R.color.accentColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                height: 1.375,
-                              )),
-                          TextSpan(
-                            text: rate < _cubit.minCompletePercent
-                                ? "để hoàn thành cấp độ này"
-                                : " câu!",
-                            style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              height: 1.375,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Text(
-                    R.string.challenge_yourself_again.tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.textDark,
-                        height: 1.37,
-                        letterSpacing: 0.4),
-                  ),
-                  const SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        width: 128,
-                        child: ButtonWidget(
-                          height: 35,
-                          title: rate == 1
-                              ? R.string.see_the_answer.tr()
-                              : R.string.skip.tr(),
-                          textSize: 14,
-                          onPressed: () {
-                            NavigationUtil.pop(context);
-                            rate == 1
-                                ? seeResultCallback()
-                                : continueLearnCallback();
-                          },
-                          backgroundColor: Colors.transparent,
-                          borderColor: R.color.accentColor,
-                          textColor: R.color.accentColor,
-                        ),
-                      ),
-                      Container(
-                        width: 128,
-                        child: ButtonWidget(
-                            height: 35,
-                            title: rate == 1
-                                ? R.string.continue_learning.tr()
-                                : R.string.accept.tr(),
-                            textSize: 14,
-                            onPressed: () {
-                              NavigationUtil.pop(context);
-                              if (rate == 1) {
-                                continueLearnCallback();
-                              } else {
-                                retryCallback!();
-                              }
-                            }),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
+      builder: (_) => QuizResultWidget(
+        rightAnswer: _cubit.countAnswerRight,
+        totalQuiz: _cubit.listQuiz.length,
+        minCompletePercent: _cubit.minCompletePercent,
+        seeResultCallback: seeResultCallback,
+        retryCallback: retryCallback,
+        continueLearnCallback: continueLearnCallback,
       ),
     );
   }
