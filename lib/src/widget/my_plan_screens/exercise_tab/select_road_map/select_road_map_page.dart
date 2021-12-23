@@ -2,12 +2,10 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/list_roadmap_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -63,28 +61,19 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                 onRefresh: () async {
                   _cubit.getRoadAppRoadMap();
                 },
-                child: LoadMore(
-                  onLoadMore: () async {
-                    return _cubit.getRoadAppRoadMap(isLoadMore: true);
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+                  itemCount: _cubit.roadMapList.length,
+                  itemBuilder: (context, index) {
+                    return _buildRoadMap(_cubit.roadMapList[index]);
                   },
-                  isFinish: !_cubit.hasMore,
-                  whenEmptyLoad: false,
-                  delegate: const CustomLoadMoreDelegate(),
-                  textBuilder: DefaultLoadMoreTextBuilder.english,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-                    itemCount: _cubit.roadMapList.length,
-                    itemBuilder: (context, index) {
-                      return _buildRoadMap(_cubit.roadMapList[index]);
-                    },
-                    separatorBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 20),
-                        height: 1,
-                        color: R.color.grayBorder,
-                      );
-                    },
-                  ),
+                  separatorBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 20),
+                      height: 1,
+                      color: R.color.grayBorder,
+                    );
+                  },
                 ),
               );
             },
@@ -94,15 +83,15 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
     );
   }
 
-  Widget _buildRoadMap(ListRoadmapResponseDataItems? itemData) {
+  Widget _buildRoadMap(ListRoadmapResponseData? itemData) {
     if (itemData == null) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           clipBehavior: Clip.hardEdge,
-          alignment: Alignment.center,
           height: 171.5,
+          width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -142,7 +131,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
             ),
             if (itemData.joined == true)
               InkWell(
-                onTap: (){
+                onTap: () {
                   NavigationUtil.pop(context);
                 },
                 child: Container(
@@ -194,7 +183,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
   }
 
   Future<void> showDialogChangeSuccessed(
-      ListRoadmapResponseDataItems? itemData) async {
+      ListRoadmapResponseData? itemData) async {
     await showDialog(
       context: context,
       builder: (_) => Scaffold(

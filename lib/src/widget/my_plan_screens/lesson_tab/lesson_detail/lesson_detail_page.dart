@@ -67,7 +67,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           return _cubit.showQuizLesson
               ? CourseQuizPage(
                   lessonId: _cubit.lessonId,
-                  lessonSectionItem: widget.lessonType == 3
+                  lessonSectionItem: widget.lessonType != 3
                       ? _cubit.currentSectionDetail
                       : null,
                   onDone: _onDoneQuiz)

@@ -7,33 +7,24 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 
 import 'select_road_map.dart';
 
-const int size = 5;
-
 class SelectRoadMapCubit extends Cubit<SelectRoadMapState> {
   SelectRoadMapCubit(this.repository) : super(const SelectRoadMapInitial());
 
   final AppRepository repository;
 
-  int currentPage = 1;
-  int total = 0;
-
-  List<ListRoadmapResponseDataItems?> roadMapList = [];
-
-  bool get hasMore => currentPage * size < total;
+  List<ListRoadmapResponseData?> roadMapList = [];
 
   Future<bool> getRoadAppRoadMap({
     bool isLoadMore = false,
   }) async {
-    currentPage = isLoadMore ? (currentPage + 1) : 1;
     await Future.delayed(Duration.zero);
     if (!isLoadMore) {
       emit(const SelectRoadMapLoading());
     }
     final ApiResult<ListRoadmapResponse> apiResult =
-        await repository.getRoadMap(page: currentPage, size: size);
+        await repository.getRoadMap();
     apiResult.when(success: (ListRoadmapResponse response) {
-      roadMapList.addAll(response.data?.items ?? []);
-      total = response.data?.total ?? 0;
+      roadMapList.addAll(response.data ?? []);
       emit(const SelectRoadMapSuccess());
       return true;
     }, failure: (NetworkExceptions error) {
@@ -44,7 +35,7 @@ class SelectRoadMapCubit extends Cubit<SelectRoadMapState> {
     return true;
   }
 
-  Future<void> changeRoadMap(ListRoadmapResponseDataItems? itemData) async {
+  Future<void> changeRoadMap(ListRoadmapResponseData? itemData) async {
     emit(const SelectRoadMapLoading());
     final ApiResult<CommonResponse> apiResult =
         await repository.selectRoadmap(itemData?.id ?? '');
