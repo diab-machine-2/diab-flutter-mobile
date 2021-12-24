@@ -15,6 +15,7 @@ import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/video_player_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
@@ -35,6 +36,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   late final ExerciseTabCubit _cubit;
   final RefreshController _controller = RefreshController();
   final ScrollController _scrollController = ScrollController();
+  final AutoScrollController _exerciseScrollController = AutoScrollController();
 
   @override
   void initState() {
@@ -66,6 +68,10 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           }
           if (state is ExerciseTabWeekChanged) {
             animateToIndex(state.newIndex, refresh: false);
+          }
+          if (state is ExerciseTabScrollToLesson) {
+            _exerciseScrollController.scrollToIndex(state.newIndex,
+                preferPosition: AutoScrollPosition.begin);
           }
         },
         builder: (context, state) {
@@ -115,24 +121,34 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                             null
                         ? const SizedBox.shrink()
                         : ListView.separated(
+                            controller: _exerciseScrollController,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 20),
                             itemCount: _cubit.isPremiumUser
                                 ? 1
-                                : (_cubit.exerciseMovementResponse?.data
-                                        ?.length ??
-                                    0),
+                                : _cubit.dataLength + 1,
                             itemBuilder: (context, index) {
-                              return _buildExerciseWidget(
-                                  exerciseItem: _cubit.isPremiumUser
-                                      ? _cubit.currentExercise
-                                      : _cubit.exerciseMovementResponse
-                                          ?.data?[index]);
+                              return AutoScrollTag(
+                                key: ValueKey(index),
+                                controller: _exerciseScrollController,
+                                index: index,
+                                child: index < _cubit.dataLength
+                                    ? _buildExerciseWidget(
+                                        exerciseItem: _cubit.isPremiumUser
+                                            ? _cubit.currentExercise
+                                            : _cubit.exerciseMovementResponse
+                                                ?.data?[index])
+                                    : SizedBox(
+                                        height: MediaQuery.of(context)
+                                                .size
+                                                .height -
+                                            MediaQuery.of(context).padding.top -
+                                            300,
+                                      ),
+                              );
                             },
                             separatorBuilder: (context, index) {
                               return Container(
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 20),
                                 height: 1,
                                 color: R.color.grayBorder,
                               );
@@ -199,7 +215,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     });
               })
                 ..add(SizedBox(
-                    width: MediaQuery.of(context).size.width - 96 * 2)),
+                    width: _cubit.weekStatesList.isEmpty
+                        ? MediaQuery.of(context).size.width - 96 * 2
+                        : 0)),
             ),
           ),
         ),
@@ -226,6 +244,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }) {
     if (exerciseItem?.code == null) return _buildDayOffWidget();
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 20),
       color: R.color.transparent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,7 +252,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           Container(
               height: 87,
               width: 87,
-              child: const NetWorkImageWidget(imageUrl: '')),
+              child:
+                  NetWorkImageWidget(imageUrl: exerciseItem?.image?.url ?? '')),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -251,8 +271,6 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -280,18 +298,24 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                           borderColor: R.color.greenGradientBottom,
                           backgroundColor: R.color.greenGradientBottom,
                           textColor: R.color.white,
-                          onTap: () {
+                          onTap: () async {
                             if (_cubit.isFreeUser &&
                                 exerciseItem.isFree != true) {
                               showUpdateRequirePopup(context: context);
                               return;
                             }
-                            NavigationUtil.navigatePage(
+                            if (exerciseItem.exerciseMovementStates ==
+                                Const.LESSON_LOCKED) {
+                              _showLockedDialog();
+                              return;
+                            }
+                            await NavigationUtil.navigatePage(
                               context,
                               ExerciseDetail(
                                 exerciseData: exerciseItem,
                               ),
                             );
+                            _cubit.getExerciseMovement();
                           },
                         ),
                         _buildCustomIconButton(
@@ -304,6 +328,11 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                             if (_cubit.isFreeUser &&
                                 exerciseItem.isFree != true) {
                               showUpdateRequirePopup(context: context);
+                              return;
+                            }
+                            if (exerciseItem.exerciseMovementStates ==
+                                Const.LESSON_LOCKED) {
+                              _showLockedDialog();
                               return;
                             }
                             NavigationUtil.navigatePage(
@@ -540,6 +569,75 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     }
   }
 
+  void _showLockedDialog() {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      barrierDismissible: true,
+      context: context,
+      builder: (_) => Scaffold(
+        backgroundColor: R.color.transparent,
+        body: Center(
+          child: GestureDetector(
+            child: Container(
+              width: 344,
+              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 24.h),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    R.color.white,
+                    R.color.main_6,
+                  ],
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(84.w, 0, 84.w, 20),
+                    child: Image.asset(
+                      R.drawable.img_lesson_locked,
+                    ),
+                  ),
+                  Text(
+                    R.string.lesson_locked.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    R.string.lesson_locked_warning.tr(),
+                    textAlign: TextAlign.center,
+                    style: R.style.normalTextStyle,
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    child: ButtonWidget(
+                      height: 43,
+                      title: R.string.agree.tr(),
+                      onPressed: () {
+                        NavigationUtil.pop(context);
+                      },
+                      textSize: 14,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void showUpdateRequirePopup({
     required BuildContext context,
   }) {
@@ -588,7 +686,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Vui lòng nâng cấp tài khoản lên gói Đồng hành để tiếp tục học!',
+                        'Vui lòng nâng cấp tài khoản để tập các bài tiếp theo.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: R.color.textDark,
@@ -600,7 +698,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           SizedBox(
-                            width: 149,
+                            width: 140.w,
+                            height: 43,
                             child: ButtonWidget(
                               title: 'Để sau',
                               textSize: 16,
@@ -612,7 +711,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                             ),
                           ),
                           SizedBox(
-                            width: 149,
+                            width: 140.w,
+                            height: 43,
                             child: ButtonWidget(
                               title: 'Tìm hiểu thêm',
                               textSize: 16,

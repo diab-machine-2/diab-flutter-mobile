@@ -7,6 +7,7 @@ import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/const.dart';
 
 import 'lesson_detail.dart';
 import 'models/audio_manager.dart';
@@ -19,7 +20,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   final AppRepository repository;
   late final String lessonId;
 
-  List<LessonSectionListResponseDataLessonSections?> sectionList = [];
+  List<LessonSectionItem?> sectionList = [];
   LessonSectionListResponseDataLessonReviews? review;
   bool? isEnabledRating;
   int currentSection = 0;
@@ -27,7 +28,11 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   AudioManager? audioManager;
   SectionStatusData? sectionStatus;
 
-  LessonSectionListResponseDataLessonSections? get currentSectionDetail =>
+  bool isQuizLesson = false;
+
+  bool alreadyDoneLesson = true;
+
+  LessonSectionItem? get currentSectionDetail =>
       sectionList.isEmpty ? null : sectionList[currentSection];
 
   String get sectionPosition =>
@@ -39,6 +44,10 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   bool get reviewed => review?.rating != null;
 
+  bool get showQuizLesson =>
+      currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_QUIZ ||
+      isQuizLesson;
+
   void onChangeSection(int newSection, {bool isFromList = false}) {
     //Check can complete the lesson and make sure that user tapped next button
     if (isAllSectionCompleted && newSection > currentSection) {
@@ -48,6 +57,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       }
       return;
     }
+
     if (newSection < 0 || newSection >= sectionList.length) return;
 
     currentSection = newSection;
@@ -95,10 +105,14 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     return null;
   }
 
-  Future<void> initData(String lessonId) async {
+  Future<void> initData(int? type, String lessonId) async {
     this.lessonId = lessonId;
 
-    await getSectionList();
+    if (type == 3) {
+      isQuizLesson = true;
+    } else {
+      await getSectionList();
+    }
 
     for (int index = 0; index < sectionList.length; index++) {
       if (sectionList[index]?.isComplete == false) {
@@ -110,7 +124,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
 
     videoManager = VideoManager(
-        url: currentSectionDetail!.videoAddressLink,
+        url: currentSectionDetail?.videoAddressLink,
         onExitFullScreen: () {},
         onCompleted: () {
           sectionStatus?.isVideoCompleted = true;

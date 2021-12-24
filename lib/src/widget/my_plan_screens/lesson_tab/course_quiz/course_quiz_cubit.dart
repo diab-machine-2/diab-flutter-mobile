@@ -16,6 +16,8 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   int selectedCourseIndex = 0;
   double minCompletePercent = 1;
 
+  String quizName = '';
+
   bool isShowResult = false;
 
   bool get isAllCompleted => answer.length == listQuiz.length;
@@ -49,8 +51,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
               ?.quiz
               ?.quizAnswers
               ?.where((e) => e?.isCorrect == true)
-              // TODO(Tuyen): should change to answerId field
-              .map((e) => e?.name)
+              .map((e) => e?.id)
               .toList()
               .toString()) {
         countAnswerRight++;
@@ -60,20 +61,39 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   }
 
   bool get isPassed =>
-      (countAnswerRight / listQuiz.length) > minCompletePercent;
+      ((countAnswerRight / listQuiz.length) * 100) > minCompletePercent;
+
+  Future<void> initData(
+      {required String lessonId, LessonSectionItem? lessonSectionItem}) async {
+    if (lessonSectionItem != null) {
+      minCompletePercent = 0.8;
+      listQuiz = lessonSectionItem.quizLessonSections ?? [];
+      quizName = lessonSectionItem.name ?? '';
+      if (listQuiz.isNotEmpty != true) {
+        emit(const CourseQuizDone());
+      }
+      emit(CourseQuizLoading());
+      await Future.delayed(Duration.zero);
+      emit(CourseQuizSuccess());
+      emit(InitialCourseQuizState());
+      return;
+    }
+    getListQuiz(lessonId);
+  }
 
   Future<void> getListQuiz(String lessonId) async {
     emit(CourseQuizLoading());
     final ApiResult<LessonSectionListResponse?> apiResult =
         await repository.getListQuiz(lessonId);
     apiResult.when(success: (LessonSectionListResponse? response) {
-      minCompletePercent = response?.data?.minCompletePercent?.toDouble() ?? 1;
-      if (response?.data?.lessonSections?.isNotEmpty != true) {
+      minCompletePercent =
+          response?.data?.minCompletePercent?.toDouble() ?? 0.8;
+      if (response?.data?.quizLessons?.isNotEmpty != true) {
         listQuiz = [];
       } else {
-        listQuiz =
-            response!.data!.lessonSections!.first?.quizLessonSections ?? [];
+        listQuiz = response?.data?.quizLessons ?? [];
       }
+      quizName = response?.data?.name ?? '';
       if (listQuiz.isNotEmpty != true) {
         emit(const CourseQuizDone());
       }
@@ -103,6 +123,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
     emit(CourseQuizLoading());
     answer.clear();
     isShowResult = false;
+    listQuiz.shuffle();
     emit(RetryQuizSuccess());
   }
 

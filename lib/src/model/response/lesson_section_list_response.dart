@@ -809,7 +809,7 @@ class LessonSectionListResponseDataLessonSectionsQuizLessonSectionsQuiz {
   }
 }
 
-class LessonSectionListResponseDataLessonSections {
+class LessonSectionItem {
 /*
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -929,7 +929,7 @@ class LessonSectionListResponseDataLessonSections {
       lessonSectionTypes;
   ImagesModel? image;
 
-  LessonSectionListResponseDataLessonSections({
+  LessonSectionItem({
     this.id,
     this.code,
     this.lessonId,
@@ -966,7 +966,7 @@ class LessonSectionListResponseDataLessonSections {
     return '';
   }
 
-  LessonSectionListResponseDataLessonSections.fromJson(
+  LessonSectionItem.fromJson(
       Map<String, dynamic> json) {
     id = json['id']?.toString();
     code = json['code']?.toString();
@@ -1300,69 +1300,6 @@ class LessonSectionListResponseDataQuizLessonsQuiz {
         arr0.add(v!.toJson());
       });
       data['quizAnswers'] = arr0;
-    }
-    return data;
-  }
-}
-
-class LessonSectionListResponseDataQuizLessons {
-/*
-{
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "code": "string",
-  "quizId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "lessonId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "quiz": {
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "code": "string",
-    "name": "string",
-    "status": 0,
-    "type": 0,
-    "lessonLevel": "string",
-    "lesson": "string",
-    "explain": "string",
-    "quizAnswers": [
-      {
-        "name": "string",
-        "isCorrect": true,
-        "order": 0,
-        "quizId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-      }
-    ]
-  }
-} 
-*/
-
-  String? id;
-  String? code;
-  String? quizId;
-  String? lessonId;
-  LessonSectionListResponseDataQuizLessonsQuiz? quiz;
-
-  LessonSectionListResponseDataQuizLessons({
-    this.id,
-    this.code,
-    this.quizId,
-    this.lessonId,
-    this.quiz,
-  });
-  LessonSectionListResponseDataQuizLessons.fromJson(Map<String, dynamic> json) {
-    id = json['id']?.toString();
-    code = json['code']?.toString();
-    quizId = json['quizId']?.toString();
-    lessonId = json['lessonId']?.toString();
-    quiz = (json['quiz'] != null)
-        ? LessonSectionListResponseDataQuizLessonsQuiz.fromJson(json['quiz'])
-        : null;
-  }
-  Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{};
-    data['id'] = id;
-    data['code'] = code;
-    data['quizId'] = quizId;
-    data['lessonId'] = lessonId;
-    if (quiz != null) {
-      data['quiz'] = quiz!.toJson();
     }
     return data;
   }
@@ -1766,9 +1703,9 @@ class LessonSectionListResponseData {
   String? lessonLevelId;
   LessonSectionListResponseDataLessonModule? lessonModule;
   LessonSectionListResponseDataLessonLevel? lessonLevel;
-  List<LessonSectionListResponseDataQuizLessons?>? quizLessons;
+  List<QuizLesson?>? quizLessons;
   List<LessonSectionListResponseDataLessonTagMappings?>? lessonTagMappings;
-  List<LessonSectionListResponseDataLessonSections?>? lessonSections;
+  List<LessonSectionItem?>? lessonSections;
   List<LessonSectionListResponseDataLessonReviews?>? lessonReviews;
   List<LessonSectionListResponseDataLessonStates?>? lessonStates;
   List<LessonSectionListResponseDataLessonModules?>? lessonModules;
@@ -1827,9 +1764,9 @@ class LessonSectionListResponseData {
         : null;
     if (json['quizLessons'] != null) {
       final v = json['quizLessons'];
-      final arr0 = <LessonSectionListResponseDataQuizLessons>[];
+      final arr0 = <QuizLesson?>[];
       v.forEach((v) {
-        arr0.add(LessonSectionListResponseDataQuizLessons.fromJson(v));
+        arr0.add(QuizLesson?.fromJson(v));
       });
       quizLessons = arr0;
     }
@@ -1843,9 +1780,9 @@ class LessonSectionListResponseData {
     }
     if (json['lessonSections'] != null) {
       final v = json['lessonSections'];
-      final arr0 = <LessonSectionListResponseDataLessonSections>[];
+      final arr0 = <LessonSectionItem>[];
       v.forEach((v) {
-        arr0.add(LessonSectionListResponseDataLessonSections.fromJson(v));
+        arr0.add(LessonSectionItem.fromJson(v));
       });
       lessonSections = arr0;
     }

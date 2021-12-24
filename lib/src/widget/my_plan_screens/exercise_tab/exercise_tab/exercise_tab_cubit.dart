@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
@@ -24,8 +26,11 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   List<WeekStatesResponseData> weekStatesList = [];
   ExerciseMovementResponse? exerciseMovementResponse;
 
-  int? get week =>
-       !isPremiumUser || currentWeekIndex == null ? null : weekStatesList[currentWeekIndex!].week;
+  int? get week => !isPremiumUser || currentWeekIndex == null
+      ? null
+      : weekStatesList[currentWeekIndex!].week;
+
+  int get dataLength => exerciseMovementResponse?.data?.length ?? 0;
 
   bool get isPremiumUser => myPlanCubit.packageCode == Const.PREMIUM;
 
@@ -98,8 +103,8 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       await Future.delayed(Duration.zero);
       emit(const ExerciseTabLoading());
     }
-    final ApiResult<ExerciseMovementResponse> apiResult = await repository
-        .getExerciseMovement(roadmapId: roadmapId, week: week);
+    final ApiResult<ExerciseMovementResponse> apiResult =
+        await repository.getExerciseMovement(roadmapId: roadmapId, week: week);
     apiResult.when(success: (ExerciseMovementResponse response) {
       exerciseMovementResponse = response;
       mark = exerciseMovementResponse?.getMarkNotLearnIndex(
@@ -108,6 +113,9 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
           0;
       currentDayIndex =
           exerciseMovementResponse?.getCurrentDayIndex(week ?? 1) ?? 1;
+      Timer(const Duration(milliseconds: 100), () {
+        emit(ExerciseTabScrollToLesson(response.firstExerciseIndex));
+      });
       emit(const ExerciseTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ExerciseTabFailure(NetworkExceptions.getErrorMessage(error)));

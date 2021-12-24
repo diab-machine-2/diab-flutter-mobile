@@ -45,7 +45,7 @@ class SelectRoadMapLoading extends SelectRoadMapState {
 
 class SelectRoadMapChanged extends SelectRoadMapState {
   const SelectRoadMapChanged(this.itemData);
-  final ListRoadmapResponseDataItems? itemData;
+  final ListRoadmapResponseData? itemData;
   @override
   String toString() {
     return 'SelectRoadMapChange{}';
