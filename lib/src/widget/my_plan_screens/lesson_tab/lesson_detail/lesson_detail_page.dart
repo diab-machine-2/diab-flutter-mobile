@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/background_page.dart';
@@ -19,7 +18,8 @@ import 'models/audio_data.dart';
 import 'widgets/bottom_sheet_widget.dart';
 
 class LessonDetailPage extends StatefulWidget {
-  const LessonDetailPage(this.lessonId);
+  const LessonDetailPage({required this.lessonType, required this.lessonId});
+  final int? lessonType;
   final String lessonId;
 
   @override
@@ -34,7 +34,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = LessonDetailCubit(appRepository);
-    _cubit.initData(widget.lessonId);
+    _cubit.initData(widget.lessonType, widget.lessonId);
   }
 
   @override
@@ -64,21 +64,21 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           }
         },
         builder: (context, state) {
-          return _cubit.currentSectionDetail?.type ==
-                  Const.LESSON_SECTION_TYPE_QUIZ
+          return _cubit.showQuizLesson
               ? CourseQuizPage(
                   lessonId: _cubit.lessonId,
+                  lessonSectionItem: widget.lessonType != 3
+                      ? _cubit.currentSectionDetail
+                      : null,
                   onDone: (isPassed) async {
                     if (isPassed) {
-                      await _cubit.completeLearningCurrentSection();
-                      _cubit.checkSectionComplete();
+                      await _cubit.checkSectionComplete();
                       if (_cubit.isLastSection) {
                         NavigationUtil.pop(context);
                       }
                     }
                     _cubit.onChangeSection(_cubit.currentSection + 1);
-                  },
-                )
+                  })
               : Scaffold(
                   body: BackgroundPage(
                     background: R.drawable.bg_lesson_detail,
@@ -150,7 +150,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   if (_cubit.currentSectionDetail?.image?.url
                                           ?.isNotEmpty ==
                                       true)
-                                    Padding(
+                                    Container(
+                                      alignment: Alignment.center,
                                       padding:
                                           const EdgeInsets.only(bottom: 24),
                                       child: _buildTitleWidget(

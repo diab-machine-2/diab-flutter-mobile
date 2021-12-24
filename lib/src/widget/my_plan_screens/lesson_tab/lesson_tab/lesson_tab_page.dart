@@ -179,7 +179,10 @@ class _LessonTabPageState extends State<LessonTabPage>
                                               NavigationUtil.navigatePage(
                                                 context,
                                                 LessonDetailPage(
-                                                  _cubit
+                                                  lessonType: _cubit
+                                                      .lessonsList?[index]
+                                                      ?.type,
+                                                  lessonId: _cubit
                                                       .lessonsList![index]!.id!,
                                                 ),
                                               );

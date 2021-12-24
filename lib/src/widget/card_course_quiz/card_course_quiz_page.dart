@@ -141,8 +141,7 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
 
   Widget buildQuestion(
       {required QuizLessonQuizQuizAnswers? data, bool isSingleChoice = true}) {
-    // TODO(Tuyen): should change to answerId field
-    final String id = data?.name ?? "";
+    final String id = data?.id ?? "";
     final bool isSelected = _cubit.listAnswerChoosing.contains(id);
     final bool isAnswerRight = data?.isCorrect == true;
     return Container(

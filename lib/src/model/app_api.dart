@@ -167,10 +167,7 @@ abstract class AppApi {
   //Exercise
 
   @GET("App/Roadmap/MyRoadmap")
-  Future<ListRoadmapResponse> getRoadMap(
-    @Query('page') int page,
-    @Query('size') int size,
-  );
+  Future<ListRoadmapResponse> getRoadMap();
 
   @POST("App/Patient/Roadmap")
   Future<CommonResponse> selectRoadmap(
@@ -238,7 +235,7 @@ abstract class AppApi {
   Future<WeekSmartGoalResponse> getWeekSmartGoal({
     @Query('week') int? week,
   });
-  
+
   // Quiz
   @POST("App/Lesson/{lessonId}/Review")
   Future<CommonResponse> sendFeedbackCourse(
