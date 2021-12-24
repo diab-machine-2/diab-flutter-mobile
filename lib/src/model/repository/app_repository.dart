@@ -389,11 +389,9 @@ class AppRepository {
 
   //Exercise
 
-  Future<ApiResult<ListRoadmapResponse>> getRoadMap(
-      {required int page, required int size}) async {
+  Future<ApiResult<ListRoadmapResponse>> getRoadMap() async {
     try {
-      final ListRoadmapResponse response =
-          await appClient.getRoadMap(page, size);
+      final ListRoadmapResponse response = await appClient.getRoadMap();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

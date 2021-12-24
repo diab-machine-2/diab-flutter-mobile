@@ -57,7 +57,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                   Message.showToastMessage(context, state.error);
                 }
                 if (state is ExerciseDetailAllCompleted) {
-                  showDonePopup(context);
+                  _showDonePopup(context);
                 }
                 if (state is ExerciseDetailMakeFeedback) {
                   NavigationUtil.navigatePage(
@@ -192,7 +192,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
     }
   }
 
-  Future<void> showDonePopup(BuildContext context) async {
+  Future<void> _showDonePopup(BuildContext context) async {
     await showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,

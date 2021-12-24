@@ -5,7 +5,7 @@ class UserInfoResponseData {
 /*
 {
   "packageCode": "pro",
-  "packageTimeExpired": "11/01/2022 17:16:34",
+  "packageExpirationDate": "11/01/2022 17:16:34",
   "bloodSugarTemplates": "NONE",
   "hasFoodMenu": true,
   "roadmapId": "07491c70-28bf-42bf-731c-08d9986eb25e",
@@ -14,7 +14,7 @@ class UserInfoResponseData {
 */
 
   String? packageCode;
-  String? packageTimeExpired;
+  String? packageExpirationDate;
   String? bloodSugarTemplates;
   bool? hasFoodMenu;
   String? roadmapId;
@@ -22,7 +22,7 @@ class UserInfoResponseData {
 
   UserInfoResponseData({
     this.packageCode,
-    this.packageTimeExpired,
+    this.packageExpirationDate,
     this.bloodSugarTemplates,
     this.hasFoodMenu,
     this.roadmapId,
@@ -30,7 +30,7 @@ class UserInfoResponseData {
   });
   UserInfoResponseData.fromJson(Map<String, dynamic> json) {
     packageCode = json['packageCode']?.toString();
-    packageTimeExpired = json['packageTimeExpired']?.toString();
+    packageExpirationDate = json['packageExpirationDate']?.toString();
     bloodSugarTemplates = json['bloodSugarTemplates']?.toString();
     hasFoodMenu = json['hasFoodMenu'];
     roadmapId = json['roadmapId']?.toString();
@@ -39,7 +39,7 @@ class UserInfoResponseData {
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['packageCode'] = packageCode;
-    data['packageTimeExpired'] = packageTimeExpired;
+    data['packageExpirationDate'] = packageExpirationDate;
     data['bloodSugarTemplates'] = bloodSugarTemplates;
     data['hasFoodMenu'] = hasFoodMenu;
     data['roadmapId'] = roadmapId;
@@ -56,7 +56,7 @@ class UserInfoResponse {
   "message": "Success",
   "data": {
     "packageCode": "pro",
-    "packageTimeExpired": "11/01/2022 17:16:34",
+    "packageExpirationDate": "11/01/2022 17:16:34",
     "bloodSugarTemplates": "NONE",
     "hasFoodMenu": true,
     "roadmapId": "07491c70-28bf-42bf-731c-08d9986eb25e",
