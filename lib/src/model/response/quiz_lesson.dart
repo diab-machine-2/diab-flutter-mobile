@@ -4,6 +4,7 @@
 class QuizLessonQuizQuizAnswers {
 /*
 {
+  "id": "187534d3-4ccd-4f32-ee76-08d9babcde77",
   "name": "string",
   "isCorrect": true,
   "order": 0,
@@ -11,18 +12,21 @@ class QuizLessonQuizQuizAnswers {
 } 
 */
 
+  String? id;
   String? name;
   bool? isCorrect;
   int? order;
   String? quizId;
 
   QuizLessonQuizQuizAnswers({
+    this.id,
     this.name,
     this.isCorrect,
     this.order,
     this.quizId,
   });
   QuizLessonQuizQuizAnswers.fromJson(Map<String, dynamic> json) {
+    id = json['id']?.toString();
     name = json['name']?.toString();
     isCorrect = json['isCorrect'];
     order = json['order']?.toInt();
@@ -30,6 +34,7 @@ class QuizLessonQuizQuizAnswers {
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
+    data['id'] = id;
     data['name'] = name;
     data['isCorrect'] = isCorrect;
     data['order'] = order;

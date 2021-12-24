@@ -51,8 +51,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
               ?.quiz
               ?.quizAnswers
               ?.where((e) => e?.isCorrect == true)
-              // TODO(Tuyen): should change to answerId field
-              .map((e) => e?.name)
+              .map((e) => e?.id)
               .toList()
               .toString()) {
         countAnswerRight++;
@@ -62,10 +61,10 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   }
 
   bool get isPassed =>
-      (countAnswerRight / listQuiz.length) > minCompletePercent;
+      ((countAnswerRight / listQuiz.length) * 100) > minCompletePercent;
 
-  void initData(
-      {required String lessonId, LessonSectionItem? lessonSectionItem}) {
+  Future<void> initData(
+      {required String lessonId, LessonSectionItem? lessonSectionItem}) async {
     if (lessonSectionItem != null) {
       minCompletePercent = 0.8;
       listQuiz = lessonSectionItem.quizLessonSections ?? [];
@@ -73,6 +72,8 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
       if (listQuiz.isNotEmpty != true) {
         emit(const CourseQuizDone());
       }
+      emit(CourseQuizLoading());
+      await Future.delayed(Duration.zero);
       emit(CourseQuizSuccess());
       emit(InitialCourseQuizState());
       return;

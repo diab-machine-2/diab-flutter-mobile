@@ -252,7 +252,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           Container(
               height: 87,
               width: 87,
-              child: const NetWorkImageWidget(imageUrl: '')),
+              child:
+                  NetWorkImageWidget(imageUrl: exerciseItem?.image?.url ?? '')),
           const SizedBox(width: 14),
           Expanded(
             child: Column(

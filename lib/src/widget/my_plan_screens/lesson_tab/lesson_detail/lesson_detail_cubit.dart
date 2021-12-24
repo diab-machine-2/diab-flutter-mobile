@@ -30,6 +30,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   bool isQuizLesson = false;
 
+  bool alreadyDoneLesson = true;
+
   LessonSectionItem? get currentSectionDetail =>
       sectionList.isEmpty ? null : sectionList[currentSection];
 
@@ -42,8 +44,9 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   bool get reviewed => review?.rating != null;
 
-  bool get showQuizLesson => currentSectionDetail?.type ==
-                  Const.LESSON_SECTION_TYPE_QUIZ || isQuizLesson;
+  bool get showQuizLesson =>
+      currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_QUIZ ||
+      isQuizLesson;
 
   void onChangeSection(int newSection, {bool isFromList = false}) {
     //Check can complete the lesson and make sure that user tapped next button
@@ -54,6 +57,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       }
       return;
     }
+
     if (newSection < 0 || newSection >= sectionList.length) return;
 
     currentSection = newSection;

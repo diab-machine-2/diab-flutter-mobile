@@ -70,7 +70,15 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   lessonSectionItem: widget.lessonType != 3
                       ? _cubit.currentSectionDetail
                       : null,
-                  onDone: _onDoneQuiz)
+                  onDone: (isPassed) async {
+                    if (isPassed) {
+                      await _cubit.checkSectionComplete();
+                      if (_cubit.isLastSection) {
+                        NavigationUtil.pop(context);
+                      }
+                    }
+                    _cubit.onChangeSection(_cubit.currentSection + 1);
+                  })
               : Scaffold(
                   body: BackgroundPage(
                     background: R.drawable.bg_lesson_detail,
@@ -142,7 +150,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   if (_cubit.currentSectionDetail?.image?.url
                                           ?.isNotEmpty ==
                                       true)
-                                    Padding(
+                                    Container(
+                                      alignment: Alignment.center,
                                       padding:
                                           const EdgeInsets.only(bottom: 24),
                                       child: _buildTitleWidget(
@@ -295,16 +304,5 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       },
     );
     _cubit.checkSectionComplete();
-  }
-
-  Future<void> _onDoneQuiz(isPassed) async {
-    if (isPassed) {
-      await _cubit.completeLearningCurrentSection();
-      _cubit.checkSectionComplete();
-      if (_cubit.isLastSection) {
-        NavigationUtil.pop(context);
-      }
-    }
-    _cubit.onChangeSection(_cubit.currentSection + 1);
   }
 }

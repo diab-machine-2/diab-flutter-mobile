@@ -188,13 +188,15 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                     margin:
                         const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                     width: ScreenUtil().screenWidth - 80,
-                    child: CardCourseQuizPage(
-                      key: listGlobal[index],
-                      index: index,
-                      quizData: data,
-                      onSubmitAnswer: (listAnswer) =>
-                          _cubit.recordAnswer(index, listAnswer),
-                    ),
+                    child: listGlobal.isNotEmpty
+                        ? CardCourseQuizPage(
+                            key: listGlobal[index],
+                            index: index,
+                            quizData: data,
+                            onSubmitAnswer: (listAnswer) =>
+                                _cubit.recordAnswer(index, listAnswer),
+                          )
+                        : const SizedBox(),
                   ),
                 );
               },
