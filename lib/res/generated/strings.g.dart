@@ -136,6 +136,14 @@ class Strings {
 	String get hide => 'hide';
 	String get camera_permission_required => 'camera_permission_required';
 	String get shared_profile_list => 'shared_profile_list';
+	String get doctor_request_share_profile => 'doctor_request_share_profile';
+	String get share_profile_for_doctor => 'share_profile_for_doctor';
+	String get share_profile_description => 'share_profile_description';
+	String get share_profile_success => 'share_profile_success';
+	String get share_profile_success_description => 'share_profile_success_description';
+	String get show_shared_list => 'show_shared_list';
+	String get stop_sharing => 'stop_sharing';
+	String get stop_sharing_description => 'stop_sharing_description';
 	String get bloodpressurescreen => 'BloodPressureScreen';
 	String get blood_pressure_trend => 'blood_pressure_trend';
 	String get lowest => 'lowest';

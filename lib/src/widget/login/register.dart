@@ -4,6 +4,7 @@ import 'dart:io' show Platform;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -54,157 +55,191 @@ class _RegisterControllerState extends State<RegisterController> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: R.color.white,
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                R.drawable.bg_splash,
-                fit: BoxFit.fill,
+        body: Container(
+          height: double.infinity,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  R.drawable.bg_splash,
+                  fit: BoxFit.fill,
+                ),
               ),
-            ),
-            SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  AppBar(
-                    leading: IconButton(
-                        splashColor: R.color.transparent,
-                        highlightColor: R.color.transparent,
-                        icon: Icon(Icons.arrow_back, color: R.color.black),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        }),
-                    title: Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        R.string.tao_tai_khoan.tr(),
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600),
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AppBar(
+                      leading: IconButton(
+                          splashColor: R.color.transparent,
+                          highlightColor: R.color.transparent,
+                          icon: Icon(Icons.arrow_back, color: R.color.black),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }),
+                      title: Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          R.string.tao_tai_khoan.tr(),
+                          style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600),
+                        ),
                       ),
+                      backgroundColor: R.color.transparent, //No more green
+                      elevation: 0.0, //Shadow gone
                     ),
-                    backgroundColor: R.color.transparent, //No more green
-                    elevation: 0.0, //Shadow gone
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(children: [
-                      TextFieldCustom(
-                          key: phoneKey,
-                          title: R.string.so_dien_thoai.tr(),
-                          placeholder: R.string.nhap_so_dien_thoai.tr(),
-                          autoFocus: true,
-                          onChanged: (value) {
-                            phone = value;
-                          }),
-                      const SizedBox(height: 20),
-                      TextFieldCustom(
-                          key: passwordKey,
-                          title: R.string.password.tr(),
-                          placeholder: R.string.password_least_character.tr(),
-                          isPassword: true,
-                          onChanged: (value) {
-                            password = value;
-                          }),
-                      const SizedBox(height: 20),
-                      TextFieldCustom(
-                          key: confirmPasswordKey,
-                          title: R.string.xac_nhan_mat_khau.tr(),
-                          placeholder: R.string.nhap_lai_mat_khau.tr(),
-                          isPassword: true,
-                          onChanged: (value) {
-                            confirmPassword = value;
-                          }),
-                      const SizedBox(height: 20),
-                      TextFieldCustom(
-                          key: sharedCodeKey,
-                          initText: sharedCode,
-                          title: R.string.references_code.tr(),
-                          placeholder: R.string.input_references_code.tr(),
-                          isSharedCode: true,
-                          onChanged: (value) {
-                            sharedCode = value;
-                          }),
-                      const SizedBox(height: 20),
-                      GestureDetector(
-                        onTap: () {
-                          phoneKey.currentState!.focusNode.requestFocus();
-
-                          verify();
-                        },
-                        child: Stack(children: [
-                          Container(
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          TextFieldCustom(
+                              key: phoneKey,
+                              title: R.string.so_dien_thoai.tr(),
+                              placeholder: R.string.nhap_so_dien_thoai.tr(),
+                              autoFocus: true,
+                              onChanged: (value) {
+                                phone = value;
+                              }),
+                          const SizedBox(height: 20),
+                          TextFieldCustom(
+                              key: passwordKey,
+                              title: R.string.password.tr(),
+                              placeholder:
+                                  R.string.password_least_character.tr(),
+                              isPassword: true,
+                              onChanged: (value) {
+                                password = value;
+                              }),
+                          const SizedBox(height: 20),
+                          TextFieldCustom(
+                              key: confirmPasswordKey,
+                              title: R.string.xac_nhan_mat_khau.tr(),
+                              placeholder: R.string.nhap_lai_mat_khau.tr(),
+                              isPassword: true,
+                              onChanged: (value) {
+                                confirmPassword = value;
+                              }),
+                          const SizedBox(height: 20),
+                          TextFieldCustom(
+                              key: sharedCodeKey,
+                              initText: sharedCode,
+                              title: R.string.references_code.tr(),
+                              placeholder: R.string.input_references_code.tr(),
+                              isSharedCode: true,
+                              onChanged: (value) {
+                                sharedCode = value;
+                              }),
+                          const SizedBox(height: 32),
+                          GestureDetector(
+                            onTap: () {
+                              phoneKey.currentState!.focusNode.requestFocus();
+                              verify();
+                            },
+                            child: Container(
                               height: 48,
                               width: 195,
                               decoration: BoxDecoration(
-                                  color: R.color.mainColor,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
+                                color: R.color.mainColor,
+                                borderRadius: BorderRadius.circular(200),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
+                                  ],
+                                ),
+                              ),
                               child: Center(
-                                child: Text(R.string.tiep_tuc.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              )),
-                        ]),
-                      )
-                    ]),
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      final dynamic scanResult =
-                          await NavigationUtil.navigatePage(
-                              context, const QRScanWidget());
-                      if (scanResult is String) {
-                        sharedCode = scanResult;
-                        sharedCodeKey.currentState?.textEditingController.text =
-                            sharedCode;
-                      }
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          R.drawable.ic_qr_scan,
-                          width: 26,
-                          height: 26,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          R.string.scan_references_code.tr(),
-                          style: TextStyle(
-                            color: R.color.mainColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
+                                child: Text(
+                                  R.string.tiep_tuc.tr(),
+                                  style: TextStyle(
+                                      color: R.color.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  SafeArea(
-                    child: Column(
-                      children: [
-                        Text(R.string.hoac_dang_nhap_bang.tr(),
+                    InkWell(
+                      onTap: () async {
+                        final dynamic scanResult =
+                            await NavigationUtil.navigatePage(
+                                context, const QRScanWidget());
+                        if (scanResult is String) {
+                          sharedCode = scanResult;
+                          sharedCodeKey.currentState?.textEditingController
+                              .text = sharedCode;
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            R.drawable.ic_qr_scan,
+                            width: 26,
+                            height: 26,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            R.string.scan_references_code.tr(),
                             style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400)),
-                        const SizedBox(height: 16),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (Platform.isIOS)
+                              color: R.color.mainColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SafeArea(
+                      child: Column(
+                        children: [
+                          Text(R.string.hoac_dang_nhap_bang.tr(),
+                              style: TextStyle(
+                                  color: R.color.textDark,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400)),
+                          const SizedBox(height: 16),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (Platform.isIOS)
+                                  GestureDetector(
+                                    onTap: () {
+                                      loginApple();
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8, right: 8),
+                                      child: Container(
+                                          height: 50,
+                                          width: 50,
+                                          decoration: BoxDecoration(
+                                              color: R.color.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
+                                          child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Image.asset(
+                                                    R.drawable.ic_login_apple,
+                                                    width: 26,
+                                                    height: 26),
+                                              ])),
+                                    ),
+                                  )
+                                else
+                                  const SizedBox(),
                                 GestureDetector(
                                   onTap: () {
-                                    loginApple();
+                                    loginGG();
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(
@@ -220,47 +255,21 @@ class _RegisterControllerState extends State<RegisterController> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              Image.asset(
-                                                  R.drawable.ic_login_apple,
-                                                  width: 26,
-                                                  height: 26),
+                                              Image.asset(R.drawable.ic_google,
+                                                  width: 26, height: 26),
                                             ])),
                                   ),
                                 )
-                              else
-                                const SizedBox(),
-                              GestureDetector(
-                                onTap: () {
-                                  loginGG();
-                                },
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 8, right: 8),
-                                  child: Container(
-                                      height: 50,
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                          color: R.color.white,
-                                          borderRadius:
-                                              BorderRadius.circular(25)),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Image.asset(R.drawable.ic_google,
-                                                width: 26, height: 26),
-                                          ])),
-                                ),
-                              )
-                            ]),
-                        const SizedBox(height: 16)
-                      ],
-                    ),
-                  )
-                ],
+                              ]),
+                          const SizedBox(height: 16)
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -478,14 +487,12 @@ class _RegisterControllerState extends State<RegisterController> {
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }
     } catch (error) {
-      if (error is Error) {
-        if (error.code == '5' && account != null) {
-          // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-          //     arguments: {'type': 'google', 'googleAccount': account});
-
-          registerAccount(account.id, authen.accessToken, 'Google',
-              account.displayName ?? R.string.user_name_default.tr(), false);
-        }
+      if (error is Error && error.code == '5' && account != null) {
+        registerAccount(account.id, authen.accessToken, 'Google',
+            account.displayName ?? R.string.user_name_default.tr(), false);
+      } else if (error is PlatformException && error.code == 'network_error') {
+        Message.showToastMessage(
+            context, R.string.error_can_not_connect_to_server.tr());
       } else {
         BotToast.closeAllLoading();
         Message.showToastMessage(context, error.toString());
@@ -537,17 +544,16 @@ class _RegisterControllerState extends State<RegisterController> {
       }
     } catch (error) {
       BotToast.closeAllLoading();
-      if (error is Error) {
-        if (error.code == '5' && credential != null) {
-          // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-          //     arguments: {'type': 'apple', 'appleAccount': credential});
-          registerAccount(
-              credential.userIdentifier,
-              credential.identityToken,
-              'Apple',
-              credential.givenName ?? R.string.user_name_default.tr(),
-              false);
-        }
+      if (error is Error && error.code == '5' && credential != null) {
+        registerAccount(
+            credential.userIdentifier,
+            credential.identityToken,
+            'Apple',
+            credential.givenName ?? R.string.user_name_default.tr(),
+            false);
+      } else if (error is PlatformException && error.code == 'network_error') {
+        Message.showToastMessage(
+            context, R.string.error_can_not_connect_to_server.tr());
       } else {
         // Message.showToastMessage(context, error.toString());
       }

@@ -1,7 +1,15 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/update_shared_profile_request.dart';
+import 'package:medical/src/model/response/patient_info_response.dart';
+import 'package:medical/src/model/response/update_shared_profile_response.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
@@ -9,35 +17,43 @@ import '../app.dart';
 import '../utils/navigation_util.dart';
 
 class ShareProfilePopup {
-  static Future<void> onHasSharedCode({
+  ShareProfilePopup._privateConstructor() {
+    appRepository = AppRepository();
+  }
+
+  static final ShareProfilePopup instance =
+      ShareProfilePopup._privateConstructor();
+
+  late final AppRepository appRepository;
+
+  Future<void> onHasSharedCode({
     BuildContext? context,
-    required String sharingTitle,
+    final bool requestFromDoctor = false,
+    required final String code,
   }) async {
-    BotToast.showLoading();
-    await Future.delayed(const Duration(seconds: 2));
-    BotToast.closeAllLoading();
     final BuildContext currentContext =
         context ?? navigatorKey.currentState!.context;
+    final PatientInfoResponseData? userInfo =
+        await _getSharedProfile(currentContext, code: code);
     showPopup(currentContext,
         image: R.drawable.img_sharing_profile,
-        title: sharingTitle,
-        description: '''
-Việc chia sẽ hồ sơ giúp bác sĩ có thêm thông tin để hỗ trợ chấn đoán và điều trị. Bạn có thể dừng chia sẻ hồ sơ khi không có nhu cầu.
-Bạn có muốn tiếp tục chia sẻ không?''', onTapCancel: () {
+        title: requestFromDoctor
+            ? R.string.doctor_request_share_profile
+                .tr(args: [userInfo?.fullName ?? ''])
+            : R.string.share_profile_for_doctor
+                .tr(args: [userInfo?.fullName ?? '', '<<tên bệnh viện>>']),
+        description: R.string.share_profile_description.tr(), onTapCancel: () {
       NavigationUtil.pop(currentContext);
     }, onTapYes: () async {
-      // TODO(Tuyen): Call API to share code
-      BotToast.showLoading();
-      await Future.delayed(const Duration(seconds: 2));
-      BotToast.closeAllLoading();
+      final bool sharingSuccessed =
+          await _shareProfile(currentContext, code: code);
+      if (!sharingSuccessed) return;
       NavigationUtil.pop(currentContext);
       showPopup(currentContext,
           image: R.drawable.img_survey_completed,
-          title: 'Bạn đã chia sẻ thành công!',
-          description: '''
-Bạn đã chia sẻ thành công profile 
-cho bác sĩ <<tên bác sĩ>>. Bạn có thể dừng chia sẻ tại “danh sách đã chia sẻ”.''',
-          onTapYes: () {
+          title: R.string.share_profile_success.tr(),
+          description: R.string.share_profile_success_description
+              .tr(args: [userInfo?.fullName ?? '']), onTapYes: () {
         NavigationUtil.pop(currentContext, result: true);
       }, afterShow: () {
         NavigationUtil.navigatePage(currentContext, const SharedProfilePage());
@@ -111,7 +127,7 @@ cho bác sĩ <<tên bác sĩ>>. Bạn có thể dừng chia sẻ tại “danh s
                               width: 130.w,
                               height: 43,
                               child: ButtonWidget(
-                                  title: 'Để sau',
+                                  title: R.string.later.tr(),
                                   textSize: 14,
                                   backgroundColor: R.color.grayBorder,
                                   textColor: R.color.textDark,
@@ -122,7 +138,7 @@ cho bác sĩ <<tên bác sĩ>>. Bạn có thể dừng chia sẻ tại “danh s
                               width: 130.w,
                               height: 43,
                               child: ButtonWidget(
-                                title: 'Xác nhận',
+                                title: R.string.confirm.tr(),
                                 textSize: 14,
                                 onPressed: onTapYes,
                               ),
@@ -134,7 +150,7 @@ cho bác sĩ <<tên bác sĩ>>. Bạn có thể dừng chia sẻ tại “danh s
                           width: 245.w,
                           height: 43,
                           child: ButtonWidget(
-                              title: 'Xem danh sách đã chia sẻ',
+                              title: R.string.show_shared_list.tr(),
                               textSize: 14,
                               onPressed: onTapYes),
                         ),
@@ -150,5 +166,40 @@ cho bác sĩ <<tên bác sĩ>>. Bạn có thể dừng chia sẻ tại “danh s
     if (result is bool && result && afterShow != null) {
       afterShow.call();
     }
+  }
+
+  Future<PatientInfoResponseData?> _getSharedProfile(BuildContext context,
+      {String? code}) async {
+    BotToast.showLoading();
+    PatientInfoResponseData? patientInfo;
+    final ApiResult<PatientInfoResponse> apiResult =
+        await appRepository.getSharedProfile(referalCode: code);
+    apiResult.when(success: (PatientInfoResponse response) {
+      if (response.data?.isNotEmpty == true) {
+        patientInfo = response.data?.first;
+      }
+    }, failure: (NetworkExceptions error) {
+      Message.showToastMessage(context, error.toString());
+    });
+    BotToast.closeAllLoading();
+    return patientInfo;
+  }
+
+  Future<bool> _shareProfile(BuildContext context, {String? code}) async {
+    BotToast.showLoading();
+    bool sharingSuccessed = false;
+    final UpdateSharedProfileRequest request = UpdateSharedProfileRequest(
+      referalCode: code,
+      referalCodeType: 3,
+    );
+    final ApiResult<UpdateSharedProfileResponse> apiResult =
+        await appRepository.updateSharedProfile(request);
+    apiResult.when(success: (UpdateSharedProfileResponse response) {
+      sharingSuccessed = true;
+    }, failure: (NetworkExceptions error) {
+      Message.showToastMessage(context, error.toString());
+    });
+    BotToast.closeAllLoading();
+    return sharingSuccessed;
   }
 }

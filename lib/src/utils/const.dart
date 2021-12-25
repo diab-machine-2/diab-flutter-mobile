@@ -1,5 +1,5 @@
 class Const {
-  static const String HOST_URL = "https://diab-api-staging.savvycom.vn/";
+  static const String HOST_URL = "https://diab-api-dev.savvycom.vn/";
 
   static const String API_URL = "${HOST_URL}api/";
 

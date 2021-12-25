@@ -63,9 +63,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
       loadMotivation(),
     ]);
     if (widget.sharedCode?.isNotEmpty == true) {
-      ShareProfilePopup.onHasSharedCode(
-          sharingTitle:
-              'Bạn muốn chia sẻ profile cho bác sĩ <<tên bác sĩ>> thuộc <<tên bệnh viện>>?');
+      ShareProfilePopup.instance.onHasSharedCode(
+          context: context, code: widget.sharedCode.toString());
     }
   }
 
@@ -200,9 +199,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                               const QRScanWidget(),
                             );
                             if (scanedResult is String) {
-                              ShareProfilePopup.onHasSharedCode(
-                                  sharingTitle:
-                                      'Bạn muốn chia sẻ profile cho bác sĩ <<tên bác sĩ>> thuộc <<tên bệnh viện>>?');
+                              ShareProfilePopup.instance.onHasSharedCode(
+                                  context: context, code: scanedResult);
                             }
                           },
                           child: Container(

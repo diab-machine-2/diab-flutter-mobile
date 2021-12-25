@@ -59,9 +59,8 @@ class NotificationManager {
           data: NotificationData.fromJson(message.data));
 
       if (model.actionType == NotificationActionType.share_profile) {
-        ShareProfilePopup.onHasSharedCode(
-            sharingTitle:
-                'Bác sĩ <<tên bác sĩ>> muốn xem profile của bạn. Bạn có đồng ý chia sẻ không?');
+        ShareProfilePopup.instance
+            .onHasSharedCode(requestFromDoctor: true, code: '123456');
         return;
       }
       Message.showNotificationMessage(
@@ -96,9 +95,8 @@ class NotificationManager {
     );
 
     if (model.actionType == NotificationActionType.share_profile) {
-      ShareProfilePopup.onHasSharedCode(
-          sharingTitle:
-              'Bác sĩ <<tên bác sĩ>> muốn xem profile của bạn. Bạn có đồng ý chia sẻ không?');
+      ShareProfilePopup.instance
+          .onHasSharedCode(requestFromDoctor: true, code: '123456');
       return;
     }
 

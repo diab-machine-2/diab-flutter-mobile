@@ -11,6 +11,7 @@ import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
+import 'package:medical/src/model/request/update_shared_profile_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
@@ -30,12 +31,14 @@ import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/my_progress_response.dart';
+import 'package:medical/src/model/response/patient_info_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/smart_goal_detail_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
 import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
+import 'package:medical/src/model/response/update_shared_profile_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/response/week_smart_goal_response.dart';
@@ -553,6 +556,29 @@ class AppRepository {
     try {
       final MyProgressResponse response =
           await appClient.getMyProgress(type: type);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  //Referral, Share Profile
+  Future<ApiResult<PatientInfoResponse>> getSharedProfile(
+      {String? referalCode}) async {
+    try {
+      final PatientInfoResponse response =
+          await appClient.getSharedProfile(referalCode: referalCode);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<UpdateSharedProfileResponse>> updateSharedProfile(
+      UpdateSharedProfileRequest request) async {
+    try {
+      final UpdateSharedProfileResponse response =
+          await appClient.updateSharedProfile(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
