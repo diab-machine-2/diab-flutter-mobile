@@ -23,6 +23,7 @@ class Strings {
 	String get error_invalid_status_code => 'error_invalid_status_code';
 	String get error_not_found_api => 'error_not_found_api';
 	String get error_can_not_connect_to_server => 'error_can_not_connect_to_server';
+	String get error_can_not_access_camera => 'error_can_not_access_camera';
 	String get current_language => 'current_language';
 	String get please_enter_email => 'please_enter_email';
 	String get please_enter_user_name => 'please_enter_user_name';
@@ -144,6 +145,8 @@ class Strings {
 	String get show_shared_list => 'show_shared_list';
 	String get stop_sharing => 'stop_sharing';
 	String get stop_sharing_description => 'stop_sharing_description';
+	String get qr_code_not_found => 'qr_code_not_found';
+	String get referral_code_not_exist => 'referral_code_not_exist';
 	String get bloodpressurescreen => 'BloodPressureScreen';
 	String get blood_pressure_trend => 'blood_pressure_trend';
 	String get lowest => 'lowest';
@@ -942,4 +945,5 @@ class Strings {
 	String get day_in_week_friday => 'day_in_week_friday';
 	String get day_in_week_saturday => 'day_in_week_saturday';
 	String get day_in_week_sunday => 'day_in_week_sunday';
+	String get data_input_not_valid => 'data_input_not_valid';
 }

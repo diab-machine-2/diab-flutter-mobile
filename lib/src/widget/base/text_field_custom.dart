@@ -126,14 +126,28 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                       fontSize: 15,
                                       fontWeight: FontWeight.w300)),
                               onChanged: (value) {
-                                isCorrect =
-                                    value.isNotEmpty && value.length >= 6;
-                                if (value.length < 6 && !widget.isSharedCode) {
-                                  showValidate = true;
-                                  validateText =
-                                      R.string.password_least_character.tr();
-                                } else if (value.isNotEmpty && showValidate) {
-                                  showValidate = false;
+                                if (!widget.isSharedCode) {
+                                  isCorrect =
+                                      value.isNotEmpty && value.length >= 6;
+                                  if (value.length < 6 &&
+                                      !widget.isSharedCode) {
+                                    showValidate = true;
+                                    validateText =
+                                        R.string.password_least_character.tr();
+                                  } else if (value.isNotEmpty && showValidate) {
+                                    showValidate = false;
+                                  }
+                                } else {
+                                  const String pattern = r'^[a-zA-Z0-9\+]*$';
+                                  final RegExp regExp = RegExp(pattern);
+                                  isCorrect = regExp.hasMatch(value);
+                                  if (!isCorrect) {
+                                    showValidate = true;
+                                    validateText =
+                                        R.string.data_input_not_valid.tr();
+                                  } else if (value.isNotEmpty && showValidate) {
+                                    showValidate = false;
+                                  }
                                 }
                                 setState(() {});
                                 widget.onChanged!(value);

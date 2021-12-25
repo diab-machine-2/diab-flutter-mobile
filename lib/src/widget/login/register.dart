@@ -134,7 +134,6 @@ class _RegisterControllerState extends State<RegisterController> {
                           const SizedBox(height: 32),
                           GestureDetector(
                             onTap: () {
-                              phoneKey.currentState!.focusNode.requestFocus();
                               verify();
                             },
                             child: Container(
@@ -166,36 +165,41 @@ class _RegisterControllerState extends State<RegisterController> {
                         ],
                       ),
                     ),
-                    InkWell(
-                      onTap: () async {
-                        final dynamic scanResult =
-                            await NavigationUtil.navigatePage(
-                                context, const QRScanWidget());
-                        if (scanResult is String) {
-                          sharedCode = scanResult;
-                          sharedCodeKey.currentState?.textEditingController
-                              .text = sharedCode;
-                        }
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            R.drawable.ic_qr_scan,
-                            width: 26,
-                            height: 26,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () async {
+                            final dynamic scanResult =
+                                await NavigationUtil.navigatePage(
+                                    context, const QRScanWidget());
+                            if (scanResult is String) {
+                              sharedCode = scanResult;
+                              sharedCodeKey.currentState?.textEditingController
+                                  .text = sharedCode;
+                            }
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                R.drawable.ic_qr_scan,
+                                width: 26,
+                                height: 26,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                R.string.scan_references_code.tr(),
+                                style: TextStyle(
+                                  color: R.color.mainColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 12),
-                          Text(
-                            R.string.scan_references_code.tr(),
-                            style: TextStyle(
-                              color: R.color.mainColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                     SafeArea(
                       child: Column(
@@ -275,6 +279,15 @@ class _RegisterControllerState extends State<RegisterController> {
     );
   }
 
+  Future<bool> _isReferralCodeExist(String code) async {
+    BotToast.showLoading();
+    // TODO(Tuyen): Call API to verify referral code exist
+    await Future.delayed(const Duration(seconds: 2));
+    BotToast.closeAllLoading();
+    Message.showToastMessage(context, R.string.referral_code_not_exist.tr());
+    return false;
+  }
+
   verify() async {
     if (phone.isEmpty) {
       phoneKey.currentState!
@@ -306,6 +319,10 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
 
+    if (!sharedCodeKey.currentState!.isCorrect) {
+      return;
+    }
+
     const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
     final RegExp regExp = RegExp(pattern);
     final isCorrect = regExp.hasMatch(phone);
@@ -313,6 +330,9 @@ class _RegisterControllerState extends State<RegisterController> {
       phoneKey.currentState!.validate(R.string.phone_not_valid.tr());
       return;
     }
+
+    final bool isReferralCodeExist = await _isReferralCodeExist('123456');
+    if (!isReferralCodeExist) return;
 
     BotToast.showLoading();
     try {

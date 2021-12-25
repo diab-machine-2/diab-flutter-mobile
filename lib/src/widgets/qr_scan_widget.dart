@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
@@ -20,6 +21,21 @@ class _QRScanWidgetState extends State<QRScanWidget> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   late final StreamSubscription<Barcode> subcription;
 
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    _stopTimer();
+    super.dispose();
+  }
+
   @override
   void reassemble() {
     super.reassemble();
@@ -27,6 +43,19 @@ class _QRScanWidgetState extends State<QRScanWidget> {
       controller!.pauseCamera();
     }
     controller!.resumeCamera();
+  }
+
+  void _startTimer() {
+    _stopTimer();
+    _timer = Timer(const Duration(minutes: 1), () {
+      Message.showToastMessage(context, R.string.qr_code_not_found.tr());
+    });
+  }
+
+  _stopTimer() {
+    if (_timer?.isActive == true) {
+      _timer?.cancel();
+    }
   }
 
   @override
@@ -64,7 +93,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
       overlay: QrScannerOverlayShape(
-          borderColor: Colors.blue,
+          borderColor: Colors.white,
           borderRadius: 10,
           borderLength: 30,
           borderWidth: 10,
@@ -86,10 +115,6 @@ class _QRScanWidgetState extends State<QRScanWidget> {
 
   Future<void> checkValidLink(String scanedText) async {
     subcription.pause();
-    // if (await canLaunch(scanedText)) {
-    //   subcription.cancel();
-    //   Navigator.pop(context, scanedText);
-    // }
     if (scanedText.contains('https://diab-portal-dev.savvycom.vn')) {
       subcription.cancel();
       Navigator.pop(context,
@@ -101,13 +126,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
     if (!p) {
-      Message.showToastMessage(context, 'Không có quyền truy cập camera');
+      Message.showToastMessage(context, R.string.error_can_not_access_camera.tr());
     }
-  }
-
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
   }
 }

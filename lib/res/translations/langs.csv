@@ -21,6 +21,7 @@ error_not_acceptable,Không được chấp nhận,Not acceptable
 error_invalid_status_code,Đã nhận mã trạng thái không hợp lệ: {},Received invalid status code: {},
 error_not_found_api,Không tìm thấy API,Not found API
 error_can_not_connect_to_server,"diaB không kết nối được với máy chủ, vui lòng kiểm tra lại kết nối Internet hoặc liên lạc với Hotline của chúng tôi"
+error_can_not_access_camera,Không có quyền truy cập camera,
 current_language,Tiếng Việt,
 please_enter_email,Vui lòng nhập Email,
 please_enter_user_name,Vui lòng nhập Tên đăng nhập,
@@ -142,6 +143,8 @@ share_profile_success_description,"Bạn đã chia sẻ thành công profile cho
 show_shared_list,Xem danh sách đã chia sẻ,
 stop_sharing,Bạn muốn dừng chia sẻ profile cho bác sĩ {} thuộc {}?,
 stop_sharing_description,Sau khi dừng chia sẻ, bác sĩ sẽ không thể theo dõi hồ sơ của bạn nữa.,
+qr_code_not_found,Không tìm thấy mã QR. Bạn hãy thử lại và đặt mã QR ở trung tâm màn hình nhé!,
+referral_code_not_exist,Mã giới thiệu không tồn tại!,
 BloodPressureScreen,============================================BloodPressure screen====================================================
 blood_pressure_trend,Xu hướng huyết áp,
 lowest,Thấp nhất,
@@ -940,3 +943,4 @@ day_in_week_thursday,Thứ năm,
 day_in_week_friday,Thứ sáu,
 day_in_week_saturday,Thứ bảy,
 day_in_week_sunday,Chủ nhật,
+data_input_not_valid,Dữ liệu không hợp lệ,
