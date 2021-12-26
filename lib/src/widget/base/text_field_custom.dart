@@ -55,6 +55,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
     }
     if (widget.initText?.isNotEmpty == true) {
       textEditingController.text = widget.initText!;
+      valideReferralCode(widget.initText!);
     }
   }
 
@@ -138,16 +139,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                     showValidate = false;
                                   }
                                 } else {
-                                  const String pattern = r'^[a-zA-Z0-9\+]*$';
-                                  final RegExp regExp = RegExp(pattern);
-                                  isCorrect = regExp.hasMatch(value);
-                                  if (!isCorrect) {
-                                    showValidate = true;
-                                    validateText =
-                                        R.string.data_input_not_valid.tr();
-                                  } else if (value.isNotEmpty && showValidate) {
-                                    showValidate = false;
-                                  }
+                                  valideReferralCode(value);
                                 }
                                 setState(() {});
                                 widget.onChanged!(value);
@@ -263,5 +255,17 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           const SizedBox()
       ],
     );
+  }
+
+  void valideReferralCode(String code) {
+    const String pattern = r'^[a-zA-Z0-9\+]*$';
+    final RegExp regExp = RegExp(pattern);
+    isCorrect = regExp.hasMatch(code);
+    if (!isCorrect) {
+      showValidate = true;
+      validateText = R.string.data_input_not_valid.tr();
+    } else if (code.isNotEmpty && showValidate) {
+      showValidate = false;
+    }
   }
 }

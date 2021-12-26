@@ -40,8 +40,8 @@ class ShareProfilePopup {
         title: requestFromDoctor
             ? R.string.doctor_request_share_profile
                 .tr(args: [userInfo?.fullName ?? ''])
-            : R.string.share_profile_for_doctor
-                .tr(args: [userInfo?.fullName ?? '', '<<tên bệnh viện>>']),
+            : R.string.share_profile_for_doctor.tr(
+                args: [userInfo?.fullName ?? '', userInfo?.nameOfAgency ?? '']),
         description: R.string.share_profile_description.tr(), onTapCancel: () {
       NavigationUtil.pop(currentContext);
     }, onTapYes: () async {

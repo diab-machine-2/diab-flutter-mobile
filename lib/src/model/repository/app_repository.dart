@@ -41,6 +41,7 @@ import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/response/update_shared_profile_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
+import 'package:medical/src/model/response/validate_referral_code_response.dart';
 import 'package:medical/src/model/response/week_smart_goal_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -579,6 +580,17 @@ class AppRepository {
     try {
       final UpdateSharedProfileResponse response =
           await appClient.updateSharedProfile(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ValidateReferralCodeResponse>> checkReferralCode(
+      String referalCode) async {
+    try {
+      final ValidateReferralCodeResponse response =
+          await appClient.checkReferralCode(referalCode);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

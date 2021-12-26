@@ -43,6 +43,7 @@ import 'response/tdee_response.dart';
 import 'response/update_shared_profile_response.dart';
 import 'response/upgrade_account_response.dart';
 import 'response/user_info_response.dart';
+import 'response/validate_referral_code_response.dart';
 import 'response/week_smart_goal_response.dart';
 import 'response/week_states_response.dart';
 
@@ -263,6 +264,11 @@ abstract class AppApi {
   @PUT("App/Patient/UpdateReferalCodeFromPatient")
   Future<UpdateSharedProfileResponse> updateSharedProfile(
     @Body() UpdateSharedProfileRequest? request,
+  );
+
+  @GET("App/Patient/CheckDuplicateReferalAccount/{referalCode}")
+  Future<ValidateReferralCodeResponse> checkReferralCode(
+    @Path('referalCode') String referalCode,
   );
 
 }

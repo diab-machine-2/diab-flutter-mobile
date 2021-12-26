@@ -79,8 +79,8 @@ class _SharedProfilePageState extends State<SharedProfilePage> {
             height: 56,
             clipBehavior: Clip.hardEdge,
             decoration: const BoxDecoration(shape: BoxShape.circle),
-            child: const NetWorkImageWidget(
-              imageUrl: '',
+            child: NetWorkImageWidget(
+              imageUrl: userData?.avatar?.url ?? '',
             ),
           ),
           const SizedBox(width: 16),
@@ -96,32 +96,39 @@ class _SharedProfilePageState extends State<SharedProfilePage> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Bệnh viện Hồng Ngọc',
-                  style: TextStyle(
-                    color: Color(0xff888C9F),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+                if (userData?.nameOfAgency?.isNotEmpty == true)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      userData?.nameOfAgency ?? '',
+                      style: const TextStyle(
+                        color: Color(0xff888C9F),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 1),
-                const Text(
-                  'Ngày chia sẻ: 25/12/2021',
-                  style: TextStyle(
-                    color: Color(0xff888C9F),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+                if (userData?.sharedDate != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1),
+                    child: Text(
+                      R.string.shared_date.tr(args: [
+                        DateFormat('dd/MM/yyyy').format(userData!.sharedDate)
+                      ]),
+                      style: const TextStyle(
+                        color: Color(0xff888C9F),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
           InkWell(
             onTap: () {
               showPopup(context, userData: userData, onTap: () async {
-                // TODO(Tuyen): Need code from userData
-                await _cubit.stopSharing(code: '');
+                await _cubit.stopSharing(code: userData?.referralCode ?? '');
                 _cubit.getSharedProfile();
                 NavigationUtil.pop(context);
               });
@@ -177,7 +184,7 @@ class _SharedProfilePageState extends State<SharedProfilePage> {
                       Text(
                         R.string.stop_sharing.tr(args: [
                           userData?.fullName ?? '',
-                          '<<tên bệnh viện>>'
+                          userData?.nameOfAgency ?? ''
                         ]),
                         textAlign: TextAlign.center,
                         style: TextStyle(

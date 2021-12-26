@@ -142,9 +142,10 @@ share_profile_success,Bạn đã chia sẻ thành công!,
 share_profile_success_description,"Bạn đã chia sẻ thành công profile cho bác sĩ {}. Bạn có thể dừng chia sẻ tại “danh sách đã chia sẻ”."
 show_shared_list,Xem danh sách đã chia sẻ,
 stop_sharing,Bạn muốn dừng chia sẻ profile cho bác sĩ {} thuộc {}?,
-stop_sharing_description,Sau khi dừng chia sẻ, bác sĩ sẽ không thể theo dõi hồ sơ của bạn nữa.,
+stop_sharing_description,"Sau khi dừng chia sẻ, bác sĩ sẽ không thể theo dõi hồ sơ của bạn nữa.",
 qr_code_not_found,Không tìm thấy mã QR. Bạn hãy thử lại và đặt mã QR ở trung tâm màn hình nhé!,
 referral_code_not_exist,Mã giới thiệu không tồn tại!,
+shared_date,Ngày chia sẻ: {},
 BloodPressureScreen,============================================BloodPressure screen====================================================
 blood_pressure_trend,Xu hướng huyết áp,
 lowest,Thấp nhất,

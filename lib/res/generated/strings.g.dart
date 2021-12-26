@@ -147,6 +147,7 @@ class Strings {
 	String get stop_sharing_description => 'stop_sharing_description';
 	String get qr_code_not_found => 'qr_code_not_found';
 	String get referral_code_not_exist => 'referral_code_not_exist';
+	String get shared_date => 'shared_date';
 	String get bloodpressurescreen => 'BloodPressureScreen';
 	String get blood_pressure_trend => 'blood_pressure_trend';
 	String get lowest => 'lowest';

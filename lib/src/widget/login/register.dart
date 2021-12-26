@@ -10,6 +10,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/validate_referral_code_response.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
@@ -28,22 +32,24 @@ class RegisterController extends StatefulWidget {
 }
 
 class _RegisterControllerState extends State<RegisterController> {
+  final AppRepository _appRepository = AppRepository();
+
   final GlobalKey<TextFieldCustomState> phoneKey = GlobalKey();
   final GlobalKey<TextFieldCustomState> passwordKey = GlobalKey();
   final GlobalKey<TextFieldCustomState> confirmPasswordKey = GlobalKey();
-  final GlobalKey<TextFieldCustomState> sharedCodeKey = GlobalKey();
+  final GlobalKey<TextFieldCustomState> referralCodeKey = GlobalKey();
 
   String phone = '';
   String password = '';
   String confirmPassword = '';
-  late String sharedCode;
+  late String referralCode;
 
   bool checked = false;
 
   @override
   void initState() {
     super.initState();
-    sharedCode = widget.sharedCode;
+    referralCode = widget.sharedCode;
   }
 
   @override
@@ -123,13 +129,13 @@ class _RegisterControllerState extends State<RegisterController> {
                               }),
                           const SizedBox(height: 20),
                           TextFieldCustom(
-                              key: sharedCodeKey,
-                              initText: sharedCode,
+                              key: referralCodeKey,
+                              initText: referralCode,
                               title: R.string.references_code.tr(),
                               placeholder: R.string.input_references_code.tr(),
                               isSharedCode: true,
                               onChanged: (value) {
-                                sharedCode = value;
+                                referralCode = value;
                               }),
                           const SizedBox(height: 32),
                           GestureDetector(
@@ -174,9 +180,11 @@ class _RegisterControllerState extends State<RegisterController> {
                                 await NavigationUtil.navigatePage(
                                     context, const QRScanWidget());
                             if (scanResult is String) {
-                              sharedCode = scanResult;
-                              sharedCodeKey.currentState?.textEditingController
-                                  .text = sharedCode;
+                              referralCode = scanResult;
+                              referralCodeKey.currentState
+                                  ?.textEditingController.text = referralCode;
+                              referralCodeKey.currentState
+                                  ?.valideReferralCode(referralCode);
                             }
                           },
                           child: Row(
@@ -281,11 +289,22 @@ class _RegisterControllerState extends State<RegisterController> {
 
   Future<bool> _isReferralCodeExist(String code) async {
     BotToast.showLoading();
-    // TODO(Tuyen): Call API to verify referral code exist
-    await Future.delayed(const Duration(seconds: 2));
-    BotToast.closeAllLoading();
-    Message.showToastMessage(context, R.string.referral_code_not_exist.tr());
-    return false;
+    bool isReferralCodeExist = false;
+    final ApiResult<ValidateReferralCodeResponse> apiResult =
+        await _appRepository.checkReferralCode(code);
+    apiResult.when(success: (ValidateReferralCodeResponse response) {
+      isReferralCodeExist = response.data ?? false;
+      if (!isReferralCodeExist) {
+        Message.showToastMessage(
+            context, R.string.referral_code_not_exist.tr());
+      }
+    }, failure: (NetworkExceptions error) {
+      Message.showToastMessage(
+          context, NetworkExceptions.getErrorMessage(error));
+      BotToast.closeAllLoading();
+    });
+    if (!isReferralCodeExist) BotToast.closeAllLoading();
+    return isReferralCodeExist;
   }
 
   verify() async {
@@ -319,7 +338,7 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
 
-    if (!sharedCodeKey.currentState!.isCorrect) {
+    if (!referralCodeKey.currentState!.isCorrect) {
       return;
     }
 
@@ -331,10 +350,8 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
 
-    final bool isReferralCodeExist = await _isReferralCodeExist('123456');
+    final bool isReferralCodeExist = await _isReferralCodeExist(referralCode);
     if (!isReferralCodeExist) return;
-
-    BotToast.showLoading();
     try {
       print(phone);
       final result = await LoginClient()
