@@ -73,9 +73,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   onDone: (isPassed) async {
                     if (isPassed) {
                       await _cubit.checkSectionComplete();
-                      if (_cubit.isLastSection) {
-                        NavigationUtil.pop(context);
-                      }
                     }
                     _cubit.onChangeSection(_cubit.currentSection + 1);
                   })
