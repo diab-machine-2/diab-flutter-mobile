@@ -22,6 +22,7 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -47,6 +48,7 @@ class ProfileInfoController extends StatefulWidget {
 class _ProfileInfoControllerState extends State<ProfileInfoController>
     with Observer {
   MotivationModel? motivation;
+  bool isHasRoadMap = false;
 
   @override
   void initState() {
@@ -470,32 +472,48 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                             ),
                             buildItem(
                               icon: R.drawable.ic_user_bmi,
-                              title: '27.2',
+                              title: user.height == null
+                                  ? R.string.not_updated_yet.tr()
+                                  : Utils.getBMI(
+                                      height: user.height!,
+                                      weight: user.weight!),
                               subTitle: 'BMI',
                               callback: () {},
                             ),
                           ],
                         ),
-                        _buildCardLayout(
+                        if (isHasRoadMap) _buildCardLayout(
                           title: 'Chủ đề quan tâm',
-                          description: 'Hãy chọn các chủ đề mà bạn quan tâm để diaB gợi ý các bài học phù hợp nhất với bạn.',
-                           showIcon: true,
+                          description:
+                              'Hãy chọn các chủ đề mà bạn quan tâm để diaB gợi ý các bài học phù hợp nhất với bạn.',
+                          showIcon: true,
+                          onTap: () {
+                            showActionFilter(
+                                context: context,
+                                builder: (context) {
+                                  return SelectBottomSheetWidget(
+                                    title: 'Chọn chủ đề quan tâm',
+                                    selectedList: [],
+                                    elementList: [],
+                                    onSelected: (typeList) {
+                                      if (typeList.isNotEmpty) {}
+                                    },
+                                  );
+                                });
+                          },
                           children: [
                             const SizedBox(height: 6),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                _buildTopicItem('Bệnh lý'),
-                                _buildTopicItem('Dinh dưỡng'),
-                                _buildTopicItem('Vận động'),
-                                _buildTopicItem('Xây dựng lối sống lành mạnh'),
-                                _buildTopicItem('Tâm lý'),
-                                _buildTopicItem('Theo dõi chỉ số sinh học'),
-                              ]
-                            ),
-                          ],),
-                        _buildCardLayout(
+                            Wrap(spacing: 8, runSpacing: 8, children: [
+                              _buildTopicItem('Bệnh lý'),
+                              _buildTopicItem('Dinh dưỡng'),
+                              _buildTopicItem('Vận động'),
+                              _buildTopicItem('Xây dựng lối sống lành mạnh'),
+                              _buildTopicItem('Tâm lý'),
+                              _buildTopicItem('Theo dõi chỉ số sinh học'),
+                            ]),
+                          ],
+                        ),
+                        if (isHasRoadMap) _buildCardLayout(
                           title: 'Tiêu chí chọn huấn luyện viên sức khỏe',
                           description:
                               'Hãy mô tả chi tiết hơn về bản thân để diaB tìm huấn luyện viên phù hợp với bạn',
@@ -874,11 +892,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
         color: R.color.main_6,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Text(title, style: TextStyle(
-        color: R.color.textDark,
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-      ),),
+      child: Text(
+        title,
+        style: TextStyle(
+          color: R.color.textDark,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
     );
   }
 
@@ -887,51 +908,56 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
     required String title,
     String description = '',
     bool showIcon = false,
+    VoidCallback? onTap,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(top: 16),
-      decoration: BoxDecoration(
-        color: R.color.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(
-          children: [
-            Expanded(
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(top: 16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: R.color.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              if (showIcon)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child:
+                      Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                )
+            ],
+          ),
+          const SizedBox(height: 8),
+          Visibility(
+            visible: description.isNotEmpty,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 6),
               child: Text(
-                title,
+                description,
                 style: TextStyle(
-                  color: R.color.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
+                  color: R.color.captionColorGray,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),
-            if (showIcon) Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Image.asset(R.drawable.ic_right,
-                                    width: 18, height: 18),
-            )
-          ],
-        ),
-        const SizedBox(height: 8),
-        Visibility(
-          visible: description.isNotEmpty,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Text(
-              description,
-              style: TextStyle(
-                color: R.color.captionColorGray,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
           ),
-        ),
-        ...children,
-      ]),
+          ...children,
+        ]),
+      ),
     );
   }
 

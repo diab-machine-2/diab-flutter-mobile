@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -360,5 +361,12 @@ class Utils {
     if (index >= 0 && index < 6) return 'T${index + 2}';
     if (index == 6) return 'CN';
     return '';
+  }
+
+  static String getBMI({required double height, required double weight}) {
+    if (height == 0) return '0';
+    final double bmi = weight / pow(height / 100, 2);
+    final num mod = pow(10.0, 1);
+    return ((bmi * mod).round().toDouble() / mod).toString();
   }
 }
