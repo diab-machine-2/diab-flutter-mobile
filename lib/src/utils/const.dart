@@ -106,10 +106,6 @@ class Const {
   static const String PARENT = 'parent';
   static const String GUARDIAN = 'guardian';
 
-  static const String PRO = "pro";
-  static const String BASIC = "basic";
-  static const String PREMIUM = "premium";
-
   static const String TEMPLATE_NONE = 'NONE';
   static const String TEMPLATE_D = 'D';
   static const String TEMPLATE_OP = 'OP';

@@ -26,19 +26,20 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   List<WeekStatesResponseData> weekStatesList = [];
   ExerciseMovementResponse? exerciseMovementResponse;
 
-  int? get week => !isPremiumUser || currentWeekIndex == null
+  int? get week => !isHasRoadmapUser || currentWeekIndex == null
       ? null
       : weekStatesList[currentWeekIndex!].week;
 
   int get dataLength => exerciseMovementResponse?.data?.length ?? 0;
 
-  bool get isPremiumUser => myPlanCubit.packageCode == Const.PREMIUM;
+  bool get isHasRoadmapUser => myPlanCubit.isHasRoadmapUser;
 
-  bool get isFreeUser => myPlanCubit.packageCode == Const.BASIC;
+  bool get isFreeUser => myPlanCubit.isFreeUser;
 
   bool get isDayOff {
-    if (isPremiumUser && currentExercise == null) return true;
-    if (!isPremiumUser && exerciseMovementResponse?.data?.isNotEmpty != true) {
+    if (isHasRoadmapUser && currentExercise == null) return true;
+    if (!isHasRoadmapUser &&
+        exerciseMovementResponse?.data?.isNotEmpty != true) {
       return true;
     }
     return false;
@@ -89,8 +90,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       emit(const ExerciseTabInitial());
       return;
     }
-    if (myPlanCubit.packageCode == Const.PREMIUM &&
-        myPlanCubit.currentStudyWeek != null) {
+    if (myPlanCubit.isHasRoadmapUser) {
       currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
       await getWeekStates();
     }

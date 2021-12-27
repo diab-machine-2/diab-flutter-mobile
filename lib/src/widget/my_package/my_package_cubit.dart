@@ -23,7 +23,7 @@ class MyPackageCubit extends Cubit<MyPackageState> {
   void getOwnPackageCode() async {
     ApiResult<UserInfoResponse> apiResult = await appRepository.getCurrentUserInfo();
     apiResult.when(success: (UserInfoResponse response) {
-      ownCode = response.data?.packageCode;
+      // ownCode = response.data?.packageCode;
     }, failure: (NetworkExceptions error) {
       logger.e(NetworkExceptions.getErrorMessage(error));
     });

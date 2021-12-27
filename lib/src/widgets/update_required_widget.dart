@@ -31,7 +31,7 @@ class UpdateRequiredWidget extends StatelessWidget {
                   NavigationUtil.navigatePage(
                     context,
                     const UpgradeAccountPage(
-                      code: Const.PRO,
+                      code: 'Const.PRO',
                     ),
                   );
                 },
@@ -48,7 +48,7 @@ class UpdateRequiredWidget extends StatelessWidget {
                     onPressed: () {
                       NavigationUtil.navigatePage(
                           context,
-                          const DetailPackagePage(code: Const.PRO));
+                          const DetailPackagePage(code: 'Const.PRO'));
                     }),
               )
             ],

@@ -7,7 +7,6 @@ import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
 
 import '../../my_plan/my_plan.dart';
 import '../lesson_filter/models/filter_data.dart';
@@ -69,8 +68,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       await myPlanCubit.getCurrentUserInfo();
     }
     filterData.roadmapId = myPlanCubit.roadmapId;
-    if (myPlanCubit.packageCode == Const.PREMIUM &&
-        myPlanCubit.currentStudyWeek != null) {
+    if (myPlanCubit.isHasRoadmapUser) {
       filterData.currentWeek = myPlanCubit.currentStudyWeek! - 1;
       await getLessonWeekStates();
     }

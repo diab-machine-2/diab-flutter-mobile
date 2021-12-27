@@ -10,7 +10,6 @@ import 'package:medical/src/model/response/week_smart_goal_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/extention.dart';
 
 import '../../my_plan/my_plan.dart';
@@ -100,8 +99,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   Future<void> initData() async {
     await myPlanCubit.checkUserInfo();
-    if (myPlanCubit.packageCode == Const.PREMIUM &&
-        myPlanCubit.currentStudyWeek != null) {
+    if (myPlanCubit.isHasRoadmapUser) {
       currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
     } else {
       currentWeekIndex = -1;

@@ -80,7 +80,7 @@ class _WelcomeServicePageState extends State<WelcomeServicePage> {
                       },
                       controller: _pageController,
                       children: [
-                        widget.code == Const.PRO
+                        widget.code == 'Const.PRO'
                             ? pageFirst(
                                 R.drawable.img_welcome_1,
                                 R.string.package_pro.tr(),

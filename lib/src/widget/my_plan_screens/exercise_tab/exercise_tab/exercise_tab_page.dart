@@ -124,7 +124,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                             controller: _exerciseScrollController,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 20),
-                            itemCount: _cubit.isPremiumUser
+                            itemCount: _cubit.isHasRoadmapUser
                                 ? 1
                                 : _cubit.dataLength + 1,
                             itemBuilder: (context, index) {
@@ -134,7 +134,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                                 index: index,
                                 child: index < _cubit.dataLength
                                     ? _buildExerciseWidget(
-                                        exerciseItem: _cubit.isPremiumUser
+                                        exerciseItem: _cubit.isHasRoadmapUser
                                             ? _cubit.currentExercise
                                             : _cubit.exerciseMovementResponse
                                                 ?.data?[index])
@@ -359,7 +359,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Widget _buildDayOffWidget() {
-    if (!_cubit.isPremiumUser) return const SizedBox();
+    if (!_cubit.isHasRoadmapUser) return const SizedBox();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 53),
       child: Column(

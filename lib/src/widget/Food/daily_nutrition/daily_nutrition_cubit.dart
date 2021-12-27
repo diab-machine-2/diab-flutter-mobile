@@ -52,7 +52,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   double? totalKcalInFoodMenu;
 
   bool get isBasicUser {
-    final String packageCode = userInfo?.packageCode ?? '';
+    // final String packageCode = userInfo?.packageCode ?? '';
     // return packageCode.isEmpty || packageCode == Const.BASIC;
     return false;
   }

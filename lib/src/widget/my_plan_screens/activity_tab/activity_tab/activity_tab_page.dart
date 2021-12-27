@@ -213,7 +213,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Visibility(
-            visible: _cubit.myPlanCubit.isPremiumUser,
+            visible: _cubit.myPlanCubit.isHasRoadmapUser,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: _buildWeekListWidget(),

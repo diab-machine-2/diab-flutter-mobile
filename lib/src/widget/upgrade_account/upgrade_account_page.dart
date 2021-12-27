@@ -127,13 +127,13 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                         height: 30,
                       ),
                       Visibility(
-                          visible: widget.code == Const.PREMIUM,
+                          visible: widget.code == 'Const.PREMIUM',
                           child: Container(
                               margin: EdgeInsets.only(bottom: 24),
                               child: priceWidget(data?.prices ?? []))),
                       tableComparison(data?.featuresComparisonTable ?? []),
                       Visibility(
-                        visible: widget.code == Const.PREMIUM,
+                        visible: widget.code == 'Const.PREMIUM',
                         child: Column(
                           children: [
                             SizedBox(
@@ -151,7 +151,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
               ),
             ),
             Visibility(
-              visible: widget.code == Const.PREMIUM,
+              visible: widget.code == 'Const.PREMIUM',
               child: Container(
                   decoration: BoxDecoration(
                       color: R.color.white,
@@ -189,16 +189,16 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                           title: R.string.sign_up.tr(),
                           onPressed: () {
                             if (!Utils.isEmpty(data?.prices)) {
-                              int index = widget.code == Const.PREMIUM
+                              int index = widget.code == 'Const.PREMIUM'
                                   ? 0
                                   : _cubit.selectedPrice;
-                              if (widget.code == Const.PRO) {
+                              if (widget.code == 'Const.PRO') {
                                 NavigationUtil.navigatePage(
                                     context,
                                     PaymentPackagePage(
                                       packageName:
                                           data?.name ?? R.string.diab_pro.tr(),
-                                      packageCode: data?.code ?? Const.PRO,
+                                      packageCode: data?.code ?? 'Const.PRO',
                                       price: data!.prices![index],
                                       isBuyDirect: widget.isBuyDirect,
                                     ));
@@ -207,14 +207,14 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                                   NavigationUtil.navigatePage(
                                       context,
                                       RegisterPackagePage(
-                                        code: data?.code ?? Const.PRO,
+                                        code: data?.code ?? 'Const.PRO',
                                         priceData: data!.prices![index],
                                       ));
                                 } else {
                                   NavigationUtil.navigatePage(
                                       context,
                                       CongratulationPage(
-                                        code: data?.code ?? Const.PRO,
+                                        code: data?.code ?? 'Const.PRO',
                                         priceData: data!.prices![index],
                                       ));
                                 }
@@ -227,7 +227,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
                   )),
             ),
             Visibility(
-              visible: widget.code == Const.PRO,
+              visible: widget.code == 'Const.PRO',
               child: Container(
                   decoration: BoxDecoration(
                       color: R.color.white,
@@ -409,7 +409,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
             )),
       ),
     ));
-    if (widget.code == Const.PRO) {
+    if (widget.code == 'Const.PRO') {
       listCell.add(
         tableCell(
           child: Container(
@@ -432,18 +432,18 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
                 topRight:
-                    Radius.circular(widget.code == Const.PREMIUM ? 0 : 10)),
+                    Radius.circular(widget.code == 'Const.PREMIUM' ? 0 : 10)),
             color: R.color.color0xffB1DDDB),
         child: Text(R.string.diab_pro.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Utils.getColorByCode(Const.PRO),
+              color: Utils.getColorByCode('Const.PRO'),
               fontWeight: FontWeight.bold,
               fontSize: 16,
             )),
       ),
     ));
-    if (widget.code == Const.PREMIUM) {
+    if (widget.code == 'Const.PREMIUM') {
       listCell.add(
         tableCell(
           child: Container(
@@ -455,7 +455,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
             child: Text(R.string.diab_premium.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Utils.getColorByCode(Const.PREMIUM),
+                  color: Utils.getColorByCode('Const.PREMIUM'),
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 )),
@@ -510,7 +510,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
           ),
         ),
       );
-      if (widget.code == Const.PRO) {
+      if (widget.code == 'Const.PRO') {
         listCell.add(
           tableCell(
             child: Container(
@@ -534,7 +534,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
-                    bottomRight: (!isLast || widget.code == Const.PREMIUM)
+                    bottomRight: (!isLast || widget.code == 'Const.PREMIUM')
                         ? Radius.zero
                         : Radius.circular(10)),
                 color:
@@ -548,7 +548,7 @@ class _UpgradeAccountPageState extends State<UpgradeAccountPage> {
           ),
         ),
       );
-      if (widget.code == Const.PREMIUM) {
+      if (widget.code == 'Const.PREMIUM') {
         listCell.add(
           tableCell(
             child: Container(
