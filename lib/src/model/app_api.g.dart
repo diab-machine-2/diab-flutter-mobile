@@ -661,17 +661,17 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<PatientInfoResponse> getSharedProfile(referalCode) async {
+  Future<PatientInfoResponse> getSharedProfile() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(_setStreamType<
-        PatientInfoResponse>(Options(
-            method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-        .compose(_dio.options,
-            'App/Patient/GetAccountInfoWithReferalOfCurrentPatient/$referalCode',
-            queryParameters: queryParameters, data: _data)
-        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<PatientInfoResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options,
+                    'App/Patient/GetAccountInfoWithReferalOfCurrentPatient',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = PatientInfoResponse.fromJson(_result.data!);
     return value;
   }
@@ -695,18 +695,19 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<ValidateReferralCodeResponse> checkReferralCode(referalCode) async {
+  Future<UserInfoReferralCodeResponse> getUserFromReferralCode(
+      referalCode) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ValidateReferralCodeResponse>(
+        _setStreamType<UserInfoReferralCodeResponse>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
                 .compose(_dio.options,
                     'App/Patient/CheckDuplicateReferalAccount/$referalCode',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = ValidateReferralCodeResponse.fromJson(_result.data!);
+    final value = UserInfoReferralCodeResponse.fromJson(_result.data!);
     return value;
   }
 

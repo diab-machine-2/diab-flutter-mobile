@@ -42,8 +42,8 @@ import 'response/smart_goal_statistic_response.dart';
 import 'response/tdee_response.dart';
 import 'response/update_shared_profile_response.dart';
 import 'response/upgrade_account_response.dart';
+import 'response/user_info_referral_code_response.dart';
 import 'response/user_info_response.dart';
-import 'response/validate_referral_code_response.dart';
 import 'response/week_smart_goal_response.dart';
 import 'response/week_states_response.dart';
 
@@ -256,10 +256,8 @@ abstract class AppApi {
   Future<MyProgressResponse> getMyProgress({@Query('type') int? type});
 
   //Referral, Share Profile
-  @GET("App/Patient/GetAccountInfoWithReferalOfCurrentPatient/{referalCode}")
-  Future<PatientInfoResponse> getSharedProfile(
-    @Path('referalCode') String referalCode,
-  );
+  @GET("App/Patient/GetAccountInfoWithReferalOfCurrentPatient")
+  Future<PatientInfoResponse> getSharedProfile();
 
   @PUT("App/Patient/UpdateReferalCodeFromPatient")
   Future<UpdateSharedProfileResponse> updateSharedProfile(
@@ -267,7 +265,7 @@ abstract class AppApi {
   );
 
   @GET("App/Patient/CheckDuplicateReferalAccount/{referalCode}")
-  Future<ValidateReferralCodeResponse> checkReferralCode(
+  Future<UserInfoReferralCodeResponse> getUserFromReferralCode(
     @Path('referalCode') String referalCode,
   );
 }

@@ -5,8 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/update_shared_profile_request.dart';
-import 'package:medical/src/model/response/patient_info_response.dart';
 import 'package:medical/src/model/response/update_shared_profile_response.dart';
+import 'package:medical/src/model/response/user_info_referral_code_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -33,15 +33,19 @@ class ShareProfilePopup {
   }) async {
     final BuildContext currentContext =
         context ?? navigatorKey.currentState!.context;
-    final PatientInfoResponseData? userInfo =
+    final UserInfoReferralCodeResponse? userInfo =
         await _getSharedProfile(currentContext, code: code);
+    if (userInfo?.isUserExists != true || userInfo?.notValidPosition == true)
+      return;
     showPopup(currentContext,
         image: R.drawable.img_sharing_profile,
         title: requestFromDoctor
             ? R.string.doctor_request_share_profile
-                .tr(args: [userInfo?.fullName ?? ''])
-            : R.string.share_profile_for_doctor.tr(
-                args: [userInfo?.fullName ?? '', userInfo?.nameOfAgency ?? '']),
+                .tr(args: [userInfo?.data?.fullName ?? ''])
+            : R.string.share_profile_for_doctor.tr(args: [
+                userInfo?.data?.fullName ?? '',
+                userInfo?.data?.nameOfAgency ?? ''
+              ]),
         description: R.string.share_profile_description.tr(), onTapCancel: () {
       NavigationUtil.pop(currentContext);
     }, onTapYes: () async {
@@ -53,7 +57,7 @@ class ShareProfilePopup {
           image: R.drawable.img_survey_completed,
           title: R.string.share_profile_success.tr(),
           description: R.string.share_profile_success_description
-              .tr(args: [userInfo?.fullName ?? '']), onTapYes: () {
+              .tr(args: [userInfo?.data?.fullName ?? '']), onTapYes: () {
         NavigationUtil.pop(currentContext, result: true);
       }, afterShow: () {
         NavigationUtil.navigatePage(currentContext, const SharedProfilePage());
@@ -168,21 +172,20 @@ class ShareProfilePopup {
     }
   }
 
-  Future<PatientInfoResponseData?> _getSharedProfile(BuildContext context,
+  Future<UserInfoReferralCodeResponse?> _getSharedProfile(BuildContext context,
       {String? code}) async {
     BotToast.showLoading();
-    PatientInfoResponseData? patientInfo;
-    final ApiResult<PatientInfoResponse> apiResult =
-        await appRepository.getSharedProfile(referalCode: code);
-    apiResult.when(success: (PatientInfoResponse response) {
-      if (response.data?.isNotEmpty == true) {
-        patientInfo = response.data?.first;
-      }
+    UserInfoReferralCodeResponse? data;
+    final ApiResult<UserInfoReferralCodeResponse> apiResult =
+        await appRepository.getUserFromReferralCode(code ?? '');
+    apiResult.when(success: (UserInfoReferralCodeResponse response) {
+      data = response;
     }, failure: (NetworkExceptions error) {
-      Message.showToastMessage(context, error.toString());
+      Message.showToastMessage(
+          context, NetworkExceptions.getErrorMessage(error));
     });
     BotToast.closeAllLoading();
-    return patientInfo;
+    return data;
   }
 
   Future<bool> _shareProfile(BuildContext context, {String? code}) async {

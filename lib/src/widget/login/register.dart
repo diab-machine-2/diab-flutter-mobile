@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/response/validate_referral_code_response.dart';
+import 'package:medical/src/model/response/user_info_referral_code_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/login/login_client.dart';
@@ -290,10 +290,10 @@ class _RegisterControllerState extends State<RegisterController> {
   Future<bool> _isReferralCodeExist(String code) async {
     BotToast.showLoading();
     bool isReferralCodeExist = false;
-    final ApiResult<ValidateReferralCodeResponse> apiResult =
-        await _appRepository.checkReferralCode(code);
-    apiResult.when(success: (ValidateReferralCodeResponse response) {
-      isReferralCodeExist = response.data ?? false;
+    final ApiResult<UserInfoReferralCodeResponse> apiResult =
+        await _appRepository.getUserFromReferralCode(code);
+    apiResult.when(success: (UserInfoReferralCodeResponse response) {
+      isReferralCodeExist = response.isUserExists;
       if (!isReferralCodeExist) {
         Message.showToastMessage(
             context, R.string.referral_code_not_exist.tr());

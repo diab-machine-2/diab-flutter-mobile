@@ -40,8 +40,8 @@ import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/response/update_shared_profile_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
+import 'package:medical/src/model/response/user_info_referral_code_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
-import 'package:medical/src/model/response/validate_referral_code_response.dart';
 import 'package:medical/src/model/response/week_smart_goal_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -564,11 +564,10 @@ class AppRepository {
   }
 
   //Referral, Share Profile
-  Future<ApiResult<PatientInfoResponse>> getSharedProfile(
-      {String? referalCode}) async {
+  Future<ApiResult<PatientInfoResponse>> getSharedProfile() async {
     try {
       final PatientInfoResponse response =
-          await appClient.getSharedProfile(referalCode ?? '');
+          await appClient.getSharedProfile();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -586,11 +585,11 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<ValidateReferralCodeResponse>> checkReferralCode(
+  Future<ApiResult<UserInfoReferralCodeResponse>> getUserFromReferralCode(
       String referalCode) async {
     try {
-      final ValidateReferralCodeResponse response =
-          await appClient.checkReferralCode(referalCode);
+      final UserInfoReferralCodeResponse response =
+          await appClient.getUserFromReferralCode(referalCode);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
