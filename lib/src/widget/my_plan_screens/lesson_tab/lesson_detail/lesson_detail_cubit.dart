@@ -50,7 +50,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   void onChangeSection(int newSection, {bool isFromList = false}) {
     //Check can complete the lesson and make sure that user tapped next button
-    if (isAllSectionCompleted && newSection > currentSection) {
+    if (isAllSectionCompleted && newSection > currentSection && !alreadyDoneLesson) {
       checkSectionComplete();
       if (isAllSectionCompleted) {
         emit(const LessonDetailCompleted());
@@ -100,6 +100,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   }
 
   bool? get canComplete {
+    //If all lesson were done before, not show complete button
+    if (alreadyDoneLesson) return null;
     if (isAllSectionCompleted && sectionList.isNotEmpty == true) return true;
     if (isOtherCompleted) return false;
     return null;
@@ -160,6 +162,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
         review = response.data?.lessonReviews?.first;
       }
       isEnabledRating = response.data?.isEnabledRating;
+      alreadyDoneLesson = isAllSectionCompleted;
       emit(const LessonDetailSuccess());
     }, failure: (NetworkExceptions error) {
       emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));
