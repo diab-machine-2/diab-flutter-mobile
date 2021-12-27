@@ -4,9 +4,8 @@ import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/message_state.dart';
+import '../activity_tab/activity_tab/models/message_state.dart';
 import 'models/plan_type.dart';
-
 import 'my_plan.dart';
 
 class MyPlanCubit extends Cubit<MyPlanState> {

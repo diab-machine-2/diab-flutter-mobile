@@ -86,7 +86,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
 
   Future<void> getInitialData({String? type, String? id}) async {
     if (type == null || type.isEmpty) return;
-    await getCurrentUserInfo();
+    // await getCurrentUserInfo();
     if (type == 'update') {
       loadDetail(id);
     } else {
