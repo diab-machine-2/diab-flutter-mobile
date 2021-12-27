@@ -568,7 +568,7 @@ class AppRepository {
       {String? referalCode}) async {
     try {
       final PatientInfoResponse response =
-          await appClient.getSharedProfile(referalCode: referalCode);
+          await appClient.getSharedProfile(referalCode ?? '');
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

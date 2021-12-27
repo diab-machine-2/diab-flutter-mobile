@@ -256,10 +256,10 @@ abstract class AppApi {
   Future<MyProgressResponse> getMyProgress({@Query('type') int? type});
 
   //Referral, Share Profile
-  @GET("App/Patient/GetAccountInfoWithReferalOfCurrentPatient")
-  Future<PatientInfoResponse> getSharedProfile({
-    @Query('referalCode') String? referalCode,
-  });
+  @GET("App/Patient/GetAccountInfoWithReferalOfCurrentPatient/{referalCode}")
+  Future<PatientInfoResponse> getSharedProfile(
+    @Path('referalCode') String referalCode,
+  );
 
   @PUT("App/Patient/UpdateReferalCodeFromPatient")
   Future<UpdateSharedProfileResponse> updateSharedProfile(
@@ -270,5 +270,4 @@ abstract class AppApi {
   Future<ValidateReferralCodeResponse> checkReferralCode(
     @Path('referalCode') String referalCode,
   );
-
 }
