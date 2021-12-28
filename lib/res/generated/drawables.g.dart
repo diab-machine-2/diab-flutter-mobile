@@ -31,6 +31,7 @@ class Drawables {
 	String get bg_splash => "lib/res/drawables/bg_splash.png";
 	String get bg_sub_exe => "lib/res/drawables/bg_sub_exe.png";
 	String get bg_upgrade_account => "lib/res/drawables/bg_upgrade_account.png";
+	String get bg_user_icon => "lib/res/drawables/bg_user_icon.png";
 	String get bg_weight => "lib/res/drawables/bg_weight.png";
 	String get bg_welcome => "lib/res/drawables/bg_welcome.png";
 	String get ic_a1c => "lib/res/drawables/ic_a1c.png";
@@ -85,6 +86,7 @@ class Drawables {
 	String get ic_camera_black => "lib/res/drawables/ic_camera_black.png";
 	String get ic_camera_picker => "lib/res/drawables/ic_camera_picker.png";
 	String get ic_can_nang => "lib/res/drawables/ic_can_nang.png";
+	String get ic_chat => "lib/res/drawables/ic_chat.png";
 	String get ic_chatting => "lib/res/drawables/ic_chatting.png";
 	String get ic_check => "lib/res/drawables/ic_check.png";
 	String get ic_check_circle => "lib/res/drawables/ic_check_circle.png";
@@ -196,6 +198,7 @@ class Drawables {
 	String get ic_ruler => "lib/res/drawables/ic_ruler.png";
 	String get ic_ruler_fill => "lib/res/drawables/ic_ruler_fill.png";
 	String get ic_sad => "lib/res/drawables/ic_sad.png";
+	String get ic_save => "lib/res/drawables/ic_save.png";
 	String get ic_scale => "lib/res/drawables/ic_scale.png";
 	String get ic_schedule_blood_pressure => "lib/res/drawables/ic_schedule_blood_pressure.png";
 	String get ic_schedule_coaching => "lib/res/drawables/ic_schedule_coaching.png";
@@ -212,6 +215,10 @@ class Drawables {
 	String get ic_show => "lib/res/drawables/ic_show.png";
 	String get ic_sick => "lib/res/drawables/ic_sick.png";
 	String get ic_sleeping => "lib/res/drawables/ic_sleeping.png";
+	String get ic_smart_goal_new_biological => "lib/res/drawables/ic_smart_goal_new_biological.png";
+	String get ic_smart_goal_new_goal => "lib/res/drawables/ic_smart_goal_new_goal.png";
+	String get ic_smart_goal_new_habit => "lib/res/drawables/ic_smart_goal_new_habit.png";
+	String get ic_smart_goal_new_own_goal => "lib/res/drawables/ic_smart_goal_new_own_goal.png";
 	String get ic_stack => "lib/res/drawables/ic_stack.png";
 	String get ic_start_exercise => "lib/res/drawables/ic_start_exercise.png";
 	String get ic_start_exercise_bold => "lib/res/drawables/ic_start_exercise_bold.png";

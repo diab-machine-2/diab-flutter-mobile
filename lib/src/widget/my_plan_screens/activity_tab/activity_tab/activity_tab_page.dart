@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
@@ -16,17 +17,21 @@ import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../create_goal/create_goal.dart';
+import '../my_progress/models/report_data.dart';
 import '../my_progress/my_progress.dart';
+import '../my_progress/widgets/report_list_widget.dart';
 import 'activity_tab.dart';
 import 'models/schedule_type.dart';
 import 'widgets/custom_progress_widget.dart';
 import 'widgets/smart_goal_item.dart';
+import 'widgets/statistical_popup.dart';
 
 class ActivityTabPage extends StatefulWidget {
   const ActivityTabPage();
@@ -71,111 +76,88 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           }
         },
         builder: (context, state) {
-          return Stack(
+          return Column(
             children: [
-              Column(
-                children: [
-                  AppBarBottom(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        _buildScheduleWidget(),
-                        Container(
-                          alignment: Alignment.centerRight,
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: InkWell(
-                            onTap: () async {
-                              Observable.instance.notifyObservers([],
-                                  notifyName: Const.HIDE_OVERLAY_KEY);
-                              final result = await NavigationUtil.navigatePage(
-                                  context, const MyProgressPage());
-                              if (result is int) {
-                                if (result == 1) {
-                                  _cubit.goToLessonTab();
-                                } else if (result == 2) {
-                                  _cubit.goToExerciseTab();
-                                }
-                              }
-                            },
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Tiến độ của tôi',
-                                  style: TextStyle(
-                                    color: R.color.greenGradientBottom,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Image.asset(
-                                  R.drawable.ic_activity_process,
-                                  width: 20,
-                                  height: 20,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: SmartRefresher(
-                      controller: _controller,
-                      onRefresh: () => _cubit.refreshData(isRefresh: true),
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(16, 32, 16,
-                              MediaQuery.of(context).padding.bottom + 75),
-                          child: Column(
-                            children: [
-                              ..._buildSmartGoalDayList(
-                                smartGoalList: _cubit.smartGoalList,
+              AppBarBottom(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _buildScheduleWidget(),
+                    Container(
+                      alignment: Alignment.centerRight,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: InkWell(
+                        onTap: () async {
+                          Observable.instance.notifyObservers([],
+                              notifyName: Const.HIDE_OVERLAY_KEY);
+                          _showSelectActionPopup();
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Thống kê',
+                              style: TextStyle(
+                                color: R.color.greenGradientBottom,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
                               ),
-                              const SizedBox(height: 32),
-                              ..._buildSmartGoalWeekList(
-                                  smartGoalList: _cubit.weekSmartGoalList)
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 4),
+                            Image.asset(
+                              R.drawable.ic_save,
+                              width: 16,
+                              height: 16,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              Positioned(
-                bottom: 24 + MediaQuery.of(context).padding.bottom,
-                right: 24,
-                child: InkWell(
-                  onTap: () async {
-                    Observable.instance.notifyObservers([],
-                        notifyName: Const.HIDE_OVERLAY_KEY);
-                    await NavigationUtil.navigatePage(
-                        context, const CreateGoalPage());
-                    _cubit.refreshData();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: R.color.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        width: 6,
-                        color: R.color.buttonRoundColor,
+              Expanded(
+                child: SmartRefresher(
+                  controller: _controller,
+                  onRefresh: () => _cubit.refreshData(isRefresh: true),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(16, 32, 16,
+                          MediaQuery.of(context).padding.bottom + 75),
+                      child: Column(
+                        children: [
+                          ..._buildSmartGoalDayList(
+                            smartGoalList: _cubit.smartGoalList,
+                          ),
+                          const SizedBox(height: 32),
+                          ..._buildSmartGoalWeekList(
+                              smartGoalList: _cubit.weekSmartGoalList),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: 195.w,
+                            child: ButtonWidget(
+                                title: 'Thêm mục tiêu',
+                                height: 48.w,
+                                textSize: 16,
+                                textColor: R.color.greenGradientBottom,
+                                borderColor: R.color.greenGradientBottom,
+                                backgroundColor: R.color.white,
+                                onPressed: () async {
+                                  Observable.instance.notifyObservers([],
+                                      notifyName: Const.HIDE_OVERLAY_KEY);
+                                  await NavigationUtil.navigatePage(
+                                      context, const CreateGoalPage());
+                                  _cubit.refreshData();
+                                }),
+                          )
+                        ],
                       ),
-                    ),
-                    child: Image.asset(
-                      R.drawable.ic_create_smart_goal,
-                      width: 28,
-                      height: 28,
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           );
         },
@@ -814,6 +796,88 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _showSelectActionPopup() async {
+    final action = await showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.9),
+      useSafeArea: true,
+      barrierDismissible: true,
+      context: context,
+      builder: (_) {
+        return const StatisticalPopup();
+      },
+    );
+    if (action is StatisticalAction) {
+      switch (action) {
+        case StatisticalAction.my_progress:
+          final result = await NavigationUtil.navigatePage(
+              context, const MyProgressPage());
+          if (result is int) {
+            if (result == 1) {
+              _cubit.goToLessonTab();
+            } else if (result == 2) {
+              _cubit.goToExerciseTab();
+            }
+          }
+          break;
+        case StatisticalAction.my_report:
+          showActionFilter(
+              context: context,
+              builder: (context) {
+                return ReportListWidget(
+                  title: R.string.report.tr(),
+                  reportList: [
+                    ReportData(
+                      title: 'Báo cáo đầu vào',
+                      dateTime: DateTime.now(),
+                      url:
+                          'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                    ),
+                    ReportData(
+                      title: 'Báo cáo tiến độ chung',
+                      dateTime: DateTime.now().subtract(
+                        const Duration(days: 1, hours: 2),
+                      ),
+                      url: 'http://www.africau.edu/images/default/sample.pdf',
+                    ),
+                    ReportData(
+                      title: 'Báo cáo tiến độ 6 tháng gần đây',
+                      dateTime: DateTime.now().subtract(
+                        const Duration(days: 1, hours: 7),
+                      ),
+                      url:
+                          'https://www.clickdimensions.com/links/TestPDFfile.pdf',
+                    ),
+                  ],
+                  onSelected: (url) {
+                    NavigationUtil.navigatePage(
+                        context, PDFViewerWidget(url: url));
+                  },
+                );
+              });
+          break;
+        case StatisticalAction.chatting:
+          break;
+        default:
+      }
+    }
+  }
+
+  showActionFilter(
+      {required BuildContext context,
+      required Widget Function(BuildContext) builder}) {
+    showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(15),
+        ),
+      ),
+      backgroundColor: R.color.white,
+      context: context,
+      isScrollControlled: true,
+      builder: builder,
     );
   }
 

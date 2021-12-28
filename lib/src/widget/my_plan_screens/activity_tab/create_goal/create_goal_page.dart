@@ -141,16 +141,22 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       const SizedBox(height: 24),
       SelectTypeWidget(
           title: R.string.create_new_habit.tr(),
+          backgroundColor: R.color.main_6,
+          icon: R.drawable.ic_smart_goal_new_goal,
           onTap: () {
             _cubit.setupGoal();
           }),
       SelectTypeWidget(
           title: R.string.do_a_favorite_thing.tr(),
+          backgroundColor: R.color.color0xffFFE3E3,
+          icon: R.drawable.ic_smart_goal_new_habit,
           onTap: () {
             _cubit.setupGoal();
           }),
       SelectTypeWidget(
         title: R.string.biometric_monitoring_frequency.tr(),
+        backgroundColor: R.color.orange_6,
+        icon: R.drawable.ic_smart_goal_new_biological,
         onSlectType: (type) async {
           if (type == ScheduleType.blood_sugar) {
             Navigator.pushNamed(context, NavigatorName.schedule_glucose);
@@ -172,6 +178,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       ),
       SelectTypeWidget(
         title: R.string.personal_smart_goal.tr(),
+        backgroundColor: R.color.color0xFFFFF7C0,
+        icon: R.drawable.ic_smart_goal_new_own_goal,
         onTap: () {
           Navigator.pushNamed(context, NavigatorName.goal_setting);
         },
