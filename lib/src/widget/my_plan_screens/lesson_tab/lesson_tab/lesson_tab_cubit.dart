@@ -67,7 +67,6 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     if (myPlanCubit.userInfo == null) {
       await myPlanCubit.getCurrentUserInfo();
     }
-    filterData.roadmapId = myPlanCubit.roadmapId;
     if (myPlanCubit.isHasRoadmapUser) {
       filterData.currentWeek = myPlanCubit.currentStudyWeek! - 1;
       await getLessonWeekStates();

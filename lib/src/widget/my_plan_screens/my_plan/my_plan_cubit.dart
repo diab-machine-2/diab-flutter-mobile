@@ -32,7 +32,7 @@ class MyPlanCubit extends Cubit<MyPlanState> {
 
   PackageType get packageType =>
       userInfo?.data?.packageType ?? PackageType.free;
-  String get roadmapId => userInfo?.data?.ownPackage?.ownRoadmap?.id ?? '';
+  String get roadmapId => userInfo?.data?.roadmapId ?? '';
   int? get currentStudyWeek =>
       userInfo?.data?.ownPackage?.ownRoadmap?.currentWeek;
 

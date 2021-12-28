@@ -175,10 +175,9 @@ abstract class AppApi {
   );
 
   @GET("App/ExerciseMovement/All")
-  Future<ExerciseMovementResponse> getExerciseMovement({
-    @Query('roadmapId') String? roadmapId,
+  Future<ExerciseMovementResponse> getExerciseMovement(
     @Query('week') int? week,
-  });
+  );
 
   @POST("App/ExerciseMovementReview")
   Future<CommonResponse> exerciseFeedback(
@@ -190,10 +189,8 @@ abstract class AppApi {
     @Body() CompleteExerciseRequest request,
   );
 
-  @GET("App/Roadmap/{roadmapId}/WeekStates")
-  Future<WeekStatesResponse> getExerciseWeekStates(
-    @Path("roadmapId") String roadmapId,
-  );
+  @GET("App/Roadmap/GetWeekStates")
+  Future<WeekStatesResponse> getExerciseWeekStates();
 
   @GET("App/Lesson/GetWeekStates")
   Future<WeekStatesResponse> getLessonWeekStates();

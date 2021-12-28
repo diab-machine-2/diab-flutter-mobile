@@ -6,7 +6,6 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
 
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
@@ -104,7 +103,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       emit(const ExerciseTabLoading());
     }
     final ApiResult<ExerciseMovementResponse> apiResult =
-        await repository.getExerciseMovement(roadmapId: roadmapId, week: week);
+        await repository.getExerciseMovement(week: week);
     apiResult.when(success: (ExerciseMovementResponse response) {
       exerciseMovementResponse = response;
       mark = exerciseMovementResponse?.getMarkNotLearnIndex(
@@ -127,7 +126,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     await Future.delayed(Duration.zero);
     emit(const ExerciseTabLoading());
     final ApiResult<WeekStatesResponse> apiResult =
-        await repository.getExerciseWeekStates(roadmapId: roadmapId);
+        await repository.getExerciseWeekStates();
     apiResult.when(success: (WeekStatesResponse response) {
       weekStatesList.clear();
       for (final state in response.data ?? []) {

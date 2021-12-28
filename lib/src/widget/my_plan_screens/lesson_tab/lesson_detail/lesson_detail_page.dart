@@ -74,7 +74,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                     if (isPassed) {
                       await _cubit.checkSectionComplete();
                     }
-                    _cubit.onChangeSection(_cubit.currentSection + 1);
+                    if (_cubit.isQuizLesson) {
+                      NavigationUtil.pop(context);
+                    } else {
+                      _cubit.onChangeSection(_cubit.currentSection + 1);
+                    }
                   })
               : Scaffold(
                   body: BackgroundPage(
@@ -201,6 +205,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             }),
                                         title: _cubit.currentSectionDetail
                                             ?.audioDescription),
+                                            const SizedBox(height: 20),
                                 ],
                               ),
                             ),

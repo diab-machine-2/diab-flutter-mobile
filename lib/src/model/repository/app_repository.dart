@@ -409,10 +409,10 @@ class AppRepository {
   }
 
   Future<ApiResult<ExerciseMovementResponse>> getExerciseMovement(
-      {required String roadmapId, int? week}) async {
+      {int? week}) async {
     try {
       final ExerciseMovementResponse response =
-          await appClient.getExerciseMovement(roadmapId: roadmapId, week: week);
+          await appClient.getExerciseMovement(week);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -449,11 +449,10 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<WeekStatesResponse>> getExerciseWeekStates(
-      {required String roadmapId}) async {
+  Future<ApiResult<WeekStatesResponse>> getExerciseWeekStates() async {
     try {
       final WeekStatesResponse response =
-          await appClient.getExerciseWeekStates(roadmapId);
+          await appClient.getExerciseWeekStates();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
