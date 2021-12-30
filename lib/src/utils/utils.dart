@@ -343,10 +343,10 @@ class Utils {
   }
 
   static Color getColorByCode(String? code) {
-    if (code == Const.PRO)
-      return R.color.yellow;
-    else if (code == Const.PREMIUM)
-      return R.color.accentColor;
+    // if (code == Const.PRO)
+    //   return R.color.yellow;
+    // else if (code == Const.PREMIUM)
+    //   return R.color.accentColor;
     return R.color.white;
   }
 

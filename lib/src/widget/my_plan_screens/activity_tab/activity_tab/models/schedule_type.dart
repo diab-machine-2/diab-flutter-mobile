@@ -8,13 +8,14 @@ enum ScheduleType {
   emotion,
   food,
   exercise,
-  hba1c,
   exercise_movement,
   custom,
-  coaching,
-  group,
+  book_1_1,
+  book_1_n,
   survey,
   lesson,
+  io_evaluate,
+  update_profile
 }
 
 extension ScheduleTypeExtend on ScheduleType {
@@ -32,20 +33,22 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.drawable.ic_schedule_food;
       case ScheduleType.exercise:
         return R.drawable.ic_exercise;
-      case ScheduleType.hba1c:
-        return R.drawable.ic_schedule_hba1c;
       case ScheduleType.exercise_movement:
         return R.drawable.ic_exercise;
       case ScheduleType.custom:
         return R.drawable.ic_schedule_custom;
-      case ScheduleType.coaching:
-        return R.drawable.ic_schedule_coaching;
-      case ScheduleType.group:
-        return R.drawable.ic_schedule_group;
+      case ScheduleType.book_1_1:
+        return R.drawable.ic_schedule_book_1_1;
+      case ScheduleType.book_1_n:
+        return R.drawable.ic_schedule_book_1_n;
       case ScheduleType.survey:
         return R.drawable.ic_schedule_survey;
       case ScheduleType.lesson:
         return R.drawable.ic_exercise;
+      case ScheduleType.io_evaluate:
+        return R.drawable.ic_schedule_io_evaluate;
+      case ScheduleType.update_profile:
+        return R.drawable.ic_schedule_update_profile;
     }
   }
 
@@ -63,20 +66,22 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.string.smart_goal_food.tr();
       case ScheduleType.exercise:
         return R.string.smart_goal_exercise.tr();
-      case ScheduleType.hba1c:
-        return R.string.smart_goal_hba1c.tr();
       case ScheduleType.exercise_movement:
         return '';
       case ScheduleType.custom:
         return '';
-      case ScheduleType.coaching:
+      case ScheduleType.book_1_1:
         return '';
-      case ScheduleType.group:
+      case ScheduleType.book_1_n:
         return '';
       case ScheduleType.survey:
         return '';
       case ScheduleType.lesson:
         return R.string.smart_goal_lesson.tr();
+      case ScheduleType.io_evaluate:
+        return '';
+      case ScheduleType.update_profile:
+        return '';
     }
   }
 
@@ -94,51 +99,55 @@ extension ScheduleTypeExtend on ScheduleType {
         return 1;
       case ScheduleType.exercise:
         return 2;
-      case ScheduleType.hba1c:
-        return 1;
       case ScheduleType.exercise_movement:
         return -1;
       case ScheduleType.custom:
         return -1;
-      case ScheduleType.coaching:
+      case ScheduleType.book_1_1:
         return -1;
-      case ScheduleType.group:
+      case ScheduleType.book_1_n:
         return -1;
       case ScheduleType.survey:
         return -1;
       case ScheduleType.lesson:
+        return -1;
+      case ScheduleType.io_evaluate:
+        return -1;
+      case ScheduleType.update_profile:
         return -1;
     }
   }
 
   int get typeIndex {
     switch (this) {
-      case ScheduleType.blood_sugar:
-        return 2;
+      case ScheduleType.custom:
+        return 0;
       case ScheduleType.blood_pressure:
         return 1;
+      case ScheduleType.blood_sugar:
+        return 2;
+      case ScheduleType.exercise:
+        return 3;
       case ScheduleType.weight:
         return 4;
       case ScheduleType.emotion:
         return 5;
       case ScheduleType.food:
-        return 7;
-      case ScheduleType.exercise:
-        return 3;
-      case ScheduleType.hba1c:
         return 6;
       case ScheduleType.exercise_movement:
+        return 7;
+      case ScheduleType.book_1_1:
         return 8;
-      case ScheduleType.custom:
-        return 0;
-      case ScheduleType.coaching:
+      case ScheduleType.book_1_n:
         return 9;
-      case ScheduleType.group:
+      case ScheduleType.io_evaluate:
         return 10;
-      case ScheduleType.survey:
-        return 11;
       case ScheduleType.lesson:
+        return 11;
+      case ScheduleType.survey:
         return 12;
+      case ScheduleType.update_profile:
+        return 13;
     }
   }
 
@@ -150,12 +159,11 @@ extension ScheduleTypeExtend on ScheduleType {
     if (index == ScheduleType.exercise.typeIndex) return ScheduleType.exercise;
     if (index == ScheduleType.weight.typeIndex) return ScheduleType.weight;
     if (index == ScheduleType.emotion.typeIndex) return ScheduleType.emotion;
-    if (index == ScheduleType.hba1c.typeIndex) return ScheduleType.hba1c;
     if (index == ScheduleType.food.typeIndex) return ScheduleType.food;
     if (index == ScheduleType.exercise_movement.typeIndex)
       return ScheduleType.exercise_movement;
-    if (index == ScheduleType.coaching.typeIndex) return ScheduleType.coaching;
-    if (index == ScheduleType.group.typeIndex) return ScheduleType.group;
+    if (index == ScheduleType.book_1_1.typeIndex) return ScheduleType.book_1_1;
+    if (index == ScheduleType.book_1_n.typeIndex) return ScheduleType.book_1_n;
     if (index == ScheduleType.survey.typeIndex) return ScheduleType.survey;
     if (index == ScheduleType.lesson.typeIndex) return ScheduleType.lesson;
     return ScheduleType.custom;

@@ -1,5 +1,6 @@
 class Const {
-  static const String HOST_URL = "https://diab-api-dev.savvycom.vn/";
+  static const String HOST_URL = "https://api.savvycom.asia/";
+  // static const String HOST_URL = "https://diab-api-dev.savvycom.vn/";
 
   static const String API_URL = "${HOST_URL}api/";
 
@@ -85,6 +86,7 @@ class Const {
   static const int LESSON_LEARNT = 1;
   static const int LESSON_LEARNING = 2;
   static const int LESSON_LOCKED = 3;
+  static const int LESSON_CAN_NOT_LEARN = 4;
 
   static const int LESSON_SECTION_TYPE_VIDEO = 1;
   static const int LESSON_SECTION_TYPE_AUDIO = 2;
@@ -105,10 +107,6 @@ class Const {
 
   static const String PARENT = 'parent';
   static const String GUARDIAN = 'guardian';
-
-  static const String PRO = "pro";
-  static const String BASIC = "basic";
-  static const String PREMIUM = "premium";
 
   static const String TEMPLATE_NONE = 'NONE';
   static const String TEMPLATE_D = 'D';

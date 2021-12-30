@@ -196,7 +196,7 @@ class _PaymentPackagePageState extends State<PaymentPackagePage> {
               child: ButtonWidget(
                 title: R.string.payment.tr(),
                 onPressed: () {
-                  if (widget.packageCode == Const.PREMIUM) {
+                  if (widget.packageCode == 'Const.PREMIUM') {
                     NavigationUtil.navigatePage(
                         context,
                         CongratulationPage(

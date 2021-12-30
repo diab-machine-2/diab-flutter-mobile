@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widgets/button_widget.dart';
 import '../models/schedule_type.dart';
 
 class SmartGoalItem extends StatelessWidget {
@@ -40,11 +43,14 @@ class SmartGoalItem extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text('Huỷ mục tiêu',
                           style: TextStyle(
-                              color: R.color.white, fontWeight: FontWeight.w500),
+                              color: R.color.white,
+                              fontWeight: FontWeight.w500),
                           textAlign: TextAlign.center),
                     ),
                   ]),
-              onTap: () {},
+              onTap: () {
+                _showDeletePopup(context);
+              },
             ),
           ),
         ],
@@ -120,5 +126,101 @@ class SmartGoalItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _showDeletePopup(BuildContext context) async {
+    final dynamic result = await showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => GestureDetector(
+        onTap: () {
+          NavigationUtil.pop(context);
+        },
+        child: Scaffold(
+          backgroundColor: R.color.transparent,
+          body: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      R.color.white,
+                      R.color.main_6,
+                    ],
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 57, vertical: 10),
+                        child: Image.asset(R.drawable.img_smart_goal_remove),
+                      ),
+                      Text(
+                        'Xác nhận huỷ mục tiêu',
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Mục tiêu này trong tương lai cũng sẽ bị huỷ, bạn chắc chắn huỷ mục tiêu chứ?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          SizedBox(
+                            width: 140.w,
+                            height: 43,
+                            child: ButtonWidget(
+                              title: 'Huỷ',
+                              textSize: 14,
+                              backgroundColor: R.color.grayBorder,
+                              textColor: R.color.textDark,
+                              onPressed: () {
+                                NavigationUtil.pop(context);
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                            width: 140.w,
+                            height: 43,
+                            child: ButtonWidget(
+                              title: 'Xác nhận',
+                              textSize: 14,
+                              onPressed: () {
+                                NavigationUtil.pop(context, result: true);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    if (result is bool && result) {
+      onRemove.call();
+    }
   }
 }

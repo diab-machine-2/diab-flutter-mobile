@@ -170,7 +170,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                           height: 24,
                         ),
                         Visibility(
-                          visible: data?.code == Const.PRO,
+                          // visible: data?.code == Const.PRO,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -201,7 +201,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
             ),
           ),
           Visibility(
-            visible: data?.code == Const.PRO,
+            // visible: data?.code == Const.PRO,
             child: Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: 24),
@@ -237,7 +237,7 @@ class _DetailPackagePageState extends State<DetailPackagePage> {
                                 PaymentPackagePage(
                                   packageName:
                                   data?.name ?? R.string.diab_pro.tr(),
-                                  packageCode: data?.code ?? Const.PRO,
+                                  packageCode: data?.code ?? 'Const.PRO',
                                   price: data!.prices![_cubit.selectedPrice],
                                   isBuyDirect: widget.isBuyDirect,
                                 ));

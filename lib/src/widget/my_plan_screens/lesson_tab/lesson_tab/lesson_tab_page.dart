@@ -162,7 +162,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                           controller: _controller,
                           scrollController: _lessonScrollController,
                           onRefresh: () =>
-                              _cubit.getLessonsList(isRefresh: true),
+                              _cubit.getInitData(isRefresh: true, showCurrentWeek: false),
                           child: _cubit.lessonsList!.isEmpty
                               ? _buildEmptyLessonList()
                               : SingleChildScrollView(
@@ -172,11 +172,11 @@ class _LessonTabPageState extends State<LessonTabPage>
                                       (index) => _buildLessonWidget(
                                           lessonDetail:
                                               _cubit.lessonsList?[index],
-                                          onTap: () {
+                                          onTap: () async {
                                             if (_cubit.lessonsList?[index]?.id
                                                     ?.isNotEmpty ==
                                                 true) {
-                                              NavigationUtil.navigatePage(
+                                              await NavigationUtil.navigatePage(
                                                 context,
                                                 LessonDetailPage(
                                                   lessonType: _cubit
@@ -186,6 +186,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                       .lessonsList![index]!.id!,
                                                 ),
                                               );
+                                              _cubit.getInitData(showCurrentWeek: false);
                                             }
                                           }),
                                     )
@@ -434,9 +435,7 @@ class _LessonTabPageState extends State<LessonTabPage>
           Expanded(
             child: InkWell(
               onTap: () {
-                if (_cubit.myPlanCubit.packageCode == Const.BASIC &&
-                    lessonDetail?.level == 'Cấp độ 1') {
-                  // TODO(Tuyen): Show dialog upgrade
+                if (lessonDetail?.learningStatus == Const.LESSON_CAN_NOT_LEARN) {
                   showUpdateRequirePopup(context: context);
                   return;
                 }

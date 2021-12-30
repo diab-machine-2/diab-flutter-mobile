@@ -11,6 +11,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/video_player_widget.dart';
@@ -124,7 +125,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                             controller: _exerciseScrollController,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 20),
-                            itemCount: _cubit.isPremiumUser
+                            itemCount: _cubit.isHasRoadmapUser
                                 ? 1
                                 : _cubit.dataLength + 1,
                             itemBuilder: (context, index) {
@@ -134,7 +135,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                                 index: index,
                                 child: index < _cubit.dataLength
                                     ? _buildExerciseWidget(
-                                        exerciseItem: _cubit.isPremiumUser
+                                        exerciseItem: _cubit.isHasRoadmapUser
                                             ? _cubit.currentExercise
                                             : _cubit.exerciseMovementResponse
                                                 ?.data?[index])
@@ -359,7 +360,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Widget _buildDayOffWidget() {
-    if (!_cubit.isPremiumUser) return const SizedBox();
+    if (!_cubit.isHasRoadmapUser) return const SizedBox();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 53),
       child: Column(
@@ -450,67 +451,20 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         children: [
           _buildWeekListWidget(),
           const SizedBox(height: 20),
-          Padding(
+          Container(
+            alignment: Alignment.centerRight,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(
-                    7,
-                    (index) => Container(
-                      alignment: Alignment.bottomCenter,
-                      width: 24,
-                      child: Text(
-                        index == 6 ? 'CN' : 'T${index + 2}',
-                        style: TextStyle(
-                          color: R.color.grey_1,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: List.generate(
-                    13,
-                    (index) {
-                      return index.isOdd
-                          ? Expanded(
-                              child: Container(
-                                height: 1,
-                                color: index ~/ 2 >= _cubit.mark
-                                    ? R.color.grayBorder
-                                    : R.color.green,
-                              ),
-                            )
-                          : _buildSingleDay(
-                              status: _cubit.getExerciseOfDay(index ~/ 2) ??
-                                  CompletionStatus.not_start_yet,
-                              isSelected: _cubit.currentDayIndex == index ~/ 2,
-                              onTap: () {
-                                _cubit.onSelectDay(index ~/ 2);
-                              });
-                    },
-                  ),
-                ),
-              ],
+            child: DayInWeekWidget(
+              data: _cubit.dayInWeekList,
+              mark: _cubit.mark,
+              currentDayIndex: _cubit.currentDayIndex,
+              onSelectDay: (selectedDayIndex) {
+                _cubit.onSelectDay(selectedDayIndex);
+              },
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildSingleDay(
-      {required CompletionStatus status,
-      required bool isSelected,
-      VoidCallback? onTap}) {
-    return InkWell(
-      onTap: onTap,
-      child: status.dayStatusIcon(isSelected),
     );
   }
 

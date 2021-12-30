@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/widgets/user_icon_widget.dart';
 import '../../activity_tab/models/schedule_type.dart';
 
 class SelectTypeWidget extends StatefulWidget {
   const SelectTypeWidget({
     required this.title,
+    required this.backgroundColor,
+    required this.icon,
     this.onTap,
     this.subList,
     this.onSlectType,
   });
 
   final String title;
+  final Color backgroundColor;
+  final String icon;
   final VoidCallback? onTap;
   final List<ScheduleType>? subList;
   final Function(ScheduleType type)? onSlectType;
@@ -38,23 +43,27 @@ class _SelectTypeWidgetState extends State<SelectTypeWidget> {
           child: Container(
             margin: EdgeInsets.only(bottom: showSubList ? 0 : 16),
             decoration: BoxDecoration(
-                color: R.color.white,
+                color: R.color.transparent,
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(8))),
             child: Container(
               height: 48,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 6),
               decoration: BoxDecoration(
-                color: R.color.main_6,
-                borderRadius: BorderRadius.circular(8),
-              ),
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: R.color.color0xffE5E5E5)),
               child: Row(
                 children: [
+                  UserIconWidget(
+                      icon: widget.icon,
+                      backgroundColor: widget.backgroundColor),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       widget.title,
                       style: TextStyle(
-                        color: R.color.greenGradientBottom,
+                        color: R.color.textDark,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),

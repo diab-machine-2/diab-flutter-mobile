@@ -45,14 +45,20 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
 
   List<dynamic> files = [];
 
+  String totalKcalText = '';
+
   String notes = '';
 
   double totalKcal = 0;
 
   double? totalKcalInFoodMenu;
 
+  bool addTotalCalo = false;
+
+  String otherFoodId = '7e8c6d8e-5d34-4c86-b15e-7ffe2e156999';
+
   bool get isBasicUser {
-    final String packageCode = userInfo?.packageCode ?? '';
+    // final String packageCode = userInfo?.packageCode ?? '';
     // return packageCode.isEmpty || packageCode == Const.BASIC;
     return false;
   }
@@ -84,9 +90,18 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     return false;
   }
 
+  double get totalKcalNumber => addTotalCalo ? parsedTotalKcal : totalKcal;
+
+  void onToggleButton(bool newState) {
+    totalKcal = 0;
+    selectedFoods = [];
+    addTotalCalo = newState;
+    refresh();
+  }
+
   Future<void> getInitialData({String? type, String? id}) async {
     if (type == null || type.isEmpty) return;
-    await getCurrentUserInfo();
+    // await getCurrentUserInfo();
     if (type == 'update') {
       loadDetail(id);
     } else {
@@ -134,9 +149,20 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     files.addAll(model!.images);
     selectedTimeFrame =
         TimeFrameModel(id: model!.mealId, code: '', name: model!.mealText);
-    selectedFoods = model!.foods;
+    final int index =
+        model!.foods.indexWhere((element) => element.id == otherFoodId);
+    if (index == -1) {
+      selectedFoods = model!.foods;
+    } else {
+      addTotalCalo = true;
+      totalKcalText = ((model!.foods[index].portion ?? 0) *
+              (model!.foods[index].calorie ?? 0))
+          .round()
+          .toString();
+    }
     calculatorCalo();
-    refresh();
+    emit(const DailyNutritionFillData());
+    emit(const DailyNutritionInitial());
   }
 
   Future<void> getCurrentUserInfo() async {
@@ -193,6 +219,8 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     return total;
   }
 
+  double get parsedTotalKcal => double.tryParse(totalKcalText) ?? 0;
+
   Future<void> changeFood({
     required FoodModel newFoodModel,
   }) async {
@@ -223,6 +251,9 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   }
 
   void calculatorCalo() {
+    if (addTotalCalo) {
+      totalKcal = parsedTotalKcal;
+    }
     totalKcal = 0;
     for (final food in selectedFoods) {
       totalKcal += food.calorie! * (food.portion ?? 0);
@@ -236,17 +267,32 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   }
 
   bool inputValid() {
-    if (selectedDate == null) {
-      emit(DailyNutritionFailure(R.string.ban_chua_nhap_thoi_gian.tr()));
-      return false;
-    }
-    if (selectedTimeFrame == null) {
-      emit(DailyNutritionFailure(R.string.ban_chua_chon_khung_gio.tr()));
-      return false;
-    }
-    if (selectedFoods.isEmpty) {
-      emit(DailyNutritionFailure(R.string.ban_chua_chon_mon_an.tr()));
-      return false;
+    if (addTotalCalo) {
+      if (totalKcalText.isEmpty) {
+        emit(const DailyNutritionFailure('Bạn chưa nhập tổng calo'));
+        return false;
+      }
+      if (parsedTotalKcal <= 0) {
+        emit(const DailyNutritionFailure('Tổng số calo phải lớn hơn 0'));
+        return false;
+      }
+      if (notes.isEmpty) {
+        emit(const DailyNutritionFailure('Bạn chưa nhập ghi chú'));
+        return false;
+      }
+    } else {
+      if (selectedDate == null) {
+        emit(DailyNutritionFailure(R.string.ban_chua_nhap_thoi_gian.tr()));
+        return false;
+      }
+      if (selectedTimeFrame == null) {
+        emit(DailyNutritionFailure(R.string.ban_chua_chon_khung_gio.tr()));
+        return false;
+      }
+      if (selectedFoods.isEmpty) {
+        emit(DailyNutritionFailure(R.string.ban_chua_chon_mon_an.tr()));
+        return false;
+      }
     }
     return true;
   }
@@ -259,11 +305,13 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
       for (final file in files) {
         paths.add(file.path);
       }
-      final bool result = await FoodClient().postIndexFood(
+      final result = await FoodClient().postIndexFood(
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          selectedTimeFrame!.id,
+          selectedTimeFrame?.id,
           notes,
-          selectedFoods,
+          addTotalCalo
+              ? [FoodModel(id: otherFoodId, portion: parsedTotalKcal)]
+              : selectedFoods,
           paths);
       if (result == true) {
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
@@ -295,7 +343,9 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           selectedTimeFrame!.id,
           notes,
-          selectedFoods,
+          addTotalCalo
+              ? [FoodModel(id: otherFoodId, portion: parsedTotalKcal)]
+              : selectedFoods,
           removeIDs,
           paths);
       if (result == true) {

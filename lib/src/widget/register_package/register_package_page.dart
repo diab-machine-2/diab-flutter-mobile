@@ -297,7 +297,7 @@ class _RegisterPackagePageState extends State<RegisterPackagePage> {
                 child: ButtonWidget(
                   title: R.string.upgrade_package_pro.tr(),
                   onPressed: () {
-                    NavigationUtil.navigatePage(context, UpgradeAccountPage(code: Const.PRO, isBuyDirect: false,));
+                    NavigationUtil.navigatePage(context, UpgradeAccountPage(code: 'Const.PRO', isBuyDirect: false,));
                   },
                 ),
               ),
