@@ -10,13 +10,11 @@ import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 
 import '../../my_plan/my_plan.dart';
 import 'activity_tab.dart';
-import 'models/goal_filter_type.dart';
-import 'models/message_state.dart';
+import 'models/congratulation_state.dart';
 
 class ActivityTabCubit extends Cubit<ActivityTabState> {
   ActivityTabCubit(this.repository, this.myPlanCubit)
@@ -25,18 +23,14 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   final AppRepository repository;
   final MyPlanCubit myPlanCubit;
 
-  final List<GoalFilterType> goalTypeList = [
-    GoalFilterType.day,
-    GoalFilterType.week
-  ];
-
   SmartGoalStatisticResponseData? statistic;
 
   int mark = 0;
   int? currentWeekIndex;
   int currentDayIndex = 0;
 
-  GoalFilterType currentGoalType = GoalFilterType.day;
+  CongratulationState congratulationState =
+      CongratulationState(currentDate: DateTime.now());
 
   List<SmartGoalList?> smartGoalDayList = [];
   List<SmartGoalList?> smartGoalWeekList = [];
@@ -45,19 +39,11 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   List<DayStatesResponseData?> get dayStatesList =>
       statistic?.daysInCurrentWeek ?? [];
 
-  int get currentGoalTypeIndex {
-    final int index = goalTypeList.indexOf(currentGoalType);
-    return index == -1 ? 0 : index;
-  }
-
   int? get currentWeek =>
       currentWeekIndex == null ? null : currentWeekIndex! + 1;
 
-  int? get currentDay => dayStatesList.isEmpty ? 0 : dayStatesList[currentDayIndex]?.day;
-
-  MessageState get messageState => currentGoalType == GoalFilterType.day
-      ? myPlanCubit.dayMessageState
-      : myPlanCubit.weekMessageState;
+  int? get currentDay =>
+      dayStatesList.isEmpty ? 0 : dayStatesList[currentDayIndex]?.day;
 
   List<DayInWeekData> get dayInWeekList => statistic?.dayInWeekList ?? [];
 
@@ -80,14 +66,6 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   void onSelectDay(int newDayIndex) {
     currentDayIndex = newDayIndex;
     getListSmartGoal();
-  }
-
-  void checkMessageDay() {
-    if (!messageState.dateTime.isSameDayWith(DateTime.now())) {
-      messageState.dateTime = DateTime.now();
-      messageState.showed50Message = false;
-      messageState.showed90Message = false;
-    }
   }
 
   Future<void> initData() async {
@@ -119,7 +97,17 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     apiResult.when(success: (SmartGoalListReponse response) {
       smartGoalDayList = response.data?.daily ?? [];
       smartGoalWeekList = response.data?.weekly ?? [];
-      checkMessageDay();
+
+      congratulationState.checkDate();
+      if (response.isWeeklyGoalCompleted && !congratulationState.weeklyShowed) {
+        emit(const ActivityTabDailyGoalCompleted());
+      } else if (response.isDailyGoalCompleted &&
+          !congratulationState.dailyShowed) {
+        emit(const ActivityTabWeeklyGoalCompleted());
+      }
+      congratulationState.weeklyShowed = !response.isWeeklyGoalCompleted;
+      congratulationState.dailyShowed = !response.isDailyGoalCompleted;
+
       emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));

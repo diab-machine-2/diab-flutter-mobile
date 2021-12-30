@@ -66,3 +66,19 @@ class ActivityTabWeekChanged extends ActivityTabState {
     return 'ActivityTabWeekChanged{}';
   }
 }
+
+class ActivityTabDailyGoalCompleted extends ActivityTabState {
+  const ActivityTabDailyGoalCompleted();
+  @override
+  String toString() {
+    return 'ActivityTabDailyGoalCompleted{}';
+  }
+}
+
+class ActivityTabWeeklyGoalCompleted extends ActivityTabState {
+  const ActivityTabWeeklyGoalCompleted();
+  @override
+  String toString() {
+    return 'ActivityTabWeeklyGoalCompleted{}';
+  }
+}

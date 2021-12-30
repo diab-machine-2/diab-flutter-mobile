@@ -394,6 +394,21 @@ class SmartGoalListReponse {
     this.meta,
     this.data,
   });
+
+  bool get isWeeklyGoalCompleted {
+    for(final SmartGoalList? data in data?.weekly ?? []) {
+      if (data?.progress != 1) return false; 
+    }
+    return true;
+  }
+
+  bool get isDailyGoalCompleted {
+    for(final SmartGoalList? data in data?.daily ?? []) {
+      if (data?.progress != 1) return false; 
+    }
+    return true;
+  }
+
   SmartGoalListReponse.fromJson(Map<String, dynamic> json) {
     meta = (json['meta'] != null)
         ? SmartGoalListReponseMeta.fromJson(json['meta'])
