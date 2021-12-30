@@ -18,6 +18,7 @@ import 'response/blood_sugar_template_response.dart';
 import 'response/common_response.dart';
 import 'response/create_menu_response.dart';
 import 'response/create_smart_goal_response.dart';
+import 'response/delete_smart_goal_reponse.dart';
 import 'response/detail_package_response.dart';
 import 'response/detail_survey_response.dart';
 import 'response/diabetes_status_response.dart';
@@ -40,7 +41,6 @@ import 'response/smart_goal_statistic_response.dart';
 import 'response/tdee_response.dart';
 import 'response/upgrade_account_response.dart';
 import 'response/user_info_response.dart';
-import 'response/week_smart_goal_response.dart';
 import 'response/week_states_response.dart';
 
 part 'app_api.g.dart';
@@ -228,10 +228,10 @@ abstract class AppApi {
     @Path("id") String id,
   );
 
-  @GET("/App/Target/GetTargetWeek")
-  Future<WeekSmartGoalResponse> getWeekSmartGoal({
-    @Query('week') int? week,
-  });
+  @DELETE("App/Target/{id}")
+  Future<DeleteSmartGoalReponse> deleteSmartGoal(
+    @Path('id') String id,
+  );
 
   // Quiz
   @POST("App/Lesson/{lessonId}/Review")

@@ -594,18 +594,17 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<WeekSmartGoalResponse> getWeekSmartGoal({week}) async {
+  Future<DeleteSmartGoalReponse> deleteSmartGoal(id) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'week': week};
-    queryParameters.removeWhere((k, v) => v == null);
+    final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<WeekSmartGoalResponse>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, '/App/Target/GetTargetWeek',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = WeekSmartGoalResponse.fromJson(_result.data!);
+        _setStreamType<DeleteSmartGoalReponse>(Options(
+                method: 'DELETE', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, 'App/Target/$id',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = DeleteSmartGoalReponse.fromJson(_result.data!);
     return value;
   }
 

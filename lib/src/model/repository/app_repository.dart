@@ -15,6 +15,7 @@ import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
 import 'package:medical/src/model/response/create_smart_goal_response.dart';
+import 'package:medical/src/model/response/delete_smart_goal_reponse.dart';
 import 'package:medical/src/model/response/detail_package_response.dart';
 import 'package:medical/src/model/response/detail_survey_response.dart';
 import 'package:medical/src/model/response/diabetes_status_response.dart';
@@ -38,7 +39,6 @@ import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/model/response/tdee_response.dart';
 import 'package:medical/src/model/response/upgrade_account_response.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
-import 'package:medical/src/model/response/week_smart_goal_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -537,10 +537,10 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<WeekSmartGoalResponse>> getWeekSmartGoal({int? week}) async {
+  Future<ApiResult<DeleteSmartGoalReponse>> deleteSmartGoal(String id) async {
     try {
-      final WeekSmartGoalResponse response =
-          await appClient.getWeekSmartGoal(week: week);
+      final DeleteSmartGoalReponse response =
+          await appClient.deleteSmartGoal(id);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

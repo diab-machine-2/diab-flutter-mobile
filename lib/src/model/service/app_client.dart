@@ -3,6 +3,7 @@ import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:ua_client_hints/ua_client_hints.dart';
 
 import '../app_api.dart';
 
@@ -22,12 +23,16 @@ class AppClient {
     return _instance;
   }
 
-  void _setupClient() {
-    Dio _dio = Dio();
+  Future<void> _setupClient() async {
+    final Dio _dio = Dio();
+    final user_agent = await userAgent();
     _dio
       ..options.connectTimeout = _defaultConnectTimeout
       ..options.receiveTimeout = _defaultReceiveTimeout
-      ..options.headers = {'Content-Type': 'application/json; charset=UTF-8'};
+      ..options.headers = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'User-Agent': user_agent
+      };
 
     _dio.interceptors.add(PrettyDioLogger(
         requestHeader: true,

@@ -7,8 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
-import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
-import 'package:medical/src/model/response/week_smart_goal_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -17,6 +15,7 @@ import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -129,11 +128,11 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       child: Column(
                         children: [
                           ..._buildSmartGoalDayList(
-                            smartGoalList: _cubit.smartGoalList,
+                            dailyList: _cubit.smartGoalDayList,
                           ),
                           const SizedBox(height: 32),
                           ..._buildSmartGoalWeekList(
-                              smartGoalList: _cubit.weekSmartGoalList),
+                              smartGoalList: _cubit.smartGoalWeekList),
                           const SizedBox(height: 16),
                           SizedBox(
                             width: 195.w,
@@ -218,81 +217,13 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               color: R.color.transparent,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(
-                      7,
-                      (index) {
-                        final DayStatesResponseData? dayData =
-                            _cubit.dayStatesList[index];
-                        final DateTime today =
-                            DateTime.fromMillisecondsSinceEpoch(
-                                (dayData?.day ?? 0) * 1000);
-                        final String dayTitle = '${today.day}/${today.month}';
-                        return Container(
-                          alignment: Alignment.bottomCenter,
-                          width: 30,
-                          child: Column(
-                            children: [
-                              Text(
-                                index == 6 ? 'CN' : 'T${index + 2}',
-                                style: TextStyle(
-                                  color: R.color.grey_1,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Visibility(
-                                visible: _cubit.weekStatesList.isEmpty,
-                                child: Text(
-                                  dayTitle,
-                                  style: TextStyle(
-                                    color: R.color.grey_1,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3.5),
-                    child: Row(
-                      children: List.generate(
-                        13,
-                        (index) {
-                          return index.isOdd
-                              ? Expanded(
-                                  child: Container(
-                                    height: 1,
-                                    color: index ~/ 2 >= _cubit.mark
-                                        ? R.color.grayBorder
-                                        : R.color.green,
-                                  ),
-                                )
-                              : _buildSingleDay(
-                                  status: _cubit.dayStatesList[index ~/ 2]
-                                          ?.completionStatus ??
-                                      CompletionStatus.not_start_yet,
-                                  isSelected:
-                                      _cubit.currentDayIndex == index ~/ 2,
-                                  onTap: () {
-                                    _cubit.onSelectDay(index ~/ 2);
-                                  });
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+              child: DayInWeekWidget(
+                data: _cubit.dayInWeekList,
+                mark: _cubit.mark,
+                currentDayIndex: _cubit.currentDayIndex,
+                onSelectDay: (selectedDayIndex) {
+                  _cubit.onSelectDay(selectedDayIndex);
+                },
               ),
             ),
           ),
@@ -360,16 +291,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  Widget _buildSingleDay(
-      {required CompletionStatus status,
-      required bool isSelected,
-      VoidCallback? onTap}) {
-    return InkWell(
-      onTap: onTap,
-      child: status.dayStatusIcon(isSelected),
-    );
-  }
-
   Widget _buildSingleWeek({
     required WeekStatesResponseData? state,
     required bool isSelected,
@@ -419,10 +340,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   List<Widget> _buildSmartGoalDayList({
-    required List<SmartGoalListReponseData?> smartGoalList,
+    required List<SmartGoalList?> dailyList,
   }) {
     final countDone =
-        smartGoalList.where((element) => element?.progress == 1).length;
+        dailyList.where((element) => element?.progress == 1).length;
     final List<Widget> children = [
       Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -438,12 +359,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           ),
           CustomProgressWidget(
             count: countDone,
-            total: smartGoalList.length,
+            total: dailyList.length,
           ),
         ],
       ),
       const SizedBox(height: 20),
-      ...smartGoalList.map((smartGoal) {
+      ...dailyList.map((smartGoal) {
         final ScheduleType type =
             ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type);
         final String frequency =
@@ -459,7 +380,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
               smartGoal: smartGoal,
             );
           },
-          onRemove: () {},
+          onRemove: () {
+            _cubit.deleteSmartGoal(smartGoal?.id);
+          },
         );
       }).toList(),
     ];
@@ -467,7 +390,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   List<Widget> _buildSmartGoalWeekList({
-    required List<WeekSmartGoalData?> smartGoalList,
+    required List<SmartGoalList?> smartGoalList,
   }) {
     final countDone =
         smartGoalList.where((element) => element?.progress == 1).length;
@@ -506,7 +429,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   Future<void> _onSelectGoal(ScheduleType type,
-      {SmartGoalListReponseData? smartGoal}) async {
+      {SmartGoalList? smartGoal}) async {
     Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
     switch (type) {
       case ScheduleType.blood_sugar:
@@ -541,11 +464,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             arguments: {'type': 'input'});
         _cubit.refreshData();
         break;
-      case ScheduleType.hba1c:
-        await Navigator.pushNamed(context, NavigatorName.add_hba1c,
-            arguments: {'type': 'input'});
-        _cubit.refreshData();
-        break;
       case ScheduleType.exercise_movement:
         _cubit.goToExerciseTab();
         break;
@@ -554,21 +472,26 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           smartGoal: smartGoal,
         );
         break;
-      case ScheduleType.coaching:
+      case ScheduleType.book_1_1:
         _showCoachingPopup();
         break;
-      case ScheduleType.group:
+      case ScheduleType.book_1_n:
         break;
       case ScheduleType.survey:
         _showSurveyPopup();
         break;
       case ScheduleType.lesson:
         break;
+      case ScheduleType.io_evaluate:
+        // TODO: Handle this case.
+        break;
+      case ScheduleType.update_profile:
+        // TODO: Handle this case.
+        break;
     }
   }
 
-  String _getSmartGoalDescription(ScheduleType type,
-      {SmartGoalListReponseData? data}) {
+  String _getSmartGoalDescription(ScheduleType type, {SmartGoalList? data}) {
     switch (type) {
       case ScheduleType.blood_sugar:
         return '${data?.executeDayTimes ?? 0} lần/ngày';
@@ -582,19 +505,21 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         return '${data?.executeDayTimes ?? 0} lần/ngày';
       case ScheduleType.exercise:
         return '${data?.executeDayTimes ?? 0} phút';
-      case ScheduleType.hba1c:
-        return '${data?.executeDayTimes ?? 0} lần/ngày';
       case ScheduleType.exercise_movement:
         return '';
       case ScheduleType.custom:
         return '';
-      case ScheduleType.coaching:
+      case ScheduleType.book_1_1:
         return '';
-      case ScheduleType.group:
+      case ScheduleType.book_1_n:
         return '';
       case ScheduleType.survey:
         return '';
       case ScheduleType.lesson:
+        return '';
+      case ScheduleType.io_evaluate:
+        return '';
+      case ScheduleType.update_profile:
         return '';
     }
   }
@@ -659,7 +584,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  _showCustomGoalPopup({SmartGoalListReponseData? smartGoal}) {
+  _showCustomGoalPopup({SmartGoalList? smartGoal}) {
     String description = '';
     if (smartGoal?.executeType == 0) {
       description = 'Thời gian: ${smartGoal?.executeDayTimes} phút';
@@ -823,40 +748,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           }
           break;
         case StatisticalAction.my_report:
-          showActionFilter(
-              context: context,
-              builder: (context) {
-                return ReportListWidget(
-                  title: R.string.report.tr(),
-                  reportList: [
-                    ReportData(
-                      title: 'Báo cáo đầu vào',
-                      dateTime: DateTime.now(),
-                      url:
-                          'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                    ),
-                    ReportData(
-                      title: 'Báo cáo tiến độ chung',
-                      dateTime: DateTime.now().subtract(
-                        const Duration(days: 1, hours: 2),
-                      ),
-                      url: 'http://www.africau.edu/images/default/sample.pdf',
-                    ),
-                    ReportData(
-                      title: 'Báo cáo tiến độ 6 tháng gần đây',
-                      dateTime: DateTime.now().subtract(
-                        const Duration(days: 1, hours: 7),
-                      ),
-                      url:
-                          'https://www.clickdimensions.com/links/TestPDFfile.pdf',
-                    ),
-                  ],
-                  onSelected: (url) {
-                    NavigationUtil.navigatePage(
-                        context, PDFViewerWidget(url: url));
-                  },
-                );
-              });
+          _showReportBottomSheet();
           break;
         case StatisticalAction.chatting:
           break;
@@ -865,9 +757,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     }
   }
 
-  showActionFilter(
-      {required BuildContext context,
-      required Widget Function(BuildContext) builder}) {
+  _showReportBottomSheet() {
     showModalBottomSheet(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -877,7 +767,36 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       backgroundColor: R.color.white,
       context: context,
       isScrollControlled: true,
-      builder: builder,
+      builder: (context) {
+        return ReportListWidget(
+          title: R.string.report.tr(),
+          reportList: [
+            ReportData(
+              title: 'Báo cáo đầu vào',
+              dateTime: DateTime.now(),
+              url:
+                  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+            ),
+            ReportData(
+              title: 'Báo cáo tiến độ chung',
+              dateTime: DateTime.now().subtract(
+                const Duration(days: 1, hours: 2),
+              ),
+              url: 'http://www.africau.edu/images/default/sample.pdf',
+            ),
+            ReportData(
+              title: 'Báo cáo tiến độ 6 tháng gần đây',
+              dateTime: DateTime.now().subtract(
+                const Duration(days: 1, hours: 7),
+              ),
+              url: 'https://www.clickdimensions.com/links/TestPDFfile.pdf',
+            ),
+          ],
+          onSelected: (url) {
+            NavigationUtil.navigatePage(context, PDFViewerWidget(url: url));
+          },
+        );
+      },
     );
   }
 

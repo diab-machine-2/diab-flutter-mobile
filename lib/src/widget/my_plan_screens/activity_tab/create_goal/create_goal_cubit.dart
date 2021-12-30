@@ -38,7 +38,7 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
 
   String dailyTargetDuration = '';
 
-  SmartGoalListReponseData? smartGoalDetail;
+  SmartGoalList? smartGoalDetail;
 
   bool get isValid {
     if (type == null || type == ScheduleType.custom) {
