@@ -85,17 +85,22 @@ class LessonStatusWidget extends StatelessWidget {
         ],
       );
     }
-    if (learningStatus == Const.LESSON_LOCKED) {
+    if (learningStatus == Const.LESSON_LOCKED ||
+        learningStatus == Const.LESSON_CAN_NOT_LEARN) {
       return Row(
         children: [
           Container(
             width: 20,
             height: 20,
-            child: Image.asset(R.drawable.ic_lesson_lock),
+            child: Image.asset(learningStatus == Const.LESSON_LOCKED
+                ? R.drawable.ic_lesson_lock
+                : R.drawable.ic_lesson_can_not_learn),
           ),
           const SizedBox(width: 8),
           Text(
-            R.string.lesson_not_unlock_yet.tr(),
+            learningStatus == Const.LESSON_LOCKED
+                ? R.string.lesson_not_unlock_yet.tr()
+                : R.string.lesson_can_not_learn.tr(),
             style: TextStyle(
               color: R.color.captionColorGray,
               fontSize: 12.sp,
