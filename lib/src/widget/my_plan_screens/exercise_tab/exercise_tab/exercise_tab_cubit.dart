@@ -6,6 +6,7 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/widgets/day_in_week_widget.dart';
 
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
@@ -46,7 +47,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
 
   ExerciseMovementResponseData? get currentExercise {
     final ExerciseMovementResponseData? exercise = exerciseMovementResponse
-        ?.getExerciseFromDayInWeek(week: week ?? 1, dayInWeek: currentDayIndex);
+        ?.getExerciseFromDayInWeek(week: week ?? 1, dayIndex: currentDayIndex);
     if (exercise?.isBlank == true) return null;
     return exercise;
   }
@@ -56,9 +57,12 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     if (exerciseMovementResponse?.data == null)
       return CompletionStatus.completed;
     return exerciseMovementResponse
-        ?.getExerciseFromDayInWeek(week: week!, dayInWeek: dayIndex)
+        ?.getExerciseFromDayInWeek(week: week!, dayIndex: dayIndex)
         ?.completionStatus;
   }
+
+  List<DayInWeekData> get dayInWeekList =>
+      exerciseMovementResponse?.dayInWeekList ?? [];
 
   void onSelectWeek(int newIndex) {
     currentWeekIndex = newIndex;
