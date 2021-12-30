@@ -73,6 +73,16 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           if (state is ActivityTabWeekChanged) {
             _animateToIndex(state.newIndex, refresh: false);
           }
+          if (state is ActivityTabDailyGoalCompleted) {
+            _showPopupCongratulation(
+                icon: R.drawable.img_smart_goal_day_achive,
+                description: R.string.congratulation_achive_daily.tr());
+          }
+          if (state is ActivityTabWeeklyGoalCompleted) {
+            _showPopupCongratulation(
+                icon: R.drawable.img_smart_goal_week_achive,
+                description: R.string.congratulation_achive_weekly.tr());
+          }
         },
         builder: (context, state) {
           return Column(
@@ -97,7 +107,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              'Thống kê',
+                              R.string.statistical.tr(),
                               style: TextStyle(
                                 color: R.color.greenGradientBottom,
                                 fontSize: 16,
@@ -137,7 +147,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                           SizedBox(
                             width: 195.w,
                             child: ButtonWidget(
-                                title: 'Thêm mục tiêu',
+                                title: R.string.create_smart_goal.tr(),
                                 height: 48.w,
                                 textSize: 16,
                                 textColor: R.color.greenGradientBottom,
@@ -350,7 +360,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         children: [
           Expanded(
             child: Text(
-              'Mục tiêu ngày',
+              R.string.goal_of_day.tr(),
               style: TextStyle(
                   color: R.color.grey_1,
                   fontSize: 16,
@@ -374,6 +384,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           name: smartGoal?.name ?? '',
           frequency: frequency,
           isDone: smartGoal?.progress == 1,
+          isEnable: true,
           onTap: () {
             _onSelectGoal(
               type,
@@ -400,7 +411,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         children: [
           Expanded(
             child: Text(
-              'Mục tiêu tuần',
+              R.string.goal_of_week.tr(),
               style: TextStyle(
                   color: R.color.grey_1,
                   fontSize: 16,
@@ -420,6 +431,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           name: smartGoal?.name ?? '',
           frequency: smartGoal?.description ?? '',
           isDone: smartGoal?.progress == 1,
+          isEnable: false,
           onTap: () {},
           onRemove: () {},
         );
@@ -494,15 +506,20 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   String _getSmartGoalDescription(ScheduleType type, {SmartGoalList? data}) {
     switch (type) {
       case ScheduleType.blood_sugar:
-        return '${data?.executeDayTimes ?? 0} lần/ngày';
+        return R.string.time_per_day
+            .tr(args: ['${data?.executeDayTimes ?? 0}']);
       case ScheduleType.blood_pressure:
-        return '${data?.executeDayTimes ?? 0} lần/ngày';
+        return R.string.time_per_day
+            .tr(args: ['${data?.executeDayTimes ?? 0}']);
       case ScheduleType.weight:
-        return '${data?.executeDayTimes ?? 0} lần/ngày';
+        return R.string.time_per_day
+            .tr(args: ['${data?.executeDayTimes ?? 0}']);
       case ScheduleType.emotion:
-        return '${data?.executeDayTimes ?? 0} lần/ngày';
+        return R.string.time_per_day
+            .tr(args: ['${data?.executeDayTimes ?? 0}']);
       case ScheduleType.food:
-        return '${data?.executeDayTimes ?? 0} lần/ngày';
+        return R.string.time_per_day
+            .tr(args: ['${data?.executeDayTimes ?? 0}']);
       case ScheduleType.exercise:
         return '${data?.executeDayTimes ?? 0} phút';
       case ScheduleType.exercise_movement:
@@ -527,7 +544,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   void _showPopup({
     required BuildContext context,
     required Widget child,
-    required String buttonTitle,
+    String? buttonTitle,
     VoidCallback? onTap,
   }) {
     showDialog(
@@ -543,39 +560,53 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           body: Center(
             child: GestureDetector(
               onTap: () {},
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      R.color.white,
-                      R.color.main_6,
-                    ],
-                  ),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      child,
-                      const SizedBox(height: 16),
-                      Visibility(
-                        visible: onTap != null,
-                        child: SizedBox(
-                          width: 245,
-                          child: ButtonWidget(
-                            title: buttonTitle,
-                            textSize: 14,
-                            onPressed: onTap,
-                          ),
-                        ),
+              child: Stack(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          R.color.white,
+                          R.color.main_6,
+                        ],
                       ),
-                    ],
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          child,
+                          const SizedBox(height: 16),
+                          Visibility(
+                            visible: onTap != null,
+                            child: SizedBox(
+                              width: 245,
+                              child: ButtonWidget(
+                                title: buttonTitle ?? '',
+                                textSize: 14,
+                                onPressed: onTap,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  Positioned(
+                      top: 4,
+                      right: 24,
+                      child: IconButton(
+                        icon: const Icon(Icons.close),
+                        iconSize: 24,
+                        onPressed: () {
+                          NavigationUtil.pop(context);
+                        },
+                      ))
+                ],
               ),
             ),
           ),
@@ -718,6 +749,32 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 color: R.color.textDark,
                 fontSize: 14,
                 fontWeight: FontWeight.w400),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _showPopupCongratulation({
+    required String icon,
+    required String description,
+  }) {
+    return _showPopup(
+      context: context,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(57, 10, 57, 30),
+            child: Image.asset(icon),
+          ),
+          Text(
+            description,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
           ),
         ],
       ),
