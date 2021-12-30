@@ -287,7 +287,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                 const SizedBox(height: 8),
                 Visibility(
                   visible: exerciseItem.exerciseMovementStates !=
-                      Const.LESSON_LOCKED,
+                          Const.LESSON_LOCKED &&
+                      exerciseItem.exerciseMovementStates !=
+                          Const.LESSON_CAN_NOT_LEARN,
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Row(
