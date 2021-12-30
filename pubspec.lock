@@ -1285,6 +1285,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
+  ua_client_hints:
+    dependency: "direct main"
+    description:
+      name: ua_client_hints
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   url_launcher:
     dependency: "direct main"
     description:

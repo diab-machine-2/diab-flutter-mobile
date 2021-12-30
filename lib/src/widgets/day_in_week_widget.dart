@@ -2,74 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 
-const List<String> title = [
-  'T7',
-  'CN',
-  'T2',
-  'T3',
-  'T4',
-  'T5',
-  'T6',
-  'T7',
-  'CN',
-];
+class DayInWeekWidget extends StatelessWidget {
+  const DayInWeekWidget({
+    Key? key,
+    required this.data,
+    required this.mark,
+    required this.currentDayIndex,
+    required this.onSelectDay,
+  }) : super(key: key);
+  final List<DayInWeekData> data;
+  final int mark;
+  final int currentDayIndex;
+  final Function(int selectedDay) onSelectDay;
 
-const List<CompletionStatus> days = [
-  CompletionStatus.not_start_yet,
-  CompletionStatus.not_completed,
-  CompletionStatus.not_start_yet,
-  CompletionStatus.completed,
-  CompletionStatus.studying,
-  CompletionStatus.not_completed,
-  CompletionStatus.not_start_yet,
-  CompletionStatus.not_completed,
-  CompletionStatus.completed,
-];
-
-class DayInWeekWidget extends StatefulWidget {
-  const DayInWeekWidget({Key? key}) : super(key: key);
-
-  @override
-  _DayInWeekWidgetState createState() => _DayInWeekWidgetState();
-}
-
-class _DayInWeekWidgetState extends State<DayInWeekWidget> {
-  final mark = 5;
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: List.generate(
-              (days.length * 2) - 1,
-              (index) {
-                return index.isOdd
-                    ? Container(
-                        margin: const EdgeInsets.only(bottom: 11.5),
-                        width: _getDashLength(constraints.maxWidth),
-                        height: 1,
-                        color: index ~/ 2 >= mark
-                            ? R.color.grayBorder
-                            : R.color.green,
-                      )
-                    : _buildSingleDay(
-                        status: CompletionStatus.not_start_yet,
-                        isSelected: false,
-                        title: title[index ~/ 2],
-                        onTap: () {});
-              },
-            ),
-          ),
-        );
-      },
-    );
+    return data.isNotEmpty != true
+        ? const SizedBox()
+        : LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: List.generate(
+                    (data.length * 2) - 1,
+                    (index) {
+                      return index.isOdd
+                          ? Container(
+                              margin: const EdgeInsets.only(bottom: 11.5),
+                              width: _getDashLength(constraints.maxWidth),
+                              height: 1,
+                              color: index ~/ 2 >= mark
+                                  ? R.color.grayBorder
+                                  : R.color.green,
+                            )
+                          : _buildSingleDay(
+                              status: data[index ~/ 2].dayStatus,
+                              isSelected: index ~/ 2 == currentDayIndex,
+                              title: data[index ~/ 2].title,
+                              onTap: () {
+                                onSelectDay(index ~/ 2);
+                              });
+                    },
+                  ),
+                ),
+              );
+            },
+          );
   }
 
   double _getDashLength(double maxWidth) {
-    return (maxWidth - 112) / 6;
+    return (maxWidth - 168) / 6;
   }
 
   Widget _buildSingleDay(
@@ -99,4 +83,14 @@ class _DayInWeekWidgetState extends State<DayInWeekWidget> {
       ),
     );
   }
+}
+
+class DayInWeekData {
+  DayInWeekData({
+    required this.title,
+    required this.dayStatus,
+  });
+
+  String title;
+  CompletionStatus dayStatus;
 }
