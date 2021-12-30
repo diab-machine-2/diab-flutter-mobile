@@ -11,6 +11,7 @@ import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
+import 'package:medical/src/model/request/update_quiz_lesson_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_menu_response.dart';
@@ -377,6 +378,21 @@ class AppRepository {
     try {
       final CommonResponse response =
           await appClient.setCompletedLessonAccount(request);
+      if (response.meta?.success == true) {
+        return ApiResult.success(data: response);
+      } else
+        return ApiResult.failure(
+            error: NetworkExceptions.defaultError(response.message ?? ''));
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> setCompletedLessonQuiz(
+      UpdateQuizLessonRequest request) async {
+    try {
+      final CommonResponse response =
+          await appClient.setCompletedLessonQuiz(request);
       if (response.meta?.success == true) {
         return ApiResult.success(data: response);
       } else

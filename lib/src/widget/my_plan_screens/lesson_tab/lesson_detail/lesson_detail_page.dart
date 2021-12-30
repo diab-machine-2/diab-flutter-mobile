@@ -75,6 +75,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                       await _cubit.checkSectionComplete();
                     }
                     if (_cubit.isQuizLesson) {
+                      await _cubit.setCompletedLessonQuiz();
                       NavigationUtil.pop(context);
                     } else {
                       _cubit.onChangeSection(_cubit.currentSection + 1);

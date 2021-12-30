@@ -14,6 +14,7 @@ import 'request/post_survey_request.dart';
 import 'request/send_feedback_course_request.dart';
 import 'request/send_interest_request.dart';
 import 'request/update_lesson_section_request.dart';
+import 'request/update_quiz_lesson_request.dart';
 import 'response/blood_sugar_template_response.dart';
 import 'response/common_response.dart';
 import 'response/create_menu_response.dart';
@@ -162,6 +163,11 @@ abstract class AppApi {
   @POST("App/LessonSection/SetCompletedLessonAccount")
   Future<CommonResponse> setCompletedLessonAccount(
     @Body() UpdateLessonSectionRequest request,
+  );
+
+  @POST("/App/Lesson/SetCompletedLessonQuiz")
+  Future<CommonResponse> setCompletedLessonQuiz(
+    @Body() UpdateQuizLessonRequest request,
   );
 
   //Exercise

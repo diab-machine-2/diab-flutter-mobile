@@ -53,7 +53,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   int? get currentWeek =>
       currentWeekIndex == null ? null : currentWeekIndex! + 1;
 
-  int? get currentDay => dayStatesList[currentDayIndex]?.day;
+  int? get currentDay => dayStatesList.isEmpty ? 0 : dayStatesList[currentDayIndex]?.day;
 
   MessageState get messageState => currentGoalType == GoalFilterType.day
       ? myPlanCubit.dayMessageState
