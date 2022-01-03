@@ -10,7 +10,6 @@ abstract class CardCourseQuizState extends Equatable {
 }
 
 class InitialCardCourseQuizState extends CardCourseQuizState {
-
   @override
   String toString() {
     return 'InitialCardCourseQuizState{}';
@@ -18,13 +17,11 @@ class InitialCardCourseQuizState extends CardCourseQuizState {
 }
 
 class ChooseAnswerSuccess extends CardCourseQuizState {
-
   @override
   String toString() {
     return 'ChooseAnswerSuccess{}';
   }
 }
-
 
 class CardCourseQuizLoading extends CardCourseQuizState {
   @override
@@ -45,4 +42,13 @@ class CardCourseQuizFailure extends CardCourseQuizState {
 
   @override
   String toString() => 'CardCourseQuizFailure { error: $error }';
+}
+
+class CardCourseQuizFillText extends CardCourseQuizState {
+  const CardCourseQuizFillText(this.text);
+
+  final String text;
+
+  @override
+  String toString() => 'CardCourseQuizFillText { text: $text }';
 }

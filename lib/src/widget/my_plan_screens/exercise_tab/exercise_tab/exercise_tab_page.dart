@@ -251,8 +251,10 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
+              clipBehavior: Clip.hardEdge,
               height: 87,
               width: 87,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
               child:
                   NetWorkImageWidget(imageUrl: exerciseItem?.image?.url ?? '')),
           const SizedBox(width: 14),
@@ -302,8 +304,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                           backgroundColor: R.color.greenGradientBottom,
                           textColor: R.color.white,
                           onTap: () async {
-                            if (_cubit.isFreeUser &&
-                                exerciseItem.isFree != true) {
+                            if (exerciseItem.exerciseMovementStates ==
+                                Const.LESSON_CAN_NOT_LEARN) {
                               showUpdateRequirePopup(context: context);
                               return;
                             }

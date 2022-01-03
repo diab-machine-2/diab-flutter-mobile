@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
@@ -5,8 +6,9 @@ import 'package:medical/res/R.dart';
 import '../models/create_goal_status.dart';
 
 class CustomTopProgressBar extends StatelessWidget {
-  const CustomTopProgressBar(this.status);
+  const CustomTopProgressBar(this.status, {required this.onSelect});
   final CreateGoalStatus status;
+  final Function(CreateGoalStatus) onSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -14,21 +16,33 @@ class CustomTopProgressBar extends StatelessWidget {
       children: [
         Row(
           children: [
-            _buildSingleStatus(index: 0),
+            _buildSingleStatus(
+                index: 0,
+                onTap: () {
+                  onSelect(CreateGoalStatus.select_type);
+                }),
             Expanded(
               child: Container(
                 height: 1,
                 color: status.index < 1 ? R.color.grayBorder : R.color.green,
               ),
             ),
-            _buildSingleStatus(index: 1),
+            _buildSingleStatus(
+                index: 1,
+                onTap: () {
+                  onSelect(CreateGoalStatus.setup);
+                }),
             Expanded(
               child: Container(
                 height: 1,
                 color: status.index < 2 ? R.color.grayBorder : R.color.green,
               ),
             ),
-            _buildSingleStatus(index: 2),
+            _buildSingleStatus(
+                index: 2,
+                onTap: () {
+                  onSelect(CreateGoalStatus.complete);
+                }),
           ],
         ),
         const SizedBox(height: 4),
@@ -53,7 +67,7 @@ class CustomTopProgressBar extends StatelessWidget {
     );
   }
 
-  Widget _buildSingleStatus({required int index}) {
+  Widget _buildSingleStatus({required int index, required VoidCallback onTap}) {
     late final Widget child;
     late final Color color;
     if (status.index > index) {
@@ -75,15 +89,18 @@ class CustomTopProgressBar extends StatelessWidget {
       child = const SizedBox();
       color = R.color.grayBorder;
     }
-    return Container(
-        width: 24,
-        height: 24,
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color,
-        ),
-        child: child);
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+          width: 24,
+          height: 24,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color,
+          ),
+          child: child),
+    );
   }
 
   Widget _buildTextLayout(

@@ -205,8 +205,11 @@ class Drawables {
 	String get ic_schedule_blood_sugar => "lib/res/drawables/ic_schedule_blood_sugar.png";
 	String get ic_schedule_book_1_1 => "lib/res/drawables/ic_schedule_book_1_1.png";
 	String get ic_schedule_book_1_n => "lib/res/drawables/ic_schedule_book_1_n.png";
+	String get ic_schedule_bool_1_1 => "lib/res/drawables/ic_schedule_bool_1_1.png";
 	String get ic_schedule_custom => "lib/res/drawables/ic_schedule_custom.png";
 	String get ic_schedule_emotion => "lib/res/drawables/ic_schedule_emotion.png";
+	String get ic_schedule_exercise => "lib/res/drawables/ic_schedule_exercise.png";
+	String get ic_schedule_exercise_lesson => "lib/res/drawables/ic_schedule_exercise_lesson.png";
 	String get ic_schedule_food => "lib/res/drawables/ic_schedule_food.png";
 	String get ic_schedule_io_evaluate => "lib/res/drawables/ic_schedule_io_evaluate.png";
 	String get ic_schedule_lesson => "lib/res/drawables/ic_schedule_lesson.png";

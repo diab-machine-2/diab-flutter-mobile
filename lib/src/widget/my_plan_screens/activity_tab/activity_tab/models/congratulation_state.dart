@@ -9,11 +9,8 @@ class CongratulationState {
   bool dailyShowed;
   bool weeklyShowed;
 
-  void checkDate() {
-    if (!currentDate.isSameDayWith(DateTime.now())) {
-      currentDate = DateTime.now();
-      dailyShowed = false;
-      weeklyShowed = false;
-    }
-  }
+  bool get shouldShowWeekPopup =>
+      currentDate.isSameDayWith(DateTime.now()) && !weeklyShowed;
+  bool get shouldShowDailyPopup =>
+      currentDate.isSameDayWith(DateTime.now()) && !dailyShowed;
 }

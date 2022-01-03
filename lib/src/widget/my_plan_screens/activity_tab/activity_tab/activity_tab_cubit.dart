@@ -98,15 +98,18 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       smartGoalDayList = response.data?.daily ?? [];
       smartGoalWeekList = response.data?.weekly ?? [];
 
-      congratulationState.checkDate();
-      if (response.isWeeklyGoalCompleted && !congratulationState.weeklyShowed) {
-        emit(const ActivityTabDailyGoalCompleted());
-      } else if (response.isDailyGoalCompleted &&
-          !congratulationState.dailyShowed) {
+      if (response.isWeeklyGoalCompleted &&
+          congratulationState.shouldShowWeekPopup) {
+        congratulationState.weeklyShowed = true;
         emit(const ActivityTabWeeklyGoalCompleted());
       }
-      congratulationState.weeklyShowed = !response.isWeeklyGoalCompleted;
-      congratulationState.dailyShowed = !response.isDailyGoalCompleted;
+      if (response.isDailyGoalCompleted &&
+          congratulationState.shouldShowDailyPopup) {
+        congratulationState.dailyShowed = true;
+        emit(const ActivityTabDailyGoalCompleted());
+      }
+
+      congratulationState.currentDate = DateTime.now();
 
       emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {

@@ -49,8 +49,6 @@ class QuestionAnswerResults {
 class PostSurveyRequest {
 /*
 {
-  "surveyId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "surveySectionId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "questionAnswerResults": [
     {
       "surveyQuestionId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -63,18 +61,12 @@ class PostSurveyRequest {
 } 
 */
 
-  String? surveyId;
-  String? surveySectionId;
   List<QuestionAnswerResults?>? questionAnswerResults;
 
   PostSurveyRequest({
-    this.surveyId,
-    this.surveySectionId,
     this.questionAnswerResults,
   });
   PostSurveyRequest.fromJson(Map<String, dynamic> json) {
-    surveyId = json['surveyId']?.toString();
-    surveySectionId = json['surveySectionId']?.toString();
     if (json['questionAnswerResults'] != null) {
       final v = json['questionAnswerResults'];
       final arr0 = <QuestionAnswerResults>[];
@@ -86,8 +78,6 @@ class PostSurveyRequest {
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
-    data['surveyId'] = surveyId;
-    data['surveySectionId'] = surveySectionId;
     if (questionAnswerResults != null) {
       final v = questionAnswerResults;
       final arr0 = [];

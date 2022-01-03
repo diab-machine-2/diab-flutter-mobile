@@ -14,14 +14,12 @@ class SmartGoalItem extends StatelessWidget {
       required this.name,
       required this.frequency,
       required this.isDone,
-      required this.isEnable,
       required this.onTap,
       required this.onRemove});
   final ScheduleType type;
   final String name;
   final String frequency;
   final bool isDone;
-  final bool isEnable;
   final VoidCallback onTap;
   final VoidCallback onRemove;
 
@@ -31,7 +29,7 @@ class SmartGoalItem extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       child: Slidable(
         actionPane: const SlidableDrawerActionPane(),
-        enabled: isEnable,
+        enabled: type.removeAble,
         secondaryActions: [
           Container(
             margin: const EdgeInsets.only(left: 4),

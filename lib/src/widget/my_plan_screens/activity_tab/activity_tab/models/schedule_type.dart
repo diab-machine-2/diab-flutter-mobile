@@ -22,19 +22,19 @@ extension ScheduleTypeExtend on ScheduleType {
   String get icon {
     switch (this) {
       case ScheduleType.blood_sugar:
-        return R.drawable.ic_blood_sugar;
+        return R.drawable.ic_schedule_blood_sugar;
       case ScheduleType.blood_pressure:
         return R.drawable.ic_schedule_blood_pressure;
       case ScheduleType.weight:
-        return R.drawable.ic_weight;
+        return R.drawable.ic_schedule_weight;
       case ScheduleType.emotion:
         return R.drawable.ic_schedule_emotion;
       case ScheduleType.food:
         return R.drawable.ic_schedule_food;
       case ScheduleType.exercise:
-        return R.drawable.ic_exercise;
+        return R.drawable.ic_schedule_exercise;
       case ScheduleType.exercise_movement:
-        return R.drawable.ic_exercise;
+        return R.drawable.ic_schedule_exercise_lesson;
       case ScheduleType.custom:
         return R.drawable.ic_schedule_custom;
       case ScheduleType.book_1_1:
@@ -44,7 +44,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.survey:
         return R.drawable.ic_schedule_survey;
       case ScheduleType.lesson:
-        return R.drawable.ic_exercise;
+        return R.drawable.ic_schedule_exercise;
       case ScheduleType.io_evaluate:
         return R.drawable.ic_schedule_io_evaluate;
       case ScheduleType.update_profile:
@@ -67,7 +67,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.exercise:
         return R.string.smart_goal_exercise.tr();
       case ScheduleType.exercise_movement:
-        return '';
+        return R.string.smart_goal_exercise_lesson.tr();
       case ScheduleType.custom:
         return '';
       case ScheduleType.book_1_1:
@@ -148,6 +148,39 @@ extension ScheduleTypeExtend on ScheduleType {
         return 12;
       case ScheduleType.update_profile:
         return 13;
+    }
+  }
+
+  bool get removeAble {
+    switch (this) {
+      case ScheduleType.custom:
+        return true;
+      case ScheduleType.blood_pressure:
+        return true;
+      case ScheduleType.blood_sugar:
+        return true;
+      case ScheduleType.exercise:
+        return true;
+      case ScheduleType.weight:
+        return true;
+      case ScheduleType.emotion:
+        return true;
+      case ScheduleType.food:
+        return true;
+      case ScheduleType.exercise_movement:
+        return false;
+      case ScheduleType.book_1_1:
+        return false;
+      case ScheduleType.book_1_n:
+        return true;
+      case ScheduleType.io_evaluate:
+        return false;
+      case ScheduleType.lesson:
+        return false;
+      case ScheduleType.survey:
+        return false;
+      case ScheduleType.update_profile:
+        return false;
     }
   }
 

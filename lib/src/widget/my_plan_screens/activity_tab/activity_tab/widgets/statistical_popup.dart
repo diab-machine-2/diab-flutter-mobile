@@ -9,7 +9,9 @@ enum StatisticalAction {
 }
 
 class StatisticalPopup extends StatelessWidget {
-  const StatisticalPopup({Key? key}) : super(key: key);
+  const StatisticalPopup({Key? key, required this.hasRoadmapUser})
+      : super(key: key);
+  final bool hasRoadmapUser;
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +19,15 @@ class StatisticalPopup extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         const Expanded(flex: 1, child: SizedBox()),
-        _buildSingleButton(
-          title: 'Tiến độ của tôi',
-          icon: R.drawable.ic_activity_process,
-          onTap: () {
-            NavigationUtil.pop(context, result: StatisticalAction.my_progress);
-          },
-        ),
+        if (hasRoadmapUser)
+          _buildSingleButton(
+            title: 'Tiến độ của tôi',
+            icon: R.drawable.ic_activity_process,
+            onTap: () {
+              NavigationUtil.pop(context,
+                  result: StatisticalAction.my_progress);
+            },
+          ),
         _buildSingleButton(
           title: 'Báo cáo của tôi',
           icon: R.drawable.ic_report,
