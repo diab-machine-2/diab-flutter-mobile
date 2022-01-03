@@ -5,7 +5,6 @@ class LessonFilterRequest {
 /*
 {
   "type": 1,
-  "roadmapId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "tagIdList": [
     "3fa85f64-5717-4562-b3fc-2c963f66afa6"
   ],
@@ -18,7 +17,6 @@ class LessonFilterRequest {
 */
 
   int? type;
-  String? roadmapId;
   List<String?>? tagIdList;
   List<String?>? lessonIdList;
   bool? isNotCompleted;
@@ -26,7 +24,6 @@ class LessonFilterRequest {
 
   LessonFilterRequest({
     this.type,
-    this.roadmapId,
     this.tagIdList,
     this.lessonIdList,
     this.isNotCompleted,
@@ -34,7 +31,6 @@ class LessonFilterRequest {
   });
   LessonFilterRequest.fromJson(Map<String, dynamic> json) {
     type = json['type']?.toInt();
-    roadmapId = json['roadmapId']?.toString();
     if (json['tagIdList'] != null) {
       final v = json['tagIdList'];
       final arr0 = <String>[];
@@ -57,7 +53,6 @@ class LessonFilterRequest {
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['type'] = type;
-    data['roadmapId'] = roadmapId;
     if (tagIdList != null) {
       final v = tagIdList;
       final arr0 = [];

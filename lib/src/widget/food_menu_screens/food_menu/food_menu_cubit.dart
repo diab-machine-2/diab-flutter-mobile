@@ -23,7 +23,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
   UserInfoResponseData? userInfo;
 
   bool get isBasicUser {
-    final String packageCode = userInfo?.packageCode ?? '';
+    // final String packageCode = userInfo?.packageCode ?? '';
     // return packageCode.isEmpty || packageCode == Const.BASIC;
     return false;
   }
@@ -57,7 +57,7 @@ class FoodMenuCubit extends Cubit<FoodMenuState> {
       });
       emit(const FoodMenuInitial());
     }
-    await getCurrentUserInfo();
+    // await getCurrentUserInfo();
     getTemplateDetail();
   }
 

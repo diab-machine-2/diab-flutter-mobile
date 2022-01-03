@@ -3,10 +3,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/message_state.dart';
 import 'models/plan_type.dart';
-
 import 'my_plan.dart';
 
 class MyPlanCubit extends Cubit<MyPlanState> {
@@ -24,21 +21,20 @@ class MyPlanCubit extends Cubit<MyPlanState> {
 
   UserInfoResponse? userInfo;
 
-  MessageState dayMessageState = MessageState();
-  MessageState weekMessageState = MessageState();
-
   int get currentPlanTypeIndex {
     final int index = planTypeList.indexOf(currentPlanType);
     return index == -1 ? 0 : index;
   }
 
-  String get packageCode => userInfo?.data?.packageCode ?? '';
+  PackageType get packageType =>
+      userInfo?.data?.packageType ?? PackageType.free;
   String get roadmapId => userInfo?.data?.roadmapId ?? '';
-  int? get currentStudyWeek => userInfo?.data?.currentStudyWeek;
+  int? get currentStudyWeek =>
+      userInfo?.data?.ownPackage?.ownRoadmap?.currentWeek;
 
-  bool get isBasicUser => packageCode == Const.BASIC;
-  bool get isProUser => packageCode == Const.PRO;
-  bool get isPremiumUser => packageCode == Const.PREMIUM;
+  bool get isFreeUser => packageType == PackageType.free;
+  bool get isNoRoadmapUser => packageType == PackageType.no_road_map;
+  bool get isHasRoadmapUser => packageType == PackageType.has_road_map && currentStudyWeek != null;
 
   void changePlanType(int newIndex) {
     currentPlanType = planTypeList[newIndex];

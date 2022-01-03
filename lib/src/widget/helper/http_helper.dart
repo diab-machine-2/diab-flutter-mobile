@@ -6,11 +6,14 @@ import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:ua_client_hints/ua_client_hints.dart';
 
 class FetchClient {
   static String get identifyBaseURL {
     // return 'is.diab.com.vn';
-    return 'diab-id-dev.savvycom.vn';
+    return 'id.savvycom.asia';
+    // return 'diab-id-dev.savvycom.vn';
+    // return 'diab-id-staging.savvycom.vn';
     // return 'is.stg.diab.cptech.vn';
     // return 'is.dev.diab.cptech.vn';
     // return '139.162.21.142:6001';
@@ -19,7 +22,8 @@ class FetchClient {
   static String get baseURL {
     // return 'api.diab.com.vn';
     // return 'diab-api-staging.savvycom.vn';
-    return 'diab-api-dev.savvycom.vn';
+    // return 'diab-api-dev.savvycom.vn';
+    return 'api.savvycom.asia';
     // return 'api.stg.diab.cptech.vn';
     // return 'api.mobile.dev.diab.cptech.vn';
     // return '139.162.21.142:6002';
@@ -28,11 +32,13 @@ class FetchClient {
   Future<Options> options() async {
     await checkNetwork();
     final token = await AppSettings.getToken();
+    final user_agent = await userAgent();
 
     final Options option = Options(
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json; charset=UTF-8'
+          'Content-Type': 'application/json; charset=UTF-8',
+          'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)',
         },
         followRedirects: false,
         validateStatus: (status) {
@@ -45,10 +51,12 @@ class FetchClient {
   Future<Options> options1() async {
     await checkNetwork();
     final token = await AppSettings.getToken();
+    final user_agent = await userAgent();
     final Options option = Options(
         contentType: "application/x-www-form-urlencoded",
         headers: {
           'Authorization': token,
+          'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)',
         },
         followRedirects: false,
         validateStatus: (status) {
@@ -60,12 +68,14 @@ class FetchClient {
   Future<Options> options2() async {
     await checkNetwork();
     final token = await AppSettings.getToken();
+    final user_agent = await userAgent();
     print(token);
     final Options option = Options(
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type':
               'multipart/form-data; boundary=<calculated when request is sent>',
+          'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)',
         },
         followRedirects: false,
         validateStatus: (status) {
@@ -128,7 +138,8 @@ class FetchClient {
       required dynamic params,
       List<String>? files}) async {
     final token = await AppSettings.getToken();
-    final headers = {'Authorization': 'Bearer $token'};
+    final user_agent = await userAgent();
+    final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'};
     final request = http.MultipartRequest(
         'POST',
         Uri.parse(
@@ -150,9 +161,11 @@ class FetchClient {
       required String path,
       required dynamic params}) async {
     final token = await AppSettings.getToken();
+    final user_agent = await userAgent();
     final headers = {
       'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'
     };
     final request = http.Request(
         'POST',
@@ -171,7 +184,8 @@ class FetchClient {
       required List<String> files,
       String? fileName}) async {
     final token = await AppSettings.getToken();
-    final headers = {'Authorization': 'Bearer $token'};
+    final user_agent = await userAgent();
+    final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'};
     final request = http.MultipartRequest(
         'PUT',
         Uri.parse(

@@ -271,7 +271,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     final bool isRight = _cubit.answer[index].toString() ==
         quizData?.quiz?.quizAnswers
             ?.where((e) => e?.isCorrect == true)
-            .map((e) => e?.name)
+            .map((e) => e?.id)
             .toList()
             .toString();
 

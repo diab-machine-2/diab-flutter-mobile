@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -86,7 +87,10 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: CustomTopProgressBar(_cubit.status),
+                      child: CustomTopProgressBar(_cubit.status,
+                          onSelect: (newStatus) {
+                        _cubit.onSelectStatus(newStatus);
+                      }),
                     ),
                     Expanded(
                       child: ListView(
@@ -141,16 +145,22 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       const SizedBox(height: 24),
       SelectTypeWidget(
           title: R.string.create_new_habit.tr(),
+          backgroundColor: R.color.main_6,
+          icon: R.drawable.ic_smart_goal_new_goal,
           onTap: () {
             _cubit.setupGoal();
           }),
       SelectTypeWidget(
           title: R.string.do_a_favorite_thing.tr(),
+          backgroundColor: R.color.color0xffFFE3E3,
+          icon: R.drawable.ic_smart_goal_new_habit,
           onTap: () {
             _cubit.setupGoal();
           }),
       SelectTypeWidget(
         title: R.string.biometric_monitoring_frequency.tr(),
+        backgroundColor: R.color.orange_6,
+        icon: R.drawable.ic_smart_goal_new_biological,
         onSlectType: (type) async {
           if (type == ScheduleType.blood_sugar) {
             Navigator.pushNamed(context, NavigatorName.schedule_glucose);
@@ -172,6 +182,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       ),
       SelectTypeWidget(
         title: R.string.personal_smart_goal.tr(),
+        backgroundColor: R.color.color0xFFFFF7C0,
+        icon: R.drawable.ic_smart_goal_new_own_goal,
         onTap: () {
           Navigator.pushNamed(context, NavigatorName.goal_setting);
         },
@@ -180,10 +192,10 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   }
 
   List<Widget> _buildSetupGoal() {
-    if (_cubit.type?.setupTypeUIIndex == 1) {
+    if (_cubit.dataModel.type?.setupTypeUIIndex == 1) {
       return _buildSetupGoalType1();
     }
-    if (_cubit.type?.setupTypeUIIndex == 2) {
+    if (_cubit.dataModel.type?.setupTypeUIIndex == 2) {
       return _buildSetupGoalType2();
     }
     return _buildSetupGoalDefault();
@@ -217,26 +229,26 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           children: [
             _buildSingleResultDetail(
               title: R.string.smart_goal_name.tr(),
-              description:
-                  _cubit.type == null || _cubit.type == ScheduleType.custom
-                      ? _cubit.name
-                      : (_cubit.type?.title ?? ''),
+              description: _cubit.dataModel.type == null ||
+                      _cubit.dataModel.type == ScheduleType.custom
+                  ? _cubit.dataModel.name
+                  : (_cubit.dataModel.type?.title ?? ''),
             ),
-            if (_cubit.goalRecordType == GoalRecordType.time &&
-                _cubit.type != ScheduleType.exercise)
+            if (_cubit.dataModel.goalRecordType == GoalRecordType.time &&
+                _cubit.dataModel.type != ScheduleType.exercise)
               _buildSingleResultDetail(
                   title: R.string.goal_record_type_time.tr(),
-                  description: '${_cubit.goalTimeOrFrequency} phút'),
-            if (_cubit.goalRecordType == GoalRecordType.frequency &&
-                _cubit.type != ScheduleType.exercise)
+                  description: '${_cubit.dataModel.goalTimeOrFrequency} phút'),
+            if (_cubit.dataModel.goalRecordType == GoalRecordType.frequency &&
+                _cubit.dataModel.type != ScheduleType.exercise)
               _buildSingleResultDetail(
                   title: R.string.goal_record_type_frequency.tr(),
-                  description: '${_cubit.goalTimeOrFrequency} lần'),
-            if (_cubit.type == ScheduleType.exercise)
+                  description: '${_cubit.dataModel.goalTimeOrFrequency} lần'),
+            if (_cubit.dataModel.type == ScheduleType.exercise)
               _buildSingleResultDetail(
                   title: R.string.so_phut_van_dong_moi_ngay.tr(),
                   description:
-                      '${_cubit.parseString(_cubit.dailyTargetDuration)} phút'),
+                      '${Utils.parseStringToInt(_cubit.dataModel.dailyTargetDuration)} phút'),
           ],
         ),
       ),
@@ -247,19 +259,21 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     return [
       _buildTextField(),
       EnterTimeWidget(
-        title: _cubit.goalRecordType.title,
-        type: _cubit.goalRecordType,
+        title: _cubit.dataModel.goalRecordType.title,
+        type: _cubit.dataModel.goalRecordType,
         onChangedTime: (text) {
-          _cubit.goalTimeOrFrequency = text;
+          _cubit.dataModel.goalTimeOrFrequency = text;
         },
         onChangeUnit: (type) {
-          _cubit.goalRecordType = type;
+          _cubit.dataModel.goalRecordType = type;
         },
+        controller:
+            TextEditingController(text: _cubit.dataModel.goalTimeOrFrequency),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: CustomCheckboxWidget(
-            isChecked: _cubit.isRepeat,
+            isChecked: _cubit.dataModel.isRepeat,
             title: R.string.repeat.tr(),
             onTap: () {
               FocusScope.of(context).unfocus();
@@ -278,13 +292,13 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         type: GoalRecordType.frequency,
         selectable: false,
         onChangedTime: (text) {
-          _cubit.goalTimeOrFrequency = text;
+          _cubit.dataModel.goalTimeOrFrequency = text;
         },
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: CustomCheckboxWidget(
-            isChecked: _cubit.isRepeat,
+            isChecked: _cubit.dataModel.isRepeat,
             title: R.string.repeat.tr(),
             onTap: () {
               FocusScope.of(context).unfocus();
@@ -299,9 +313,10 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     return [
       _buildTextDescription(),
       ExerciseTimeWidget(
-          totalMinutes: _cubit.userInfo?.dailyTargetDuration?.toInt() ?? 0,
+          totalMinutes:
+              _cubit.dataModel.userInfo?.dailyTargetDuration?.toInt() ?? 0,
           onChangedTime: (totalMinutes) {
-            _cubit.dailyTargetDuration = totalMinutes.toString();
+            _cubit.dataModel.dailyTargetDuration = totalMinutes.toString();
           }),
     ];
   }
@@ -333,6 +348,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             child: Column(
               children: [
                 TextField(
+                  controller:
+                      TextEditingController(text: _cubit.dataModel.name),
                   autofocus: false,
                   decoration: InputDecoration(
                       border: InputBorder.none,
@@ -342,7 +359,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           left: 0, bottom: 0, top: 8, right: 0),
                       hintText: R.string.enter_smart_goal_name.tr()),
                   onChanged: (text) {
-                    _cubit.name = text;
+                    _cubit.dataModel.name = text;
                   },
                 ),
                 Container(height: 1, color: R.color.color0xffE5E5E5),
@@ -357,7 +374,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
 
   Widget _buildSetupRepeat() {
     return Visibility(
-      visible: _cubit.isRepeat,
+      visible: _cubit.dataModel.isRepeat,
       child: Column(
         children: [
           _buildItemLayout(
@@ -392,7 +409,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                         builder: (context) {
                           return SelectBottomSheetWidget(
                             title: R.string.select_frequency.tr(),
-                            selectedList: [_cubit.repeatType.title],
+                            selectedList: [_cubit.dataModel.repeatType.title],
                             elementList: [
                               RepeatType.day.title,
                               RepeatType.week.title
@@ -414,7 +431,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           children: [
                             Expanded(
                               child: Text(
-                                _cubit.repeatType.title,
+                                _cubit.dataModel.repeatType.title,
                                 style: TextStyle(
                                     color: R.color.textDark,
                                     fontSize: 16,
@@ -440,7 +457,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             ),
           ),
           Visibility(
-            visible: _cubit.repeatType == RepeatType.week,
+            visible: _cubit.dataModel.repeatType == RepeatType.week,
             child: _buildItemLayout(
               child: Column(
                 children: [
@@ -452,7 +469,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           builder: (context) {
                             return SelectBottomSheetWidget(
                               title: R.string.select_frequency.tr(),
-                              selectedList: _cubit.repeatDayList
+                              selectedList: _cubit.dataModel.repeatDayList
                                   .map((e) => e.title)
                                   .toList(),
                               elementList: DayInWeekExtend.dayInWeekList
@@ -479,7 +496,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                               Expanded(
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
-                                  children: _cubit.repeatDayList
+                                  children: _cubit.dataModel.repeatDayList
                                       .map(
                                         (day) => Container(
                                           height: 24,
@@ -515,13 +532,12 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             ),
           ),
           _buildTimePicker(
-            initDate: _cubit.endDate,
-            title: R.string.select_end_date.tr(),
-            onPickDate: (dateTime) {
-              _cubit.endDate = dateTime;
-            },
-            minDate: _cubit.startDate,
-          ),
+              initDate: _cubit.dataModel.endDate,
+              title: R.string.select_end_date.tr(),
+              onPickDate: (dateTime) {
+                _cubit.dataModel.endDate = dateTime;
+              },
+              minDate: DateTime.now()),
           const SizedBox(height: 24)
         ],
       ),

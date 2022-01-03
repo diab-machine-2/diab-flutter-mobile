@@ -4,9 +4,11 @@ import 'package:medical/res/R.dart';
 class UserIconWidget extends StatelessWidget {
   const UserIconWidget({
     required this.icon,
+    this.backgroundColor,
   });
 
   final String icon;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +21,18 @@ class UserIconWidget extends StatelessWidget {
             child: Image.asset(R.drawable.bg_user_icon),
           ),
           Center(
-              child: Image.asset(
-            icon,
-            width: 24,
-            height: 24,
-          )),
+            child: Image.asset(
+              R.drawable.bg_user_icon,
+              color: backgroundColor,
+            ),
+          ),
+          Center(
+            child: Image.asset(
+              icon,
+              width: 24,
+              height: 24,
+            ),
+          ),
         ],
       ),
     );

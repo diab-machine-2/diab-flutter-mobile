@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
+import 'package:medical/src/model/request/update_quiz_lesson_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -50,7 +51,9 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   void onChangeSection(int newSection, {bool isFromList = false}) {
     //Check can complete the lesson and make sure that user tapped next button
-    if (isAllSectionCompleted && newSection > currentSection && !alreadyDoneLesson) {
+    if (isAllSectionCompleted &&
+        newSection > currentSection &&
+        !alreadyDoneLesson) {
       checkSectionComplete();
       if (isAllSectionCompleted) {
         emit(const LessonDetailCompleted());
@@ -181,6 +184,24 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
         lessonSectionId: currentSectionDetail?.id,
       ),
     );
+    apiResult.when(success: (CommonResponse response) {
+      if (response.meta?.success == true) {
+        currentSectionDetail?.isComplete = true;
+      }
+      emit(const LessonDetailSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    emit(const LessonDetailInitial());
+  }
+
+  Future<void> setCompletedLessonQuiz() async {
+    await Future.delayed(Duration.zero);
+    emit(const LessonDetailLoading());
+    final ApiResult<CommonResponse> apiResult =
+        await repository.setCompletedLessonQuiz(UpdateQuizLessonRequest(
+      lessonId: lessonId,
+    ));
     apiResult.when(success: (CommonResponse response) {
       if (response.meta?.success == true) {
         currentSectionDetail?.isComplete = true;

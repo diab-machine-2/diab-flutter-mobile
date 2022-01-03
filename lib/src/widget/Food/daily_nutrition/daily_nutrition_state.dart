@@ -49,3 +49,11 @@ class DailyNutritionSubmitSuccess extends DailyNutritionState {
     return 'DailyNutritionSubmitSuccess{}';
   }
 }
+
+class DailyNutritionFillData extends DailyNutritionState {
+  const DailyNutritionFillData();
+  @override
+  String toString() {
+    return 'DailyNutritionFillData{}';
+  }
+}

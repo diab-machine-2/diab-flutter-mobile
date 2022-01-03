@@ -138,7 +138,7 @@ class Utils {
               content: Text(contentText!),
               actions: [
                 FlatButton(
-                  onPressed: () =>  Navigator.of(context).pop(),
+                  onPressed: () => Navigator.of(context).pop(),
                   child: Text(R.string.close.tr()),
                 ),
                 Visibility(
@@ -344,10 +344,10 @@ class Utils {
   }
 
   static Color getColorByCode(String? code) {
-    if (code == Const.PRO)
-      return R.color.yellow;
-    else if (code == Const.PREMIUM)
-      return R.color.accentColor;
+    // if (code == Const.PRO)
+    //   return R.color.yellow;
+    // else if (code == Const.PREMIUM)
+    //   return R.color.accentColor;
     return R.color.white;
   }
 
@@ -368,5 +368,14 @@ class Utils {
     final double bmi = weight / pow(height / 100, 2);
     final num mod = pow(10.0, 1);
     return ((bmi * mod).round().toDouble() / mod).toString();
+  }
+
+  static int parseStringToInt(String text) {
+    try {
+      final int number = double.parse(text).toInt();
+      return number;
+    } catch (_) {
+      return 0;
+    }
   }
 }

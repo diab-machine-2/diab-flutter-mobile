@@ -68,7 +68,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
 
   Widget buildPage(BuildContext context, MyPackageState state) {
     String? code = _cubit.ownCode;
-    bool isBasic = code?.isEmpty == true || code == Const.BASIC;
+    bool isBasic = code?.isEmpty == true || code == 'Const.BASIC';
     return CommonPage(
       title: R.string.my_package.tr(),
       background: R.drawable.bg_welcome,
@@ -87,7 +87,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
               child: UpgradePackageWidget(
                 onClickUpgrade: () {
                   NavigationUtil.navigatePage(
-                      context, UpgradeAccountPage(code: Const.PRO));
+                      context, UpgradeAccountPage(code: 'Const.PRO'));
                 },
               ),
             ),
@@ -107,7 +107,7 @@ class _MyPackagePageState extends State<MyPackagePage> {
                         title: R.string.renewal_package_pro.tr(),
                         onPressed: () {
                           NavigationUtil.navigatePage(
-                              context, UpgradeAccountPage(code: Const.PRO));
+                              context, UpgradeAccountPage(code: 'Const.PRO'));
                         },
                       ),
                     ),
@@ -335,12 +335,12 @@ class _MyPackagePageState extends State<MyPackagePage> {
                         alignment: Alignment.centerLeft,
                         child: GestureDetector(
                           onTap: () {
-                            if (_cubit.ownCode == Const.PRO) {
+                            if (_cubit.ownCode == 'Const.PRO') {
                               NavigationUtil.navigatePage(context,
-                                  DetailPackagePage(code: Const.PRO));
+                                  DetailPackagePage(code: 'Const.PRO'));
                             } else {
                               NavigationUtil.navigatePage(context,
-                                  UpgradeAccountPage(code: Const.PREMIUM));
+                                  UpgradeAccountPage(code: 'Const.PREMIUM'));
                             }
                           },
                           child: Text(

@@ -306,8 +306,8 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                                             crossAxisAlignment: CrossAxisAlignment.start,
                                                                                             children: [
                                                                                               Text(food.name!, style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w500)),
-                                                                                              SizedBox(height: 4),
-                                                                                              food.code == 'OtherUneditable' ? SizedBox() :Text(food.text!, style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal))
+                                                                                              const SizedBox(height: 4),
+                                                                                              if (food.code == 'OtherUneditable') const SizedBox() else Text(food.text!, style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal))
                                                                                             ],
                                                                                           ),
                                                                                         )

@@ -32,7 +32,7 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
     super.initState();
     final AppRepository repository = AppRepository();
     _cubit = BloodSugarStartSurveyCubit(repository);
-    _cubit.getCurrentUserInfo();
+    // _cubit.getCurrentUserInfo();
   }
 
   @override
