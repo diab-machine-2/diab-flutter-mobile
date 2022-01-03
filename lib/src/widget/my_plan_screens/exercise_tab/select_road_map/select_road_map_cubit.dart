@@ -14,6 +14,8 @@ class SelectRoadMapCubit extends Cubit<SelectRoadMapState> {
 
   List<ListRoadmapResponseData?> roadMapList = [];
 
+  ListRoadmapResponseData? currentRoadMap;
+
   Future<bool> getRoadAppRoadMap({
     bool isLoadMore = false,
   }) async {
@@ -25,6 +27,7 @@ class SelectRoadMapCubit extends Cubit<SelectRoadMapState> {
         await repository.getRoadMap();
     apiResult.when(success: (ListRoadmapResponse response) {
       roadMapList.addAll(response.data ?? []);
+      currentRoadMap = response.currentRoadMap;
       emit(const SelectRoadMapSuccess());
       return true;
     }, failure: (NetworkExceptions error) {

@@ -276,15 +276,17 @@ class ExerciseMovementResponseData {
     if (json['sections'] != null) {
       final v = json['sections'];
       final arr0 = <ExerciseMovementResponseDataSections>[];
-      v.forEach((v) {
-        arr0.add(ExerciseMovementResponseDataSections.fromJson(v));
-      });
-      sections = arr0;
+      if (v is List && v.isNotEmpty) {
+        v.forEach((v) {
+          arr0.add(ExerciseMovementResponseDataSections.fromJson(v));
+        });
+        sections = arr0;
+      }
     }
-    reviewSummary = (json['reviewSummary'] != null)
-        ? ExerciseMovementResponseDataReviewSummary.fromJson(
-            json['reviewSummary'])
-        : null;
+    // reviewSummary = (json['reviewSummary'] != null)
+    //     ? ExerciseMovementResponseDataReviewSummary.fromJson(
+    //         json['reviewSummary'])
+    //     : null;
     if (json['exerciseMovementAccounts'] != null) {
       final v = json['exerciseMovementAccounts'];
       final arr0 = <ExerciseMovementResponseDataExerciseMovementAccounts>[];

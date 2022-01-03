@@ -507,17 +507,6 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<CreateSmartGoalResponse>> updateSmartGoal(
-      {required String id, required CreateSmartGoalRequest request}) async {
-    try {
-      final CreateSmartGoalResponse response =
-          await appClient.updateSmartGoal(id: id, request: request);
-      return ApiResult.success(data: response);
-    } catch (e) {
-      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
-    }
-  }
-
   Future<ApiResult<SmartGoalListReponse>> getListSmartGoal({
     int? week,
     int? day,

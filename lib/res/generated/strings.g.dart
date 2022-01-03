@@ -650,6 +650,7 @@ class Strings {
 	String get smart_goal_emotion => 'smart_goal_emotion';
 	String get smart_goal_exercise => 'smart_goal_exercise';
 	String get smart_goal_lesson => 'smart_goal_lesson';
+	String get smart_goal_exercise_lesson => 'smart_goal_exercise_lesson';
 	String get goal_record_type_time => 'goal_record_type_time';
 	String get goal_record_type_frequency => 'goal_record_type_frequency';
 	String get select_smart_goal => 'select_smart_goal';

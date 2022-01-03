@@ -82,6 +82,13 @@ class QuizData {
     _answers = answers;
   }
 
+  bool get hasUserAnswer {
+    for (final AnswerData answer in answers ?? []) {
+      if (answer.isAnswered) return true;
+    }
+    return false;
+  }
+
   QuizData.fromJson(dynamic json) {
     _id = json['id'];
     _code = json['code'];
@@ -146,7 +153,8 @@ class QuizData {
 /// id : "491047bc-a779-4dad-7b6d-08d98c9b30de"
 /// name : "test 3"
 /// order : 0
-/// isCorrect : false
+/// "isCorrectAnswer": false,
+/// "textAnswer": null,
 
 class AnswerData {
   AnswerData({
@@ -158,7 +166,8 @@ class AnswerData {
     int? flag,
     bool? isMappedToSurvey,
     String? mappedQuestionId,
-    bool? isCorrect,
+    bool? isCorrectAnswer,
+    String? textAnswer,
   }) {
     _id = id;
     _content = content;
@@ -168,8 +177,12 @@ class AnswerData {
     _flag = flag;
     _isMappedToSurvey = isMappedToSurvey;
     _mappedQuestionId = mappedQuestionId;
-    _isCorrect = isCorrect;
+    _isCorrectAnswer = isCorrectAnswer;
+    _textAnswer = textAnswer;
   }
+
+  bool get isAnswered =>
+      _isCorrectAnswer == true || _textAnswer?.isNotEmpty == true;
 
   AnswerData.fromJson(dynamic json) {
     _id = json['id'];
@@ -180,7 +193,8 @@ class AnswerData {
     _flag = json['flag'];
     _isMappedToSurvey = json['isMappedToSurvey'];
     _mappedQuestionId = json['mappedQuestionId'];
-    _isCorrect = json['isCorrect'];
+    _isCorrectAnswer = json['isCorrectAnswer'];
+    _textAnswer = json['textAnswer'];
   }
   String? _id;
   String? _content;
@@ -190,7 +204,8 @@ class AnswerData {
   int? _flag;
   bool? _isMappedToSurvey;
   String? _mappedQuestionId;
-  bool? _isCorrect;
+  bool? _isCorrectAnswer;
+  String? _textAnswer;
 
   String? get id => _id;
   String? get content => _content;
@@ -200,7 +215,8 @@ class AnswerData {
   int? get flag => _flag;
   bool? get isMappedToSurvey => _isMappedToSurvey;
   String? get mappedQuestionId => _mappedQuestionId;
-  bool? get isCorrect => _isCorrect;
+  bool? get isCorrectAnswer => _isCorrectAnswer;
+  String? get textAnswer => _textAnswer;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -212,7 +228,8 @@ class AnswerData {
     map['flag'] = _flag;
     map['isMappedToSurvey'] = _isMappedToSurvey;
     map['mappedQuestionId'] = _mappedQuestionId;
-    map['isCorrect'] = _isCorrect;
+    map['isCorrectAnswer'] = _isCorrectAnswer;
+    map['textAnswer'] = _textAnswer;
     return map;
   }
 }
