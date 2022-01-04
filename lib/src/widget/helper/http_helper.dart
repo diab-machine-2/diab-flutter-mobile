@@ -11,9 +11,9 @@ import 'package:ua_client_hints/ua_client_hints.dart';
 class FetchClient {
   static String get identifyBaseURL {
     // return 'is.diab.com.vn';
-    // return 'id.savvycom.asia';
+    return 'id.savvycom.asia';
     // return 'diab-id-dev.savvycom.vn';
-    return 'diab-id-staging.savvycom.vn';
+    // return 'diab-id-staging.savvycom.vn';
     // return 'is.stg.diab.cptech.vn';
     // return 'is.dev.diab.cptech.vn';
     // return '139.162.21.142:6001';
@@ -21,9 +21,9 @@ class FetchClient {
 
   static String get baseURL {
     // return 'api.diab.com.vn';
-    return 'diab-api-staging.savvycom.vn';
+    // return 'diab-api-staging.savvycom.vn';
     // return 'diab-api-dev.savvycom.vn';
-    // return 'api.savvycom.asia';
+    return 'api.savvycom.asia';
     // return 'api.stg.diab.cptech.vn';
     // return 'api.mobile.dev.diab.cptech.vn';
     // return '139.162.21.142:6002';
