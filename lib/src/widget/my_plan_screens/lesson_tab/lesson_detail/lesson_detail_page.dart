@@ -72,11 +72,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                       : null,
                   onDone: (isPassed) async {
                     if (isPassed) {
-                      await _cubit.checkSectionComplete();
-                    }
-                    if (_cubit.isQuizLesson) {
-                      await _cubit.setCompletedLessonQuiz();
-                      NavigationUtil.pop(context);
+                      if (_cubit.isQuizLesson) {
+                        await _cubit.setCompletedLessonQuiz();
+                        NavigationUtil.pop(context);
+                      } else {
+                        await _cubit.checkSectionComplete();
+                      }
                     } else {
                       _cubit.onChangeSection(_cubit.currentSection + 1);
                     }
@@ -206,7 +207,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             }),
                                         title: _cubit.currentSectionDetail
                                             ?.audioDescription),
-                                            const SizedBox(height: 20),
+                                  const SizedBox(height: 20),
                                 ],
                               ),
                             ),
