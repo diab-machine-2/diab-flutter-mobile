@@ -21,7 +21,7 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
 
   CreateSmartGoalData dataModel = CreateSmartGoalData();
 
-  CreateGoalStatus status = CreateGoalStatus.select_type;
+  CreateGoalStatus currentStatus = CreateGoalStatus.select_type;
 
   bool get isValid {
     final String errorMessage = dataModel.checkValid;
@@ -35,15 +35,24 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     emit(const CreateGoalInitial());
   }
 
-  bool get showDetail => !(status != CreateGoalStatus.setup ||
+  bool get showDetail => !(currentStatus != CreateGoalStatus.setup ||
       dataModel.type == ScheduleType.custom);
 
-  Future<void> setupGoal({ScheduleType? selectedType}) async {
+  Future<void> setupGoal(
+      {required ScheduleType selectedType, int? subType}) async {
+    if (selectedType != dataModel.cachedType ||
+        selectedType == dataModel.cachedType &&
+            subType != dataModel.cachedSubType) {
+      dataModel.resetData();
+    }
+    dataModel.cachedType = null;
+    dataModel.cachedSubType = null;
     dataModel.type = selectedType;
+    dataModel.subType = subType;
     if (selectedType != null && selectedType != ScheduleType.custom) {
       dataModel.goalRecordType = GoalRecordType.frequency;
     }
-    status = CreateGoalStatus.setup;
+    currentStatus = CreateGoalStatus.setup;
     emit(const CreateGoalSuccess());
     emit(const CreateGoalInitial());
   }
@@ -74,18 +83,37 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
   }
 
   void onSelectStatus(CreateGoalStatus newStatus) {
-    status = newStatus;
+    if (newStatus == currentStatus) return;
+
+    if (currentStatus == CreateGoalStatus.select_type && dataModel.type == null)
+      return;
+
+    if (newStatus == CreateGoalStatus.complete) {
+      if (!isValid) {
+        currentStatus = CreateGoalStatus.setup;
+        emit(const CreateGoalSuccess());
+        emit(const CreateGoalInitial());
+        return;
+      }
+    }
+
+    if (newStatus == CreateGoalStatus.select_type) {
+      dataModel.cachedType = dataModel.type;
+      dataModel.cachedSubType = dataModel.subType;
+    }
+
+    currentStatus = newStatus;
     emit(const CreateGoalSuccess());
     emit(const CreateGoalInitial());
   }
 
   Future<void> onTapNext() async {
-    if (status == null) return;
-    if (status == CreateGoalStatus.setup) {
+    if (currentStatus == null) return;
+    if (currentStatus == CreateGoalStatus.setup) {
       if (!isValid) return;
-      status = CreateGoalStatus.complete;
+      currentStatus = CreateGoalStatus.complete;
       emit(const CreateGoalSuccess());
-    } else if (status == CreateGoalStatus.complete) {
+    } else if (currentStatus == CreateGoalStatus.complete) {
       await createSmartGoal();
       emit(const CreateGoalCompleted());
     }
@@ -112,6 +140,7 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
       dataModel.userInfo = await UserClient().fetchGoalInfo();
       dataModel.dailyTargetDuration =
           '${dataModel.userInfo?.dailyTargetDuration ?? 0}';
+      emit(const CreateGoalSuccess());
     } catch (error) {
       emit(CreateGoalFailure(error.toString()));
     }
