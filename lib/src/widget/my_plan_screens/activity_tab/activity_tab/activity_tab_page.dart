@@ -6,6 +6,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/const.dart';
@@ -19,6 +20,8 @@ import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../exercise_tab/exercise_detail/exercise_detail_page.dart';
+import '../../lesson_tab/lesson_detail/lesson_detail_page.dart';
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../../my_plan/widgets/app_bar_bottom.dart';
@@ -73,6 +76,16 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           if (state is ActivityTabWeekChanged) {
             _animateToIndex(state.newIndex, refresh: false);
           }
+          if (state is ActivityTabDailyGoalCompleted) {
+            _showPopupCongratulation(
+                icon: R.drawable.img_smart_goal_day_achive,
+                description: R.string.congratulation_achive_daily.tr());
+          }
+          if (state is ActivityTabWeeklyGoalCompleted) {
+            _showPopupCongratulation(
+                icon: R.drawable.img_smart_goal_week_achive,
+                description: R.string.congratulation_achive_weekly.tr());
+          }
         },
         builder: (context, state) {
           return Column(
@@ -90,6 +103,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                           Observable.instance.notifyObservers([],
                               notifyName: Const.HIDE_OVERLAY_KEY);
                           _showSelectActionPopup();
+                          // _showSurveyPopup();
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -97,7 +111,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              'Thống kê',
+                              R.string.statistical.tr(),
                               style: TextStyle(
                                 color: R.color.greenGradientBottom,
                                 fontSize: 16,
@@ -137,7 +151,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                           SizedBox(
                             width: 195.w,
                             child: ButtonWidget(
-                                title: 'Thêm mục tiêu',
+                                title: R.string.create_smart_goal.tr(),
                                 height: 48.w,
                                 textSize: 16,
                                 textColor: R.color.greenGradientBottom,
@@ -350,7 +364,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         children: [
           Expanded(
             child: Text(
-              'Mục tiêu ngày',
+              R.string.goal_of_day.tr(),
               style: TextStyle(
                   color: R.color.grey_1,
                   fontSize: 16,
@@ -367,12 +381,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       ...dailyList.map((smartGoal) {
         final ScheduleType type =
             ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type);
-        final String frequency =
-            _getSmartGoalDescription(type, data: smartGoal);
         return SmartGoalItem(
           type: type,
           name: smartGoal?.name ?? '',
-          frequency: frequency,
+          frequency: smartGoal?.description ?? '',
           isDone: smartGoal?.progress == 1,
           onTap: () {
             _onSelectGoal(
@@ -400,7 +412,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         children: [
           Expanded(
             child: Text(
-              'Mục tiêu tuần',
+              R.string.goal_of_week.tr(),
               style: TextStyle(
                   color: R.color.grey_1,
                   fontSize: 16,
@@ -415,12 +427,19 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       ),
       const SizedBox(height: 20),
       ...smartGoalList.map((smartGoal) {
+        final ScheduleType type =
+            ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type);
         return SmartGoalItem(
           type: ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type),
           name: smartGoal?.name ?? '',
           frequency: smartGoal?.description ?? '',
           isDone: smartGoal?.progress == 1,
-          onTap: () {},
+          onTap: () {
+            _onSelectGoal(
+              type,
+              smartGoal: smartGoal,
+            );
+          },
           onRemove: () {},
         );
       }).toList(),
@@ -465,7 +484,15 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _cubit.refreshData();
         break;
       case ScheduleType.exercise_movement:
-        _cubit.goToExerciseTab();
+        if (smartGoal?.exerciseData == null) break;
+        if (smartGoal?.exerciseData?.exerciseMovementStates !=
+            Const.LESSON_LOCKED) {
+          _showLockedDialog();
+          break;
+        }
+        await NavigationUtil.navigatePage(
+            context, ExerciseDetail(exerciseData: smartGoal?.exerciseData));
+        _cubit.refreshData();
         break;
       case ScheduleType.custom:
         _showCustomGoalPopup(
@@ -481,53 +508,25 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _showSurveyPopup();
         break;
       case ScheduleType.lesson:
+        final LessonSectionListResponseData? lessonDetail =
+            smartGoal?.lessonData;
+        await NavigationUtil.navigatePage(
+            context,
+            LessonDetailPage(
+                lessonType: lessonDetail?.type,
+                lessonId: lessonDetail?.id ?? ''));
         break;
       case ScheduleType.io_evaluate:
-        // TODO: Handle this case.
         break;
       case ScheduleType.update_profile:
-        // TODO: Handle this case.
         break;
-    }
-  }
-
-  String _getSmartGoalDescription(ScheduleType type, {SmartGoalList? data}) {
-    switch (type) {
-      case ScheduleType.blood_sugar:
-        return '${data?.executeDayTimes ?? 0} lần/ngày';
-      case ScheduleType.blood_pressure:
-        return '${data?.executeDayTimes ?? 0} lần/ngày';
-      case ScheduleType.weight:
-        return '${data?.executeDayTimes ?? 0} lần/ngày';
-      case ScheduleType.emotion:
-        return '${data?.executeDayTimes ?? 0} lần/ngày';
-      case ScheduleType.food:
-        return '${data?.executeDayTimes ?? 0} lần/ngày';
-      case ScheduleType.exercise:
-        return '${data?.executeDayTimes ?? 0} phút';
-      case ScheduleType.exercise_movement:
-        return '';
-      case ScheduleType.custom:
-        return '';
-      case ScheduleType.book_1_1:
-        return '';
-      case ScheduleType.book_1_n:
-        return '';
-      case ScheduleType.survey:
-        return '';
-      case ScheduleType.lesson:
-        return '';
-      case ScheduleType.io_evaluate:
-        return '';
-      case ScheduleType.update_profile:
-        return '';
     }
   }
 
   void _showPopup({
     required BuildContext context,
     required Widget child,
-    required String buttonTitle,
+    String? buttonTitle,
     VoidCallback? onTap,
   }) {
     showDialog(
@@ -543,39 +542,53 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           body: Center(
             child: GestureDetector(
               onTap: () {},
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      R.color.white,
-                      R.color.main_6,
-                    ],
-                  ),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      child,
-                      const SizedBox(height: 16),
-                      Visibility(
-                        visible: onTap != null,
-                        child: SizedBox(
-                          width: 245,
-                          child: ButtonWidget(
-                            title: buttonTitle,
-                            textSize: 14,
-                            onPressed: onTap,
-                          ),
-                        ),
+              child: Stack(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          R.color.white,
+                          R.color.main_6,
+                        ],
                       ),
-                    ],
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          child,
+                          const SizedBox(height: 16),
+                          Visibility(
+                            visible: onTap != null,
+                            child: SizedBox(
+                              width: 245,
+                              child: ButtonWidget(
+                                title: buttonTitle ?? '',
+                                textSize: 14,
+                                onPressed: onTap,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  Positioned(
+                      top: 4,
+                      right: 24,
+                      child: IconButton(
+                        icon: const Icon(Icons.close),
+                        iconSize: 24,
+                        onPressed: () {
+                          NavigationUtil.pop(context);
+                        },
+                      ))
+                ],
               ),
             ),
           ),
@@ -724,6 +737,32 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
+  _showPopupCongratulation({
+    required String icon,
+    required String description,
+  }) {
+    return _showPopup(
+      context: context,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(57, 10, 57, 30),
+            child: Image.asset(icon),
+          ),
+          Text(
+            description,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 20,
+                fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _showSelectActionPopup() async {
     final action = await showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.9),
@@ -731,7 +770,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       barrierDismissible: true,
       context: context,
       builder: (_) {
-        return const StatisticalPopup();
+        return StatisticalPopup(
+            hasRoadmapUser: _cubit.myPlanCubit.isHasRoadmapUser);
       },
     );
     if (action is StatisticalAction) {
@@ -797,6 +837,75 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           },
         );
       },
+    );
+  }
+
+  void _showLockedDialog() {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      barrierDismissible: true,
+      context: context,
+      builder: (_) => Scaffold(
+        backgroundColor: R.color.transparent,
+        body: Center(
+          child: GestureDetector(
+            child: Container(
+              width: 344,
+              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 24.h),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    R.color.white,
+                    R.color.main_6,
+                  ],
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(84.w, 0, 84.w, 20),
+                    child: Image.asset(
+                      R.drawable.img_lesson_locked,
+                    ),
+                  ),
+                  Text(
+                    R.string.lesson_locked.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    R.string.lesson_locked_warning.tr(),
+                    textAlign: TextAlign.center,
+                    style: R.style.normalTextStyle,
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    child: ButtonWidget(
+                      height: 43,
+                      title: R.string.agree.tr(),
+                      onPressed: () {
+                        NavigationUtil.pop(context);
+                      },
+                      textSize: 14,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

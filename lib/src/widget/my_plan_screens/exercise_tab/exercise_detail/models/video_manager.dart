@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:better_player/better_player.dart';
@@ -9,6 +10,22 @@ class VideoManager {
   int currentSourceIndex = 0;
   bool isCompleted = false;
   final VoidCallback? onDone;
+  bool isLocked = false;
+  Timer? _timer;
+
+  _startTimer() {
+    _stopTimer();
+    isLocked = true;
+    _timer = Timer(const Duration(seconds: 1), () {
+      isLocked = false;
+    });
+  }
+
+  _stopTimer() {
+    if (_timer?.isActive == true) {
+      _timer?.cancel();
+    }
+  }
 
   VideoManager.fromExerciseData(ExerciseMovementResponseData exerciseData,
       {this.onDone}) {
@@ -33,20 +50,25 @@ class VideoManager {
       );
 
       this.controller?.videoPlayerController?.addListener(() {
-        if (this.controller?.videoPlayerController?.value != null &&
+        if (!isLocked &&
+            this.controller?.videoPlayerController?.value != null &&
             !this.controller!.videoPlayerController!.value.isPlaying &&
             this.controller!.videoPlayerController!.value.initialized &&
             (this.controller!.videoPlayerController!.value.duration ==
                 this.controller!.videoPlayerController!.value.position)) {
+          _startTimer();
           loopVideo();
         }
       });
     }
   }
 
+  lock() {}
+
   void playNextVideo() {
     if (currentSourceIndex + 1 >= sourceList.length) {
       isCompleted = true;
+      this.controller?.pause();
       onDone?.call();
       return;
     }

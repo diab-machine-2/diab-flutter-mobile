@@ -38,7 +38,7 @@ class FetchClient {
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json; charset=UTF-8',
-          'User-Agent': user_agent,
+          'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)',
         },
         followRedirects: false,
         validateStatus: (status) {
@@ -56,7 +56,7 @@ class FetchClient {
         contentType: "application/x-www-form-urlencoded",
         headers: {
           'Authorization': token,
-          'User-Agent': user_agent,
+          'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)',
         },
         followRedirects: false,
         validateStatus: (status) {
@@ -75,7 +75,7 @@ class FetchClient {
           'Authorization': 'Bearer $token',
           'Content-Type':
               'multipart/form-data; boundary=<calculated when request is sent>',
-          'User-Agent': user_agent,
+          'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)',
         },
         followRedirects: false,
         validateStatus: (status) {
@@ -139,7 +139,7 @@ class FetchClient {
       List<String>? files}) async {
     final token = await AppSettings.getToken();
     final user_agent = await userAgent();
-    final headers = {'Authorization': 'Bearer $token', 'User-Agent': user_agent};
+    final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'};
     final request = http.MultipartRequest(
         'POST',
         Uri.parse(
@@ -165,7 +165,7 @@ class FetchClient {
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
-      'User-Agent': user_agent
+      'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'
     };
     final request = http.Request(
         'POST',
@@ -185,7 +185,7 @@ class FetchClient {
       String? fileName}) async {
     final token = await AppSettings.getToken();
     final user_agent = await userAgent();
-    final headers = {'Authorization': 'Bearer $token', 'User-Agent': user_agent};
+    final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'};
     final request = http.MultipartRequest(
         'PUT',
         Uri.parse(

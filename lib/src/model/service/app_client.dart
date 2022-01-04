@@ -25,13 +25,13 @@ class AppClient {
 
   Future<void> _setupClient() async {
     final Dio _dio = Dio();
-    final user_agent = await userAgent();
+    // final user_agent = await userAgent();
     _dio
       ..options.connectTimeout = _defaultConnectTimeout
       ..options.receiveTimeout = _defaultReceiveTimeout
       ..options.headers = {
         'Content-Type': 'application/json; charset=UTF-8',
-        'User-Agent': user_agent
+        'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'
       };
 
     _dio.interceptors.add(PrettyDioLogger(

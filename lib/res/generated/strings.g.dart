@@ -650,6 +650,7 @@ class Strings {
 	String get smart_goal_emotion => 'smart_goal_emotion';
 	String get smart_goal_exercise => 'smart_goal_exercise';
 	String get smart_goal_lesson => 'smart_goal_lesson';
+	String get smart_goal_exercise_lesson => 'smart_goal_exercise_lesson';
 	String get goal_record_type_time => 'goal_record_type_time';
 	String get goal_record_type_frequency => 'goal_record_type_frequency';
 	String get select_smart_goal => 'select_smart_goal';
@@ -681,6 +682,12 @@ class Strings {
 	String get lesson_unlocked => 'lesson_unlocked';
 	String get lesson_not_learned => 'lesson_not_learned';
 	String get dia_recommand => 'dia_recommand';
+	String get cancel_smart_goal => 'cancel_smart_goal';
+	String get confirm_cancel_smart_goal => 'confirm_cancel_smart_goal';
+	String get confirm_cancel_smart_goal_description => 'confirm_cancel_smart_goal_description';
+	String get congratulation_achive_daily => 'congratulation_achive_daily';
+	String get congratulation_achive_weekly => 'congratulation_achive_weekly';
+	String get create_smart_goal => 'create_smart_goal';
 	String get common => 'Common';
 	String get huyet_ap => 'huyet_ap';
 	String get duong_huyet => 'duong_huyet';
@@ -933,4 +940,5 @@ class Strings {
 	String get day_in_week_friday => 'day_in_week_friday';
 	String get day_in_week_saturday => 'day_in_week_saturday';
 	String get day_in_week_sunday => 'day_in_week_sunday';
+	String get statistical => 'statistical';
 }

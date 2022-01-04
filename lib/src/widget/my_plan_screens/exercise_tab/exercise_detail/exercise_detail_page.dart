@@ -15,7 +15,7 @@ import 'exercise_detail.dart';
 
 class ExerciseDetail extends StatefulWidget {
   const ExerciseDetail({required this.exerciseData});
-  final ExerciseMovementResponseData exerciseData;
+  final ExerciseMovementResponseData? exerciseData;
 
   @override
   _ExerciseDetailState createState() => _ExerciseDetailState();

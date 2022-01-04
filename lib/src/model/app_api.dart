@@ -212,12 +212,6 @@ abstract class AppApi {
     @Body() CompleteSmartGoalRequest request,
   );
 
-  @PUT("/App/Target/{id}")
-  Future<CreateSmartGoalResponse> updateSmartGoal({
-    @Path("id") String? id,
-    @Body() CreateSmartGoalRequest? request,
-  });
-
   @GET("App/Target")
   Future<SmartGoalListReponse> getListSmartGoal({
     @Query('week') int? week,

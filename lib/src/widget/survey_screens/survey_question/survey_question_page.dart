@@ -52,6 +52,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
         listGlobal.add(GlobalKey<CardCourseQuizPageState>());
       });
     }
+    _cubit.scrollToNotAnsweredQuiz();
     Utils.onWidgetDidBuild(() {
       _controller.position.isScrollingNotifier.addListener(() {
         if (!_controller.position.isScrollingNotifier.value) {
@@ -82,6 +83,9 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               listener: (context, state) {
                 if (state is SurveyQuestionFailure) {
                   Message.showToastMessage(context, state.error);
+                }
+                if (state is SurveyQuestionScrollToQuiz) {
+                  jumpToQuiz(state.index);
                 }
               },
               builder: (context, state) {
@@ -249,10 +253,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               }
             } else {
               final int newIndex = _cubit.selectedCourseIndex + 1;
-              _controller.scrollToIndex(newIndex,
-                  duration: const Duration(milliseconds: 400),
-                  preferPosition: AutoScrollPosition.middle);
-              _cubit.jumpToIndexCourse(newIndex);
+              jumpToQuiz(newIndex);
             }
           }
         : null;
@@ -302,5 +303,28 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               ),
             ),
           );
+  }
+
+  void jumpToQuiz(int newIndex) {
+    if (newIndex == _cubit.lengthQuiz - 1) {
+      final bool isLastPart =
+          widget.index + 1 == (widget.surveyData.sections?.length ?? 0);
+      _cubit.emit(SurveyQuestionHideProgressMessage());
+      if (isLastPart) {
+        NavigationUtil.navigatePage(context, SurveyResultPage());
+      } else {
+        NavigationUtil.navigatePage(
+            context,
+            SurveyPage(
+              index: widget.index + 1,
+              surveyData: widget.surveyData,
+            ));
+      }
+    } else {
+      _controller.scrollToIndex(newIndex,
+          duration: const Duration(milliseconds: 400),
+          preferPosition: AutoScrollPosition.middle);
+      _cubit.jumpToIndexCourse(newIndex);
+    }
   }
 }

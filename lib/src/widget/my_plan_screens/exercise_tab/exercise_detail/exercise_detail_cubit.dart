@@ -5,6 +5,7 @@ import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import '../../my_plan/models/completion_status.dart';
 import 'exercise_detail.dart';
 import 'models/video_manager.dart';
 
@@ -16,13 +17,19 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
   late final ExerciseMovementResponseData exerciseData;
   late final VideoManager videoManager;
 
-  void initData(ExerciseMovementResponseData exerciseData) {
+  bool exerciseCompleted = false;
+
+  void initData(ExerciseMovementResponseData? exerciseData) {
+    if (exerciseData == null) return;
     this.exerciseData = exerciseData;
     videoManager = VideoManager.fromExerciseData(
       exerciseData,
       onDone: () {
-        videoManager.controller?.pause();
-        completeExercise(exerciseData.id ?? '');
+        if (!exerciseCompleted &&
+            exerciseData.completionStatus != CompletionStatus.completed) {
+          exerciseCompleted = true;
+          completeExercise(exerciseData.id ?? '');
+        }
       },
     );
   }

@@ -166,7 +166,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                       context: context,
                       builder: (_) => NoticeChangePage(
                           description: R.string.ask_for_change_roadmap
-                              .tr(args: [itemData.name ?? '']),
+                              .tr(args: [_cubit.currentRoadMap?.name ?? '']),
                           positiveButtonTitle: R.string.confirm.tr(),
                           onClick: () {
                             _cubit.changeRoadMap(itemData);
@@ -226,7 +226,7 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                       Text(
                         R.string.road_map_changed.tr(args: [
                           itemData?.name ?? '',
-                          (itemData?.exerciseMovements?.length ?? 0).toString()
+                          (itemData?.exerciseMovementCount ?? 0).toString()
                         ]),
                         style: TextStyle(
                           fontSize: 16,

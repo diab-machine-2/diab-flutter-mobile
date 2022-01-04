@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+
 import '../models/schedule_type.dart';
 
 class SmartGoalItem extends StatelessWidget {
@@ -27,6 +29,7 @@ class SmartGoalItem extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       child: Slidable(
         actionPane: const SlidableDrawerActionPane(),
+        enabled: type.removeAble,
         secondaryActions: [
           Container(
             margin: const EdgeInsets.only(left: 4),
@@ -41,7 +44,7 @@ class SmartGoalItem extends StatelessWidget {
                     const SizedBox(height: 4),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('Huỷ mục tiêu',
+                      child: Text(R.string.cancel_smart_goal.tr(),
                           style: TextStyle(
                               color: R.color.white,
                               fontWeight: FontWeight.w500),
@@ -165,7 +168,7 @@ class SmartGoalItem extends StatelessWidget {
                         child: Image.asset(R.drawable.img_smart_goal_remove),
                       ),
                       Text(
-                        'Xác nhận huỷ mục tiêu',
+                        R.string.confirm_cancel_smart_goal.tr(),
                         style: TextStyle(
                             color: R.color.textDark,
                             fontSize: 20,
@@ -173,7 +176,7 @@ class SmartGoalItem extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Mục tiêu này trong tương lai cũng sẽ bị huỷ, bạn chắc chắn huỷ mục tiêu chứ?',
+                        R.string.confirm_cancel_smart_goal_description.tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: R.color.textDark,
@@ -188,7 +191,7 @@ class SmartGoalItem extends StatelessWidget {
                             width: 140.w,
                             height: 43,
                             child: ButtonWidget(
-                              title: 'Huỷ',
+                              title: R.string.cancel.tr(),
                               textSize: 14,
                               backgroundColor: R.color.grayBorder,
                               textColor: R.color.textDark,
@@ -201,7 +204,7 @@ class SmartGoalItem extends StatelessWidget {
                             width: 140.w,
                             height: 43,
                             child: ButtonWidget(
-                              title: 'Xác nhận',
+                              title: R.string.confirm.tr(),
                               textSize: 14,
                               onPressed: () {
                                 NavigationUtil.pop(context, result: true);
