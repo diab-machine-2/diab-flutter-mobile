@@ -9,8 +9,10 @@ class FilterData {
     int? week,
   }) {
     final FilterData newFilter = FilterData();
-    newFilter.tagFilter = tagFilter ?? this.tagFilter;
-    newFilter.nameFilter = nameFilter ?? this.nameFilter;
+    newFilter.tagFilter =
+        tagFilter ?? this.tagFilter.map((e) => e?.copy).toList();
+    newFilter.nameFilter =
+        nameFilter ?? this.nameFilter.map((e) => e?.copy).toList();
     newFilter.isCompleted = filterInCompleted ?? this.isCompleted;
     newFilter.currentWeek = week ?? this.currentWeek;
     return newFilter;
