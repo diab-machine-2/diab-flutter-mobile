@@ -130,23 +130,16 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                                 : _cubit.dataLength + 1,
                             itemBuilder: (context, index) {
                               return AutoScrollTag(
-                                key: ValueKey(index),
-                                controller: _exerciseScrollController,
-                                index: index,
-                                child: index < _cubit.dataLength
-                                    ? _buildExerciseWidget(
-                                        exerciseItem: _cubit.isHasRoadmapUser
-                                            ? _cubit.currentExercise
-                                            : _cubit.exerciseMovementResponse
-                                                ?.data?[index])
-                                    : SizedBox(
-                                        height: MediaQuery.of(context)
-                                                .size
-                                                .height -
-                                            MediaQuery.of(context).padding.top -
-                                            300,
-                                      ),
-                              );
+                                  key: ValueKey(index),
+                                  controller: _exerciseScrollController,
+                                  index: index,
+                                  child: index < _cubit.dataLength
+                                      ? _buildExerciseWidget(
+                                          exerciseItem: _cubit.isHasRoadmapUser
+                                              ? _cubit.currentExercise
+                                              : _cubit.exerciseMovementResponse
+                                                  ?.data?[index])
+                                      : SizedBox(height: 20.h));
                             },
                             separatorBuilder: (context, index) {
                               return Container(
@@ -287,7 +280,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                 const SizedBox(height: 8),
                 Visibility(
                   visible: exerciseItem.exerciseMovementStates !=
-                      Const.LESSON_LOCKED,
+                          Const.LESSON_LOCKED &&
+                      exerciseItem.exerciseMovementStates !=
+                          Const.LESSON_CAN_NOT_LEARN,
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: Row(
@@ -306,7 +301,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                               return;
                             }
                             if (exerciseItem.exerciseMovementStates ==
-                                Const.LESSON_LOCKED) {
+                                    Const.LESSON_LOCKED ||
+                                exerciseItem.exerciseMovementStates ==
+                                    Const.LESSON_CAN_NOT_LEARN) {
                               _showLockedDialog();
                               return;
                             }
@@ -568,7 +565,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    R.string.lesson_locked_warning.tr(),
+                    "Bạn cần tập lần lượt các bài học theo lộ trình của diaB để mở khoá bài tập này.",
                     textAlign: TextAlign.center,
                     style: R.style.normalTextStyle,
                   ),

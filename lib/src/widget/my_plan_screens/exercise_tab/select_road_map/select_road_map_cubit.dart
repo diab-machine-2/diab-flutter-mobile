@@ -24,7 +24,7 @@ class SelectRoadMapCubit extends Cubit<SelectRoadMapState> {
     final ApiResult<ListRoadmapResponse> apiResult =
         await repository.getRoadMap();
     apiResult.when(success: (ListRoadmapResponse response) {
-      roadMapList.addAll(response.data ?? []);
+      roadMapList = response.data ?? [];
       emit(const SelectRoadMapSuccess());
       return true;
     }, failure: (NetworkExceptions error) {
