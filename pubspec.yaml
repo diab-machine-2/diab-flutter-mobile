@@ -100,7 +100,7 @@ dependencies:
   cached_network_image: ^3.1.0
   flutter_inapp_purchase: ^5.0.3
   #video player
-  better_player: ^0.0.77
+  better_player: ^0.0.81
   #audio player
   audioplayers: ^0.20.1
   flutter_rating_bar: ^4.0.0

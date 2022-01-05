@@ -13,27 +13,30 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late final BetterPlayerController _controller;
+  BetterPlayerController? _controller;
 
   @override
   void initState() {
-    super.initState();
     if (widget.videoUrl.isNotEmpty) {
       _controller = BetterPlayerController(
-        const BetterPlayerConfiguration(
-            allowedScreenSleep: false, autoPlay: true),
+        const BetterPlayerConfiguration(allowedScreenSleep: false, autoPlay: true),
         betterPlayerDataSource: BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
           widget.videoUrl,
         ),
       );
     }
+    super.initState();
   }
 
   @override
   void dispose() {
+    if (_controller != null) {
+      _controller!.dispose(forceDispose: true);
+      _controller = null;
+      print("Disposed controller from Framework.");
+    }
     super.dispose();
-    _controller.dispose(forceDispose: true);
   }
 
   @override
@@ -49,7 +52,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             ),
             child: widget.videoUrl.isEmpty
                 ? const SizedBox.shrink()
-                : BetterPlayer(controller: _controller),
+                : _controller != null
+                    ? BetterPlayer(controller: _controller!)
+                    : Container(),
           ),
           Positioned(
             top: MediaQuery.of(context).padding.top,
