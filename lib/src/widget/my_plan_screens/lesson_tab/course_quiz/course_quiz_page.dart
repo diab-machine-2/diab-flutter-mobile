@@ -228,7 +228,9 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   onDoneQuiz();
                   return;
                 }
-                _cubit.setCompleteQuiz();
+                if (_cubit.isPassed) {
+                  _cubit.setCompleteQuiz();
+                }
                 _buildDialogCompleted(seeResultCallback: () {
                   _cubit.showAnswer();
                   _controller.scrollToIndex(0,

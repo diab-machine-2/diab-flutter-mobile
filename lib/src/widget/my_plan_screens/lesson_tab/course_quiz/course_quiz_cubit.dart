@@ -22,7 +22,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   List<QuizLesson?> listQuiz = [];
   Map<int, List<String>> answer = {};
   int selectedCourseIndex = 0;
-  double minCompletePercent = 1;
+  double minCompletePercent = 100;
 
   String quizName = '';
 
@@ -75,7 +75,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
 
   Future<void> initData() async {
     if (!isQuizLesson) {
-      minCompletePercent = 0.8;
+      minCompletePercent = 80;
       listQuiz = lessonSectionItem?.quizLessonSections ?? [];
       quizName = lessonSectionItem?.name ?? '';
       if (listQuiz.isNotEmpty != true) {
@@ -134,7 +134,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
         await repository.getListQuiz(lessonId);
     apiResult.when(success: (LessonSectionListResponse? response) {
       minCompletePercent =
-          response?.data?.minCompletePercent?.toDouble() ?? 0.8;
+          response?.data?.minCompletePercent?.toDouble() ?? 80;
       if (response?.data?.quizLessons?.isNotEmpty != true) {
         listQuiz = [];
       } else {
