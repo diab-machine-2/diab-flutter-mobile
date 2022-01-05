@@ -66,6 +66,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         builder: (context, state) {
           return _cubit.showQuizLesson
               ? CourseQuizPage(
+                key: Key(_cubit.currentSectionDetail?.id ?? ''),
                   lessonId: _cubit.lessonId,
                   lessonSectionItem: widget.lessonType != 3
                       ? _cubit.currentSectionDetail

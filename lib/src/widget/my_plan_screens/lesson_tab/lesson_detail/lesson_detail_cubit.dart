@@ -75,6 +75,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     sectionStatus = SectionStatusData(
       hasVideo: currentSectionDetail?.videoAddressLink?.isNotEmpty == true,
       hasAudio: currentSectionDetail?.audioAddressLink?.isNotEmpty == true,
+      isQuizSection:
+          currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_QUIZ,
     );
 
     if (!isFromList) {
@@ -131,6 +133,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     sectionStatus = SectionStatusData(
       hasVideo: currentSectionDetail?.videoAddressLink?.isNotEmpty == true,
       hasAudio: currentSectionDetail?.audioAddressLink?.isNotEmpty == true,
+      isQuizSection:
+          currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_QUIZ,
     );
 
     videoManager = VideoManager(
@@ -152,7 +156,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
   }
 
   Future<void> checkSectionComplete() async {
-    if (sectionStatus?.isSectionCompleted == true &&
+    if (!isQuizLesson &&
+        sectionStatus?.isSectionCompleted == true &&
         currentSectionDetail?.isComplete != true &&
         state is! LessonDetailCompleted) {
       currentSectionDetail?.isComplete = true;

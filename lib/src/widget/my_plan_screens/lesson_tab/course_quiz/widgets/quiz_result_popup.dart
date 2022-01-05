@@ -94,7 +94,7 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
                       children: <TextSpan>[
                         TextSpan(
                             text: !passQuiz
-                                ? " ${(widget.minCompletePercent * 100).round()}% "
+                                ? " ${(widget.minCompletePercent).round()}% "
                                 : "${widget.rightAnswer}/${widget.totalQuiz}",
                             style: TextStyle(
                               color: R.color.accentColor,
