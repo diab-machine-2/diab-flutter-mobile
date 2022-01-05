@@ -85,6 +85,11 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     getExerciseMovement();
   }
 
+  Future<void> onRefresh({bool isRefresh = false}) async {
+    if (myPlanCubit.isHasRoadmapUser) await getWeekStates(isRefresh: isRefresh);
+    getExerciseMovement(isRefresh: isRefresh);
+  }
+
   Future<void> initData() async {
     await myPlanCubit.checkUserInfo();
     roadmapId = myPlanCubit.roadmapId;
@@ -126,7 +131,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     emit(const ExerciseTabInitial());
   }
 
-  Future<void> getWeekStates() async {
+  Future<void> getWeekStates({bool isRefresh = false}) async {
     await Future.delayed(Duration.zero);
     emit(const ExerciseTabLoading());
     final ApiResult<WeekStatesResponse> apiResult =

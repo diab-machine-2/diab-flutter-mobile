@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
-import 'package:medical/src/model/request/update_quiz_lesson_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -73,7 +72,10 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       url: currentSectionDetail?.audioAddressLink,
     );
 
-    sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
+    sectionStatus = SectionStatusData(
+      hasVideo: currentSectionDetail?.videoAddressLink?.isNotEmpty == true,
+      hasAudio: currentSectionDetail?.audioAddressLink?.isNotEmpty == true,
+    );
 
     if (!isFromList) {
       checkSectionComplete();
@@ -126,7 +128,10 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       }
     }
 
-    sectionStatus = SectionStatusData(type: currentSectionDetail?.type);
+    sectionStatus = SectionStatusData(
+      hasVideo: currentSectionDetail?.videoAddressLink?.isNotEmpty == true,
+      hasAudio: currentSectionDetail?.audioAddressLink?.isNotEmpty == true,
+    );
 
     videoManager = VideoManager(
         url: currentSectionDetail?.videoAddressLink,
@@ -150,6 +155,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     if (sectionStatus?.isSectionCompleted == true &&
         currentSectionDetail?.isComplete != true &&
         state is! LessonDetailCompleted) {
+      currentSectionDetail?.isComplete = true;
       await completeLearningCurrentSection();
     }
   }
@@ -191,24 +197,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       emit(const LessonDetailSuccess());
     }, failure: (NetworkExceptions error) {
       emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));
-    });
-    emit(const LessonDetailInitial());
-  }
-
-  Future<void> setCompletedLessonQuiz() async {
-    await Future.delayed(Duration.zero);
-    emit(const LessonDetailLoading());
-    final ApiResult<CommonResponse> apiResult =
-        await repository.setCompletedLessonQuiz(UpdateQuizLessonRequest(
-      lessonId: lessonId,
-    ));
-    apiResult.when(success: (CommonResponse response) {
-      if (response.meta?.success == true) {
-        currentSectionDetail?.isComplete = true;
-      }
-      emit(const LessonDetailSuccess());
-    }, failure: (NetworkExceptions error) {
-      emit(LessonDetailFailure(NetworkExceptions.getErrorMessage(error)));
+      currentSectionDetail?.isComplete = false;
     });
     emit(const LessonDetailInitial());
   }

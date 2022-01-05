@@ -229,17 +229,16 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     }
                   },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              color: R.color.transparent,
-              child: DayInWeekWidget(
-                data: _cubit.dayInWeekList,
-                mark: _cubit.mark,
-                currentDayIndex: _cubit.currentDayIndex,
-                onSelectDay: (selectedDayIndex) {
-                  _cubit.onSelectDay(selectedDayIndex);
-                },
-              ),
-            ),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                color: R.color.transparent,
+                child: DayInWeekWidget(
+                  data: _cubit.dayInWeekList,
+                  mark: _cubit.mark,
+                  currentDayIndex: _cubit.currentDayIndex,
+                  onSelectDay: (selectedDayIndex) {
+                    _cubit.onSelectDay(selectedDayIndex);
+                  },
+                )),
           ),
         ],
       ),

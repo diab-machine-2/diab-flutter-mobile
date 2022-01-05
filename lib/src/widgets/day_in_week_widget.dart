@@ -41,6 +41,7 @@ class DayInWeekWidget extends StatelessWidget {
                               status: data[index ~/ 2].dayStatus,
                               isSelected: index ~/ 2 == currentDayIndex,
                               title: data[index ~/ 2].title,
+                              day: data[index ~/ 2].dateTime,
                               onTap: () {
                                 onSelectDay(index ~/ 2);
                               });
@@ -52,6 +53,13 @@ class DayInWeekWidget extends StatelessWidget {
           );
   }
 
+  bool get showDay {
+    for (final DayInWeekData dayInWeekData in data) {
+      if (dayInWeekData.dateTime == null) return false;
+    }
+    return true;
+  }
+
   double _getDashLength(double maxWidth) {
     return (maxWidth - 168) / 6;
   }
@@ -60,7 +68,11 @@ class DayInWeekWidget extends StatelessWidget {
       {required CompletionStatus status,
       required bool isSelected,
       required String title,
+      int? day,
       VoidCallback? onTap}) {
+    final DateTime today =
+        DateTime.fromMillisecondsSinceEpoch((day ?? 0) * 1000);
+    final String dayTitle = '${today.day}/${today.month}';
     return InkWell(
       onTap: onTap,
       child: Column(
@@ -77,6 +89,22 @@ class DayInWeekWidget extends StatelessWidget {
               ),
             ),
           ),
+          Container(
+            alignment: Alignment.bottomCenter,
+            width: 24,
+            child: Visibility(
+              visible: day != null,
+              child: Text(
+                dayTitle,
+                style: TextStyle(
+                  color: R.color.grey_1,
+                  fontSize: 8,
+                  fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
           const SizedBox(height: 4),
           status.dayStatusIcon(isSelected),
         ],
@@ -89,8 +117,10 @@ class DayInWeekData {
   DayInWeekData({
     required this.title,
     required this.dayStatus,
+    this.dateTime,
   });
 
   String title;
   CompletionStatus dayStatus;
+  int? dateTime;
 }

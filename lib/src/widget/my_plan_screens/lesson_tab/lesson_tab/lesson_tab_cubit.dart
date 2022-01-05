@@ -70,8 +70,8 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     }
     if (showCurrentWeek && myPlanCubit.isHasRoadmapUser) {
       filterData.currentWeek = myPlanCubit.currentStudyWeek! - 1;
-      await getLessonWeekStates(isRefresh: isRefresh);
     }
+    await getLessonWeekStates(isRefresh: isRefresh);
     await getLessonsList(isRefresh: isRefresh);
     if (showCurrentWeek && filterData.currentWeek != null) {
       emit(LessonTabWeekChanged(filterData.currentWeek!));

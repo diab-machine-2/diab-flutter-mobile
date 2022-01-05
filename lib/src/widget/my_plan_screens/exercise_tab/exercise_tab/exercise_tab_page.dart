@@ -116,8 +116,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   top: false,
                   child: SmartRefresher(
                     controller: _controller,
-                    onRefresh: () =>
-                        _cubit.getExerciseMovement(isRefresh: true),
+                    onRefresh: () => _cubit.onRefresh(isRefresh: true),
                     child: _cubit.exerciseMovementResponse?.data?.isEmpty ==
                             null
                         ? const SizedBox.shrink()
@@ -315,7 +314,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                                 exerciseData: exerciseItem,
                               ),
                             );
-                            _cubit.getExerciseMovement();
+                            _cubit.onRefresh();
                           },
                         ),
                         _buildCustomIconButton(

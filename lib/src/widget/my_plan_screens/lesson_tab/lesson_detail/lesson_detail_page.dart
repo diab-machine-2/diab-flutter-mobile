@@ -71,16 +71,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                       ? _cubit.currentSectionDetail
                       : null,
                   onDone: (isPassed) async {
-                    if (isPassed) {
-                      if (_cubit.isQuizLesson) {
-                        await _cubit.setCompletedLessonQuiz();
-                        NavigationUtil.pop(context);
-                      } else {
-                        await _cubit.checkSectionComplete();
-                      }
-                    } else {
-                      _cubit.onChangeSection(_cubit.currentSection + 1);
-                    }
+                    _cubit.onChangeSection(_cubit.currentSection + 1);
                   })
               : Scaffold(
                   body: BackgroundPage(
