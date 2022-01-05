@@ -69,11 +69,11 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             },
             builder: (context, state) {
               late final List<Widget> body;
-              if (_cubit.status == CreateGoalStatus.select_type) {
+              if (_cubit.currentStatus == CreateGoalStatus.select_type) {
                 body = _buildSelectGoalType();
-              } else if (_cubit.status == CreateGoalStatus.setup) {
+              } else if (_cubit.currentStatus == CreateGoalStatus.setup) {
                 body = _buildSetupGoal();
-              } else if (_cubit.status == CreateGoalStatus.complete) {
+              } else if (_cubit.currentStatus == CreateGoalStatus.complete) {
                 body = _buildSetupCompleteGoal();
               } else {
                 body = [];
@@ -87,7 +87,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: CustomTopProgressBar(_cubit.status,
+                      child: CustomTopProgressBar(_cubit.currentStatus,
                           onSelect: (newStatus) {
                         _cubit.onSelectStatus(newStatus);
                       }),
@@ -102,14 +102,16 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     ),
                     const SizedBox(height: 16),
                     Visibility(
-                      visible: _cubit.status != CreateGoalStatus.select_type,
+                      visible:
+                          _cubit.currentStatus != CreateGoalStatus.select_type,
                       child: SafeArea(
                         top: false,
                         child: Container(
                           height: 48,
                           width: 195,
                           child: ButtonWidget(
-                            title: _cubit.status == CreateGoalStatus.complete
+                            title: _cubit.currentStatus ==
+                                    CreateGoalStatus.complete
                                 ? R.string.completed.tr()
                                 : R.string.text_continue.tr(),
                             textSize: 16,
@@ -148,14 +150,14 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           backgroundColor: R.color.main_6,
           icon: R.drawable.ic_smart_goal_new_goal,
           onTap: () {
-            _cubit.setupGoal();
+            _cubit.setupGoal(selectedType: ScheduleType.custom, subType: 0);
           }),
       SelectTypeWidget(
           title: R.string.do_a_favorite_thing.tr(),
           backgroundColor: R.color.color0xffFFE3E3,
           icon: R.drawable.ic_smart_goal_new_habit,
           onTap: () {
-            _cubit.setupGoal();
+            _cubit.setupGoal(selectedType: ScheduleType.custom, subType: 1);
           }),
       SelectTypeWidget(
         title: R.string.biometric_monitoring_frequency.tr(),
@@ -294,6 +296,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         onChangedTime: (text) {
           _cubit.dataModel.goalTimeOrFrequency = text;
         },
+        controller:
+            TextEditingController(text: _cubit.dataModel.goalTimeOrFrequency),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),

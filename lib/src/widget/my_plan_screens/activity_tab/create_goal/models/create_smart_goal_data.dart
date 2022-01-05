@@ -32,6 +32,16 @@ class CreateSmartGoalData {
 
   ScheduleType? type;
 
+  //Because there are two smartGoal have the same type ("Create a new habit" and "Do a favorite thing")
+  //The subType field used to distinguish these case
+  //subType == 0 -> Create a new habit
+  //subType == 1 -> Do a favorite thing
+  int? subType;
+
+  ScheduleType? cachedType;
+
+  int? cachedSubType;
+
   RepeatType repeatType = RepeatType.day;
 
   List<DayInWeek> repeatDayList = [];
@@ -49,12 +59,12 @@ class CreateSmartGoalData {
     isRepeat = false;
     goalRecordType = GoalRecordType.time;
     type = null;
+    cachedType = null;
+    cachedSubType = null;
     repeatType = RepeatType.day;
     repeatDayList = [];
     name = '';
     goalTimeOrFrequency = '';
-    userInfo = null;
-    dailyTargetDuration = '';
   }
 
   CreateSmartGoalData get copy => CreateSmartGoalData(

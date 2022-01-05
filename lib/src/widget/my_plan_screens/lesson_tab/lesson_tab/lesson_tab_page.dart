@@ -100,11 +100,12 @@ class _LessonTabPageState extends State<LessonTabPage>
                       const Spacer(),
                       InkWell(
                         onTap: () async {
+                          final FilterData newFilter = _cubit.filterData.copyWith();
                           final dynamic result =
                               await NavigationUtil.navigatePage(
                             context,
                             LessonFilterPage(
-                              _cubit.filterData.copyWith(),
+                              newFilter,
                             ),
                           );
                           if (result is FilterData) {
@@ -462,6 +463,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          if(lessonDetail?.tagName.isNotEmpty == true)
                           Row(
                             children: [
                               Text(
@@ -633,7 +635,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Vui lòng nâng cấp tài khoản lên gói Đồng hành để tiếp tục học!',
+                        'Vui lòng nâng cấp tài khoản để tiếp tục học!',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: R.color.textDark,

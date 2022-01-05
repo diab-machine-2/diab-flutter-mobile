@@ -62,6 +62,7 @@ class _MyProgressPageState extends State<MyProgressPage> {
             showCloseBackButton: true,
             onTapClose: () {
               _messageController.sink.add(true);
+              NavigationUtil.pop(context);
             },
             child: BlocConsumer<MyProgressCubit, MyProgressState>(
               listener: (context, state) {

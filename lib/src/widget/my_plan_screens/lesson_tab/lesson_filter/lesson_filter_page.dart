@@ -47,6 +47,9 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
           title: R.string.filter.tr(),
           background: R.drawable.bg_welcome,
           showCloseBackButton: true,
+          onTapClose: () {
+            NavigationUtil.pop(context);
+          },
           onTapAppBar: () {
             FocusScope.of(context).unfocus();
           },
@@ -104,6 +107,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
           hintText: R.string.enter_key_word.tr(),
           onSelectTag: () {
             _cubit.searchingStatus = SearchingStatus.keyWord;
+            _cubit.textSearch = '';
             _cubit.refresh();
           },
           onRemoveTag: (index) {
@@ -118,6 +122,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
           hintText: R.string.enter_lesson_name.tr(),
           onSelectTag: () {
             _cubit.searchingStatus = SearchingStatus.lessonName;
+            _cubit.textSearch = '';
             _cubit.refresh();
           },
           onRemoveTag: (index) {
@@ -226,8 +231,13 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
                         child: ListView.separated(
                           itemCount: _cubit.suggestWordFiltered.length,
                           itemBuilder: (context, index) {
-                            final bool isSelected = selectedList
-                                .contains(_cubit.suggestWordFiltered[index]);
+                            final bool isSelected = selectedList.indexWhere(
+                                    (element) =>
+                                        element != null &&
+                                        element.value ==
+                                            _cubit.suggestWordFiltered[index]
+                                                ?.value) !=
+                                -1;
                             return InkWell(
                               onTap: () {
                                 if (!isSelected) {
