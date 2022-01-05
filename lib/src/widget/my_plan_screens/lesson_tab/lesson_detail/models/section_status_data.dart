@@ -1,21 +1,16 @@
-import 'package:medical/src/utils/const.dart';
-
 class SectionStatusData {
   SectionStatusData({
-    required this.type,
-    this.isAudioCompleted,
-    this.isVideoCompleted,
+    required this.hasVideo,
+    required this.hasAudio,
   });
-  int? type;
+  final bool hasVideo;
+  final bool hasAudio;
   bool? isVideoCompleted;
   bool? isAudioCompleted;
 
   bool get isSectionCompleted {
-    if (type == Const.LESSON_SECTION_TYPE_TEXT) return true;
-    if (type == Const.LESSON_SECTION_TYPE_VIDEO)
-      return isVideoCompleted == true;
-    if (type == Const.LESSON_SECTION_TYPE_AUDIO)
-      return isAudioCompleted == true;
-    return false;
+    if (hasVideo && isVideoCompleted != true) return false;
+    if (hasAudio && isAudioCompleted != true) return false;
+    return true;
   }
 }

@@ -92,6 +92,7 @@ class SmartGoalStatisticResponseData {
           title: Utils.getDayInWeekTitle(dayIndex),
           dayStatus: daysInCurrentWeek?[index]?.completionStatus ??
               CompletionStatus.not_start_yet,
+          dateTime: daysInCurrentWeek?[index]?.day
         ),
       );
     }

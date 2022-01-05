@@ -17,7 +17,7 @@ class VideoManager {
 
   BetterPlayerController? get controller => hasVideo ? _controller : null;
 
-  void refreshUrl({required String? url}) {
+  Future<void> refreshUrl({required String? url}) async {
     finishedVideo = false;
     if (url == null) {
       _controller?.pause();
@@ -33,16 +33,17 @@ class VideoManager {
       initController(url: url);
     }
 
-    if (url != _controller?.betterPlayerDataSource?.url) {
-      _controller?.setupDataSource(
-        BetterPlayerDataSource(
-          BetterPlayerDataSourceType.network,
-          url,
-        ),
-      );
-      _controller?.retryDataSource();
-      _controller?.setControlsAlwaysVisible(true);
-    }
+    _controller?.setupDataSource(
+      BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network,
+        url,
+      ),
+    );
+    _controller?.retryDataSource();
+    _controller?.setControlsAlwaysVisible(true);
+    await Future.delayed(Duration.zero);
+    _controller?.seekTo(Duration.zero);
+    _controller?.pause();
   }
 
   void initController({required String? url}) {
