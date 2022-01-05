@@ -17,8 +17,7 @@ class SelectBottomSheetWidget extends StatefulWidget {
   final Function(List<String>) onSelected;
   final bool isMultipleChoice;
   @override
-  _SelectBottomSheetWidgetState createState() =>
-      _SelectBottomSheetWidgetState();
+  _SelectBottomSheetWidgetState createState() => _SelectBottomSheetWidgetState();
 }
 
 class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
@@ -63,8 +62,7 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                   Expanded(
                     child: Text(
                       widget.title,
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.w700),
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                     ),
                   ),
                   GestureDetector(
@@ -87,13 +85,10 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                       ? const AlwaysScrollableScrollPhysics()
                       : const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  padding: const EdgeInsets.only(
-                      left: 10, right: 10, bottom: 8, top: 10),
+                  padding: const EdgeInsets.only(left: 10, right: 10, bottom: 8, top: 10),
                   itemCount: widget.elementList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return _buildItem(
-                        title: widget.elementList[index],
-                        isLast: index == widget.elementList.length - 1);
+                    return _buildItem(title: widget.elementList[index], isLast: index == widget.elementList.length - 1);
                   }),
             ),
             const SizedBox(height: 8),
@@ -112,19 +107,13 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                       gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.centerRight,
-                          colors: [
-                            R.color.greenGradientTop,
-                            R.color.greenGradientBottom
-                          ]),
+                          colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                       borderRadius: BorderRadius.circular(200),
                     ),
                     child: Center(
                       child: Text(
                         R.string.save.tr(),
-                        style: TextStyle(
-                            color: R.color.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600),
+                        style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -168,20 +157,15 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                         if (isSelected)
                           Text(
                             title,
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: R.color.mainColor),
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: R.color.mainColor),
                           )
                         else
                           Text(
                             title,
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w400),
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
                           ),
                         if (isSelected && widget.isMultipleChoice)
-                          Image.asset(R.drawable.ic_check_mark,
-                              width: 24, height: 24),
+                          Image.asset(R.drawable.ic_check_mark, width: 24, height: 24),
                         if (isSelected && !widget.isMultipleChoice)
                           Container(
                             width: 24,

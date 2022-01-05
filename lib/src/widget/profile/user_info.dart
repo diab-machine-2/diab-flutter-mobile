@@ -29,6 +29,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/profile/address.dart';
+import 'package:medical/src/widget/profile/widgets/item_profile.dart';
 import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:medical/src/widgets/user_icon_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -45,15 +46,17 @@ class ProfileInfoController extends StatefulWidget {
   _ProfileInfoControllerState createState() => _ProfileInfoControllerState();
 }
 
-class _ProfileInfoControllerState extends State<ProfileInfoController>
-    with Observer {
+class _ProfileInfoControllerState extends State<ProfileInfoController> with Observer {
   MotivationModel? motivation;
   bool isHasRoadMap = false;
+  var user = AppSettings.userInfo!;
 
   @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
+
+    isHasRoadMap = user.roadMapId != null;
 
     loadMotivation();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Update Profile');
@@ -66,8 +69,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
   }
 
   @override
-  void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'motivation_change') {
       loadMotivation();
     }
@@ -84,7 +86,6 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
 
   @override
   Widget build(BuildContext context) {
-    final user = AppSettings.userInfo!;
     return GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -106,10 +107,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               CustomAppBar(
                 backgroundColor: R.color.transparent,
                 title: Text(R.string.personal_info.tr(),
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: R.color.textDark)),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
                 leadingIcon: IconButton(
                     splashColor: R.color.transparent,
                     highlightColor: R.color.transparent,
@@ -122,10 +120,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                 child: SafeArea(
                   top: false,
                   child: ListView(
-                      padding: const EdgeInsets.only(
-                          bottom: 16, left: 16, right: 16),
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -136,30 +132,20 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                               },
                               child: Container(
                                 color: R.color.transparent,
-                                child: Stack(
-                                    alignment: AlignmentDirectional.bottomEnd,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          clipBehavior: Clip.hardEdge,
-                                          decoration: BoxDecoration(
-                                              color: R.color.mainColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(80)),
-                                          child: user.imageUrl!.url == null
-                                              ? Icon(Icons.person,
-                                                  size: 160,
-                                                  color: R.color.white)
-                                              : Image.network(
-                                                  user.imageUrl!.url!,
-                                                  width: 160,
-                                                  height: 160),
-                                        ),
-                                      ),
-                                      Image.asset(R.drawable.ic_camera_picker,
-                                          width: 50, height: 50)
-                                    ]),
+                                child: Stack(alignment: AlignmentDirectional.bottomEnd, children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                          color: R.color.mainColor, borderRadius: BorderRadius.circular(80)),
+                                      child: user.imageUrl!.url == null
+                                          ? Icon(Icons.person, size: 160, color: R.color.white)
+                                          : Image.network(user.imageUrl!.url!, width: 160, height: 160),
+                                    ),
+                                  ),
+                                  Image.asset(R.drawable.ic_camera_picker, width: 50, height: 50)
+                                ]),
                               ),
                             ),
                           ],
@@ -167,113 +153,70 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         const SizedBox(height: 16),
                         if (motivation != null)
                           Container(
-                              decoration: BoxDecoration(
-                                  color: R.color.white,
-                                  borderRadius: BorderRadius.circular(10)),
+                              decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 16, left: 16, right: 16),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                    R.string.my_motivation.tr(),
-                                                    style: TextStyle(
-                                                        color: R.color.black,
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        fontSize: 16)),
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    _showDialogUpdateMotivation(
-                                                        motivation);
-                                                  },
-                                                  child: Container(
-                                                    color: R.color.transparent,
-                                                    child: Row(children: [
-                                                      Image.asset(
-                                                          R.drawable.ic_edit,
-                                                          width: 16,
-                                                          height: 16),
-                                                      const SizedBox(width: 4),
-                                                      Text(
-                                                          R.string.chinh_sua
-                                                              .tr(),
-                                                          style: TextStyle(
-                                                              color: R.color
-                                                                  .mainColor,
-                                                              fontSize: 16))
-                                                    ]),
-                                                  ),
-                                                )
-                                              ]),
-                                          const SizedBox(height: 16),
-                                          Text('“${motivation!.content}”',
-                                              style: TextStyle(
-                                                  color: R.color.textDark,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 16)),
-                                        ]),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Container(
-                                      height: 1,
-                                      color: R.color.color0xffE5E5E5),
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.pushNamed(context,
-                                                  NavigatorName.motivation);
-                                            },
-                                            child: Container(
-                                              color: R.color.transparent,
-                                              child: Center(
-                                                child: Text(
-                                                    R.string.view_log.tr(),
-                                                    style: TextStyle(
-                                                        color:
-                                                            R.color.mainColor,
-                                                        fontSize: 16)),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                            height: 46,
-                                            width: 1,
-                                            color: R.color.color0xffE5E5E5),
-                                        Expanded(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              _showDialogUpdateMotivation(null);
-                                            },
-                                            child: Container(
-                                              color: R.color.transparent,
-                                              child: Center(
-                                                child: Text(
-                                                    R.string.new_motivation
-                                                        .tr(),
-                                                    style: TextStyle(
-                                                        color:
-                                                            R.color.mainColor,
-                                                        fontSize: 16)),
-                                              ),
-                                            ),
+                                    padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                        Text(R.string.my_motivation.tr(),
+                                            style: TextStyle(
+                                                color: R.color.black, fontWeight: FontWeight.w700, fontSize: 16)),
+                                        GestureDetector(
+                                          onTap: () {
+                                            _showDialogUpdateMotivation(motivation);
+                                          },
+                                          child: Container(
+                                            color: R.color.transparent,
+                                            child: Row(children: [
+                                              Image.asset(R.drawable.ic_edit, width: 16, height: 16),
+                                              const SizedBox(width: 4),
+                                              Text(R.string.chinh_sua.tr(),
+                                                  style: TextStyle(color: R.color.mainColor, fontSize: 16))
+                                            ]),
                                           ),
                                         )
-                                      ])
+                                      ]),
+                                      const SizedBox(height: 16),
+                                      Text('“${motivation!.content}”',
+                                          style: TextStyle(
+                                              color: R.color.textDark, fontWeight: FontWeight.w400, fontSize: 16)),
+                                    ]),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Container(height: 1, color: R.color.color0xffE5E5E5),
+                                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.pushNamed(context, NavigatorName.motivation);
+                                        },
+                                        child: Container(
+                                          color: R.color.transparent,
+                                          child: Center(
+                                            child: Text(R.string.view_log.tr(),
+                                                style: TextStyle(color: R.color.mainColor, fontSize: 16)),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Container(height: 46, width: 1, color: R.color.color0xffE5E5E5),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          _showDialogUpdateMotivation(null);
+                                        },
+                                        child: Container(
+                                          color: R.color.transparent,
+                                          child: Center(
+                                            child: Text(R.string.new_motivation.tr(),
+                                                style: TextStyle(color: R.color.mainColor, fontSize: 16)),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ])
                                 ],
                               ))
                         else
@@ -284,437 +227,353 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                             child: Container(
                               decoration: BoxDecoration(
                                 color: R.color.transparent,
-                                image: DecorationImage(
-                                    image: AssetImage(R.drawable.bg_dong_luc),
-                                    fit: BoxFit.fill),
+                                image: DecorationImage(image: AssetImage(R.drawable.bg_dong_luc), fit: BoxFit.fill),
                               ),
                               padding: const EdgeInsets.all(16),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(R.string.my_motivation.tr(),
-                                        style: TextStyle(
-                                            color: R.color.white,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 16)),
-                                    const SizedBox(height: 8),
-                                    Text(R.string.new_motivaiton_suggest.tr(),
-                                        style: TextStyle(
-                                            color: R.color.white,
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 16)),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 16, bottom: 8),
+                              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                Text(R.string.my_motivation.tr(),
+                                    style: TextStyle(color: R.color.white, fontWeight: FontWeight.w700, fontSize: 16)),
+                                const SizedBox(height: 8),
+                                Text(R.string.new_motivaiton_suggest.tr(),
+                                    style: TextStyle(color: R.color.white, fontWeight: FontWeight.w400, fontSize: 16)),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16, bottom: 8),
+                                  child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                    Container(
+                                      height: 40,
+                                      padding: const EdgeInsets.only(left: 16, right: 16),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(color: R.color.white, width: 2),
+                                          borderRadius: BorderRadius.circular(20)),
                                       child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              height: 40,
-                                              padding: const EdgeInsets.only(
-                                                  left: 16, right: 16),
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: R.color.white,
-                                                      width: 2),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.add,
-                                                      color: R.color.white,
-                                                      size: 28),
-                                                  const SizedBox(width: 8),
-                                                  Text(
-                                                      '${R.string.enter_motivation.tr()}  ',
-                                                      style: TextStyle(
-                                                          color: R.color.white,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          fontSize: 16)),
-                                                ],
-                                              ),
-                                            )
-                                          ]),
+                                        children: [
+                                          Icon(Icons.add, color: R.color.white, size: 28),
+                                          const SizedBox(width: 8),
+                                          Text('${R.string.enter_motivation.tr()}  ',
+                                              style: TextStyle(
+                                                  color: R.color.white, fontWeight: FontWeight.w700, fontSize: 16)),
+                                        ],
+                                      ),
                                     )
                                   ]),
+                                )
+                              ]),
                             ),
                           ),
-                        _buildCardLayout(
-                            title: R.string.general_info.tr(),
-                            children: [
-                              buildItem(
-                                image: R.drawable.ic_person,
-                                title: user.fullName!,
-                                subTitle:
-                                    R.string.last_name_and_first_name.tr(),
-                                subIcon: Image.asset(R.drawable.ic_right,
-                                    width: 18, height: 18),
-                                callback: () {
-                                  _showDialogUpdateName();
-                                },
-                              ),
-                              buildItem(
-                                image: R.drawable.ic_birthday,
-                                title: convertToUTC(
-                                    user.dateOfBirth!, 'dd/MM/yyyy'),
-                                subTitle: R.string.ngay_sinh.tr(),
-                                subIcon: Image.asset(R.drawable.ic_right,
-                                    width: 18, height: 18),
-                                callback: () {
-                                  _showDialogUpdateBirthday();
-                                },
-                              ),
-                              buildItem(
-                                image: R.drawable.ic_gender,
-                                title:
-                                    user.gender == null || user.gender!.isEmpty
-                                        ? R.string.updating.tr()
-                                        : user.gender!,
-                                subTitle: R.string.gioi_tinh.tr(),
-                                subIcon: Image.asset(R.drawable.ic_right,
-                                    width: 18, height: 18),
-                                callback: () {
-                                  _showDialogUpdateGender();
-                                },
-                              ),
-                              buildItem(
-                                icon: R.drawable.ic_user_job,
-                                title: 'Giáo viên',
-                                subTitle: 'Nghề nghiệp',
-                                subIcon: Image.asset(R.drawable.ic_right,
-                                    width: 18, height: 18),
-                                callback: () {
-                                  // TODO(Tuyen): Update Nghề nghiệp
-                                  showActionFilter(
-                                      context: context,
-                                      builder: (context) {
-                                        return SelectBottomSheetWidget(
-                                          title: 'Chọn nghề nghiệp',
-                                          selectedList: [],
-                                          elementList: [],
-                                          onSelected: (typeList) {
-                                            if (typeList.isNotEmpty) {}
-                                          },
-                                        );
-                                      });
-                                },
-                              ),
-                              buildItem(
-                                icon: R.drawable.ic_user_education,
-                                title: 'Đại học',
-                                subTitle: 'Trình độ văn hoá',
-                                subIcon: Image.asset(R.drawable.ic_right,
-                                    width: 18, height: 18),
-                                callback: () {
-                                  // TODO(Tuyen): Update Trình độ văn hoá
-                                  showActionFilter(
-                                      context: context,
-                                      builder: (context) {
-                                        return SelectBottomSheetWidget(
-                                          title: 'Chọn học vấn',
-                                          selectedList: [],
-                                          elementList: [],
-                                          onSelected: (typeList) {
-                                            if (typeList.isNotEmpty) {}
-                                          },
-                                        );
-                                      });
-                                },
-                              ),
-                            ]),
-                        _buildCardLayout(
-                            title: R.string.pathological_info.tr(),
-                            children: [
-                              buildItem(
-                                image: R.drawable.ic_folder,
-                                title:
-                                    user.diabetesName ?? R.string.updating.tr(),
-                                subTitle: R.string.loai_benh.tr(),
-                                callback: () {
-                                  _showDialogUpdateDiabetesStatus();
-                                },
-                              ),
-                              buildItem(
-                                image: R.drawable.ic_year,
-                                title: convertToUTC(
-                                    user.diabetesDate ?? 0, 'yyyy'),
-                                subTitle: R.string.year_illness_start.tr(),
-                                callback: () {
-                                  _showDialogUpdateDiabetesStatusDate();
-                                },
-                              )
-                            ]),
+                        _buildCardLayout(title: R.string.general_info.tr(), children: [
+                          ItemProfile(
+                            image: R.drawable.ic_person,
+                            title: user.fullName!,
+                            subTitle: R.string.last_name_and_first_name.tr(),
+                            subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                            callback: (selectedIndexList) {
+                              _showDialogUpdateName();
+                            },
+                          ),
+                          ItemProfile(
+                            image: R.drawable.ic_birthday,
+                            title: convertToUTC(user.dateOfBirth!, 'dd/MM/yyyy'),
+                            subTitle: R.string.ngay_sinh.tr(),
+                            subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                            callback: (selectedIndexList) {
+                              _showDialogUpdateBirthday();
+                            },
+                          ),
+                          ItemProfile(
+                            image: R.drawable.ic_gender,
+                            title: user.gender == null || user.gender!.isEmpty ? R.string.updating.tr() : user.gender!,
+                            subTitle: R.string.gioi_tinh.tr(),
+                            subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                            callback: (selectedIndexList) {
+                              _showDialogUpdateGender();
+                            },
+                          ),
+                          ItemProfile(
+                            icon: R.drawable.ic_user_job,
+                            title: 'Giáo viên',
+                            subTitle: 'Nghề nghiệp',
+                            subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                            elementList: [
+                              "Hưu trí",
+                              "Học sinh Sinh viên",
+                              "Nhân viên văn phòng",
+                              "Kinh doanh",
+                              "Nội trợ",
+                              "Khác"
+                            ],
+                            selectedDialogTitle: "Chọn nghề nghiệp",
+                            isShowSelectedDialog: true,
+                            callback: (selectedIndexList) {
+                              // TODO(Tuyen): Update Nghề nghiệp
+                            },
+                          ),
+                          ItemProfile(
+                            icon: R.drawable.ic_user_education,
+                            title: 'Đại học',
+                            subTitle: 'Trình độ văn hoá',
+                            subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                            elementList: [
+                              "Tiểu học",
+                              "Trung học cơ sở",
+                              "Trung học phổ thông",
+                              "Đại học",
+                              "Sau Đại học"
+                            ],
+                            selectedDialogTitle: "Chọn học vấn",
+                            isShowSelectedDialog: true,
+                            callback: (selectedIndexList) {
+                              // TODO(Tuyen): Update Trình độ văn hoá
+                            },
+                          ),
+                        ]),
+                        _buildCardLayout(title: R.string.pathological_info.tr(), children: [
+                          ItemProfile(
+                            image: R.drawable.ic_folder,
+                            title: user.diabetesName ?? R.string.updating.tr(),
+                            subTitle: R.string.loai_benh.tr(),
+                            callback: (selectedIndexList) {
+                              _showDialogUpdateDiabetesStatus();
+                            },
+                          ),
+                          ItemProfile(
+                            image: R.drawable.ic_year,
+                            title: convertToUTC(user.diabetesDate ?? 0, 'yyyy'),
+                            subTitle: R.string.year_illness_start.tr(),
+                            callback: (selectedIndexList) {
+                              _showDialogUpdateDiabetesStatusDate();
+                            },
+                          )
+                        ]),
                         _buildCardLayout(
                           title: R.string.body_info.tr(),
                           children: [
-                            buildItem(
+                            ItemProfile(
                               image: R.drawable.ic_kg,
-                              title: user.weight == null
-                                  ? R.string.not_updated_yet.tr()
-                                  : '${user.weight!.round()} kg',
+                              title: user.weight == null ? R.string.not_updated_yet.tr() : '${user.weight!.round()} kg',
                               subTitle: R.string.can_nang.tr(),
-                              callback: () {
+                              callback: (selectedIndexList) {
                                 showDialogWeight();
                               },
                             ),
-                            buildItem(
+                            ItemProfile(
                               image: R.drawable.ic_ruler_fill,
-                              title: user.height == null
-                                  ? R.string.not_updated_yet.tr()
-                                  : '${user.height!.round()} cm',
+                              title: user.height == null ? R.string.not_updated_yet.tr() : '${user.height!.round()} cm',
                               subTitle: R.string.chieu_cao.tr(),
-                              callback: () {
+                              callback: (selectedIndexList) {
                                 showDialogHeight();
                               },
                             ),
-                            buildItem(
+                            ItemProfile(
                               icon: R.drawable.ic_user_bmi,
                               title: user.height == null
                                   ? R.string.not_updated_yet.tr()
-                                  : Utils.getBMI(
-                                      height: user.height!,
-                                      weight: user.weight!),
+                                  : Utils.getBMI(height: user.height!, weight: user.weight!),
                               subTitle: 'BMI',
-                              callback: () {},
+                              callback: (selectedIndexList) {},
                             ),
                           ],
                         ),
-                        if (isHasRoadMap) _buildCardLayout(
-                          title: 'Chủ đề quan tâm',
-                          description:
-                              'Hãy chọn các chủ đề mà bạn quan tâm để diaB gợi ý các bài học phù hợp nhất với bạn.',
-                          showIcon: true,
-                          onTap: () {
-                            showActionFilter(
-                                context: context,
-                                builder: (context) {
-                                  return SelectBottomSheetWidget(
-                                    title: 'Chọn chủ đề quan tâm',
-                                    selectedList: [],
-                                    elementList: [],
-                                    onSelected: (typeList) {
-                                      if (typeList.isNotEmpty) {}
-                                    },
-                                  );
-                                });
-                          },
-                          children: [
-                            const SizedBox(height: 6),
-                            Wrap(spacing: 8, runSpacing: 8, children: [
-                              _buildTopicItem('Bệnh lý'),
-                              _buildTopicItem('Dinh dưỡng'),
-                              _buildTopicItem('Vận động'),
-                              _buildTopicItem('Xây dựng lối sống lành mạnh'),
-                              _buildTopicItem('Tâm lý'),
-                              _buildTopicItem('Theo dõi chỉ số sinh học'),
-                            ]),
-                          ],
-                        ),
-                        if (isHasRoadMap) _buildCardLayout(
-                          title: 'Tiêu chí chọn huấn luyện viên sức khỏe',
-                          description:
-                              'Hãy mô tả chi tiết hơn về bản thân để diaB tìm huấn luyện viên phù hợp với bạn',
-                          children: [
-                            buildItem(
-                              image: R.drawable.ic_person,
-                              title: 'Hướng ngoại',
-                              subTitle: 'Tính cách',
-                              subIcon: Image.asset(R.drawable.ic_right,
-                                  width: 18, height: 18),
-                              callback: () {
-                                // TODO(Tuyen): Update Tính cách
-                                showActionFilter(
-                                    context: context,
-                                    builder: (context) {
-                                      return SelectBottomSheetWidget(
-                                        title: 'Chọn tính cách',
-                                        selectedList: [],
-                                        elementList: [],
-                                        onSelected: (typeList) {
-                                          if (typeList.isNotEmpty) {}
-                                        },
-                                      );
-                                    });
-                              },
-                            ),
-                            buildItem(
-                              icon: R.drawable.ic_user_habit,
-                              title: 'Chơi game, đọc sách',
-                              subTitle: 'Sở thích cá nhân',
-                              subIcon: Image.asset(R.drawable.ic_right,
-                                  width: 18, height: 18),
-                              callback: () {
-                                // TODO(Tuyen): Update Sở thích cá nhân
-                                showActionFilter(
-                                    context: context,
-                                    builder: (context) {
-                                      return SelectBottomSheetWidget(
-                                        title: 'Chọn sở thích',
-                                        selectedList: [],
-                                        elementList: [],
-                                        onSelected: (typeList) {
-                                          if (typeList.isNotEmpty) {}
-                                        },
-                                      );
-                                    });
-                              },
-                            ),
-                            buildItem(
-                              icon: R.drawable.ic_user_exercise,
-                              title: 'Cầu lông, xe đạp',
-                              subTitle: 'Môn thể thao yêu thích',
-                              subIcon: Image.asset(R.drawable.ic_right,
-                                  width: 18, height: 18),
-                              callback: () {
-                                // TODO(Tuyen): Update Môn thể thao yêu thích
-                                showActionFilter(
-                                    context: context,
-                                    builder: (context) {
-                                      return SelectBottomSheetWidget(
-                                        title: 'Chọn môn thể thao',
-                                        selectedList: [],
-                                        elementList: [],
-                                        onSelected: (typeList) {
-                                          if (typeList.isNotEmpty) {}
-                                        },
-                                      );
-                                    });
-                              },
-                            ),
-                            buildItem(
-                              icon: R.drawable.ic_user_mental_exercise,
-                              title: 'Không',
-                              subTitle: 'Thực hành tâm thức',
-                              subIcon: Image.asset(R.drawable.ic_right,
-                                  width: 18, height: 18),
-                              callback: () {
-                                // TODO(Tuyen): Update Thực hành tâm thức
-                                showActionFilter(
-                                    context: context,
-                                    builder: (context) {
-                                      return SelectBottomSheetWidget(
-                                        title: 'Chọn thực hành tâm thức',
-                                        selectedList: [],
-                                        elementList: [],
-                                        onSelected: (typeList) {
-                                          if (typeList.isNotEmpty) {}
-                                        },
-                                      );
-                                    });
-                              },
-                            ),
-                            buildItem(
-                              icon: R.drawable.ic_user_religion,
-                              title: 'Không',
-                              subTitle: 'Tôn giáo',
-                              subIcon: Image.asset(R.drawable.ic_right,
-                                  width: 18, height: 18),
-                              callback: () {
-                                // TODO(Tuyen): Update Tôn giáo
-                                showActionFilter(
-                                    context: context,
-                                    builder: (context) {
-                                      return SelectBottomSheetWidget(
-                                        title: 'Chọn tôn giáo',
-                                        selectedList: [],
-                                        elementList: [],
-                                        onSelected: (typeList) {
-                                          if (typeList.isNotEmpty) {}
-                                        },
-                                      );
-                                    });
-                              },
-                            ),
-                            buildItem(
-                              icon: R.drawable.ic_user_in_diet,
-                              title: 'Không',
-                              subTitle: 'Ăn chay',
-                              subIcon: Image.asset(R.drawable.ic_right,
-                                  width: 18, height: 18),
-                              callback: () {
-                                // TODO(Tuyen): Update Ăn chay
-                                showActionFilter(
-                                    context: context,
-                                    builder: (context) {
-                                      return SelectBottomSheetWidget(
-                                        title: 'Chọn ăn chay',
-                                        selectedList: [],
-                                        elementList: [],
-                                        onSelected: (typeList) {
-                                          if (typeList.isNotEmpty) {}
-                                        },
-                                      );
-                                    });
-                              },
-                            ),
-                            buildItem(
-                              icon: R.drawable.ic_user_schedule,
-                              title: 'Buổi sáng; Bao gồm thứ 7',
-                              subTitle:
-                                  'Khung giờ làm việc với huấn luyện viên',
-                              subIcon: Image.asset(R.drawable.ic_right,
-                                  width: 18, height: 18),
-                              callback: () {
-                                // TODO(Tuyen): Update Khung giờ làm việc với huấn luyện viên
-                                showActionFilter(
-                                    context: context,
-                                    builder: (context) {
-                                      return SelectBottomSheetWidget(
-                                        title:
-                                            'Chọn khung giờ trao đổi với coach ưa thích',
-                                        selectedList: [],
-                                        elementList: [],
-                                        onSelected: (typeList) {
-                                          if (typeList.isNotEmpty) {}
-                                        },
-                                      );
-                                    });
-                              },
-                            ),
-                          ],
-                        ),
+                        if (isHasRoadMap)
+                          _buildCardLayout(
+                            title: 'Chủ đề quan tâm',
+                            description:
+                                'Hãy chọn các chủ đề mà bạn quan tâm để diaB gợi ý các bài học phù hợp nhất với bạn.',
+                            showIcon: true,
+                            onTap: () {
+                              var elementList = [
+                                "Bệnh lý",
+                                "Dinh dưỡng",
+                                "Vận động",
+                                "Xây dựng lối sống lành mạnh",
+                                "Tâm lý",
+                                "Theo dõi chỉ số sinh học"
+                              ];
+                              showActionFilter(
+                                  context: context,
+                                  builder: (context) {
+                                    return SelectBottomSheetWidget(
+                                      title: 'Chọn chủ đề quan tâm',
+                                      selectedList: [],
+                                      elementList: elementList,
+                                      isMultipleChoice: true,
+                                      onSelected: (typeList) {
+                                        if (typeList.isNotEmpty) {}
+                                      },
+                                    );
+                                  });
+                            },
+                            children: [
+                              const SizedBox(height: 6),
+                              Wrap(spacing: 8, runSpacing: 8, children: [
+                                _buildTopicItem('Bệnh lý'),
+                                _buildTopicItem('Dinh dưỡng'),
+                                _buildTopicItem('Vận động'),
+                                _buildTopicItem('Xây dựng lối sống lành mạnh'),
+                                _buildTopicItem('Tâm lý'),
+                                _buildTopicItem('Theo dõi chỉ số sinh học'),
+                              ]),
+                            ],
+                          ),
+                        if (isHasRoadMap)
+                          _buildCardLayout(
+                            title: 'Tiêu chí chọn huấn luyện viên sức khỏe',
+                            description:
+                                'Hãy mô tả chi tiết hơn về bản thân để diaB tìm huấn luyện viên phù hợp với bạn',
+                            children: [
+                              ItemProfile(
+                                image: R.drawable.ic_person,
+                                title: 'Hướng ngoại',
+                                subTitle: 'Tính cách',
+                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                                elementList: [
+                                  "Tự chủ",
+                                  "Hướng ngoại",
+                                  "Hòa đồng",
+                                  "Sẵn sàng trải nghiệm",
+                                  "Bất ổn cảm xúc"
+                                ],
+                                selectedDialogTitle: "Chọn tính cách",
+                                isShowSelectedDialog: true,
+                                callback: (selectedIndexList) {
+                                  // TODO(Tuyen): Update Tính cách
+                                },
+                              ),
+                              ItemProfile(
+                                icon: R.drawable.ic_user_habit,
+                                title: 'Chơi game, đọc sách',
+                                subTitle: 'Sở thích cá nhân',
+                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                                elementList: ["Thể thao", "Đọc sách", "Xem phim/TV", "Nghe nhạc", "Hội họa"],
+                                isShowSelectedDialog: true,
+                                selectedDialogTitle: "Chọn sở thích",
+                                callback: (selectedIndexList) {
+                                  // TODO(Tuyen): Update Sở thích cá nhân
+                                },
+                              ),
+                              ItemProfile(
+                                icon: R.drawable.ic_user_exercise,
+                                title: 'Cầu lông, xe đạp',
+                                subTitle: 'Môn thể thao yêu thích',
+                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                                elementList: [
+                                  "Đi bộ",
+                                  "Xe đạp",
+                                  "Tennis",
+                                  "Cầu lông",
+                                  "Gym",
+                                  "Work out/Carido",
+                                  "Dưỡng sinh/ Khí công",
+                                  "Yoga",
+                                  "Chạy bộ"
+                                ],
+                                selectedDialogTitle: "Chọn môn thể thao",
+                                isShowSelectedDialog: true,
+                                callback: (selectedIndexList) {
+                                  // TODO(Tuyen): Update Môn thể thao yêu thích
+                                },
+                              ),
+                              ItemProfile(
+                                icon: R.drawable.ic_user_mental_exercise,
+                                title: 'Không',
+                                subTitle: 'Thực hành tâm thức',
+                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                                elementList: ["Thực hành thiền", "Không", "Khác"],
+                                isShowSelectedDialog: true,
+                                selectedDialogTitle: "Chọn thực hành tâm thức",
+                                callback: (selectedIndexList) {
+                                  // TODO(Tuyen): Update Thực hành tâm thức
+                                },
+                              ),
+                              ItemProfile(
+                                icon: R.drawable.ic_user_religion,
+                                title: 'Không',
+                                subTitle: 'Tôn giáo',
+                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                                elementList: [
+                                  "Không",
+                                  "Phật giáo",
+                                  "Công giáo",
+                                  "Tin lành",
+                                  "Hồi giáo",
+                                  "Cao Đài",
+                                  "Hòa Hảo"
+                                ],
+                                isShowSelectedDialog: true,
+                                selectedDialogTitle: "Chọn tôn giáo",
+                                callback: (selectedIndexList) {
+                                  // TODO(Tuyen): Update Tôn giáo
+                                },
+                              ),
+                              ItemProfile(
+                                icon: R.drawable.ic_user_in_diet,
+                                title: 'Không',
+                                subTitle: 'Ăn chay',
+                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                                elementList: ["Có", "Không"],
+                                isShowSelectedDialog: true,
+                                selectedDialogTitle: "Chọn ăn chay",
+                                callback: (selectedIndexList) {
+                                  // TODO(Tuyen): Update Ăn chay
+                                },
+                              ),
+                              ItemProfile(
+                                icon: R.drawable.ic_user_schedule,
+                                title: 'Buổi sáng; Bao gồm thứ 7',
+                                subTitle: 'Khung giờ làm việc với huấn luyện viên',
+                                subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                                elementList: [
+                                  "Buổi sáng",
+                                  "Buổi trưa",
+                                  "Buổi chiều",
+                                  "Buổi tối",
+                                  "Bao gồm thứ 7",
+                                  "Bao gồm Chủ Nhật"
+                                ],
+                                selectedDialogTitle: "Chọn khung giờ trao đổi với coach ưa thích",
+                                isShowSelectedDialog: true,
+                                callback: (selectedIndexList) {
+                                  // TODO(Tuyen): Update Khung giờ làm việc với huấn luyện viên
+                                },
+                              ),
+                            ],
+                          ),
                         _buildCardLayout(
                           title: 'Cơ sở dịch vụ đã giới thiệu',
                           children: [
-                            buildItem(
+                            ItemProfile(
                               icon: R.drawable.ic_user_hospital,
                               title: 'Bệnh viện Hồng Ngọc',
                               subTitle: 'Bệnh viện / Phòng khám',
-                              callback: () {},
+                              callback: (selectedIndexList) {},
                             ),
-                            buildItem(
+                            ItemProfile(
                               icon: R.drawable.ic_user_doctor,
                               title: 'Đặng Vân Nga',
                               subTitle: 'Bác sĩ giới thiệu',
-                              callback: () {},
+                              callback: (selectedIndexList) {},
                             ),
                           ],
                         ),
                         _buildCardLayout(
                           title: R.string.contact_info.tr(),
                           children: [
-                            buildItem(
+                            ItemProfile(
                               image: R.drawable.ic_phone_info,
                               title: user.phoneNumber!,
                               subTitle: R.string.phone_number_1.tr(),
-                              subIcon: Image.asset(R.drawable.ic_ok,
-                                  width: 24, height: 24),
+                              subIcon: Image.asset(R.drawable.ic_ok, width: 24, height: 24),
                             ),
-                            buildItem(
+                            ItemProfile(
                               image: R.drawable.ic_phone_info,
-                              title: user.secondPhoneNumber == null ||
-                                      user.secondPhoneNumber!.isEmpty
+                              title: user.secondPhoneNumber == null || user.secondPhoneNumber!.isEmpty
                                   ? R.string.not_updated_yet.tr()
                                   : user.secondPhoneNumber!,
                               subTitle: R.string.phone_number_2.tr(),
-                              callback: () {
+                              callback: (selectedIndexList) {
                                 _showDialogUpdatePhone2();
                               },
                             ),
-                            buildItem(
+                            ItemProfile(
                               image: R.drawable.ic_email,
                               title: user.isLinkedGoogle == true
                                   ? (user.googleEmail ?? '')
@@ -722,69 +581,38 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                       ? R.string.not_updated_yet.tr()
                                       : user.email!),
                               subTitle: R.string.email.tr(),
-                              callback: () {
+                              callback: (selectedIndexList) {
                                 if (user.isLinkedGoogle == true) {
                                   return;
                                 }
                                 _showDialogUpdateEmail();
                               },
                             ),
-                            buildItem(
+                            ItemProfile(
                                 image: R.drawable.ic_location,
                                 title: ((user.address ?? '') +
-                                            (user.address == null ||
-                                                    user.address!.isEmpty
-                                                ? ''
-                                                : ', ') +
-                                            (user.ward == null
-                                                ? ''
-                                                : user.ward!.name!) +
-                                            (user.ward == null ||
-                                                    user.ward!.name!.isEmpty
-                                                ? ''
-                                                : ', ') +
-                                            (user.district == null
-                                                ? ''
-                                                : user.district!.name!) +
-                                            (user.district == null ||
-                                                    user.district!.name!.isEmpty
-                                                ? ''
-                                                : ', ') +
-                                            (user.province == null
-                                                ? ''
-                                                : user.province!.name!))
+                                            (user.address == null || user.address!.isEmpty ? '' : ', ') +
+                                            (user.ward == null ? '' : user.ward!.name!) +
+                                            (user.ward == null || user.ward!.name!.isEmpty ? '' : ', ') +
+                                            (user.district == null ? '' : user.district!.name!) +
+                                            (user.district == null || user.district!.name!.isEmpty ? '' : ', ') +
+                                            (user.province == null ? '' : user.province!.name!))
                                         .isEmpty
                                     ? R.string.not_updated_yet.tr()
                                     : ((user.address ?? '') +
-                                        (user.address == null ||
-                                                user.address!.isEmpty
-                                            ? ''
-                                            : ', ') +
-                                        (user.ward == null
-                                            ? ''
-                                            : user.ward!.name!) +
-                                        (user.ward == null ||
-                                                user.ward!.name!.isEmpty
-                                            ? ''
-                                            : ', ') +
-                                        (user.district == null
-                                            ? ''
-                                            : user.district!.name!) +
-                                        (user.district == null ||
-                                                user.district!.name!.isEmpty
-                                            ? ''
-                                            : ', ') +
-                                        (user.province == null
-                                            ? ''
-                                            : user.province!.name!)),
+                                        (user.address == null || user.address!.isEmpty ? '' : ', ') +
+                                        (user.ward == null ? '' : user.ward!.name!) +
+                                        (user.ward == null || user.ward!.name!.isEmpty ? '' : ', ') +
+                                        (user.district == null ? '' : user.district!.name!) +
+                                        (user.district == null || user.district!.name!.isEmpty ? '' : ', ') +
+                                        (user.province == null ? '' : user.province!.name!)),
                                 subTitle: R.string.address.tr(),
-                                callback: () {
+                                callback: (selectedIndexList) {
                                   _showDialogUpdateAddress();
                                 }),
-                            buildItem(
+                            ItemProfile(
                               image: R.drawable.ic_google,
-                              title: user.isLinkedGoogle == null ||
-                                      !user.isLinkedGoogle!
+                              title: user.isLinkedGoogle == null || !user.isLinkedGoogle!
                                   ? R.string.not_connected_yet.tr()
                                   : user.fullName!,
                               subTitle: 'Google',
@@ -805,13 +633,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                             _showDialogLogout();
                           },
                           child: Container(
-                              decoration: BoxDecoration(
-                                  color: R.color.white,
-                                  borderRadius: BorderRadius.circular(10)),
+                              decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
                               padding: const EdgeInsets.all(16),
                               child: Row(children: [
-                                Image.asset(R.drawable.ic_logout,
-                                    width: 33, height: 33),
+                                Image.asset(R.drawable.ic_logout, width: 33, height: 33),
                                 const SizedBox(width: 12),
                                 Text(
                                   R.string.logout.tr(),
@@ -829,60 +654,6 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
             ]),
           ]),
         )));
-  }
-
-  Widget buildItem({
-    String? image,
-    String? icon,
-    required String title,
-    required String subTitle,
-    Widget? subIcon,
-    VoidCallback? callback,
-  }) {
-    return GestureDetector(
-      onTap: callback,
-      child: Container(
-        color: R.color.transparent,
-        padding: const EdgeInsets.only(top: 8, bottom: 8),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Expanded(
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              if (image != null)
-                Image.asset(image, width: 33, height: 33)
-              else
-                UserIconWidget(
-                  icon: icon!,
-                ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                            color: R.color.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        subTitle,
-                        style: TextStyle(
-                          color: R.color.captionColorGray,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      )
-                    ]),
-              )
-            ]),
-          ),
-          if (subIcon != null) subIcon
-        ]),
-      ),
-    );
   }
 
   Widget _buildTopicItem(String title) {
@@ -935,8 +706,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               if (showIcon)
                 Padding(
                   padding: const EdgeInsets.only(left: 8),
-                  child:
-                      Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                  child: Image.asset(R.drawable.ic_right, width: 18, height: 18),
                 )
             ],
           ),
@@ -971,9 +741,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               children: [
                 Image.asset(R.drawable.ic_photo, width: 24, height: 24),
                 const SizedBox(width: 16),
-                Text(R.string.chon_trong_thu_vien.tr(),
-                    style: TextStyle(
-                        color: R.color.color0xff333333, fontSize: 14)),
+                Text(R.string.chon_trong_thu_vien.tr(), style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
           ),
@@ -989,9 +757,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               children: [
                 Image.asset(R.drawable.ic_camera_black, width: 24, height: 24),
                 const SizedBox(width: 16),
-                Text(R.string.chup_anh.tr(),
-                    style: TextStyle(
-                        color: R.color.color0xff333333, fontSize: 14)),
+                Text(R.string.chup_anh.tr(), style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
           ),
@@ -1002,8 +768,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
         )
       ],
       cancelButton: CupertinoActionSheetAction(
-        child: Text(R.string.cancel.tr(),
-            style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+        child: Text(R.string.cancel.tr(), style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
         onPressed: () {
           Navigator.pop(context);
         },
@@ -1016,10 +781,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
     try {
       final picker = ImagePicker();
       final pickedFile = await picker.getImage(
-          maxWidth: 1024,
-          maxHeight: 1024,
-          source: ImageSource.camera,
-          preferredCameraDevice: CameraDevice.rear);
+          maxWidth: 1024, maxHeight: 1024, source: ImageSource.camera, preferredCameraDevice: CameraDevice.rear);
       if (pickedFile != null) {
         await _cropImage(pickedFile.path);
       }
@@ -1031,8 +793,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
   showGallery() async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
-          maxWidth: 1024, maxHeight: 1024, source: ImageSource.gallery);
+      final pickedFile = await picker.getImage(maxWidth: 1024, maxHeight: 1024, source: ImageSource.gallery);
       if (pickedFile != null) {
         await _cropImage(pickedFile.path);
       }
@@ -1053,9 +814,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
           cropStyle: CropStyle.circle,
           sourcePath: url,
           androidUiSettings: const AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              initAspectRatio: CropAspectRatioPreset.square,
-              lockAspectRatio: false),
+              toolbarTitle: 'Cropper', initAspectRatio: CropAspectRatioPreset.square, lockAspectRatio: false),
           iosUiSettings: const IOSUiSettings(
             minimumAspectRatio: 1.0,
           )) as FutureOr<File>);
@@ -1180,11 +939,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
       );
       await _googleSignIn.signOut();
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
-      final result = await LoginClient().linkedAccountOTP({
-        'providerName': 'Google',
-        'providerKey': account?.id,
-        'phoneNumber': user.phoneNumber
-      });
+      final result = await LoginClient()
+          .linkedAccountOTP({'providerName': 'Google', 'providerKey': account?.id, 'phoneNumber': user.phoneNumber});
       BotToast.closeAllLoading();
       if (result.isSuccess != true) {
         _showDialogError(user.phoneNumber);
@@ -1247,8 +1003,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
           BotToast.closeAllLoading();
           if (e is Error) {
             if (e.code == 'USER002') {
-              Message.showToastMessage(
-                  context, R.string.account_already_used.tr());
+              Message.showToastMessage(context, R.string.account_already_used.tr());
             } else {
               Message.showToastMessage(context, e.message);
             }
@@ -1327,18 +1082,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                 textAlign: TextAlign.center,
                 text: TextSpan(
                   text: 'Đã gửi OTP 5 lần cho số điện thoại ',
-                  style:
-                      const TextStyle(color: Color(0xff172823), fontSize: 16),
+                  style: const TextStyle(color: Color(0xff172823), fontSize: 16),
                   children: <TextSpan>[
-                    TextSpan(
-                        text: phone,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
+                    TextSpan(text: phone, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     const TextSpan(
-                        text:
-                            '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
-                        style:
-                            TextStyle(color: Color(0xff172823), fontSize: 16)),
+                        text: '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
+                        style: TextStyle(color: Color(0xff172823), fontSize: 16)),
                   ],
                 ),
               )
@@ -1382,71 +1131,55 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                       padding: const EdgeInsets.only(top: 16.0),
                       child: Text(R.string.confirm_logout.tr(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600)),
+                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
                       child: Text(R.string.confirm_logout_description.tr(),
-                          textAlign: TextAlign.center,
-                          style: R.style.normalTextStyle),
+                          textAlign: TextAlign.center, style: R.style.normalTextStyle),
                     ),
                     Container(
                       margin: const EdgeInsets.only(top: 16),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                    height: 43,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(200),
-                                        color: R.color.grayBorder),
-                                    child: Center(
-                                      child: Text(R.string.van_o_lai.tr(),
-                                          style: TextStyle(
-                                              color: R.color.textDark,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
-                                    )),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                                height: 43,
+                                decoration:
+                                    BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                                child: Center(
+                                  child: Text(R.string.van_o_lai.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                )),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              AppSettings.logout();
+                            },
+                            child: Container(
+                              height: 43,
+                              decoration: BoxDecoration(
+                                  color: R.color.red,
+                                  borderRadius: BorderRadius.circular(200),
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                              child: Center(
+                                child: Text(R.string.logout.tr(),
+                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                               ),
                             ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  AppSettings.logout();
-                                },
-                                child: Container(
-                                  height: 43,
-                                  decoration: BoxDecoration(
-                                      color: R.color.red,
-                                      borderRadius: BorderRadius.circular(200),
-                                      gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.centerRight,
-                                          colors: [
-                                            R.color.greenGradientTop,
-                                            R.color.greenGradientBottom
-                                          ])),
-                                  child: Center(
-                                    child: Text(R.string.logout.tr(),
-                                        style: TextStyle(
-                                            color: R.color.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600)),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ]),
+                          ),
+                        ),
+                      ]),
                     ),
                   ],
                 ),
@@ -1465,21 +1198,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(R.string.last_name_and_first_name.tr(),
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600)),
-                      GestureDetector(
-                          child:
-                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                          onTap: () {
-                            Navigator.pop(context);
-                          })
-                    ]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text(R.string.last_name_and_first_name.tr(),
+                      style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                  GestureDetector(
+                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onTap: () {
+                        Navigator.pop(context);
+                      })
+                ]),
                 const SizedBox(height: 16),
                 Container(
                     height: 64,
@@ -1496,84 +1223,66 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         decoration: InputDecoration(
                             fillColor: R.color.textDark,
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: R.color.grayComponentBorder,
-                                  width: 1.0),
+                              borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: R.color.mainColor, width: 1.0),
+                              borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            contentPadding: const EdgeInsets.only(
-                                top: 0, left: 16, right: 16),
-                            hintText:
-                                R.string.enter_first_name_and_last_name.tr()),
+                            contentPadding: const EdgeInsets.only(top: 0, left: 16, right: 16),
+                            hintText: R.string.enter_first_name_and_last_name.tr()),
                         onChanged: (value) {})),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(200),
-                                  color: R.color.grayBorder),
-                              child: Center(
-                                child: Text(R.string.cancel.tr(),
-                                    style: TextStyle(
-                                        color: R.color.textDark,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              )),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            final name = textEditingController.text;
-                            if (name.isEmpty) {
-                              Message.showToastMessage(
-                                  context, R.string.mes_name_empty.tr());
-                              return;
-                            } else {
-                              final UserModel userInfo = AppSettings.userInfo!;
-                              updateUserInfo(
-                                userInfo.copyWith(
-                                  fullName: name,
-                                ),
-                              );
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: Container(
-                            height: 48,
-                            width: 119,
-                            decoration: BoxDecoration(
-                                color: R.color.red,
-                                borderRadius: BorderRadius.circular(200),
-                                gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ])),
-                            child: Center(
-                              child: Text(R.string.save.tr(),
-                                  style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration:
+                              BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                          child: Center(
+                            child: Text(R.string.cancel.tr(),
+                                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                          )),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        final name = textEditingController.text;
+                        if (name.isEmpty) {
+                          Message.showToastMessage(context, R.string.mes_name_empty.tr());
+                          return;
+                        } else {
+                          final UserModel userInfo = AppSettings.userInfo!;
+                          updateUserInfo(
+                            userInfo.copyWith(
+                              fullName: name,
                             ),
-                          ),
+                          );
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: Container(
+                        height: 48,
+                        width: 119,
+                        decoration: BoxDecoration(
+                            color: R.color.red,
+                            borderRadius: BorderRadius.circular(200),
+                            gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.centerRight,
+                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                        child: Center(
+                          child: Text(R.string.save.tr(),
+                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                         ),
-                      ]),
+                      ),
+                    ),
+                  ]),
                 ),
               ],
             )));
@@ -1581,8 +1290,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
 
   _showDialogUpdateBirthday() {
     final width = MediaQuery.of(context).size.width;
-    DateTime selectedDate = DateTime.fromMillisecondsSinceEpoch(
-        AppSettings.userInfo!.dateOfBirth! * 1000);
+    DateTime selectedDate = DateTime.fromMillisecondsSinceEpoch(AppSettings.userInfo!.dateOfBirth! * 1000);
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -1590,89 +1298,69 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(R.string.ngay_sinh.tr(),
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600)),
-                      GestureDetector(
-                          child:
-                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                          onTap: () {
-                            Navigator.pop(context);
-                          })
-                    ]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text(R.string.ngay_sinh.tr(),
+                      style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                  GestureDetector(
+                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onTap: () {
+                        Navigator.pop(context);
+                      })
+                ]),
                 const SizedBox(height: 16),
                 Container(
                     height: 250,
                     width: width - 36,
                     child: BirthDayPicker(
-                      selectedDate: DateTime.fromMillisecondsSinceEpoch(
-                          AppSettings.userInfo!.dateOfBirth! * 1000),
+                      selectedDate: DateTime.fromMillisecondsSinceEpoch(AppSettings.userInfo!.dateOfBirth! * 1000),
                       onChanged: (date) {
                         selectedDate = date;
                       },
                     )),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(200),
-                                  color: R.color.grayBorder),
-                              child: Center(
-                                child: Text(R.string.cancel.tr(),
-                                    style: TextStyle(
-                                        color: R.color.textDark,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              )),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            final UserModel userInfo = AppSettings.userInfo!;
-                            updateUserInfo(
-                              userInfo.copyWith(
-                                dateOfBirth:
-                                    selectedDate.millisecondsSinceEpoch ~/ 1000,
-                              ),
-                            );
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            height: 48,
-                            width: 119,
-                            decoration: BoxDecoration(
-                                color: R.color.red,
-                                borderRadius: BorderRadius.circular(200),
-                                gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ])),
-                            child: Center(
-                              child: Text(R.string.yes.tr(),
-                                  style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            ),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration:
+                              BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                          child: Center(
+                            child: Text(R.string.cancel.tr(),
+                                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                          )),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        final UserModel userInfo = AppSettings.userInfo!;
+                        updateUserInfo(
+                          userInfo.copyWith(
+                            dateOfBirth: selectedDate.millisecondsSinceEpoch ~/ 1000,
                           ),
+                        );
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        height: 48,
+                        width: 119,
+                        decoration: BoxDecoration(
+                            color: R.color.red,
+                            borderRadius: BorderRadius.circular(200),
+                            gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.centerRight,
+                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                        child: Center(
+                          child: Text(R.string.yes.tr(),
+                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                         ),
-                      ]),
+                      ),
+                    ),
+                  ]),
                 ),
               ],
             )));
@@ -1680,8 +1368,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
 
   _showDialogUpdateGender() {
     final width = MediaQuery.of(context).size.width;
-    final FixedExtentScrollController controller = FixedExtentScrollController(
-        initialItem: AppSettings.userInfo!.genderType == 1 ? 0 : 1);
+    final FixedExtentScrollController controller =
+        FixedExtentScrollController(initialItem: AppSettings.userInfo!.genderType == 1 ? 0 : 1);
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -1689,83 +1377,61 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(R.string.gioi_tinh.tr(),
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600)),
-                      GestureDetector(
-                          child:
-                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                          onTap: () {
-                            Navigator.pop(context);
-                          })
-                    ]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text(R.string.gioi_tinh.tr(),
+                      style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                  GestureDetector(
+                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onTap: () {
+                        Navigator.pop(context);
+                      })
+                ]),
                 const SizedBox(height: 16),
-                Container(
-                    height: 150,
-                    width: width - 36,
-                    child: GenderPicker(controller: controller)),
+                Container(height: 150, width: width - 36, child: GenderPicker(controller: controller)),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(200),
-                                  color: R.color.grayBorder),
-                              child: Center(
-                                child: Text(R.string.cancel.tr(),
-                                    style: TextStyle(
-                                        color: R.color.textDark,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              )),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            final UserModel userInfo = AppSettings.userInfo!;
-                            updateUserInfo(
-                              userInfo.copyWith(
-                                genderType:
-                                    controller.selectedItem == 0 ? 1 : 2,
-                              ),
-                            );
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            height: 48,
-                            width: 119,
-                            decoration: BoxDecoration(
-                                color: R.color.red,
-                                borderRadius: BorderRadius.circular(200),
-                                gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ])),
-                            child: Center(
-                              child: Text(R.string.yes.tr(),
-                                  style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            ),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration:
+                              BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                          child: Center(
+                            child: Text(R.string.cancel.tr(),
+                                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                          )),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        final UserModel userInfo = AppSettings.userInfo!;
+                        updateUserInfo(
+                          userInfo.copyWith(
+                            genderType: controller.selectedItem == 0 ? 1 : 2,
                           ),
+                        );
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        height: 48,
+                        width: 119,
+                        decoration: BoxDecoration(
+                            color: R.color.red,
+                            borderRadius: BorderRadius.circular(200),
+                            gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.centerRight,
+                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                        child: Center(
+                          child: Text(R.string.yes.tr(),
+                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                         ),
-                      ]),
+                      ),
+                    ),
+                  ]),
                 ),
               ],
             )));
@@ -1781,21 +1447,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(R.string.loai_benh.tr(),
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600)),
-                      GestureDetector(
-                          child:
-                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                          onTap: () {
-                            Navigator.pop(context);
-                          })
-                    ]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text(R.string.loai_benh.tr(),
+                      style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                  GestureDetector(
+                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onTap: () {
+                        Navigator.pop(context);
+                      })
+                ]),
                 const SizedBox(height: 16),
                 Container(
                     height: 150,
@@ -1808,60 +1468,53 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                     )),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(200),
-                                  color: R.color.grayBorder),
-                              child: Center(
-                                child: Text(R.string.cancel.tr(),
-                                    style: TextStyle(
-                                        color: R.color.textDark,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              )),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            final UserModel userInfo = AppSettings.userInfo!;
-                            updateUserInfo(
-                              userInfo.copyWith(
-                                diabetesStatus: diabetesStatus,
-                              ),
-                            );
-                            Navigator.pop(context);
-                          },
-                          child: Container(
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
                             height: 48,
-                            width: 119,
-                            decoration: BoxDecoration(
-                                color: R.color.red,
-                                borderRadius: BorderRadius.circular(200),
-                                gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ])),
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
                             child: Center(
-                              child: Text(R.string.yes.tr(),
-                                  style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          final UserModel userInfo = AppSettings.userInfo!;
+                          updateUserInfo(
+                            userInfo.copyWith(
+                              diabetesStatus: diabetesStatus,
                             ),
+                          );
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                          child: Center(
+                            child: Text(R.string.yes.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
                         ),
-                      ]),
+                      ),
+                    ),
+                  ]),
                 ),
               ],
             )));
@@ -1877,91 +1530,74 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(R.string.nam_phat_hien_benh.tr(),
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600)),
-                      GestureDetector(
-                          child:
-                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                          onTap: () {
-                            Navigator.pop(context);
-                          })
-                    ]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text(R.string.nam_phat_hien_benh.tr(),
+                      style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                  GestureDetector(
+                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onTap: () {
+                        Navigator.pop(context);
+                      })
+                ]),
                 const SizedBox(height: 16),
                 Container(
                     height: 150,
                     width: width - 36,
                     child: DiabetesStatusDatePicker(
-                      year: DateTime.fromMillisecondsSinceEpoch(
-                              (year ?? 0) * 1000)
-                          .year,
+                      year: DateTime.fromMillisecondsSinceEpoch((year ?? 0) * 1000).year,
                       onChanged: (data) {
                         year = data;
                       },
                     )),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(200),
-                                  color: R.color.grayBorder),
-                              child: Center(
-                                child: Text(R.string.cancel.tr(),
-                                    style: TextStyle(
-                                        color: R.color.textDark,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              )),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            final UserModel userInfo = AppSettings.userInfo!;
-                            updateUserInfo(
-                              userInfo.copyWith(
-                                diabetesDate: DateTime.utc(year ?? 0)
-                                        .millisecondsSinceEpoch ~/
-                                    1000,
-                              ),
-                            );
-                            Navigator.pop(context);
-                          },
-                          child: Container(
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
                             height: 48,
-                            width: 119,
-                            decoration: BoxDecoration(
-                                color: R.color.red,
-                                borderRadius: BorderRadius.circular(200),
-                                gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ])),
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
                             child: Center(
-                              child: Text(R.string.yes.tr(),
-                                  style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          final UserModel userInfo = AppSettings.userInfo!;
+                          updateUserInfo(
+                            userInfo.copyWith(
+                              diabetesDate: DateTime.utc(year ?? 0).millisecondsSinceEpoch ~/ 1000,
                             ),
+                          );
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                          child: Center(
+                            child: Text(R.string.yes.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
                         ),
-                      ]),
+                      ),
+                    ),
+                  ]),
                 ),
               ],
             )));
@@ -1974,8 +1610,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
       builder: (_) => CustomWeightPicker(
           callback: (weight) {
             if (weight == null || weight <= 0) {
-              Message.showToastMessage(
-                  context, R.string.mes_weight_must_greater_than_zero.tr());
+              Message.showToastMessage(context, R.string.mes_weight_must_greater_than_zero.tr());
               return;
             }
             final UserModel userInfo = AppSettings.userInfo!;
@@ -1987,8 +1622,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
           },
           title: R.string.enter_weight.tr(),
           max: 180,
-          numberDefault: (AppSettings.userInfo!.weight == null ||
-                      AppSettings.userInfo!.weight == 0
+          numberDefault: (AppSettings.userInfo!.weight == null || AppSettings.userInfo!.weight == 0
                   ? 50
                   : AppSettings.userInfo!.weight)!
               .toInt(),
@@ -2003,8 +1637,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
       builder: (_) => CustomNumPicker(
           callback: (data) {
             if (data == null || data <= 0) {
-              Message.showToastMessage(
-                  context, R.string.mes_height_must_greater_than_zero.tr());
+              Message.showToastMessage(context, R.string.mes_height_must_greater_than_zero.tr());
               return;
             }
             final UserModel userInfo = AppSettings.userInfo!;
@@ -2016,8 +1649,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
           },
           title: R.string.enter_height.tr(),
           max: 250,
-          numberDefault: (AppSettings.userInfo!.height == null ||
-                      AppSettings.userInfo!.height == 0
+          numberDefault: (AppSettings.userInfo!.height == null || AppSettings.userInfo!.height == 0
                   ? 150
                   : AppSettings.userInfo!.height)!
               .toInt(),
@@ -2036,21 +1668,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(R.string.phone_number_2.tr(),
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600)),
-                      GestureDetector(
-                          child:
-                              Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                          onTap: () {
-                            Navigator.pop(context);
-                          })
-                    ]),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text(R.string.phone_number_2.tr(),
+                      style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                  GestureDetector(
+                      child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onTap: () {
+                        Navigator.pop(context);
+                      })
+                ]),
                 const SizedBox(height: 16),
                 Container(
                     height: 54,
@@ -2064,83 +1690,67 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                         decoration: InputDecoration(
                           fillColor: R.color.textDark,
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: R.color.grayComponentBorder, width: 1.0),
+                            borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: R.color.mainColor, width: 1.0),
+                            borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          contentPadding: const EdgeInsets.only(
-                              top: 0, left: 16, right: 16),
+                          contentPadding: const EdgeInsets.only(top: 0, left: 16, right: 16),
                           hintText: R.string.enter_phone_number_2.tr(),
                         ),
                         onChanged: (value) {})),
                 Container(
                   margin: const EdgeInsets.only(top: 16),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(200),
-                                  color: R.color.grayBorder),
-                              child: Center(
-                                child: Text(R.string.cancel.tr(),
-                                    style: TextStyle(
-                                        color: R.color.textDark,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              )),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            final phone = textEditingController.text;
-                            if (phone.isEmpty) {
-                              Message.showToastMessage(context,
-                                  R.string.ban_chua_nhap_so_dien_thoai.tr());
-                              return;
-                            } else {
-                              final UserModel userInfo = AppSettings.userInfo!;
-                              updateUserInfo(
-                                userInfo.copyWith(
-                                  secondPhoneNumber: phone,
-                                ),
-                              );
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: Container(
-                            height: 48,
-                            width: 119,
-                            decoration: BoxDecoration(
-                                color: R.color.red,
-                                borderRadius: BorderRadius.circular(200),
-                                gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ])),
-                            child: Center(
-                              child: Text(R.string.save.tr(),
-                                  style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration:
+                              BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                          child: Center(
+                            child: Text(R.string.cancel.tr(),
+                                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                          )),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        final phone = textEditingController.text;
+                        if (phone.isEmpty) {
+                          Message.showToastMessage(context, R.string.ban_chua_nhap_so_dien_thoai.tr());
+                          return;
+                        } else {
+                          final UserModel userInfo = AppSettings.userInfo!;
+                          updateUserInfo(
+                            userInfo.copyWith(
+                              secondPhoneNumber: phone,
                             ),
-                          ),
+                          );
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: Container(
+                        height: 48,
+                        width: 119,
+                        decoration: BoxDecoration(
+                            color: R.color.red,
+                            borderRadius: BorderRadius.circular(200),
+                            gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.centerRight,
+                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                        child: Center(
+                          child: Text(R.string.save.tr(),
+                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                         ),
-                      ]),
+                      ),
+                    ),
+                  ]),
                 ),
               ],
             )));
@@ -2191,9 +1801,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
     );
   }
 
-  showActionFilter(
-      {required BuildContext context,
-      required Widget Function(BuildContext) builder}) {
+  showActionFilter({required BuildContext context, required Widget Function(BuildContext) builder}) {
     showModalBottomSheet(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -2205,5 +1813,26 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
       isScrollControlled: true,
       builder: builder,
     );
+  }
+
+  List<int> getSelectedIndexList(List<String> elementList, List<String> selectedList) {
+    List<int> selectedIndexList = [];
+    for (var selectedItem in selectedList) {
+      for (int j = 0; j < elementList.length; j++) {
+        if (selectedItem == elementList[j]) {
+          selectedIndexList.add(j);
+        }
+      }
+    }
+    return selectedIndexList;
+  }
+
+  String selectedListToString(List<String> selectedList) {
+    String selected = '';
+    for (var selectedItem in selectedList) {
+      selected += selectedItem + ",";
+    }
+    selected = selected.substring(0, selected.length - 1);
+    return selected;
   }
 }
