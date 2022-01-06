@@ -44,48 +44,61 @@ extension WeekStatus on CompletionStatus {
     }
   }
 
-  Widget dayStatusIcon(bool isSelected) {
-    switch (this) {
-      case CompletionStatus.completed:
-        return _dayIconLayout(
-          child: Icon(
-            Icons.check_rounded,
-            color: R.color.white,
-            size: 16,
-          ),
-          color: R.color.greenGradientBottom,
-          isSelected: isSelected,
-        );
-      case CompletionStatus.not_completed:
-        return _dayIconLayout(
-          child: Icon(
-            Icons.clear_rounded,
-            color: R.color.white,
-            size: 16,
-          ),
-          color: R.color.orange_1,
-          isSelected: isSelected,
-        );
-      case CompletionStatus.studying:
-        return _dayIconLayout(
-          child: Image.asset(
-            R.drawable.ic_learning,
-            width: 16,
-            height: 16,
-            color: R.color.white,
-          ),
-          color: R.color.green,
-          isSelected: isSelected,
-        );
-      case CompletionStatus.not_start_yet:
-        return _dayIconLayout(
-          child: Container(
-            width: 16,
-            height: 16,
-          ),
-          color: R.color.grayBorder,
-          isSelected: isSelected,
-        );
+  Widget dayStatusIcon(bool isSelected, bool isToday) {
+    if (isToday) {
+      return _dayIconLayout(
+        child: Image.asset(
+          R.drawable.ic_learning,
+          width: 16,
+          height: 16,
+          color: R.color.white,
+        ),
+        color: R.color.green,
+        isSelected: isSelected,
+      );
+    } else {
+      switch (this) {
+        case CompletionStatus.completed:
+          return _dayIconLayout(
+            child: Icon(
+              Icons.check_rounded,
+              color: R.color.white,
+              size: 16,
+            ),
+            color: R.color.greenGradientBottom,
+            isSelected: isSelected,
+          );
+        case CompletionStatus.not_completed:
+          return _dayIconLayout(
+            child: Icon(
+              Icons.clear_rounded,
+              color: R.color.white,
+              size: 16,
+            ),
+            color: R.color.orange_1,
+            isSelected: isSelected,
+          );
+        case CompletionStatus.studying:
+          return _dayIconLayout(
+            child: Image.asset(
+              R.drawable.ic_learning,
+              width: 16,
+              height: 16,
+              color: R.color.white,
+            ),
+            color: R.color.green,
+            isSelected: isSelected,
+          );
+        case CompletionStatus.not_start_yet:
+          return _dayIconLayout(
+            child: Container(
+              width: 16,
+              height: 16,
+            ),
+            color: R.color.grayBorder,
+            isSelected: isSelected,
+          );
+      }
     }
   }
 

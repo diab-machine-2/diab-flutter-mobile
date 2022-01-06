@@ -35,15 +35,14 @@ class DayInWeekWidget extends StatelessWidget {
                               margin: const EdgeInsets.only(bottom: 11.5),
                               width: _getDashLength(constraints.maxWidth),
                               height: 1,
-                              color: index ~/ 2 >= mark
-                                  ? R.color.grayBorder
-                                  : R.color.green,
+                              color: index ~/ 2 >= mark ? R.color.grayBorder : R.color.green,
                             )
                           : _buildSingleDay(
                               status: data[index ~/ 2].dayStatus,
                               isSelected: index ~/ 2 == currentDayIndex,
                               title: data[index ~/ 2].title,
                               day: data[index ~/ 2].dateTime,
+                              isToday: data[index ~/ 2].isToday,
                               onTap: () {
                                 onSelectDay(index ~/ 2);
                               });
@@ -70,10 +69,10 @@ class DayInWeekWidget extends StatelessWidget {
       {required CompletionStatus status,
       required bool isSelected,
       required String title,
+      bool? isToday,
       int? day,
       VoidCallback? onTap}) {
-    final DateTime today =
-        DateTime.fromMillisecondsSinceEpoch((day ?? 0) * 1000);
+    final DateTime today = DateTime.fromMillisecondsSinceEpoch((day ?? 0) * 1000);
     final String dayTitle = '${today.day}/${today.month}';
     return InkWell(
       onTap: onTap,
@@ -108,7 +107,7 @@ class DayInWeekWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          status.dayStatusIcon(isSelected),
+          status.dayStatusIcon(isSelected, isToday ?? false),
         ],
       ),
     );
@@ -120,9 +119,11 @@ class DayInWeekData {
     required this.title,
     required this.dayStatus,
     this.dateTime,
+    this.isToday,
   });
 
   String title;
   CompletionStatus dayStatus;
   int? dateTime;
+  bool? isToday;
 }
