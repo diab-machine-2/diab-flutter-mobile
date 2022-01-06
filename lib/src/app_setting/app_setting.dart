@@ -5,6 +5,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/modal/home/home_model.dart';
+import 'package:medical/src/modal/user/category_user_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/repo/login/login_client.dart';
@@ -14,6 +15,7 @@ import 'package:medical/src/widget/helper/http_helper.dart';
 
 class AppSettings {
   static UserModel? userInfo;
+  static CategoryUserModel? categoryUserModel;
 
   static Future<bool> saveToken(String? token) async {
     appPreference.setData(Const.TOKEN, token);
@@ -102,7 +104,7 @@ class AppSettings {
     if (tokenLifetime > now) {
       return true;
     } else {
-      Observable.instance.notifyObservers([], notifyName : "token_time_out");
+      Observable.instance.notifyObservers([], notifyName: "token_time_out");
       // DartNotificationCenter.post(channel: 'token_time_out');
       await logout();
       return false;

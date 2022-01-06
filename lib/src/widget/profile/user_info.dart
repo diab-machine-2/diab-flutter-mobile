@@ -50,6 +50,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   MotivationModel? motivation;
   bool isHasRoadMap = false;
   var user = AppSettings.userInfo!;
+  var category = AppSettings.categoryUserModel!;
 
   @override
   void initState() {
@@ -293,14 +294,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             title: 'Giáo viên',
                             subTitle: 'Nghề nghiệp',
                             subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                            elementList: [
-                              "Hưu trí",
-                              "Học sinh Sinh viên",
-                              "Nhân viên văn phòng",
-                              "Kinh doanh",
-                              "Nội trợ",
-                              "Khác"
-                            ],
+                            elementList: category.jobList!.map((e) => e.text ?? '').toList(),
                             selectedDialogTitle: "Chọn nghề nghiệp",
                             isShowSelectedDialog: true,
                             callback: (selectedIndexList) {
@@ -312,13 +306,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             title: 'Đại học',
                             subTitle: 'Trình độ văn hoá',
                             subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                            elementList: [
-                              "Tiểu học",
-                              "Trung học cơ sở",
-                              "Trung học phổ thông",
-                              "Đại học",
-                              "Sau Đại học"
-                            ],
+                            elementList: category.educationLevelList!.map((e) => e.text ?? '').toList(),
                             selectedDialogTitle: "Chọn học vấn",
                             isShowSelectedDialog: true,
                             callback: (selectedIndexList) {
@@ -425,13 +413,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Hướng ngoại',
                                 subTitle: 'Tính cách',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: [
-                                  "Tự chủ",
-                                  "Hướng ngoại",
-                                  "Hòa đồng",
-                                  "Sẵn sàng trải nghiệm",
-                                  "Bất ổn cảm xúc"
-                                ],
+                                elementList: category.personalityRuleList!.map((e) => e.text ?? '').toList(),
                                 selectedDialogTitle: "Chọn tính cách",
                                 isShowSelectedDialog: true,
                                 callback: (selectedIndexList) {
@@ -443,7 +425,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Chơi game, đọc sách',
                                 subTitle: 'Sở thích cá nhân',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: ["Thể thao", "Đọc sách", "Xem phim/TV", "Nghe nhạc", "Hội họa"],
+                                elementList: category.interestRuleList!.map((e) => e.text ?? '').toList(),
                                 isShowSelectedDialog: true,
                                 selectedDialogTitle: "Chọn sở thích",
                                 callback: (selectedIndexList) {
@@ -455,17 +437,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Cầu lông, xe đạp',
                                 subTitle: 'Môn thể thao yêu thích',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: [
-                                  "Đi bộ",
-                                  "Xe đạp",
-                                  "Tennis",
-                                  "Cầu lông",
-                                  "Gym",
-                                  "Work out/Carido",
-                                  "Dưỡng sinh/ Khí công",
-                                  "Yoga",
-                                  "Chạy bộ"
-                                ],
+                                elementList: category.favouriteSportRuleList!.map((e) => e.text ?? '').toList(),
                                 selectedDialogTitle: "Chọn môn thể thao",
                                 isShowSelectedDialog: true,
                                 callback: (selectedIndexList) {
@@ -477,7 +449,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Không',
                                 subTitle: 'Thực hành tâm thức',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: ["Thực hành thiền", "Không", "Khác"],
+                                elementList: category.consciousnessPracticeRuleList!.map((e) => e.text ?? '').toList(),
                                 isShowSelectedDialog: true,
                                 selectedDialogTitle: "Chọn thực hành tâm thức",
                                 callback: (selectedIndexList) {
@@ -489,15 +461,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Không',
                                 subTitle: 'Tôn giáo',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: [
-                                  "Không",
-                                  "Phật giáo",
-                                  "Công giáo",
-                                  "Tin lành",
-                                  "Hồi giáo",
-                                  "Cao Đài",
-                                  "Hòa Hảo"
-                                ],
+                                elementList: category.religionRuleList!.map((e) => e.text ?? '').toList(),
                                 isShowSelectedDialog: true,
                                 selectedDialogTitle: "Chọn tôn giáo",
                                 callback: (selectedIndexList) {
@@ -509,7 +473,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Không',
                                 subTitle: 'Ăn chay',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: ["Có", "Không"],
+                                elementList: category.vegetarianRuleList!.map((e) => e.text ?? '').toList(),
                                 isShowSelectedDialog: true,
                                 selectedDialogTitle: "Chọn ăn chay",
                                 callback: (selectedIndexList) {
@@ -521,14 +485,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Buổi sáng; Bao gồm thứ 7',
                                 subTitle: 'Khung giờ làm việc với huấn luyện viên',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: [
-                                  "Buổi sáng",
-                                  "Buổi trưa",
-                                  "Buổi chiều",
-                                  "Buổi tối",
-                                  "Bao gồm thứ 7",
-                                  "Bao gồm Chủ Nhật"
-                                ],
+                                elementList: category.workingHourRuleList!.map((e) => e.text ?? '').toList(),
                                 selectedDialogTitle: "Chọn khung giờ trao đổi với coach ưa thích",
                                 isShowSelectedDialog: true,
                                 callback: (selectedIndexList) {
@@ -1236,49 +1193,56 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 Container(
                   margin: const EdgeInsets.only(top: 16),
                   child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          final name = textEditingController.text;
+                          if (name.isEmpty) {
+                            Message.showToastMessage(context, R.string.mes_name_empty.tr());
+                            return;
+                          } else {
+                            final UserModel userInfo = AppSettings.userInfo!;
+                            updateUserInfo(
+                              userInfo.copyWith(
+                                fullName: name,
+                              ),
+                            );
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Container(
                           height: 48,
                           width: 119,
-                          decoration:
-                              BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                           child: Center(
-                            child: Text(R.string.cancel.tr(),
-                                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                          )),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        final name = textEditingController.text;
-                        if (name.isEmpty) {
-                          Message.showToastMessage(context, R.string.mes_name_empty.tr());
-                          return;
-                        } else {
-                          final UserModel userInfo = AppSettings.userInfo!;
-                          updateUserInfo(
-                            userInfo.copyWith(
-                              fullName: name,
-                            ),
-                          );
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: Container(
-                        height: 48,
-                        width: 119,
-                        decoration: BoxDecoration(
-                            color: R.color.red,
-                            borderRadius: BorderRadius.circular(200),
-                            gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.centerRight,
-                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                        child: Center(
-                          child: Text(R.string.save.tr(),
-                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                            child: Text(R.string.save.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                          ),
                         ),
                       ),
                     ),
@@ -1320,43 +1284,50 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 Container(
                   margin: const EdgeInsets.only(top: 16),
                   child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          final UserModel userInfo = AppSettings.userInfo!;
+                          updateUserInfo(
+                            userInfo.copyWith(
+                              dateOfBirth: selectedDate.millisecondsSinceEpoch ~/ 1000,
+                            ),
+                          );
+                          Navigator.pop(context);
+                        },
+                        child: Container(
                           height: 48,
                           width: 119,
-                          decoration:
-                              BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                           child: Center(
-                            child: Text(R.string.cancel.tr(),
-                                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                          )),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        final UserModel userInfo = AppSettings.userInfo!;
-                        updateUserInfo(
-                          userInfo.copyWith(
-                            dateOfBirth: selectedDate.millisecondsSinceEpoch ~/ 1000,
+                            child: Text(R.string.yes.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
-                        );
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        height: 48,
-                        width: 119,
-                        decoration: BoxDecoration(
-                            color: R.color.red,
-                            borderRadius: BorderRadius.circular(200),
-                            gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.centerRight,
-                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                        child: Center(
-                          child: Text(R.string.yes.tr(),
-                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                         ),
                       ),
                     ),
@@ -1391,43 +1362,50 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 Container(
                   margin: const EdgeInsets.only(top: 16),
                   child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          final UserModel userInfo = AppSettings.userInfo!;
+                          updateUserInfo(
+                            userInfo.copyWith(
+                              genderType: controller.selectedItem == 0 ? 1 : 2,
+                            ),
+                          );
+                          Navigator.pop(context);
+                        },
+                        child: Container(
                           height: 48,
                           width: 119,
-                          decoration:
-                              BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                           child: Center(
-                            child: Text(R.string.cancel.tr(),
-                                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                          )),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        final UserModel userInfo = AppSettings.userInfo!;
-                        updateUserInfo(
-                          userInfo.copyWith(
-                            genderType: controller.selectedItem == 0 ? 1 : 2,
+                            child: Text(R.string.yes.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
-                        );
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        height: 48,
-                        width: 119,
-                        decoration: BoxDecoration(
-                            color: R.color.red,
-                            borderRadius: BorderRadius.circular(200),
-                            gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.centerRight,
-                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                        child: Center(
-                          child: Text(R.string.yes.tr(),
-                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                         ),
                       ),
                     ),
