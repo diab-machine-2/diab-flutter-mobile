@@ -28,8 +28,7 @@ class ExerciseMovementResponseDataExerciseMovementAccounts {
     this.accountId,
     this.exerciseMovementId,
   });
-  ExerciseMovementResponseDataExerciseMovementAccounts.fromJson(
-      Map<String, dynamic> json) {
+  ExerciseMovementResponseDataExerciseMovementAccounts.fromJson(Map<String, dynamic> json) {
     id = json['id']?.toString();
     code = json['code']?.toString();
     accountId = json['accountId']?.toString();
@@ -84,8 +83,7 @@ class ExerciseMovementResponseDataReviewSummary {
     this.tooHeavyExercisePercent,
     this.tooHeavyExerciseCount,
   });
-  ExerciseMovementResponseDataReviewSummary.fromJson(
-      Map<String, dynamic> json) {
+  ExerciseMovementResponseDataReviewSummary.fromJson(Map<String, dynamic> json) {
     tooLightExercisePercent = json['tooLightExercisePercent']?.toInt();
     tooLightExerciseCount = json['tooLightExerciseCount']?.toInt();
     lightExercisePercent = json['lightExercisePercent']?.toInt();
@@ -226,9 +224,9 @@ class ExerciseMovementResponseData {
   ImagesModel? image;
   List<ExerciseMovementResponseDataSections?>? sections;
   ExerciseMovementResponseDataReviewSummary? reviewSummary;
-  List<ExerciseMovementResponseDataExerciseMovementAccounts?>?
-      exerciseMovementAccounts;
+  List<ExerciseMovementResponseDataExerciseMovementAccounts?>? exerciseMovementAccounts;
   int? exerciseMovementStates;
+  bool? isToday;
 
   ExerciseMovementResponseData({
     this.id,
@@ -247,15 +245,13 @@ class ExerciseMovementResponseData {
     this.reviewSummary,
     this.exerciseMovementAccounts,
     this.exerciseMovementStates,
+    this.isToday,
   });
 
   CompletionStatus get completionStatus {
-    if (exerciseMovementStates == Const.LESSON_NOT_LEARN)
-      return CompletionStatus.not_completed;
-    if (exerciseMovementStates == Const.LESSON_LEARNT)
-      return CompletionStatus.completed;
-    if (exerciseMovementStates == Const.LESSON_LEARNING)
-      return CompletionStatus.studying;
+    if (exerciseMovementStates == Const.LESSON_NOT_LEARN) return CompletionStatus.not_completed;
+    if (exerciseMovementStates == Const.LESSON_LEARNT) return CompletionStatus.completed;
+    if (exerciseMovementStates == Const.LESSON_LEARNING) return CompletionStatus.studying;
     return CompletionStatus.not_start_yet;
   }
 
@@ -268,11 +264,11 @@ class ExerciseMovementResponseData {
     description = json['description']?.toString();
     isFree = json['isFree'];
     isBlank = json['isBlank'];
+    isToday = json['isToday'];
     practiceTime = json['practiceTime']?.toInt();
     videoUrl = json['videoUrl']?.toString();
     day = json['day']?.toInt();
-    image =
-        (json['image'] != null) ? ImagesModel.fromJson(json['image']) : null;
+    image = (json['image'] != null) ? ImagesModel.fromJson(json['image']) : null;
     if (json['sections'] != null) {
       final v = json['sections'];
       final arr0 = <ExerciseMovementResponseDataSections>[];
@@ -291,8 +287,7 @@ class ExerciseMovementResponseData {
       final v = json['exerciseMovementAccounts'];
       final arr0 = <ExerciseMovementResponseDataExerciseMovementAccounts>[];
       v.forEach((v) {
-        arr0.add(
-            ExerciseMovementResponseDataExerciseMovementAccounts.fromJson(v));
+        arr0.add(ExerciseMovementResponseDataExerciseMovementAccounts.fromJson(v));
       });
       exerciseMovementAccounts = arr0;
     }
@@ -308,6 +303,7 @@ class ExerciseMovementResponseData {
     data['description'] = description;
     data['isFree'] = isFree;
     data['isBlank'] = isBlank;
+    data['isToday'] = isToday;
     data['practiceTime'] = practiceTime;
     data['videoUrl'] = videoUrl;
     data['day'] = day;
@@ -431,8 +427,7 @@ class ExerciseMovementResponse {
   int get firstExerciseIndex {
     if (data?.isNotEmpty != true) return 0;
     for (int index = 0; index < (data?.length ?? 0); index++) {
-      if (data?[index]?.exerciseMovementStates != null &&
-          data?[index]?.exerciseMovementStates != Const.LESSON_LEARNT) {
+      if (data?[index]?.exerciseMovementStates != null && data?[index]?.exerciseMovementStates != Const.LESSON_LEARNT) {
         return index;
       }
     }
@@ -453,8 +448,7 @@ class ExerciseMovementResponse {
     if (week > userCurrentWeek) return 0;
 
     for (int index = 0; index < (data?.length ?? 0); index++) {
-      if (data?[index]?.completionStatus == CompletionStatus.studying)
-        return index;
+      if (data?[index]?.completionStatus == CompletionStatus.studying) return index;
     }
 
     return 0;
@@ -462,8 +456,7 @@ class ExerciseMovementResponse {
 
   int getCurrentDayIndex(int week) {
     for (int index = 0; index < (data?.length ?? 0); index++) {
-      if (data?[index]?.completionStatus == CompletionStatus.studying)
-        return index;
+      if (data?[index]?.completionStatus == CompletionStatus.studying) return index;
     }
     return 0;
   }
@@ -482,8 +475,8 @@ class ExerciseMovementResponse {
         0,
         DayInWeekData(
           title: Utils.getDayInWeekTitle(dayIndex),
-          dayStatus:
-              data?[index]?.completionStatus ?? CompletionStatus.not_start_yet,
+          dayStatus: data?[index]?.completionStatus ?? CompletionStatus.not_start_yet,
+          isToday: data?[index]?.isToday,
         ),
       );
     }
@@ -491,9 +484,7 @@ class ExerciseMovementResponse {
   }
 
   ExerciseMovementResponse.fromJson(Map<String, dynamic> json) {
-    meta = (json['meta'] != null)
-        ? ExerciseMovementResponseMeta.fromJson(json['meta'])
-        : null;
+    meta = (json['meta'] != null) ? ExerciseMovementResponseMeta.fromJson(json['meta']) : null;
     if (json['data'] != null) {
       final v = json['data'];
       final arr0 = <ExerciseMovementResponseData>[];

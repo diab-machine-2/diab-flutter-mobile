@@ -222,7 +222,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
   Widget _buildExerciseWidget({
     required ExerciseMovementResponseData? exerciseItem,
   }) {
-    if (exerciseItem?.code == null) return _buildDayOffWidget();
+    if (exerciseItem?.name == null) return _buildDayNoExerciseWidget();
+    if (exerciseItem?.name == 'Ngày nghỉ') return _buildDayOffWidget();
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 20),
       color: R.color.transparent,
@@ -353,6 +354,39 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                   style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
+                Text(
+                  R.string.today_is_day_off_description.tr(),
+                  textAlign: TextAlign.center,
+                  style: R.style.normalTextStyle,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDayNoExerciseWidget() {
+    if (!_cubit.isHasRoadmapUser) return const SizedBox();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Image.asset(R.drawable.img_day_no_exercise),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              children: [
+                Text(
+                  R.string.today_is_day_no_exercise.tr(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
                 Text(
                   R.string.today_is_day_off_description.tr(),
                   textAlign: TextAlign.center,
