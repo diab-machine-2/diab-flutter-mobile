@@ -31,10 +31,9 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
           "grant_type": "refresh_token",
           "refresh_token": refreshToken
         });
-        final user = await UserClient().fetchUser();
+        final user = await UserClient().fetchUser(isFetchCategory: true);
         if (user == null) {
-          Message.showToastMessage(
-              context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+          Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
           AppSettings.logout();
           Navigator.pushReplacementNamed(context, NavigatorName.step_list);
         } else {
@@ -44,8 +43,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         Navigator.pushReplacementNamed(context, NavigatorName.step_list);
       }
     } catch (e) {
-      Message.showToastMessage(
-          context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+      Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
       AppSettings.logout();
     }
   }
@@ -71,24 +69,16 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const SizedBox(),
-              Center(
-                  child: Image.asset(R.drawable.img_logo,
-                      width: 190, height: 95)),
+              Center(child: Image.asset(R.drawable.img_logo, width: 190, height: 95)),
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: RichText(
                   text: TextSpan(
                     text: '${R.string.cong_ty_co_phan_cong_nghe_y_te.tr()} ',
-                    style: TextStyle(
-                        color: R.color.mainColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400),
+                    style: TextStyle(color: R.color.mainColor, fontSize: 16, fontWeight: FontWeight.w400),
                     children: <TextSpan>[
                       TextSpan(
-                          style: TextStyle(
-                              color: R.color.mainColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700),
+                          style: TextStyle(color: R.color.mainColor, fontSize: 14, fontWeight: FontWeight.w700),
                           text: 'dia-B'),
                     ],
                   ),

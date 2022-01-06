@@ -15,6 +15,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/modal/user/category_user_model.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
@@ -50,7 +51,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   MotivationModel? motivation;
   bool isHasRoadMap = false;
   var user = AppSettings.userInfo!;
-  var category = AppSettings.categoryUserModel!;
+  CategoryUserModel? category = AppSettings.categoryUserModel;
 
   @override
   void initState() {
@@ -59,8 +60,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
     isHasRoadMap = user.roadMapId != null;
 
+    if (category == null) {
+      getCategory();
+    }
+
     loadMotivation();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Update Profile');
+  }
+
+  getCategory() async {
+    category = await UserClient().fetchCategoryItems();
+    setState(() {});
   }
 
   loadMotivation() async {
@@ -294,7 +304,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             title: 'Giáo viên',
                             subTitle: 'Nghề nghiệp',
                             subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                            elementList: category.jobList!.map((e) => e.text ?? '').toList(),
+                            elementList: category == null ? [] : category!.jobList!.map((e) => e.text ?? '').toList(),
                             selectedDialogTitle: "Chọn nghề nghiệp",
                             isShowSelectedDialog: true,
                             callback: (selectedIndexList) {
@@ -306,7 +316,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             title: 'Đại học',
                             subTitle: 'Trình độ văn hoá',
                             subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                            elementList: category.educationLevelList!.map((e) => e.text ?? '').toList(),
+                            elementList:
+                                category == null ? [] : category!.educationLevelList!.map((e) => e.text ?? '').toList(),
                             selectedDialogTitle: "Chọn học vấn",
                             isShowSelectedDialog: true,
                             callback: (selectedIndexList) {
@@ -413,7 +424,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Hướng ngoại',
                                 subTitle: 'Tính cách',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category.personalityRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: category == null
+                                    ? []
+                                    : category!.personalityRuleList!.map((e) => e.text ?? '').toList(),
                                 selectedDialogTitle: "Chọn tính cách",
                                 isShowSelectedDialog: true,
                                 callback: (selectedIndexList) {
@@ -425,8 +438,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Chơi game, đọc sách',
                                 subTitle: 'Sở thích cá nhân',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category.interestRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: category == null
+                                    ? []
+                                    : category!.interestRuleList!.map((e) => e.text ?? '').toList(),
                                 isShowSelectedDialog: true,
+                                isMultipleChoice: true,
                                 selectedDialogTitle: "Chọn sở thích",
                                 callback: (selectedIndexList) {
                                   // TODO(Tuyen): Update Sở thích cá nhân
@@ -437,9 +453,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Cầu lông, xe đạp',
                                 subTitle: 'Môn thể thao yêu thích',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category.favouriteSportRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: category == null
+                                    ? []
+                                    : category!.favouriteSportRuleList!.map((e) => e.text ?? '').toList(),
                                 selectedDialogTitle: "Chọn môn thể thao",
                                 isShowSelectedDialog: true,
+                                isMultipleChoice: true,
                                 callback: (selectedIndexList) {
                                   // TODO(Tuyen): Update Môn thể thao yêu thích
                                 },
@@ -449,7 +468,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Không',
                                 subTitle: 'Thực hành tâm thức',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category.consciousnessPracticeRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: category == null
+                                    ? []
+                                    : category!.consciousnessPracticeRuleList!.map((e) => e.text ?? '').toList(),
                                 isShowSelectedDialog: true,
                                 selectedDialogTitle: "Chọn thực hành tâm thức",
                                 callback: (selectedIndexList) {
@@ -461,7 +482,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Không',
                                 subTitle: 'Tôn giáo',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category.religionRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: category == null
+                                    ? []
+                                    : category!.religionRuleList!.map((e) => e.text ?? '').toList(),
                                 isShowSelectedDialog: true,
                                 selectedDialogTitle: "Chọn tôn giáo",
                                 callback: (selectedIndexList) {
@@ -473,7 +496,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Không',
                                 subTitle: 'Ăn chay',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category.vegetarianRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: category == null
+                                    ? []
+                                    : category!.vegetarianRuleList!.map((e) => e.text ?? '').toList(),
                                 isShowSelectedDialog: true,
                                 selectedDialogTitle: "Chọn ăn chay",
                                 callback: (selectedIndexList) {
@@ -485,9 +510,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Buổi sáng; Bao gồm thứ 7',
                                 subTitle: 'Khung giờ làm việc với huấn luyện viên',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category.workingHourRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: category == null
+                                    ? []
+                                    : category!.workingHourRuleList!.map((e) => e.text ?? '').toList(),
                                 selectedDialogTitle: "Chọn khung giờ trao đổi với coach ưa thích",
                                 isShowSelectedDialog: true,
+                                isMultipleChoice: true,
                                 callback: (selectedIndexList) {
                                   // TODO(Tuyen): Update Khung giờ làm việc với huấn luyện viên
                                 },

@@ -15,6 +15,7 @@ class ItemProfile extends StatefulWidget {
   List<String> elementList;
   String selectedDialogTitle;
   bool isShowSelectedDialog;
+  bool isMultipleChoice;
 
   ItemProfile({
     this.image,
@@ -26,6 +27,7 @@ class ItemProfile extends StatefulWidget {
     this.subIcon,
     this.callback,
     this.isShowSelectedDialog = false,
+    this.isMultipleChoice = false,
   });
 
   @override
@@ -54,7 +56,7 @@ class _ItemProfileState extends State<ItemProfile> {
                   title: widget.selectedDialogTitle,
                   selectedList: selectedList,
                   elementList: widget.elementList,
-                  isMultipleChoice: true,
+                  isMultipleChoice: widget.isMultipleChoice,
                   onSelected: (typeList) {
                     selectedList = typeList;
                     if (typeList.isNotEmpty) {
@@ -143,9 +145,11 @@ class _ItemProfileState extends State<ItemProfile> {
   String selectedListToString(List<String> selectedList) {
     String selected = '';
     for (var selectedItem in selectedList) {
-      selected += selectedItem + ",";
+      selected += selectedItem + ", ";
     }
-    selected = selected.substring(0, selected.length - 1);
+    if (selected.length > 2) {
+      selected = selected.substring(0, selected.length - 2);
+    }
     return selected;
   }
 }
