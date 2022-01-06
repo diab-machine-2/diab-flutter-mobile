@@ -623,6 +623,8 @@ class Strings {
 	String get no_matched_lesson_description => 'no_matched_lesson_description';
 	String get lesson_locked => 'lesson_locked';
 	String get lesson_locked_warning => 'lesson_locked_warning';
+	String get exercise_lesson_locked => 'exercise_lesson_locked';
+	String get exercise_lesson_locked_warning => 'exercise_lesson_locked_warning';
 	String get filter_by_key_word => 'filter_by_key_word';
 	String get filter_by_lesson_name => 'filter_by_lesson_name';
 	String get enter_lesson_name => 'enter_lesson_name';

@@ -2,11 +2,12 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -27,7 +28,8 @@ import 'widgets/exercise_time_widget.dart';
 import 'widgets/select_type_widget.dart';
 
 class CreateGoalPage extends StatefulWidget {
-  const CreateGoalPage();
+  const CreateGoalPage(this.smartGoalDayList);
+  final List<SmartGoalList?> smartGoalDayList;
 
   @override
   _CreateGoalPageState createState() => _CreateGoalPageState();
@@ -40,7 +42,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
-    _cubit = CreateGoalCubit(appRepository);
+    _cubit = CreateGoalCubit(appRepository,
+        smartGoalDayList: widget.smartGoalDayList);
   }
 
   @override
@@ -167,9 +170,6 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           if (type == ScheduleType.blood_sugar) {
             Navigator.pushNamed(context, NavigatorName.schedule_glucose);
           } else {
-            if (type == ScheduleType.exercise) {
-              await _cubit.getUserTarget();
-            }
             _cubit.setupGoal(selectedType: type);
           }
         },
@@ -206,8 +206,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   List<Widget> _buildSetupCompleteGoal() {
     return [
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50),
-        child: Image.asset(R.drawable.img_select_route_successed),
+        padding: EdgeInsets.symmetric(horizontal: 100.w),
+        child: Image.asset(R.drawable.img_complete_setup_smart_goal),
       ),
       Container(
         margin: const EdgeInsets.only(top: 24, bottom: 16),
@@ -228,32 +228,51 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
-          children: [
-            _buildSingleResultDetail(
-              title: R.string.smart_goal_name.tr(),
-              description: _cubit.dataModel.type == null ||
-                      _cubit.dataModel.type == ScheduleType.custom
-                  ? _cubit.dataModel.name
-                  : (_cubit.dataModel.type?.title ?? ''),
-            ),
-            if (_cubit.dataModel.goalRecordType == GoalRecordType.time &&
-                _cubit.dataModel.type != ScheduleType.exercise)
-              _buildSingleResultDetail(
-                  title: R.string.goal_record_type_time.tr(),
-                  description: '${_cubit.dataModel.goalTimeOrFrequency} phút'),
-            if (_cubit.dataModel.goalRecordType == GoalRecordType.frequency &&
-                _cubit.dataModel.type != ScheduleType.exercise)
-              _buildSingleResultDetail(
-                  title: R.string.goal_record_type_frequency.tr(),
-                  description: '${_cubit.dataModel.goalTimeOrFrequency} lần'),
-            if (_cubit.dataModel.type == ScheduleType.exercise)
-              _buildSingleResultDetail(
-                  title: R.string.so_phut_van_dong_moi_ngay.tr(),
-                  description:
-                      '${Utils.parseStringToInt(_cubit.dataModel.dailyTargetDuration)} phút'),
-          ],
+          children: _cubit.dataModel.type == ScheduleType.exercise
+              ? _buildSmartGoalDetailType2()
+              : _buildSmartGoalDetailType1(),
         ),
       ),
+    ];
+  }
+
+  List<Widget> _buildSmartGoalDetailType1() {
+    return [
+      _buildSingleResultDetail(
+        title: 'Mục tiêu',
+        description: _cubit.dataModel.type == ScheduleType.custom
+            ? _cubit.dataModel.name
+            : (_cubit.dataModel.type?.title ?? ''),
+      ),
+      _buildSingleResultDetail(
+          title: _cubit.dataModel.goalRecordType == GoalRecordType.time
+              ? 'Thời lượng'
+              : 'Số lần',
+          description:
+              '${_cubit.dataModel.goalTimeOrFrequency} ${_cubit.dataModel.goalRecordType == GoalRecordType.time ? 'phút' : 'lần'}'),
+      if (_cubit.dataModel.isRepeat)
+        _buildSingleResultDetail(
+          title: 'Tần suất',
+          description: _cubit.dataModel.repeatType == RepeatType.day
+              ? 'Hàng ngày'
+              : 'Hàng tuần vào ${_cubit.dataModel.repeatDayList.map((e) => e.shortTitle).toList().join(',')}',
+        ),
+      if (_cubit.dataModel.isRepeat)
+        _buildSingleResultDetail(
+          title: 'Ngày kết thúc',
+          description:
+              DateFormat('dd/MM/yyyy').format(_cubit.dataModel.endDate),
+        ),
+    ];
+  }
+
+  List<Widget> _buildSmartGoalDetailType2() {
+    return [
+      _buildSingleResultDetail(
+          title: 'Mục tiêu', description: 'Vận động trong ngày'),
+      _buildSingleResultDetail(
+          title: 'Thời lượng',
+          description: '${_cubit.dataModel.dailyTargetDurationNumber} phút'),
     ];
   }
 
@@ -264,7 +283,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         title: _cubit.dataModel.goalRecordType.title,
         type: _cubit.dataModel.goalRecordType,
         onChangedTime: (text) {
-          _cubit.dataModel.goalTimeOrFrequency = text;
+          _cubit.dataModel.goalTimeOrFrequency = text.trim();
         },
         onChangeUnit: (type) {
           _cubit.dataModel.goalRecordType = type;
@@ -317,8 +336,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     return [
       _buildTextDescription(),
       ExerciseTimeWidget(
-          totalMinutes:
-              _cubit.dataModel.userInfo?.dailyTargetDuration?.toInt() ?? 0,
+          totalMinutes: _cubit.dataModel.dailyTargetDurationNumber,
           onChangedTime: (totalMinutes) {
             _cubit.dataModel.dailyTargetDuration = totalMinutes.toString();
           }),
@@ -355,7 +373,9 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                   controller:
                       TextEditingController(text: _cubit.dataModel.name),
                   autofocus: false,
+                  maxLength: 24,
                   decoration: InputDecoration(
+                      counterText: '',
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
@@ -363,7 +383,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           left: 0, bottom: 0, top: 8, right: 0),
                       hintText: R.string.enter_smart_goal_name.tr()),
                   onChanged: (text) {
-                    _cubit.dataModel.name = text;
+                    _cubit.dataModel.name = text.trim();
                   },
                 ),
                 Container(height: 1, color: R.color.color0xffE5E5E5),
@@ -413,7 +433,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                         builder: (context) {
                           return SelectBottomSheetWidget(
                             title: R.string.select_frequency.tr(),
-                            selectedList: [_cubit.dataModel.repeatType.title],
+                            selectedList: const [],
                             elementList: [
                               RepeatType.day.title,
                               RepeatType.week.title
@@ -435,7 +455,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           children: [
                             Expanded(
                               child: Text(
-                                _cubit.dataModel.repeatType.title,
+                                _cubit.dataModel.repeatType?.title ??
+                                    'Không lặp lại',
                                 style: TextStyle(
                                     color: R.color.textDark,
                                     fontSize: 16,

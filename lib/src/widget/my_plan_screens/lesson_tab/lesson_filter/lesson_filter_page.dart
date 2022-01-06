@@ -331,7 +331,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
                               fontWeight: FontWeight.w400,
                             ),
                             onChanged: (text) {
-                              _cubit.textSearch = text;
+                              _cubit.textSearch = text.trim();
                               _cubit.refresh();
                             },
                           ),

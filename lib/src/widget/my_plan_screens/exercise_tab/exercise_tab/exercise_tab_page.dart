@@ -556,7 +556,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     ),
                   ),
                   Text(
-                    R.string.lesson_locked.tr(),
+                    R.string.exercise_lesson_locked.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: R.color.textDark,
@@ -566,7 +566,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    "Bạn cần tập lần lượt các bài học theo lộ trình của diaB để mở khoá bài tập này.",
+                    R.string.exercise_lesson_locked_warning.tr(),
                     textAlign: TextAlign.center,
                     style: R.style.normalTextStyle,
                   ),

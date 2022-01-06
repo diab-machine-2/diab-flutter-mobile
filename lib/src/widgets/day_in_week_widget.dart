@@ -8,11 +8,13 @@ class DayInWeekWidget extends StatelessWidget {
     required this.data,
     required this.mark,
     required this.currentDayIndex,
+    this.showDateTime = false,
     required this.onSelectDay,
   }) : super(key: key);
   final List<DayInWeekData> data;
   final int mark;
   final int currentDayIndex;
+  final bool showDateTime;
   final Function(int selectedDay) onSelectDay;
 
   @override
@@ -89,11 +91,11 @@ class DayInWeekWidget extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            alignment: Alignment.bottomCenter,
-            width: 24,
-            child: Visibility(
-              visible: day != null,
+          Visibility(
+            visible: showDateTime,
+            child: Container(
+              alignment: Alignment.bottomCenter,
+              width: 24,
               child: Text(
                 dayTitle,
                 style: TextStyle(

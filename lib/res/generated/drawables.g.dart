@@ -255,6 +255,7 @@ class Drawables {
 	String get img_bmi_empty => "lib/res/drawables/img_bmi_empty.png";
 	String get img_book_coach => "lib/res/drawables/img_book_coach.png";
 	String get img_check_phone => "lib/res/drawables/img_check_phone.png";
+	String get img_complete_setup_smart_goal => "lib/res/drawables/img_complete_setup_smart_goal.png";
 	String get img_congrat => "lib/res/drawables/img_congrat.png";
 	String get img_cooking => "lib/res/drawables/img_cooking.png";
 	String get img_course_feedback => "lib/res/drawables/img_course_feedback.png";

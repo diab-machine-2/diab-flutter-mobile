@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/utils/utils.dart';
 
 import '../../activity_tab/models/schedule_type.dart';
@@ -19,7 +19,6 @@ class CreateSmartGoalData {
       this.repeatDayList = const [],
       this.name = '',
       this.goalTimeOrFrequency = '',
-      this.userInfo,
       this.dailyTargetDuration = ''}) {
     this.endDate = endDate ?? DateTime.now();
   }
@@ -42,15 +41,13 @@ class CreateSmartGoalData {
 
   int? cachedSubType;
 
-  RepeatType repeatType = RepeatType.day;
+  RepeatType? repeatType;
 
   List<DayInWeek> repeatDayList = [];
 
   String name = '';
 
   String goalTimeOrFrequency = '';
-
-  GoalInfoModel? userInfo;
 
   String dailyTargetDuration = '';
 
@@ -61,11 +58,85 @@ class CreateSmartGoalData {
     type = null;
     cachedType = null;
     cachedSubType = null;
-    repeatType = RepeatType.day;
+    repeatType = null;
     repeatDayList = [];
     name = '';
     goalTimeOrFrequency = '';
   }
+
+  void fillData(ScheduleType newType, SmartGoalList? smartGoalData) {
+    if (newType == null) return;
+    switch (newType) {
+      case ScheduleType.blood_pressure:
+        if (smartGoalData == null) {
+          goalTimeOrFrequency = '1';
+          isRepeat = true;
+          repeatType = RepeatType.week;
+          repeatDayList = [DayInWeek.tue, DayInWeek.fri];
+          endDate = DateTime.now().add(const Duration(days: 90));
+          return;
+        }
+        if (smartGoalData != null) {
+          fillDataFromSmartGoal(smartGoalData);
+          return;
+        }
+        break;
+      case ScheduleType.weight:
+        if (smartGoalData == null) {
+          goalTimeOrFrequency = '1';
+          isRepeat = true;
+          repeatType = RepeatType.week;
+          repeatDayList = [DayInWeek.sun];
+          endDate = DateTime.now().add(const Duration(days: 90));
+          return;
+        }
+        if (smartGoalData != null) {
+          fillDataFromSmartGoal(smartGoalData);
+          return;
+        }
+        break;
+      case ScheduleType.emotion:
+        if (smartGoalData == null) {
+          goalTimeOrFrequency = '3';
+          isRepeat = true;
+          repeatType = RepeatType.week;
+          repeatDayList = [DayInWeek.tue, DayInWeek.sat];
+          endDate = DateTime.now().add(const Duration(days: 90));
+          return;
+        }
+        if (smartGoalData != null) {
+          fillDataFromSmartGoal(smartGoalData);
+          return;
+        }
+        break;
+      case ScheduleType.exercise:
+        if (smartGoalData == null) {
+          dailyTargetDuration = '30';
+          return;
+        }
+        if (smartGoalData != null) {
+          dailyTargetDuration = '${smartGoalData.executeDayTimes}';
+        }
+        break;
+
+      default:
+    }
+  }
+
+  void fillDataFromSmartGoal(SmartGoalList smartGoalData) {
+    goalTimeOrFrequency = '${smartGoalData.executeDayTimes ?? 0}';
+    if (smartGoalData.targetScheduler != null) {
+      isRepeat = true;
+      repeatType = RepeatTypeExtend.getTypeFromNumber(
+          smartGoalData.targetScheduler?.repeatType);
+      repeatDayList = smartGoalData.targetScheduler?.repeatDayList ?? [];
+      endDate = DateTime.fromMillisecondsSinceEpoch(
+          (smartGoalData.targetScheduler?.endDate ?? 0) * 1000);
+    }
+  }
+
+  int get dailyTargetDurationNumber =>
+      Utils.parseStringToInt(dailyTargetDuration);
 
   CreateSmartGoalData get copy => CreateSmartGoalData(
       endDate: this.endDate,
@@ -76,13 +147,17 @@ class CreateSmartGoalData {
       repeatDayList: this.repeatDayList,
       name: this.name,
       goalTimeOrFrequency: this.goalTimeOrFrequency,
-      userInfo: this.userInfo,
       dailyTargetDuration: this.dailyTargetDuration);
 
   String get checkValid {
     if (type == null || type == ScheduleType.custom) {
       if (name.isEmpty) {
-        return R.string.smart_goal_name_empty.tr();
+        return R.string.smart_goal_name_empty.tr(args: [
+          if (subType == 0) 'Tên mục tiêu của bạn' else 'Tên việc làm yêu thích'
+        ]);
+      }
+      if (isRepeat && repeatType == null) {
+        return 'Mức độ thường xuyên là bắt buộc';
       }
       if (isRepeat && repeatType == RepeatType.week && repeatDayList.isEmpty) {
         return R.string.smart_goal_repeat_day_empty.tr();
@@ -92,11 +167,13 @@ class CreateSmartGoalData {
         return 'Chưa nhập ${goalRecordType == GoalRecordType.time ? 'thời gian thực hiện' : 'số lần thực hiện'}';
       }
     } else if (type == ScheduleType.exercise) {
-      if (userInfo?.dailyTargetDuration == null ||
-          userInfo?.weeklyTargetDuration == null) {
+      if (dailyTargetDuration.isEmpty) {
         return R.string.smart_goal_exercise_time_empty.tr();
       }
     } else {
+      if (isRepeat && repeatType == null) {
+        return 'Mức độ thường xuyên là bắt buộc';
+      }
       if (isRepeat && repeatType == RepeatType.week && repeatDayList.isEmpty) {
         return R.string.smart_goal_repeat_day_empty.tr();
       }

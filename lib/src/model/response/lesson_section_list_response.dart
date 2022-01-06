@@ -966,8 +966,7 @@ class LessonSectionItem {
     return '';
   }
 
-  LessonSectionItem.fromJson(
-      Map<String, dynamic> json) {
+  LessonSectionItem.fromJson(Map<String, dynamic> json) {
     id = json['id']?.toString();
     code = json['code']?.toString();
     lessonId = json['lessonId']?.toString();
@@ -1420,8 +1419,7 @@ class LessonSectionListResponseDataLessonModule {
     updaterUsername = json['updaterUsername']?.toString();
     updaterCode = json['updaterCode']?.toString();
     updaterImage = (json['updaterImage'] != null)
-        ? ImagesModel.fromJson(
-            json['updaterImage'])
+        ? ImagesModel.fromJson(json['updaterImage'])
         : null;
   }
   Map<String, dynamic> toJson() {
@@ -1456,6 +1454,7 @@ class LessonSectionListResponseData {
   "coverId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "lessonModuleId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "lessonLevelId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "learningStatus": 0,
   "lessonModule": {
     "id": "string",
     "code": "string",
@@ -1701,6 +1700,7 @@ class LessonSectionListResponseData {
   String? coverId;
   String? lessonModuleId;
   String? lessonLevelId;
+  int? learningStatus;
   LessonSectionListResponseDataLessonModule? lessonModule;
   LessonSectionListResponseDataLessonLevel? lessonLevel;
   List<QuizLesson?>? quizLessons;
@@ -1728,6 +1728,7 @@ class LessonSectionListResponseData {
     this.coverId,
     this.lessonModuleId,
     this.lessonLevelId,
+    this.learningStatus,
     this.lessonModule,
     this.lessonLevel,
     this.quizLessons,
@@ -1755,6 +1756,7 @@ class LessonSectionListResponseData {
     coverId = json['coverId']?.toString();
     lessonModuleId = json['lessonModuleId']?.toString();
     lessonLevelId = json['lessonLevelId']?.toString();
+    learningStatus = json['learningStatus']?.toInt();
     lessonModule = (json['lessonModule'] != null)
         ? LessonSectionListResponseDataLessonModule.fromJson(
             json['lessonModule'])
@@ -1852,6 +1854,7 @@ class LessonSectionListResponseData {
     data['coverId'] = coverId;
     data['lessonModuleId'] = lessonModuleId;
     data['lessonLevelId'] = lessonLevelId;
+    data['learningStatus'] = learningStatus;
     if (lessonModule != null) {
       data['lessonModule'] = lessonModule!.toJson();
     }

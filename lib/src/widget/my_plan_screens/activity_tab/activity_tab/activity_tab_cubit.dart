@@ -58,9 +58,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   Future<void> onSelectWeek(int newWeekIndex,
       {bool hideLoadingAfterDone = false}) async {
     currentWeekIndex = newWeekIndex;
-    await getSmartGoalStatistics(hideLoadingAfterDone: hideLoadingAfterDone);
     refreshData();
-    // if (weekStatesList.isNotEmpty) getListSmartGoal();
   }
 
   void onSelectDay(int newDayIndex) {
@@ -84,6 +82,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   }
 
   Future<void> refreshData({bool isRefresh = false}) async {
+    await getSmartGoalStatistics(
+        isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: true);
     await getListSmartGoal(isRefresh: isRefresh);
   }
 
@@ -118,19 +118,21 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     emit(const ActivityTabInitial());
   }
 
-  Future<void> getSmartGoalStatistics(
-      {bool hideLoadingAfterDone = true}) async {
+  Future<void> getSmartGoalStatistics({
+    bool isRefresh = false,
+    bool hideLoadingAfterDone = true,
+    bool keepCurrentDay = false,
+  }) async {
     await Future.delayed(Duration.zero);
-    emit(const ActivityTabLoading());
+    if (!isRefresh) emit(const ActivityTabLoading());
     final ApiResult<SmartGoalStatisticResponse> apiResult =
         await repository.getSmartGoalStatistics(week: currentWeek);
     apiResult.when(success: (SmartGoalStatisticResponse response) {
       statistic = response.data;
-      currentDayIndex = response.initDayIndex;
+      if (!keepCurrentDay) currentDayIndex = response.initDayIndex;
       mark = response.getCompletedMarkIndex(
           currentWeek: currentWeek,
-          userCurrentWeek:
-              weekStatesList.isNotEmpty ? myPlanCubit.currentStudyWeek : 0);
+          userCurrentWeek: myPlanCubit.currentStudyWeek);
       if (hideLoadingAfterDone) emit(const ActivityTabSuccess());
       emit(const ActivityTabProgressChanged());
     }, failure: (NetworkExceptions error) {
