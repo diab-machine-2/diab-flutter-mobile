@@ -6,12 +6,14 @@ class VideoManager {
     required String? url,
     this.onExitFullScreen,
     this.onCompleted,
+    this.placeHolder,
   }) {
     initController(url: url);
   }
   BetterPlayerController? _controller;
   final VoidCallback? onExitFullScreen;
   final VoidCallback? onCompleted;
+  Widget? placeHolder;
   bool finishedVideo = false;
   bool hasVideo = false;
 
@@ -49,7 +51,9 @@ class VideoManager {
   void initController({required String? url}) {
     if (url?.isNotEmpty != true) return;
     final BetterPlayerController newController = BetterPlayerController(
-      const BetterPlayerConfiguration(
+      BetterPlayerConfiguration(
+        placeholder: placeHolder == null ? Container() : placeHolder,
+        showPlaceholderUntilPlay: true,
         aspectRatio: 16 / 9,
         autoDispose: false,
       ),
@@ -59,9 +63,7 @@ class VideoManager {
       ),
     )..addEventsListener(
         (event) async {
-          if (event.betterPlayerEventType ==
-                  BetterPlayerEventType.hideFullscreen &&
-              onExitFullScreen != null) {
+          if (event.betterPlayerEventType == BetterPlayerEventType.hideFullscreen && onExitFullScreen != null) {
             await Future.delayed(const Duration(seconds: 1));
             onExitFullScreen!.call();
           }
