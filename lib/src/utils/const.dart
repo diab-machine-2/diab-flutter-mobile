@@ -4,8 +4,7 @@ class Const {
 
   static const String API_URL = "${HOST_URL}api/";
 
-  static const String HOST_GOOGLE_MAP_URL =
-      "https://maps.googleapis.com/maps/api/";
+  static const String HOST_GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/";
   static const String ANDROID_KEY = "AIzaSyAVRrZKBfIphjlPiua9y5Pk4CJ3oaddGp0";
   static const String IOS_KEY = "AIzaSyB6P1Tq9lnnZPjkUJmAlTjUE1uqMVfTLFA";
   static const String PLACE_KEY = "AIzaSyC7tPpmwviNXdX0_krWw5QdxOVGOJgdFmo";
@@ -88,6 +87,16 @@ class Const {
   static const int LESSON_LOCKED = 3;
   static const int LESSON_CAN_NOT_LEARN = 4;
 
+  static const int JOB_TYPE = 12;
+  static const int EDUCATION_LEVEL_TYPE = 13;
+  static const int LEVEL_OF_DIABETES_TYPE = 10;
+  static const int PERSONALITY_TYPE = 1;
+  static const int CONSCIOUSNESS_PRATICE_TYPE = 4;
+  static const int VEGETERIAN_TYPE = 8;
+  static const int WORKING_HOURS_TYPE = 9;
+  static const int INTERESTS_TYPE = 2;
+  static const int LESSON_TAG_TYPE = 0;
+
   static const int LESSON_SECTION_TYPE_VIDEO = 1;
   static const int LESSON_SECTION_TYPE_AUDIO = 2;
   static const int LESSON_SECTION_TYPE_TEXT = 3;
@@ -148,5 +157,4 @@ class Const {
     22,
   ];
   static const List<int> minuteList = [0, 15, 30, 45];
-
 }

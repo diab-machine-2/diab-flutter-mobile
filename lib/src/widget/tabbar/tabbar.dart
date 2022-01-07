@@ -174,7 +174,7 @@ showPopupWeight() {
             UserModel userInfo = AppSettings.userInfo!;
             userInfo = UserModel(
               id: userInfo.id,
-              username: userInfo.username,
+              userName: userInfo.userName,
               fullName: userInfo.fullName,
               age: userInfo.age,
               phoneNumber: userInfo.phoneNumber,
@@ -220,6 +220,22 @@ showPopupWeight() {
               personalInterests: userInfo.personalInterests,
               favouriteSports: userInfo.favouriteSports,
               workingHourss: userInfo.workingHourss,
+              jobList: userInfo.jobList,
+              educationLevelList: userInfo.educationLevelList,
+              lessonTagList: userInfo.lessonTagList,
+              personalityRuleList: userInfo.personalityRuleList,
+              interestRuleList: userInfo.interestRuleList,
+              consciousnessPracticeRuleList: userInfo.consciousnessPracticeRuleList,
+              vegetarianRuleList: userInfo.vegetarianRuleList,
+              workingHourRuleList: userInfo.workingHourRuleList,
+              levelOfDiabetesRuleList: userInfo.levelOfDiabetesRuleList,
+              favouriteSportRuleList: userInfo.favouriteSportRuleList,
+              religionRuleList: userInfo.religionRuleList,
+              accountRule: userInfo.accountRule,
+              accountId: userInfo.accountId,
+              creatorId: userInfo.creatorId,
+              energyGoal: userInfo.energyGoal,
+              nation: userInfo.nation,
             );
             await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();

@@ -212,7 +212,7 @@ class _LoginControllerState extends State<LoginController> {
         "password": password,
         "phone_number": phone
       });
-      final user = await UserClient().fetchUser(isFetchCategory: true);
+      final user = await UserClient().fetchUser();
       BotToast.closeAllLoading();
       if (user == null) {
         Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {'type': 'phone'});
@@ -321,7 +321,7 @@ class _LoginControllerState extends State<LoginController> {
             "external_token": token,
             "provider": 'Facebook'
           });
-          final user = await UserClient().fetchUser(isFetchCategory: true);
+          final user = await UserClient().fetchUser();
           BotToast.closeAllLoading();
           if (user == null) {
             registerAccount(result.accessToken?.userId, result.accessToken?.token, 'Facebook',
@@ -385,7 +385,7 @@ class _LoginControllerState extends State<LoginController> {
         "external_token": authen.accessToken,
         "provider": 'Google'
       });
-      final user = await UserClient().fetchUser(isFetchCategory: true);
+      final user = await UserClient().fetchUser();
       BotToast.closeAllLoading();
       if (user == null) {
         registerAccount(
@@ -439,7 +439,7 @@ class _LoginControllerState extends State<LoginController> {
         "external_token": credential.identityToken,
         "provider": 'Apple'
       });
-      final user = await UserClient().fetchUser(isFetchCategory: true);
+      final user = await UserClient().fetchUser();
       BotToast.closeAllLoading();
       if (user == null) {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,

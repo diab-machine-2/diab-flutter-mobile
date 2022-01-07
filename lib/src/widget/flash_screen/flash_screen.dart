@@ -31,7 +31,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
           "grant_type": "refresh_token",
           "refresh_token": refreshToken
         });
-        final user = await UserClient().fetchUser(isFetchCategory: true);
+        final user = await UserClient().fetchUser();
         if (user == null) {
           Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
           AppSettings.logout();

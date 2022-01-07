@@ -15,6 +15,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/modal/user/category_user_model.dart';
 import 'package:medical/src/modal/user/motivation_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
@@ -51,7 +52,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   MotivationModel? motivation;
   bool isHasRoadMap = false;
   var user = AppSettings.userInfo!;
-  CategoryUserModel? category = AppSettings.categoryUserModel;
+  List<CategoryItemUserModel> selectedLessonTagList = [];
 
   @override
   void initState() {
@@ -60,17 +61,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
     isHasRoadMap = user.roadMapId != null;
 
-    if (category == null) {
-      getCategory();
-    }
-
     loadMotivation();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Update Profile');
-  }
-
-  getCategory() async {
-    category = await UserClient().fetchCategoryItems();
-    setState(() {});
   }
 
   loadMotivation() async {
@@ -97,6 +89,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   @override
   Widget build(BuildContext context) {
+    user = AppSettings.userInfo!;
+    selectedLessonTagList =
+        user.lessonTagList == null ? [] : user.lessonTagList!.where((element) => element.selected ?? false).toList();
+
     return GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -304,11 +300,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             title: 'Giáo viên',
                             subTitle: 'Nghề nghiệp',
                             subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                            elementList: category == null ? [] : category!.jobList!.map((e) => e.text ?? '').toList(),
+                            elementList: user.jobList!.map((e) => e.text ?? '').toList(),
+                            selectedList:
+                                user.jobList!.where((e) => e.selected ?? false).map((e) => e.text ?? '').toList(),
                             selectedDialogTitle: "Chọn nghề nghiệp",
                             isShowSelectedDialog: true,
                             callback: (selectedIndexList) {
-                              // TODO(Tuyen): Update Nghề nghiệp
+                              updateCategoryUser(user.jobList!, selectedIndexList, CategoryType.JOB_TYPE);
                             },
                           ),
                           ItemProfile(
@@ -316,12 +314,16 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             title: 'Đại học',
                             subTitle: 'Trình độ văn hoá',
                             subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                            elementList:
-                                category == null ? [] : category!.educationLevelList!.map((e) => e.text ?? '').toList(),
+                            elementList: user.educationLevelList!.map((e) => e.text ?? '').toList(),
+                            selectedList: user.educationLevelList!
+                                .where((e) => e.selected ?? false)
+                                .map((e) => e.text ?? '')
+                                .toList(),
                             selectedDialogTitle: "Chọn học vấn",
                             isShowSelectedDialog: true,
                             callback: (selectedIndexList) {
-                              // TODO(Tuyen): Update Trình độ văn hoá
+                              updateCategoryUser(
+                                  user.educationLevelList!, selectedIndexList, CategoryType.EDUCATION_LEVEL_TYPE);
                             },
                           ),
                         ]),
@@ -379,38 +381,35 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 'Hãy chọn các chủ đề mà bạn quan tâm để diaB gợi ý các bài học phù hợp nhất với bạn.',
                             showIcon: true,
                             onTap: () {
-                              var elementList = [
-                                "Bệnh lý",
-                                "Dinh dưỡng",
-                                "Vận động",
-                                "Xây dựng lối sống lành mạnh",
-                                "Tâm lý",
-                                "Theo dõi chỉ số sinh học"
-                              ];
                               showActionFilter(
                                   context: context,
                                   builder: (context) {
                                     return SelectBottomSheetWidget(
                                       title: 'Chọn chủ đề quan tâm',
-                                      selectedList: [],
-                                      elementList: elementList,
+                                      elementList: user.lessonTagList!.map((e) => e.text ?? '').toList(),
+                                      selectedList: user.lessonTagList!
+                                          .where((e) => e.selected ?? false)
+                                          .map((e) => e.text ?? '')
+                                          .toList(),
                                       isMultipleChoice: true,
                                       onSelected: (typeList) {
-                                        if (typeList.isNotEmpty) {}
+                                        var selectedIndexList = getSelectedIndexList(
+                                            user.lessonTagList!.map((e) => e.text ?? '').toList(), typeList);
+                                        selectedLessonTagList =
+                                            getSelectedCategoryList(user.lessonTagList!, selectedIndexList);
+                                        //    setState(() {});
+                                        updateCategoryUser(
+                                            user.lessonTagList!, selectedIndexList, CategoryType.LESSON_TAG_TYPE);
                                       },
                                     );
                                   });
                             },
                             children: [
-                              const SizedBox(height: 6),
-                              Wrap(spacing: 8, runSpacing: 8, children: [
-                                _buildTopicItem('Bệnh lý'),
-                                _buildTopicItem('Dinh dưỡng'),
-                                _buildTopicItem('Vận động'),
-                                _buildTopicItem('Xây dựng lối sống lành mạnh'),
-                                _buildTopicItem('Tâm lý'),
-                                _buildTopicItem('Theo dõi chỉ số sinh học'),
-                              ]),
+                              selectedLessonTagList.isEmpty ? Container() : const SizedBox(height: 6),
+                              Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: selectedLessonTagList.map((e) => _buildTopicItem(e.text ?? '')).toList()),
                             ],
                           ),
                         if (isHasRoadMap)
@@ -424,13 +423,16 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Hướng ngoại',
                                 subTitle: 'Tính cách',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category == null
-                                    ? []
-                                    : category!.personalityRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: user.personalityRuleList!.map((e) => e.text ?? '').toList(),
+                                selectedList: user.personalityRuleList!
+                                    .where((e) => e.selected ?? false)
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 selectedDialogTitle: "Chọn tính cách",
                                 isShowSelectedDialog: true,
                                 callback: (selectedIndexList) {
-                                  // TODO(Tuyen): Update Tính cách
+                                  updateCategoryUser(
+                                      user.personalityRuleList!, selectedIndexList, CategoryType.PERSONALITY_TYPE);
                                 },
                               ),
                               ItemProfile(
@@ -438,14 +440,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Chơi game, đọc sách',
                                 subTitle: 'Sở thích cá nhân',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category == null
-                                    ? []
-                                    : category!.interestRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: user.interestRuleList!.map((e) => e.text ?? '').toList(),
+                                selectedList: user.interestRuleList!
+                                    .where((e) => e.selected ?? false)
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 isShowSelectedDialog: true,
                                 isMultipleChoice: true,
                                 selectedDialogTitle: "Chọn sở thích",
                                 callback: (selectedIndexList) {
-                                  // TODO(Tuyen): Update Sở thích cá nhân
+                                  updateCategoryUser(
+                                      user.interestRuleList!, selectedIndexList, CategoryType.INTERESTS_TYPE);
                                 },
                               ),
                               ItemProfile(
@@ -453,14 +458,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Cầu lông, xe đạp',
                                 subTitle: 'Môn thể thao yêu thích',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category == null
-                                    ? []
-                                    : category!.favouriteSportRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: user.favouriteSportRuleList!.map((e) => e.text ?? '').toList(),
+                                selectedList: user.favouriteSportRuleList!
+                                    .where((e) => e.selected ?? false)
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 selectedDialogTitle: "Chọn môn thể thao",
                                 isShowSelectedDialog: true,
                                 isMultipleChoice: true,
                                 callback: (selectedIndexList) {
-                                  // TODO(Tuyen): Update Môn thể thao yêu thích
+                                  updateCategoryUser(user.favouriteSportRuleList!, selectedIndexList,
+                                      CategoryType.FAVORITE_SPORT_TYPE);
                                 },
                               ),
                               ItemProfile(
@@ -468,13 +476,16 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Không',
                                 subTitle: 'Thực hành tâm thức',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category == null
-                                    ? []
-                                    : category!.consciousnessPracticeRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: user.consciousnessPracticeRuleList!.map((e) => e.text ?? '').toList(),
+                                selectedList: user.consciousnessPracticeRuleList!
+                                    .where((e) => e.selected ?? false)
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 isShowSelectedDialog: true,
                                 selectedDialogTitle: "Chọn thực hành tâm thức",
                                 callback: (selectedIndexList) {
-                                  // TODO(Tuyen): Update Thực hành tâm thức
+                                  updateCategoryUser(user.consciousnessPracticeRuleList!, selectedIndexList,
+                                      CategoryType.CONSCIOUSNESS_PRATICE_TYPE);
                                 },
                               ),
                               ItemProfile(
@@ -482,13 +493,16 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Không',
                                 subTitle: 'Tôn giáo',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category == null
-                                    ? []
-                                    : category!.religionRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: user.religionRuleList!.map((e) => e.text ?? '').toList(),
+                                selectedList: user.religionRuleList!
+                                    .where((e) => e.selected ?? false)
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 isShowSelectedDialog: true,
                                 selectedDialogTitle: "Chọn tôn giáo",
                                 callback: (selectedIndexList) {
-                                  // TODO(Tuyen): Update Tôn giáo
+                                  updateCategoryUser(
+                                      user.religionRuleList!, selectedIndexList, CategoryType.RELIGION_TYPE);
                                 },
                               ),
                               ItemProfile(
@@ -496,13 +510,16 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Không',
                                 subTitle: 'Ăn chay',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category == null
-                                    ? []
-                                    : category!.vegetarianRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: user.vegetarianRuleList!.map((e) => e.text ?? '').toList(),
+                                selectedList: user.vegetarianRuleList!
+                                    .where((e) => e.selected ?? false)
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 isShowSelectedDialog: true,
                                 selectedDialogTitle: "Chọn ăn chay",
                                 callback: (selectedIndexList) {
-                                  // TODO(Tuyen): Update Ăn chay
+                                  updateCategoryUser(
+                                      user.vegetarianRuleList!, selectedIndexList, CategoryType.VEGETERIAN_TYPE);
                                 },
                               ),
                               ItemProfile(
@@ -510,14 +527,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 title: 'Buổi sáng; Bao gồm thứ 7',
                                 subTitle: 'Khung giờ làm việc với huấn luyện viên',
                                 subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
-                                elementList: category == null
-                                    ? []
-                                    : category!.workingHourRuleList!.map((e) => e.text ?? '').toList(),
+                                elementList: user.workingHourRuleList!.map((e) => e.text ?? '').toList(),
+                                selectedList: user.workingHourRuleList!
+                                    .where((e) => e.selected ?? false)
+                                    .map((e) => e.text ?? '')
+                                    .toList(),
                                 selectedDialogTitle: "Chọn khung giờ trao đổi với coach ưa thích",
                                 isShowSelectedDialog: true,
                                 isMultipleChoice: true,
                                 callback: (selectedIndexList) {
-                                  // TODO(Tuyen): Update Khung giờ làm việc với huấn luyện viên
+                                  updateCategoryUser(
+                                      user.workingHourRuleList!, selectedIndexList, CategoryType.WORKING_HOURS_TYPE);
                                 },
                               ),
                             ],
@@ -862,6 +882,29 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     try {
       BotToast.showLoading();
       await UserClient().updateUserInfo(AppSettings.userInfo!.id, user);
+      await UserClient().fetchUser();
+      BotToast.closeAllLoading();
+    } catch (e, _) {
+      BotToast.closeAllLoading();
+      if (e is Error) {
+        Message.showToastMessage(context, e.message);
+      } else {
+        Message.showToastMessage(context, e.toString());
+      }
+    }
+  }
+
+  updateCategoryUser(
+    List<CategoryItemUserModel> categoryList,
+    List<int> selectedIndexList,
+    CategoryType categoryType,
+  ) async {
+    try {
+      BotToast.showLoading();
+      List<CategoryItemUserModel> selectedJobList = getSelectedCategoryList(categoryList, selectedIndexList);
+      final UserModel userInfo = AppSettings.userInfo!;
+      //  bool isNew = checkIsNew(user.jobList!);
+      await UserClient().updateCategoryUser(AppSettings.userInfo!.id, userInfo, selectedJobList, categoryType);
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -1467,9 +1510,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                     height: 150,
                     width: width - 36,
                     child: DiabetesStatusPicker(
+                      levelOfDiabetesList: user.levelOfDiabetesRuleList ?? [],
                       state: diabetesStatus,
                       onChanged: (data) {
-                        diabetesStatus = data['key'];
+                        diabetesStatus = data;
                       },
                     )),
                 Container(
@@ -1496,12 +1540,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                       flex: 1,
                       child: GestureDetector(
                         onTap: () {
-                          final UserModel userInfo = AppSettings.userInfo!;
-                          updateUserInfo(
-                            userInfo.copyWith(
-                              diabetesStatus: diabetesStatus,
-                            ),
-                          );
+                          updateCategoryUser(user.levelOfDiabetesRuleList!,
+                              diabetesStatus != null ? [diabetesStatus!] : [], CategoryType.LEVEL_OF_DIABETES_TYPE);
+
+                          // final UserModel userInfo = AppSettings.userInfo!;
+                          // updateUserInfo(
+                          //   userInfo.copyWith(
+                          //     diabetesStatus: diabetesStatus,
+                          //   ),
+                          // );
                           Navigator.pop(context);
                         },
                         child: Container(
@@ -1821,6 +1868,19 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     );
   }
 
+  List<CategoryItemUserModel> getSelectedCategoryList(
+      List<CategoryItemUserModel> elementList, List<int> selectedIndexList) {
+    List<CategoryItemUserModel> selectedValueList = [];
+    for (var selectedItem in selectedIndexList) {
+      for (int i = 0; i < elementList.length; i++) {
+        if (selectedItem == i) {
+          selectedValueList.add(elementList[i]);
+        }
+      }
+    }
+    return selectedValueList;
+  }
+
   List<int> getSelectedIndexList(List<String> elementList, List<String> selectedList) {
     List<int> selectedIndexList = [];
     for (var selectedItem in selectedList) {
@@ -1830,15 +1890,18 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
         }
       }
     }
+    selectedIndexList.sort((a, b) => a.compareTo(b));
     return selectedIndexList;
   }
 
-  String selectedListToString(List<String> selectedList) {
-    String selected = '';
-    for (var selectedItem in selectedList) {
-      selected += selectedItem + ",";
+  bool checkIsNew(List<CategoryItemUserModel> list) {
+    bool isNew = true;
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].selected ?? false) {
+        isNew = false;
+        break;
+      }
     }
-    selected = selected.substring(0, selected.length - 1);
-    return selected;
+    return isNew;
   }
 }

@@ -1,10 +1,15 @@
 import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/modal/user/update_profile_request.dart';
 import 'package:meta/meta.dart';
+
+import 'category_item_user_model.dart';
 
 @immutable
 class UserModel {
   final String? id;
-  final String? username;
+  final String? accountId;
+  final String? creatorId;
+  final String? userName;
   final String? fullName;
   final int? age;
   final String? phoneNumber;
@@ -22,12 +27,14 @@ class UserModel {
   final int? diabetesDate;
   final ImagesModel? imageUrl;
   final String? code;
+  final ProvinceModel? nation;
   final ProvinceModel? province;
   final ProvinceModel? district;
   final ProvinceModel? ward;
   final String? address;
   final double? goalWaist;
   final double? goalWeight;
+  final double? energyGoal;
   final bool? isLinkedFacebook;
   final bool? isLinkedGoogle;
   final bool? isMobileAccount;
@@ -54,9 +61,24 @@ class UserModel {
   final List<InfoModel>? favouriteSports;
   final List<InfoModel>? workingHourss;
 
+  final List<CategoryItemUserModel>? jobList;
+  final List<CategoryItemUserModel>? educationLevelList;
+  final List<CategoryItemUserModel>? lessonTagList;
+  final List<CategoryItemUserModel>? personalityRuleList;
+  final List<CategoryItemUserModel>? interestRuleList;
+  final List<CategoryItemUserModel>? consciousnessPracticeRuleList;
+  final List<CategoryItemUserModel>? vegetarianRuleList;
+  final List<CategoryItemUserModel>? workingHourRuleList;
+  final List<CategoryItemUserModel>? levelOfDiabetesRuleList;
+  final List<CategoryItemUserModel>? favouriteSportRuleList;
+  final List<CategoryItemUserModel>? religionRuleList;
+  final AccountRule? accountRule;
+
   const UserModel({
     required this.id,
-    required this.username,
+    required this.accountId,
+    required this.creatorId,
+    required this.userName,
     required this.fullName,
     required this.age,
     required this.phoneNumber,
@@ -65,6 +87,7 @@ class UserModel {
     required this.genderType,
     required this.createDatetime,
     required this.isActive,
+    required this.nation,
     required this.province,
     required this.district,
     required this.height,
@@ -80,6 +103,7 @@ class UserModel {
     required this.address,
     required this.goalWaist,
     required this.goalWeight,
+    required this.energyGoal,
     required this.isLinkedFacebook,
     required this.isLinkedGoogle,
     required this.isMobileAccount,
@@ -102,59 +126,90 @@ class UserModel {
     required this.personalInterests,
     required this.favouriteSports,
     required this.workingHourss,
+    required this.jobList,
+    required this.educationLevelList,
+    required this.lessonTagList,
+    required this.personalityRuleList,
+    required this.interestRuleList,
+    required this.consciousnessPracticeRuleList,
+    required this.vegetarianRuleList,
+    required this.workingHourRuleList,
+    required this.levelOfDiabetesRuleList,
+    required this.favouriteSportRuleList,
+    required this.religionRuleList,
+    required this.accountRule,
   });
 
-  UserModel copyWith(
-          {String? id,
-          String? username,
-          String? fullName,
-          int? age,
-          String? phoneNumber,
-          String? secondPhoneNumber,
-          String? gender,
-          int? genderType,
-          int? createDatetime,
-          bool? isActive,
-          String? email,
-          double? height,
-          double? weight,
-          int? dateOfBirth,
-          int? diabetesStatus,
-          String? diabetesName,
-          int? diabetesDate,
-          ImagesModel? imageUrl,
-          String? code,
-          ProvinceModel? province,
-          ProvinceModel? district,
-          ProvinceModel? ward,
-          String? address,
-          double? goalWaist,
-          double? goalWeight,
-          bool? isLinkedFacebook,
-          bool? isLinkedGoogle,
-          bool? isMobileAccount,
-          String? firstLinkedAccount,
-          int? glucoseUnit,
-          String? googleEmail,
-          double? activityLevelRate,
-          String? roadMapId,
-          bool? hasBreakfastSnack,
-          bool? hasLunchSnack,
-          bool? hasDinnerSnack,
-          DiabeteModel? diabetes,
-          InfoModel? profession,
-          InfoModel? educationLevel,
-          InfoModel? personality,
-          InfoModel? consciousnessPractice,
-          InfoModel? religion,
-          InfoModel? vegetarian,
-          List<InfoModel>? caredTopic,
-          List<InfoModel>? personalInterests,
-          List<InfoModel>? favouriteSports,
-          List<InfoModel>? workingHourss}) =>
+  UserModel copyWith({
+    String? id,
+    String? accountId,
+    String? creatorId,
+    String? username,
+    String? fullName,
+    int? age,
+    String? phoneNumber,
+    String? secondPhoneNumber,
+    String? gender,
+    int? genderType,
+    int? createDatetime,
+    bool? isActive,
+    String? email,
+    double? height,
+    double? weight,
+    int? dateOfBirth,
+    int? diabetesStatus,
+    String? diabetesName,
+    int? diabetesDate,
+    ImagesModel? imageUrl,
+    String? code,
+    ProvinceModel? nation,
+    ProvinceModel? province,
+    ProvinceModel? district,
+    ProvinceModel? ward,
+    String? address,
+    double? goalWaist,
+    double? goalWeight,
+    double? energyGoal,
+    bool? isLinkedFacebook,
+    bool? isLinkedGoogle,
+    bool? isMobileAccount,
+    String? firstLinkedAccount,
+    int? glucoseUnit,
+    String? googleEmail,
+    double? activityLevelRate,
+    String? roadMapId,
+    bool? hasBreakfastSnack,
+    bool? hasLunchSnack,
+    bool? hasDinnerSnack,
+    DiabeteModel? diabetes,
+    InfoModel? profession,
+    InfoModel? educationLevel,
+    InfoModel? personality,
+    InfoModel? consciousnessPractice,
+    InfoModel? religion,
+    InfoModel? vegetarian,
+    List<InfoModel>? caredTopic,
+    List<InfoModel>? personalInterests,
+    List<InfoModel>? favouriteSports,
+    List<InfoModel>? workingHourss,
+    List<CategoryItemUserModel>? jobList,
+    List<CategoryItemUserModel>? educationLevelList,
+    List<CategoryItemUserModel>? lessonTagList,
+    List<CategoryItemUserModel>? personalityRuleList,
+    List<CategoryItemUserModel>? interestRuleList,
+    List<CategoryItemUserModel>? consciousnessPracticeRuleList,
+    List<CategoryItemUserModel>? vegetarianRuleList,
+    List<CategoryItemUserModel>? workingHourRuleList,
+    List<CategoryItemUserModel>? levelOfDiabetesRuleList,
+    List<CategoryItemUserModel>? favouriteSportRuleList,
+    List<CategoryItemUserModel>? religionRuleList,
+    AccountRule? accountRule,
+  }) =>
       UserModel(
         id: id ?? this.id,
-        username: username ?? this.username,
+        accountId: accountId ?? this.accountId,
+        creatorId: creatorId ?? this.creatorId,
+        userName: username ?? this.userName,
         fullName: fullName ?? this.fullName,
         age: age ?? this.age,
         phoneNumber: phoneNumber ?? this.phoneNumber,
@@ -163,6 +218,7 @@ class UserModel {
         genderType: genderType ?? this.genderType,
         createDatetime: createDatetime ?? this.createDatetime,
         isActive: isActive ?? this.isActive,
+        nation: nation ?? this.nation,
         province: province ?? this.province,
         district: district ?? this.district,
         height: height ?? this.height,
@@ -178,6 +234,7 @@ class UserModel {
         address: address ?? this.address,
         goalWaist: goalWaist ?? this.goalWaist,
         goalWeight: goalWeight ?? this.goalWeight,
+        energyGoal: energyGoal ?? this.energyGoal,
         isLinkedFacebook: isLinkedFacebook ?? this.isLinkedFacebook,
         isLinkedGoogle: isLinkedGoogle ?? this.isLinkedGoogle,
         isMobileAccount: isMobileAccount ?? this.isMobileAccount,
@@ -200,12 +257,26 @@ class UserModel {
         personalInterests: personalInterests ?? this.personalInterests,
         favouriteSports: favouriteSports ?? this.favouriteSports,
         workingHourss: workingHourss ?? this.workingHourss,
+        jobList: jobList ?? this.jobList,
+        educationLevelList: educationLevelList ?? this.educationLevelList,
+        lessonTagList: lessonTagList ?? this.lessonTagList,
+        personalityRuleList: personalityRuleList ?? this.personalityRuleList,
+        interestRuleList: interestRuleList ?? this.interestRuleList,
+        consciousnessPracticeRuleList: consciousnessPracticeRuleList ?? this.consciousnessPracticeRuleList,
+        vegetarianRuleList: vegetarianRuleList ?? this.vegetarianRuleList,
+        workingHourRuleList: workingHourRuleList ?? this.workingHourRuleList,
+        levelOfDiabetesRuleList: levelOfDiabetesRuleList ?? this.levelOfDiabetesRuleList,
+        favouriteSportRuleList: favouriteSportRuleList ?? this.favouriteSportRuleList,
+        religionRuleList: religionRuleList ?? this.religionRuleList,
+        accountRule: accountRule ?? this.accountRule,
       );
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'],
-      username: json['username'],
+      accountId: json['accountId'],
+      creatorId: json['creatorId'],
+      userName: json['userName'],
       fullName: json['fullName'],
       age: json['age'],
       phoneNumber: json['phoneNumber'],
@@ -214,6 +285,8 @@ class UserModel {
       genderType: json['genderType'],
       createDatetime: json['createDatetime'],
       isActive: json['isActive'],
+      nation:
+          json['nation'] == null ? null : (json['nation'] is String ? null : ProvinceModel.fromJson(json['nation'])),
       province: json['province'] == null
           ? null
           : (json['province'] is String ? null : ProvinceModel.fromJson(json['province'])),
@@ -233,6 +306,7 @@ class UserModel {
       address: json['address'],
       goalWaist: json['goalWaist'],
       goalWeight: json['goalWeight'],
+      energyGoal: json['energyGoal'],
       isLinkedFacebook: json['isLinkedFacebook'],
       isLinkedGoogle: json['isLinkedGoogle'],
       isMobileAccount: json['isMobileAccount'],
@@ -255,6 +329,18 @@ class UserModel {
       personalInterests: json['personalInterests'],
       favouriteSports: json['favouriteSports'],
       workingHourss: json['workingHourss'],
+      jobList: CategoryItemUserModel.toList(json['jobList']),
+      educationLevelList: CategoryItemUserModel.toList(json['educationLevelList']),
+      lessonTagList: CategoryItemUserModel.toList(json['lessonTagList']),
+      interestRuleList: CategoryItemUserModel.toList(json['interestRuleList']),
+      consciousnessPracticeRuleList: CategoryItemUserModel.toList(json['consciousnessPracticeRuleList']),
+      vegetarianRuleList: CategoryItemUserModel.toList(json['vegetarianRuleList']),
+      workingHourRuleList: CategoryItemUserModel.toList(json['workingHourRuleList']),
+      levelOfDiabetesRuleList: CategoryItemUserModel.toList(json['levelOfDiabetesRuleList']),
+      favouriteSportRuleList: CategoryItemUserModel.toList(json['favouriteSportRuleList']),
+      religionRuleList: CategoryItemUserModel.toList(json['religionRuleList']),
+      accountRule: json['accountRule'] == null ? null : AccountRule.fromJson(json['accountRule']),
+      personalityRuleList: CategoryItemUserModel.toList(json['personalityRuleList']),
     );
   }
 

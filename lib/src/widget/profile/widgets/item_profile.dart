@@ -13,6 +13,7 @@ class ItemProfile extends StatefulWidget {
   Widget? subIcon;
   Function(List<int>)? callback;
   List<String> elementList;
+  List<String> selectedList;
   String selectedDialogTitle;
   bool isShowSelectedDialog;
   bool isMultipleChoice;
@@ -23,6 +24,7 @@ class ItemProfile extends StatefulWidget {
     required this.title,
     required this.subTitle,
     this.elementList = const [],
+    this.selectedList = const [],
     this.selectedDialogTitle = '',
     this.subIcon,
     this.callback,
@@ -40,7 +42,9 @@ class _ItemProfileState extends State<ItemProfile> {
 
   @override
   void initState() {
-    title = widget.title;
+    selectedList = widget.selectedList;
+    title = getTitleFromSelectedList(widget.selectedList);
+
     super.initState();
   }
 
@@ -61,8 +65,8 @@ class _ItemProfileState extends State<ItemProfile> {
                     selectedList = typeList;
                     if (typeList.isNotEmpty) {
                       var selectedIndexList = getSelectedIndexList(widget.elementList, typeList);
-                      title = selectedListToString(typeList);
-                      setState(() {});
+                      title = getTitleFromSelectedList(typeList);
+                      //  setState(() {});
 
                       if (widget.callback != null) {
                         widget.callback!(selectedIndexList);
@@ -142,14 +146,17 @@ class _ItemProfileState extends State<ItemProfile> {
     return selectedIndexList;
   }
 
-  String selectedListToString(List<String> selectedList) {
-    String selected = '';
+  String getTitleFromSelectedList(List<String> selectedList) {
+    String title = '';
     for (var selectedItem in selectedList) {
-      selected += selectedItem + ", ";
+      title += selectedItem + ", ";
     }
-    if (selected.length > 2) {
-      selected = selected.substring(0, selected.length - 2);
+    if (title.length > 2) {
+      title = title.substring(0, title.length - 2);
     }
-    return selected;
+    if (title.isEmpty) {
+      title = 'Chưa có';
+    }
+    return title;
   }
 }
