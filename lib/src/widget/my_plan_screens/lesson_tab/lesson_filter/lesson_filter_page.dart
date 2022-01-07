@@ -216,6 +216,20 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
           child: Stack(
             children: [
               Visibility(
+                visible: _cubit.suggestWordFiltered.isEmpty,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 60.0, left: 8),
+                  child: Text(
+                    'Không có kết quả phù hợp',
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+              ),
+              Visibility(
                 visible: _cubit.suggestWordFiltered.isNotEmpty,
                 child: Container(
                   width: double.infinity,

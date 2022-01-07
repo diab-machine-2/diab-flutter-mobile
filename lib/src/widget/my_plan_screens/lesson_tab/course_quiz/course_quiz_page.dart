@@ -138,6 +138,10 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 IconButton(
                   icon: Icon(Icons.close, color: R.color.black),
                   onPressed: () {
+                    if (_cubit.isShowResult) {
+                      onDoneQuiz();
+                      return;
+                    }
                     NavigationUtil.pop(context);
                   },
                 )
@@ -225,7 +229,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
               }
               if (_cubit.canComplete == true) {
                 if (_cubit.isShowResult) {
-                  onDoneQuiz();
+                  // onDoneQuiz();
                   return;
                 }
                 if (_cubit.isPassed) {
@@ -258,7 +262,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 : '${_cubit.selectedCourseIndex + 1}/$lengthQuiz',
             previousButtonTitle: R.string.previous_question.tr(),
             nextButtonTitle: R.string.next_question.tr(),
-            isCompleted: _cubit.canComplete,
+            isCompleted: _cubit.isShowResult ? null : _cubit.canComplete,
           ),
         ],
       ),

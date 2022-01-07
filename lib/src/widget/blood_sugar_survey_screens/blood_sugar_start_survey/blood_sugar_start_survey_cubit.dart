@@ -16,18 +16,16 @@ class BloodSugarStartSurveyCubit extends Cubit<BloodSugarStartSurveyState> {
   bool isBasicUser = false;
   String surveyCode = '';
 
-  // Future<void> getCurrentUserInfo() async {
-  //   emit(const BloodSugarStartSurveyLoading());
-  //   final ApiResult<UserInfoResponse> apiResult =
-  //       await repository.getCurrentUserInfo();
-  //   apiResult.when(success: (UserInfoResponse response) {
-  //     final String packageCode = response.data?.packageCode ?? '';
-  //     isBasicUser = packageCode.isEmpty || packageCode == Const.BASIC;
-  //     surveyCode = response.data?.bloodSugarTemplates ?? '';
-  //     emit(const BloodSugarStartSurveySuccess());
-  //   }, failure: (NetworkExceptions error) {
-  //     emit(BloodSugarStartSurveyFailure(
-  //         NetworkExceptions.getErrorMessage(error)));
-  //   });
-  // }
+  Future<void> getCurrentUserInfo() async {
+    emit(const BloodSugarStartSurveyLoading());
+    final ApiResult<UserInfoResponse> apiResult =
+        await repository.getCurrentUserInfo();
+    apiResult.when(success: (UserInfoResponse response) {
+      surveyCode = response.data?.bloodSugarTemplates ?? '';
+      emit(const BloodSugarStartSurveySuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(BloodSugarStartSurveyFailure(
+          NetworkExceptions.getErrorMessage(error)));
+    });
+  }
 }

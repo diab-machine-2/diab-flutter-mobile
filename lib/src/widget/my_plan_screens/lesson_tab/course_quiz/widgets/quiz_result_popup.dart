@@ -28,11 +28,13 @@ class QuizResultWidget extends StatefulWidget {
 
 class _QuizResultwidgetState extends State<QuizResultWidget> {
   late final double rate;
+  late final bool gotMaxRate;
 
   @override
   void initState() {
     super.initState();
     rate = (widget.rightAnswer / widget.totalQuiz) * 100;
+    gotMaxRate = rate >= 100;
   }
 
   @override
@@ -94,7 +96,7 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
             textAlign: TextAlign.center,
             text: TextSpan(
               text:
-                  "Bạn đã${suggestRetry ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
+                  "Bạn đã${gotMaxRate ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
               style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 16,
@@ -102,13 +104,14 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
               ),
               children: <TextSpan>[
                 TextSpan(
-                    text: "${widget.rightAnswer}/${widget.totalQuiz}",
-                    style: TextStyle(
-                      color: R.color.accentColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      height: 1.375,
-                    )),
+                  text: "${widget.rightAnswer}/${widget.totalQuiz}",
+                  style: TextStyle(
+                    color: R.color.accentColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    height: 1.375,
+                  ),
+                ),
                 TextSpan(
                   text: " câu!",
                   style: TextStyle(
@@ -121,6 +124,20 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
             ),
           ),
         ),
+        if (suggestRetry)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 30),
+            child: Text(
+              R.string.challenge_yourself_again.tr(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.textDark,
+                  height: 1.37,
+                  letterSpacing: 0.4),
+            ),
+          ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

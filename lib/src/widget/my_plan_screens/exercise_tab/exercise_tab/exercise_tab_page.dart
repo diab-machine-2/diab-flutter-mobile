@@ -15,10 +15,8 @@ import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/video_player_widget.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
@@ -34,7 +32,8 @@ class ExerciseTabPage extends StatefulWidget {
   _ExerciseTabPageState createState() => _ExerciseTabPageState();
 }
 
-class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAliveClientMixin<ExerciseTabPage> {
+class _ExerciseTabPageState extends State<ExerciseTabPage>
+    with AutomaticKeepAliveClientMixin<ExerciseTabPage> {
   late final ExerciseTabCubit _cubit;
   final RefreshController _controller = RefreshController();
   final ScrollController _scrollController = ScrollController();
@@ -72,7 +71,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
             animateToIndex(state.newIndex, refresh: false);
           }
           if (state is ExerciseTabScrollToLesson) {
-            _exerciseScrollController.scrollToIndex(state.newIndex, preferPosition: AutoScrollPosition.begin);
+            _exerciseScrollController.scrollToIndex(state.newIndex,
+                preferPosition: AutoScrollPosition.begin);
           }
         },
         builder: (context, state) {
@@ -117,12 +117,16 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                   child: SmartRefresher(
                     controller: _controller,
                     onRefresh: () => _cubit.onRefresh(isRefresh: true),
-                    child: _cubit.exerciseMovementResponse?.data?.isEmpty == null
+                    child: _cubit.exerciseMovementResponse?.data?.isEmpty ==
+                            null
                         ? const SizedBox.shrink()
                         : ListView.separated(
                             controller: _exerciseScrollController,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                            itemCount: _cubit.isHasRoadmapUser ? 1 : _cubit.dataLength + 1,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 20),
+                            itemCount: _cubit.isHasRoadmapUser
+                                ? 1
+                                : _cubit.dataLength + 1,
                             itemBuilder: (context, index) {
                               return AutoScrollTag(
                                   key: ValueKey(index),
@@ -132,7 +136,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                                       ? _buildExerciseWidget(
                                           exerciseItem: _cubit.isHasRoadmapUser
                                               ? _cubit.currentExercise
-                                              : _cubit.exerciseMovementResponse?.data?[index])
+                                              : _cubit.exerciseMovementResponse
+                                                  ?.data?[index])
                                       : SizedBox(height: 20.h));
                             },
                             separatorBuilder: (context, index) {
@@ -184,7 +189,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
           child: Icon(
             Icons.chevron_left_rounded,
             size: 24,
-            color: (_cubit.currentWeekIndex ?? 0) <= 0 ? R.color.captionColorGray : R.color.greenGradientBottom,
+            color: (_cubit.currentWeekIndex ?? 0) <= 0
+                ? R.color.captionColorGray
+                : R.color.greenGradientBottom,
           ),
         ),
         Expanded(
@@ -200,7 +207,10 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                       _cubit.onSelectWeek(index);
                     });
               })
-                ..add(SizedBox(width: _cubit.weekStatesList.isEmpty ? MediaQuery.of(context).size.width - 96 * 2 : 0)),
+                ..add(SizedBox(
+                    width: _cubit.weekStatesList.isEmpty
+                        ? MediaQuery.of(context).size.width - 96 * 2
+                        : 0)),
             ),
           ),
         ),
@@ -212,7 +222,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
           child: Icon(
             Icons.chevron_right_rounded,
             size: 24,
-            color: (_cubit.currentWeekIndex ?? 0) >= (_cubit.weekStatesList.length - 1)
+            color: (_cubit.currentWeekIndex ?? 0) >=
+                    (_cubit.weekStatesList.length - 1)
                 ? R.color.captionColorGray
                 : R.color.greenGradientBottom,
           ),
@@ -237,99 +248,103 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
               height: 87,
               width: 87,
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-              child: NetWorkImageWidget(imageUrl: exerciseItem?.image?.url ?? '')),
+              child:
+                  NetWorkImageWidget(imageUrl: exerciseItem?.image?.url ?? '')),
           const SizedBox(width: 14),
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        exerciseItem!.name ?? '',
-                        style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+            child: InkWell(
+              onTap: () {
+                if (exerciseItem?.exerciseMovementStates ==
+                    Const.LESSON_CAN_NOT_LEARN) {
+                  showUpdateRequirePopup(context: context);
+                  return;
+                }
+                if (exerciseItem?.exerciseMovementStates ==
+                        Const.LESSON_LOCKED ||
+                    exerciseItem?.exerciseMovementStates ==
+                        Const.LESSON_CAN_NOT_LEARN) {
+                  _showLockedDialog();
+                  return;
+                }
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          exerciseItem!.name ?? '',
+                          style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${exerciseItem.practiceTime ?? ''} ${R.string.minute.tr()}',
-                      style: TextStyle(color: R.color.grey_2, fontSize: 12, fontWeight: FontWeight.w400),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Visibility(
-                  visible: exerciseItem.exerciseMovementStates != Const.LESSON_LOCKED &&
-                      exerciseItem.exerciseMovementStates != Const.LESSON_CAN_NOT_LEARN,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildCustomIconButton(
-                          title: R.string.start_exercise.tr(),
-                          icon: R.drawable.ic_start_exercise,
-                          borderColor: R.color.greenGradientBottom,
-                          backgroundColor: R.color.greenGradientBottom,
-                          textColor: R.color.white,
-                          onTap: () async {
-                            if (exerciseItem.exerciseMovementStates == Const.LESSON_CAN_NOT_LEARN) {
-                              showUpdateRequirePopup(context: context);
-                              return;
-                            }
-                            if (exerciseItem.exerciseMovementStates == Const.LESSON_LOCKED ||
-                                exerciseItem.exerciseMovementStates == Const.LESSON_CAN_NOT_LEARN) {
-                              _showLockedDialog();
-                              return;
-                            }
-                            await NavigationUtil.navigatePage(
-                              context,
-                              ExerciseDetail(
-                                exerciseData: exerciseItem,
-                              ),
-                            );
-                            _cubit.onRefresh(keepSelectedDayIndex: true);
-                          },
-                        ),
-                        _buildCustomIconButton(
-                          title: R.string.show_instruction.tr(),
-                          icon: R.drawable.ic_play,
-                          borderColor: R.color.greenGradientBottom,
-                          backgroundColor: R.color.white,
-                          textColor: R.color.greenGradientBottom,
-                          onTap: () async {
-                            if (_cubit.isFreeUser && exerciseItem.isFree != true) {
-                              showUpdateRequirePopup(context: context);
-                              return;
-                            }
-                            if (exerciseItem.exerciseMovementStates == Const.LESSON_LOCKED) {
-                              _showLockedDialog();
-                              return;
-                            }
-
-                            NavigationUtil.navigatePage(
-                              context,
-                              VideoPlayerWidget(
-                                videoUrl: exerciseItem.videoUrl ?? '',
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                      const SizedBox(width: 8),
+                      Text(
+                        '${exerciseItem.practiceTime ?? ''} ${R.string.minute.tr()}',
+                        style: TextStyle(
+                            color: R.color.grey_2,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Visibility(
+                    visible: exerciseItem.exerciseMovementStates !=
+                            Const.LESSON_LOCKED &&
+                        exerciseItem.exerciseMovementStates !=
+                            Const.LESSON_CAN_NOT_LEARN,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildCustomIconButton(
+                            title: R.string.start_exercise.tr(),
+                            icon: R.drawable.ic_start_exercise,
+                            borderColor: R.color.greenGradientBottom,
+                            backgroundColor: R.color.greenGradientBottom,
+                            textColor: R.color.white,
+                            onTap: () async {
+                              await NavigationUtil.navigatePage(
+                                context,
+                                ExerciseDetail(
+                                  exerciseData: exerciseItem,
+                                ),
+                              );
+                              _cubit.onRefresh(keepSelectedDayIndex: true);
+                            },
+                          ),
+                          _buildCustomIconButton(
+                            title: R.string.show_instruction.tr(),
+                            icon: R.drawable.ic_play,
+                            borderColor: R.color.greenGradientBottom,
+                            backgroundColor: R.color.white,
+                            textColor: R.color.greenGradientBottom,
+                            onTap: () {
+                              NavigationUtil.navigatePage(
+                                context,
+                                VideoPlayerWidget(
+                                  videoUrl: exerciseItem.videoUrl ?? '',
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                LessonStatusWidget(
-                  learningStatus: exerciseItem.exerciseMovementStates,
-                ),
-              ],
+                  LessonStatusWidget(
+                    learningStatus: exerciseItem.exerciseMovementStates,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -354,7 +369,10 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                 Text(
                   R.string.today_is_day_off.tr(),
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -387,7 +405,10 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                 Text(
                   R.string.today_is_day_no_exercise.tr(),
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -489,10 +510,12 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
         width: 96,
         height: 32,
         decoration: BoxDecoration(
-          color: isSelected && state.completionStatus == CompletionStatus.not_start_yet
+          color: isSelected &&
+                  state.completionStatus == CompletionStatus.not_start_yet
               ? R.color.greenbg
               : state.completionStatus.statusBackgroundColor,
-          border: isSelected && state.completionStatus != CompletionStatus.not_start_yet
+          border: isSelected &&
+                  state.completionStatus != CompletionStatus.not_start_yet
               ? Border.all(color: state.completionStatus.statusIconColor)
               : null,
           borderRadius: BorderRadius.circular(200),
@@ -503,14 +526,16 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
             Text(
               state.weekTitle ?? '',
               style: TextStyle(
-                color: isSelected && state.completionStatus == CompletionStatus.not_start_yet
+                color: isSelected &&
+                        state.completionStatus == CompletionStatus.not_start_yet
                     ? R.color.green
                     : state.completionStatus.statusIconColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            if (!(isSelected && state.completionStatus == CompletionStatus.not_start_yet))
+            if (!(isSelected &&
+                state.completionStatus == CompletionStatus.not_start_yet))
               state.completionStatus.weekStatusIcon
           ],
         ),
@@ -519,8 +544,11 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
   }
 
   Future<void> changeRoadMap() async {
-    final newRoadmapId = await NavigationUtil.navigatePage(context, const SelectRoadMapPage());
-    if (newRoadmapId is String && newRoadmapId.isNotEmpty && newRoadmapId != _cubit.roadmapId) {
+    final newRoadmapId =
+        await NavigationUtil.navigatePage(context, const SelectRoadMapPage());
+    if (newRoadmapId is String &&
+        newRoadmapId.isNotEmpty &&
+        newRoadmapId != _cubit.roadmapId) {
       _cubit.roadmapChanged(newRoadmapId);
     }
   }
@@ -628,19 +656,26 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 30),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50.0, vertical: 30),
                         child: Image.asset(R.drawable.img_upgrade_package),
                       ),
                       Text(
                         'Bài học chưa mở khoá!',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         'Vui lòng nâng cấp tài khoản để tập các bài tiếp theo.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
                       ),
                       const SizedBox(height: 16),
                       Row(
