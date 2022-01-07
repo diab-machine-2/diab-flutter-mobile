@@ -344,6 +344,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => QuizResultWidget(
+        isQuizLesson: _cubit.isQuizLesson,
         rightAnswer: _cubit.countAnswerRight,
         totalQuiz: _cubit.listQuiz.length,
         minCompletePercent: _cubit.minCompletePercent,

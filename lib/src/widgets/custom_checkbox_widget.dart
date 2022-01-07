@@ -29,7 +29,7 @@ class CustomCheckboxWidget extends StatelessWidget {
               color: isChecked ? R.color.accentColor : R.color.white,
               border: isChecked
                   ? null
-                  : Border.all(width: 2, color: R.color.grayComponentBorder),
+                  : Border.all(width: 2, color: R.color.primaryGreyColor),
               borderRadius: BorderRadius.circular(4),
             ),
             child: isChecked
