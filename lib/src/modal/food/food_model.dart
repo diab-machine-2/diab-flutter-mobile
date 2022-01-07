@@ -1,5 +1,6 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
+
 @immutable
 class FoodModel {
   final String? id;
@@ -19,25 +20,27 @@ class FoodModel {
   final String? foodCategoryId;
   final double? quantity;
   final String? mealId;
+  final int? timeCode;
 
   const FoodModel({
     required this.id,
-     this.code,
-     this.name,
-     this.portion,
-     this.unit,
-     this.calorie,
-     this.glucose,
-     this.lipid,
-     this.protein,
-     this.fibre,
-     this.image,
-     this.liked,
-     this.text,
-     this.description,
-     this.foodCategoryId,
-     this.quantity,
-     this.mealId,
+    this.code,
+    this.name,
+    this.portion,
+    this.unit,
+    this.calorie,
+    this.glucose,
+    this.lipid,
+    this.protein,
+    this.fibre,
+    this.image,
+    this.liked,
+    this.text,
+    this.description,
+    this.foodCategoryId,
+    this.quantity,
+    this.mealId,
+    this.timeCode,
   });
 
   @override
@@ -45,7 +48,7 @@ class FoodModel {
     return FoodModel(
       id: json['id'],
       name: json['name'],
-        code: json['code'],
+      code: json['code'],
       portion: json['portion'] == null ? 1 : json['portion'].toDouble() ?? 1,
       unit: json['unit'],
       calorie: json['calorie'] == null
@@ -94,7 +97,7 @@ class FoodModel {
     String? foodCategoryId,
     double? quantity,
     String? mealId,
-
+    int? timeCode,
   }) {
     return FoodModel(
       id: id ?? this.id,
@@ -114,12 +117,13 @@ class FoodModel {
       foodCategoryId: foodCategoryId ?? this.foodCategoryId,
       quantity: quantity ?? this.quantity,
       mealId: mealId ?? this.mealId,
+      timeCode: timeCode ?? this.timeCode,
     );
   }
 
   Map<String, dynamic> toJson() => {
         'id': id,
-    'code': code,
+        'code': code,
         'name': name,
         'portion': portion,
         'unit': unit,
@@ -133,6 +137,6 @@ class FoodModel {
         'text': text,
         'description': description,
         'foodCategoryId': foodCategoryId,
-    'quantity': quantity,
+        'quantity': quantity,
       };
 }

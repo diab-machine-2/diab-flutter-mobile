@@ -147,7 +147,8 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                               CrossAxisAlignment.end,
                                           children: [
                                             Text(
-                                              formatNumber(_cubit.totalKcalNumber),
+                                              formatNumber(
+                                                  _cubit.totalKcalNumber),
                                               style: TextStyle(
                                                 color: R.color.black,
                                                 fontSize: 24,
@@ -446,7 +447,11 @@ class _DailyNutritionPageState extends State<DailyNutritionPage> {
                                                               dateCode:
                                                                   'T${_cubit.selectedDate.weekday + 1}',
                                                               timeCode: _cubit
-                                                                  .timeCode,
+                                                                      .selectedFoods[
+                                                                          index]
+                                                                      .timeCode ??
+                                                                  _cubit
+                                                                      .timeCode,
                                                             ),
                                                           );
                                                           if (result

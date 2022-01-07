@@ -457,14 +457,14 @@ class MenuResponse {
         return -1;
       }
 
-      void addFood(FoodModel food) {
+      void addFood(FoodModel food, int timeCode) {
         final int index = indexOfFood(food);
         if (index != -1) {
           foods[index] = foods[index].copyWith(
               portion: (foods[index].portion ?? 0) + (food.portion ?? 0));
           return;
         }
-        foods.add(food);
+        foods.add(food.copyWith(timeCode: timeCode));
       }
 
       final List<FoodModel> listFood_4 =
@@ -475,13 +475,13 @@ class MenuResponse {
           _timeGroupsFromDateTime(time: time, timeCode: 6)?.listFoods ?? [];
 
       listFood_4.forEach((food) {
-        addFood(food);
+        addFood(food, 4);
       });
       listFood_5.forEach((food) {
-        addFood(food);
+        addFood(food, 5);
       });
       listFood_6.forEach((food) {
-        addFood(food);
+        addFood(food, 6);
       });
       return foods;
     }

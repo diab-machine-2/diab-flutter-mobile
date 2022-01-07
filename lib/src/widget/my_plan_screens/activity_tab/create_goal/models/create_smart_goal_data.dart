@@ -187,7 +187,7 @@ class CreateSmartGoalData {
 
   List<CustomWeekList?> get targetSchedulerWeeks => List.generate(
         repeatDayList.length,
-        (index) => CustomWeekList(dayInWeek: repeatDayList[index].index),
+        (index) => CustomWeekList(dayInWeek: repeatDayList[index].index + 1),
       );
 
   int get repeatTypeIndex {

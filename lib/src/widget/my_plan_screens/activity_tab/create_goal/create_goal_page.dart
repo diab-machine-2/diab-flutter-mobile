@@ -433,7 +433,9 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                         builder: (context) {
                           return SelectBottomSheetWidget(
                             title: R.string.select_frequency.tr(),
-                            selectedList: [_cubit.dataModel.repeatType?.title ?? ''],
+                            selectedList: [
+                              _cubit.dataModel.repeatType?.title ?? ''
+                            ],
                             elementList: [
                               RepeatType.day.title,
                               RepeatType.week.title
@@ -520,27 +522,42 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                                   width: 24, height: 24),
                               Expanded(
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: _cubit.dataModel.repeatDayList
-                                      .map(
-                                        (day) => Container(
-                                          height: 24,
-                                          alignment: Alignment.center,
-                                          margin:
-                                              const EdgeInsets.only(left: 8),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 4),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            border: Border.all(
-                                                color: R.color.grayBorder),
-                                          ),
-                                          child: Text(day.shortTitle,
-                                              style: R.style.normalTextStyle),
-                                        ),
-                                      )
-                                      .toList(),
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: _cubit
+                                          .dataModel.repeatDayList.isEmpty
+                                      ? [
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'Chọn ngày lặp lại',
+                                            style: TextStyle(
+                                              color: R.color.gray,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          )
+                                        ]
+                                      : _cubit.dataModel.repeatDayList
+                                          .map(
+                                            (day) => Container(
+                                              height: 24,
+                                              alignment: Alignment.center,
+                                              margin: const EdgeInsets.only(
+                                                  left: 8),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 4),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                    color: R.color.grayBorder),
+                                              ),
+                                              child: Text(day.shortTitle,
+                                                  style:
+                                                      R.style.normalTextStyle),
+                                            ),
+                                          )
+                                          .toList(),
                                 ),
                               )
                             ],
@@ -557,12 +574,13 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             ),
           ),
           _buildTimePicker(
-              initDate: _cubit.dataModel.endDate,
-              title: R.string.select_end_date.tr(),
-              onPickDate: (dateTime) {
-                _cubit.dataModel.endDate = dateTime;
-              },
-              minDate: DateTime.now(),),
+            initDate: _cubit.dataModel.endDate,
+            title: R.string.select_end_date.tr(),
+            onPickDate: (dateTime) {
+              _cubit.dataModel.endDate = dateTime;
+            },
+            minDate: DateTime.now(),
+          ),
           const SizedBox(height: 24)
         ],
       ),
