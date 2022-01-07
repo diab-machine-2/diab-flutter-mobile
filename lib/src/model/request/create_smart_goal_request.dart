@@ -23,7 +23,8 @@ class CustomWeekList {
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['dayInWeek'] = dayInWeek;
-    if (targetSchedulerId != null) data['targetSchedulerId'] = targetSchedulerId;
+    if (targetSchedulerId != null)
+      data['targetSchedulerId'] = targetSchedulerId;
     return data;
   }
 }
@@ -132,7 +133,10 @@ class CreateSmartGoalRequest {
     this.executeType,
     this.executeDayTimes,
     this.targetScheduler,
-  });
+  }) {
+    this.appointmentDate =
+        (DateTime.now().millisecondsSinceEpoch ~/ 1000).toInt();
+  }
   CreateSmartGoalRequest.fromJson(Map<String, dynamic> json) {
     id = json['id']?.toString();
     targetSchedulerId = json['targetSchedulerId']?.toString();
@@ -148,7 +152,8 @@ class CreateSmartGoalRequest {
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     if (id != null) data['id'] = id;
-    if (targetSchedulerId != null) data['targetSchedulerId'] = targetSchedulerId;
+    if (targetSchedulerId != null)
+      data['targetSchedulerId'] = targetSchedulerId;
     data['name'] = name;
     data['type'] = type;
     data['appointmentDate'] = appointmentDate;
