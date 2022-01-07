@@ -38,6 +38,10 @@ class CreateGoalPage extends StatefulWidget {
 class _CreateGoalPageState extends State<CreateGoalPage> {
   late final CreateGoalCubit _cubit;
 
+  final TextEditingController _controlleGoalTimeOrFrequency =
+      TextEditingController();
+  final TextEditingController _controllerName = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -277,6 +281,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   }
 
   List<Widget> _buildSetupGoalDefault() {
+    _controlleGoalTimeOrFrequency.text = _cubit.dataModel.goalTimeOrFrequency;
     return [
       _buildTextField(),
       EnterTimeWidget(
@@ -288,8 +293,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         onChangeUnit: (type) {
           _cubit.dataModel.goalRecordType = type;
         },
-        controller:
-            TextEditingController(text: _cubit.dataModel.goalTimeOrFrequency),
+        controller: _controlleGoalTimeOrFrequency,
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -306,6 +310,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   }
 
   List<Widget> _buildSetupGoalType1() {
+    _controlleGoalTimeOrFrequency.text = _cubit.dataModel.goalTimeOrFrequency;
     return [
       _buildTextDescription(),
       EnterTimeWidget(
@@ -315,8 +320,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         onChangedTime: (text) {
           _cubit.dataModel.goalTimeOrFrequency = text;
         },
-        controller:
-            TextEditingController(text: _cubit.dataModel.goalTimeOrFrequency),
+        controller: _controlleGoalTimeOrFrequency,
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -344,6 +348,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   }
 
   Widget _buildTextField() {
+    _controllerName.text = _cubit.dataModel.name;
     return _buildItemLayout(
       child: Column(
         children: [
@@ -370,8 +375,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
             child: Column(
               children: [
                 TextField(
-                  controller:
-                      TextEditingController(text: _cubit.dataModel.name),
+                  controller: _controllerName,
                   autofocus: false,
                   maxLength: 24,
                   decoration: InputDecoration(
