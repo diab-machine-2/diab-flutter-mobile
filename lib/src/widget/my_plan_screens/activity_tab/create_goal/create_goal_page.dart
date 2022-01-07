@@ -433,7 +433,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                         builder: (context) {
                           return SelectBottomSheetWidget(
                             title: R.string.select_frequency.tr(),
-                            selectedList: const [],
+                            selectedList: [_cubit.dataModel.repeatType?.title ?? ''],
                             elementList: [
                               RepeatType.day.title,
                               RepeatType.week.title
@@ -562,7 +562,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
               onPickDate: (dateTime) {
                 _cubit.dataModel.endDate = dateTime;
               },
-              minDate: DateTime.now()),
+              minDate: DateTime.now(),),
           const SizedBox(height: 24)
         ],
       ),
@@ -712,7 +712,7 @@ Dù chưa biết lý do vì sao có sự tương quan đáng kể giữa đái t
 Tăng huyết áp được biết đến như một “kẻ giết người thầm lặng” vì nó không có triệu chứng rõ ràng. Một cuộc khảo sát năm 2002 của Hiệp hội Đái tháo đường Hoa Kỳ (ADA) cho thấy, khoảng 68% những người bị bệnh đái tháo đường không biết họ cũng có nguy cơ gia tăng bệnh tim và đột quỵ vì liên quan đến tăng huyết áp mạn tính.''');
               },
               child: Text(
-                'Tôi cần thêm thông tin',
+                'Tìm hiểu thêm',
                 style: TextStyle(
                   color: R.color.greenGradientBottom,
                   fontSize: 14,

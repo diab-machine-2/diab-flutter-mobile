@@ -58,7 +58,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   Future<void> onSelectWeek(int newWeekIndex,
       {bool hideLoadingAfterDone = false}) async {
     currentWeekIndex = newWeekIndex;
-    refreshData();
+    refreshData(keepCurrentDay: false);
   }
 
   void onSelectDay(int newDayIndex) {
@@ -81,9 +81,9 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     emit(const ActivityTabProgressChanged());
   }
 
-  Future<void> refreshData({bool isRefresh = false}) async {
+  Future<void> refreshData({bool isRefresh = false, bool keepCurrentDay = true}) async {
     await getSmartGoalStatistics(
-        isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: true);
+        isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: keepCurrentDay);
     await getListSmartGoal(isRefresh: isRefresh);
   }
 
