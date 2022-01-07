@@ -38,16 +38,14 @@ class CreateGoalPage extends StatefulWidget {
 class _CreateGoalPageState extends State<CreateGoalPage> {
   late final CreateGoalCubit _cubit;
 
-  final TextEditingController _controlleGoalTimeOrFrequency =
-      TextEditingController();
+  final TextEditingController _controlleGoalTimeOrFrequency = TextEditingController();
   final TextEditingController _controllerName = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     final AppRepository appRepository = AppRepository();
-    _cubit = CreateGoalCubit(appRepository,
-        smartGoalDayList: widget.smartGoalDayList);
+    _cubit = CreateGoalCubit(appRepository, smartGoalDayList: widget.smartGoalDayList);
   }
 
   @override
@@ -94,31 +92,27 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: CustomTopProgressBar(_cubit.currentStatus,
-                          onSelect: (newStatus) {
+                      child: CustomTopProgressBar(_cubit.currentStatus, onSelect: (newStatus) {
                         _cubit.onSelectStatus(newStatus);
                       }),
                     ),
                     Expanded(
                       child: ListView(
-                        keyboardDismissBehavior:
-                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                         padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
                         children: body,
                       ),
                     ),
                     const SizedBox(height: 16),
                     Visibility(
-                      visible:
-                          _cubit.currentStatus != CreateGoalStatus.select_type,
+                      visible: _cubit.currentStatus != CreateGoalStatus.select_type,
                       child: SafeArea(
                         top: false,
                         child: Container(
                           height: 48,
                           width: 195,
                           child: ButtonWidget(
-                            title: _cubit.currentStatus ==
-                                    CreateGoalStatus.complete
+                            title: _cubit.currentStatus == CreateGoalStatus.complete
                                 ? R.string.completed.tr()
                                 : R.string.text_continue.tr(),
                             textSize: 16,
@@ -244,14 +238,11 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
     return [
       _buildSingleResultDetail(
         title: 'Mục tiêu',
-        description: _cubit.dataModel.type == ScheduleType.custom
-            ? _cubit.dataModel.name
-            : (_cubit.dataModel.type?.title ?? ''),
+        description:
+            _cubit.dataModel.type == ScheduleType.custom ? _cubit.dataModel.name : (_cubit.dataModel.type?.title ?? ''),
       ),
       _buildSingleResultDetail(
-          title: _cubit.dataModel.goalRecordType == GoalRecordType.time
-              ? 'Thời lượng'
-              : 'Số lần',
+          title: _cubit.dataModel.goalRecordType == GoalRecordType.time ? 'Thời lượng' : 'Số lần',
           description:
               '${_cubit.dataModel.goalTimeOrFrequency} ${_cubit.dataModel.goalRecordType == GoalRecordType.time ? 'phút' : 'lần'}'),
       if (_cubit.dataModel.isRepeat)
@@ -264,24 +255,20 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
       if (_cubit.dataModel.isRepeat)
         _buildSingleResultDetail(
           title: 'Ngày kết thúc',
-          description:
-              DateFormat('dd/MM/yyyy').format(_cubit.dataModel.endDate),
+          description: DateFormat('dd/MM/yyyy').format(_cubit.dataModel.endDate),
         ),
     ];
   }
 
   List<Widget> _buildSmartGoalDetailType2() {
     return [
-      _buildSingleResultDetail(
-          title: 'Mục tiêu', description: 'Vận động trong ngày'),
-      _buildSingleResultDetail(
-          title: 'Thời lượng',
-          description: '${_cubit.dataModel.dailyTargetDurationNumber} phút'),
+      _buildSingleResultDetail(title: 'Mục tiêu', description: 'Vận động trong ngày'),
+      _buildSingleResultDetail(title: 'Thời lượng', description: '${_cubit.dataModel.dailyTargetDurationNumber} phút'),
     ];
   }
 
   List<Widget> _buildSetupGoalDefault() {
-    _controlleGoalTimeOrFrequency.text = _cubit.dataModel.goalTimeOrFrequency;
+    //   _controlleGoalTimeOrFrequency.text = _cubit.dataModel.goalTimeOrFrequency;
     return [
       _buildTextField(),
       EnterTimeWidget(
@@ -383,8 +370,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
-                      contentPadding: const EdgeInsets.only(
-                          left: 0, bottom: 0, top: 8, right: 0),
+                      contentPadding: const EdgeInsets.only(left: 0, bottom: 0, top: 8, right: 0),
                       hintText: R.string.enter_smart_goal_name.tr()),
                   onChanged: (text) {
                     _cubit.dataModel.name = text.trim();
@@ -437,13 +423,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                         builder: (context) {
                           return SelectBottomSheetWidget(
                             title: R.string.select_frequency.tr(),
-                            selectedList: [
-                              _cubit.dataModel.repeatType?.title ?? ''
-                            ],
-                            elementList: [
-                              RepeatType.day.title,
-                              RepeatType.week.title
-                            ],
+                            selectedList: [_cubit.dataModel.repeatType?.title ?? ''],
+                            elementList: [RepeatType.day.title, RepeatType.week.title],
                             onSelected: (typeList) {
                               if (typeList.isNotEmpty) {
                                 _cubit.onChangeRepeatType(typeList.first);
@@ -461,12 +442,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           children: [
                             Expanded(
                               child: Text(
-                                _cubit.dataModel.repeatType?.title ??
-                                    'Không lặp lại',
-                                style: TextStyle(
-                                    color: R.color.textDark,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400),
+                                _cubit.dataModel.repeatType?.title ?? 'Không lặp lại',
+                                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -500,12 +477,8 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           builder: (context) {
                             return SelectBottomSheetWidget(
                               title: R.string.select_frequency.tr(),
-                              selectedList: _cubit.dataModel.repeatDayList
-                                  .map((e) => e.title)
-                                  .toList(),
-                              elementList: DayInWeekExtend.dayInWeekList
-                                  .map((e) => e.title)
-                                  .toList(),
+                              selectedList: _cubit.dataModel.repeatDayList.map((e) => e.title).toList(),
+                              elementList: DayInWeekExtend.dayInWeekList.map((e) => e.title).toList(),
                               onSelected: (dayList) {
                                 if (dayList != null) {
                                   _cubit.onChangeRepeatDay(dayList);
@@ -522,13 +495,11 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Image.asset(R.drawable.ic_calendar,
-                                  width: 24, height: 24),
+                              Image.asset(R.drawable.ic_calendar, width: 24, height: 24),
                               Expanded(
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  children: _cubit
-                                          .dataModel.repeatDayList.isEmpty
+                                  children: _cubit.dataModel.repeatDayList.isEmpty
                                       ? [
                                           const SizedBox(width: 8),
                                           Text(
@@ -545,20 +516,13 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                                             (day) => Container(
                                               height: 24,
                                               alignment: Alignment.center,
-                                              margin: const EdgeInsets.only(
-                                                  left: 8),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 4),
+                                              margin: const EdgeInsets.only(left: 8),
+                                              padding: const EdgeInsets.symmetric(horizontal: 4),
                                               decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                border: Border.all(
-                                                    color: R.color.grayBorder),
+                                                borderRadius: BorderRadius.circular(8),
+                                                border: Border.all(color: R.color.grayBorder),
                                               ),
-                                              child: Text(day.shortTitle,
-                                                  style:
-                                                      R.style.normalTextStyle),
+                                              child: Text(day.shortTitle, style: R.style.normalTextStyle),
                                             ),
                                           )
                                           .toList(),
@@ -719,8 +683,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         const SizedBox(height: 8),
         Text('''
       - Nếu huyết áp của bạn ổn định, hãy đo 1- 3 ngày/tuần
-      - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''',
-            style: R.style.normalTextStyle),
+      - Nếu huyết áp của bạn chưa ổn định, hãy đo 3 - 7 ngày/tuần''', style: R.style.normalTextStyle),
         const SizedBox(height: 14),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -748,10 +711,7 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
     );
   }
 
-  Widget _buildItemLayout(
-      {required Widget child,
-      EdgeInsetsGeometry? margin,
-      bool isValid = true}) {
+  Widget _buildItemLayout({required Widget child, EdgeInsetsGeometry? margin, bool isValid = true}) {
     return Container(
       margin: margin ?? const EdgeInsets.only(top: 16),
       decoration: BoxDecoration(
@@ -767,9 +727,7 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
     );
   }
 
-  showActionFilter(
-      {required BuildContext context,
-      required Widget Function(BuildContext) builder}) {
+  showActionFilter({required BuildContext context, required Widget Function(BuildContext) builder}) {
     showModalBottomSheet(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -805,10 +763,7 @@ Tăng huyết áp được biết đến như một “kẻ giết người th�
                 Expanded(
                   child: Center(
                     child: Text(R.string.dia_recommand.tr(),
-                        style: TextStyle(
-                            color: R.color.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold)),
+                        style: TextStyle(color: R.color.black, fontSize: 20, fontWeight: FontWeight.bold)),
                   ),
                 )
               ]),
