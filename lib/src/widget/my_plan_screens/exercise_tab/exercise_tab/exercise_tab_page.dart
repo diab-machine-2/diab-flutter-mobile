@@ -15,8 +15,10 @@ import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/video_player_widget.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
@@ -302,7 +304,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                           borderColor: R.color.greenGradientBottom,
                           backgroundColor: R.color.white,
                           textColor: R.color.greenGradientBottom,
-                          onTap: () {
+                          onTap: () async {
                             if (_cubit.isFreeUser && exerciseItem.isFree != true) {
                               showUpdateRequirePopup(context: context);
                               return;
@@ -311,6 +313,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
                               _showLockedDialog();
                               return;
                             }
+
                             NavigationUtil.navigatePage(
                               context,
                               VideoPlayerWidget(
