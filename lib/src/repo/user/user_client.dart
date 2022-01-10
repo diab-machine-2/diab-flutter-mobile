@@ -264,7 +264,20 @@ class UserClient extends FetchClient {
     bool isMultiChoice,
   ) async {
     try {
-      AccountRule accountRule = userInfo.accountRule!;
+      AccountRule accountRule;
+      if (userInfo.accountRule != null) {
+        accountRule = userInfo.accountRule!;
+      } else {
+        accountRule = AccountRule(
+            id: "00000000-0000-0000-0000-000000000000",
+            fromAge: 0,
+            toAge: 0,
+            amount: 0,
+            accountRuleTypeMappings: [],
+            accountRuleTagMappings: [],
+            modelStatus: 0);
+      }
+
       accountRule.fromAge = 0;
       accountRule.toAge = 0;
       accountRule.amount = 0;

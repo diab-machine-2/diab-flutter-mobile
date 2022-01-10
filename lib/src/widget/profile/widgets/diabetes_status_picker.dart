@@ -23,8 +23,8 @@ class _DiabetesStatusPickerState extends State<DiabetesStatusPicker> {
   @override
   void initState() {
     super.initState();
-    scrollController = FixedExtentScrollController(initialItem: widget.state == null ? 0 : (widget.state! - 1));
-    selectedItem = widget.state == null ? 0 : (widget.state! - 1);
+    scrollController = FixedExtentScrollController(initialItem: widget.state == null ? 0 : (widget.state!));
+    selectedItem = widget.state == null ? 0 : (widget.state!);
 
     diabeteStates = widget.levelOfDiabetesList;
     if (widget.state == null) {

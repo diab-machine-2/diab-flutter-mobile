@@ -31,6 +31,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/profile/address.dart';
+import 'package:medical/src/widget/profile/widgets/currency_formatter.dart';
 import 'package:medical/src/widget/profile/widgets/item_profile.dart';
 import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:medical/src/widgets/user_icon_widget.dart';
@@ -2063,7 +2064,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     if (user?.accountRule?.accountRuleTypeMappings != null) {
       for (int i = 0; i < user!.accountRule!.accountRuleTypeMappings!.length; i++) {
         if (user.accountRule!.accountRuleTypeMappings![i].ruleType == 10) {
-          return (user.accountRule!.accountRuleTypeMappings![i].value ?? 0) + 1;
+          return (user.accountRule!.accountRuleTypeMappings![i].value ?? 0);
         }
       }
     }
