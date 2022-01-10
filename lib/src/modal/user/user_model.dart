@@ -318,7 +318,7 @@ class UserModel {
       hasBreakfastSnack: json['hasBreakfastSnack'],
       hasLunchSnack: json['hasLunchSnack'],
       hasDinnerSnack: json['hasDinnerSnack'],
-      diabetes: json['diabetes'],
+      diabetes: json['diabetes'] == null ? null : DiabeteModel.fromJson(json['diabetes']),
       profession: json['profession'],
       educationLevel: json['educationLevel'],
       personality: json['personality'],

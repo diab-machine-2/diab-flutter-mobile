@@ -213,7 +213,7 @@ class UserClient extends FetchClient {
         'districtId': userInfo.district == null ? '' : userInfo.district!.id ?? '',
         'wardId': userInfo.ward == null ? '' : userInfo.ward!.id ?? '',
         'address': userInfo.address ?? '',
-        'diabetesStatus': userInfo.diabetesStatus == null ? 0 : userInfo.diabetesStatus! - 1,
+        'diabetesStatus': userInfo.diabetesStatus == null ? 0 : userInfo.diabetesStatus!,
         'diabetesDate': userInfo.diabetesDate == null ? 0 : userInfo.diabetesDate,
         'height': userInfo.height == null ? 0 : userInfo.height,
         'weight': userInfo.weight == null ? 0 : userInfo.weight,
