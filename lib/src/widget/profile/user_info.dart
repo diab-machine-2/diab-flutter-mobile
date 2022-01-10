@@ -54,6 +54,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   var user = AppSettings.userInfo!;
   List<CategoryItemUserModel> selectedLessonTagList = [];
   String diabetesName = '';
+  int? diabetesStatus;
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
         break;
       }
     }
+    diabetesStatus = getSelectedIndexDiabetes();
 
     loadMotivation();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Update Profile');
@@ -98,7 +100,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   @override
   Widget build(BuildContext context) {
     user = AppSettings.userInfo!;
-    user = user.copyWith(diabetesName: diabetesName);
+    user = user.copyWith(diabetesName: diabetesName, diabetesStatus: diabetesStatus);
+    AppSettings.userInfo = user;
+
     selectedLessonTagList =
         user.lessonTagList == null ? [] : user.lessonTagList!.where((element) => element.selected ?? false).toList();
 
@@ -564,14 +568,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           children: [
                             _buildItemProfile(
                               icon: R.drawable.ic_user_hospital,
-                              title: 'Bệnh viện Hồng Ngọc',
+                              title: R.string.not_updated_yet.tr(),
                               subTitle: 'Bệnh viện / Phòng khám',
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
                             ),
                             _buildItemProfile(
                               icon: R.drawable.ic_user_doctor,
-                              title: 'Đặng Vân Nga',
+                              title: R.string.not_updated_yet.tr(),
                               subTitle: 'Bác sĩ giới thiệu',
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
@@ -834,7 +838,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   _cropImage(String url) async {
     try {
       BotToast.showLoading();
-      final imageFile = await (ImageCropper.cropImage(
+      final imageFile = await ImageCropper.cropImage(
           maxWidth: 320,
           maxHeight: 320,
           aspectRatioPresets: [CropAspectRatioPreset.square],
@@ -846,9 +850,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
               toolbarTitle: 'Cropper', initAspectRatio: CropAspectRatioPreset.square, lockAspectRatio: false),
           iosUiSettings: const IOSUiSettings(
             minimumAspectRatio: 1.0,
-          )) as FutureOr<File>);
+          ));
 
-      final path = imageFile.path;
+      final path = imageFile!.path;
       await uploadAvatar(path);
     } catch (_) {
       BotToast.closeAllLoading();
@@ -902,10 +906,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     }
   }
 
-  updateUserInfo(UserModel user) async {
+  updateUserInfo(UserModel user, {bool isUpdateDiabetes = false}) async {
     try {
       BotToast.showLoading();
-      await UserClient().updateUserInfo(AppSettings.userInfo!.id, user);
+      await UserClient().updateUserInfo(AppSettings.userInfo!.id, user, isUpdateDiabetes: isUpdateDiabetes);
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -993,6 +997,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       );
       await _googleSignIn.signOut();
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
+      if (account == null) BotToast.closeAllLoading();
       final result = await LoginClient()
           .linkedAccountOTP({'providerName': 'Google', 'providerKey': account?.id, 'phoneNumber': user.phoneNumber});
       BotToast.closeAllLoading();
@@ -1013,6 +1018,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
         if (e.code == 'USER002') {
           Message.showToastMessage(context, R.string.account_already_used.tr());
         } else {
+          if (e.message != null && e.message!.isNotEmpty) {
+            Message.showToastMessage(context, e.message);
+          }
+        }
+      } else if (e is PlatformException) {
+        if (e.message != null && e.message!.isNotEmpty) {
           Message.showToastMessage(context, e.message);
         }
       }
@@ -1514,7 +1525,6 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   _showDialogUpdateDiabetesStatus() {
     final width = MediaQuery.of(context).size.width;
-    int? diabetesStatus = getSelectedIndexDiabetes();
 
     showDialog(
         context: context,
@@ -1668,6 +1678,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             userInfo.copyWith(
                               diabetesDate: DateTime.utc(year ?? 0).millisecondsSinceEpoch ~/ 1000,
                             ),
+                            isUpdateDiabetes: true,
                           );
                           Navigator.pop(context);
                         },
@@ -1695,7 +1706,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   showDialogWeight() {
     showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      //    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      barrierDismissible: true,
       context: context,
       builder: (_) => CustomWeightPicker(
           callback: (weight) {
@@ -1722,8 +1734,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   showDialogHeight() {
     showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      //   barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
+      barrierDismissible: true,
       builder: (_) => CustomNumPicker(
           callback: (data) {
             if (data == null || data <= 0) {
@@ -2003,7 +2016,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       title = title.substring(0, title.length - 2);
     }
     if (title.isEmpty) {
-      title = R.string.updating.tr();
+      title = R.string.not_updated_yet.tr();
     }
     return title;
   }

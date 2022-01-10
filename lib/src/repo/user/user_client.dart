@@ -186,8 +186,8 @@ class UserClient extends FetchClient {
     String path,
   ) async {
     try {
-      Map<String, String?> params = {
-        'patientId': patientId,
+      Map<String, String> params = {
+        'patientId': patientId!,
       };
       final response =
           await super.putHttp(path: '/App/Patient/Avatar', params: params, files: [path], fileName: 'image');
@@ -202,30 +202,54 @@ class UserClient extends FetchClient {
     }
   }
 
-  Future<bool> updateUserInfo(String? patientId, UserModel userInfo) async {
+  Future<bool> updateUserInfo(String? patientId, UserModel userInfo, {bool isUpdateDiabetes = false}) async {
     try {
-      Map<String, String> params = {
+      Map<String, dynamic> params = {
         'patientId': patientId ?? '',
         'fullName': userInfo.fullName ?? '',
-        'dateOfBirth': userInfo.dateOfBirth.toString(),
-        'gender': userInfo.genderType == null || userInfo.genderType == 0 ? '1' : userInfo.genderType.toString(),
+        'dateOfBirth': userInfo.dateOfBirth,
+        'gender': userInfo.genderType == null || userInfo.genderType == 0 ? 1 : userInfo.genderType,
         'provinceId': userInfo.province == null ? '' : userInfo.province!.id ?? '',
         'districtId': userInfo.district == null ? '' : userInfo.district!.id ?? '',
         'wardId': userInfo.ward == null ? '' : userInfo.ward!.id ?? '',
         'address': userInfo.address ?? '',
-        'diabetesStatus': userInfo.diabetesStatus == null ? '' : userInfo.diabetesStatus.toString(),
-        'diabetesDate': userInfo.diabetesDate == null ? '0' : userInfo.diabetesDate.toString(),
-        'height': userInfo.height == null ? '' : userInfo.height.toString(),
-        'weight': userInfo.weight == null ? '' : userInfo.weight.toString(),
+        'diabetesStatus': userInfo.diabetesStatus == null ? 0 : userInfo.diabetesStatus! - 1,
+        'diabetesDate': userInfo.diabetesDate == null ? 0 : userInfo.diabetesDate,
+        'height': userInfo.height == null ? 0 : userInfo.height,
+        'weight': userInfo.weight == null ? 0 : userInfo.weight,
         'email': userInfo.email ?? '',
         'secondPhoneNumber': userInfo.secondPhoneNumber ?? ''
       };
-      final response = await super.putHttp(path: '/App/Patient/Input', params: params, files: [], fileName: '');
+
+      AccountRule? accountRule;
+      if (isUpdateDiabetes) {
+        accountRule = userInfo.accountRule;
+        if (accountRule != null) {
+          AccountRuleTypeMapping? accountRuleTypeMapping;
+          for (var item in accountRule.accountRuleTypeMappings!) {
+            if (item.ruleType == 10) {
+              accountRuleTypeMapping = item;
+              accountRuleTypeMapping.modelStatus = 1;
+            }
+          }
+          if (accountRuleTypeMapping != null) {
+            accountRule.accountRuleTypeMappings = [accountRuleTypeMapping];
+          }
+          accountRule.accountRuleTagMappings = [];
+          accountRule.fromAge = 0;
+          accountRule.toAge = 0;
+          accountRule.amount = 0;
+          accountRule.modelStatus = 0;
+          params['accountRule'] = accountRule.toJson();
+        }
+      }
+
+      final Response response = await super.putData(url: '/App/Patient/mobile/Input', params: params);
       if (response.statusCode == 200) {
         return true;
       } else {
-        final error = (await response.stream.bytesToString());
-        throw Error.fromString(error);
+        final error = Error.fromJson(response);
+        throw error;
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();

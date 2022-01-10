@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 
 class SelectBottomSheetWidget extends StatefulWidget {
   const SelectBottomSheetWidget({
@@ -78,14 +79,14 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Expanded(
               child: ListView.builder(
                   physics: countHight > height
                       ? const AlwaysScrollableScrollPhysics()
                       : const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  padding: const EdgeInsets.only(left: 10, right: 10, bottom: 8, top: 10),
+                  padding: const EdgeInsets.only(left: 0, right: 0, bottom: 8, top: 10),
                   itemCount: widget.elementList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return _buildItem(title: widget.elementList[index], isLast: index == widget.elementList.length - 1);
@@ -97,8 +98,12 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
               child: Center(
                 child: GestureDetector(
                   onTap: () {
-                    widget.onSelected(selectedList);
-                    Navigator.pop(context);
+                    if (selectedList.length > 0) {
+                      widget.onSelected(selectedList);
+                      Navigator.pop(context);
+                    } else {
+                      Message.showToastMessage(context, 'Bạn hãy hoàn thành các thông tin bắt buộc nhé!');
+                    }
                   },
                   child: Container(
                     height: 48,
@@ -144,7 +149,7 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
             });
           },
           child: Container(
-            color: isSelected ? R.color.greenbg : R.color.white,
+            color: (isSelected && !widget.isMultipleChoice) ? R.color.greenbg : R.color.white,
             child: Column(
               children: [
                 Padding(
@@ -157,7 +162,10 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                         if (isSelected)
                           Text(
                             title,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: R.color.mainColor),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: widget.isMultipleChoice ? R.color.mainColor : R.color.black),
                           )
                         else
                           Text(
