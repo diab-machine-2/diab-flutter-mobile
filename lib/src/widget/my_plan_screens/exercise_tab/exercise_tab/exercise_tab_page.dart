@@ -116,8 +116,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   top: false,
                   child: SmartRefresher(
                     controller: _controller,
-                    onRefresh: () =>
-                        _cubit.getExerciseMovement(isRefresh: true),
+                    onRefresh: () => _cubit.onRefresh(isRefresh: true),
                     child: _cubit.exerciseMovementResponse?.data?.isEmpty ==
                             null
                         ? const SizedBox.shrink()
@@ -236,7 +235,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   Widget _buildExerciseWidget({
     required ExerciseMovementResponseData? exerciseItem,
   }) {
-    if (exerciseItem?.code == null) return _buildDayOffWidget();
+    if (exerciseItem?.name == null) return _buildDayNoExerciseWidget();
+    if (exerciseItem?.name == 'Ngày nghỉ') return _buildDayOffWidget();
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 20),
       color: R.color.transparent,
@@ -252,105 +252,99 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   NetWorkImageWidget(imageUrl: exerciseItem?.image?.url ?? '')),
           const SizedBox(width: 14),
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        exerciseItem!.name ?? '',
-                        style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+            child: InkWell(
+              onTap: () {
+                if (exerciseItem?.exerciseMovementStates ==
+                    Const.LESSON_CAN_NOT_LEARN) {
+                  showUpdateRequirePopup(context: context);
+                  return;
+                }
+                if (exerciseItem?.exerciseMovementStates ==
+                        Const.LESSON_LOCKED ||
+                    exerciseItem?.exerciseMovementStates ==
+                        Const.LESSON_CAN_NOT_LEARN) {
+                  _showLockedDialog();
+                  return;
+                }
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          exerciseItem!.name ?? '',
+                          style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${exerciseItem.practiceTime ?? ''} ${R.string.minute.tr()}',
-                      style: TextStyle(
-                          color: R.color.grey_2,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Visibility(
-                  visible: exerciseItem.exerciseMovementStates !=
-                          Const.LESSON_LOCKED &&
-                      exerciseItem.exerciseMovementStates !=
-                          Const.LESSON_CAN_NOT_LEARN,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildCustomIconButton(
-                          title: R.string.start_exercise.tr(),
-                          icon: R.drawable.ic_start_exercise,
-                          borderColor: R.color.greenGradientBottom,
-                          backgroundColor: R.color.greenGradientBottom,
-                          textColor: R.color.white,
-                          onTap: () async {
-                            if (exerciseItem.exerciseMovementStates ==
-                                Const.LESSON_CAN_NOT_LEARN) {
-                              showUpdateRequirePopup(context: context);
-                              return;
-                            }
-                            if (exerciseItem.exerciseMovementStates ==
-                                    Const.LESSON_LOCKED ||
-                                exerciseItem.exerciseMovementStates ==
-                                    Const.LESSON_CAN_NOT_LEARN) {
-                              _showLockedDialog();
-                              return;
-                            }
-                            await NavigationUtil.navigatePage(
-                              context,
-                              ExerciseDetail(
-                                exerciseData: exerciseItem,
-                              ),
-                            );
-                            _cubit.getExerciseMovement();
-                          },
-                        ),
-                        _buildCustomIconButton(
-                          title: R.string.show_instruction.tr(),
-                          icon: R.drawable.ic_play,
-                          borderColor: R.color.greenGradientBottom,
-                          backgroundColor: R.color.white,
-                          textColor: R.color.greenGradientBottom,
-                          onTap: () {
-                            if (_cubit.isFreeUser &&
-                                exerciseItem.isFree != true) {
-                              showUpdateRequirePopup(context: context);
-                              return;
-                            }
-                            if (exerciseItem.exerciseMovementStates ==
-                                Const.LESSON_LOCKED) {
-                              _showLockedDialog();
-                              return;
-                            }
-                            NavigationUtil.navigatePage(
-                              context,
-                              VideoPlayerWidget(
-                                videoUrl: exerciseItem.videoUrl ?? '',
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                      const SizedBox(width: 8),
+                      Text(
+                        '${exerciseItem.practiceTime ?? ''} ${R.string.minute.tr()}',
+                        style: TextStyle(
+                            color: R.color.grey_2,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Visibility(
+                    visible: exerciseItem.exerciseMovementStates !=
+                            Const.LESSON_LOCKED &&
+                        exerciseItem.exerciseMovementStates !=
+                            Const.LESSON_CAN_NOT_LEARN,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildCustomIconButton(
+                            title: R.string.start_exercise.tr(),
+                            icon: R.drawable.ic_start_exercise,
+                            borderColor: R.color.greenGradientBottom,
+                            backgroundColor: R.color.greenGradientBottom,
+                            textColor: R.color.white,
+                            onTap: () async {
+                              await NavigationUtil.navigatePage(
+                                context,
+                                ExerciseDetail(
+                                  exerciseData: exerciseItem,
+                                ),
+                              );
+                              _cubit.onRefresh(keepSelectedDayIndex: true);
+                            },
+                          ),
+                          _buildCustomIconButton(
+                            title: R.string.show_instruction.tr(),
+                            icon: R.drawable.ic_play,
+                            borderColor: R.color.greenGradientBottom,
+                            backgroundColor: R.color.white,
+                            textColor: R.color.greenGradientBottom,
+                            onTap: () {
+                              NavigationUtil.navigatePage(
+                                context,
+                                VideoPlayerWidget(
+                                  videoUrl: exerciseItem.videoUrl ?? '',
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                LessonStatusWidget(
-                  learningStatus: exerciseItem.exerciseMovementStates,
-                ),
-              ],
+                  LessonStatusWidget(
+                    learningStatus: exerciseItem.exerciseMovementStates,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -381,6 +375,42 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                       fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
+                Text(
+                  R.string.today_is_day_off_description.tr(),
+                  textAlign: TextAlign.center,
+                  style: R.style.normalTextStyle,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDayNoExerciseWidget() {
+    if (!_cubit.isHasRoadmapUser) return const SizedBox();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Image.asset(R.drawable.img_day_no_exercise),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              children: [
+                Text(
+                  R.string.today_is_day_no_exercise.tr(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
                 Text(
                   R.string.today_is_day_off_description.tr(),
                   textAlign: TextAlign.center,
@@ -557,7 +587,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     ),
                   ),
                   Text(
-                    R.string.lesson_locked.tr(),
+                    R.string.exercise_lesson_locked.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: R.color.textDark,
@@ -567,7 +597,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    "Bạn cần tập lần lượt các bài học theo lộ trình của diaB để mở khoá bài tập này.",
+                    R.string.exercise_lesson_locked_warning.tr(),
                     textAlign: TextAlign.center,
                     style: R.style.normalTextStyle,
                   ),

@@ -27,7 +27,7 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
   @override
   void initState() {
     super.initState();
-    selectedList = widget.selectedList;
+    selectedList = widget.selectedList.isEmpty ? [] : widget.selectedList;
   }
 
   @override

@@ -615,6 +615,7 @@ class Strings {
 	String get change_road_map_success => 'change_road_map_success';
 	String get today_is_day_off => 'today_is_day_off';
 	String get today_is_day_off_description => 'today_is_day_off_description';
+	String get today_is_day_no_exercise => 'today_is_day_no_exercise';
 	String get start_exercise => 'start_exercise';
 	String get show_instruction => 'show_instruction';
 	String get lesson_category => 'lesson_category';
@@ -623,6 +624,8 @@ class Strings {
 	String get no_matched_lesson_description => 'no_matched_lesson_description';
 	String get lesson_locked => 'lesson_locked';
 	String get lesson_locked_warning => 'lesson_locked_warning';
+	String get exercise_lesson_locked => 'exercise_lesson_locked';
+	String get exercise_lesson_locked_warning => 'exercise_lesson_locked_warning';
 	String get filter_by_key_word => 'filter_by_key_word';
 	String get filter_by_lesson_name => 'filter_by_lesson_name';
 	String get enter_lesson_name => 'enter_lesson_name';

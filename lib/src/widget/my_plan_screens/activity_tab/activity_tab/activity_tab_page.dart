@@ -160,8 +160,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                 onPressed: () async {
                                   Observable.instance.notifyObservers([],
                                       notifyName: Const.HIDE_OVERLAY_KEY);
-                                  await NavigationUtil.navigatePage(
-                                      context, const CreateGoalPage());
+                                  await NavigationUtil.navigatePage(context,
+                                      CreateGoalPage(_cubit.smartGoalDayList));
                                   _cubit.refreshData();
                                 }),
                           )
@@ -214,33 +214,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
               child: _buildWeekListWidget(),
             ),
           ),
-          GestureDetector(
-            onHorizontalDragEnd: _cubit.weekStatesList.isNotEmpty
-                ? null
-                : (DragEndDetails details) {
-                    Observable.instance.notifyObservers([],
-                        notifyName: Const.HIDE_OVERLAY_KEY);
-                    if (details.primaryVelocity! > 0) {
-                      _cubit.onSelectWeek(_cubit.currentWeekIndex! - 1,
-                          hideLoadingAfterDone: true);
-                    } else if (details.primaryVelocity! < 0) {
-                      _cubit.onSelectWeek(_cubit.currentWeekIndex! + 1,
-                          hideLoadingAfterDone: true);
-                    }
-                  },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              color: R.color.transparent,
-              child: DayInWeekWidget(
-                data: _cubit.dayInWeekList,
-                mark: _cubit.mark,
-                currentDayIndex: _cubit.currentDayIndex,
-                onSelectDay: (selectedDayIndex) {
-                  _cubit.onSelectDay(selectedDayIndex);
-                },
-              ),
-            ),
-          ),
+          _buildDayListWidget(),
         ],
       ),
     );
@@ -301,6 +275,63 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 : R.color.greenGradientBottom,
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildDayListWidget() {
+    return Row(
+      children: [
+        if (!_cubit.myPlanCubit.isHasRoadmapUser)
+          InkWell(
+            onTap: () {
+              Observable.instance
+                  .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+              if (_cubit.currentWeekIndex! < -7) return;
+              _cubit.onSelectWeek(_cubit.currentWeekIndex! - 1,
+                  hideLoadingAfterDone: true);
+            },
+            child: Icon(
+              Icons.chevron_left_rounded,
+              size: 24,
+              color: _cubit.currentWeekIndex! < -7
+                  ? R.color.captionColorGray
+                  : R.color.greenGradientBottom,
+            ),
+          ),
+        Expanded(
+          child: Container(
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            color: R.color.transparent,
+            child: DayInWeekWidget(
+              data: _cubit.dayInWeekList,
+              mark: _cubit.mark,
+              currentDayIndex: _cubit.currentDayIndex,
+              showDateTime: !_cubit.myPlanCubit.isHasRoadmapUser,
+              onSelectDay: (selectedDayIndex) {
+                _cubit.onSelectDay(selectedDayIndex);
+              },
+            ),
+          ),
+        ),
+        if (!_cubit.myPlanCubit.isHasRoadmapUser)
+          InkWell(
+            onTap: () {
+              Observable.instance
+                  .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+              if (_cubit.currentWeekIndex! >= 4) return;
+              _cubit.onSelectWeek(_cubit.currentWeekIndex! + 1,
+                  hideLoadingAfterDone: true);
+            },
+            child: Icon(
+              Icons.chevron_right_rounded,
+              size: 24,
+              color: _cubit.currentWeekIndex! >= 4
+                  ? R.color.captionColorGray
+                  : R.color.greenGradientBottom,
+            ),
+          ),
       ],
     );
   }
@@ -485,9 +516,13 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         break;
       case ScheduleType.exercise_movement:
         if (smartGoal?.exerciseData == null) break;
-        if (smartGoal?.exerciseData?.exerciseMovementStates !=
-            Const.LESSON_LOCKED) {
-          _showLockedDialog();
+        if (smartGoal?.exerciseData?.exerciseMovementStates == null ||
+            smartGoal?.exerciseData?.exerciseMovementStates ==
+                Const.LESSON_LOCKED) {
+          _showLockedDialog(
+            title: R.string.lesson_locked.tr(),
+            description: R.string.lesson_locked_warning.tr(),
+          );
           break;
         }
         await NavigationUtil.navigatePage(
@@ -510,11 +545,19 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       case ScheduleType.lesson:
         final LessonSectionListResponseData? lessonDetail =
             smartGoal?.lessonData;
+        if (lessonDetail?.learningStatus == null ||
+            lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
+          _showLockedDialog(
+              title: R.string.exercise_lesson_locked.tr(),
+              description: R.string.exercise_lesson_locked_warning.tr());
+          return;
+        }
         await NavigationUtil.navigatePage(
             context,
             LessonDetailPage(
                 lessonType: lessonDetail?.type,
                 lessonId: lessonDetail?.id ?? ''));
+        _cubit.refreshData();
         break;
       case ScheduleType.io_evaluate:
         break;
@@ -840,7 +883,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  void _showLockedDialog() {
+  void _showLockedDialog({required String title, required String description}) {
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       barrierDismissible: true,
@@ -874,7 +917,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     ),
                   ),
                   Text(
-                    R.string.lesson_locked.tr(),
+                    title,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: R.color.textDark,
@@ -884,7 +927,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    R.string.lesson_locked_warning.tr(),
+                    description,
                     textAlign: TextAlign.center,
                     style: R.style.normalTextStyle,
                   ),

@@ -114,7 +114,7 @@ class SmartGoalItem extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: isDone ? R.color.greenGradientBottom : R.color.white,
-                    border: isDone ? null : Border.all(color: R.color.grey_2),
+                    border: isDone ? null : Border.all(color: R.color.grey_2, width: 1.5),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

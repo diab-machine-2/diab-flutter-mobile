@@ -42,11 +42,9 @@ class AudioManager {
       _controller = newAudioController;
     }
 
-    if (url != _controller?.url) {
-      _controller?.changeUrl(
-        url,
-      );
-    }
+    _controller?.changeUrl(
+      url,
+    );
   }
 
   void disposeAllAudio() {

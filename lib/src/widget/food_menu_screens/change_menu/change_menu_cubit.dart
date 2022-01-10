@@ -35,7 +35,7 @@ class ChangeMenuCubit extends Cubit<ChangeMenuState> {
     await showLoading();
     final ApiResult<FoodSuggestResponse> apiResult =
         await repository.getSuggestionFood(
-      foodMenuCode: initFood?.mealId ?? '',
+      foodMenuCode: initFood?.code ?? '',
       foodId: initFood?.id ?? '',
       dateCode: dateCode,
       timeCode: timeCode,
