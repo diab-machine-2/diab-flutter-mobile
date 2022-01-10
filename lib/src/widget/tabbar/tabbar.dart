@@ -236,6 +236,8 @@ showPopupWeight() {
               creatorId: userInfo.creatorId,
               energyGoal: userInfo.energyGoal,
               nation: userInfo.nation,
+              nameOfAgency: userInfo.nameOfAgency,
+              nameOfDoctor: userInfo.nameOfDoctor,
             );
             await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();

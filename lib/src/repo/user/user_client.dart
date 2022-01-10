@@ -261,8 +261,9 @@ class UserClient extends FetchClient {
     UserModel userInfo,
     List<CategoryItemUserModel> selectedList,
     CategoryType categoryType,
-    bool isMultiChoice,
-  ) async {
+    bool isMultiChoice, {
+    bool isUpdateDiabetes = false,
+  }) async {
     try {
       AccountRule accountRule;
       if (userInfo.accountRule != null) {
@@ -416,6 +417,10 @@ class UserClient extends FetchClient {
       }
 
       UpdateProfileRequest request = UpdateProfileRequest(patientId: patientId, accountRule: accountRule);
+      if (isUpdateDiabetes) {
+        request.diabetesDate = userInfo.diabetesDate;
+        request.diabetesStatus = userInfo.diabetesStatus;
+      }
       final Response response = await super.putData(url: '/App/Patient/mobile/Input', params: request.toJson());
       if (response.statusCode == 200) {
         return true;

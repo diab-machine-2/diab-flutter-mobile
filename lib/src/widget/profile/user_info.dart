@@ -569,14 +569,14 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           children: [
                             _buildItemProfile(
                               icon: R.drawable.ic_user_hospital,
-                              title: R.string.not_updated_yet.tr(),
+                              title: user.nameOfAgency ?? R.string.not_updated_yet.tr(),
                               subTitle: 'Bệnh viện / Phòng khám',
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
                             ),
                             _buildItemProfile(
                               icon: R.drawable.ic_user_doctor,
-                              title: R.string.not_updated_yet.tr(),
+                              title: user.nameOfDoctor ?? R.string.not_updated_yet.tr(),
                               subTitle: 'Bác sĩ giới thiệu',
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
@@ -927,15 +927,22 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     List<CategoryItemUserModel> categoryList,
     List<int> selectedIndexList,
     CategoryType categoryType,
-    bool isMultiChoice,
-  ) async {
+    bool isMultiChoice, {
+    bool isUpdateDiabetes = false,
+  }) async {
     try {
       BotToast.showLoading();
       List<CategoryItemUserModel> selectedJobList = getSelectedCategoryList(categoryList, selectedIndexList);
       final UserModel userInfo = AppSettings.userInfo!;
       //  bool isNew = checkIsNew(user.jobList!);
-      await UserClient()
-          .updateCategoryUser(AppSettings.userInfo!.id, userInfo, selectedJobList, categoryType, isMultiChoice);
+      await UserClient().updateCategoryUser(
+        AppSettings.userInfo!.id,
+        userInfo,
+        selectedJobList,
+        categoryType,
+        isMultiChoice,
+        isUpdateDiabetes: isUpdateDiabetes,
+      );
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -1586,10 +1593,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           }
                           setState(() {});
                           updateCategoryUser(
-                              user.levelOfDiabetesRuleList!,
-                              diabetesStatus != null ? [diabetesStatus!] : [],
-                              CategoryType.LEVEL_OF_DIABETES_TYPE,
-                              false);
+                            user.levelOfDiabetesRuleList!,
+                            diabetesStatus != null ? [diabetesStatus!] : [],
+                            CategoryType.LEVEL_OF_DIABETES_TYPE,
+                            false,
+                            isUpdateDiabetes: true,
+                          );
 
                           // final UserModel userInfo = AppSettings.userInfo!;
                           // updateUserInfo(

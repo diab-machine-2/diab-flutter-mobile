@@ -74,6 +74,9 @@ class UserModel {
   final List<CategoryItemUserModel>? religionRuleList;
   final AccountRule? accountRule;
 
+  final String? nameOfAgency;
+  final String? nameOfDoctor;
+
   const UserModel({
     required this.id,
     required this.accountId,
@@ -138,6 +141,8 @@ class UserModel {
     required this.favouriteSportRuleList,
     required this.religionRuleList,
     required this.accountRule,
+    required this.nameOfAgency,
+    required this.nameOfDoctor,
   });
 
   UserModel copyWith({
@@ -204,6 +209,8 @@ class UserModel {
     List<CategoryItemUserModel>? favouriteSportRuleList,
     List<CategoryItemUserModel>? religionRuleList,
     AccountRule? accountRule,
+    String? nameOfAgency,
+    String? nameOfDoctor,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -269,6 +276,8 @@ class UserModel {
         favouriteSportRuleList: favouriteSportRuleList ?? this.favouriteSportRuleList,
         religionRuleList: religionRuleList ?? this.religionRuleList,
         accountRule: accountRule ?? this.accountRule,
+        nameOfAgency: nameOfAgency ?? this.nameOfAgency,
+        nameOfDoctor: nameOfDoctor ?? this.nameOfDoctor,
       );
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -341,6 +350,8 @@ class UserModel {
       religionRuleList: CategoryItemUserModel.toList(json['religionRuleList']),
       accountRule: json['accountRule'] == null ? null : AccountRule.fromJson(json['accountRule']),
       personalityRuleList: CategoryItemUserModel.toList(json['personalityRuleList']),
+      nameOfAgency: json['nameOfAgency'],
+      nameOfDoctor: json['nameOfDoctor'],
     );
   }
 

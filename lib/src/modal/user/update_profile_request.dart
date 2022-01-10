@@ -4,8 +4,10 @@ import 'package:meta/meta.dart';
 class UpdateProfileRequest {
   final String? patientId;
   final AccountRule? accountRule;
+  int? diabetesStatus;
+  int? diabetesDate;
 
-  UpdateProfileRequest({required this.patientId, required this.accountRule});
+  UpdateProfileRequest({required this.patientId, required this.accountRule, this.diabetesStatus, this.diabetesDate});
 
   factory UpdateProfileRequest.fromJson(Map<String, dynamic> json) {
     return UpdateProfileRequest(
@@ -13,6 +15,8 @@ class UpdateProfileRequest {
       accountRule: json['accountRule'] == null
           ? null
           : (json['accountRule'] is String ? null : AccountRule.fromJson(json['accountRule'])),
+      diabetesStatus: json['diabetesStatus'],
+      diabetesDate: json['diabetesDate'],
     );
   }
 
@@ -29,6 +33,8 @@ class UpdateProfileRequest {
     if (accountRule != null) {
       map['accountRule'] = accountRule?.toJson();
     }
+    map['diabetesStatus'] = diabetesStatus;
+    map['diabetesDate'] = diabetesDate;
     return map;
   }
 
