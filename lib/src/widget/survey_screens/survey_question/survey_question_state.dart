@@ -68,3 +68,12 @@ class SurveyQuestionHideProgressMessage extends SurveyQuestionState {
     return 'SurveyQuestionHideProgressMessage{}';
   }
 }
+
+class SurveyQuestionScrollToQuiz extends SurveyQuestionState {
+  const SurveyQuestionScrollToQuiz(this.index);
+  final int index;
+  @override
+  String toString() {
+    return 'SurveyQuestionScrollToQuiz{}';
+  }
+}

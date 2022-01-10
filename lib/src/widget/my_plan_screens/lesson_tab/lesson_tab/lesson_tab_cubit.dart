@@ -7,7 +7,6 @@ import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
 
 import '../../my_plan/my_plan.dart';
 import '../lesson_filter/models/filter_data.dart';
@@ -64,25 +63,24 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     emit(const LessonTabInitial());
   }
 
-  Future<void> getInitData() async {
+  Future<void> getInitData(
+      {bool isRefresh = false, bool showCurrentWeek = true}) async {
     if (myPlanCubit.userInfo == null) {
       await myPlanCubit.getCurrentUserInfo();
     }
-    filterData.roadmapId = myPlanCubit.roadmapId;
-    if (myPlanCubit.packageCode == Const.PREMIUM &&
-        myPlanCubit.currentStudyWeek != null) {
+    if (showCurrentWeek && myPlanCubit.isHasRoadmapUser) {
       filterData.currentWeek = myPlanCubit.currentStudyWeek! - 1;
-      await getLessonWeekStates();
     }
-    await getLessonsList();
-    if (filterData.currentWeek != null) {
+    await getLessonWeekStates(isRefresh: isRefresh);
+    await getLessonsList(isRefresh: isRefresh);
+    if (showCurrentWeek && filterData.currentWeek != null) {
       emit(LessonTabWeekChanged(filterData.currentWeek!));
     }
   }
 
   Future<void> getLessonsList({bool isRefresh = false}) async {
+    await Future.delayed(Duration.zero);
     if (!isRefresh) {
-      await Future.delayed(Duration.zero);
       emit(const LessonTabLoading());
     }
     final LessonFilterRequest request =
@@ -101,9 +99,9 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     emit(const LessonTabInitial());
   }
 
-  Future<void> getLessonWeekStates() async {
+  Future<void> getLessonWeekStates({bool isRefresh = false}) async {
     await Future.delayed(Duration.zero);
-    emit(const LessonTabLoading());
+    if (!isRefresh) emit(const LessonTabLoading());
     final ApiResult<WeekStatesResponse> apiResult =
         await repository.getLessonWeekStates();
     apiResult.when(success: (WeekStatesResponse response) {

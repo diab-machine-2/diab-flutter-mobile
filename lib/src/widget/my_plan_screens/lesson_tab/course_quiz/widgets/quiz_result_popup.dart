@@ -6,6 +6,7 @@ import 'package:medical/src/widgets/button_widget.dart';
 
 class QuizResultWidget extends StatefulWidget {
   const QuizResultWidget({
+    required this.isQuizLesson,
     required this.rightAnswer,
     required this.totalQuiz,
     required this.minCompletePercent,
@@ -13,7 +14,7 @@ class QuizResultWidget extends StatefulWidget {
     required this.retryCallback,
     required this.continueLearnCallback,
   });
-
+  final bool isQuizLesson;
   final int rightAnswer;
   final int totalQuiz;
   final double minCompletePercent;
@@ -28,16 +29,12 @@ class QuizResultWidget extends StatefulWidget {
 class _QuizResultwidgetState extends State<QuizResultWidget> {
   late final double rate;
   late final bool gotMaxRate;
-  late final bool passQuiz;
-
-  bool askForTryAgain = true;
 
   @override
   void initState() {
     super.initState();
     rate = (widget.rightAnswer / widget.totalQuiz) * 100;
-    gotMaxRate = rate == 100;
-    passQuiz = rate >= widget.minCompletePercent;
+    gotMaxRate = rate >= 100;
   }
 
   @override
@@ -60,87 +57,182 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
             ),
           ),
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Image.asset(
-                  !passQuiz
-                      ? R.drawable.img_learn_result_medium
-                      : R.drawable.img_learn_result_high,
-                  height: 150,
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  R.string.completed_quiz.tr(),
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.textDark,
-                      height: 1.4),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      text: !passQuiz
-                          ? "Rất tiếc! Bạn cần trả lời đúng"
-                          : "Bạn đã${gotMaxRate ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 16,
-                        height: 1.375,
-                      ),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: !passQuiz
-                                ? " ${(widget.minCompletePercent).round()}% "
-                                : "${widget.rightAnswer}/${widget.totalQuiz}",
-                            style: TextStyle(
-                              color: R.color.accentColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              height: 1.375,
-                            )),
-                        TextSpan(
-                          text:
-                              !passQuiz ? "để hoàn thành cấp độ này" : " câu!",
-                          style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            height: 1.375,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (gotMaxRate || !askForTryAgain)
-                  _completeButtons()
-                else
-                  _notCompleteButtons()
-              ],
-            ),
+            child: _selectPopUp(),
           ),
         ),
       ),
     );
   }
 
-  Widget _notCompleteButtons() {
+  Widget _selectPopUp() {
+    if (widget.isQuizLesson) {
+      if (rate < widget.minCompletePercent) return _buildFail();
+      return _buildPass(suggestRetry: false);
+    }
+    if (rate < 80) return _buildPass(suggestRetry: true);
+    return _buildPass(suggestRetry: false);
+  }
+
+  Widget _buildPass({required bool suggestRetry}) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 30),
-          child: Text(
-            R.string.challenge_yourself_again.tr(),
+        Image.asset(
+          R.drawable.img_learn_result_high,
+          height: 150,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          R.string.completed_quiz.tr(),
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: R.color.textDark,
+              height: 1.4),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          padding: const EdgeInsets.all(24),
+          child: RichText(
             textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
+            text: TextSpan(
+              text:
+                  "Bạn đã${gotMaxRate ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
+              style: TextStyle(
                 color: R.color.textDark,
-                height: 1.37,
-                letterSpacing: 0.4),
+                fontSize: 16,
+                height: 1.375,
+              ),
+              children: <TextSpan>[
+                TextSpan(
+                  text: "${widget.rightAnswer}/${widget.totalQuiz}",
+                  style: TextStyle(
+                    color: R.color.accentColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    height: 1.375,
+                  ),
+                ),
+                TextSpan(
+                  text: " câu!",
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 16,
+                    height: 1.375,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (suggestRetry)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 30),
+            child: Text(
+              R.string.challenge_yourself_again.tr(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.textDark,
+                  height: 1.37,
+                  letterSpacing: 0.4),
+            ),
+          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Container(
+              width: 128,
+              child: ButtonWidget(
+                height: 35,
+                title: suggestRetry
+                    ? R.string.skip.tr()
+                    : R.string.see_the_answer.tr(),
+                textSize: 14,
+                onPressed: () {
+                  NavigationUtil.pop(context);
+                  if (suggestRetry) {
+                    widget.continueLearnCallback();
+                  } else {
+                    widget.seeResultCallback();
+                  }
+                },
+                backgroundColor: Colors.transparent,
+                borderColor: R.color.accentColor,
+                textColor: R.color.accentColor,
+              ),
+            ),
+            Container(
+              width: 128,
+              child: ButtonWidget(
+                height: 35,
+                title: suggestRetry
+                    ? R.string.accept.tr()
+                    : R.string.continue_learning.tr(),
+                textSize: 14,
+                onPressed: () {
+                  NavigationUtil.pop(context);
+                  if (suggestRetry) {
+                    widget.retryCallback();
+                  } else {
+                    widget.continueLearnCallback();
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFail() {
+    return Column(
+      children: [
+        Image.asset(
+          R.drawable.img_learn_result_medium,
+          height: 150,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          R.string.completed_quiz.tr(),
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: R.color.textDark,
+              height: 1.4),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          padding: const EdgeInsets.all(24),
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              text: "Rất tiếc! Bạn cần trả lời đúng",
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 16,
+                height: 1.375,
+              ),
+              children: <TextSpan>[
+                TextSpan(
+                    text: " ${(widget.minCompletePercent).round()}% ",
+                    style: TextStyle(
+                      color: R.color.accentColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      height: 1.375,
+                    )),
+                TextSpan(
+                  text: "để hoàn thành cấp độ này",
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 16,
+                    height: 1.375,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         Row(
@@ -153,13 +245,8 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
                 title: R.string.skip.tr(),
                 textSize: 14,
                 onPressed: () {
-                  if (passQuiz) {
-                    askForTryAgain = false;
-                    setState(() {});
-                  } else {
-                    NavigationUtil.pop(context);
-                    widget.continueLearnCallback();
-                  }
+                  NavigationUtil.pop(context);
+                  widget.continueLearnCallback();
                 },
                 backgroundColor: Colors.transparent,
                 borderColor: R.color.accentColor,
@@ -169,51 +256,16 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
             Container(
               width: 128,
               child: ButtonWidget(
-                  height: 35,
-                  title: gotMaxRate
-                      ? R.string.continue_learning.tr()
-                      : R.string.accept.tr(),
-                  textSize: 14,
-                  onPressed: () {
-                    NavigationUtil.pop(context);
-                    widget.retryCallback();
-                  }),
+                height: 35,
+                title: R.string.accept.tr(),
+                textSize: 14,
+                onPressed: () {
+                  NavigationUtil.pop(context);
+                  widget.retryCallback();
+                },
+              ),
             ),
           ],
-        ),
-      ],
-    );
-  }
-
-  Widget _completeButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Container(
-          width: 128,
-          child: ButtonWidget(
-            height: 35,
-            title: R.string.see_the_answer.tr(),
-            textSize: 14,
-            onPressed: () {
-              NavigationUtil.pop(context);
-              widget.seeResultCallback();
-            },
-            backgroundColor: Colors.transparent,
-            borderColor: R.color.accentColor,
-            textColor: R.color.accentColor,
-          ),
-        ),
-        Container(
-          width: 128,
-          child: ButtonWidget(
-              height: 35,
-              title: R.string.continue_learning.tr(),
-              textSize: 14,
-              onPressed: () {
-                NavigationUtil.pop(context);
-                widget.continueLearnCallback();
-              }),
         ),
       ],
     );

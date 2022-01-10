@@ -84,13 +84,12 @@ class CommonPage extends StatelessWidget {
                             ),
                           ),
                         IconButton(
-                          icon: Icon(Icons.close, color: R.color.black),
-                          onPressed: onTapBack ??
-                              () {
-                                onTapClose?.call();
-                                NavigationUtil.pop(context);
-                              },
-                        )
+                            icon: Icon(Icons.close, color: R.color.black),
+                            onPressed: onTapBack ??
+                                onTapClose ??
+                                () {
+                                  NavigationUtil.pop(context);
+                                })
                       ]
                     : appBarAction != null
                         ? [appBarAction!]

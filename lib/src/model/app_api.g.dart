@@ -390,6 +390,22 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<CommonResponse> setCompletedLessonQuiz(request) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CommonResponse>(
+            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/App/Lesson/SetCompletedLessonQuiz',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CommonResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<ListRoadmapResponse> getRoadMap() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -420,13 +436,9 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<ExerciseMovementResponse> getExerciseMovement(
-      {roadmapId, week}) async {
+  Future<ExerciseMovementResponse> getExerciseMovement(week) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'roadmapId': roadmapId,
-      r'week': week
-    };
+    final queryParameters = <String, dynamic>{r'week': week};
     queryParameters.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
@@ -472,14 +484,14 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<WeekStatesResponse> getExerciseWeekStates(roadmapId) async {
+  Future<WeekStatesResponse> getExerciseWeekStates() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<WeekStatesResponse>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, 'App/Roadmap/$roadmapId/WeekStates',
+                .compose(_dio.options, 'App/Roadmap/GetWeekStates',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = WeekStatesResponse.fromJson(_result.data!);
@@ -534,23 +546,6 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<CreateSmartGoalResponse> updateSmartGoal({id, request}) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
-    _data.addAll(request?.toJson() ?? <String, dynamic>{});
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<CreateSmartGoalResponse>(
-            Options(method: 'PUT', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, '/App/Target/$id',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = CreateSmartGoalResponse.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
   Future<SmartGoalListReponse> getListSmartGoal({week, day}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'week': week, r'day': day};
@@ -598,18 +593,17 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<WeekSmartGoalResponse> getWeekSmartGoal({week}) async {
+  Future<DeleteSmartGoalReponse> deleteSmartGoal(id) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'week': week};
-    queryParameters.removeWhere((k, v) => v == null);
+    final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<WeekSmartGoalResponse>(
-            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-                .compose(_dio.options, '/App/Target/GetTargetWeek',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = WeekSmartGoalResponse.fromJson(_result.data!);
+        _setStreamType<DeleteSmartGoalReponse>(Options(
+                method: 'DELETE', headers: <String, dynamic>{}, extra: _extra)
+            .compose(_dio.options, 'App/Target/$id',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = DeleteSmartGoalReponse.fromJson(_result.data!);
     return value;
   }
 

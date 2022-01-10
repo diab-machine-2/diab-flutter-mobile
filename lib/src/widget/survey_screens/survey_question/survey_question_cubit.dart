@@ -33,6 +33,18 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
 
   QuizData? get currentQuestion => questions[selectedCourseIndex];
 
+  Future<void> scrollToNotAnsweredQuiz() async {
+    int scrollIndex = 0;
+    for (int index = 0; index < questions.length; index++) {
+      scrollIndex = index;
+      if (!questions[index].hasUserAnswer) {
+        break;
+      }
+    }
+    await Future.delayed(Duration.zero);
+    emit(SurveyQuestionScrollToQuiz(scrollIndex));
+  }
+
   void recordAnswer({
     required String questionId,
     required QuestionAnswerResults answerResult,
@@ -147,10 +159,8 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
     answer.forEach((key, value) {
       list.add(value);
     });
-    
+
     final PostSurveyRequest request = PostSurveyRequest(
-        surveyId: surveyId,
-        surveySectionId: sectionId,
         questionAnswerResults: list
             .where((element) => element.surveyQuestionId == questionId)
             .toList());

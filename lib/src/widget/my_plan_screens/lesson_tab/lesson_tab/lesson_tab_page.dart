@@ -100,11 +100,12 @@ class _LessonTabPageState extends State<LessonTabPage>
                       const Spacer(),
                       InkWell(
                         onTap: () async {
+                          final FilterData newFilter = _cubit.filterData.copyWith();
                           final dynamic result =
                               await NavigationUtil.navigatePage(
                             context,
                             LessonFilterPage(
-                              _cubit.filterData.copyWith(),
+                              newFilter,
                             ),
                           );
                           if (result is FilterData) {
@@ -162,7 +163,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                           controller: _controller,
                           scrollController: _lessonScrollController,
                           onRefresh: () =>
-                              _cubit.getLessonsList(isRefresh: true),
+                              _cubit.getInitData(isRefresh: true, showCurrentWeek: false),
                           child: _cubit.lessonsList!.isEmpty
                               ? _buildEmptyLessonList()
                               : SingleChildScrollView(
@@ -172,11 +173,11 @@ class _LessonTabPageState extends State<LessonTabPage>
                                       (index) => _buildLessonWidget(
                                           lessonDetail:
                                               _cubit.lessonsList?[index],
-                                          onTap: () {
+                                          onTap: () async {
                                             if (_cubit.lessonsList?[index]?.id
                                                     ?.isNotEmpty ==
                                                 true) {
-                                              NavigationUtil.navigatePage(
+                                              await NavigationUtil.navigatePage(
                                                 context,
                                                 LessonDetailPage(
                                                   lessonType: _cubit
@@ -186,6 +187,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                       .lessonsList![index]!.id!,
                                                 ),
                                               );
+                                              _cubit.getInitData(showCurrentWeek: false);
                                             }
                                           }),
                                     )
@@ -434,9 +436,7 @@ class _LessonTabPageState extends State<LessonTabPage>
           Expanded(
             child: InkWell(
               onTap: () {
-                if (_cubit.myPlanCubit.packageCode == Const.BASIC &&
-                    lessonDetail?.level == 'Cấp độ 1') {
-                  // TODO(Tuyen): Show dialog upgrade
+                if (lessonDetail?.learningStatus == Const.LESSON_CAN_NOT_LEARN) {
                   showUpdateRequirePopup(context: context);
                   return;
                 }
@@ -463,6 +463,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          if(lessonDetail?.tagName.isNotEmpty == true)
                           Row(
                             children: [
                               Text(
@@ -634,7 +635,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Vui lòng nâng cấp tài khoản lên gói Đồng hành để tiếp tục học!',
+                        'Vui lòng nâng cấp tài khoản để tiếp tục học!',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: R.color.textDark,

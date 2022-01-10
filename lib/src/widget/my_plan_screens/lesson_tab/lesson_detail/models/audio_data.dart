@@ -40,10 +40,17 @@ class AudioController {
         totalTime: totalTime,
       );
 
-  void changeUrl(String newUrl) {
+  Future<void> changeUrl(String newUrl) async {
     url = newUrl;
     currentTime = Duration.zero;
     totalTime = Duration.zero;
+    play(volume: 0);
+    await Future.delayed(const Duration(seconds: 1));
+    pause();
+    audioPlayer.seek(Duration.zero);
+    final int seconds = await audioPlayer.getDuration();
+    totalTime = Duration(seconds: seconds ~/ 1000);
+    onChanged.sink.add(audioData);
   }
 
   void togglePlay() {
@@ -54,8 +61,8 @@ class AudioController {
     }
   }
 
-  void play() {
-    audioPlayer.play(url, position: currentTime);
+  void play({double volume = 1}) {
+    audioPlayer.play(url, position: currentTime, volume: volume);
   }
 
   void pause() => audioPlayer.pause();

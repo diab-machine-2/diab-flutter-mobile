@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
 
 import 'card_course_quiz.dart';
 
@@ -11,6 +12,17 @@ class CardCourseQuizCubit extends Cubit<CardCourseQuizState> {
   bool isShowAnswer = false;
 
   CardCourseQuizCubit(this.repository) : super(InitialCardCourseQuizState());
+
+  void fillAnswer(QuizData quizData) {
+    for (final AnswerData data in quizData.answers ?? []) {
+      if (data.isCorrectAnswer == true) {
+        listAnswerChoosing.add(data.id ?? '');
+      }
+      if (data.content?.isNotEmpty == true) {
+        emit(CardCourseQuizFillText(data.content ?? ''));
+      }
+    }
+  }
 
   void checkBox(String answerId, bool isSingleChoice) {
     emit(CardCourseQuizLoading());

@@ -17,6 +17,12 @@ class FilterDataItemGroup {
     this.disabled,
     this.name,
   });
+
+  FilterDataItemGroup get copy => FilterDataItemGroup(
+        disabled: this.disabled,
+        name: this.name,
+      );
+
   FilterDataItemGroup.fromJson(Map<String, dynamic> json) {
     disabled = json['disabled'];
     name = json['name']?.toString();
@@ -56,6 +62,15 @@ class FilterDataItem {
     this.text,
     this.value,
   });
+
+  FilterDataItem get copy => FilterDataItem(
+        disabled: this.disabled,
+        group: this.group?.copy,
+        selected: this.selected,
+        text: this.text,
+        value: this.value,
+      );
+
   FilterDataItem.fromJson(Map<String, dynamic> json) {
     disabled = json['disabled'];
     group = (json['group'] != null)

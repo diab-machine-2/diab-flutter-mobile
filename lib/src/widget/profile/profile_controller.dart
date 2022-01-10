@@ -69,8 +69,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
     final ApiResult<UserInfoResponse> apiResult =
         await _appRepository.getCurrentUserInfo();
     apiResult.when(success: (UserInfoResponse response) {
-      final String packageCode = response.data?.packageCode ?? '';
-      isPro = packageCode.isNotEmpty && packageCode != Const.BASIC;
+      // final String packageCode = response.data?.packageCode ?? '';
+      // isPro = packageCode.isNotEmpty && packageCode != Const.BASIC;
     }, failure: (NetworkExceptions error) {
       isPro = false;
     });

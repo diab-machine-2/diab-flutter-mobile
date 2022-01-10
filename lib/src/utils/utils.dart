@@ -137,7 +137,7 @@ class Utils {
               content: Text(contentText!),
               actions: [
                 FlatButton(
-                  onPressed: () =>  Navigator.of(context).pop(),
+                  onPressed: () => Navigator.of(context).pop(),
                   child: Text(R.string.close.tr()),
                 ),
                 Visibility(
@@ -343,10 +343,10 @@ class Utils {
   }
 
   static Color getColorByCode(String? code) {
-    if (code == Const.PRO)
-      return R.color.yellow;
-    else if (code == Const.PREMIUM)
-      return R.color.accentColor;
+    // if (code == Const.PRO)
+    //   return R.color.yellow;
+    // else if (code == Const.PREMIUM)
+    //   return R.color.accentColor;
     return R.color.white;
   }
 
@@ -360,5 +360,14 @@ class Utils {
     if (index >= 0 && index < 6) return 'T${index + 2}';
     if (index == 6) return 'CN';
     return '';
+  }
+
+  static int parseStringToInt(String text) {
+    try {
+      final int number = double.parse(text).toInt();
+      return number;
+    } catch (_) {
+      return 0;
+    }
   }
 }

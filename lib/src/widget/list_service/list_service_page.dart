@@ -114,7 +114,7 @@ class _ListServicePageState extends State<ListServicePage> {
                     DetailPackageData data = _cubit.listFilterData[index];
                     return rowService(data, () {
                       NavigationUtil.navigatePage(
-                          context, UpgradeAccountPage(code: data.code ?? Const.PRO));
+                          context, UpgradeAccountPage(code: data.code ?? 'Const.PRO'));
                     });
                   }),
               SizedBox(
@@ -139,7 +139,7 @@ class _ListServicePageState extends State<ListServicePage> {
     Color color = Utils.getColorByCode(data.code);
     String background;
     String icon;
-    if (data.code == Const.PRO) {
+    if (data.code == 'Const.PRO') {
       background = R.drawable.bg_pro;
       icon = R.drawable.ic_package_pro;
     } else {

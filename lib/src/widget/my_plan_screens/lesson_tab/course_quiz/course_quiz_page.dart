@@ -20,6 +20,8 @@ import '../../../card_course_quiz/card_course_quiz.dart';
 import 'course_quiz.dart';
 import 'widgets/quiz_result_popup.dart';
 
+const Duration duration = Duration(milliseconds: 200);
+
 class CourseQuizPage extends StatefulWidget {
   const CourseQuizPage(
       {Key? key, required this.lessonId, this.lessonSectionItem, this.onDone})
@@ -42,11 +44,12 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
   @override
   void initState() {
     final AppRepository repository = AppRepository();
-    _cubit = CourseQuizCubit(repository);
-    _cubit.initData(
+    _cubit = CourseQuizCubit(
+      repository,
       lessonId: widget.lessonId,
       lessonSectionItem: widget.lessonSectionItem,
     );
+    _cubit.initData();
     Utils.onWidgetDidBuild(() {
       _controller.position.isScrollingNotifier.addListener(() {
         if (!_controller.position.isScrollingNotifier.value) {
@@ -135,6 +138,10 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 IconButton(
                   icon: Icon(Icons.close, color: R.color.black),
                   onPressed: () {
+                    if (_cubit.isShowResult) {
+                      onDoneQuiz();
+                      return;
+                    }
                     NavigationUtil.pop(context);
                   },
                 )
@@ -165,7 +172,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   index: index,
                   onTap: () {
                     _controller.scrollToIndex(index,
-                        duration: const Duration(milliseconds: 200),
+                        duration: duration,
                         preferPosition: AutoScrollPosition.middle);
                   }),
               separatorBuilder: (context, index) => const SizedBox(width: 14),
@@ -209,7 +216,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 : () {
                     final int newIndex = _cubit.selectedCourseIndex - 1;
                     _controller.scrollToIndex(newIndex,
-                        duration: const Duration(milliseconds: 200),
+                        duration: duration,
                         preferPosition: AutoScrollPosition.middle);
                     _cubit.jumpToIndexCourse(newIndex);
                   },
@@ -222,18 +229,21 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
               }
               if (_cubit.canComplete == true) {
                 if (_cubit.isShowResult) {
-                  onDoneQuiz();
+                  // onDoneQuiz();
                   return;
+                }
+                if (_cubit.isPassed) {
+                  _cubit.setCompleteQuiz();
                 }
                 _buildDialogCompleted(seeResultCallback: () {
                   _cubit.showAnswer();
                   _controller.scrollToIndex(0,
-                      duration: const Duration(milliseconds: 200),
+                      duration: duration,
                       preferPosition: AutoScrollPosition.begin);
                 }, retryCallback: () {
                   _cubit.retryQuiz();
                   _controller.scrollToIndex(0,
-                      duration: const Duration(milliseconds: 200),
+                      duration: duration,
                       preferPosition: AutoScrollPosition.begin);
                 }, continueLearnCallback: () {
                   onDoneQuiz();
@@ -242,7 +252,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 final int newIndex = _cubit.selectedCourseIndex + 1;
                 if (newIndex > lengthQuiz - 1) return;
                 _controller.scrollToIndex(newIndex,
-                    duration: const Duration(milliseconds: 200),
+                    duration: duration,
                     preferPosition: AutoScrollPosition.middle);
                 _cubit.jumpToIndexCourse(newIndex);
               }
@@ -252,7 +262,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 : '${_cubit.selectedCourseIndex + 1}/$lengthQuiz',
             previousButtonTitle: R.string.previous_question.tr(),
             nextButtonTitle: R.string.next_question.tr(),
-            isCompleted: _cubit.canComplete,
+            isCompleted: _cubit.isShowResult ? null : _cubit.canComplete,
           ),
         ],
       ),
@@ -271,7 +281,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     final bool isRight = _cubit.answer[index].toString() ==
         quizData?.quiz?.quizAnswers
             ?.where((e) => e?.isCorrect == true)
-            .map((e) => e?.name)
+            .map((e) => e?.id)
             .toList()
             .toString();
 
@@ -338,6 +348,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => QuizResultWidget(
+        isQuizLesson: _cubit.isQuizLesson,
         rightAnswer: _cubit.countAnswerRight,
         totalQuiz: _cubit.listQuiz.length,
         minCompletePercent: _cubit.minCompletePercent,
@@ -349,8 +360,10 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
   }
 
   void onDoneQuiz() {
-    if (widget.onDone != null) {
-      widget.onDone!(_cubit.isPassed);
+    if (_cubit.isQuizLesson || widget.onDone == null) {
+      NavigationUtil.pop(context);
+      return;
     }
+    widget.onDone!(_cubit.isPassed);
   }
 }

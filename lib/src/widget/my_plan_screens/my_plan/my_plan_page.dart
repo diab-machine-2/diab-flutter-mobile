@@ -11,7 +11,6 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../activity_tab/activity_tab/activity_tab.dart';
 import '../exercise_tab/exercise_tab/exercise_tab.dart';
@@ -29,7 +28,6 @@ class MyPlanPage extends StatefulWidget {
 class _MyPlanPageState extends State<MyPlanPage> with Observer {
   late final MyPlanCubit _cubit;
   final PageController _pageController = PageController(initialPage: 1);
-  final RefreshController _controller = RefreshController();
 
   @override
   void initState() {
@@ -73,7 +71,6 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
               BotToast.showLoading();
             } else {
               BotToast.closeAllLoading();
-              _controller.refreshCompleted();
             }
             return CommonPage(
               title: R.string.my_plan.tr(),

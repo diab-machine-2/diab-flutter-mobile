@@ -6,15 +6,14 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/widgets/day_in_week_widget.dart';
 
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import 'exercise_tab.dart';
 
 class ExerciseTabCubit extends Cubit<ExerciseTabState> {
-  ExerciseTabCubit(this.repository, this.myPlanCubit)
-      : super(const ExerciseTabInitial());
+  ExerciseTabCubit(this.repository, this.myPlanCubit) : super(const ExerciseTabInitial());
 
   final AppRepository repository;
   final MyPlanCubit myPlanCubit;
@@ -26,39 +25,36 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   List<WeekStatesResponseData> weekStatesList = [];
   ExerciseMovementResponse? exerciseMovementResponse;
 
-  int? get week => !isPremiumUser || currentWeekIndex == null
-      ? null
-      : weekStatesList[currentWeekIndex!].week;
+  int? get week => !isHasRoadmapUser || currentWeekIndex == null ? null : weekStatesList[currentWeekIndex!].week;
 
   int get dataLength => exerciseMovementResponse?.data?.length ?? 0;
 
-  bool get isPremiumUser => myPlanCubit.packageCode == Const.PREMIUM;
+  bool get isHasRoadmapUser => myPlanCubit.isHasRoadmapUser;
 
-  bool get isFreeUser => myPlanCubit.packageCode == Const.BASIC;
+  bool get isFreeUser => myPlanCubit.isFreeUser;
 
   bool get isDayOff {
-    if (isPremiumUser && currentExercise == null) return true;
-    if (!isPremiumUser && exerciseMovementResponse?.data?.isNotEmpty != true) {
+    if (isHasRoadmapUser && currentExercise == null) return true;
+    if (!isHasRoadmapUser && exerciseMovementResponse?.data?.isNotEmpty != true) {
       return true;
     }
     return false;
   }
 
   ExerciseMovementResponseData? get currentExercise {
-    final ExerciseMovementResponseData? exercise = exerciseMovementResponse
-        ?.getExerciseFromDayInWeek(week: week ?? 1, dayInWeek: currentDayIndex);
+    final ExerciseMovementResponseData? exercise =
+        exerciseMovementResponse?.getExerciseFromDayInWeek(week: week ?? 1, dayIndex: currentDayIndex);
     if (exercise?.isBlank == true) return null;
     return exercise;
   }
 
   CompletionStatus? getExerciseOfDay(int dayIndex) {
     if (week == null) return null;
-    if (exerciseMovementResponse?.data == null)
-      return CompletionStatus.completed;
-    return exerciseMovementResponse
-        ?.getExerciseFromDayInWeek(week: week!, dayInWeek: dayIndex)
-        ?.completionStatus;
+    if (exerciseMovementResponse?.data == null) return CompletionStatus.completed;
+    return exerciseMovementResponse?.getExerciseFromDayInWeek(week: week!, dayIndex: dayIndex)?.completionStatus;
   }
+
+  List<DayInWeekData> get dayInWeekList => exerciseMovementResponse?.dayInWeekList ?? [];
 
   void onSelectWeek(int newIndex) {
     currentWeekIndex = newIndex;
@@ -81,6 +77,11 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     getExerciseMovement();
   }
 
+  Future<void> onRefresh({bool isRefresh = false, bool keepSelectedDayIndex = false}) async {
+    if (myPlanCubit.isHasRoadmapUser) await getWeekStates(isRefresh: isRefresh);
+    getExerciseMovement(isRefresh: isRefresh, keepSelectedDayIndex: keepSelectedDayIndex);
+  }
+
   Future<void> initData() async {
     await myPlanCubit.checkUserInfo();
     roadmapId = myPlanCubit.roadmapId;
@@ -89,8 +90,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       emit(const ExerciseTabInitial());
       return;
     }
-    if (myPlanCubit.packageCode == Const.PREMIUM &&
-        myPlanCubit.currentStudyWeek != null) {
+    if (myPlanCubit.isHasRoadmapUser) {
       currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
       await getWeekStates();
     }
@@ -98,21 +98,21 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     emit(ExerciseTabWeekChanged(currentWeekIndex ?? 0));
   }
 
-  Future<void> getExerciseMovement({bool isRefresh = false}) async {
+  Future<void> getExerciseMovement({bool isRefresh = false, bool keepSelectedDayIndex = false}) async {
     if (!isRefresh) {
       await Future.delayed(Duration.zero);
       emit(const ExerciseTabLoading());
     }
-    final ApiResult<ExerciseMovementResponse> apiResult =
-        await repository.getExerciseMovement(roadmapId: roadmapId, week: week);
+    final ApiResult<ExerciseMovementResponse> apiResult = await repository.getExerciseMovement(week: week);
     apiResult.when(success: (ExerciseMovementResponse response) {
       exerciseMovementResponse = response;
       mark = exerciseMovementResponse?.getMarkNotLearnIndex(
-              week: week ?? 1,
-              userCurrentWeek: myPlanCubit.currentStudyWeek ?? 1) ??
+              week: week ?? 1, userCurrentWeek: myPlanCubit.currentStudyWeek ?? 1) ??
           0;
-      currentDayIndex =
-          exerciseMovementResponse?.getCurrentDayIndex(week ?? 1) ?? 1;
+
+      if (!keepSelectedDayIndex) {
+        currentDayIndex = exerciseMovementResponse?.getCurrentDayIndex(week ?? 1) ?? 1;
+      }
       Timer(const Duration(milliseconds: 100), () {
         emit(ExerciseTabScrollToLesson(response.firstExerciseIndex));
       });
@@ -123,11 +123,10 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     emit(const ExerciseTabInitial());
   }
 
-  Future<void> getWeekStates() async {
+  Future<void> getWeekStates({bool isRefresh = false}) async {
     await Future.delayed(Duration.zero);
     emit(const ExerciseTabLoading());
-    final ApiResult<WeekStatesResponse> apiResult =
-        await repository.getExerciseWeekStates(roadmapId: roadmapId);
+    final ApiResult<WeekStatesResponse> apiResult = await repository.getExerciseWeekStates();
     apiResult.when(success: (WeekStatesResponse response) {
       weekStatesList.clear();
       for (final state in response.data ?? []) {

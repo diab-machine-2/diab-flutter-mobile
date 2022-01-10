@@ -3,22 +3,21 @@ import 'package:medical/src/model/response/filter_data_response.dart';
 
 class FilterData {
   FilterData copyWith({
-    String? roadmapId,
     List<FilterDataItem?>? tagFilter,
     List<FilterDataItem?>? nameFilter,
     bool? filterInCompleted,
     int? week,
   }) {
     final FilterData newFilter = FilterData();
-    newFilter.roadmapId = roadmapId ?? this.roadmapId;
-    newFilter.tagFilter = tagFilter ?? this.tagFilter;
-    newFilter.nameFilter = nameFilter ?? this.nameFilter;
+    newFilter.tagFilter =
+        tagFilter ?? this.tagFilter.map((e) => e?.copy).toList();
+    newFilter.nameFilter =
+        nameFilter ?? this.nameFilter.map((e) => e?.copy).toList();
     newFilter.isCompleted = filterInCompleted ?? this.isCompleted;
     newFilter.currentWeek = week ?? this.currentWeek;
     return newFilter;
   }
 
-  String? roadmapId;
   List<FilterDataItem?> tagFilter = [];
   List<FilterDataItem?> nameFilter = [];
   bool isCompleted = false;
@@ -56,7 +55,6 @@ class FilterData {
   LessonFilterRequest getRequest({required int type}) {
     return LessonFilterRequest(
       type: type,
-      roadmapId: roadmapId,
       tagIdList: tagFilterStringList,
       lessonIdList: nameFilterStringList,
       isNotCompleted: isCompleted,

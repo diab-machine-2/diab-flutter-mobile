@@ -43,6 +43,13 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
   void initState() {
     final AppRepository repository = AppRepository();
     _cubit = CardCourseQuizCubit(repository);
+    _cubit.fillAnswer(widget.quizData);
+    widget.onSubmitAnswer(
+      QuestionAnswerResults(
+        surveyQuestionId: widget.quizData.id,
+        surveyAnswerIdList: _cubit.listAnswerChoosing,
+      ),
+    );
     super.initState();
   }
 
@@ -61,6 +68,14 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
             listener: (context, state) {
               if (state is CardCourseQuizFailure)
                 Message.showToastMessage(context, state.error);
+              if (state is CardCourseQuizFillText) {
+                _textController.text = state.text;
+                if (widget.onSubmitAnswer != null && state.text != null) {
+                  widget.onSubmitAnswer(QuestionAnswerResults(
+                      surveyQuestionId: widget.quizData.id,
+                      content: state.text.trim()));
+                }
+              }
               if (state is ChooseAnswerSuccess) {
                 if (widget.onSubmitAnswer != null) {
                   widget.onSubmitAnswer(

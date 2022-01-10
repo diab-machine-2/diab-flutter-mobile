@@ -80,13 +80,13 @@ class _CongratulationPageState extends State<CongratulationPage> {
                       SizedBox(
                         height: 10,
                       ),
-                      Container(
-                          height: 240,
-                          child: Image.asset(widget.code == Const.PRO
-                              ? R.drawable.ic_congratulation
-                              : R.drawable.img_workaround)),
+                      // Container(
+                      //     height: 240,
+                      //     child: Image.asset(widget.code == Const.PRO
+                      //         ? R.drawable.ic_congratulation
+                      //         : R.drawable.img_workaround)),
                       Visibility(
-                        visible: widget.code == Const.PRO,
+                        // visible: widget.code == Const.PRO,
                         child: Container(
                           margin: EdgeInsets.only(top: 20, left: 20, right: 20),
                           child: Text(

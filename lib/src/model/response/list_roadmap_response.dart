@@ -534,6 +534,7 @@ class ListRoadmapResponseData {
   List<ListRoadmapResponseDataTags?>? tags;
   bool? joined;
   bool? enoughExercise;
+  int? exerciseMovementCount;
 
   ListRoadmapResponseData({
     this.id,
@@ -553,6 +554,7 @@ class ListRoadmapResponseData {
     this.tags,
     this.joined,
     this.enoughExercise,
+    this.exerciseMovementCount,
   });
   ListRoadmapResponseData.fromJson(Map<String, dynamic> json) {
     id = json['id']?.toString();
@@ -605,6 +607,7 @@ class ListRoadmapResponseData {
     }
     joined = json['joined'];
     enoughExercise = json['enoughExercise'];
+    exerciseMovementCount = json['exerciseMovementCount'];
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -657,6 +660,7 @@ class ListRoadmapResponseData {
     }
     data['joined'] = joined;
     data['enoughExercise'] = enoughExercise;
+    data['exerciseMovementCount'] = exerciseMovementCount;
     return data;
   }
 }
@@ -782,6 +786,15 @@ class ListRoadmapResponse {
     this.meta,
     this.data,
   });
+
+  ListRoadmapResponseData? get currentRoadMap {
+    final int? index = data?.indexWhere((element) => element?.joined == true);
+    if (index != null && index != -1) {
+      return data?[index];
+    }
+    return null;
+  }
+
   ListRoadmapResponse.fromJson(Map<String, dynamic> json) {
     meta = (json['meta'] != null)
         ? ListRoadmapResponseMeta.fromJson(json['meta'])

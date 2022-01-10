@@ -21,8 +21,6 @@ class BloodSugarStartSurveyCubit extends Cubit<BloodSugarStartSurveyState> {
     final ApiResult<UserInfoResponse> apiResult =
         await repository.getCurrentUserInfo();
     apiResult.when(success: (UserInfoResponse response) {
-      final String packageCode = response.data?.packageCode ?? '';
-      // isBasicUser = packageCode.isEmpty || packageCode == Const.BASIC;
       surveyCode = response.data?.bloodSugarTemplates ?? '';
       emit(const BloodSugarStartSurveySuccess());
     }, failure: (NetworkExceptions error) {

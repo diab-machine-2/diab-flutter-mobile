@@ -12,7 +12,7 @@ class ListServiceCubit extends Cubit<ListServiceState> {
 
   final AppRepository appRepository;
   List<DetailPackageData>? listData;
-  List<DetailPackageData> get listFilterData => (listData ?? []).where((element) => element.code != Const.BASIC).toList();
+  List<DetailPackageData> get listFilterData => (listData ?? []).where((element) => element.code != 'Const.BASIC').toList();
 
   ListServiceCubit(this.appRepository) : super(ListServiceInitial());
 
