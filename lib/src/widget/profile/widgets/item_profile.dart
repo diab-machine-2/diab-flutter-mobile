@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:medical/src/widgets/user_icon_widget.dart';
@@ -17,6 +19,7 @@ class ItemProfile extends StatefulWidget {
   String selectedDialogTitle;
   bool isShowSelectedDialog;
   bool isMultipleChoice;
+  bool isTitleFromSelectedCategory;
 
   ItemProfile({
     this.image,
@@ -30,6 +33,7 @@ class ItemProfile extends StatefulWidget {
     this.callback,
     this.isShowSelectedDialog = false,
     this.isMultipleChoice = false,
+    this.isTitleFromSelectedCategory = true,
   });
 
   @override
@@ -43,7 +47,7 @@ class _ItemProfileState extends State<ItemProfile> {
   @override
   void initState() {
     selectedList = widget.selectedList;
-    title = getTitleFromSelectedList(widget.selectedList);
+    title = widget.isTitleFromSelectedCategory ? getTitleFromSelectedList(widget.selectedList) : widget.title;
 
     super.initState();
   }
@@ -63,14 +67,12 @@ class _ItemProfileState extends State<ItemProfile> {
                   isMultipleChoice: widget.isMultipleChoice,
                   onSelected: (typeList) {
                     selectedList = typeList;
-                    if (typeList.isNotEmpty) {
-                      var selectedIndexList = getSelectedIndexList(widget.elementList, typeList);
-                      title = getTitleFromSelectedList(typeList);
-                      //  setState(() {});
+                    var selectedIndexList = getSelectedIndexList(widget.elementList, typeList);
+                    title = getTitleFromSelectedList(typeList);
+                    //  setState(() {});
 
-                      if (widget.callback != null) {
-                        widget.callback!(selectedIndexList);
-                      }
+                    if (widget.callback != null) {
+                      widget.callback!(selectedIndexList);
                     }
                   },
                 );
@@ -155,7 +157,7 @@ class _ItemProfileState extends State<ItemProfile> {
       title = title.substring(0, title.length - 2);
     }
     if (title.isEmpty) {
-      title = 'Chưa có';
+      title = R.string.updating.tr();
     }
     return title;
   }

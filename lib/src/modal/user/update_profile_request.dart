@@ -110,7 +110,7 @@ class AccountRuleTypeMapping {
   final int? ruleType;
   final int? value;
   final String? accountRuleId;
-  final int? modelStatus;
+  int? modelStatus;
 
   AccountRuleTypeMapping({
     required this.id,

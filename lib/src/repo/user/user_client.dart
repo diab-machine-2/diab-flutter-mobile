@@ -237,6 +237,7 @@ class UserClient extends FetchClient {
     UserModel userInfo,
     List<CategoryItemUserModel> selectedList,
     CategoryType categoryType,
+    bool isMultiChoice,
   ) async {
     try {
       AccountRule accountRule = userInfo.accountRule!;
@@ -307,30 +308,73 @@ class UserClient extends FetchClient {
       } else {
         if (accountRule.accountRuleTypeMappings == null) accountRule.accountRuleTypeMappings = [];
 
-        String id = "00000000-0000-0000-0000-000000000000";
-        String? accountRuleId = (accountRule.id != null && accountRule.id!.isNotEmpty)
-            ? accountRule.id
-            : "00000000-0000-0000-0000-000000000000";
-        int modelStatus = 3;
+        if (!isMultiChoice) {
+          String id = "00000000-0000-0000-0000-000000000000";
+          String? accountRuleId = (accountRule.id != null && accountRule.id!.isNotEmpty)
+              ? accountRule.id
+              : "00000000-0000-0000-0000-000000000000";
+          int modelStatus = 3;
 
-        List<AccountRuleTypeMapping> accountRuleTypeMappingList = [];
-
-        for (int i = 0; i < accountRule.accountRuleTypeMappings!.length; i++) {
-          if (accountRule.accountRuleTypeMappings![i].ruleType == getRuleType(categoryType)) {
-            id = accountRule.accountRuleTypeMappings![i].id ?? '';
-            modelStatus = 1;
-            break;
+          for (int i = 0; i < accountRule.accountRuleTypeMappings!.length; i++) {
+            if (accountRule.accountRuleTypeMappings![i].ruleType == getRuleType(categoryType)) {
+              id = accountRule.accountRuleTypeMappings![i].id ?? '';
+              modelStatus = 1;
+              break;
+            }
           }
+          accountRule.accountRuleTypeMappings = selectedList
+              .map((e) => AccountRuleTypeMapping(
+                    id: id,
+                    ruleType: getRuleType(categoryType),
+                    value: Utils.parseStringToInt(e.value!),
+                    accountRuleId: accountRuleId,
+                    modelStatus: modelStatus,
+                  ))
+              .toList();
+        } else {
+          List<AccountRuleTypeMapping> newAccountRuleTypeMappingList = [];
+          newAccountRuleTypeMappingList.addAll(selectedList.map((e) => AccountRuleTypeMapping(
+                id: "00000000-0000-0000-0000-000000000000",
+                ruleType: getRuleType(categoryType),
+                value: Utils.parseStringToInt(e.value!),
+                accountRuleId: (accountRule.id != null && accountRule.id!.isNotEmpty)
+                    ? accountRule.id
+                    : "00000000-0000-0000-0000-000000000000",
+                modelStatus: 3,
+              )));
+
+          List<AccountRuleTypeMapping> oldAccountRuleTypeMappingList = accountRule.accountRuleTypeMappings!
+              .where((element) => element.ruleType == getRuleType(categoryType))
+              .toList();
+
+          for (int i = 0; i < oldAccountRuleTypeMappingList.length; i++) {
+            bool isExisted = false;
+            int indexSelectedList = -1;
+            for (int j = 0; j < newAccountRuleTypeMappingList.length; j++) {
+              if (oldAccountRuleTypeMappingList[i].value == newAccountRuleTypeMappingList[j].value) {
+                indexSelectedList = j;
+                isExisted = true;
+                break;
+              }
+            }
+            if (isExisted) {
+              oldAccountRuleTypeMappingList.removeAt(i);
+              if (indexSelectedList >= 0) {
+                newAccountRuleTypeMappingList.remove(indexSelectedList);
+              }
+              i--;
+            }
+          }
+
+          List<AccountRuleTypeMapping> accountRuleTypeMappingList = [];
+          for (var item in oldAccountRuleTypeMappingList) {
+            item.modelStatus = 2;
+          }
+          accountRuleTypeMappingList.addAll(oldAccountRuleTypeMappingList);
+          accountRuleTypeMappingList.addAll(newAccountRuleTypeMappingList);
+
+          accountRule.accountRuleTypeMappings = accountRuleTypeMappingList;
         }
-        accountRule.accountRuleTypeMappings = selectedList
-            .map((e) => AccountRuleTypeMapping(
-                  id: id,
-                  ruleType: getRuleType(categoryType),
-                  value: Utils.parseStringToInt(e.value!),
-                  accountRuleId: accountRuleId,
-                  modelStatus: modelStatus,
-                ))
-            .toList();
         accountRule.accountRuleTagMappings = [];
       }
 

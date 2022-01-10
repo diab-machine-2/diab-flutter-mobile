@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 @immutable
 class CategoryItemUserModel {
   final bool? disabled;
-  final bool? selected;
+  bool? selected;
   final GroupModel? group;
   final String? text;
   final String? value;

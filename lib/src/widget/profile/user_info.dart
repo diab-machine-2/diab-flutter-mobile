@@ -53,6 +53,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   bool isHasRoadMap = false;
   var user = AppSettings.userInfo!;
   List<CategoryItemUserModel> selectedLessonTagList = [];
+  String diabetesName = '';
 
   @override
   void initState() {
@@ -60,6 +61,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     Observable.instance.addObserver(this);
 
     isHasRoadMap = user.roadMapId != null;
+
+    for (int i = 0; i < user.levelOfDiabetesRuleList!.length; i++) {
+      if (user.levelOfDiabetesRuleList![i].selected!) {
+        diabetesName = user.levelOfDiabetesRuleList![i].text!;
+        break;
+      }
+    }
 
     loadMotivation();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Update Profile');
@@ -90,6 +98,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   @override
   Widget build(BuildContext context) {
     user = AppSettings.userInfo!;
+    user = user.copyWith(diabetesName: diabetesName);
     selectedLessonTagList =
         user.lessonTagList == null ? [] : user.lessonTagList!.where((element) => element.selected ?? false).toList();
 
@@ -268,34 +277,37 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             ),
                           ),
                         _buildCardLayout(title: R.string.general_info.tr(), children: [
-                          ItemProfile(
+                          _buildItemProfile(
                             image: R.drawable.ic_person,
                             title: user.fullName!,
+                            isTitleFromSelectedCategory: false,
                             subTitle: R.string.last_name_and_first_name.tr(),
                             subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
                             callback: (selectedIndexList) {
                               _showDialogUpdateName();
                             },
                           ),
-                          ItemProfile(
+                          _buildItemProfile(
                             image: R.drawable.ic_birthday,
                             title: convertToUTC(user.dateOfBirth!, 'dd/MM/yyyy'),
                             subTitle: R.string.ngay_sinh.tr(),
+                            isTitleFromSelectedCategory: false,
                             subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
                             callback: (selectedIndexList) {
                               _showDialogUpdateBirthday();
                             },
                           ),
-                          ItemProfile(
+                          _buildItemProfile(
                             image: R.drawable.ic_gender,
                             title: user.gender == null || user.gender!.isEmpty ? R.string.updating.tr() : user.gender!,
                             subTitle: R.string.gioi_tinh.tr(),
+                            isTitleFromSelectedCategory: false,
                             subIcon: Image.asset(R.drawable.ic_right, width: 18, height: 18),
                             callback: (selectedIndexList) {
                               _showDialogUpdateGender();
                             },
                           ),
-                          ItemProfile(
+                          _buildItemProfile(
                             icon: R.drawable.ic_user_job,
                             title: 'Giáo viên',
                             subTitle: 'Nghề nghiệp',
@@ -306,10 +318,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             selectedDialogTitle: "Chọn nghề nghiệp",
                             isShowSelectedDialog: true,
                             callback: (selectedIndexList) {
-                              updateCategoryUser(user.jobList!, selectedIndexList, CategoryType.JOB_TYPE);
+                              updateCategoryUser(user.jobList!, selectedIndexList, CategoryType.JOB_TYPE, false);
                             },
                           ),
-                          ItemProfile(
+                          _buildItemProfile(
                             icon: R.drawable.ic_user_education,
                             title: 'Đại học',
                             subTitle: 'Trình độ văn hoá',
@@ -322,24 +334,26 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             selectedDialogTitle: "Chọn học vấn",
                             isShowSelectedDialog: true,
                             callback: (selectedIndexList) {
-                              updateCategoryUser(
-                                  user.educationLevelList!, selectedIndexList, CategoryType.EDUCATION_LEVEL_TYPE);
+                              updateCategoryUser(user.educationLevelList!, selectedIndexList,
+                                  CategoryType.EDUCATION_LEVEL_TYPE, false);
                             },
                           ),
                         ]),
                         _buildCardLayout(title: R.string.pathological_info.tr(), children: [
-                          ItemProfile(
+                          _buildItemProfile(
                             image: R.drawable.ic_folder,
-                            title: user.diabetesName ?? R.string.updating.tr(),
+                            title: user.diabetesName == null ? R.string.updating.tr() : user.diabetesName!,
                             subTitle: R.string.loai_benh.tr(),
+                            isTitleFromSelectedCategory: false,
                             callback: (selectedIndexList) {
                               _showDialogUpdateDiabetesStatus();
                             },
                           ),
-                          ItemProfile(
+                          _buildItemProfile(
                             image: R.drawable.ic_year,
                             title: convertToUTC(user.diabetesDate ?? 0, 'yyyy'),
                             subTitle: R.string.year_illness_start.tr(),
+                            isTitleFromSelectedCategory: false,
                             callback: (selectedIndexList) {
                               _showDialogUpdateDiabetesStatusDate();
                             },
@@ -348,28 +362,31 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         _buildCardLayout(
                           title: R.string.body_info.tr(),
                           children: [
-                            ItemProfile(
+                            _buildItemProfile(
                               image: R.drawable.ic_kg,
                               title: user.weight == null ? R.string.not_updated_yet.tr() : '${user.weight!.round()} kg',
+                              isTitleFromSelectedCategory: false,
                               subTitle: R.string.can_nang.tr(),
                               callback: (selectedIndexList) {
                                 showDialogWeight();
                               },
                             ),
-                            ItemProfile(
+                            _buildItemProfile(
                               image: R.drawable.ic_ruler_fill,
                               title: user.height == null ? R.string.not_updated_yet.tr() : '${user.height!.round()} cm',
                               subTitle: R.string.chieu_cao.tr(),
+                              isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {
                                 showDialogHeight();
                               },
                             ),
-                            ItemProfile(
+                            _buildItemProfile(
                               icon: R.drawable.ic_user_bmi,
                               title: user.height == null
                                   ? R.string.not_updated_yet.tr()
                                   : Utils.getBMI(height: user.height!, weight: user.weight!),
                               subTitle: 'BMI',
+                              isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
                             ),
                           ],
@@ -399,7 +416,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                             getSelectedCategoryList(user.lessonTagList!, selectedIndexList);
                                         //    setState(() {});
                                         updateCategoryUser(
-                                            user.lessonTagList!, selectedIndexList, CategoryType.LESSON_TAG_TYPE);
+                                            user.lessonTagList!, selectedIndexList, CategoryType.LESSON_TAG_TYPE, true);
                                       },
                                     );
                                   });
@@ -418,7 +435,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             description:
                                 'Hãy mô tả chi tiết hơn về bản thân để diaB tìm huấn luyện viên phù hợp với bạn',
                             children: [
-                              ItemProfile(
+                              _buildItemProfile(
                                 image: R.drawable.ic_person,
                                 title: 'Hướng ngoại',
                                 subTitle: 'Tính cách',
@@ -431,11 +448,11 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 selectedDialogTitle: "Chọn tính cách",
                                 isShowSelectedDialog: true,
                                 callback: (selectedIndexList) {
-                                  updateCategoryUser(
-                                      user.personalityRuleList!, selectedIndexList, CategoryType.PERSONALITY_TYPE);
+                                  updateCategoryUser(user.personalityRuleList!, selectedIndexList,
+                                      CategoryType.PERSONALITY_TYPE, false);
                                 },
                               ),
-                              ItemProfile(
+                              _buildItemProfile(
                                 icon: R.drawable.ic_user_habit,
                                 title: 'Chơi game, đọc sách',
                                 subTitle: 'Sở thích cá nhân',
@@ -450,10 +467,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 selectedDialogTitle: "Chọn sở thích",
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(
-                                      user.interestRuleList!, selectedIndexList, CategoryType.INTERESTS_TYPE);
+                                      user.interestRuleList!, selectedIndexList, CategoryType.INTERESTS_TYPE, true);
                                 },
                               ),
-                              ItemProfile(
+                              _buildItemProfile(
                                 icon: R.drawable.ic_user_exercise,
                                 title: 'Cầu lông, xe đạp',
                                 subTitle: 'Môn thể thao yêu thích',
@@ -468,10 +485,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 isMultipleChoice: true,
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(user.favouriteSportRuleList!, selectedIndexList,
-                                      CategoryType.FAVORITE_SPORT_TYPE);
+                                      CategoryType.FAVORITE_SPORT_TYPE, true);
                                 },
                               ),
-                              ItemProfile(
+                              _buildItemProfile(
                                 icon: R.drawable.ic_user_mental_exercise,
                                 title: 'Không',
                                 subTitle: 'Thực hành tâm thức',
@@ -485,10 +502,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 selectedDialogTitle: "Chọn thực hành tâm thức",
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(user.consciousnessPracticeRuleList!, selectedIndexList,
-                                      CategoryType.CONSCIOUSNESS_PRATICE_TYPE);
+                                      CategoryType.CONSCIOUSNESS_PRATICE_TYPE, false);
                                 },
                               ),
-                              ItemProfile(
+                              _buildItemProfile(
                                 icon: R.drawable.ic_user_religion,
                                 title: 'Không',
                                 subTitle: 'Tôn giáo',
@@ -502,10 +519,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 selectedDialogTitle: "Chọn tôn giáo",
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(
-                                      user.religionRuleList!, selectedIndexList, CategoryType.RELIGION_TYPE);
+                                      user.religionRuleList!, selectedIndexList, CategoryType.RELIGION_TYPE, false);
                                 },
                               ),
-                              ItemProfile(
+                              _buildItemProfile(
                                 icon: R.drawable.ic_user_in_diet,
                                 title: 'Không',
                                 subTitle: 'Ăn chay',
@@ -519,10 +536,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 selectedDialogTitle: "Chọn ăn chay",
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(
-                                      user.vegetarianRuleList!, selectedIndexList, CategoryType.VEGETERIAN_TYPE);
+                                      user.vegetarianRuleList!, selectedIndexList, CategoryType.VEGETERIAN_TYPE, false);
                                 },
                               ),
-                              ItemProfile(
+                              _buildItemProfile(
                                 icon: R.drawable.ic_user_schedule,
                                 title: 'Buổi sáng; Bao gồm thứ 7',
                                 subTitle: 'Khung giờ làm việc với huấn luyện viên',
@@ -536,8 +553,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 isShowSelectedDialog: true,
                                 isMultipleChoice: true,
                                 callback: (selectedIndexList) {
-                                  updateCategoryUser(
-                                      user.workingHourRuleList!, selectedIndexList, CategoryType.WORKING_HOURS_TYPE);
+                                  updateCategoryUser(user.workingHourRuleList!, selectedIndexList,
+                                      CategoryType.WORKING_HOURS_TYPE, true);
                                 },
                               ),
                             ],
@@ -545,16 +562,18 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         _buildCardLayout(
                           title: 'Cơ sở dịch vụ đã giới thiệu',
                           children: [
-                            ItemProfile(
+                            _buildItemProfile(
                               icon: R.drawable.ic_user_hospital,
                               title: 'Bệnh viện Hồng Ngọc',
                               subTitle: 'Bệnh viện / Phòng khám',
+                              isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
                             ),
-                            ItemProfile(
+                            _buildItemProfile(
                               icon: R.drawable.ic_user_doctor,
                               title: 'Đặng Vân Nga',
                               subTitle: 'Bác sĩ giới thiệu',
+                              isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {},
                             ),
                           ],
@@ -562,23 +581,25 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         _buildCardLayout(
                           title: R.string.contact_info.tr(),
                           children: [
-                            ItemProfile(
+                            _buildItemProfile(
                               image: R.drawable.ic_phone_info,
                               title: user.phoneNumber!,
                               subTitle: R.string.phone_number_1.tr(),
+                              isTitleFromSelectedCategory: false,
                               subIcon: Image.asset(R.drawable.ic_ok, width: 24, height: 24),
                             ),
-                            ItemProfile(
+                            _buildItemProfile(
                               image: R.drawable.ic_phone_info,
                               title: user.secondPhoneNumber == null || user.secondPhoneNumber!.isEmpty
                                   ? R.string.not_updated_yet.tr()
                                   : user.secondPhoneNumber!,
                               subTitle: R.string.phone_number_2.tr(),
+                              isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {
                                 _showDialogUpdatePhone2();
                               },
                             ),
-                            ItemProfile(
+                            _buildItemProfile(
                               image: R.drawable.ic_email,
                               title: user.isLinkedGoogle == true
                                   ? (user.googleEmail ?? '')
@@ -586,6 +607,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                       ? R.string.not_updated_yet.tr()
                                       : user.email!),
                               subTitle: R.string.email.tr(),
+                              isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {
                                 if (user.isLinkedGoogle == true) {
                                   return;
@@ -593,7 +615,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 _showDialogUpdateEmail();
                               },
                             ),
-                            ItemProfile(
+                            _buildItemProfile(
                                 image: R.drawable.ic_location,
                                 title: ((user.address ?? '') +
                                             (user.address == null || user.address!.isEmpty ? '' : ', ') +
@@ -612,15 +634,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                         (user.district == null || user.district!.name!.isEmpty ? '' : ', ') +
                                         (user.province == null ? '' : user.province!.name!)),
                                 subTitle: R.string.address.tr(),
+                                isTitleFromSelectedCategory: false,
                                 callback: (selectedIndexList) {
                                   _showDialogUpdateAddress();
                                 }),
-                            ItemProfile(
+                            _buildItemProfile(
                               image: R.drawable.ic_google,
                               title: user.isLinkedGoogle == null || !user.isLinkedGoogle!
                                   ? R.string.not_connected_yet.tr()
                                   : user.fullName!,
                               subTitle: 'Google',
+                              isTitleFromSelectedCategory: false,
                               subIcon: CupertinoSwitch(
                                 activeColor: R.color.mainColor,
                                 value: user.isLinkedGoogle ?? false,
@@ -898,13 +922,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     List<CategoryItemUserModel> categoryList,
     List<int> selectedIndexList,
     CategoryType categoryType,
+    bool isMultiChoice,
   ) async {
     try {
       BotToast.showLoading();
       List<CategoryItemUserModel> selectedJobList = getSelectedCategoryList(categoryList, selectedIndexList);
       final UserModel userInfo = AppSettings.userInfo!;
       //  bool isNew = checkIsNew(user.jobList!);
-      await UserClient().updateCategoryUser(AppSettings.userInfo!.id, userInfo, selectedJobList, categoryType);
+      await UserClient()
+          .updateCategoryUser(AppSettings.userInfo!.id, userInfo, selectedJobList, categoryType, isMultiChoice);
       await UserClient().fetchUser();
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -1488,7 +1514,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   _showDialogUpdateDiabetesStatus() {
     final width = MediaQuery.of(context).size.width;
-    int? diabetesStatus = AppSettings.userInfo!.diabetesStatus;
+    int? diabetesStatus = getSelectedIndexDiabetes();
+
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -1540,8 +1567,18 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                       flex: 1,
                       child: GestureDetector(
                         onTap: () {
-                          updateCategoryUser(user.levelOfDiabetesRuleList!,
-                              diabetesStatus != null ? [diabetesStatus!] : [], CategoryType.LEVEL_OF_DIABETES_TYPE);
+                          for (int i = 0; i < user.levelOfDiabetesRuleList!.length; i++) {
+                            if (Utils.parseStringToInt(user.levelOfDiabetesRuleList![i].value!) == diabetesStatus) {
+                              diabetesName = user.levelOfDiabetesRuleList![i].text!;
+                              break;
+                            }
+                          }
+                          setState(() {});
+                          updateCategoryUser(
+                              user.levelOfDiabetesRuleList!,
+                              diabetesStatus != null ? [diabetesStatus!] : [],
+                              CategoryType.LEVEL_OF_DIABETES_TYPE,
+                              false);
 
                           // final UserModel userInfo = AppSettings.userInfo!;
                           // updateUserInfo(
@@ -1757,49 +1794,56 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 Container(
                   margin: const EdgeInsets.only(top: 16),
                   child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          final phone = textEditingController.text;
+                          if (phone.isEmpty) {
+                            Message.showToastMessage(context, R.string.ban_chua_nhap_so_dien_thoai.tr());
+                            return;
+                          } else {
+                            final UserModel userInfo = AppSettings.userInfo!;
+                            updateUserInfo(
+                              userInfo.copyWith(
+                                secondPhoneNumber: phone,
+                              ),
+                            );
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Container(
                           height: 48,
                           width: 119,
-                          decoration:
-                              BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                           child: Center(
-                            child: Text(R.string.cancel.tr(),
-                                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                          )),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        final phone = textEditingController.text;
-                        if (phone.isEmpty) {
-                          Message.showToastMessage(context, R.string.ban_chua_nhap_so_dien_thoai.tr());
-                          return;
-                        } else {
-                          final UserModel userInfo = AppSettings.userInfo!;
-                          updateUserInfo(
-                            userInfo.copyWith(
-                              secondPhoneNumber: phone,
-                            ),
-                          );
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: Container(
-                        height: 48,
-                        width: 119,
-                        decoration: BoxDecoration(
-                            color: R.color.red,
-                            borderRadius: BorderRadius.circular(200),
-                            gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.centerRight,
-                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                        child: Center(
-                          child: Text(R.string.save.tr(),
-                              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                            child: Text(R.string.save.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                          ),
                         ),
                       ),
                     ),
@@ -1868,6 +1912,102 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     );
   }
 
+  _buildItemProfile({
+    String? image,
+    String? icon,
+    required String title,
+    required String subTitle,
+    Widget? subIcon,
+    Function(List<int>)? callback,
+    List<String> elementList = const [],
+    List<String> selectedList = const [],
+    String selectedDialogTitle = '',
+    bool isShowSelectedDialog = false,
+    bool isMultipleChoice = false,
+    bool isTitleFromSelectedCategory = true,
+  }) {
+    title = isTitleFromSelectedCategory ? getTitleFromSelectedList(selectedList) : title;
+    return GestureDetector(
+      onTap: () {
+        if (isShowSelectedDialog) {
+          showActionFilter(
+              context: context,
+              builder: (context) {
+                return SelectBottomSheetWidget(
+                  title: selectedDialogTitle,
+                  selectedList: selectedList,
+                  elementList: elementList,
+                  isMultipleChoice: isMultipleChoice,
+                  onSelected: (typeList) {
+                    selectedList = typeList;
+                    var selectedIndexList = getSelectedIndexList(elementList, typeList);
+                    title = getTitleFromSelectedList(typeList);
+                    //  setState(() {});
+
+                    if (callback != null) {
+                      callback(selectedIndexList);
+                    }
+                  },
+                );
+              });
+        } else {
+          if (callback != null) {
+            callback([]);
+          }
+        }
+      },
+      child: Container(
+        color: R.color.transparent,
+        padding: const EdgeInsets.only(top: 8, bottom: 8),
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Expanded(
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              if (image != null)
+                Image.asset(image, width: 33, height: 33)
+              else
+                UserIconWidget(
+                  icon: icon!,
+                ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(
+                    title,
+                    style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w400),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subTitle,
+                    style: TextStyle(
+                      color: R.color.captionColorGray,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  )
+                ]),
+              )
+            ]),
+          ),
+          if (subIcon != null) subIcon
+        ]),
+      ),
+    );
+  }
+
+  String getTitleFromSelectedList(List<String> selectedList) {
+    String title = '';
+    for (var selectedItem in selectedList) {
+      title += selectedItem + ", ";
+    }
+    if (title.length > 2) {
+      title = title.substring(0, title.length - 2);
+    }
+    if (title.isEmpty) {
+      title = R.string.updating.tr();
+    }
+    return title;
+  }
+
   List<CategoryItemUserModel> getSelectedCategoryList(
       List<CategoryItemUserModel> elementList, List<int> selectedIndexList) {
     List<CategoryItemUserModel> selectedValueList = [];
@@ -1903,5 +2043,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       }
     }
     return isNew;
+  }
+
+  int? getSelectedIndexDiabetes() {
+    var user = AppSettings.userInfo;
+    if (user?.accountRule?.accountRuleTypeMappings != null) {
+      for (int i = 0; i < user!.accountRule!.accountRuleTypeMappings!.length; i++) {
+        if (user.accountRule!.accountRuleTypeMappings![i].ruleType == 10) {
+          return (user.accountRule!.accountRuleTypeMappings![i].value ?? 0) + 1;
+        }
+      }
+    }
+    return 0;
   }
 }
