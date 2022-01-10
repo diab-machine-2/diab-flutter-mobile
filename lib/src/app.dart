@@ -136,7 +136,7 @@ class _AppState extends State<App> {
                   return _buildRoute(
                       settings,
                       RegisterSuccess(
-                          phone: data?['phone'], password: data?['password']));
+                          phone: data?['phone'], password: data?['password'], referalCode: data?['referalCode']));
                 case NavigatorName.update_info:
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(
@@ -146,7 +146,8 @@ class _AppState extends State<App> {
                           googleAccount: data?['googleAccount'],
                           facebookAccount: data?['facebookAccount'],
                           appleAccount: data?['appleAccount'],
-                          userInfo: data?['userInfo']));
+                          userInfo: data?['userInfo'],
+                          referalCode: data?['referalCode']));
                 case NavigatorName.forgot_password:
                   return _buildRoute(settings, ForgotPasswordController());
                 case NavigatorName.new_password:
@@ -166,6 +167,7 @@ class _AppState extends State<App> {
                           phone: data?['phone'],
                           password: data?['password'],
                           remainingRequestCount: data?['remainingRequestCount'],
+                          referalCode: data?['referalCode'],
                           googleAccount: data?['googleAccount'],
                           facebookAccount: data?['facebookAccount'],
                           appleAccount: data?['appleAccount'],

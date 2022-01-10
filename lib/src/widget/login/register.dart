@@ -366,7 +366,8 @@ class _RegisterControllerState extends State<RegisterController> {
         'otp': result.token,
         'phone': phone,
         'password': password,
-        'remainingRequestCount': result.remainingRequestCount
+        'remainingRequestCount': result.remainingRequestCount,
+        'referalCode': referralCode,
       });
     } catch (e, _) {
       BotToast.closeAllLoading();
