@@ -44,7 +44,7 @@ class MyPlanCubit extends Cubit<MyPlanState> {
 
   Future<void> getCurrentUserInfo() async {
     await Future.delayed(Duration.zero);
-    //  emit(const MyPlanLoading());
+    emit(const MyPlanLoading());
     final ApiResult<UserInfoResponse> apiResult = await repository.getCurrentUserInfo();
     apiResult.when(success: (UserInfoResponse response) {
       userInfo = response;
