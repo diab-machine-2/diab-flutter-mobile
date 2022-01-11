@@ -191,9 +191,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
 
   Widget _buildSearchingPage() {
     final List<FilterDataItem?> selectedList =
-        _cubit.searchingStatus == SearchingStatus.keyWord
-            ? _cubit.filterData.tagFilter
-            : _cubit.filterData.nameFilter;
+        _cubit.searchingStatus == SearchingStatus.keyWord ? _cubit.filterData.tagFilter : _cubit.filterData.nameFilter;
     final String title = _cubit.searchingStatus == SearchingStatus.keyWord
         ? R.string.filter_by_key_word.tr()
         : R.string.filter_by_lesson_name.tr();
@@ -245,29 +243,23 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
                         child: ListView.separated(
                           itemCount: _cubit.suggestWordFiltered.length,
                           itemBuilder: (context, index) {
-                            final bool isSelected = selectedList.indexWhere(
-                                    (element) =>
-                                        element != null &&
-                                        element.value ==
-                                            _cubit.suggestWordFiltered[index]
-                                                ?.value) !=
+                            final bool isSelected = selectedList.indexWhere((element) =>
+                                    element != null && element.value == _cubit.suggestWordFiltered[index]?.value) !=
                                 -1;
                             return InkWell(
                               onTap: () {
                                 if (!isSelected) {
-                                  _cubit.searchingStatus ==
-                                          SearchingStatus.keyWord
-                                      ? _cubit.filterData.tagFilter.add(
-                                          _cubit.suggestWordFiltered[index])
-                                      : _cubit.filterData.nameFilter.add(
-                                          _cubit.suggestWordFiltered[index]);
+                                  _cubit.searchingStatus == SearchingStatus.keyWord
+                                      ? _cubit.filterData.tagFilter.add(_cubit.suggestWordFiltered[index])
+                                      : _cubit.filterData.nameFilter.add(_cubit.suggestWordFiltered[index]);
                                 } else {
-                                  _cubit.searchingStatus ==
-                                          SearchingStatus.keyWord
-                                      ? _cubit.filterData.tagFilter.remove(
-                                          _cubit.suggestWordFiltered[index])
-                                      : _cubit.filterData.nameFilter.remove(
-                                          _cubit.suggestWordFiltered[index]);
+                                  _cubit.searchingStatus == SearchingStatus.keyWord
+                                      ? _cubit.filterData.tagFilter.removeWhere((element) {
+                                          return element!.value! == _cubit.suggestWordFiltered[index]!.value!;
+                                        })
+                                      : _cubit.filterData.nameFilter.removeWhere((element) {
+                                          return element!.value! == _cubit.suggestWordFiltered[index]!.value!;
+                                        });
                                 }
                                 _cubit.refresh();
                               },
@@ -283,9 +275,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
                                       child: Text(
                                         '${_cubit.suggestWordFiltered[index]?.text ?? ""}',
                                         style: TextStyle(
-                                          color: isSelected
-                                              ? R.color.mainColor
-                                              : R.color.textDark,
+                                          color: isSelected ? R.color.mainColor : R.color.textDark,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400,
                                         ),
@@ -484,8 +474,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width - 120),
+              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 120),
               child: Text(
                 title,
                 style: TextStyle(
