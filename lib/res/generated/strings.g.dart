@@ -948,4 +948,7 @@ class Strings {
 	String get replied => 'replied';
 	String get view_by_topic => 'view_by_topic';
 	String get question_doctor => 'question_doctor';
+	String get ask_question => 'ask_question';
+	String get select_topic => 'select_topic';
+	String get your_question => 'your_question';
 }

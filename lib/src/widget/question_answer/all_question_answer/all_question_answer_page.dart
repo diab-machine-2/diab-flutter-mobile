@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'all_question_answer.dart';
 
@@ -53,7 +54,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildQuestionDoctor(),
-                SizedBox(height: 16),
+                SizedBox(height: 8),
                 _buildQuestionList(),
               ],
             ),
@@ -66,9 +67,6 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   _buildTopic(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        // border: Border(
-        //   bottom: BorderSide(width: 1.0, color: R.color.grayBorder),
-        // ),
         borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)), // Set rounded corner radius
         boxShadow: [BoxShadow(blurRadius: 1, color: R.color.grayBorder, offset: Offset(1, 3))],
@@ -114,7 +112,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
       child: Container(
         alignment: Alignment.center,
         margin: const EdgeInsets.only(right: 8),
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? R.color.greenGradientBottom : R.color.grayBorder,
           border: isSelected ? Border.all(color: R.color.greenGradientBottom) : null,
@@ -138,45 +136,51 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   }
 
   _buildQuestionDoctor() {
-    return Container(
-      height: 78,
-      child: Stack(
-        children: [
-          Positioned(
-            bottom: 0,
-            right: 0,
-            left: 0,
-            child: Container(
-              height: 66,
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                color: R.color.white,
-                elevation: 2,
-                child: Container(
-                  padding: EdgeInsets.all(18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(width: 32),
-                      Text(
-                        R.string.ask_doctor.tr(),
-                        style: TextStyle(color: R.color.greenGradientBottom, fontWeight: FontWeight.w700, fontSize: 16),
-                      ),
-                      Image.asset(R.drawable.ic_right, width: 18, height: 18, color: R.color.greenGradientBottom),
-                    ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushReplacementNamed(context, NavigatorName.make_question);
+      },
+      child: Container(
+        height: 78,
+        child: Stack(
+          children: [
+            Positioned(
+              bottom: 0,
+              right: 0,
+              left: 0,
+              child: Container(
+                height: 66,
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  color: R.color.white,
+                  elevation: 2,
+                  child: Container(
+                    padding: EdgeInsets.all(18),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(width: 32),
+                        Text(
+                          R.string.ask_doctor.tr(),
+                          style:
+                              TextStyle(color: R.color.greenGradientBottom, fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
+                        Image.asset(R.drawable.ic_right, width: 18, height: 18, color: R.color.greenGradientBottom),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            left: 8,
-            bottom: 5,
-            child: Image.asset(R.drawable.ic_doctor, width: 66, height: 66),
-          ),
-        ],
+            Positioned(
+              left: 8,
+              bottom: 5,
+              child: Image.asset(R.drawable.ic_doctor, width: 66, height: 66),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -199,6 +203,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         borderRadius: BorderRadius.circular(8.0),
       ),
       color: R.color.white,
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       elevation: 2,
       child: Container(
         padding: EdgeInsets.all(16),
