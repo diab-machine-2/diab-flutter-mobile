@@ -369,6 +369,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
                           show: false,
                         ),
                         titlesData: FlTitlesData(
+                          rightTitles: SideTitles(showTitles: false),
+                          topTitles: SideTitles(showTitles: false),
                           bottomTitles: SideTitles(
                             showTitles: true,
                             margin: 16,
