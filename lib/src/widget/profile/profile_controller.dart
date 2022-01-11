@@ -21,6 +21,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_package/my_package_page.dart';
+import 'package:medical/src/widget/shared_profile/shared_profile.dart';
 
 import '../food_menu_screens/food_menu/food_menu_page.dart';
 
@@ -260,6 +261,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                       R.string.contact_diab.tr(), R.drawable.ic_contact, 3),
                   buildAction(
                       R.string.password.tr(), R.drawable.ic_password, 4),
+                  buildAction(
+                      R.string.shared_profile_list.tr(), R.drawable.ic_share, 5),
                 ],
               ),
             )));
@@ -337,6 +340,8 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
               arguments: {'contact': secureModel});
         } else if (index == 4) {
           Navigator.pushNamed(context, NavigatorName.change_password);
+        } else if (index == 5) {
+          NavigationUtil.navigatePage(context, const SharedProfilePage());
         }
       },
       child: Container(

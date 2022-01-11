@@ -59,6 +59,7 @@ import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import 'app_setting/deep_link_config.dart';
 import 'model/service/app_client.dart';
 import 'utils/navigator_name.dart';
 import 'widget/Food/add_food.dart';
@@ -77,6 +78,13 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     AppClient();
+    // DeepLinkConfig.instance.handleDeepLink();
+  }
+
+  @override
+  void dispose() {
+    DeepLinkConfig.instance.dispose();
+    super.dispose();
   }
 
   @override
@@ -108,19 +116,27 @@ class _AppState extends State<App> {
             onGenerateRoute: (settings) {
               switch (settings.name) {
                 case NavigatorName.tabbar:
-                  return _buildRoute(settings, TabbarController());
+                String sharedCode = '';
+                if (settings.arguments != null) {
+                sharedCode = settings.arguments! as String;
+                }
+                  return _buildRoute(settings, TabbarController(sharedCode: sharedCode,));
                 case NavigatorName.login:
                   return _buildRoute(settings, LoginController(),
                       isPresent: true);
                 case NavigatorName.register:
-                  return _buildRoute(settings, RegisterController(),
+                String sharedCode = '';
+                if (settings.arguments != null) {
+                sharedCode = settings.arguments! as String;
+                }
+                  return _buildRoute(settings, RegisterController(sharedCode),
                       isPresent: true);
                 case NavigatorName.register_success:
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(
                       settings,
                       RegisterSuccess(
-                          phone: data?['phone'], password: data?['password']));
+                          phone: data?['phone'], password: data?['password'], referalCode: data?['referalCode']));
                 case NavigatorName.update_info:
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(
@@ -130,7 +146,8 @@ class _AppState extends State<App> {
                           googleAccount: data?['googleAccount'],
                           facebookAccount: data?['facebookAccount'],
                           appleAccount: data?['appleAccount'],
-                          userInfo: data?['userInfo']));
+                          userInfo: data?['userInfo'],
+                          referalCode: data?['referalCode']));
                 case NavigatorName.forgot_password:
                   return _buildRoute(settings, ForgotPasswordController());
                 case NavigatorName.new_password:
@@ -150,6 +167,7 @@ class _AppState extends State<App> {
                           phone: data?['phone'],
                           password: data?['password'],
                           remainingRequestCount: data?['remainingRequestCount'],
+                          referalCode: data?['referalCode'],
                           googleAccount: data?['googleAccount'],
                           facebookAccount: data?['facebookAccount'],
                           appleAccount: data?['appleAccount'],
@@ -161,7 +179,11 @@ class _AppState extends State<App> {
                   return _buildRoute(settings, PolicyController(),
                       isPresent: true);
                 case NavigatorName.step_list:
-                  return _buildRoute(settings, StepListController(),
+                String sharedCode = '';
+                if (settings.arguments != null) {
+                sharedCode = settings.arguments! as String;
+                }
+                  return _buildRoute(settings, StepListController(sharedCode),
                       isPresent: true);
                 case NavigatorName.rules:
                   return _buildRoute(settings, RulesController());

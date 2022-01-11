@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
@@ -24,15 +25,31 @@ class MyPlanPage extends StatefulWidget {
   State<MyPlanPage> createState() => _MyPlanPageState();
 }
 
-class _MyPlanPageState extends State<MyPlanPage> {
+class _MyPlanPageState extends State<MyPlanPage> with Observer {
   late final MyPlanCubit _cubit;
   final PageController _pageController = PageController(initialPage: 1);
 
   @override
   void initState() {
+    super.initState();
+    Observable.instance.addObserver(this);
     final AppRepository appRepository = AppRepository();
     _cubit = MyPlanCubit(appRepository);
-    super.initState();
+  }
+
+  @override
+  update(Observable observable, String? notifyName, Map? map) {
+    if (notifyName == Const.NAVIGATE_TO_ACTIVITY_TAB) {
+      if (_cubit.currentPlanType != PlanType.goal) {
+        _cubit.changePlanType(0);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
