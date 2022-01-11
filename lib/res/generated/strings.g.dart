@@ -944,4 +944,8 @@ class Strings {
 	String get day_in_week_saturday => 'day_in_week_saturday';
 	String get day_in_week_sunday => 'day_in_week_sunday';
 	String get statistical => 'statistical';
+	String get ask_doctor => 'ask_doctor';
+	String get replied => 'replied';
+	String get view_by_topic => 'view_by_topic';
+	String get question_doctor => 'question_doctor';
 }
