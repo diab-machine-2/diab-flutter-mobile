@@ -127,16 +127,14 @@ class CreateSmartGoalData {
     goalTimeOrFrequency = '${smartGoalData.executeDayTimes ?? 0}';
     if (smartGoalData.targetScheduler != null) {
       isRepeat = true;
-      repeatType = RepeatTypeExtend.getTypeFromNumber(
-          smartGoalData.targetScheduler?.repeatType);
+      repeatType = RepeatTypeExtend.getTypeFromNumber(smartGoalData.targetScheduler?.repeatType);
       repeatDayList = smartGoalData.targetScheduler?.repeatDayList ?? [];
-      endDate = DateTime.fromMillisecondsSinceEpoch(
-          (smartGoalData.targetScheduler?.endDate ?? 0) * 1000);
+      repeatDayList.sort((a, b) => a.index - b.index);
+      endDate = DateTime.fromMillisecondsSinceEpoch((smartGoalData.targetScheduler?.endDate ?? 0) * 1000);
     }
   }
 
-  int get dailyTargetDurationNumber =>
-      Utils.parseStringToInt(dailyTargetDuration);
+  int get dailyTargetDurationNumber => Utils.parseStringToInt(dailyTargetDuration);
 
   CreateSmartGoalData get copy => CreateSmartGoalData(
       endDate: this.endDate,
@@ -152,9 +150,8 @@ class CreateSmartGoalData {
   String get checkValid {
     if (type == null || type == ScheduleType.custom) {
       if (name.isEmpty) {
-        return R.string.smart_goal_name_empty.tr(args: [
-          if (subType == 0) 'Tên mục tiêu của bạn' else 'Tên việc làm yêu thích'
-        ]);
+        return R.string.smart_goal_name_empty
+            .tr(args: [if (subType == 0) 'Tên mục tiêu của bạn' else 'Tên việc làm yêu thích']);
       }
       if (isRepeat && repeatType == null) {
         return 'Mức độ thường xuyên là bắt buộc';
@@ -162,8 +159,7 @@ class CreateSmartGoalData {
       if (isRepeat && repeatType == RepeatType.week && repeatDayList.isEmpty) {
         return R.string.smart_goal_repeat_day_empty.tr();
       }
-      if (goalTimeOrFrequency.isEmpty ||
-          Utils.parseStringToInt(goalTimeOrFrequency) == 0) {
+      if (goalTimeOrFrequency.isEmpty || Utils.parseStringToInt(goalTimeOrFrequency) == 0) {
         return 'Chưa nhập ${goalRecordType == GoalRecordType.time ? 'thời gian thực hiện' : 'số lần thực hiện'}';
       }
     } else if (type == ScheduleType.exercise) {
@@ -177,8 +173,7 @@ class CreateSmartGoalData {
       if (isRepeat && repeatType == RepeatType.week && repeatDayList.isEmpty) {
         return R.string.smart_goal_repeat_day_empty.tr();
       }
-      if (goalTimeOrFrequency.isEmpty ||
-          Utils.parseStringToInt(goalTimeOrFrequency) == 0) {
+      if (goalTimeOrFrequency.isEmpty || Utils.parseStringToInt(goalTimeOrFrequency) == 0) {
         return R.string.smart_goal_exercise_frequency_empty.tr();
       }
     }
