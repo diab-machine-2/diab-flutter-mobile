@@ -83,24 +83,75 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
             style: TextStyle(color: R.color.black, fontWeight: FontWeight.w400, fontSize: 14),
           ),
           SizedBox(height: 6),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            controller: _scrollController,
-            child: Row(
-              children: List.generate(_cubit.topic.length, (index) {
-                return _buildTopicItem(
-                    item: _cubit.topic[index],
-                    isSelected: index == _cubit.currentTopic,
-                    onSelect: () {
-                      _cubit.onSelectWeek(index);
-                    });
-              })
-                ..add(SizedBox(width: _cubit.topic.isEmpty ? MediaQuery.of(context).size.width - 96 * 2 : 0)),
-            ),
+          Row(
+            children: [
+              InkWell(
+                onTap: () {
+                  if (_cubit.currentTopic == null) return;
+                  animateToIndex(_cubit.currentTopic - 1);
+                },
+                child: Icon(
+                  Icons.chevron_left_rounded,
+                  size: 28,
+                  color: (_cubit.currentTopic) <= 0 ? R.color.captionColorGray : R.color.greenGradientBottom,
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  controller: _scrollController,
+                  child: Row(
+                    children: List.generate(_cubit.topic.length, (index) {
+                      return _buildTopicItem(
+                          item: _cubit.topic[index],
+                          isSelected: index == _cubit.currentTopic,
+                          onSelect: () {
+                            _cubit.onSelectWeek(index);
+                          });
+                    })
+                      ..add(SizedBox(width: _cubit.topic.isEmpty ? MediaQuery.of(context).size.width - 96 * 2 : 0)),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  if (_cubit.currentTopic == null) return;
+                  animateToIndex(_cubit.currentTopic + 1);
+                },
+                child: Icon(
+                  Icons.chevron_right_rounded,
+                  size: 28,
+                  color: (_cubit.currentTopic) >= (_cubit.topic.length - 1)
+                      ? R.color.captionColorGray
+                      : R.color.greenGradientBottom,
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  void animateToIndex(int index, {bool refresh = true}) {
+    if (_cubit.topic.isEmpty) return;
+    if (index < 0) {
+      index = 0;
+      refresh = false;
+    }
+    if (index >= _cubit.topic.length) {
+      index = _cubit.topic.length - 1;
+      refresh = false;
+    }
+    final double newPosition = index * 96 + (6 * index.toDouble());
+    _scrollController.animateTo(
+      newPosition,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.ease,
+    );
+    if (refresh) {
+      _cubit.onSelectWeek(index);
+    }
   }
 
   _buildTopicItem({
@@ -350,84 +401,81 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
     showDialog(
       context: context,
       builder: (context) {
-        return Container(
-          child: AlertDialog(
-              contentPadding: EdgeInsets.all(0),
-              content: Stack(children: [
-                Container(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(R.drawable.ic_earse, width: 40, height: 40),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(R.string.confirm_delete_question.tr(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(R.string.confirm_delete_question_subtitle.tr(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 16),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                                  child: Center(
-                                    child: Text(R.string.back.tr(),
-                                        style: TextStyle(
-                                            color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                                  )),
-                            ),
-                          ),
-                          SizedBox(width: 14),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                //     delete(model);
-                                Navigator.pop(context);
-                              },
-                              child: Container(
+        return AlertDialog(
+            contentPadding: EdgeInsets.all(0),
+            content: Stack(children: [
+              Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(R.drawable.ic_earse, width: 40, height: 40),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(R.string.confirm_delete_question.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(R.string.confirm_delete_question_subtitle.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 16),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
                                 height: 40,
-                                decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                ),
+                                decoration:
+                                    BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text(R.string.delete.tr(),
-                                      style:
-                                          TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                                ),
+                                  child: Text(R.string.back.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                )),
+                          ),
+                        ),
+                        SizedBox(width: 14),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              //     delete(model);
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: R.color.red,
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              child: Center(
+                                child: Text(R.string.delete.tr(),
+                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                               ),
                             ),
                           ),
-                        ]),
-                      ),
-                    ],
-                  ),
+                        ),
+                      ]),
+                    ),
+                  ],
                 ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: IconButton(
-                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                )
-              ])),
-        );
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                    icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
+              )
+            ]));
       },
     );
   }

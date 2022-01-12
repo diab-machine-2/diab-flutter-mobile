@@ -130,13 +130,13 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
           child: Center(
             child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
           ),
-          itemBuilder: (mContext) {
+          itemBuilder: (context) {
             return List.generate(1, (index) {
               return PopupMenuItem<String>(
                   height: 30,
                   padding: EdgeInsets.zero,
                   onTap: () {
-                    _showDialogDelete(context, '');
+                    Future.delayed(const Duration(seconds: 0), () => _showDialogDelete(context, ''));
                   },
                   child: Container(
                     child: Row(
@@ -203,13 +203,13 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
               child: Center(
                 child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
               ),
-              itemBuilder: (mContext) {
+              itemBuilder: (context) {
                 return List.generate(1, (index) {
                   return PopupMenuItem<String>(
                       height: 30,
                       padding: EdgeInsets.zero,
                       onTap: () {
-                        _showDialogComment(context, '');
+                        Future.delayed(const Duration(seconds: 0), () => _showDialogComment(context, ''));
                       },
                       child: Container(
                         child: Row(
@@ -260,84 +260,81 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return Container(
-          child: AlertDialog(
-              contentPadding: EdgeInsets.all(0),
-              content: Stack(children: [
-                Container(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(R.drawable.ic_earse, width: 40, height: 40),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(R.string.confirm_delete_question.tr(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(R.string.confirm_delete_question_subtitle.tr(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 16),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                                  child: Center(
-                                    child: Text(R.string.back.tr(),
-                                        style: TextStyle(
-                                            color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                                  )),
-                            ),
-                          ),
-                          SizedBox(width: 14),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                //     delete(model);
-                                Navigator.pop(context);
-                              },
-                              child: Container(
+        return AlertDialog(
+            contentPadding: EdgeInsets.all(0),
+            content: Stack(children: [
+              Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(R.drawable.ic_earse, width: 40, height: 40),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(R.string.confirm_delete_question.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(R.string.confirm_delete_question_subtitle.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 16),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
                                 height: 40,
-                                decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                ),
+                                decoration:
+                                    BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text(R.string.delete.tr(),
-                                      style:
-                                          TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                                ),
+                                  child: Text(R.string.back.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                )),
+                          ),
+                        ),
+                        SizedBox(width: 14),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              //     delete(model);
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: R.color.red,
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              child: Center(
+                                child: Text(R.string.delete.tr(),
+                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                               ),
                             ),
                           ),
-                        ]),
-                      ),
-                    ],
-                  ),
+                        ),
+                      ]),
+                    ),
+                  ],
                 ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: IconButton(
-                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                )
-              ])),
-        );
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                    icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
+              )
+            ]));
       },
     );
   }
@@ -346,84 +343,81 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return Container(
-          child: AlertDialog(
-              contentPadding: EdgeInsets.all(0),
-              content: Stack(children: [
-                Container(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(R.drawable.ic_earse, width: 40, height: 40),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(R.string.confirm_delete_comment.tr(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(R.string.confirm_delete_comment_subtitle.tr(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 16),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                                  child: Center(
-                                    child: Text(R.string.back.tr(),
-                                        style: TextStyle(
-                                            color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                                  )),
-                            ),
-                          ),
-                          SizedBox(width: 14),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                //     delete(model);
-                                Navigator.pop(context);
-                              },
-                              child: Container(
+        return AlertDialog(
+            contentPadding: EdgeInsets.all(0),
+            content: Stack(children: [
+              Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(R.drawable.ic_earse, width: 40, height: 40),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(R.string.confirm_delete_comment.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(R.string.confirm_delete_comment_subtitle.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 16),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
                                 height: 40,
-                                decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                ),
+                                decoration:
+                                    BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
                                 child: Center(
-                                  child: Text(R.string.delete.tr(),
-                                      style:
-                                          TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                                ),
+                                  child: Text(R.string.back.tr(),
+                                      style: TextStyle(
+                                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                )),
+                          ),
+                        ),
+                        SizedBox(width: 14),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              //     delete(model);
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: R.color.red,
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              child: Center(
+                                child: Text(R.string.delete.tr(),
+                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                               ),
                             ),
                           ),
-                        ]),
-                      ),
-                    ],
-                  ),
+                        ),
+                      ]),
+                    ),
+                  ],
                 ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: IconButton(
-                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                )
-              ])),
-        );
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                    icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
+              )
+            ]));
       },
     );
   }
