@@ -138,7 +138,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   _buildQuestionDoctor() {
     return GestureDetector(
       onTap: () {
-        Navigator.pushReplacementNamed(context, NavigatorName.make_question);
+        Navigator.pushNamed(context, NavigatorName.make_question);
       },
       child: Container(
         height: 78,

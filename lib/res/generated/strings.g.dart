@@ -951,4 +951,5 @@ class Strings {
 	String get ask_question => 'ask_question';
 	String get select_topic => 'select_topic';
 	String get your_question => 'your_question';
+	String get send_question => 'send_question';
 }

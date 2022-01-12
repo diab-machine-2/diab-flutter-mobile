@@ -3,7 +3,7 @@ import '../make_question.dart';
 
 class MakeQuestionCubit extends Cubit<MakeQuestionState> {
   List<String> topicList = ["Chủ đề 1", "Chủ đề 2", "Chủ đề 3", "Chủ đề 4", "Chủ đề 5"];
-  String currentTopic = '';
+  String? currentTopic;
 
   MakeQuestionCubit() : super(MakeQuestionInitial()) {
     // TODO
