@@ -57,6 +57,8 @@ import 'package:medical/src/widget/profile/schedule_glucose.dart';
 import 'package:medical/src/widget/profile/setting_schedule_glucose.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/question_answer/make_question/make_question_page.dart';
+import 'package:medical/src/widget/question_answer/question_detail/bloc/question_detail_cubit.dart';
+import 'package:medical/src/widget/question_answer/question_detail/question_detail_page.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -358,6 +360,8 @@ class _AppState extends State<App> {
                       isPresent: true);
                 case NavigatorName.make_question:
                   return _buildRoute(settings, MakeQuestionPage(), isPresent: true);
+                case NavigatorName.question_detail:
+                  return _buildRoute(settings, QuestionDetailPage(), isPresent: true);
                 default:
                   return null;
               }

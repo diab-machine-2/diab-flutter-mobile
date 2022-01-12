@@ -14,4 +14,9 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
     emit(MakeQuestionLoading());
     emit(MakeQuestionSuccess());
   }
+
+  sendQuestion() {
+    emit(MakeQuestionLoading());
+    emit(SendQuestionSuccess());
+  }
 }

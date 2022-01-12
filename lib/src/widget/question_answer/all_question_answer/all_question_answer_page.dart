@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -198,33 +199,62 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   }
 
   _buildQuestionItem(int position) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      color: R.color.white,
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      elevation: 2,
-      child: Container(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildHeaderItem(),
-            SizedBox(height: 12),
-            _buildTitleItem(),
-            SizedBox(height: 16),
-            Divider(height: 0.5, color: R.color.grayBorder),
-            SizedBox(height: 16),
-            ListView.builder(
-              itemCount: 1,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, position) {
-                return _buildDoctorItemInQuestionItem(position);
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, NavigatorName.question_detail);
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        color: R.color.white,
+        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        elevation: 2,
+        child: Slidable(
+          actionPane: SlidableDrawerActionPane(),
+          secondaryActions: [
+            IconSlideAction(
+              color: R.color.color0xffFF5552,
+              iconWidget: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+                    SizedBox(height: 8),
+                    Text(R.string.delete_question.tr(),
+                        style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.center),
+                  ],
+                ),
+              ),
+              onTap: () {
+                _showDialogDelete(context, '');
               },
             ),
           ],
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildHeaderItem(),
+                SizedBox(height: 12),
+                _buildTitleItem(),
+                SizedBox(height: 16),
+                Divider(height: 0.5, color: R.color.grayBorder),
+                SizedBox(height: 16),
+                ListView.builder(
+                  itemCount: 1,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, position) {
+                    return _buildDoctorItemInQuestionItem(position);
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -313,6 +343,92 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         ),
         Image.asset(R.drawable.ic_right, width: 14, height: 14, color: R.color.greenGradientBottom),
       ],
+    );
+  }
+
+  _showDialogDelete(BuildContext context, String model) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          child: AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Stack(children: [
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(R.drawable.ic_earse, width: 40, height: 40),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(R.string.confirm_delete_question.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(R.string.confirm_delete_question_subtitle.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 16),
+                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                                  child: Center(
+                                    child: Text(R.string.back.tr(),
+                                        style: TextStyle(
+                                            color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                  )),
+                            ),
+                          ),
+                          SizedBox(width: 14),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                //     delete(model);
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: R.color.red,
+                                  borderRadius: BorderRadius.circular(200),
+                                ),
+                                child: Center(
+                                  child: Text(R.string.delete.tr(),
+                                      style:
+                                          TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                )
+              ])),
+        );
+      },
     );
   }
 

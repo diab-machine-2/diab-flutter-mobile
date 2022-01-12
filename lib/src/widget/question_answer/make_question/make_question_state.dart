@@ -39,3 +39,21 @@ class MakeQuestionFailure extends MakeQuestionState {
   @override
   String toString() => 'MakeQuestionFailure { error: $error }';
 }
+
+class SendQuestionSuccess extends MakeQuestionState {
+  final String? message;
+
+  const SendQuestionSuccess({this.message});
+
+  @override
+  String toString() => 'SendQuestionSuccess { message: $message }';
+}
+
+class SendQuestionFailure extends MakeQuestionState {
+  final String error;
+
+  const SendQuestionFailure(this.error);
+
+  @override
+  String toString() => 'SendQuestionFailure { error: $error }';
+}

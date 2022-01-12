@@ -30,7 +30,11 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocListener<MakeQuestionCubit, MakeQuestionState>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            if (state is SendQuestionSuccess) {
+              showSuccessDialog();
+            }
+          },
           child: BlocBuilder<MakeQuestionCubit, MakeQuestionState>(
             builder: (context, state) {
               return _buildPage(context, state);
@@ -114,6 +118,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
+              alignment: AlignmentDirectional.bottomEnd,
               isDense: true,
               isExpanded: true,
               value: _cubit.currentTopic,
@@ -217,20 +222,74 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
   }
 
   _buildSendButton() {
-    return Container(
-        height: 48,
-        width: 300,
-        margin: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-            color: R.color.mainColor,
-            borderRadius: BorderRadius.circular(200),
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.centerRight,
-                colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-        child: Center(
-          child: Text(R.string.send_question.tr(),
-              style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-        ));
+    return GestureDetector(
+      onTap: () {
+        showSuccessDialog();
+        //    _cubit.sendQuestion();
+      },
+      child: Container(
+          height: 48,
+          width: 300,
+          margin: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+              color: R.color.mainColor,
+              borderRadius: BorderRadius.circular(200),
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.centerRight,
+                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+          child: Center(
+            child: Text(R.string.send_question.tr(),
+                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+          )),
+    );
+  }
+
+  showSuccessDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: R.color.greenbg,
+            contentPadding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            content: Container(
+              padding: EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(width: 20),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Image.asset(R.drawable.ic_close, width: 24, height: 24),
+                      ),
+                    ],
+                  ),
+                  Image.asset(R.drawable.img_question, width: 200, height: 200),
+                  SizedBox(height: 16),
+                  Text(
+                    R.string.send_question_success.tr(),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: R.color.textDark),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    R.string.response_as_soon_as_possible.tr(),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: R.color.textDark),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 8),
+                ],
+              ),
+            ),
+            actions: <Widget>[],
+          );
+        });
   }
 }

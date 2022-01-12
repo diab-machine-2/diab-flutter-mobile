@@ -291,6 +291,7 @@ class Drawables {
 	String get img_nothing_chart_weight => "lib/res/drawables/img_nothing_chart_weight.png";
 	String get img_notification_empty => "lib/res/drawables/img_notification_empty.png";
 	String get img_parent => "lib/res/drawables/img_parent.png";
+	String get img_question => "lib/res/drawables/img_question.png";
 	String get img_register_success => "lib/res/drawables/img_register_success.png";
 	String get img_reminder => "lib/res/drawables/img_reminder.png";
 	String get img_result_booking => "lib/res/drawables/img_result_booking.png";

@@ -952,4 +952,12 @@ class Strings {
 	String get select_topic => 'select_topic';
 	String get your_question => 'your_question';
 	String get send_question => 'send_question';
+	String get response_as_soon_as_possible => 'response_as_soon_as_possible';
+	String get send_question_success => 'send_question_success';
+	String get delete_question => 'delete_question';
+	String get confirm_delete_question => 'confirm_delete_question';
+	String get confirm_delete_question_subtitle => 'confirm_delete_question_subtitle';
+	String get confirm_delete_comment => 'confirm_delete_comment';
+	String get confirm_delete_comment_subtitle => 'confirm_delete_comment_subtitle';
+	String get delete_comment => 'delete_comment';
 }
