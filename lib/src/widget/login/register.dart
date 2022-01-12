@@ -87,10 +87,7 @@ class _RegisterControllerState extends State<RegisterController> {
                         alignment: Alignment.topLeft,
                         child: Text(
                           R.string.tao_tai_khoan.tr(),
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600),
+                          style: TextStyle(color: R.color.textDark, fontSize: 24, fontWeight: FontWeight.w600),
                         ),
                       ),
                       backgroundColor: R.color.transparent, //No more green
@@ -112,8 +109,7 @@ class _RegisterControllerState extends State<RegisterController> {
                           TextFieldCustom(
                               key: passwordKey,
                               title: R.string.password.tr(),
-                              placeholder:
-                                  R.string.password_least_character.tr(),
+                              placeholder: R.string.password_least_character.tr(),
                               isPassword: true,
                               onChanged: (value) {
                                 password = value;
@@ -131,11 +127,12 @@ class _RegisterControllerState extends State<RegisterController> {
                           TextFieldCustom(
                               key: referralCodeKey,
                               initText: referralCode,
+                              maxLength: 6,
                               title: R.string.references_code.tr(),
                               placeholder: R.string.input_references_code.tr(),
                               isSharedCode: true,
                               onChanged: (value) {
-                                referralCode = value;
+                                referralCode = value.trim();
                               }),
                           const SizedBox(height: 32),
                           GestureDetector(
@@ -151,19 +148,13 @@ class _RegisterControllerState extends State<RegisterController> {
                                 gradient: LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.centerRight,
-                                  colors: [
-                                    R.color.greenGradientTop,
-                                    R.color.greenGradientBottom
-                                  ],
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
                                 ),
                               ),
                               child: Center(
                                 child: Text(
                                   R.string.tiep_tuc.tr(),
-                                  style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
+                                  style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ),
@@ -176,15 +167,11 @@ class _RegisterControllerState extends State<RegisterController> {
                       children: [
                         InkWell(
                           onTap: () async {
-                            final dynamic scanResult =
-                                await NavigationUtil.navigatePage(
-                                    context, const QRScanWidget());
+                            final dynamic scanResult = await NavigationUtil.navigatePage(context, const QRScanWidget());
                             if (scanResult is String) {
                               referralCode = scanResult;
-                              referralCodeKey.currentState
-                                  ?.textEditingController.text = referralCode;
-                              referralCodeKey.currentState
-                                  ?.valideReferralCode(referralCode);
+                              referralCodeKey.currentState?.textEditingController.text = referralCode;
+                              referralCodeKey.currentState?.valideReferralCode(referralCode);
                             }
                           },
                           child: Row(
@@ -213,66 +200,45 @@ class _RegisterControllerState extends State<RegisterController> {
                       child: Column(
                         children: [
                           Text(R.string.hoac_dang_nhap_bang.tr(),
-                              style: TextStyle(
-                                  color: R.color.textDark,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400)),
+                              style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
                           const SizedBox(height: 16),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if (Platform.isIOS)
-                                  GestureDetector(
-                                    onTap: () {
-                                      loginApple();
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8, right: 8),
-                                      child: Container(
-                                          height: 50,
-                                          width: 50,
-                                          decoration: BoxDecoration(
-                                              color: R.color.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(25)),
-                                          child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Image.asset(
-                                                    R.drawable.ic_login_apple,
-                                                    width: 26,
-                                                    height: 26),
-                                              ])),
-                                    ),
-                                  )
-                                else
-                                  const SizedBox(),
-                                GestureDetector(
-                                  onTap: () {
-                                    loginGG();
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8, right: 8),
-                                    child: Container(
-                                        height: 50,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            color: R.color.white,
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                        child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Image.asset(R.drawable.ic_google,
-                                                  width: 26, height: 26),
-                                            ])),
-                                  ),
-                                )
-                              ]),
+                          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                            if (Platform.isIOS)
+                              GestureDetector(
+                                onTap: () {
+                                  loginApple();
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 8, right: 8),
+                                  child: Container(
+                                      height: 50,
+                                      width: 50,
+                                      decoration:
+                                          BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(25)),
+                                      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                        Image.asset(R.drawable.ic_login_apple, width: 26, height: 26),
+                                      ])),
+                                ),
+                              )
+                            else
+                              const SizedBox(),
+                            GestureDetector(
+                              onTap: () {
+                                loginGG();
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8, right: 8),
+                                child: Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration:
+                                        BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(25)),
+                                    child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                      Image.asset(R.drawable.ic_google, width: 26, height: 26),
+                                    ])),
+                              ),
+                            )
+                          ]),
                           const SizedBox(height: 16)
                         ],
                       ),
@@ -290,17 +256,14 @@ class _RegisterControllerState extends State<RegisterController> {
   Future<bool> _isReferralCodeExist(String code) async {
     BotToast.showLoading();
     bool isReferralCodeExist = false;
-    final ApiResult<UserInfoReferralCodeResponse> apiResult =
-        await _appRepository.getUserFromReferralCode(code);
+    final ApiResult<UserInfoReferralCodeResponse> apiResult = await _appRepository.getUserFromReferralCode(code);
     apiResult.when(success: (UserInfoReferralCodeResponse response) {
       isReferralCodeExist = response.isUserExists;
       if (!isReferralCodeExist) {
-        Message.showToastMessage(
-            context, R.string.referral_code_not_exist.tr());
+        Message.showToastMessage(context, R.string.referral_code_not_exist.tr());
       }
     }, failure: (NetworkExceptions error) {
-      Message.showToastMessage(
-          context, NetworkExceptions.getErrorMessage(error));
+      Message.showToastMessage(context, NetworkExceptions.getErrorMessage(error));
       BotToast.closeAllLoading();
     });
     if (!isReferralCodeExist) BotToast.closeAllLoading();
@@ -309,8 +272,7 @@ class _RegisterControllerState extends State<RegisterController> {
 
   verify() async {
     if (phone.isEmpty) {
-      phoneKey.currentState!
-          .validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
+      phoneKey.currentState!.validate(R.string.ban_chua_nhap_so_dien_thoai.tr());
       return;
     }
     if (password.isEmpty) {
@@ -318,23 +280,19 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
     if (password.contains(' ')) {
-      passwordKey.currentState!
-          .validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
+      passwordKey.currentState!.validate(R.string.mat_khau_khong_chua_khoang_trang.tr());
       return;
     }
     if (password.length < 6) {
-      passwordKey.currentState!
-          .validate(R.string.password_least_character.tr());
+      passwordKey.currentState!.validate(R.string.password_least_character.tr());
       return;
     }
     if (confirmPassword.isEmpty) {
-      confirmPasswordKey.currentState!
-          .validate(R.string.ban_chua_nhap_lai_mat_khau.tr());
+      confirmPasswordKey.currentState!.validate(R.string.ban_chua_nhap_lai_mat_khau.tr());
       return;
     }
     if (confirmPassword != password) {
-      confirmPasswordKey.currentState!
-          .validate(R.string.nhap_lai_mat_khau_khong_chinh_xac.tr());
+      confirmPasswordKey.currentState!.validate(R.string.nhap_lai_mat_khau_khong_chinh_xac.tr());
       return;
     }
 
@@ -354,8 +312,7 @@ class _RegisterControllerState extends State<RegisterController> {
     if (!isReferralCodeExist) return;
     try {
       print(phone);
-      final result = await LoginClient()
-          .requestOTP({"password": password, "phoneNumber": phone});
+      final result = await LoginClient().requestOTP({"password": password, "phoneNumber": phone});
       BotToast.closeAllLoading();
       if (result.remainingRequestCount! <= 0) {
         _showDialogError();
@@ -373,15 +330,12 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == 'USER002') {
-          phoneKey.currentState!
-              .validate(R.string.so_dien_thoai_da_ton_tai.tr());
+          phoneKey.currentState!.validate(R.string.so_dien_thoai_da_ton_tai.tr());
         } else {
-          Message.showToastMessage(
-              context, R.string.error_can_not_connect_to_server.tr());
+          Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
         }
       } else {
-        Message.showToastMessage(
-            context, R.string.error_can_not_connect_to_server.tr());
+        Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -404,14 +358,10 @@ class _RegisterControllerState extends State<RegisterController> {
                   text: R.string.da_gui_otp_5_lan_cho_so_dien_thoai.tr(),
                   style: TextStyle(color: R.color.textDark, fontSize: 16),
                   children: <TextSpan>[
-                    TextSpan(
-                        text: phone,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
+                    TextSpan(text: phone, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
                         text: R.string.dang_ky_lai_hom_sau.tr(),
-                        style:
-                            TextStyle(color: R.color.textDark, fontSize: 16)),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16)),
                   ],
                 ),
               )
@@ -444,12 +394,8 @@ class _RegisterControllerState extends State<RegisterController> {
           final user = await UserClient().fetchUser();
           BotToast.closeAllLoading();
           if (user == null) {
-            registerAccount(
-                result.accessToken?.userId,
-                result.accessToken?.token,
-                'Facebook',
-                profile['name'] ?? R.string.user_name_default.tr(),
-                true);
+            registerAccount(result.accessToken?.userId, result.accessToken?.token, 'Facebook',
+                profile['name'] ?? R.string.user_name_default.tr(), true);
             // Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
             //   'type': 'facebook',
             //   'facebookAccount': result,
@@ -463,12 +409,8 @@ class _RegisterControllerState extends State<RegisterController> {
           BotToast.closeAllLoading();
           if (error is Error) {
             if (error.code == '5' && profile != null) {
-              registerAccount(
-                  result.accessToken?.userId,
-                  result.accessToken?.token,
-                  'Facebook',
-                  profile['name'] ?? R.string.user_name_default.tr(),
-                  false);
+              registerAccount(result.accessToken?.userId, result.accessToken?.token, 'Facebook',
+                  profile['name'] ?? R.string.user_name_default.tr(), false);
               // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
               //     arguments: {
               //       'type': 'facebook',
@@ -516,8 +458,8 @@ class _RegisterControllerState extends State<RegisterController> {
       final user = await UserClient().fetchUser();
       BotToast.closeAllLoading();
       if (user == null) {
-        registerAccount(account.id, authen.accessToken, 'Google',
-            account.displayName ?? R.string.user_name_default.tr(), true);
+        registerAccount(
+            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), true);
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
@@ -526,11 +468,10 @@ class _RegisterControllerState extends State<RegisterController> {
       }
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
-        registerAccount(account.id, authen.accessToken, 'Google',
-            account.displayName ?? R.string.user_name_default.tr(), false);
+        registerAccount(
+            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), false);
       } else if (error is PlatformException && error.code == 'network_error') {
-        Message.showToastMessage(
-            context, R.string.error_can_not_connect_to_server.tr());
+        Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       } else {
         BotToast.closeAllLoading();
         Message.showToastMessage(context, error.toString());
@@ -570,12 +511,8 @@ class _RegisterControllerState extends State<RegisterController> {
       if (user == null) {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'apple', 'appleAccount': credential});
-        registerAccount(
-            credential.userIdentifier,
-            credential.identityToken,
-            'Apple',
-            credential.givenName ?? R.string.user_name_default.tr(),
-            true);
+        registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
+            credential.givenName ?? R.string.user_name_default.tr(), true);
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
@@ -583,28 +520,21 @@ class _RegisterControllerState extends State<RegisterController> {
     } catch (error) {
       BotToast.closeAllLoading();
       if (error is Error && error.code == '5' && credential != null) {
-        registerAccount(
-            credential.userIdentifier,
-            credential.identityToken,
-            'Apple',
-            credential.givenName ?? R.string.user_name_default.tr(),
-            false);
+        registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
+            credential.givenName ?? R.string.user_name_default.tr(), false);
       } else if (error is PlatformException && error.code == 'network_error') {
-        Message.showToastMessage(
-            context, R.string.error_can_not_connect_to_server.tr());
+        Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       } else {
         // Message.showToastMessage(context, error.toString());
       }
     }
   }
 
-  registerAccount(String? providerKey, String? externalToken, String provider,
-      String userName, bool update) async {
+  registerAccount(String? providerKey, String? externalToken, String provider, String userName, bool update) async {
     try {
       BotToast.showLoading();
       if (!update) {
-        await LoginClient().registerWithSocial(
-            {'providerName': provider, 'providerKey': providerKey ?? ''});
+        await LoginClient().registerWithSocial({'providerName': provider, 'providerKey': providerKey ?? ''});
 
         await LoginClient().login({
           "client_id": Const.CLIENT_ID,
@@ -615,17 +545,14 @@ class _RegisterControllerState extends State<RegisterController> {
         });
       }
 
-      final diabeteStates =
-          await (UserClient().fetchDiabeteStates() as Future<List<dynamic>>);
+      final diabeteStates = await (UserClient().fetchDiabeteStates() as Future<List<dynamic>>);
 
       final result = await LoginClient().createPatient({
         'fullName': userName,
         'dateOfBirth': '0',
         'gender': '1',
-        'diabetesStatus':
-            diabeteStates.isEmpty ? '1' : diabeteStates.first['key'].toString(),
-        'diabetesDate':
-            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
+        'diabetesStatus': diabeteStates.isEmpty ? '1' : diabeteStates.first['key'].toString(),
+        'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
       });
       if (result == true) {
         Navigator.pushReplacementNamed(context, NavigatorName.rules);
