@@ -321,4 +321,5 @@ class Drawables {
 	String get img_welcome_2 => "lib/res/drawables/img_welcome_2.png";
 	String get img_welcome_3 => "lib/res/drawables/img_welcome_3.png";
 	String get img_workaround => "lib/res/drawables/img_workaround.png";
+	String get splash => "lib/res/drawables/splash.png";
 }

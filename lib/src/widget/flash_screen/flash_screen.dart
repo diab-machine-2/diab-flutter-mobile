@@ -35,8 +35,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         });
         final user = await UserClient().fetchUser();
         if (user == null) {
-          Message.showToastMessage(context,
-              R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+          Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
           AppSettings.logout();
           Navigator.pushReplacementNamed(
             context,
@@ -58,8 +57,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
         );
       }
     } catch (e) {
-      Message.showToastMessage(context,
-          R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+      Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
       AppSettings.logout();
     }
   }
@@ -68,6 +66,12 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: R.color.white,
+      // body: SafeArea(
+      //   child: FittedBox(
+      //     child: Image.asset(R.drawable.splash),
+      //     fit: BoxFit.fill,
+      //   ),
+      // ),
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -80,36 +84,26 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft, //FractionalOffset(1.0, 0.0),
                 stops: const [0.0, 0.3, 0.8, 1.0])),
-        child: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(),
-              Center(
-                  child:
-                      Image.asset(R.drawable.img_logo, width: 190, height: 95)),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: RichText(
-                  text: TextSpan(
-                    text: '${R.string.cong_ty_co_phan_cong_nghe_y_te.tr()} ',
-                    style: TextStyle(
-                        color: R.color.mainColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400),
-                    children: <TextSpan>[
-                      TextSpan(
-                          style: TextStyle(
-                              color: R.color.mainColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700),
-                          text: 'dia-B'),
-                    ],
-                  ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const SizedBox(),
+            Center(child: Image.asset(R.drawable.img_logo, width: 190, height: 95)),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: RichText(
+                text: TextSpan(
+                  text: '${R.string.cong_ty_co_phan_cong_nghe_y_te.tr()} ',
+                  style: TextStyle(color: R.color.mainColor, fontSize: 16, fontWeight: FontWeight.w400),
+                  children: <TextSpan>[
+                    TextSpan(
+                        style: TextStyle(color: R.color.mainColor, fontSize: 14, fontWeight: FontWeight.w700),
+                        text: 'dia-B'),
+                  ],
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );
