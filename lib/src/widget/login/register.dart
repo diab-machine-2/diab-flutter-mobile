@@ -296,8 +296,10 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
 
-    if (!referralCodeKey.currentState!.isCorrect) {
-      return;
+    if (referralCode != null && referralCode.isNotEmpty) {
+      if (!referralCodeKey.currentState!.isCorrect) {
+        return;
+      }
     }
 
     const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
@@ -308,8 +310,10 @@ class _RegisterControllerState extends State<RegisterController> {
       return;
     }
 
-    final bool isReferralCodeExist = await _isReferralCodeExist(referralCode);
-    if (!isReferralCodeExist) return;
+    if (referralCode != null && referralCode.isNotEmpty) {
+      final bool isReferralCodeExist = await _isReferralCodeExist(referralCode);
+      if (!isReferralCodeExist) return;
+    }
     try {
       print(phone);
       final result = await LoginClient().requestOTP({"password": password, "phoneNumber": phone});
