@@ -21,44 +21,47 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   void initState() {
+    initController();
     super.initState();
   }
 
-  Future<BetterPlayerController?> getController() async {
-    var path;
-    try {
-      path = (await VideoThumbnail.thumbnailFile(
-        video: widget.videoUrl,
-        thumbnailPath: (await getTemporaryDirectory()).path,
-        imageFormat: ImageFormat.PNG,
-        maxHeight: 190,
-        quality: 10,
-      ));
-    } catch (e) {
-      path = null;
-    }
+  Future initController() async {
+    // var path;
+    // try {
+    //   path = (await VideoThumbnail.thumbnailFile(
+    //     video: widget.videoUrl,
+    //     thumbnailPath: (await getTemporaryDirectory()).path,
+    //     imageFormat: ImageFormat.PNG,
+    //     maxHeight: 190,
+    //     quality: 10,
+    //   ));
+    // } catch (e) {
+    //   path = null;
+    // }
 
     _controller = BetterPlayerController(
       BetterPlayerConfiguration(
-        allowedScreenSleep: false,
         autoPlay: true,
-        showPlaceholderUntilPlay: true,
-        placeholder: path != null ? Image.file(File(path!)) : Container(),
-      ),
-      betterPlayerDataSource: BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        widget.videoUrl,
+     //   showPlaceholderUntilPlay: true,
+         handleLifecycle: true,
+      //  placeholder: path != null ? Image.file(File(path!),) : Container(),
       ),
     );
-    return _controller;
+      BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
+          BetterPlayerDataSourceType.network,
+          widget.videoUrl,
+        );
+      _controller!.setupDataSource(betterPlayerDataSource);
   }
 
   @override
   void dispose() {
-    super.dispose();
     if (_controller != null) {
       _controller!.dispose(forceDispose: true);
+      _controller = null;
+      print("Disposed controller");
     }
+    super.dispose();
   }
 
   @override
@@ -67,23 +70,31 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       backgroundColor: R.color.textDark,
       body: Stack(
         children: [
-          FutureBuilder(
-              future: getController(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                var controller = snapshot.data! as BetterPlayerController;
-                return Container(
+          Container(
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                   ),
-                  child: widget.videoUrl.isEmpty ? const SizedBox.shrink() : BetterPlayer(controller: controller),
-                );
-              }),
+                  child: widget.videoUrl.isEmpty ? const SizedBox.shrink() : BetterPlayer(controller: 
+                  _controller!),
+                ),
+          // FutureBuilder(
+          //     future: initController(),
+          //     builder: (context, snapshot) {
+          //       if (!snapshot.hasData) {
+          //         return Center(
+          //           child: CircularProgressIndicator(),
+          //         );
+          //       }
+          //       var controller = snapshot.data! as BetterPlayerController;
+          //       return Container(
+          //         alignment: Alignment.center,
+          //         padding: const EdgeInsets.symmetric(
+          //           horizontal: 16,
+          //         ),
+          //         child: widget.videoUrl.isEmpty ? const SizedBox.shrink() : BetterPlayer(controller: controller),
+          //       );
+          //     }),
           Positioned(
             top: MediaQuery.of(context).padding.top,
             right: 16,
