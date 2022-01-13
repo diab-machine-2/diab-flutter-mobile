@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
@@ -5,8 +6,7 @@ import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/notification/notification.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/notification/notification_controller.dart';
 
 class NotificationTabbarController extends StatefulWidget {
   @override
@@ -35,7 +35,7 @@ class _NotificationTabbarControllerState
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(vsync: this, length: 3);
+    _tabController = TabController(vsync: this, length: 3);
     TrackingManager.analytics.setCurrentScreen(screenName: 'Notification');
   }
 
@@ -70,24 +70,29 @@ class _NotificationTabbarControllerState
               isScrollable: true,
               labelColor: R.color.mainColor,
               labelStyle: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w600, color: R.color.mainColor),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: R.color.mainColor),
               unselectedLabelColor: R.color.captionColorGray,
               unselectedLabelStyle:
-                  TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-              labelPadding: EdgeInsets.all(0),
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+              labelPadding: const EdgeInsets.all(0),
               tabs: [
                 SizedBox(width: width / 3, child: Tab(text: R.string.all.tr())),
-                SizedBox(width: width / 3, child: Tab(text: R.string.not_read_yet.tr())),
-                SizedBox(width: width / 3, child: Tab(text: R.string.read.tr())),
+                SizedBox(
+                    width: width / 3,
+                    child: Tab(text: R.string.not_read_yet.tr())),
+                SizedBox(
+                    width: width / 3, child: Tab(text: R.string.read.tr())),
               ],
               controller: _tabController,
               indicatorColor: R.color.mainColor,
               indicatorWeight: 3),
           Expanded(
-              child: TabBarView(controller: _tabController, children: [
-            NotificationController(isRead: null),
-            NotificationController(isRead: false),
-            NotificationController(isRead: true)
+              child: TabBarView(controller: _tabController, children: const [
+            NotificationController(isRemovealbe: null),
+            NotificationController(isRemovealbe: false),
+            NotificationController(isRemovealbe: true)
           ])),
         ]),
       ),

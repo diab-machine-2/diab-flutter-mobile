@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:better_player/better_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   const VideoPlayerWidget({required this.videoUrl});
@@ -17,17 +21,37 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   void initState() {
-    if (widget.videoUrl.isNotEmpty) {
-      _controller = BetterPlayerController(
-        const BetterPlayerConfiguration(autoPlay: true, handleLifecycle: true),
-      );
+    initController();
+    super.initState();
+  }
+
+  Future initController() async {
+    var path;
+    try {
+      path = (await VideoThumbnail.thumbnailFile(
+        video: widget.videoUrl,
+        thumbnailPath: (await getTemporaryDirectory()).path,
+        imageFormat: ImageFormat.PNG,
+        maxHeight: 190,
+        quality: 10,
+      ));
+    } catch (e) {
+      path = null;
+    }
+
+    _controller = BetterPlayerController(
+      BetterPlayerConfiguration(
+        autoPlay: true,
+        showPlaceholderUntilPlay: true,
+         handleLifecycle: true,
+        placeholder: path != null ? Image.file(File(path!)) : Container(),
+      ),
+    );
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
           widget.videoUrl,
         );
       _controller!.setupDataSource(betterPlayerDataSource);
-    }
-    super.initState();
   }
 
   @override
@@ -46,17 +70,23 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       backgroundColor: R.color.textDark,
       body: Stack(
         children: [
-          Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-            ),
-            child: widget.videoUrl.isEmpty
-                ? const SizedBox.shrink()
-                : _controller != null
-                    ? BetterPlayer(controller: _controller!)
-                    : Container(),
-          ),
+          FutureBuilder(
+              future: initController(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                var controller = snapshot.data! as BetterPlayerController;
+                return Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                  ),
+                  child: widget.videoUrl.isEmpty ? const SizedBox.shrink() : BetterPlayer(controller: controller),
+                );
+              }),
           Positioned(
             top: MediaQuery.of(context).padding.top,
             right: 16,

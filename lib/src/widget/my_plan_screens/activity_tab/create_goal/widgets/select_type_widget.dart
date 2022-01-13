@@ -64,8 +64,8 @@ class _SelectTypeWidgetState extends State<SelectTypeWidget> {
                       widget.title,
                       style: TextStyle(
                         color: R.color.textDark,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),

@@ -12,11 +12,13 @@ abstract class CourseQuizState extends Equatable {
 class InitialCourseQuizState extends CourseQuizState {}
 
 class CourseQuizLoading extends CourseQuizState {
+  const CourseQuizLoading();
   @override
   String toString() => 'CourseQuizLoading';
 }
 
 class CourseQuizSuccess extends CourseQuizState {
+  const CourseQuizSuccess();
   @override
   String toString() {
     return 'CourseQuizSuccess';

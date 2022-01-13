@@ -6,18 +6,20 @@ class VideoManager {
     required String? url,
     this.onExitFullScreen,
     this.onCompleted,
+    this.placeHolder,
   }) {
     initController(url: url);
   }
   BetterPlayerController? _controller;
   final VoidCallback? onExitFullScreen;
   final VoidCallback? onCompleted;
+  Widget? placeHolder;
   bool finishedVideo = false;
   bool hasVideo = false;
 
   BetterPlayerController? get controller => hasVideo ? _controller : null;
 
-  void refreshUrl({required String? url}) {
+  Future<void> refreshUrl({required String? url}) async {
     finishedVideo = false;
     if (url == null) {
       _controller?.pause();
@@ -33,22 +35,25 @@ class VideoManager {
       initController(url: url);
     }
 
-    if (url != _controller?.betterPlayerDataSource?.url) {
-      _controller?.setupDataSource(
-        BetterPlayerDataSource(
-          BetterPlayerDataSourceType.network,
-          url,
-        ),
-      );
-      _controller?.retryDataSource();
-      _controller?.setControlsAlwaysVisible(true);
-    }
+    _controller?.setupDataSource(
+      BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network,
+        url,
+      ),
+    );
+    _controller?.retryDataSource();
+    _controller?.setControlsAlwaysVisible(true);
+    await Future.delayed(Duration.zero);
+    _controller?.seekTo(Duration.zero);
+    _controller?.pause();
   }
 
   void initController({required String? url}) {
     if (url?.isNotEmpty != true) return;
     final BetterPlayerController newController = BetterPlayerController(
-      const BetterPlayerConfiguration(
+      BetterPlayerConfiguration(
+        placeholder: placeHolder == null ? Container() : placeHolder,
+        showPlaceholderUntilPlay: true,
         aspectRatio: 16 / 9,
         autoDispose: false,
       ),
@@ -58,9 +63,7 @@ class VideoManager {
       ),
     )..addEventsListener(
         (event) async {
-          if (event.betterPlayerEventType ==
-                  BetterPlayerEventType.hideFullscreen &&
-              onExitFullScreen != null) {
+          if (event.betterPlayerEventType == BetterPlayerEventType.hideFullscreen && onExitFullScreen != null) {
             await Future.delayed(const Duration(seconds: 1));
             onExitFullScreen!.call();
           }

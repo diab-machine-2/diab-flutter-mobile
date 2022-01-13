@@ -22,12 +22,14 @@ class UpdateInfoController extends StatefulWidget {
   final FacebookLoginResult? facebookAccount;
   final AuthorizationCredentialAppleID? appleAccount;
   final dynamic userInfo;
+  final String? referalCode;
   UpdateInfoController(
       {this.type,
       this.googleAccount,
       this.facebookAccount,
       this.appleAccount,
-      this.userInfo});
+      this.userInfo,
+      this.referalCode});
   @override
   _UpdateInfoControllerState createState() => _UpdateInfoControllerState();
 }
@@ -731,8 +733,11 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             ? '0'
             : (selectedDate!.millisecondsSinceEpoch ~/ 1000).toString(),
         'gender': _choosenGender.toString(),
-        'diabetesStatus': diabetesStatus['key'].toString()
+        'diabetesStatus': diabetesStatus['key'].toString(),
       };
+      if (widget.referalCode?.isNotEmpty == true) {
+        params['referalCode'] = widget.referalCode!;
+      }
       if (selectedYear != null) {
         params['diabetesDate'] =
             (selectedYear!.millisecondsSinceEpoch ~/ 1000).toString();

@@ -45,12 +45,14 @@ class _EnterTimeWidgetState extends State<EnterTimeWidget> {
                 height: 24,
               ),
               const SizedBox(width: 8),
-              Text(
-                widget.title,
-                style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
+              Expanded(
+                child: Text(
+                  widget.title,
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
@@ -72,12 +74,14 @@ class _EnterTimeWidgetState extends State<EnterTimeWidget> {
                       fontWeight: FontWeight.w400,
                     ),
                     keyboardType: TextInputType.number,
+                    maxLength: 3,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
                         RegExp(r'[0-9]'),
                       ),
                     ],
                     decoration: const InputDecoration(
+                      counterText: '',
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,

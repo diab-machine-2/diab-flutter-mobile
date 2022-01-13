@@ -78,9 +78,7 @@ class SmartGoalStatisticResponseData {
     if (daysInCurrentWeek?.isNotEmpty != true) return [];
     final List<DayInWeekData> dayInWeekList = [];
     int dayIndex = 7;
-    for (int index = (daysInCurrentWeek?.length ?? 0) - 1;
-        index >= 0;
-        index--) {
+    for (int index = (daysInCurrentWeek?.length ?? 0) - 1; index >= 0; index--) {
       if (dayIndex - 1 >= 0) {
         dayIndex -= 1;
       } else {
@@ -90,8 +88,8 @@ class SmartGoalStatisticResponseData {
         0,
         DayInWeekData(
           title: Utils.getDayInWeekTitle(dayIndex),
-          dayStatus: daysInCurrentWeek?[index]?.completionStatus ??
-              CompletionStatus.not_start_yet,
+          dayStatus: daysInCurrentWeek?[index]?.completionStatus ?? CompletionStatus.not_start_yet,
+          dateTime: daysInCurrentWeek?[index]?.day,
         ),
       );
     }
@@ -194,19 +192,15 @@ class SmartGoalStatisticResponse {
   });
 
   int get initDayIndex {
-    for (int index = 0;
-        index < (data?.daysInCurrentWeek?.length ?? 0);
-        index++) {
-      if (data?.daysInCurrentWeek?[index]?.completionStatus ==
-          CompletionStatus.studying) {
+    for (int index = 0; index < (data?.daysInCurrentWeek?.length ?? 0); index++) {
+      if (data?.daysInCurrentWeek?[index]?.completionStatus == CompletionStatus.studying) {
         return index;
       }
     }
     return 0;
   }
 
-  int getCompletedMarkIndex(
-      {required int? currentWeek, required int? userCurrentWeek}) {
+  int getCompletedMarkIndex({required int? currentWeek, required int? userCurrentWeek}) {
     if (currentWeek == null || userCurrentWeek == null) return 0;
     if (currentWeek < userCurrentWeek) return 14;
     if (currentWeek > userCurrentWeek) return 0;
@@ -214,12 +208,8 @@ class SmartGoalStatisticResponse {
   }
 
   SmartGoalStatisticResponse.fromJson(Map<String, dynamic> json) {
-    meta = (json['meta'] != null)
-        ? SmartGoalStatisticResponseMeta.fromJson(json['meta'])
-        : null;
-    data = (json['data'] != null)
-        ? SmartGoalStatisticResponseData.fromJson(json['data'])
-        : null;
+    meta = (json['meta'] != null) ? SmartGoalStatisticResponseMeta.fromJson(json['meta']) : null;
+    data = (json['data'] != null) ? SmartGoalStatisticResponseData.fromJson(json['data']) : null;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};

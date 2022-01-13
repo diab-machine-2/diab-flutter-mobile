@@ -134,6 +134,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
           minY: 0,
           maxY: 6,
           titlesData: FlTitlesData(
+            rightTitles: SideTitles(showTitles: false),
+            topTitles: SideTitles(showTitles: false),
             show: true,
             bottomTitles: SideTitles(
               showTitles: true,

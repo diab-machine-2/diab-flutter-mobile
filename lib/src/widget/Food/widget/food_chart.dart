@@ -359,6 +359,8 @@ class FoodChartState extends State<FoodChart>
                             ),
                           ),
                           titlesData: FlTitlesData(
+                            rightTitles: SideTitles(showTitles: false),
+                            topTitles: SideTitles(showTitles: false),
                             show: true,
                             bottomTitles: SideTitles(
                               margin: 16,

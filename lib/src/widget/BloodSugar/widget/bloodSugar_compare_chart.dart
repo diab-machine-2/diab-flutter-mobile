@@ -254,6 +254,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                               ),
                             ),
                             titlesData: FlTitlesData(
+                              rightTitles: SideTitles(showTitles: false),
+                              topTitles: SideTitles(showTitles: false),
                               show: true,
                               bottomTitles: SideTitles(
                                 showTitles: true,
