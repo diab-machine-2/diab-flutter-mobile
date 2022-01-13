@@ -26,25 +26,25 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   }
 
   Future initController() async {
-    var path;
-    try {
-      path = (await VideoThumbnail.thumbnailFile(
-        video: widget.videoUrl,
-        thumbnailPath: (await getTemporaryDirectory()).path,
-        imageFormat: ImageFormat.PNG,
-        maxHeight: 190,
-        quality: 10,
-      ));
-    } catch (e) {
-      path = null;
-    }
+    // var path;
+    // try {
+    //   path = (await VideoThumbnail.thumbnailFile(
+    //     video: widget.videoUrl,
+    //     thumbnailPath: (await getTemporaryDirectory()).path,
+    //     imageFormat: ImageFormat.PNG,
+    //     maxHeight: 190,
+    //     quality: 10,
+    //   ));
+    // } catch (e) {
+    //   path = null;
+    // }
 
     _controller = BetterPlayerController(
       BetterPlayerConfiguration(
         autoPlay: true,
-        showPlaceholderUntilPlay: true,
+     //   showPlaceholderUntilPlay: true,
          handleLifecycle: true,
-        placeholder: path != null ? Image.file(File(path!)) : Container(),
+      //  placeholder: path != null ? Image.file(File(path!),) : Container(),
       ),
     );
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
@@ -70,23 +70,31 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       backgroundColor: R.color.textDark,
       body: Stack(
         children: [
-          FutureBuilder(
-              future: initController(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                var controller = snapshot.data! as BetterPlayerController;
-                return Container(
+          Container(
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                   ),
-                  child: widget.videoUrl.isEmpty ? const SizedBox.shrink() : BetterPlayer(controller: controller),
-                );
-              }),
+                  child: widget.videoUrl.isEmpty ? const SizedBox.shrink() : BetterPlayer(controller: 
+                  _controller!),
+                ),
+          // FutureBuilder(
+          //     future: initController(),
+          //     builder: (context, snapshot) {
+          //       if (!snapshot.hasData) {
+          //         return Center(
+          //           child: CircularProgressIndicator(),
+          //         );
+          //       }
+          //       var controller = snapshot.data! as BetterPlayerController;
+          //       return Container(
+          //         alignment: Alignment.center,
+          //         padding: const EdgeInsets.symmetric(
+          //           horizontal: 16,
+          //         ),
+          //         child: widget.videoUrl.isEmpty ? const SizedBox.shrink() : BetterPlayer(controller: controller),
+          //       );
+          //     }),
           Positioned(
             top: MediaQuery.of(context).padding.top,
             right: 16,
