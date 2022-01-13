@@ -19,12 +19,13 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   void initState() {
     if (widget.videoUrl.isNotEmpty) {
       _controller = BetterPlayerController(
-        const BetterPlayerConfiguration(allowedScreenSleep: false, autoPlay: true),
-        betterPlayerDataSource: BetterPlayerDataSource(
+        const BetterPlayerConfiguration(autoPlay: true, handleLifecycle: true),
+      );
+      BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
           widget.videoUrl,
-        ),
-      );
+        );
+      _controller!.setupDataSource(betterPlayerDataSource);
     }
     super.initState();
   }
@@ -34,7 +35,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     if (_controller != null) {
       _controller!.dispose(forceDispose: true);
       _controller = null;
-      print("Disposed controller from Framework.");
+      print("Disposed controller");
     }
     super.dispose();
   }
