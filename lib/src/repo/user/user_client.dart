@@ -219,7 +219,7 @@ class UserClient extends FetchClient {
         'weight': userInfo.weight == null ? 0 : userInfo.weight,
         'email': userInfo.email ?? '',
         'secondPhoneNumber': userInfo.secondPhoneNumber ?? '',
-        'phoneNumber': userInfo.phoneNumber ?? ''
+        //    'phoneNumber': userInfo.phoneNumber ?? ''
       };
 
       AccountRule? accountRule;

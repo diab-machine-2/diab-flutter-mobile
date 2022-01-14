@@ -592,9 +592,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                               subTitle: R.string.phone_number_1.tr(),
                               isTitleFromSelectedCategory: false,
                               subIcon: Image.asset(R.drawable.ic_ok, width: 24, height: 24),
-                              callback: (selectedIndexList) {
-                                _showDialogUpdatePhone(isPhoneNumber2: false);
-                              },
+                              // callback: (selectedIndexList) {
+                              //   _showDialogUpdatePhone(isPhoneNumber2: false);
+                              // },
                             ),
                             _buildItemProfile(
                               image: R.drawable.ic_phone_info,
