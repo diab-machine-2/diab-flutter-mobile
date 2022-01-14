@@ -20,16 +20,18 @@ class VerifyPhoneController extends StatefulWidget {
   final String? phone;
   final String? password;
   final int? remainingRequestCount;
+  final String? referalCode;
   final GoogleSignInAccount? googleAccount;
   final FacebookLoginResult? facebookAccount;
   final AuthorizationCredentialAppleID? appleAccount;
   final dynamic userInfo;
-  VerifyPhoneController(
+  const VerifyPhoneController(
       {this.type = 'forgot_password',
       this.otp,
       this.phone,
       this.password,
       this.remainingRequestCount,
+      this.referalCode,
       this.googleAccount,
       this.facebookAccount,
       this.appleAccount,
@@ -393,7 +395,11 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         final result = await LoginClient().verifyOTP(widget.phone, otpCode);
         print(result);
         Navigator.pushReplacementNamed(context, NavigatorName.register_success,
-            arguments: {'phone': widget.phone, 'password': widget.password});
+            arguments: {
+              'phone': widget.phone,
+              'password': widget.password,
+              'referalCode': widget.referalCode,
+            });
         BotToast.closeAllLoading();
       }
     } catch (e, _) {

@@ -76,6 +76,7 @@ class _BottomTabbar extends State<BottomTabbar> {
                         : R.color.gray),
                 const SizedBox(height: 4),
                 Text(title,
+                textAlign: TextAlign.center,
                     style: TextStyle(
                         color: index == screenIndex
                             ? R.color.accentColor

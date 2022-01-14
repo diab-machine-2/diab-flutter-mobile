@@ -471,6 +471,8 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                             setState(() {});
                           }),
                       titlesData: FlTitlesData(
+                        rightTitles: SideTitles(showTitles: false),
+                        topTitles: SideTitles(showTitles: false),
                         show: true,
                         bottomTitles: SideTitles(
                           showTitles: true,

@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -15,7 +17,6 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class LoginController extends StatefulWidget {
   @override
@@ -28,7 +29,6 @@ class _LoginControllerState extends State<LoginController> {
   String phone = '';
   String password = '';
   TextEditingController userNameController = TextEditingController();
-  FocusNode _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +47,9 @@ class _LoginControllerState extends State<LoginController> {
                 fit: BoxFit.cover,
               )),
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.only(top: 30),
                   ),
                   Column(children: [
@@ -59,7 +59,7 @@ class _LoginControllerState extends State<LoginController> {
                         style: TextStyle(color: R.color.textDark, fontSize: 28, fontWeight: FontWeight.w600),
                       ),
                     ]),
-                    SizedBox(height: 28),
+                    const SizedBox(height: 28),
                     TextFieldCustom(
                         key: phoneKey,
                         title: R.string.so_dien_thoai.tr(),
@@ -68,7 +68,7 @@ class _LoginControllerState extends State<LoginController> {
                         onChanged: (value) {
                           phone = value;
                         }),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextFieldCustom(
                         key: passwordKey,
                         title: R.string.password.tr(),
@@ -77,7 +77,7 @@ class _LoginControllerState extends State<LoginController> {
                         onChanged: (value) {
                           password = value;
                         }),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     GestureDetector(
                       onTap: () {
                         login();
@@ -97,49 +97,48 @@ class _LoginControllerState extends State<LoginController> {
                                 style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           )),
                     ),
-                    SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.forgot_password);
-                      },
-                      child: Container(
-                          height: 48,
-                          color: R.color.transparent,
-                          child: Center(
+                    const SizedBox(height: 8),
+                    Container(
+                        height: 48,
+                        color: R.color.transparent,
+                        child: Center(
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(context, NavigatorName.forgot_password);
+                            },
                             child: Text(R.string.forgot_password.tr(),
                                 style: TextStyle(color: R.color.mainColor, fontSize: 16, fontWeight: FontWeight.w600)),
-                          )),
-                    )
+                          ),
+                        ))
                   ]),
                   Column(children: [
                     Text(R.string.hoac_dang_nhap_bang.tr(),
                         style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      Platform.isIOS
-                          ? GestureDetector(
-                              onTap: () {
-                                loginApple();
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 8, right: 8),
-                                child: Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration:
-                                        BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(25)),
-                                    child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                      Image.asset(R.drawable.ic_login_apple, width: 26, height: 26),
-                                    ])),
-                              ),
-                            )
-                          : SizedBox(),
+                      if (Platform.isIOS)
+                        GestureDetector(
+                          onTap: () {
+                            loginApple();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            child: Container(
+                                height: 50,
+                                width: 50,
+                                decoration:
+                                    BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(25)),
+                                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                  Image.asset(R.drawable.ic_login_apple, width: 26, height: 26),
+                                ])),
+                          ),
+                        ),
                       GestureDetector(
                         onTap: () {
                           loginGG();
                         },
                         child: Padding(
-                          padding: EdgeInsets.only(left: 8, right: 8),
+                          padding: const EdgeInsets.only(left: 8, right: 8),
                           child: Container(
                               height: 50,
                               width: 50,
@@ -150,9 +149,10 @@ class _LoginControllerState extends State<LoginController> {
                         ),
                       )
                     ]),
-                    SizedBox(height: 30),
-                    Text(R.string.chua_co_tai_khoan.tr(), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 30),
+                    Text(R.string.chua_co_tai_khoan.tr(),
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
+                    const SizedBox(height: 10),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, NavigatorName.register);
@@ -169,24 +169,23 @@ class _LoginControllerState extends State<LoginController> {
                                 style: TextStyle(color: R.color.mainColor, fontWeight: FontWeight.w600)),
                           )),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                   ])
                 ]),
               )),
-          new Positioned(
+          Positioned(
             //Place it at the top, and not use the entire screen
             top: 0,
             left: 0,
             right: 0,
-            child: AppBar(leading: SizedBox(), backgroundColor: R.color.transparent, //No more green
-                actions: [
-                  IconButton(
-                      padding: EdgeInsets.only(right: 30),
-                      icon: Icon(Icons.close, color: R.color.black),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      })
-                ]),
+            child: AppBar(leading: const SizedBox(), backgroundColor: R.color.transparent, actions: [
+              IconButton(
+                  padding: const EdgeInsets.only(right: 30),
+                  icon: Icon(Icons.close, color: R.color.black),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  })
+            ]),
           )
         ]),
       ),
@@ -276,12 +275,12 @@ class _LoginControllerState extends State<LoginController> {
       builder: (context) {
         return AlertDialog(
             content: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Image.asset(R.drawable.ic_check_error, width: 64, height: 64),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
@@ -289,6 +288,7 @@ class _LoginControllerState extends State<LoginController> {
                   style: TextStyle(color: R.color.textDark, fontSize: 16),
                   children: <TextSpan>[
                     TextSpan(text: phone, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    TextSpan(text: phone, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
                         text: R.string.dang_ky_lai_hom_sau.tr(),
                         style: TextStyle(color: R.color.textDark, fontSize: 16)),
@@ -363,7 +363,7 @@ class _LoginControllerState extends State<LoginController> {
   }
 
   loginGG() async {
-    GoogleSignIn _googleSignIn = GoogleSignIn(
+    final GoogleSignIn _googleSignIn = GoogleSignIn(
       scopes: [
         'email',
         'profile',
@@ -397,14 +397,11 @@ class _LoginControllerState extends State<LoginController> {
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
       }
     } catch (error) {
-      if (error is Error) {
-        if (error.code == '5' && account != null) {
-          // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-          //     arguments: {'type': 'google', 'googleAccount': account});
-
-          registerAccount(
-              account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), false);
-        }
+      if (error is Error && error.code == '5' && account != null) {
+        registerAccount(
+            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), false);
+      } else if (error is PlatformException && error.code == 'network_error') {
+        Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       } else {
         BotToast.closeAllLoading();
         Message.showToastMessage(context, error.toString());
@@ -452,13 +449,11 @@ class _LoginControllerState extends State<LoginController> {
       }
     } catch (error) {
       BotToast.closeAllLoading();
-      if (error is Error) {
-        if (error.code == '5' && credential != null) {
-          // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-          //     arguments: {'type': 'apple', 'appleAccount': credential});
-          registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
-              credential.givenName ?? R.string.user_name_default.tr(), false);
-        }
+      if (error is Error && error.code == '5' && credential != null) {
+        registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
+            credential.givenName ?? R.string.user_name_default.tr(), false);
+      } else if (error is PlatformException && error.code == 'network_error') {
+        Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       } else {
         // Message.showToastMessage(context, error.toString());
       }

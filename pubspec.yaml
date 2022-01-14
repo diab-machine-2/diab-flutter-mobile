@@ -100,7 +100,7 @@ dependencies:
   cached_network_image: ^3.1.0
   flutter_inapp_purchase: ^5.0.3
   #video player
-  better_player: ^0.0.77
+  better_player: ^0.0.81
   video_thumbnail: ^0.4.3
   path_provider: ^2.0.8
   #audio player
@@ -109,6 +109,10 @@ dependencies:
   scroll_to_index: ^2.1.0
   #PDF viewer
   flutter_cached_pdfview: ^0.4.0-nullsafety
+  #QR code scan
+  qr_code_scanner: ^0.6.1
+  #Deep link
+  uni_links: ^0.5.1
 
 dev_dependencies:
   flutter_test:
