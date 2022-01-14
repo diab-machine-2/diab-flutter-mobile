@@ -959,4 +959,8 @@ class Strings {
 	String get day_in_week_sunday => 'day_in_week_sunday';
 	String get data_input_not_valid => 'data_input_not_valid';
 	String get statistical => 'statistical';
+	String get expert_comment => 'expert_comment';
+	String get no_expert_comment => 'no_expert_comment';
+	String get comment => 'comment';
+	String get next_action => 'next_action';
 }
