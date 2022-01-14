@@ -123,16 +123,16 @@ class _RegisterControllerState extends State<RegisterController> {
                               onChanged: (value) {
                                 confirmPassword = value;
                               }),
-                          // const SizedBox(height: 20),
-                          // TextFieldCustom(
-                          //     key: referralCodeKey,
-                          //     initText: referralCode,
-                          //     title: R.string.references_code.tr(),
-                          //     placeholder: R.string.input_references_code.tr(),
-                          //     isSharedCode: true,
-                          //     onChanged: (value) {
-                          //       referralCode = value;
-                          //     }),
+                          const SizedBox(height: 20),
+                          TextFieldCustom(
+                              key: referralCodeKey,
+                              initText: referralCode,
+                              title: R.string.references_code.tr(),
+                              placeholder: R.string.input_references_code.tr(),
+                              isSharedCode: true,
+                              onChanged: (value) {
+                                referralCode = value;
+                              }),
                           const SizedBox(height: 32),
                           GestureDetector(
                             onTap: () {
@@ -161,40 +161,40 @@ class _RegisterControllerState extends State<RegisterController> {
                         ],
                       ),
                     ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.center,
-                    //   children: [
-                    //     InkWell(
-                    //       onTap: () async {
-                    //         final dynamic scanResult = await NavigationUtil.navigatePage(context, const QRScanWidget());
-                    //         if (scanResult is String) {
-                    //           referralCode = scanResult;
-                    //           referralCodeKey.currentState?.textEditingController.text = referralCode;
-                    //           referralCodeKey.currentState?.valideReferralCode(referralCode);
-                    //         }
-                    //       },
-                    //       child: Row(
-                    //         mainAxisAlignment: MainAxisAlignment.center,
-                    //         children: [
-                    //           Image.asset(
-                    //             R.drawable.ic_qr_scan,
-                    //             width: 26,
-                    //             height: 26,
-                    //           ),
-                    //           const SizedBox(width: 12),
-                    //           Text(
-                    //             R.string.scan_references_code.tr(),
-                    //             style: TextStyle(
-                    //               color: R.color.mainColor,
-                    //               fontSize: 16,
-                    //               fontWeight: FontWeight.w700,
-                    //             ),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () async {
+                            final dynamic scanResult = await NavigationUtil.navigatePage(context, const QRScanWidget());
+                            if (scanResult is String) {
+                              referralCode = scanResult;
+                              referralCodeKey.currentState?.textEditingController.text = referralCode;
+                              referralCodeKey.currentState?.valideReferralCode(referralCode);
+                            }
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                R.drawable.ic_qr_scan,
+                                width: 26,
+                                height: 26,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                R.string.scan_references_code.tr(),
+                                style: TextStyle(
+                                  color: R.color.mainColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                     SafeArea(
                       child: Column(
                         children: [
