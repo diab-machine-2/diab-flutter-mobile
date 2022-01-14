@@ -84,20 +84,14 @@ class _QRScanWidgetState extends State<QRScanWidget> {
   }
 
   Widget _buildQrView(BuildContext context) {
-    final double scanArea = (MediaQuery.of(context).size.width < 400 ||
-            MediaQuery.of(context).size.height < 400)
-        ? 150.0
-        : 300.0;
+    final double scanArea =
+        (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 250.0 : 400.0;
 
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
       overlay: QrScannerOverlayShape(
-          borderColor: Colors.white,
-          borderRadius: 10,
-          borderLength: 30,
-          borderWidth: 10,
-          cutOutSize: scanArea),
+          borderColor: Colors.white, borderRadius: 10, borderLength: 30, borderWidth: 10, cutOutSize: scanArea),
       onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
     );
   }
@@ -117,8 +111,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
     subcription.pause();
     if (scanedText.contains('https://diab-portal-dev.savvycom.vn')) {
       subcription.cancel();
-      Navigator.pop(context,
-          scanedText.substring(scanedText.length - 6, scanedText.length));
+      Navigator.pop(context, scanedText.substring(scanedText.length - 6, scanedText.length));
     }
     subcription.resume();
   }
