@@ -87,6 +87,7 @@ extension DayInWeekExtend on DayInWeek {
     if (index == 4) return DayInWeek.thu;
     if (index == 5) return DayInWeek.fri;
     if (index == 6) return DayInWeek.sat;
+    if (index == 7) return DayInWeek.sun;
     if (index == 0) return DayInWeek.sun;
     return DayInWeek.mon;
   }
