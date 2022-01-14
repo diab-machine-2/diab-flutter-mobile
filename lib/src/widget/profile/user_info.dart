@@ -962,7 +962,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     try {
       BotToast.showLoading();
       await UserClient().inputMotivationDiary(model.content);
-      await loadMotivation();
+      Observable.instance.notifyObservers([], notifyName: "motivation_change");
+      //   await loadMotivation();
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -978,7 +979,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     try {
       BotToast.showLoading();
       await UserClient().editMotivationDiary(model.id, model.content);
-      await loadMotivation();
+      Observable.instance.notifyObservers([], notifyName: "motivation_change");
+      //     await loadMotivation();
       BotToast.closeAllLoading();
     } catch (e, _) {
       BotToast.closeAllLoading();
