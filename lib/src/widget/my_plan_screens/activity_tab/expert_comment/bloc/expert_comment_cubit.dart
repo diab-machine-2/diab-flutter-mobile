@@ -1,9 +1,5 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
-import 'package:medical/src/model/service/api_result.dart';
-import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/expert_comment/model/expert_comment_model.dart';
 import '../expert_comment.dart';
 

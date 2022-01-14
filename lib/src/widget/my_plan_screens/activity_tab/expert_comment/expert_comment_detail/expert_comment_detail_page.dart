@@ -85,7 +85,7 @@ class _ExpertCommentDetailPageState extends State<ExpertCommentDetailPage> {
                 clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(color: R.color.mainColor, borderRadius: BorderRadius.circular(52)),
                 child: Icon(Icons.person, size: 64, color: R.color.white),
-                // user.imageUrl!.url == null
+                // widget.item?.url == null
                 //     ? Icon(Icons.person, size: 64, color: R.color.white)
                 //     : Image.network(user.imageUrl!.url!, width: 64, height: 64)),
               ),
