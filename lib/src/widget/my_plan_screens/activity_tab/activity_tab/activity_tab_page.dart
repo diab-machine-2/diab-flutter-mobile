@@ -607,7 +607,7 @@ class _ActivityTabPageState extends State<ActivityTabPage> with AutomaticKeepAli
       onTap: smartGoal?.isCompleted == true
           ? null
           : () {
-              _cubit.completeSmartGoal(smartGoal?.id);
+              _cubit.completeSmartGoal(smartGoal?.id, smartGoal?.executeDayTimes, smartGoal?.type);
               NavigationUtil.pop(context);
             },
       child: Column(

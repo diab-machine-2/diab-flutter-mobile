@@ -17,8 +17,7 @@ import 'activity_tab.dart';
 import 'models/congratulation_state.dart';
 
 class ActivityTabCubit extends Cubit<ActivityTabState> {
-  ActivityTabCubit(this.repository, this.myPlanCubit)
-      : super(const ActivityTabInitial());
+  ActivityTabCubit(this.repository, this.myPlanCubit) : super(const ActivityTabInitial());
 
   final AppRepository repository;
   final MyPlanCubit myPlanCubit;
@@ -29,21 +28,17 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   int? currentWeekIndex;
   int currentDayIndex = 0;
 
-  CongratulationState congratulationState =
-      CongratulationState(currentDate: DateTime.now());
+  CongratulationState congratulationState = CongratulationState(currentDate: DateTime.now());
 
   List<SmartGoalList?> smartGoalDayList = [];
   List<SmartGoalList?> smartGoalWeekList = [];
 
   List<WeekStatesResponseData?> get weekStatesList => statistic?.weeks ?? [];
-  List<DayStatesResponseData?> get dayStatesList =>
-      statistic?.daysInCurrentWeek ?? [];
+  List<DayStatesResponseData?> get dayStatesList => statistic?.daysInCurrentWeek ?? [];
 
-  int? get currentWeek =>
-      currentWeekIndex == null ? null : currentWeekIndex! + 1;
+  int? get currentWeek => currentWeekIndex == null ? null : currentWeekIndex! + 1;
 
-  int? get currentDay =>
-      dayStatesList.isEmpty ? 0 : dayStatesList[currentDayIndex]?.day;
+  int? get currentDay => dayStatesList.isEmpty ? 0 : dayStatesList[currentDayIndex]?.day;
 
   List<DayInWeekData> get dayInWeekList => statistic?.dayInWeekList ?? [];
 
@@ -55,8 +50,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     myPlanCubit.changePlanType(2);
   }
 
-  Future<void> onSelectWeek(int newWeekIndex,
-      {bool hideLoadingAfterDone = false}) async {
+  Future<void> onSelectWeek(int newWeekIndex, {bool hideLoadingAfterDone = false}) async {
     currentWeekIndex = newWeekIndex;
     refreshData(keepCurrentDay: false);
   }
@@ -83,15 +77,13 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   }
 
   Future<void> refreshData({bool isRefresh = false, bool keepCurrentDay = true}) async {
-    await getSmartGoalStatistics(
-        isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: keepCurrentDay);
+    await getSmartGoalStatistics(isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: keepCurrentDay);
     await getListSmartGoal(isRefresh: isRefresh);
   }
 
   Future<void> getListSmartGoal({bool isRefresh = false}) async {
     if (!isRefresh) {
       await Future.delayed(Duration.zero);
-      
     }
     final ApiResult<SmartGoalListReponse> apiResult =
         await repository.getListSmartGoal(day: currentDay, week: currentWeek);
@@ -99,13 +91,11 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       smartGoalDayList = response.data?.daily ?? [];
       smartGoalWeekList = response.data?.weekly ?? [];
 
-      if (response.isWeeklyGoalCompleted &&
-          congratulationState.shouldShowWeekPopup) {
+      if (response.isWeeklyGoalCompleted && congratulationState.shouldShowWeekPopup) {
         congratulationState.weeklyShowed = true;
         emit(const ActivityTabWeeklyGoalCompleted());
       }
-      if (response.isDailyGoalCompleted &&
-          congratulationState.shouldShowDailyPopup) {
+      if (response.isDailyGoalCompleted && congratulationState.shouldShowDailyPopup) {
         congratulationState.dailyShowed = true;
         emit(const ActivityTabDailyGoalCompleted());
       }
@@ -126,29 +116,25 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   }) async {
     await Future.delayed(Duration.zero);
 //    if (!isRefresh) emit(const ActivityTabLoading());
-    final ApiResult<SmartGoalStatisticResponse> apiResult =
-        await repository.getSmartGoalStatistics(week: currentWeek);
+    final ApiResult<SmartGoalStatisticResponse> apiResult = await repository.getSmartGoalStatistics(week: currentWeek);
     apiResult.when(success: (SmartGoalStatisticResponse response) {
       statistic = response.data;
       if (!keepCurrentDay) currentDayIndex = response.initDayIndex;
-      mark = response.getCompletedMarkIndex(
-          currentWeek: currentWeek,
-          userCurrentWeek: myPlanCubit.currentStudyWeek);
- //     if (hideLoadingAfterDone) emit(const ActivityTabSuccess());
+      mark = response.getCompletedMarkIndex(currentWeek: currentWeek, userCurrentWeek: myPlanCubit.currentStudyWeek);
+      //     if (hideLoadingAfterDone) emit(const ActivityTabSuccess());
       emit(const ActivityTabProgressChanged());
     }, failure: (NetworkExceptions error) {
- //     emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
+      //     emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
- //   if (hideLoadingAfterDone) emit(const ActivityTabInitial());
+    //   if (hideLoadingAfterDone) emit(const ActivityTabInitial());
   }
 
-  Future<void> completeSmartGoal(String? smartGoalId) async {
+  Future<void> completeSmartGoal(String? smartGoalId, int? executeDayTimes, int? type) async {
     if (smartGoalId == null) return;
     emit(const ActivityTabLoading());
     final CompleteSmartGoalRequest request =
-        CompleteSmartGoalRequest(id: smartGoalId);
-    final ApiResult<CommonResponse> apiResult =
-        await repository.completeSmartGoal(request);
+        CompleteSmartGoalRequest(id: smartGoalId, executeTimes: executeDayTimes, type: type);
+    final ApiResult<CommonResponse> apiResult = await repository.completeSmartGoal(request);
     apiResult.when(success: (CommonResponse response) {
       refreshData();
       emit(const ActivityTabSuccess());
@@ -161,8 +147,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   Future<void> deleteSmartGoal(String? smartGoalId) async {
     if (smartGoalId == null) return;
     emit(const ActivityTabLoading());
-    final ApiResult<DeleteSmartGoalReponse> apiResult =
-        await repository.deleteSmartGoal(smartGoalId);
+    final ApiResult<DeleteSmartGoalReponse> apiResult = await repository.deleteSmartGoal(smartGoalId);
     apiResult.when(success: (DeleteSmartGoalReponse response) {
       refreshData();
       emit(const ActivityTabSuccess());
