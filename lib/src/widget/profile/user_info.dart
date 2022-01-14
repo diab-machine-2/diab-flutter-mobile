@@ -592,6 +592,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                               subTitle: R.string.phone_number_1.tr(),
                               isTitleFromSelectedCategory: false,
                               subIcon: Image.asset(R.drawable.ic_ok, width: 24, height: 24),
+                              callback: (selectedIndexList) {
+                                _showDialogUpdatePhone(isPhoneNumber2: false);
+                              },
                             ),
                             _buildItemProfile(
                               image: R.drawable.ic_phone_info,
@@ -601,7 +604,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                               subTitle: R.string.phone_number_2.tr(),
                               isTitleFromSelectedCategory: false,
                               callback: (selectedIndexList) {
-                                _showDialogUpdatePhone2();
+                                _showDialogUpdatePhone(isPhoneNumber2: true);
                               },
                             ),
                             _buildItemProfile(
@@ -1770,10 +1773,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     );
   }
 
-  _showDialogUpdatePhone2() {
+  _showDialogUpdatePhone({bool isPhoneNumber2 = false}) {
     final width = MediaQuery.of(context).size.width;
     final TextEditingController textEditingController = TextEditingController();
-    textEditingController.text = AppSettings.userInfo?.secondPhoneNumber ?? '';
+    if (isPhoneNumber2) {
+      textEditingController.text = AppSettings.userInfo?.secondPhoneNumber ?? '';
+    } else {
+      textEditingController.text = AppSettings.userInfo?.phoneNumber ?? '';
+    }
+
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -1782,7 +1790,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text(R.string.phone_number_2.tr(),
+                  Text(isPhoneNumber2 ? R.string.phone_number_2.tr() : R.string.phone_number_1.tr(),
                       style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
                   GestureDetector(
                       child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
@@ -1811,7 +1819,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             borderRadius: BorderRadius.circular(10),
                           ),
                           contentPadding: const EdgeInsets.only(top: 0, left: 16, right: 16),
-                          hintText: R.string.enter_phone_number_2.tr(),
+                          hintText:
+                              isPhoneNumber2 ? R.string.enter_phone_number_2.tr() : R.string.enter_phone_number_1.tr(),
                         ),
                         onChanged: (value) {})),
                 Container(
@@ -1845,11 +1854,20 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             return;
                           } else {
                             final UserModel userInfo = AppSettings.userInfo!;
-                            updateUserInfo(
-                              userInfo.copyWith(
-                                secondPhoneNumber: phone,
-                              ),
-                            );
+                            if (isPhoneNumber2) {
+                              updateUserInfo(
+                                userInfo.copyWith(
+                                  secondPhoneNumber: phone,
+                                ),
+                              );
+                            } else {
+                              updateUserInfo(
+                                userInfo.copyWith(
+                                  phoneNumber: phone,
+                                ),
+                              );
+                            }
+
                             Navigator.pop(context);
                           }
                         },

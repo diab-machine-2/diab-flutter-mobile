@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
@@ -23,6 +25,8 @@ class SelectBottomSheetWidget extends StatefulWidget {
 
 class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
   List<String> selectedList = [];
+  bool isClickSave = false;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -99,10 +103,20 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                 child: GestureDetector(
                   onTap: () {
                     if (selectedList.length > 0) {
-                      widget.onSelected(selectedList);
-                      Navigator.pop(context);
+                      if (!isClickSave) {
+                        isClickSave = true;
+                        widget.onSelected(selectedList);
+                        Navigator.pop(context);
+                      }
                     } else {
-                      Message.showToastMessage(context, 'Bạn hãy hoàn thành các thông tin bắt buộc nhé!');
+                      if (!isClickSave) {
+                        Message.showToastMessage(context, 'Bạn hãy hoàn thành các thông tin bắt buộc nhé!');
+                      }
+                      isClickSave = true;
+                      if (_timer != null) _timer!.cancel();
+                      _timer = Timer(Duration(seconds: 3), () {
+                        isClickSave = false;
+                      });
                     }
                   },
                   child: Container(
@@ -138,6 +152,7 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
         GestureDetector(
           onTap: () {
             setState(() {
+              isClickSave = false;
               if (!isSelected) {
                 if (!widget.isMultipleChoice) {
                   selectedList.clear();

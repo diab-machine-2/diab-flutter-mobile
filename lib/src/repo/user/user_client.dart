@@ -218,7 +218,8 @@ class UserClient extends FetchClient {
         'height': userInfo.height == null ? 0 : userInfo.height,
         'weight': userInfo.weight == null ? 0 : userInfo.weight,
         'email': userInfo.email ?? '',
-        'secondPhoneNumber': userInfo.secondPhoneNumber ?? ''
+        'secondPhoneNumber': userInfo.secondPhoneNumber ?? '',
+        'phoneNumber': userInfo.phoneNumber ?? ''
       };
 
       AccountRule? accountRule;
