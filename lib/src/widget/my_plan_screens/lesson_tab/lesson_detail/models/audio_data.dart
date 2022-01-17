@@ -53,11 +53,8 @@ class AudioController {
       if (duration != null) {
         secondsDuration = duration.inSeconds * 1000;
       }
-      print('changeUrl0 = $secondsDuration');
-      print('changeUrl00 = ${duration?.inSeconds}');
     }
     totalTime = Duration(seconds: secondsDuration ~/ 1000);
-    print('changeUrl1 = $secondsDuration');
     onChanged.sink.add(audioData);
   }
 
