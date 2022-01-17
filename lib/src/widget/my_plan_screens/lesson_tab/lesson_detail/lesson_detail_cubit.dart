@@ -50,7 +50,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   bool get showQuizLesson => currentSectionDetail?.type == Const.LESSON_SECTION_TYPE_QUIZ || isQuizLesson;
 
-  void onChangeSection(int newSection, {bool isFromList = false}) {
+  void onChangeSection(BuildContext context, int newSection, {bool isFromList = false}) {
     //Check can complete the lesson and make sure that user tapped next button
     if (isAllSectionCompleted && newSection > currentSection && !alreadyDoneLesson) {
       checkSectionComplete();
@@ -60,7 +60,10 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       return;
     }
 
-    if (newSection < 0 || newSection >= sectionList.length) return;
+    if (newSection < 0 || newSection >= sectionList.length) {
+      Navigator.pop(context);
+      return;
+    }
 
     currentSection = newSection;
 

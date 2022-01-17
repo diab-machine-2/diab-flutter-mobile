@@ -1,5 +1,6 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class VideoManager {
   VideoManager({
@@ -56,6 +57,10 @@ class VideoManager {
         showPlaceholderUntilPlay: true,
         aspectRatio: 16 / 9,
         autoDispose: false,
+        deviceOrientationsAfterFullScreen: [
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ],
       ),
       betterPlayerDataSource: BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
