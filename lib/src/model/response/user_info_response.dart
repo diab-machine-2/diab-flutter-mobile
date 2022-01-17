@@ -94,9 +94,8 @@ class UserInfoResponseDataOwnPackage {
     durationType = json['durationType']?.toInt();
     activationDate = json['activationDate']?.toInt();
     expirationDate = json['expirationDate']?.toInt();
-    ownRoadmap = (json['ownRoadmap'] != null)
-        ? UserInfoResponseDataOwnPackageOwnRoadmap.fromJson(json['ownRoadmap'])
-        : null;
+    ownRoadmap =
+        (json['ownRoadmap'] != null) ? UserInfoResponseDataOwnPackageOwnRoadmap.fromJson(json['ownRoadmap']) : null;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -140,12 +139,14 @@ class UserInfoResponseData {
   bool? hasFoodMenu;
   String? roadmapId;
   UserInfoResponseDataOwnPackage? ownPackage;
+  int? currentDateTime;
 
   UserInfoResponseData({
     this.bloodSugarTemplates,
     this.hasFoodMenu,
     this.roadmapId,
     this.ownPackage,
+    this.currentDateTime,
   });
 
   PackageType get packageType {
@@ -157,16 +158,16 @@ class UserInfoResponseData {
   UserInfoResponseData.fromJson(Map<String, dynamic> json) {
     bloodSugarTemplates = json['bloodSugarTemplates']?.toString();
     hasFoodMenu = json['hasFoodMenu'];
+    currentDateTime = json['currentDateTime'];
     roadmapId = json['roadmapId']?.toString();
-    ownPackage = (json['ownPackage'] != null)
-        ? UserInfoResponseDataOwnPackage.fromJson(json['ownPackage'])
-        : null;
+    ownPackage = (json['ownPackage'] != null) ? UserInfoResponseDataOwnPackage.fromJson(json['ownPackage']) : null;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['bloodSugarTemplates'] = bloodSugarTemplates;
     data['hasFoodMenu'] = hasFoodMenu;
     data['roadmapId'] = roadmapId;
+    data['currentDateTime'] = currentDateTime;
     if (ownPackage != null) {
       data['ownPackage'] = ownPackage!.toJson();
     }
@@ -218,9 +219,7 @@ class UserInfoResponse {
     id = json['id']?.toString();
     statusCode = json['statusCode']?.toInt();
     message = json['message']?.toString();
-    data = (json['data'] != null)
-        ? UserInfoResponseData.fromJson(json['data'])
-        : null;
+    data = (json['data'] != null) ? UserInfoResponseData.fromJson(json['data']) : null;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};

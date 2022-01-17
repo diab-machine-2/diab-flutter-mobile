@@ -57,7 +57,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   void onSelectDay(int newDayIndex) {
     currentDayIndex = newDayIndex;
-    getListSmartGoal();
+    getListSmartGoal(isShowLoading: true);
   }
 
   Future<void> initData() async {
@@ -67,23 +67,29 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     } else {
       currentWeekIndex = 0;
     }
-    emit(const ActivityTabLoading());
-    await getSmartGoalStatistics(hideLoadingAfterDone: false);
+
+    //  await getSmartGoalStatistics(hideLoadingAfterDone: false);
     await refreshData();
     Timer(const Duration(milliseconds: 100), () {
       emit(ActivityTabWeekChanged(currentWeekIndex ?? 0));
     });
-    emit(const ActivityTabProgressChanged());
+    //  emit(const ActivityTabProgressChanged());
   }
 
   Future<void> refreshData({bool isRefresh = false, bool keepCurrentDay = true}) async {
+    if (!isRefresh) {
+      emit(const ActivityTabLoading());
+    }
     await getSmartGoalStatistics(isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: keepCurrentDay);
     await getListSmartGoal(isRefresh: isRefresh);
   }
 
-  Future<void> getListSmartGoal({bool isRefresh = false}) async {
+  Future<void> getListSmartGoal({bool isRefresh = false, bool isShowLoading = false}) async {
     if (!isRefresh) {
       await Future.delayed(Duration.zero);
+    }
+    if (isShowLoading) {
+      emit(const ActivityTabLoading());
     }
     final ApiResult<SmartGoalListReponse> apiResult =
         await repository.getListSmartGoal(day: currentDay, week: currentWeek);
@@ -122,7 +128,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       if (!keepCurrentDay) currentDayIndex = response.initDayIndex;
       mark = response.getCompletedMarkIndex(currentWeek: currentWeek, userCurrentWeek: myPlanCubit.currentStudyWeek);
       //     if (hideLoadingAfterDone) emit(const ActivityTabSuccess());
-      emit(const ActivityTabProgressChanged());
+      //   emit(const ActivityTabProgressChanged());
     }, failure: (NetworkExceptions error) {
       //     emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
@@ -136,12 +142,12 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         CompleteSmartGoalRequest(id: smartGoalId, executeTimes: executeDayTimes, type: type);
     final ApiResult<CommonResponse> apiResult = await repository.completeSmartGoal(request);
     apiResult.when(success: (CommonResponse response) {
-      refreshData();
-      emit(const ActivityTabSuccess());
+      refreshData(isRefresh: true);
+      //   emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
-    emit(const ActivityTabInitial());
+    //   emit(const ActivityTabInitial());
   }
 
   Future<void> deleteSmartGoal(String? smartGoalId) async {
@@ -149,11 +155,11 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     emit(const ActivityTabLoading());
     final ApiResult<DeleteSmartGoalReponse> apiResult = await repository.deleteSmartGoal(smartGoalId);
     apiResult.when(success: (DeleteSmartGoalReponse response) {
-      refreshData();
-      emit(const ActivityTabSuccess());
+      refreshData(isRefresh: true);
+      //  emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
-    emit(const ActivityTabInitial());
+    // emit(const ActivityTabInitial());
   }
 }

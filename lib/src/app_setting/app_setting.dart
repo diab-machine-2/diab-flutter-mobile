@@ -14,6 +14,7 @@ import 'package:medical/src/widget/helper/http_helper.dart';
 
 class AppSettings {
   static UserModel? userInfo;
+  static int? currentDateTime;
 
   static Future<bool> saveToken(String? token) async {
     appPreference.setData(Const.TOKEN, token);
@@ -102,7 +103,7 @@ class AppSettings {
     if (tokenLifetime > now) {
       return true;
     } else {
-      Observable.instance.notifyObservers([], notifyName : "token_time_out");
+      Observable.instance.notifyObservers([], notifyName: "token_time_out");
       // DartNotificationCenter.post(channel: 'token_time_out');
       await logout();
       return false;
