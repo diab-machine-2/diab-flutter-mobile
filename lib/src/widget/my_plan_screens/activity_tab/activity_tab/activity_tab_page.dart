@@ -417,6 +417,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           type: type,
           name: smartGoal?.name ?? '',
           frequency: smartGoal?.description ?? '',
+          appointmentDate: smartGoal?.appointmentDate,
           isDone: smartGoal?.progress == 1,
           onTap: () {
             _onSelectGoal(
@@ -425,12 +426,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             );
           },
           onRemove: () {
-            bool isUnableToRemove = DateUtil.isBefore(smartGoal?.appointmentDate, AppSettings.currentDateTime) ?? false;
-            if (isUnableToRemove) {
-              Message.showToastMessage(context, 'Không thể hủy mục tiêu trong quá khứ!');
-            } else {
-              _cubit.deleteSmartGoal(smartGoal?.id);
-            }
+            _cubit.deleteSmartGoal(smartGoal?.id);
           },
         );
       }).toList(),
@@ -468,6 +464,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           type: ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type),
           name: smartGoal?.name ?? '',
           frequency: smartGoal?.description ?? '',
+          appointmentDate: smartGoal?.appointmentDate,
           isDone: smartGoal?.progress == 1,
           onTap: () {
             _onSelectGoal(

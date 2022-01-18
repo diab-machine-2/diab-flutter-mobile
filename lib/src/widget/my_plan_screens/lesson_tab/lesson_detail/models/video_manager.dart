@@ -23,8 +23,10 @@ class VideoManager {
   Future<void> refreshUrl({required String? url}) async {
     finishedVideo = false;
     if (url == null) {
-      _controller?.pause();
-      _controller?.seekTo(Duration.zero);
+      //   _controller?.pause();
+      _controller?.dispose(forceDispose: true);
+      _controller = null;
+      //   _controller?.seekTo(Duration.zero);
 
       hasVideo = false;
       return;
