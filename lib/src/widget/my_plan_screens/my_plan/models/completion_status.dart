@@ -153,22 +153,26 @@ extension WeekStatus on CompletionStatus {
   }) {
     return Stack(
       children: [
-        Container(
-          padding: const EdgeInsets.all(7),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color.withOpacity(0.65),
-            //  color: color,
+        Positioned(
+          top: 4,
+          left: 4,
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color,
+              //  color: color,
+            ),
+            child: child,
           ),
-          child: child,
         ),
         Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: R.color.transparent,
-            border: Border.all(color: isSelected ? color : R.color.transparent, width: 3),
+            border: Border.all(color: isSelected ? R.color.green : R.color.transparent, width: 2),
           ),
-          child: const SizedBox(width: 24, height: 24),
+          child: SizedBox(width: 28, height: 28),
         ),
       ],
     );

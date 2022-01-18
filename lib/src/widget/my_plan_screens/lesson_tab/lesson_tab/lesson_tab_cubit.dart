@@ -65,12 +65,17 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     }
     if (showCurrentWeek && myPlanCubit.isHasRoadmapUser) {
       filterData.currentWeek = myPlanCubit.currentStudyWeek! - 1;
+      if (filterData.currentWeek == -1) filterData.currentWeek = 0;
+    } else {
+      filterData.currentWeek = 0;
     }
     if (!isRefresh) emit(const LessonTabLoading());
     await getLessonWeekStates(isRefresh: isRefresh);
     await getLessonsList(isRefresh: isRefresh);
     if (showCurrentWeek && filterData.currentWeek != null) {
-      emit(LessonTabWeekChanged(filterData.currentWeek!));
+      Timer(const Duration(milliseconds: 100), () {
+        emit(LessonTabWeekChanged(filterData.currentWeek!));
+      });
     }
   }
 

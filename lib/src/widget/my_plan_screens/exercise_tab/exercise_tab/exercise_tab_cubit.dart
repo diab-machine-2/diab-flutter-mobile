@@ -96,9 +96,13 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
       if (currentWeekIndex == -1) currentWeekIndex = 0;
       await getWeekStates();
+    } else {
+      currentWeekIndex = 0;
     }
     await getExerciseMovement();
-    emit(ExerciseTabWeekChanged(currentWeekIndex ?? 0));
+    Timer(const Duration(milliseconds: 100), () {
+      emit(ExerciseTabWeekChanged(currentWeekIndex ?? 0));
+    });
   }
 
   Future<void> getExerciseMovement({bool isRefresh = false, bool keepSelectedDayIndex = false}) async {
