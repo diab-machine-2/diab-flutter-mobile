@@ -227,6 +227,21 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   _controller.scrollToIndex(0, duration: duration, preferPosition: AutoScrollPosition.begin);
                 }, continueLearnCallback: () {
                   onDoneQuiz();
+                }, skipCallback: () {
+                  _buildDialogCompleted(
+                      rate: 100,
+                      seeResultCallback: () {
+                        _cubit.showAnswer();
+                        _controller.scrollToIndex(0, duration: duration, preferPosition: AutoScrollPosition.begin);
+                      },
+                      retryCallback: () {
+                        _cubit.retryQuiz();
+                        _controller.scrollToIndex(0, duration: duration, preferPosition: AutoScrollPosition.begin);
+                      },
+                      continueLearnCallback: () {
+                        onDoneQuiz();
+                      },
+                      skipCallback: () {});
                 });
               } else {
                 final int newIndex = _cubit.selectedCourseIndex + 1;
@@ -311,11 +326,14 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     required VoidCallback seeResultCallback,
     required VoidCallback retryCallback,
     required VoidCallback continueLearnCallback,
+    required VoidCallback skipCallback,
+    double? rate,
   }) {
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => QuizResultWidget(
+        rate: rate,
         isQuizLesson: _cubit.isQuizLesson,
         rightAnswer: _cubit.countAnswerRight,
         totalQuiz: _cubit.listQuiz.length,
@@ -323,6 +341,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
         seeResultCallback: seeResultCallback,
         retryCallback: retryCallback,
         continueLearnCallback: continueLearnCallback,
+        skipCallback: skipCallback,
       ),
     );
   }

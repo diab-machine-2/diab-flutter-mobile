@@ -72,6 +72,16 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         }
       });
     }
+    if (notifyName == 'active_change_data' ||
+        notifyName == 'glucose_change_data' ||
+        notifyName == 'BloodPressure_change_data' ||
+        notifyName == 'Weight_change_data' ||
+        notifyName == 'Emotion_change_data' ||
+        notifyName == 'food_change_data' ||
+        notifyName == 'hba1c_change_data' ||
+        notifyName == 'goal_calo_changed') {
+      _cubit.refreshData(isRefresh: true);
+    }
   }
 
   @override

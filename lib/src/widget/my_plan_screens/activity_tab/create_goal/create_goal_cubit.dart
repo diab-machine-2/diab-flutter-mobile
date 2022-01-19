@@ -1,11 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/response/create_smart_goal_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 
 import '../activity_tab/models/schedule_type.dart';
 import 'create_goal.dart';
@@ -20,6 +22,8 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
 
   final AppRepository repository;
   final List<SmartGoalList?> smartGoalDayList;
+
+  GoalInfoModel? goalInfoModel;
 
   CreateSmartGoalData dataModel = CreateSmartGoalData();
 
@@ -66,6 +70,11 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
       dataModel.goalRecordType = GoalRecordType.frequency;
     }
     currentStatus = CreateGoalStatus.setup;
+
+    if (selectedType == ScheduleType.exercise) {
+      emit(const CreateGoalLoading());
+      await fetchGoalInfo();
+    }
     emit(const CreateGoalSuccess());
     emit(const CreateGoalInitial());
   }
@@ -123,14 +132,34 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
       currentStatus = CreateGoalStatus.complete;
       emit(const CreateGoalSuccess());
     } else if (currentStatus == CreateGoalStatus.complete) {
+      emit(const CreateGoalLoading());
+      await updateGoalSetting();
       await createSmartGoal();
       emit(const CreateGoalCompleted());
     }
     emit(const CreateGoalInitial());
   }
 
+  Future<void> updateGoalSetting() async {
+    await UserClient().updateGoalInfo(
+      GoalInfoModel(
+        dailyWalkTargetDuration: goalInfoModel?.dailyWalkTargetDuration ?? 0,
+        dailyTargetDuration: dataModel.dailyTargetDurationNumber.toDouble(),
+        weeklyTargetDuration: goalInfoModel?.weeklyTargetDuration ?? 0,
+        dailyTargetBurnedCalorie: goalInfoModel?.dailyTargetBurnedCalorie ?? 0,
+        dailyEnergyGoal: goalInfoModel?.dailyEnergyGoal ?? 0,
+        goalWaist: goalInfoModel?.goalWaist ?? 0,
+        goalWeight: goalInfoModel?.goalWeight ?? 0,
+      ),
+    );
+  }
+
+  Future<GoalInfoModel?> fetchGoalInfo() async {
+    goalInfoModel = await UserClient().fetchGoalInfo();
+    return goalInfoModel;
+  }
+
   Future<void> createSmartGoal() async {
-    emit(const CreateGoalLoading());
     late final ApiResult<CreateSmartGoalResponse> apiResult;
     apiResult = await repository.createSmartGoal(dataModel.request ?? CreateSmartGoalRequest());
     apiResult.when(success: (CreateSmartGoalResponse response) {
