@@ -74,7 +74,12 @@ class VideoManager {
           }
         },
       );
-    newController.videoPlayerController?.addListener(() {
+    newController.videoPlayerController?.addListener(() async {
+      if((newController.videoPlayerController!.value.position.inMilliseconds) ==
+              newController.videoPlayerController!.value.duration!.inMilliseconds){
+        await newController.pause();
+        print('newController.pause()');
+      }
       if (newController.videoPlayerController?.value != null &&
           !newController.videoPlayerController!.value.isPlaying &&
           newController.videoPlayerController!.value.initialized &&
