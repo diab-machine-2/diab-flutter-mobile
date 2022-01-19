@@ -10,6 +10,7 @@ import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 
 import '../../my_plan/my_plan.dart';
@@ -70,7 +71,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     }
 
     //  await getSmartGoalStatistics(hideLoadingAfterDone: false);
-    await refreshData();
+    await refreshData(keepCurrentDay: false);
     Timer(const Duration(milliseconds: 100), () {
       emit(ActivityTabWeekChanged(currentWeekIndex ?? 0));
     });
@@ -97,6 +98,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     apiResult.when(success: (SmartGoalListReponse response) {
       smartGoalDayList = response.data?.daily ?? [];
       smartGoalWeekList = response.data?.weekly ?? [];
+
+      congratulationState.currentDate = DateUtil.parseTimespanToDateTime(currentDay!);
 
       if (response.isWeeklyGoalCompleted && congratulationState.shouldShowWeekPopup) {
         congratulationState.weeklyShowed = true;
