@@ -216,9 +216,9 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   // onDoneQuiz();
                   return;
                 }
-                if (_cubit.isPassed) {
-                  _cubit.setCompleteQuiz();
-                }
+                //   if (_cubit.isPassed) {
+                _cubit.setCompleteQuiz();
+                //   }
                 _buildDialogCompleted(seeResultCallback: () {
                   _cubit.showAnswer();
                   _controller.scrollToIndex(0, duration: duration, preferPosition: AutoScrollPosition.begin);
@@ -347,7 +347,9 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
   }
 
   void onDoneQuiz() {
-    if (_cubit.isQuizLesson || widget.onDone == null) {
+    if (
+        //_cubit.isQuizLesson ||
+        widget.onDone == null) {
       NavigationUtil.pop(context);
       return;
     }

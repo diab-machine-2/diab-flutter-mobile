@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -344,5 +345,12 @@ class Utils {
     } catch (_) {
       return 0;
     }
+  }
+}
+
+extension Precision on double {
+  double toPrecision(int fractionDigits) {
+    num mod = pow(10, fractionDigits.toDouble());
+    return ((this * mod).round().toDouble() / mod);
   }
 }
