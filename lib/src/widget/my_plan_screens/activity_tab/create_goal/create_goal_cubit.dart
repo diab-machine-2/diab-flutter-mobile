@@ -133,23 +133,25 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
       emit(const CreateGoalSuccess());
     } else if (currentStatus == CreateGoalStatus.complete) {
       emit(const CreateGoalLoading());
-      await updateGoalSetting();
+      if (goalInfoModel != null) {
+        await updateGoalSetting(goalInfoModel!);
+      }
       await createSmartGoal();
       emit(const CreateGoalCompleted());
     }
     emit(const CreateGoalInitial());
   }
 
-  Future<void> updateGoalSetting() async {
+  Future<void> updateGoalSetting(GoalInfoModel goalInfoModel) async {
     await UserClient().updateGoalInfo(
       GoalInfoModel(
-        dailyWalkTargetDuration: goalInfoModel?.dailyWalkTargetDuration ?? 0,
+        dailyWalkTargetDuration: goalInfoModel.dailyWalkTargetDuration ?? 0,
         dailyTargetDuration: dataModel.dailyTargetDurationNumber.toDouble(),
-        weeklyTargetDuration: goalInfoModel?.weeklyTargetDuration ?? 0,
-        dailyTargetBurnedCalorie: goalInfoModel?.dailyTargetBurnedCalorie ?? 0,
-        dailyEnergyGoal: goalInfoModel?.dailyEnergyGoal ?? 0,
-        goalWaist: goalInfoModel?.goalWaist ?? 0,
-        goalWeight: goalInfoModel?.goalWeight ?? 0,
+        weeklyTargetDuration: goalInfoModel.weeklyTargetDuration ?? 0,
+        dailyTargetBurnedCalorie: goalInfoModel.dailyTargetBurnedCalorie ?? 0,
+        dailyEnergyGoal: goalInfoModel.dailyEnergyGoal ?? 0,
+        goalWaist: goalInfoModel.goalWaist ?? 0,
+        goalWeight: goalInfoModel.goalWeight ?? 0,
       ),
     );
   }

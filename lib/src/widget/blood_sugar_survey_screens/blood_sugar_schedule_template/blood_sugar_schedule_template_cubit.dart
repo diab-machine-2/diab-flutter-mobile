@@ -9,8 +9,7 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'blood_sugar_schedule_template.dart';
 
-class BloodSugarScheduleTemplateCubit
-    extends Cubit<BloodSugarScheduleTemplateState> {
+class BloodSugarScheduleTemplateCubit extends Cubit<BloodSugarScheduleTemplateState> {
   BloodSugarScheduleTemplateCubit(this.repository, {required this.templateCode})
       : super(const BloodSugarScheduleTemplateInitial());
 
@@ -43,8 +42,7 @@ class BloodSugarScheduleTemplateCubit
 
   Future<void> getTemplateDetail() async {
     emit(const BloodSugarScheduleTemplateLoading());
-    final ApiResult<BloodSugarTemplateResponse> apiResult =
-        await repository.getTemplateDetail(templateCode);
+    final ApiResult<BloodSugarTemplateResponse> apiResult = await repository.getTemplateDetail(templateCode);
     apiResult.when(success: (BloodSugarTemplateResponse response) {
       if (response.data != null) {
         templateDetail = response.data;
@@ -55,8 +53,7 @@ class BloodSugarScheduleTemplateCubit
         emit(const BloodSugarScheduleTemplateSuccess());
       }
     }, failure: (NetworkExceptions error) {
-      emit(BloodSugarScheduleTemplateFailure(
-          NetworkExceptions.getErrorMessage(error)));
+      emit(BloodSugarScheduleTemplateFailure(NetworkExceptions.getErrorMessage(error)));
     });
     emit(const BloodSugarScheduleTemplateInitial());
   }
@@ -72,8 +69,7 @@ class BloodSugarScheduleTemplateCubit
   }
 
   Future<void> onSubmitSchedule() async {
-    final ScheduleGlucoseModel? scheduleGlucoseModel =
-        templateDetail?.scheduleGlucoseModel;
+    final ScheduleGlucoseModel? scheduleGlucoseModel = templateDetail?.scheduleGlucoseModel;
     if (scheduleGlucoseModel == null) return;
     try {
       await showLoading();
@@ -88,13 +84,11 @@ class BloodSugarScheduleTemplateCubit
   }
 
   Future<void> saveSurveyResult() async {
-    final ApiResult<SaveSurveyResultResponse> apiResult =
-        await repository.saveSurveyResult(templateDetail?.id ?? '');
-    apiResult.when(
-        success: (SaveSurveyResultResponse response) {},
-        failure: (NetworkExceptions error) {
-          emit(BloodSugarScheduleTemplateFailure(
-              NetworkExceptions.getErrorMessage(error)));
-        });
+    final ApiResult<SaveSurveyResultResponse> apiResult = await repository.saveSurveyResult(templateDetail?.id ?? '');
+    apiResult.when(success: (SaveSurveyResultResponse response) {
+      print('saveSurveySuccess');
+    }, failure: (NetworkExceptions error) {
+      emit(BloodSugarScheduleTemplateFailure(NetworkExceptions.getErrorMessage(error)));
+    });
   }
 }

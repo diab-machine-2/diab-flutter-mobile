@@ -157,7 +157,7 @@ extension WeekStatus on CompletionStatus {
           top: 4,
           left: 4,
           child: Container(
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: color,
@@ -172,7 +172,7 @@ extension WeekStatus on CompletionStatus {
             color: R.color.transparent,
             border: Border.all(color: isSelected ? R.color.green : R.color.transparent, width: 2),
           ),
-          child: SizedBox(width: 28, height: 28),
+          child: SizedBox(width: 26, height: 26),
         ),
       ],
     );
