@@ -36,7 +36,7 @@ class NetWorkImageWidget extends StatelessWidget {
               fit: BoxFit.fill,
               placeholder: showLoading
                   ? (_, __) {
-                      return const Center(child: CircularProgressIndicator());
+                      return Container(color: R.color.grayBorder);
                     }
                   : null,
               errorWidget: (_, __, ___) {
