@@ -861,7 +861,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           child: GestureDetector(
             child: Container(
               width: 344,
-              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 24.h),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 gradient: LinearGradient(
@@ -900,7 +900,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                   ),
                   Container(
                     margin: const EdgeInsets.only(top: 24),
-                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: ButtonWidget(
                       height: 43,
                       title: R.string.agree.tr(),

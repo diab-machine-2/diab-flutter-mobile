@@ -599,7 +599,7 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 30),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
                         child: Image.asset(R.drawable.img_upgrade_package),
                       ),
                       Text(
@@ -617,8 +617,8 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(
-                            width: 149,
+                          Expanded(
+                            flex: 1,
                             child: ButtonWidget(
                               title: 'Để sau',
                               textSize: 16,
@@ -629,8 +629,9 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
                               },
                             ),
                           ),
-                          SizedBox(
-                            width: 149,
+                          SizedBox(width: 8),
+                          Expanded(
+                            flex: 1,
                             child: ButtonWidget(
                               title: 'Tìm hiểu thêm',
                               textSize: 16,

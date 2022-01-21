@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -75,10 +77,12 @@ class VideoManager {
         },
       );
     newController.videoPlayerController?.addListener(() async {
-      if((newController.videoPlayerController!.value.position.inMilliseconds) ==
-              newController.videoPlayerController!.value.duration!.inMilliseconds){
-        await newController.pause();
-        print('newController.pause()');
+      if (Platform.isIOS) {
+        if ((newController.videoPlayerController!.value.position.inMilliseconds) ==
+            newController.videoPlayerController!.value.duration!.inMilliseconds) {
+          await newController.pause();
+          print('newController.pause()');
+        }
       }
       if (newController.videoPlayerController?.value != null &&
           !newController.videoPlayerController!.value.isPlaying &&

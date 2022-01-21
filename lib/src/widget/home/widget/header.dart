@@ -37,13 +37,11 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   }
 
   @override
-  void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'user_info_change') {
       setState(() {});
     }
-    if (notifyName == 'reload_notification' ||
-        notifyName == 'read_notification_success') {
+    if (notifyName == 'reload_notification' || notifyName == 'read_notification_success') {
       loadNotification();
     }
     if (notifyName == 'motivation_change') {
@@ -63,8 +61,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
       loadMotivation(),
     ]);
     if (widget.sharedCode?.isNotEmpty == true) {
-      ShareProfilePopup.instance.onHasSharedCode(
-          context: context, code: widget.sharedCode.toString());
+      ShareProfilePopup.instance.onHasSharedCode(context: context, code: widget.sharedCode.toString());
     }
   }
 
@@ -85,8 +82,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
     return SafeArea(
         bottom: false,
         child: Container(
-            padding:
-                const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+            padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -101,56 +97,42 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                         child: Container(
                           color: R.color.transparent,
                           child: Row(children: [
-                            Stack(
-                                alignment: AlignmentDirectional.bottomEnd,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 4, bottom: 4),
-                                    child: Container(
-                                        clipBehavior: Clip.hardEdge,
-                                        decoration: BoxDecoration(
-                                            color: R.color.white,
-                                            borderRadius:
-                                                BorderRadius.circular(21)),
-                                        child: user.imageUrl!.url == null
-                                            ? Icon(Icons.person,
-                                                size: 42,
-                                                color: R.color.mainColor)
-                                            : Image.network(user.imageUrl!.url!,
-                                                width: 42, height: 42)),
-                                  ),
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    padding: const EdgeInsets.all(4),
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: R.color.white,
-                                    ),
-                                    child:
-                                        Image.asset(R.drawable.ic_crown_green),
-                                  )
-                                ]),
+                            Stack(alignment: AlignmentDirectional.bottomEnd, children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 4, bottom: 4),
+                                child: Container(
+                                    clipBehavior: Clip.hardEdge,
+                                    decoration:
+                                        BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(21)),
+                                    child: user.imageUrl!.url == null
+                                        ? Icon(Icons.person, size: 42, color: R.color.mainColor)
+                                        : Image.network(user.imageUrl!.url!, width: 42, height: 42)),
+                              ),
+                              Container(
+                                width: 20,
+                                height: 20,
+                                padding: const EdgeInsets.all(4),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: R.color.white,
+                                ),
+                                child: Image.asset(R.drawable.ic_crown_green),
+                              )
+                            ]),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(user.fullName!.trim(),
-                                        style: TextStyle(
-                                          color: R.color.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                        )),
-                                    const SizedBox(height: 4),
-                                    Text(R.string.thanh_vien_co_ban.tr(),
-                                        style: TextStyle(
-                                            color: R.color.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w400))
-                                  ]),
+                              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                Text(user.fullName!.trim(),
+                                    style: TextStyle(
+                                      color: R.color.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    )),
+                                const SizedBox(height: 4),
+                                Text(R.string.thanh_vien_co_ban.tr(),
+                                    style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400))
+                              ]),
                             ),
                           ]),
                         ),
@@ -166,54 +148,45 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                             });
                           },
                           child: isChoose
-                              ? Image.asset(
-                                  R.drawable.ic_book_question_selected,
-                                  width: 24,
-                                  height: 24)
-                              : Image.asset(R.drawable.ic_book_question,
-                                  width: 24, height: 24),
+                              ? Image.asset(R.drawable.ic_book_question_selected, width: 24, height: 24)
+                              : Image.asset(R.drawable.ic_book_question, width: 24, height: 24),
                         ),
                         const SizedBox(width: 8),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(
-                                context, NavigatorName.notification);
+                            Navigator.pushNamed(context, NavigatorName.notification);
                           },
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             color: R.color.transparent,
-                            child: Image.asset(
-                                notificationCount! > 0
-                                    ? R.drawable.ic_bell_dot
-                                    : R.drawable.ic_bell,
-                                width: 24,
-                                height: 24),
+                            child: Image.asset(notificationCount! > 0 ? R.drawable.ic_bell_dot : R.drawable.ic_bell,
+                                width: 24, height: 24),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        InkWell(
-                          onTap: () async {
-                            final scanedResult =
-                                await NavigationUtil.navigatePage(
-                              context,
-                              const QRScanWidget(),
-                            );
-                            if (scanedResult is String) {
-                              ShareProfilePopup.instance.onHasSharedCode(
-                                  context: context, code: scanedResult);
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            color: R.color.transparent,
-                            child: Image.asset(
-                              R.drawable.ic_qr_scan,
-                              color: R.color.white,
-                              width: 24,
-                              height: 24,
-                            ),
-                          ),
-                        ),
+                        //const SizedBox(width: 8),
+                        // InkWell(
+                        //   onTap: () async {
+                        //     final scanedResult =
+                        //         await NavigationUtil.navigatePage(
+                        //       context,
+                        //       const QRScanWidget(),
+                        //     );
+                        //     if (scanedResult is String) {
+                        //       ShareProfilePopup.instance.onHasSharedCode(
+                        //           context: context, code: scanedResult);
+                        //     }
+                        //   },
+                        //   child: Container(
+                        //     padding: const EdgeInsets.all(4),
+                        //     color: R.color.transparent,
+                        //     child: Image.asset(
+                        //       R.drawable.ic_qr_scan,
+                        //       color: R.color.white,
+                        //       width: 24,
+                        //       height: 24,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     )
                   ],
@@ -226,19 +199,13 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                       ? Padding(
                           padding: const EdgeInsets.only(top: 16),
                           child: Text(motivation!.content!,
-                              style: TextStyle(
-                                  color: R.color.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400)),
+                              style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
                         )
                       : Column(children: [
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
                             child: Text(R.string.share_with_diab.tr(),
-                                style: TextStyle(
-                                    color: R.color.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400)),
+                                style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400)),
                           ),
                           const SizedBox(height: 8),
                           Center(
@@ -248,23 +215,16 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                               },
                               child: Container(
                                   height: 32,
-                                  decoration: BoxDecoration(
-                                      color: R.color.white,
-                                      borderRadius: BorderRadius.circular(16)),
-                                  padding: const EdgeInsets.only(
-                                      left: 16, right: 16),
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(R.string.viet_dong_luc.tr(),
-                                            style: TextStyle(
-                                                color: R.color.mainColor,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600)),
-                                        const SizedBox(width: 4),
-                                        Image.asset(R.drawable.ic_arrow_right,
-                                            width: 24, height: 24)
-                                      ])),
+                                  decoration:
+                                      BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(16)),
+                                  padding: const EdgeInsets.only(left: 16, right: 16),
+                                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                                    Text(R.string.viet_dong_luc.tr(),
+                                        style: TextStyle(
+                                            color: R.color.mainColor, fontSize: 15, fontWeight: FontWeight.w600)),
+                                    const SizedBox(width: 4),
+                                    Image.asset(R.drawable.ic_arrow_right, width: 24, height: 24)
+                                  ])),
                             ),
                           )
                         ])

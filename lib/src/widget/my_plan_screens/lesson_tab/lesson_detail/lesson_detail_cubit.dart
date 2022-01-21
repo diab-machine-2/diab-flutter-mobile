@@ -100,7 +100,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   bool get isOtherCompleted {
     for (int index = 0; index < sectionList.length; index++) {
-      if (index == currentSection) continue;
+      if (index == currentSection && currentSection == (sectionList.length - 1)) continue;
       if (sectionList[index]?.isComplete != true) {
         return false;
       }
@@ -110,6 +110,13 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   bool? get canComplete {
     //If all lesson were done before, not show complete button
+    if (currentSection == (sectionList.length - 1)) {
+      if (isAllSectionCompleted && sectionList.isNotEmpty == true) {
+        return true;
+      } else {
+        return false;
+      }
+    }
     if (alreadyDoneLesson) return null;
     if (isAllSectionCompleted && sectionList.isNotEmpty == true) return true;
     if (isOtherCompleted) return false;
