@@ -54,10 +54,10 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     //Check can complete the lesson and make sure that user tapped next button
     if (isAllSectionCompleted && newSection > currentSection && !alreadyDoneLesson) {
       checkSectionComplete();
-      if (isAllSectionCompleted) {
+      if (isAllSectionCompleted && currentSection == (sectionList.length - 1)) {
         emit(const LessonDetailCompleted());
+        return;
       }
-      return;
     }
 
     if (newSection < 0 || newSection >= sectionList.length) {
@@ -100,7 +100,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
   bool get isOtherCompleted {
     for (int index = 0; index < sectionList.length; index++) {
-      if (index == currentSection && currentSection == (sectionList.length - 1)) continue;
+      if (index == currentSection) continue;
       if (sectionList[index]?.isComplete != true) {
         return false;
       }
@@ -117,9 +117,10 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
         return false;
       }
     }
+
     if (alreadyDoneLesson) return null;
-    if (isAllSectionCompleted && sectionList.isNotEmpty == true) return true;
-    if (isOtherCompleted) return false;
+    //   if (isAllSectionCompleted && sectionList.isNotEmpty == true) return true;
+    // if (isOtherCompleted) return false;
     return null;
   }
 
