@@ -38,9 +38,9 @@ extension NotificationActionExtend on NotificationActionType {
     if (index == NotificationType.REMIND_COACH_MINUTE.index + 1 || index == NotificationType.REMIND_COACH_DAY.index + 1)
       return NotificationActionType.redirect_date_detail;
 
-    if (index == 0) return NotificationActionType.add_reminder;
-    if (index == 0) return NotificationActionType.add_blood_sugar;
-    if (index == 0) return NotificationActionType.share_profile;
+    // if (index == 0) return NotificationActionType.add_reminder;
+    // if (index == 0) return NotificationActionType.add_blood_sugar;
+    // if (index == 0) return NotificationActionType.share_profile;
 
     return NotificationActionType.redirect_to_url;
   }
