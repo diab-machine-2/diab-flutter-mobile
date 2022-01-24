@@ -178,14 +178,34 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             color: R.color.transparent,
-                            child: Image.asset(
-                              R.drawable.ic_qr_scan,
-                              color: R.color.white,
-                              width: 24,
-                              height: 24,
-                            ),
+                            child: Image.asset(notificationCount! > 0 ? R.drawable.ic_bell_dot : R.drawable.ic_bell,
+                                width: 24, height: 24),
                           ),
                         ),
+                        //const SizedBox(width: 8),
+                        // InkWell(
+                        //   onTap: () async {
+                        //     final scanedResult =
+                        //         await NavigationUtil.navigatePage(
+                        //       context,
+                        //       const QRScanWidget(),
+                        //     );
+                        //     if (scanedResult is String) {
+                        //       ShareProfilePopup.instance.onHasSharedCode(
+                        //           context: context, code: scanedResult);
+                        //     }
+                        //   },
+                        //   child: Container(
+                        //     padding: const EdgeInsets.all(4),
+                        //     color: R.color.transparent,
+                        //     child: Image.asset(
+                        //       R.drawable.ic_qr_scan,
+                        //       color: R.color.white,
+                        //       width: 24,
+                        //       height: 24,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     )
                   ],

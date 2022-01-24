@@ -16,6 +16,7 @@ import 'package:medical/src/widget/helper/http_helper.dart';
 class AppSettings {
   static UserModel? userInfo;
   static CategoryUserModel? categoryUserModel;
+  static int? currentDateTime;
 
   static Future<bool> saveToken(String? token) async {
     appPreference.setData(Const.TOKEN, token);

@@ -85,7 +85,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'motivation_change') {
-      loadMotivation();
+      //   loadMotivation();
     }
     if (notifyName == 'user_info_change') {
       setState(() {});
