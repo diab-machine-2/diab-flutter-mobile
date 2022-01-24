@@ -43,7 +43,7 @@ extension NotificationActionExtend on NotificationActionType {
           return NotificationActionType.redirect_to_url;
       }
     } else {
-      return NotificationActionType.redirect_to_url;
+      return NotificationActionType.none;
     }
   }
 }
