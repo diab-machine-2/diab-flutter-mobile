@@ -14,6 +14,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NotificationManager {
   static final NotificationManager instance = NotificationManager._internal();
@@ -100,7 +101,10 @@ class NotificationManager {
 
     switch (model.actionType) {
       case NotificationActionType.redirect_to_activity_tab:
-        Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+        Navigator.pushReplacementNamed(navigatorKey.currentState!.context, NavigatorName.tabbar, arguments: {
+          'id': model.data?.communicationId,
+          'isRedirectFromNotification': true,
+        });
         break;
       case NotificationActionType.redirect_to_url:
         Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.notification_detail,
@@ -112,7 +116,7 @@ class NotificationManager {
         break;
       case NotificationActionType.add_blood_sugar:
         Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
-            arguments: {'type': 'input', 'id': null});
+            arguments: {'type': 'input', 'id': model.data?.communicationId});
         break;
       case NotificationActionType.none:
         break;
@@ -163,5 +167,18 @@ class NotificationManager {
       }
     } catch (exception) {}
     return deviceInformation;
+  }
+
+  Future<void> _launchInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: false,
+        forceWebView: false,
+        headers: <String, String>{'my_header_key': 'my_header_value'},
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

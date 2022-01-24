@@ -25,23 +25,25 @@ enum NotificationType {
 
 extension NotificationActionExtend on NotificationActionType {
   static NotificationActionType getNotificationActionTypeFromIndex(int? index) {
-    if (index == NotificationType.CREATE_ACCOUNT.index + 1) return NotificationActionType.redirect_to_url;
-    if (index == NotificationType.HAPPY_BIRTHDAY.index + 1 ||
-        index == NotificationType.JOIN_GROUP.index + 1 ||
-        index == NotificationType.ACTIVITY.index + 1 ||
-        index == NotificationType.SURVEY.index + 1) return NotificationActionType.none;
-    if (index == NotificationType.JOIN_PACKAGE.index + 1 ||
-        index == NotificationType.TARGET_START_DAY.index + 1 ||
-        index == NotificationType.TARGET_END_DAY.index + 1 ||
-        index == NotificationType.TARGET_START_WEEK.index + 1 ||
-        index == NotificationType.TARGET_END_WEEK.index + 1) return NotificationActionType.redirect_to_activity_tab;
-    if (index == NotificationType.REMIND_COACH_MINUTE.index + 1 || index == NotificationType.REMIND_COACH_DAY.index + 1)
-      return NotificationActionType.redirect_date_detail;
-
-    // if (index == 0) return NotificationActionType.add_reminder;
-    // if (index == 0) return NotificationActionType.add_blood_sugar;
-    // if (index == 0) return NotificationActionType.share_profile;
-
-    return NotificationActionType.redirect_to_url;
+    if (index != null) {
+      switch (index) {
+        case 0:
+          return NotificationActionType.redirect_to_activity_tab;
+        case 1:
+          return NotificationActionType.redirect_to_url;
+        case 2:
+          return NotificationActionType.add_reminder;
+        case 3:
+          return NotificationActionType.add_blood_sugar;
+        case 4:
+          return NotificationActionType.none;
+        case 5:
+          return NotificationActionType.share_profile;
+        default:
+          return NotificationActionType.redirect_to_url;
+      }
+    } else {
+      return NotificationActionType.redirect_to_url;
+    }
   }
 }
