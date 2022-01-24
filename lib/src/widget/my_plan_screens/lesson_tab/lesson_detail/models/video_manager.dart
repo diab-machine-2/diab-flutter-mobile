@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class VideoManager {
   VideoManager({
@@ -22,8 +25,8 @@ class VideoManager {
   Future<void> refreshUrl({required String? url}) async {
     finishedVideo = false;
     if (url == null) {
-      _controller?.pause();
-      _controller?.seekTo(Duration.zero);
+      await _controller?.seekTo(Duration.zero);
+      await _controller?.pause();
 
       hasVideo = false;
       return;
@@ -44,8 +47,8 @@ class VideoManager {
     _controller?.retryDataSource();
     _controller?.setControlsAlwaysVisible(true);
     await Future.delayed(Duration.zero);
-    _controller?.seekTo(Duration.zero);
-    _controller?.pause();
+    await _controller?.seekTo(Duration.zero);
+    await _controller?.pause();
   }
 
   void initController({required String? url}) {
@@ -56,6 +59,10 @@ class VideoManager {
         showPlaceholderUntilPlay: true,
         aspectRatio: 16 / 9,
         autoDispose: false,
+        deviceOrientationsAfterFullScreen: [
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ],
       ),
       betterPlayerDataSource: BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
@@ -69,7 +76,14 @@ class VideoManager {
           }
         },
       );
-    newController.videoPlayerController?.addListener(() {
+    newController.videoPlayerController?.addListener(() async {
+      if (Platform.isIOS) {
+        if ((newController.videoPlayerController!.value.position.inMilliseconds) ==
+            newController.videoPlayerController!.value.duration!.inMilliseconds) {
+          await newController.pause();
+          print('newController.pause()');
+        }
+      }
       if (newController.videoPlayerController?.value != null &&
           !newController.videoPlayerController!.value.isPlaying &&
           newController.videoPlayerController!.value.initialized &&

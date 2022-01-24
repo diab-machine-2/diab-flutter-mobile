@@ -20,12 +20,10 @@ import '../../../card_course_quiz/card_course_quiz.dart';
 import 'course_quiz.dart';
 import 'widgets/quiz_result_popup.dart';
 
-const Duration duration = Duration(milliseconds: 200);
+const Duration duration = Duration(milliseconds: 1);
 
 class CourseQuizPage extends StatefulWidget {
-  const CourseQuizPage(
-      {Key? key, required this.lessonId, this.lessonSectionItem, this.onDone})
-      : super(key: key);
+  const CourseQuizPage({Key? key, required this.lessonId, this.lessonSectionItem, this.onDone}) : super(key: key);
 
   final String lessonId;
   final LessonSectionItem? lessonSectionItem;
@@ -38,8 +36,7 @@ class CourseQuizPage extends StatefulWidget {
 class _CourseQuizPageState extends State<CourseQuizPage> {
   late CourseQuizCubit _cubit;
   List<GlobalKey<CardCourseQuizPageState>> listGlobal = [];
-  final AutoScrollController _controller =
-      AutoScrollController(axis: Axis.horizontal);
+  final AutoScrollController _controller = AutoScrollController(axis: Axis.horizontal);
 
   @override
   void initState() {
@@ -53,8 +50,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     Utils.onWidgetDidBuild(() {
       _controller.position.isScrollingNotifier.addListener(() {
         if (!_controller.position.isScrollingNotifier.value) {
-          final int index =
-              (_controller.offset / (ScreenUtil().screenWidth - 80)).round();
+          final int index = (_controller.offset / (ScreenUtil().screenWidth - 80)).round();
           _cubit.jumpToIndexCourse(index);
         }
       });
@@ -88,8 +84,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 element.currentState?.showAnswer();
               });
             }
-            if (state is CourseQuizFailure)
-              Message.showToastMessage(context, state.error);
+            if (state is CourseQuizFailure) Message.showToastMessage(context, state.error);
             if (state is CourseQuizDone) {
               onDoneQuiz();
             }
@@ -152,11 +147,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
             child: Text(
               _cubit.quizName,
               style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.textDark,
-                  height: 1.4,
-                  letterSpacing: 0.4),
+                  fontSize: 18, fontWeight: FontWeight.bold, color: R.color.textDark, height: 1.4, letterSpacing: 0.4),
             ),
           ),
           const SizedBox(height: 5),
@@ -171,9 +162,8 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
               itemBuilder: (context, index) => buildStep(
                   index: index,
                   onTap: () {
-                    _controller.scrollToIndex(index,
-                        duration: duration,
-                        preferPosition: AutoScrollPosition.middle);
+                    _controller.scrollToIndex(index, duration: duration, preferPosition: AutoScrollPosition.begin);
+                    _cubit.jumpToIndexCourse(index);
                   }),
               separatorBuilder: (context, index) => const SizedBox(width: 14),
             ),
@@ -182,8 +172,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
             child: ListView.builder(
               controller: _controller,
               scrollDirection: Axis.horizontal,
-              physics: CustomScrollPhysics(
-                  itemDimension: ScreenUtil().screenWidth - 66),
+              physics: CustomScrollPhysics(itemDimension: ScreenUtil().screenWidth - 66),
               itemCount: lengthQuiz,
               itemBuilder: (context, index) {
                 final QuizLesson? data = _cubit.listQuiz[index];
@@ -192,16 +181,14 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   controller: _controller,
                   index: index,
                   child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                    margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                     width: ScreenUtil().screenWidth - 80,
                     child: listGlobal.isNotEmpty
                         ? CardCourseQuizPage(
                             key: listGlobal[index],
                             index: index,
                             quizData: data,
-                            onSubmitAnswer: (listAnswer) =>
-                                _cubit.recordAnswer(index, listAnswer),
+                            onSubmitAnswer: (listAnswer) => _cubit.recordAnswer(index, listAnswer),
                           )
                         : const SizedBox(),
                   ),
@@ -215,13 +202,10 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 ? null
                 : () {
                     final int newIndex = _cubit.selectedCourseIndex - 1;
-                    _controller.scrollToIndex(newIndex,
-                        duration: duration,
-                        preferPosition: AutoScrollPosition.middle);
+                    _controller.scrollToIndex(newIndex, duration: duration, preferPosition: AutoScrollPosition.begin);
                     _cubit.jumpToIndexCourse(newIndex);
                   },
-            isNextButtonActive:
-                lengthQuiz != 0 && _cubit.selectedCourseIndex < lengthQuiz - 1,
+            isNextButtonActive: lengthQuiz != 0 && _cubit.selectedCourseIndex < lengthQuiz - 1,
             onTapNext: () {
               if (lengthQuiz == 0) {
                 onDoneQuiz();
@@ -232,34 +216,41 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   // onDoneQuiz();
                   return;
                 }
-                if (_cubit.isPassed) {
-                  _cubit.setCompleteQuiz();
-                }
+                //   if (_cubit.isPassed) {
+                _cubit.setCompleteQuiz();
+                //   }
                 _buildDialogCompleted(seeResultCallback: () {
                   _cubit.showAnswer();
-                  _controller.scrollToIndex(0,
-                      duration: duration,
-                      preferPosition: AutoScrollPosition.begin);
+                  _controller.scrollToIndex(0, duration: duration, preferPosition: AutoScrollPosition.begin);
                 }, retryCallback: () {
                   _cubit.retryQuiz();
-                  _controller.scrollToIndex(0,
-                      duration: duration,
-                      preferPosition: AutoScrollPosition.begin);
+                  _controller.scrollToIndex(0, duration: duration, preferPosition: AutoScrollPosition.begin);
                 }, continueLearnCallback: () {
                   onDoneQuiz();
+                }, skipCallback: () {
+                  _buildDialogCompleted(
+                      rate: 100,
+                      seeResultCallback: () {
+                        _cubit.showAnswer();
+                        _controller.scrollToIndex(0, duration: duration, preferPosition: AutoScrollPosition.begin);
+                      },
+                      retryCallback: () {
+                        _cubit.retryQuiz();
+                        _controller.scrollToIndex(0, duration: duration, preferPosition: AutoScrollPosition.begin);
+                      },
+                      continueLearnCallback: () {
+                        onDoneQuiz();
+                      },
+                      skipCallback: () {});
                 });
               } else {
                 final int newIndex = _cubit.selectedCourseIndex + 1;
                 if (newIndex > lengthQuiz - 1) return;
-                _controller.scrollToIndex(newIndex,
-                    duration: duration,
-                    preferPosition: AutoScrollPosition.middle);
+                _controller.scrollToIndex(newIndex, duration: duration, preferPosition: AutoScrollPosition.begin);
                 _cubit.jumpToIndexCourse(newIndex);
               }
             },
-            currentPositionTitle: lengthQuiz == 0
-                ? '0/0'
-                : '${_cubit.selectedCourseIndex + 1}/$lengthQuiz',
+            currentPositionTitle: lengthQuiz == 0 ? '0/0' : '${_cubit.selectedCourseIndex + 1}/$lengthQuiz',
             previousButtonTitle: R.string.previous_question.tr(),
             nextButtonTitle: R.string.next_question.tr(),
             isCompleted: _cubit.isShowResult ? null : _cubit.canComplete,
@@ -279,11 +270,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     final bool isCurrent = _cubit.selectedCourseIndex == index;
     final bool isAnswered = _cubit.answer[index]?.isNotEmpty == true;
     final bool isRight = _cubit.answer[index].toString() ==
-        quizData?.quiz?.quizAnswers
-            ?.where((e) => e?.isCorrect == true)
-            .map((e) => e?.id)
-            .toList()
-            .toString();
+        quizData?.quiz?.quizAnswers?.where((e) => e?.isCorrect == true).map((e) => e?.id).toList().toString();
 
     if (_cubit.isShowResult) {
       colorText = R.color.white;
@@ -328,11 +315,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
           child: Text(
             "${index + 1}",
             style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: colorText,
-                height: 1.37,
-                letterSpacing: 0.4),
+                fontSize: 16, fontWeight: FontWeight.bold, color: colorText, height: 1.37, letterSpacing: 0.4),
           ),
         ),
       ),
@@ -343,11 +326,14 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     required VoidCallback seeResultCallback,
     required VoidCallback retryCallback,
     required VoidCallback continueLearnCallback,
+    required VoidCallback skipCallback,
+    double? rate,
   }) {
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => QuizResultWidget(
+        rate: rate,
         isQuizLesson: _cubit.isQuizLesson,
         rightAnswer: _cubit.countAnswerRight,
         totalQuiz: _cubit.listQuiz.length,
@@ -355,12 +341,15 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
         seeResultCallback: seeResultCallback,
         retryCallback: retryCallback,
         continueLearnCallback: continueLearnCallback,
+        skipCallback: skipCallback,
       ),
     );
   }
 
   void onDoneQuiz() {
-    if (_cubit.isQuizLesson || widget.onDone == null) {
+    if (
+        //_cubit.isQuizLesson ||
+        widget.onDone == null) {
       NavigationUtil.pop(context);
       return;
     }

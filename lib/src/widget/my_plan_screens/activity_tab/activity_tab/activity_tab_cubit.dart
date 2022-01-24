@@ -10,6 +10,7 @@ import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 
 import '../../my_plan/my_plan.dart';
@@ -57,39 +58,48 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   void onSelectDay(int newDayIndex) {
     currentDayIndex = newDayIndex;
-    getListSmartGoal();
+    getListSmartGoal(isShowLoading: true);
   }
 
   Future<void> initData() async {
     await myPlanCubit.checkUserInfo();
     if (myPlanCubit.isHasRoadmapUser) {
       currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
+      if (currentWeekIndex == -1) currentWeekIndex = 0;
     } else {
       currentWeekIndex = 0;
     }
-    emit(const ActivityTabLoading());
-    await getSmartGoalStatistics(hideLoadingAfterDone: false);
-    await refreshData();
+
+    //  await getSmartGoalStatistics(hideLoadingAfterDone: false);
+    await refreshData(keepCurrentDay: false);
     Timer(const Duration(milliseconds: 100), () {
       emit(ActivityTabWeekChanged(currentWeekIndex ?? 0));
     });
-    emit(const ActivityTabProgressChanged());
+    //  emit(const ActivityTabProgressChanged());
   }
 
   Future<void> refreshData({bool isRefresh = false, bool keepCurrentDay = true}) async {
+    if (!isRefresh) {
+      emit(const ActivityTabLoading());
+    }
     await getSmartGoalStatistics(isRefresh: isRefresh, hideLoadingAfterDone: true, keepCurrentDay: keepCurrentDay);
     await getListSmartGoal(isRefresh: isRefresh);
   }
 
-  Future<void> getListSmartGoal({bool isRefresh = false}) async {
+  Future<void> getListSmartGoal({bool isRefresh = false, bool isShowLoading = false}) async {
     if (!isRefresh) {
       await Future.delayed(Duration.zero);
+    }
+    if (isShowLoading) {
+      emit(const ActivityTabLoading());
     }
     final ApiResult<SmartGoalListReponse> apiResult =
         await repository.getListSmartGoal(day: currentDay, week: currentWeek);
     apiResult.when(success: (SmartGoalListReponse response) {
       smartGoalDayList = response.data?.daily ?? [];
       smartGoalWeekList = response.data?.weekly ?? [];
+
+      congratulationState.currentDate = DateUtil.parseTimespanToDateTime(currentDay!);
 
       if (response.isWeeklyGoalCompleted && congratulationState.shouldShowWeekPopup) {
         congratulationState.weeklyShowed = true;
@@ -122,7 +132,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       if (!keepCurrentDay) currentDayIndex = response.initDayIndex;
       mark = response.getCompletedMarkIndex(currentWeek: currentWeek, userCurrentWeek: myPlanCubit.currentStudyWeek);
       //     if (hideLoadingAfterDone) emit(const ActivityTabSuccess());
-      emit(const ActivityTabProgressChanged());
+      //   emit(const ActivityTabProgressChanged());
     }, failure: (NetworkExceptions error) {
       //     emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
@@ -136,12 +146,12 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         CompleteSmartGoalRequest(id: smartGoalId, executeTimes: executeDayTimes, type: type);
     final ApiResult<CommonResponse> apiResult = await repository.completeSmartGoal(request);
     apiResult.when(success: (CommonResponse response) {
-      refreshData();
-      emit(const ActivityTabSuccess());
+      refreshData(isRefresh: true);
+      //   emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
-    emit(const ActivityTabInitial());
+    //   emit(const ActivityTabInitial());
   }
 
   Future<void> deleteSmartGoal(String? smartGoalId) async {
@@ -149,11 +159,11 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     emit(const ActivityTabLoading());
     final ApiResult<DeleteSmartGoalReponse> apiResult = await repository.deleteSmartGoal(smartGoalId);
     apiResult.when(success: (DeleteSmartGoalReponse response) {
-      refreshData();
-      emit(const ActivityTabSuccess());
+      refreshData(isRefresh: true);
+      //  emit(const ActivityTabSuccess());
     }, failure: (NetworkExceptions error) {
       emit(ActivityTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
-    emit(const ActivityTabInitial());
+    // emit(const ActivityTabInitial());
   }
 }

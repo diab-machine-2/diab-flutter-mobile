@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/utils.dart';
 
 enum CompletionStatus {
   completed,
@@ -95,7 +96,7 @@ extension WeekStatus on CompletionStatus {
               width: 16,
               height: 16,
             ),
-            color: R.color.grayBorder,
+            color: R.color.gray,
             isSelected: isSelected,
           );
       }
@@ -150,13 +151,44 @@ extension WeekStatus on CompletionStatus {
     required Color color,
     required bool isSelected,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isSelected ? R.color.green : color,
-      ),
-      child: isSelected ? const SizedBox(width: 16, height: 16) : child,
+    return Stack(
+      children: [
+        Positioned(
+          top: 4,
+          left: 4,
+          child: Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color,
+              //  color: color,
+            ),
+            child: child,
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: R.color.transparent,
+            border: Border.all(color: isSelected ? R.color.green : R.color.transparent, width: 2),
+          ),
+          child: SizedBox(width: 26, height: 26),
+        ),
+      ],
     );
+  }
+
+  Color getColorBorderSelected(Color color) {
+    if (color == R.color.green) {
+      return R.color.green;
+    } else if (color == R.color.orange_1) {
+      return R.color.orange_1;
+    } else if (color == R.color.greenGradientBottom) {
+      return R.color.greenGradientBottom;
+    } else if (color == R.color.gray) {
+      return R.color.gray;
+    } else {
+      return R.color.green;
+    }
   }
 }

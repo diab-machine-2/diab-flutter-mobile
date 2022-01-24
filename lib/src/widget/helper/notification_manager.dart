@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -24,7 +25,7 @@ class NotificationManager {
 
   NotificationManager._internal();
 
-  Future requestFirebaseToken() async {
+  Future requestFirebaseToken(BuildContext context) async {
     firebaseConfigure();
     final Map<String, dynamic>? deviceInfor = await getDeviceInformation();
     final String deviceId = deviceInfor != null ? deviceInfor['uuid'] : '';
@@ -40,6 +41,10 @@ class NotificationManager {
     try {
       final token = await FirebaseMessaging.instance.getToken();
       print(token);
+      // Clipboard.setData(new ClipboardData(text: token)).then((_){
+      //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(token ?? 'Copied'), duration: Duration(minutes: 3),));
+      // });
+
       await LoginClient().syncToken(deviceId, token, Platform.isIOS ? 1 : 2);
     } catch (e) {
       print(e);

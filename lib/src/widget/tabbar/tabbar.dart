@@ -53,7 +53,7 @@ class _TabbarControllerState extends State<TabbarController>
       const ProfileController(hideAllBackButton: true),
     ];
     Observable.instance.addObserver(this);
-    NotificationManager.instance.requestFirebaseToken();
+    NotificationManager.instance.requestFirebaseToken(context);
     pageController = PageController();
     _bottomTabbar = BottomTabbar(callback: (index) {
       if (index == -1) {

@@ -31,8 +31,7 @@ class LessonTabPage extends StatefulWidget {
   _LessonTabPageState createState() => _LessonTabPageState();
 }
 
-class _LessonTabPageState extends State<LessonTabPage>
-    with AutomaticKeepAliveClientMixin<LessonTabPage> {
+class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveClientMixin<LessonTabPage> {
   late final LessonTabCubit _cubit;
   final RefreshController _controller = RefreshController();
   final ScrollController _lessonScrollController = ScrollController();
@@ -101,8 +100,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                       InkWell(
                         onTap: () async {
                           final FilterData newFilter = _cubit.filterData.copyWith();
-                          final dynamic result =
-                              await NavigationUtil.navigatePage(
+                          final dynamic result = await NavigationUtil.navigatePage(
                             context,
                             LessonFilterPage(
                               newFilter,
@@ -139,8 +137,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                     decoration: BoxDecoration(
                                       color: R.color.greenGradientTop,
                                       shape: BoxShape.circle,
-                                      border: Border.all(
-                                          width: 2, color: R.color.white),
+                                      border: Border.all(width: 2, color: R.color.white),
                                     ),
                                   ),
                                 ),
@@ -162,8 +159,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                         child: SmartRefresher(
                           controller: _controller,
                           scrollController: _lessonScrollController,
-                          onRefresh: () =>
-                              _cubit.getInitData(isRefresh: true, showCurrentWeek: false),
+                          onRefresh: () => _cubit.getInitData(isRefresh: true, showCurrentWeek: false),
                           child: _cubit.lessonsList!.isEmpty
                               ? _buildEmptyLessonList()
                               : SingleChildScrollView(
@@ -171,23 +167,18 @@ class _LessonTabPageState extends State<LessonTabPage>
                                     children: List.generate(
                                       _cubit.lessonsList?.length ?? 0,
                                       (index) => _buildLessonWidget(
-                                          lessonDetail:
-                                              _cubit.lessonsList?[index],
+                                          lessonDetail: _cubit.lessonsList?[index],
                                           onTap: () async {
-                                            if (_cubit.lessonsList?[index]?.id
-                                                    ?.isNotEmpty ==
-                                                true) {
+                                            if (_cubit.lessonsList?[index]?.id?.isNotEmpty == true) {
                                               await NavigationUtil.navigatePage(
                                                 context,
                                                 LessonDetailPage(
-                                                  lessonType: _cubit
-                                                      .lessonsList?[index]
-                                                      ?.type,
-                                                  lessonId: _cubit
-                                                      .lessonsList![index]!.id!,
+                                                  lessonType: _cubit.lessonsList?[index]?.type,
+                                                  lessonId: _cubit.lessonsList![index]!.id!,
                                                 ),
                                               );
-                                              _cubit.getInitData(showCurrentWeek: false);
+                                              _cubit.getInitData(
+                                                  showCurrentWeek: false, currentWeek: _cubit.filterData.currentWeek);
                                             }
                                           }),
                                     )
@@ -259,8 +250,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                       onSelect: () {
                         _cubit.onSelectWeek(index);
                       }),
-                )..add(SizedBox(
-                    width: MediaQuery.of(context).size.width - 96 * 2)),
+                )..add(SizedBox(width: MediaQuery.of(context).size.width - 96 * 2)),
               ),
             ),
           ),
@@ -272,9 +262,7 @@ class _LessonTabPageState extends State<LessonTabPage>
             child: Icon(
               Icons.chevron_right_rounded,
               size: 24,
-              color: _cubit.currentWeekIndex >=
-                          (_cubit.weekStatesList.length - 1) ||
-                      _cubit.isFiltering
+              color: _cubit.currentWeekIndex >= (_cubit.weekStatesList.length - 1) || _cubit.isFiltering
                   ? R.color.captionColorGray
                   : R.color.greenGradientBottom,
             ),
@@ -290,20 +278,16 @@ class _LessonTabPageState extends State<LessonTabPage>
     bool isDisable = false,
     VoidCallback? onSelect,
   }) {
-    final Color background =
-        isSelected && state.completionStatus == CompletionStatus.not_start_yet
-            ? R.color.greenbg
-            : state.completionStatus.statusBackgroundColor;
-    final BoxBorder? border =
-        isSelected && state.completionStatus != CompletionStatus.not_start_yet
-            ? Border.all(color: state.completionStatus.statusIconColor)
-            : null;
-    final Color textColor =
-        isSelected && state.completionStatus == CompletionStatus.not_start_yet
-            ? R.color.green
-            : state.completionStatus.statusIconColor;
-    final bool showIcon = !(isSelected &&
-        state.completionStatus == CompletionStatus.not_start_yet);
+    final Color background = isSelected && state.completionStatus == CompletionStatus.not_start_yet
+        ? R.color.greenbg
+        : state.completionStatus.statusBackgroundColor;
+    final BoxBorder? border = isSelected && state.completionStatus != CompletionStatus.not_start_yet
+        ? Border.all(color: state.completionStatus.statusIconColor)
+        : null;
+    final Color textColor = isSelected && state.completionStatus == CompletionStatus.not_start_yet
+        ? R.color.green
+        : state.completionStatus.statusIconColor;
+    final bool showIcon = !(isSelected && state.completionStatus == CompletionStatus.not_start_yet);
 
     return GestureDetector(
       onTap: isDisable
@@ -352,9 +336,7 @@ class _LessonTabPageState extends State<LessonTabPage>
           Text(
             title,
             style: TextStyle(
-              color: isActive
-                  ? R.color.greenGradientBottom
-                  : R.color.captionColorGray,
+              color: isActive ? R.color.greenGradientBottom : R.color.captionColorGray,
               fontSize: 16,
               fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
             ),
@@ -392,9 +374,7 @@ class _LessonTabPageState extends State<LessonTabPage>
         Padding(
           padding: const EdgeInsets.fromLTRB(50, 24, 50, 6),
           child: Text(
-            _cubit.isFiltering
-                ? R.string.no_matched_lesson.tr()
-                : R.string.lesson_empty_no_filter.tr(),
+            _cubit.isFiltering ? R.string.no_matched_lesson.tr() : R.string.lesson_empty_no_filter.tr(),
             style: TextStyle(
               color: R.color.textDark,
               fontSize: 16,
@@ -452,10 +432,8 @@ class _LessonTabPageState extends State<LessonTabPage>
                       clipBehavior: Clip.hardEdge,
                       height: 87,
                       width: 87,
-                      decoration:
-                          BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                      child: NetWorkImageWidget(
-                          imageUrl: lessonDetail?.image?.url)),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                      child: NetWorkImageWidget(imageUrl: lessonDetail?.image?.url)),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -463,26 +441,26 @@ class _LessonTabPageState extends State<LessonTabPage>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if(lessonDetail?.tagName.isNotEmpty == true)
-                          Row(
-                            children: [
-                              Text(
-                                lessonDetail?.tagName ?? '',
-                                style: TextStyle(
-                                  color: R.color.greenGradientBottom,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
+                          if (lessonDetail?.tagName.isNotEmpty == true)
+                            Row(
+                              children: [
+                                Text(
+                                  lessonDetail?.tagName ?? '',
+                                  style: TextStyle(
+                                    color: R.color.greenGradientBottom,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              if (lessonDetail?.isNew == true)
-                                Image.asset(
-                                  R.drawable.ic_new_lesson,
-                                  width: 24,
-                                  height: 24,
-                                )
-                            ],
-                          ),
+                                const SizedBox(width: 4),
+                                if (lessonDetail?.isNew == true)
+                                  Image.asset(
+                                    R.drawable.ic_new_lesson,
+                                    width: 24,
+                                    height: 24,
+                                  )
+                              ],
+                            ),
                           Text(
                             lessonDetail?.name ?? '',
                             style: TextStyle(
@@ -621,33 +599,26 @@ class _LessonTabPageState extends State<LessonTabPage>
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50.0, vertical: 30),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
                         child: Image.asset(R.drawable.img_upgrade_package),
                       ),
                       Text(
                         'Bài học chưa mở khoá!',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700),
+                        style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         'Vui lòng nâng cấp tài khoản để tiếp tục học!',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
                       ),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(
-                            width: 149,
+                          Expanded(
+                            flex: 1,
                             child: ButtonWidget(
                               title: 'Để sau',
                               textSize: 16,
@@ -658,8 +629,9 @@ class _LessonTabPageState extends State<LessonTabPage>
                               },
                             ),
                           ),
-                          SizedBox(
-                            width: 149,
+                          SizedBox(width: 8),
+                          Expanded(
+                            flex: 1,
                             child: ButtonWidget(
                               title: 'Tìm hiểu thêm',
                               textSize: 16,

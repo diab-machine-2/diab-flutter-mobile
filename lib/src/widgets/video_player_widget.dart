@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:better_player/better_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:path_provider/path_provider.dart';
@@ -42,16 +43,20 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     _controller = BetterPlayerController(
       BetterPlayerConfiguration(
         autoPlay: true,
-     //   showPlaceholderUntilPlay: true,
-         handleLifecycle: true,
-      //  placeholder: path != null ? Image.file(File(path!),) : Container(),
+        handleLifecycle: true,
+        //   showPlaceholderUntilPlay: true,
+        //  placeholder: path != null ? Image.file(File(path!),) : Container(),
+        deviceOrientationsAfterFullScreen: [
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ],
       ),
     );
-      BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
-          BetterPlayerDataSourceType.network,
-          widget.videoUrl,
-        );
-      _controller!.setupDataSource(betterPlayerDataSource);
+    BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
+      BetterPlayerDataSourceType.network,
+      widget.videoUrl,
+    );
+    _controller!.setupDataSource(betterPlayerDataSource);
   }
 
   @override
@@ -71,13 +76,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       body: Stack(
         children: [
           Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: widget.videoUrl.isEmpty ? const SizedBox.shrink() : BetterPlayer(controller: 
-                  _controller!),
-                ),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            child: widget.videoUrl.isEmpty ? const SizedBox.shrink() : BetterPlayer(controller: _controller!),
+          ),
           // FutureBuilder(
           //     future: initController(),
           //     builder: (context, snapshot) {
