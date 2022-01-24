@@ -49,8 +49,8 @@ class _TabbarControllerState extends State<TabbarController>
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
       const MyPlanPage(),
-      Container(),
-      const ProfileController(hideAllBackButton: true),
+    //  Container(),
+    //  const ProfileController(hideAllBackButton: true),
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
