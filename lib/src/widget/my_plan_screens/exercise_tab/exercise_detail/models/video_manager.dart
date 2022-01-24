@@ -27,14 +27,15 @@ class VideoManager {
     }
   }
 
-  VideoManager.fromExerciseData(ExerciseMovementResponseData exerciseData,
-      {this.onDone}) {
+  VideoManager.fromExerciseData(ExerciseMovementResponseData exerciseData, {this.onDone}) {
     sourceList.clear();
 
-    for (final ExerciseMovementResponseDataSections? data
-        in exerciseData.sections ?? []) {
-      sourceList.add(VideoSourceData(
-          url: data?.videoUrl ?? '', loopTimes: data?.replayTime ?? 1));
+    for (final ExerciseMovementResponseDataSections? data in exerciseData.sections ?? []) {
+      sourceList.add(VideoSourceData(url: data?.videoUrl ?? '', loopTimes: data?.replayTime ?? 1));
+    }
+
+    if (sourceList.isEmpty) {
+      sourceList.add(VideoSourceData(url: exerciseData.videoUrl ?? '', loopTimes: 1));
     }
 
     if (sourceList.isNotEmpty) {
@@ -43,11 +44,12 @@ class VideoManager {
           aspectRatio: 16 / 9,
           autoPlay: true,
         ),
-        betterPlayerDataSource: BetterPlayerDataSource(
-          BetterPlayerDataSourceType.network,
-          sourceList[currentSourceIndex].url,
-        ),
       );
+      var betterPlayerDataSource = BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network,
+        sourceList[currentSourceIndex].url,
+      );
+      this.controller!.setupDataSource(betterPlayerDataSource);
 
       this.controller?.videoPlayerController?.addListener(() {
         if (!isLocked &&

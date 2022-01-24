@@ -229,7 +229,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   onDoneQuiz();
                 }, skipCallback: () {
                   _buildDialogCompleted(
-                      rate: 100,
+                      rate: 90,
                       seeResultCallback: () {
                         _cubit.showAnswer();
                         _controller.scrollToIndex(0, duration: duration, preferPosition: AutoScrollPosition.begin);
