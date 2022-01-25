@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:medical/src/model/response/lesson_module_response.dart';
+import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -217,6 +219,12 @@ abstract class AppApi {
     @Query('week') int? week,
     @Query('day') int? day,
   });
+
+  @GET("App/Question")
+  Future<QuestionAnswerResponse> getListQuestion(@Query("lessonModuleId") List<String>? ids);
+
+  @GET("App/LessonModule")
+  Future<LessonModuleResponse> getListLessonModule();
 
   @GET("App/Target/GetTargetWeekStatistics")
   Future<SmartGoalStatisticResponse> getSmartGoalStatistics({

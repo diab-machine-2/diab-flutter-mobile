@@ -960,4 +960,5 @@ class Strings {
 	String get confirm_delete_comment => 'confirm_delete_comment';
 	String get confirm_delete_comment_subtitle => 'confirm_delete_comment_subtitle';
 	String get delete_comment => 'delete_comment';
+	String get question_answer => 'question_answer';
 }

@@ -1,11 +1,16 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'all_question_answer.dart';
 
 class AllQuestionAnswerPage extends StatefulWidget {
@@ -18,11 +23,14 @@ class AllQuestionAnswerPage extends StatefulWidget {
 class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with AutomaticKeepAliveClientMixin {
   late AllQuestionAnswerCubit _cubit;
   final ScrollController _scrollController = ScrollController();
+  final RefreshController _controller = RefreshController();
 
   @override
   void initState() {
     super.initState();
-    _cubit = AllQuestionAnswerCubit();
+    final AppRepository appRepository = AppRepository();
+    _cubit = AllQuestionAnswerCubit(appRepository);
+    _cubit.initData();
   }
 
   @override
@@ -31,7 +39,16 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocListener<AllQuestionAnswerCubit, AllQuestionAnswerState>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            if(state is AllQuestionAnswerLoading){
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+              if(state is AllQuestionAnswerSuccess || state is AllQuestionAnswerFailure){
+                _controller.refreshCompleted();
+              }
+            }
+          },
           child: BlocBuilder<AllQuestionAnswerCubit, AllQuestionAnswerState>(
             builder: (context, state) {
               return _buildPage(context, state);
@@ -101,15 +118,15 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                   scrollDirection: Axis.horizontal,
                   controller: _scrollController,
                   child: Row(
-                    children: List.generate(_cubit.topic.length, (index) {
+                    children: List.generate(_cubit.lessonModules.length, (index) {
                       return _buildTopicItem(
-                          item: _cubit.topic[index],
-                          isSelected: index == _cubit.currentTopic,
+                          item: _cubit.lessonModules[index].name ?? '',
+                          isSelected: _cubit.listSelectedLessonModule[index],
                           onSelect: () {
-                            _cubit.onSelectWeek(index);
+                            _cubit.onSelectLessonModule(index);
                           });
                     })
-                      ..add(SizedBox(width: _cubit.topic.isEmpty ? MediaQuery.of(context).size.width - 96 * 2 : 0)),
+                      ..add(SizedBox(width: _cubit.lessonModules.isEmpty ? MediaQuery.of(context).size.width - 96 * 2 : 0)),
                   ),
                 ),
               ),
@@ -121,7 +138,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                 child: Icon(
                   Icons.chevron_right_rounded,
                   size: 28,
-                  color: (_cubit.currentTopic) >= (_cubit.topic.length - 1)
+                  color: (_cubit.currentTopic) >= (_cubit.lessonModules.length - 1)
                       ? R.color.captionColorGray
                       : R.color.greenGradientBottom,
                 ),
@@ -134,13 +151,13 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   }
 
   void animateToIndex(int index, {bool refresh = true}) {
-    if (_cubit.topic.isEmpty) return;
+    if (_cubit.lessonModules.isEmpty) return;
     if (index < 0) {
       index = 0;
       refresh = false;
     }
-    if (index >= _cubit.topic.length) {
-      index = _cubit.topic.length - 1;
+    if (index >= _cubit.lessonModules.length) {
+      index = _cubit.lessonModules.length - 1;
       refresh = false;
     }
     final double newPosition = index * 96 + (6 * index.toDouble());
@@ -150,7 +167,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
       curve: Curves.ease,
     );
     if (refresh) {
-      _cubit.onSelectWeek(index);
+      _cubit.onAnimate(index);
     }
   }
 
@@ -239,17 +256,21 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
 
   _buildQuestionList() {
     return Expanded(
-      child: ListView.builder(
-        itemCount: 10,
+      child: SmartRefresher(
+                  controller: _controller,
+                  onRefresh: () => _cubit.refreshData(isRefresh: true),
+                  child: ListView.builder(
+        itemCount: _cubit.questions.length,
         shrinkWrap: true,
         itemBuilder: (context, position) {
-          return _buildQuestionItem(position);
+          return _buildQuestionItem(_cubit.questions[position]);
         },
+      ),
       ),
     );
   }
 
-  _buildQuestionItem(int position) {
+  _buildQuestionItem(QuestionModel questionModel) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, NavigatorName.question_detail);
@@ -288,19 +309,20 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
             padding: EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeaderItem(),
+                _buildHeaderItem(questionModel),
                 SizedBox(height: 12),
-                _buildTitleItem(),
+                _buildTitleItem(questionModel),
                 SizedBox(height: 16),
                 Divider(height: 0.5, color: R.color.grayBorder),
-                SizedBox(height: 16),
+                SizedBox(height: 8),
                 ListView.builder(
-                  itemCount: 1,
+                  itemCount: questionModel.answers?.length ?? 0,
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, position) {
-                    return _buildDoctorItemInQuestionItem(position);
+                    return _buildDoctorItemInQuestionItem(questionModel.answers != null ? questionModel.answers![position] : null);
                   },
                 ),
               ],
@@ -311,20 +333,20 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
     );
   }
 
-  _buildHeaderItem() {
+  _buildHeaderItem(QuestionModel questionModel) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Container(
           alignment: Alignment.center,
-          padding: EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
           decoration: BoxDecoration(
             color: true ? R.color.greenGradientBottom : R.color.grayBorder,
             border: true ? Border.all(color: R.color.greenGradientBottom) : null,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            'Vận động',
+            questionModel.lessonModule != null ? questionModel.lessonModule!.name ?? '' : _cubit.getLessonModule(questionModel.lessonModuleId ?? '').name ?? '',
             style: TextStyle(
               color: true ? R.color.white : R.color.black,
               fontSize: 12,
@@ -333,9 +355,9 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
           ),
         ),
         Text(
-          R.string.replied.tr(),
+          _cubit.getStatus(questionModel.status ?? 0),
           style: TextStyle(
-            color: R.color.greenGradientBottom,
+            color: _cubit.getColorStatus(questionModel.status ?? 0),
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -344,9 +366,9 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
     );
   }
 
-  _buildTitleItem() {
+  _buildTitleItem(QuestionModel questionModel) {
     return Text(
-      'Di truyền có phải là nguyên nhân gây bệnh đái tháo đường típ 2 không?',
+      questionModel.body ?? '',
       style: TextStyle(
         color: R.color.black,
         fontSize: 16,
@@ -355,45 +377,49 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
     );
   }
 
-  _buildDoctorItemInQuestionItem(int position) {
-    return Row(
-      children: [
-        Container(
-          clipBehavior: Clip.hardEdge,
-          height: 40,
-          width: 40,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
-          //     child: NetWorkImageWidget(imageUrl: exerciseItem?.image?.url ?? ''),
-        ),
-        SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'BS. Le Thi Thuy',
-                style: TextStyle(
-                  color: R.color.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                '12/12/2021 - 10:30',
-                style: TextStyle(
-                  color: R.color.gray,
-                  fontSize: 12,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
+  _buildDoctorItemInQuestionItem(Answer? answer) {
+    if(answer == null) return Container();
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+      child: Row(
+        children: [
+          Container(
+            clipBehavior: Clip.hardEdge,
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
+            child: answer.account?.avatar?.url == null ? Container() : NetWorkImageWidget(imageUrl: answer.account!.avatar!.url),
           ),
-        ),
-        Image.asset(R.drawable.ic_right, width: 14, height: 14, color: R.color.greenGradientBottom),
-      ],
+          SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  answer.account?.fullName ?? '',
+                  style: TextStyle(
+                    color: R.color.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  answer.account?.createDatetime == null ? '' : DateUtil.parseDateToString(DateTime.fromMillisecondsSinceEpoch(answer.account!.createDatetime! * 1000), 'dd/MM/yyyy - hh:mm'),
+                  style: TextStyle(
+                    color: R.color.gray,
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Image.asset(R.drawable.ic_right, width: 14, height: 14, color: R.color.greenGradientBottom),
+        ],
+      ),
     );
   }
 

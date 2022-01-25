@@ -562,6 +562,37 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<QuestionAnswerResponse> getListQuestion(ids) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'lessonModuleId': ids};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<QuestionAnswerResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/Question',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = QuestionAnswerResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<LessonModuleResponse> getListLessonModule() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<LessonModuleResponse>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/LessonModule',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = LessonModuleResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<SmartGoalStatisticResponse> getSmartGoalStatistics({week}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'week': week};

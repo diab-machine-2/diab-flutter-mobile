@@ -24,6 +24,7 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
+import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/list_activity_response.dart';
 import 'package:medical/src/model/response/list_package_response.dart';
@@ -32,6 +33,7 @@ import 'package:medical/src/model/response/list_transaction_response.dart';
 import 'package:medical/src/model/response/menu_response.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/my_progress_response.dart';
+import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
 import 'package:medical/src/model/response/smart_goal_detail_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
@@ -514,6 +516,26 @@ class AppRepository {
     try {
       final SmartGoalListReponse response =
           await appClient.getListSmartGoal(week: week, day: day);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<QuestionAnswerResponse>> getListQuestion({List<String>? lessonModuleIds}) async {
+    try {
+      final QuestionAnswerResponse response =
+          await appClient.getListQuestion(lessonModuleIds);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<LessonModuleResponse>> getListLessonModule() async {
+    try {
+      final LessonModuleResponse response =
+          await appClient.getListLessonModule();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

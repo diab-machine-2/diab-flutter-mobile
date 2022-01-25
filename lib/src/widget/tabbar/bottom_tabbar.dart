@@ -50,7 +50,7 @@ class _BottomTabbar extends State<BottomTabbar> {
                   tabWidget(R.string.schedule.tr(), R.drawable.ic_plan,
                       Const.PLAN_SCREEN),
                   Expanded(flex: 1, child: Container()),
-                  tabWidget(R.string.course.tr(), R.drawable.ic_course,
+                  tabWidget(R.string.question_answer, R.drawable.ic_course,
                       Const.COURSE_SCREEN),
                   tabWidget(R.string.individual.tr(), R.drawable.ic_account,
                       Const.ACCOUNT_SCREEN),
