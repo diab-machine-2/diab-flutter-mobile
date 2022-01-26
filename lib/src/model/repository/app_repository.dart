@@ -485,6 +485,15 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<QuestionResponse>> getQuestionById(String id) async {
+    try {
+      final QuestionResponse response = await appClient.getQuestionById(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<LessonModuleResponse>> getListLessonModule() async {
     try {
       final LessonModuleResponse response = await appClient.getListLessonModule();

@@ -1,9 +1,6 @@
-
-
-
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 
-class QuestionAnswerResponse{
+class QuestionAnswerResponse {
   QuestionAnswerReponseMeta? meta;
   List<QuestionModel>? data;
 
@@ -13,9 +10,7 @@ class QuestionAnswerResponse{
   });
 
   QuestionAnswerResponse.fromJson(Map<String, dynamic> json) {
-    meta = (json['meta'] != null)
-        ? QuestionAnswerReponseMeta.fromJson(json['meta'])
-        : null;
+    meta = (json['meta'] != null) ? QuestionAnswerReponseMeta.fromJson(json['meta']) : null;
     if (json['data'] != null) {
       data = [];
       json['data'].forEach((v) {
@@ -48,5 +43,30 @@ class QuestionAnswerReponseMeta {
     final data = <String, dynamic>{};
     data['success'] = success;
     return data;
+  }
+}
+
+class QuestionResponse {
+  QuestionAnswerReponseMeta? meta;
+  QuestionModel? data;
+
+  QuestionResponse({
+    this.meta,
+    this.data,
+  });
+
+  QuestionResponse.fromJson(Map<String, dynamic> json) {
+    meta = (json['meta'] != null) ? QuestionAnswerReponseMeta.fromJson(json['meta']) : null;
+    data = json['data'] != null ? QuestionModel.fromJson(json['data']) : null;
+  }
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    if (meta != null) {
+      map['meta'] = meta!.toJson();
+    }
+    if (data != null) {
+      map['data'] = data!.toJson();
+    }
+    return map;
   }
 }
