@@ -959,4 +959,9 @@ class Strings {
 	String get day_in_week_sunday => 'day_in_week_sunday';
 	String get data_input_not_valid => 'data_input_not_valid';
 	String get statistical => 'statistical';
+	String get food_menu_intro_title1 => 'food_menu_intro_title1';
+	String get food_menu_intro_title21 => 'food_menu_intro_title21';
+	String get food_menu_intro_title22 => 'food_menu_intro_title22';
+	String get food_menu_intro_title23 => 'food_menu_intro_title23';
+	String get food_menu_intro_title3 => 'food_menu_intro_title3';
 }
