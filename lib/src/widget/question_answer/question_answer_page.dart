@@ -13,6 +13,7 @@ import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 
 import 'all_question_answer/all_question_answer.dart';
+import 'my_question_answer/my_question_answer.dart';
 
 class QuestionAnswerPage extends StatefulWidget {
   const QuestionAnswerPage();
@@ -22,7 +23,7 @@ class QuestionAnswerPage extends StatefulWidget {
 }
 
 class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
-  final PageController _pageController = PageController(initialPage: 1);
+  final PageController _pageController = PageController(initialPage: 0);
   List<QuestionAnswerType> questionAnswerList = [QuestionAnswerType.All, QuestionAnswerType.Mine];
 
   QuestionAnswerType currentQuestionAnswerType = QuestionAnswerType.All;
@@ -106,7 +107,7 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
         physics: const NeverScrollableScrollPhysics(),
         children: const [
           AllQuestionAnswerPage(),
-          AllQuestionAnswerPage(),
+          MyQuestionAnswerPage(),
         ],
       ),
     );
@@ -123,6 +124,7 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
 
   void changeQuestionAnswerType(int newIndex) {
     currentQuestionAnswerType = questionAnswerList[newIndex];
+    _pageController.jumpToPage(newIndex);
     setState(() {});
   }
 }
@@ -138,7 +140,7 @@ extension QuestionAnswerDetail on QuestionAnswerType {
       case QuestionAnswerType.All:
         return R.string.all.tr();
       case QuestionAnswerType.Mine:
-        return 'Của tôi';
+        return R.string.mine.tr();
     }
   }
 }

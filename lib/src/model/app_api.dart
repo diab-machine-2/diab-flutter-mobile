@@ -221,8 +221,8 @@ abstract class AppApi {
   });
 
   @GET("App/Question")
-  Future<QuestionAnswerResponse> getListQuestion(
-      @Query('page') int page, @Query('size') int size, @Query("lessonModuleIds") List<String>? ids);
+  Future<QuestionAnswerResponse> getListQuestion(@Query('page') int page, @Query('size') int size,
+      @Query("lessonModuleIds") List<String>? lessonModuleIds, @Query("accountIds") List<String>? accountIds);
 
   @GET("App/LessonModule")
   Future<LessonModuleResponse> getListLessonModule();

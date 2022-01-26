@@ -476,9 +476,9 @@ class AppRepository {
   }
 
   Future<ApiResult<QuestionAnswerResponse>> getListQuestion(
-      {int page = 1, int size = 20, List<String>? lessonModuleIds}) async {
+      {int page = 1, int size = 20, List<String>? lessonModuleIds, List<String>? accountIds}) async {
     try {
-      final QuestionAnswerResponse response = await appClient.getListQuestion(page, size, lessonModuleIds);
+      final QuestionAnswerResponse response = await appClient.getListQuestion(page, size, lessonModuleIds, accountIds);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

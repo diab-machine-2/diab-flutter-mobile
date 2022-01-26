@@ -965,4 +965,5 @@ class Strings {
 	String get closed => 'closed';
 	String get waiting => 'waiting';
 	String get question_empty => 'question_empty';
+	String get mine => 'mine';
 }

@@ -562,12 +562,14 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<QuestionAnswerResponse> getListQuestion(page, size, ids) async {
+  Future<QuestionAnswerResponse> getListQuestion(
+      page, size, lessonModuleIds, accountIds) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'page': page,
       r'size': size,
-      r'lessonModuleIds': ids
+      r'lessonModuleIds': lessonModuleIds,
+      r'accountIds': accountIds
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
