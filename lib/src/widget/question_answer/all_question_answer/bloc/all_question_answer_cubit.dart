@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
@@ -13,6 +14,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import '../all_question_answer.dart';
 import 'package:medical/src/repo/question_answer/question_answer_client.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 
 class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
   int currentTopic = 0;
@@ -115,21 +117,39 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     await initData(isRefresh: true);
   }
 
-  Future<void> sendQuestion(String? body) async {
-    var userInfo = AppSettings.userInfo;
-    if (userInfo == null) return;
+  Future<void> deleteQuestion(String id) async {
+    emit(AllQuestionAnswerLoading());
+    final ApiResult<CommonResponse> apiResult = await repository.deleteQuestion(id);
+    apiResult.when(success: (CommonResponse response) {
+      questions.removeWhere((element) => element.id == id);
+      emit(DeleteQuestionSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(DeleteQuestionFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+  }
 
-    emit(MakeQuestionLoading());
-    final MakeQuestionRequest request =
-        MakeQuestionRequest(body: body, lessonModuleId: currentLessonModule!.id, accountId: userInfo.accountId);
-    var response = await QuestionAnswerClient().makeQuestion(request);
-    if (response is bool && response) {
-      emit(SendQuestionSuccess());
-    } else if (response is Error) {
-      emit(SendQuestionFailure(response.message ?? ''));
-    } else if (response is String) {
-      emit(SendQuestionFailure(response));
+  Future<void> deleteQuestionLocal(String id) async {
+    emit(AllQuestionAnswerLoading());
+    questions.removeWhere((element) => element.id == id);
+    emit(DeleteQuestionSuccess());
+  }
+
+  Future<void> deleteCommentLocal(String questionId, String commentId) async {
+    emit(AllQuestionAnswerLoading());
+    var question = questions.firstWhere((element) => element.id == questionId, orElse: null);
+    if (question != null) {
+      if (question.answers != null) {
+        question.answers!.removeWhere((element) => element.id == commentId);
+      }
     }
+    emit(DeleteCommentSuccess());
+  }
+
+  Future<void> updateQuestions(QuestionModel questionModel) async {
+    emit(AllQuestionAnswerLoading());
+    var index = questions.indexWhere((element) => element.id == questionModel.id);
+    questions[index] = questionModel;
+    emit(const AllQuestionAnswerSuccess());
   }
 
   String getStatus(int status) {

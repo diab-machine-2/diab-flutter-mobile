@@ -235,6 +235,16 @@ abstract class AppApi {
     @Body() MakeQuestionRequest request,
   );
 
+  @DELETE("App/Question/Input/{id}")
+  Future<CommonResponse> deleteQuestion(
+    @Path('id') String id,
+  );
+
+  @DELETE("App/Question/DeleteAnswer")
+  Future<CommonResponse> deleteComment(
+    @Query('id') String id,
+  );
+
   @GET("App/Target/GetTargetWeekStatistics")
   Future<SmartGoalStatisticResponse> getSmartGoalStatistics({
     @Query('week') int? week,

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -24,6 +25,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   late AllQuestionAnswerCubit _cubit;
   final ScrollController _scrollController = ScrollController();
   final RefreshController _controller = RefreshController();
+  final userInfo = AppSettings.userInfo;
 
   @override
   void initState() {
@@ -42,8 +44,8 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
             if (state is AllQuestionAnswerLoading) {
               BotToast.showLoading();
             } else {
+              BotToast.closeAllLoading();
               if (state is AllQuestionAnswerSuccess || state is AllQuestionAnswerFailure) {
-                BotToast.closeAllLoading();
                 _controller.refreshCompleted();
               }
             }
@@ -291,8 +293,22 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
 
   _buildQuestionItem(QuestionModel questionModel) {
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, NavigatorName.question_detail, arguments: {'questionModel': questionModel});
+      onTap: () async {
+        var result = await Navigator.pushNamed(context, NavigatorName.question_detail,
+            arguments: {'questionModel': questionModel});
+        if (result != null) {
+          if (result is Map) {
+            var type = result['type'];
+            var id = result['id'];
+            if (type == 'question') {
+              _cubit.deleteQuestionLocal(id);
+            } else if (type == 'comment') {
+              _cubit.deleteCommentLocal(questionModel.id!, id);
+            }
+          } else if (result is QuestionModel) {
+            _cubit.updateQuestions(result);
+          }
+        }
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -301,57 +317,63 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         color: R.color.white,
         margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
         elevation: 2,
-        child: Slidable(
-          actionPane: SlidableDrawerActionPane(),
-          secondaryActions: [
-            IconSlideAction(
-              color: R.color.color0xffFF5552,
-              iconWidget: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                    SizedBox(height: 8),
-                    Text(R.string.delete_question.tr(),
-                        style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
-                        textAlign: TextAlign.center),
-                  ],
-                ),
-              ),
-              onTap: () {
-                _showDialogDelete(context, '');
-              },
-            ),
-          ],
-          child: Container(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeaderItem(questionModel),
-                SizedBox(height: 12),
-                _buildTitleItem(questionModel),
-                SizedBox(height: (questionModel.answers != null && questionModel.answers!.isNotEmpty) ? 16 : 0),
-                Visibility(
-                  visible: questionModel.answers != null && questionModel.answers!.isNotEmpty,
-                  child: Divider(height: 0.5, color: R.color.grayBorder),
-                ),
-                SizedBox(height: 8),
-                ListView.builder(
-                  itemCount: questionModel.answers?.length ?? 0,
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, position) {
-                    return _buildDoctorItemInQuestionItem(
-                        questionModel.answers != null ? questionModel.answers![position] : null);
-                  },
-                ),
-              ],
-            ),
+        child: questionModel.accountId == userInfo?.accountId
+            ? Slidable(
+                actionPane: SlidableDrawerActionPane(),
+                secondaryActions: [
+                  IconSlideAction(
+                    color: R.color.color0xffFF5552,
+                    iconWidget: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+                          SizedBox(height: 8),
+                          Text(R.string.delete_question.tr(),
+                              style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.center),
+                        ],
+                      ),
+                    ),
+                    onTap: () {
+                      _showDialogDelete(context, questionModel.id!);
+                    },
+                  ),
+                ],
+                child: _buildQuestionItemInCard(questionModel),
+              )
+            : _buildQuestionItemInCard(questionModel),
+      ),
+    );
+  }
+
+  _buildQuestionItemInCard(QuestionModel questionModel) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeaderItem(questionModel),
+          SizedBox(height: 12),
+          _buildTitleItem(questionModel),
+          SizedBox(height: (questionModel.answers != null && questionModel.answers!.isNotEmpty) ? 16 : 0),
+          Visibility(
+            visible: questionModel.answers != null && questionModel.answers!.isNotEmpty,
+            child: Divider(height: 0.5, color: R.color.grayBorder),
           ),
-        ),
+          SizedBox(height: 8),
+          ListView.builder(
+            itemCount: questionModel.answers?.length ?? 0,
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, position) {
+              return _buildDoctorItemInQuestionItem(
+                  questionModel.answers != null ? questionModel.answers![position] : null);
+            },
+          ),
+        ],
       ),
     );
   }
@@ -454,7 +476,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
     );
   }
 
-  _showDialogDelete(BuildContext context, String model) {
+  _showDialogDelete(BuildContext context, String id) {
     showDialog(
       context: context,
       builder: (context) {
@@ -501,8 +523,8 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                         SizedBox(width: 14),
                         Expanded(
                           child: GestureDetector(
-                            onTap: () {
-                              //     delete(model);
+                            onTap: () async {
+                              await _cubit.deleteQuestion(id);
                               Navigator.pop(context);
                             },
                             child: Container(

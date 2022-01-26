@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
@@ -108,6 +109,41 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
     }, failure: (NetworkExceptions error) {
       emit(MyQuestionAnswerFailure(NetworkExceptions.getErrorMessage(error)));
     });
+  }
+
+  Future<void> deleteQuestion(String id) async {
+    emit(MyQuestionAnswerLoading());
+    final ApiResult<CommonResponse> apiResult = await repository.deleteQuestion(id);
+    apiResult.when(success: (CommonResponse response) {
+      questions.removeWhere((element) => element.id == id);
+      emit(DeleteQuestionSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(DeleteQuestionFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+  }
+
+  Future<void> deleteQuestionLocal(String id) async {
+    emit(MyQuestionAnswerLoading());
+    questions.removeWhere((element) => element.id == id);
+    emit(DeleteQuestionSuccess());
+  }
+
+  Future<void> deleteCommentLocal(String questionId, String commentId) async {
+    emit(MyQuestionAnswerLoading());
+    var question = questions.firstWhere((element) => element.id == questionId, orElse: null);
+    if (question != null) {
+      if (question.answers != null) {
+        question.answers!.removeWhere((element) => element.id == commentId);
+      }
+    }
+    emit(DeleteCommentSuccess());
+  }
+
+  Future<void> updateQuestions(QuestionModel questionModel) async {
+    emit(MyQuestionAnswerLoading());
+    var index = questions.indexWhere((element) => element.id == questionModel.id);
+    questions[index] = questionModel;
+    emit(const MyQuestionAnswerSuccess());
   }
 
   refreshData() async {

@@ -2,15 +2,80 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/make_comment_request.dart';
+import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
+import 'package:medical/src/model/response/question_answer_response.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/repo/question_answer/question_answer_client.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import '../question_detail.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 
 class QuestionDetailCubit extends Cubit<QuestionDetailState> {
-  final QuestionModel questionModel;
+  QuestionModel questionModel;
+  final AppRepository repository;
 
-  QuestionDetailCubit(this.questionModel) : super(QuestionDetailInitial()) {
+  QuestionDetailCubit(this.repository, this.questionModel) : super(QuestionDetailInitial()) {
     // TODO
+  }
+
+  getQuestionById({bool isShowLoading = false}) async {
+    if (isShowLoading) {
+      emit(QuestionDetailLoading());
+    }
+    final ApiResult<QuestionResponse> apiResult = await repository.getQuestionById(questionModel.id!);
+    apiResult.when(success: (QuestionResponse response) {
+      if (response.data != null) {
+        questionModel = response.data!;
+      }
+      emit(const QuestionDetailSuccess());
+    }, failure: (NetworkExceptions error) {
+      emit(QuestionDetailFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+  }
+
+  Future<void> sendComment(String? body) async {
+    var userInfo = AppSettings.userInfo;
+    if (userInfo == null) return;
+
+    emit(QuestionDetailLoading());
+    final MakeCommentRequest request =
+        MakeCommentRequest(body: body, questionId: questionModel.id, accountId: userInfo.accountId);
+    var response = await QuestionAnswerClient().makeComment(request);
+    if (response is bool && response) {
+      await getQuestionById();
+    } else if (response is Error) {
+      emit(MakeCommentFailure(response.message ?? ''));
+    } else if (response is String) {
+      emit(MakeCommentFailure(response));
+    }
+  }
+
+  Future<void> deleteQuestion(String id) async {
+    emit(QuestionDetailLoading());
+    final ApiResult<CommonResponse> apiResult = await repository.deleteQuestion(id);
+    apiResult.when(success: (CommonResponse response) {
+      emit(DeleteQuestionSuccess(message: id));
+    }, failure: (NetworkExceptions error) {
+      emit(DeleteQuestionFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+  }
+
+  Future<void> deleteComment(String id) async {
+    emit(QuestionDetailLoading());
+    final ApiResult<CommonResponse> apiResult = await repository.deleteComment(id);
+    apiResult.when(success: (CommonResponse response) {
+      if (questionModel.answers != null) {
+        questionModel.answers!.removeWhere((element) => element.id == id);
+      }
+      emit(DeleteCommentSuccess(message: id));
+    }, failure: (NetworkExceptions error) {
+      emit(DeleteCommentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
   }
 
   String getStatus(int status) {

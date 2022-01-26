@@ -39,3 +39,39 @@ class AllQuestionAnswerFailure extends AllQuestionAnswerState {
   @override
   String toString() => 'AllQuestionAnswerFailure { error: $error }';
 }
+
+class DeleteQuestionSuccess extends AllQuestionAnswerState {
+  final String? message;
+
+  const DeleteQuestionSuccess({this.message});
+
+  @override
+  String toString() => 'DeleteQuestionSuccess { message: $message }';
+}
+
+class DeleteQuestionFailure extends AllQuestionAnswerState {
+  final String error;
+
+  const DeleteQuestionFailure(this.error);
+
+  @override
+  String toString() => 'DeleteQuestionFailure { error: $error }';
+}
+
+class DeleteCommentSuccess extends AllQuestionAnswerState {
+  final String? message;
+
+  const DeleteCommentSuccess({this.message});
+
+  @override
+  String toString() => 'DeleteCommentSuccess { message: $message }';
+}
+
+class DeleteCommentFailure extends AllQuestionAnswerState {
+  final String error;
+
+  const DeleteCommentFailure(this.error);
+
+  @override
+  String toString() => 'DeleteCommentFailure { error: $error }';
+}

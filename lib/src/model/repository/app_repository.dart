@@ -463,6 +463,24 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<CommonResponse>> deleteQuestion(String id) async {
+    try {
+      final CommonResponse response = await appClient.deleteQuestion(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> deleteComment(String id) async {
+    try {
+      final CommonResponse response = await appClient.deleteComment(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<SmartGoalListReponse>> getListSmartGoal({
     int? week,
     int? day,
