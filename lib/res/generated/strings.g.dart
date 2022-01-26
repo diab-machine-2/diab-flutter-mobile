@@ -191,6 +191,7 @@ class Strings {
 	String get blood_sugar_group => 'blood_sugar_group';
 	String get result => 'result';
 	String get pick_a_model => 'pick_a_model';
+	String get recommand_blood_sugar_test1 => 'recommand_blood_sugar_test1';
 	String get recommand_blood_sugar_test => 'recommand_blood_sugar_test';
 	String get recommand_blood_sugar => 'recommand_blood_sugar';
 	String get no_need_to_test => 'no_need_to_test';

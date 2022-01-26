@@ -73,6 +73,7 @@ class _BloodSugarScheduleTemplatePageState extends State<BloodSugarScheduleTempl
               : BloodSugarResultLayoutWidget(
                   title: R.string.result.tr(),
                   timeToTestPerDay: _cubit.templateDetail?.timePerDay,
+                  note: _cubit.templateDetail?.note,
                   code: _cubit.templateDetail?.code,
                   child: Container(
                     width: double.infinity,
