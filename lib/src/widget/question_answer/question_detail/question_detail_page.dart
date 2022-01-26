@@ -72,8 +72,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
   _buildAppBar(BuildContext context) {
     return CustomAppBar(
       backgroundColor: R.color.transparent,
-      title: Text(R.string.ask_question.tr(),
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
+      title: Text('', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
       leadingIcon: IconButton(
           splashColor: R.color.transparent,
           highlightColor: R.color.transparent,
@@ -195,7 +194,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(height: 2),
+                    SizedBox(height: 3),
                     Text(
                       answer.account?.createDatetime == null
                           ? ''

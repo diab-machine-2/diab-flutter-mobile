@@ -964,4 +964,5 @@ class Strings {
 	String get question_answer_title => 'question_answer_title';
 	String get closed => 'closed';
 	String get waiting => 'waiting';
+	String get question_empty => 'question_empty';
 }

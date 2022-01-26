@@ -62,7 +62,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTopic(context),
+        _buildLessonModule(context),
         Expanded(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -81,7 +81,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
     );
   }
 
-  _buildTopic(BuildContext context) {
+  _buildLessonModule(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
@@ -261,13 +261,30 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
       child: SmartRefresher(
         controller: _controller,
         onRefresh: () => _cubit.refreshData(),
-        child: ListView.builder(
-          itemCount: _cubit.questions.length,
-          shrinkWrap: true,
-          itemBuilder: (context, position) {
-            return _buildQuestionItem(_cubit.questions[position]);
-          },
-        ),
+        child: _cubit.questions.isNotEmpty
+            ? ListView.builder(
+                itemCount: _cubit.questions.length,
+                shrinkWrap: true,
+                itemBuilder: (context, position) {
+                  return _buildQuestionItem(_cubit.questions[position]);
+                },
+              )
+            : _buildEmpty(),
+      ),
+    );
+  }
+
+  _buildEmpty() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 64, vertical: 32),
+      child: Column(
+        children: [
+          Image.asset(R.drawable.img_question_empty),
+          SizedBox(height: 20),
+          Text(R.string.question_empty.tr(),
+              textAlign: TextAlign.center,
+              style: TextStyle(color: R.color.textDark, fontSize: 15, fontWeight: FontWeight.w400)),
+        ],
       ),
     );
   }
