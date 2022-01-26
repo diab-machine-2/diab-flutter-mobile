@@ -207,6 +207,7 @@ class Strings {
 	String get latest_hba1c_is => 'latest_hba1c_is';
 	String get back_to_schedule => 'back_to_schedule';
 	String get blood_sugar_survey_description => 'blood_sugar_survey_description';
+	String get blood_sugar_survey_description_link => 'blood_sugar_survey_description_link';
 	String get blood_sugar_survey_done_description => 'blood_sugar_survey_done_description';
 	String get blood_sugar_survey_update_require => 'blood_sugar_survey_update_require';
 	String get survey_question_1 => 'survey_question_1';
