@@ -175,6 +175,7 @@ showPopupWeight() {
             UserModel userInfo = AppSettings.userInfo!;
             userInfo = UserModel(
                 id: userInfo.id,
+                accountId: userInfo.accountId,
                 username: userInfo.username,
                 fullName: userInfo.fullName,
                 age: userInfo.age,

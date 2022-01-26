@@ -4,11 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'question_detail.dart';
 
 class QuestionDetailPage extends StatefulWidget {
-  const QuestionDetailPage({Key? key}) : super(key: key);
+  final QuestionModel questionModel;
+  QuestionDetailPage({Key? key, required this.questionModel}) : super(key: key);
 
   @override
   _QuestionDetailPageState createState() => _QuestionDetailPageState();
@@ -20,7 +24,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
   @override
   void initState() {
     super.initState();
-    _cubit = QuestionDetailCubit();
+    _cubit = QuestionDetailCubit(widget.questionModel);
   }
 
   @override
@@ -55,7 +59,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                 _buildTitleItem(),
                 SizedBox(height: 16),
                 Divider(height: 0.5, color: R.color.grayBorder),
-                SizedBox(height: 16),
+                SizedBox(height: 10),
                 _buildListComment(),
               ],
             ),
@@ -93,7 +97,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            'Vận động',
+            widget.questionModel.lessonModule!.name ?? '',
             style: TextStyle(
               color: true ? R.color.white : R.color.black,
               fontSize: 12,
@@ -102,9 +106,9 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
           ),
         ),
         Text(
-          R.string.replied.tr(),
+          _cubit.getStatus(widget.questionModel.status ?? 0),
           style: TextStyle(
-            color: R.color.greenGradientBottom,
+            color: _cubit.getColorStatus(widget.questionModel.status ?? 0),
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -120,7 +124,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
       children: [
         Expanded(
           child: Text(
-            'Di truyền có phải là nguyên nhân gây bệnh đái tháo đường típ 2 không?',
+            widget.questionModel.body ?? '',
             style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700),
           ),
         ),
@@ -158,99 +162,114 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
     );
   }
 
-  _buildDoctorItemInQuestionItem(int position) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            Container(
-              clipBehavior: Clip.hardEdge,
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
-              //     child: NetWorkImageWidget(imageUrl: exerciseItem?.image?.url ?? ''),
-            ),
-            SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'BS. Le Thi Thuy',
-                    style: TextStyle(
-                      color: R.color.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    '12/12/2021 - 10:30',
-                    style: TextStyle(
-                      color: R.color.gray,
-                      fontSize: 12,
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
+  _buildDoctorItemInQuestionItem(Answer? answer) {
+    if (answer == null) return Container();
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                clipBehavior: Clip.hardEdge,
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
+                child: answer.account?.avatar?.url == null
+                    ? Container()
+                    : NetWorkImageWidget(imageUrl: answer.account!.avatar!.url),
               ),
-            ),
-            PopupMenuButton(
-              color: R.color.color0xffFF5552,
-              child: Center(
-                child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
-              ),
-              itemBuilder: (context) {
-                return List.generate(1, (index) {
-                  return PopupMenuItem<String>(
-                      height: 30,
-                      padding: EdgeInsets.zero,
-                      onTap: () {
-                        Future.delayed(const Duration(seconds: 0), () => _showDialogComment(context, ''));
-                      },
-                      child: Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                            SizedBox(width: 8),
-                            Text(R.string.delete_comment.tr(),
-                                style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
-                                textAlign: TextAlign.center),
-                          ],
-                        ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      answer.account?.fullName ?? '',
+                      style: TextStyle(
+                        color: R.color.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
                       ),
-                      value: 'Doge');
-                });
-              },
-            ),
-          ],
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed volutpat porttitor dolor turpis scelerisque non arcu, morbi.',
-          style: TextStyle(
-            color: R.color.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      answer.account?.createDatetime == null
+                          ? ''
+                          : DateUtil.parseDateToString(
+                              DateTime.fromMillisecondsSinceEpoch(answer.account!.createDatetime! * 1000),
+                              'dd/MM/yyyy - hh:mm'),
+                      style: TextStyle(
+                        color: R.color.gray,
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuButton(
+                color: R.color.color0xffFF5552,
+                child: Center(
+                  child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
+                ),
+                itemBuilder: (context) {
+                  return List.generate(1, (index) {
+                    return PopupMenuItem<String>(
+                        height: 30,
+                        padding: EdgeInsets.zero,
+                        onTap: () {
+                          Future.delayed(const Duration(seconds: 0), () => _showDialogComment(context, ''));
+                        },
+                        child: Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+                              SizedBox(width: 8),
+                              Text(R.string.delete_comment.tr(),
+                                  style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.center),
+                            ],
+                          ),
+                        ),
+                        value: 'Doge');
+                  });
+                },
+              ),
+            ],
           ),
-        ),
-      ],
+          SizedBox(height: 4),
+          Text(
+            answer.body ?? '',
+            style: TextStyle(
+              color: R.color.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   _buildListComment() {
     return Expanded(
       child: ListView.builder(
-        itemCount: 1,
+        // separatorBuilder: (context, index) {
+        //   return Divider(height: 0.0);
+        // },
+        itemCount: widget.questionModel.answers?.length ?? 0,
         shrinkWrap: true,
         padding: EdgeInsets.zero,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, position) {
-          return _buildDoctorItemInQuestionItem(position);
+          return _buildDoctorItemInQuestionItem(
+              widget.questionModel.answers != null ? widget.questionModel.answers![position] : null);
         },
       ),
     );

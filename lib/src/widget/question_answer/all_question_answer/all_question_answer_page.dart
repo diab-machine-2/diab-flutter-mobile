@@ -30,7 +30,6 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = AllQuestionAnswerCubit(appRepository);
-    _cubit.initData();
   }
 
   @override
@@ -40,11 +39,11 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         create: (context) => _cubit,
         child: BlocListener<AllQuestionAnswerCubit, AllQuestionAnswerState>(
           listener: (context, state) {
-            if(state is AllQuestionAnswerLoading){
+            if (state is AllQuestionAnswerLoading) {
               BotToast.showLoading();
             } else {
-              BotToast.closeAllLoading();
-              if(state is AllQuestionAnswerSuccess || state is AllQuestionAnswerFailure){
+              if (state is AllQuestionAnswerSuccess || state is AllQuestionAnswerFailure) {
+                BotToast.closeAllLoading();
                 _controller.refreshCompleted();
               }
             }
@@ -126,7 +125,8 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                             _cubit.onSelectLessonModule(index);
                           });
                     })
-                      ..add(SizedBox(width: _cubit.lessonModules.isEmpty ? MediaQuery.of(context).size.width - 96 * 2 : 0)),
+                      ..add(SizedBox(
+                          width: _cubit.lessonModules.isEmpty ? MediaQuery.of(context).size.width - 96 * 2 : 0)),
                   ),
                 ),
               ),
@@ -206,8 +206,10 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
 
   _buildQuestionDoctor() {
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, NavigatorName.make_question);
+      onTap: () async {
+        await Navigator.pushNamed(context, NavigatorName.make_question,
+            arguments: {'lessonModuleItems': _cubit.lessonModules});
+        _cubit.getQuestions(isShowLoading: true);
       },
       child: Container(
         height: 78,
@@ -257,15 +259,15 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   _buildQuestionList() {
     return Expanded(
       child: SmartRefresher(
-                  controller: _controller,
-                  onRefresh: () => _cubit.refreshData(isRefresh: true),
-                  child: ListView.builder(
-        itemCount: _cubit.questions.length,
-        shrinkWrap: true,
-        itemBuilder: (context, position) {
-          return _buildQuestionItem(_cubit.questions[position]);
-        },
-      ),
+        controller: _controller,
+        onRefresh: () => _cubit.refreshData(),
+        child: ListView.builder(
+          itemCount: _cubit.questions.length,
+          shrinkWrap: true,
+          itemBuilder: (context, position) {
+            return _buildQuestionItem(_cubit.questions[position]);
+          },
+        ),
       ),
     );
   }
@@ -273,7 +275,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   _buildQuestionItem(QuestionModel questionModel) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, NavigatorName.question_detail);
+        Navigator.pushNamed(context, NavigatorName.question_detail, arguments: {'questionModel': questionModel});
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -314,15 +316,19 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                 _buildHeaderItem(questionModel),
                 SizedBox(height: 12),
                 _buildTitleItem(questionModel),
-                SizedBox(height: 16),
-                Divider(height: 0.5, color: R.color.grayBorder),
+                SizedBox(height: (questionModel.answers != null && questionModel.answers!.isNotEmpty) ? 16 : 0),
+                Visibility(
+                  visible: questionModel.answers != null && questionModel.answers!.isNotEmpty,
+                  child: Divider(height: 0.5, color: R.color.grayBorder),
+                ),
                 SizedBox(height: 8),
                 ListView.builder(
                   itemCount: questionModel.answers?.length ?? 0,
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, position) {
-                    return _buildDoctorItemInQuestionItem(questionModel.answers != null ? questionModel.answers![position] : null);
+                    return _buildDoctorItemInQuestionItem(
+                        questionModel.answers != null ? questionModel.answers![position] : null);
                   },
                 ),
               ],
@@ -346,7 +352,9 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            questionModel.lessonModule != null ? questionModel.lessonModule!.name ?? '' : _cubit.getLessonModule(questionModel.lessonModuleId ?? '').name ?? '',
+            questionModel.lessonModule != null
+                ? questionModel.lessonModule!.name ?? ''
+                : _cubit.getLessonModule(questionModel.lessonModuleId ?? '').name ?? '',
             style: TextStyle(
               color: true ? R.color.white : R.color.black,
               fontSize: 12,
@@ -378,7 +386,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   }
 
   _buildDoctorItemInQuestionItem(Answer? answer) {
-    if(answer == null) return Container();
+    if (answer == null) return Container();
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
       child: Row(
@@ -388,7 +396,9 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
             height: 40,
             width: 40,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
-            child: answer.account?.avatar?.url == null ? Container() : NetWorkImageWidget(imageUrl: answer.account!.avatar!.url),
+            child: answer.account?.avatar?.url == null
+                ? Container()
+                : NetWorkImageWidget(imageUrl: answer.account!.avatar!.url),
           ),
           SizedBox(width: 8),
           Expanded(
@@ -406,7 +416,11 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                 ),
                 SizedBox(height: 2),
                 Text(
-                  answer.account?.createDatetime == null ? '' : DateUtil.parseDateToString(DateTime.fromMillisecondsSinceEpoch(answer.account!.createDatetime! * 1000), 'dd/MM/yyyy - hh:mm'),
+                  answer.account?.createDatetime == null
+                      ? ''
+                      : DateUtil.parseDateToString(
+                          DateTime.fromMillisecondsSinceEpoch(answer.account!.createDatetime! * 1000),
+                          'dd/MM/yyyy - hh:mm'),
                   style: TextStyle(
                     color: R.color.gray,
                     fontSize: 12,

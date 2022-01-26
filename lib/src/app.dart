@@ -359,9 +359,13 @@ class _AppState extends State<App> {
                   return _buildRoute(settings, PhotoView(files: data?['files'], index: data?['index']),
                       isPresent: true);
                 case NavigatorName.make_question:
-                  return _buildRoute(settings, MakeQuestionPage(), isPresent: true);
+                  final data = settings.arguments as Map<String, dynamic>?;
+                  return _buildRoute(settings, MakeQuestionPage(lessonModuleItems: data!['lessonModuleItems']),
+                      isPresent: true);
                 case NavigatorName.question_detail:
-                  return _buildRoute(settings, QuestionDetailPage(), isPresent: true);
+                  final data = settings.arguments as Map<String, dynamic>?;
+                  return _buildRoute(settings, QuestionDetailPage(questionModel: data!['questionModel']),
+                      isPresent: true);
                 default:
                   return null;
               }

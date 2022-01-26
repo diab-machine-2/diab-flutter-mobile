@@ -1,3 +1,5 @@
+import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -19,28 +21,28 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
   List<QuestionModel> questions = [];
 
   AllQuestionAnswerCubit(this.repository) : super(AllQuestionAnswerInitial()) {
-    // TODO
+    initData();
   }
 
   onSelectLessonModule(int index) {
-    if(index == 0){
-      for(int i = 0; i < listSelectedLessonModule.length; i++){
+    if (index == 0) {
+      for (int i = 0; i < listSelectedLessonModule.length; i++) {
         listSelectedLessonModule[i] = false;
       }
-      if(listSelectedLessonModule.isNotEmpty){
+      if (listSelectedLessonModule.isNotEmpty) {
         listSelectedLessonModule[0] = true;
       }
       lessonModuleIds = [];
     } else {
-      if(listSelectedLessonModule.isNotEmpty){
+      if (listSelectedLessonModule.isNotEmpty) {
         listSelectedLessonModule[0] = false;
       }
       listSelectedLessonModule[index] = !listSelectedLessonModule[index];
 
       lessonModuleIds = [];
-      for(int i = 0; i < listSelectedLessonModule.length; i++){
-        if(listSelectedLessonModule[i]){
-          if(lessonModules[i].id != null){
+      for (int i = 0; i < listSelectedLessonModule.length; i++) {
+        if (listSelectedLessonModule[i]) {
+          if (lessonModules[i].id != null) {
             lessonModuleIds.add(lessonModules[i].id!);
           }
         }
@@ -57,42 +59,46 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     emit(AllQuestionAnswerSuccess());
   }
 
-  initData() async {
-    emit(AllQuestionAnswerLoading());
+  initData({bool isRefresh = false}) async {
+    if (!isRefresh) {
+      BotToast.showLoading();
+    }
+
     await getListLessonModule();
     await getQuestions();
   }
 
   getListLessonModule() async {
-    final ApiResult<LessonModuleResponse> apiResult =
-        await repository.getListLessonModule();
+    final ApiResult<LessonModuleResponse> apiResult = await repository.getListLessonModule();
     apiResult.when(success: (LessonModuleResponse response) {
-      if(response.data?.items != null){
-        lessonModules = [];
-        lessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
+      lessonModules = [];
+      lessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
+      if (response.data?.items != null) {
         lessonModules.addAll(response.data!.items!);
 
         listSelectedLessonModule = [];
-        for(var lesson in lessonModules){
+        for (var lesson in lessonModules) {
           listSelectedLessonModule.add(false);
         }
-        if(listSelectedLessonModule.isNotEmpty){
+        if (listSelectedLessonModule.isNotEmpty) {
           listSelectedLessonModule[0] = true;
         }
       }
     }, failure: (NetworkExceptions error) {
-  //   emit(AllQuestionAnswerFailure(NetworkExceptions.getErrorMessage(error)));
+      lessonModules = [];
+      lessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
+      //   emit(AllQuestionAnswerFailure(NetworkExceptions.getErrorMessage(error)));
     });
   }
 
   getQuestions({bool isShowLoading = false}) async {
-    if(isShowLoading){
+    if (isShowLoading) {
       emit(AllQuestionAnswerLoading());
     }
     final ApiResult<QuestionAnswerResponse> apiResult =
         await repository.getListQuestion(lessonModuleIds: lessonModuleIds);
     apiResult.when(success: (QuestionAnswerResponse response) {
-      if(response.data != null){
+      if (response.data != null) {
         questions = [];
         questions = response.data!;
       }
@@ -100,29 +106,29 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     }, failure: (NetworkExceptions error) {
       emit(AllQuestionAnswerFailure(NetworkExceptions.getErrorMessage(error)));
     });
-
   }
 
-  refreshData({bool isRefresh = false}) async {
-    await initData();
+  refreshData() async {
+    emit(AllQuestionAnswerInitial());
+    await initData(isRefresh: true);
   }
 
-  String getStatus(int status){
-    switch(status){
-      case 0: 
-        return 'Đã đóng';
+  String getStatus(int status) {
+    switch (status) {
+       case 0:
+        return R.string.closed.tr();
       case 1:
-        return 'Đang chờ';
+        return R.string.waiting.tr();
       case 2:
-        return 'Đã trả lời';
+        return R.string.replied.tr();
       default:
         return '';
     }
   }
 
-  Color getColorStatus(int status){
-    switch(status){
-      case 0: 
+  Color getColorStatus(int status) {
+    switch (status) {
+      case 0:
         return R.color.red;
       case 1:
         return R.color.yellow;
@@ -133,7 +139,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     }
   }
 
-  LessonModuleItem getLessonModule(String id){
+  LessonModuleItem getLessonModule(String id) {
     return lessonModules.firstWhere((element) => element.id == id, orElse: null);
   }
 }

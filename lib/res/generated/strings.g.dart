@@ -954,11 +954,14 @@ class Strings {
 	String get send_question => 'send_question';
 	String get response_as_soon_as_possible => 'response_as_soon_as_possible';
 	String get send_question_success => 'send_question_success';
+	String get qa_title => 'qa_title';
 	String get delete_question => 'delete_question';
 	String get confirm_delete_question => 'confirm_delete_question';
 	String get confirm_delete_question_subtitle => 'confirm_delete_question_subtitle';
 	String get confirm_delete_comment => 'confirm_delete_comment';
 	String get confirm_delete_comment_subtitle => 'confirm_delete_comment_subtitle';
 	String get delete_comment => 'delete_comment';
-	String get question_answer => 'question_answer';
+	String get question_answer_title => 'question_answer_title';
+	String get closed => 'closed';
+	String get waiting => 'waiting';
 }

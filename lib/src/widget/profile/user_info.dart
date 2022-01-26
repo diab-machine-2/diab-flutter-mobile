@@ -60,8 +60,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   }
 
   @override
-  void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'motivation_change') {
       loadMotivation();
     }
@@ -102,10 +101,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
               CustomAppBar(
                 backgroundColor: R.color.transparent,
                 title: Text(R.string.personal_info.tr(),
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: R.color.textDark)),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
                 leadingIcon: IconButton(
                     splashColor: R.color.transparent,
                     highlightColor: R.color.transparent,
@@ -119,8 +115,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                   top: false,
                   child: ListView(
                       padding: EdgeInsets.only(bottom: 16, left: 16, right: 16),
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -131,30 +126,20 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                               },
                               child: Container(
                                 color: R.color.transparent,
-                                child: Stack(
-                                    alignment: AlignmentDirectional.bottomEnd,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Container(
-                                          clipBehavior: Clip.hardEdge,
-                                          decoration: BoxDecoration(
-                                              color: R.color.mainColor,
-                                              borderRadius:
-                                                  BorderRadius.circular(80)),
-                                          child: user.imageUrl!.url == null
-                                              ? Icon(Icons.person,
-                                                  size: 160,
-                                                  color: R.color.white)
-                                              : Image.network(user.imageUrl!.url!,
-                                                  width: 160, height: 160),
-                                        ),
-                                      ),
-                                      Image.asset(
-                                          R.drawable.ic_camera_picker,
-                                          width: 50,
-                                          height: 50)
-                                    ]),
+                                child: Stack(alignment: AlignmentDirectional.bottomEnd, children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Container(
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                          color: R.color.mainColor, borderRadius: BorderRadius.circular(80)),
+                                      child: user.imageUrl!.url == null
+                                          ? Icon(Icons.person, size: 160, color: R.color.white)
+                                          : Image.network(user.imageUrl!.url!, width: 160, height: 160),
+                                    ),
+                                  ),
+                                  Image.asset(R.drawable.ic_camera_picker, width: 50, height: 50)
+                                ]),
                               ),
                             ),
                           ],
@@ -162,105 +147,71 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                         SizedBox(height: 16),
                         motivation != null
                             ? Container(
-                                decoration: BoxDecoration(
-                                    color: R.color.white,
-                                    borderRadius: BorderRadius.circular(10)),
+                                decoration:
+                                    BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
                                 child: Column(
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 16, left: 16, right: 16),
-                                      child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(R.string.my_motivation.tr(),
-                                                      style: TextStyle(
-                                                          color: R.color.black,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          fontSize: 16)),
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      _showDialogUpdateMotivation(
-                                                          motivation);
-                                                    },
-                                                    child: Container(
-                                                      color: R.color.transparent,
-                                                      child: Row(children: [
-                                                        Image.asset(
-                                                            R.drawable.ic_edit,
-                                                            width: 16,
-                                                            height: 16),
-                                                        SizedBox(width: 4),
-                                                        Text(R.string.chinh_sua.tr(),
-                                                            style: TextStyle(
-                                                                color:
-                                                                    R.color.mainColor,
-                                                                fontSize: 16))
-                                                      ]),
-                                                    ),
-                                                  )
-                                                ]),
-                                            SizedBox(height: 16),
-                                            Text('“${motivation!.content}”',
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 16)),
-                                          ]),
-                                    ),
-                                    SizedBox(height: 16),
-                                    Container(
-                                        height: 1, color: R.color.color0xffE5E5E5),
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Expanded(
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    context, NavigatorName.motivation);
-                                              },
-                                              child: Container(
-                                                color: R.color.transparent,
-                                                child: Center(
-                                                  child: Text(R.string.view_log.tr(),
-                                                      style: TextStyle(
-                                                          color: R.color.mainColor,
-                                                          fontSize: 16)),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                              height: 46,
-                                              width: 1,
-                                              color: R.color.color0xffE5E5E5),
-                                          Expanded(
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                _showDialogUpdateMotivation(
-                                                    null);
-                                              },
-                                              child: Container(
-                                                color: R.color.transparent,
-                                                child: Center(
-                                                  child: Text(R.string.new_motivation.tr(),
-                                                      style: TextStyle(
-                                                          color: R.color.mainColor,
-                                                          fontSize: 16)),
-                                                ),
-                                              ),
+                                      padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                          Text(R.string.my_motivation.tr(),
+                                              style: TextStyle(
+                                                  color: R.color.black, fontWeight: FontWeight.w700, fontSize: 16)),
+                                          GestureDetector(
+                                            onTap: () {
+                                              _showDialogUpdateMotivation(motivation);
+                                            },
+                                            child: Container(
+                                              color: R.color.transparent,
+                                              child: Row(children: [
+                                                Image.asset(R.drawable.ic_edit, width: 16, height: 16),
+                                                SizedBox(width: 4),
+                                                Text(R.string.chinh_sua.tr(),
+                                                    style: TextStyle(color: R.color.mainColor, fontSize: 16))
+                                              ]),
                                             ),
                                           )
-                                        ])
+                                        ]),
+                                        SizedBox(height: 16),
+                                        Text('“${motivation!.content}”',
+                                            style: TextStyle(
+                                                color: R.color.textDark, fontWeight: FontWeight.w400, fontSize: 16)),
+                                      ]),
+                                    ),
+                                    SizedBox(height: 16),
+                                    Container(height: 1, color: R.color.color0xffE5E5E5),
+                                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            Navigator.pushNamed(context, NavigatorName.motivation);
+                                          },
+                                          child: Container(
+                                            color: R.color.transparent,
+                                            child: Center(
+                                              child: Text(R.string.view_log.tr(),
+                                                  style: TextStyle(color: R.color.mainColor, fontSize: 16)),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(height: 46, width: 1, color: R.color.color0xffE5E5E5),
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            _showDialogUpdateMotivation(null);
+                                          },
+                                          child: Container(
+                                            color: R.color.transparent,
+                                            child: Center(
+                                              child: Text(R.string.new_motivation.tr(),
+                                                  style: TextStyle(color: R.color.mainColor, fontSize: 16)),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ])
                                   ],
                                 ))
                             : GestureDetector(
@@ -270,330 +221,219 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: R.color.transparent,
-                                    image: DecorationImage(
-                                        image: AssetImage(
-                                            R.drawable.bg_dong_luc),
-                                        fit: BoxFit.fill),
+                                    image: DecorationImage(image: AssetImage(R.drawable.bg_dong_luc), fit: BoxFit.fill),
                                   ),
                                   padding: EdgeInsets.all(16),
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(R.string.my_motivation.tr(),
-                                            style: TextStyle(
-                                                color: R.color.white,
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 16)),
-                                        SizedBox(height: 8),
-                                        Text(
-                                            R.string.new_motivaiton_suggest.tr(),
-                                            style: TextStyle(
-                                                color: R.color.white,
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 16)),
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              top: 16, bottom: 8),
+                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                    Text(R.string.my_motivation.tr(),
+                                        style:
+                                            TextStyle(color: R.color.white, fontWeight: FontWeight.w700, fontSize: 16)),
+                                    SizedBox(height: 8),
+                                    Text(R.string.new_motivaiton_suggest.tr(),
+                                        style:
+                                            TextStyle(color: R.color.white, fontWeight: FontWeight.w400, fontSize: 16)),
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 16, bottom: 8),
+                                      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                        Container(
+                                          height: 40,
+                                          padding: EdgeInsets.only(left: 16, right: 16),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(color: R.color.white, width: 2),
+                                              borderRadius: BorderRadius.circular(20)),
                                           child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  height: 40,
-                                                  padding: EdgeInsets.only(
-                                                      left: 16, right: 16),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: R.color.white,
-                                                          width: 2),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20)),
-                                                  child: Row(
-                                                    children: [
-                                                      Icon(Icons.add,
-                                                          color: R.color.white,
-                                                          size: 28),
-                                                      SizedBox(width: 8),
-                                                      Text('${R.string.enter_motivation.tr()}  ',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  R.color.white,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700,
-                                                              fontSize: 16)),
-                                                    ],
-                                                  ),
-                                                )
-                                              ]),
+                                            children: [
+                                              Icon(Icons.add, color: R.color.white, size: 28),
+                                              SizedBox(width: 8),
+                                              Text('${R.string.enter_motivation.tr()}  ',
+                                                  style: TextStyle(
+                                                      color: R.color.white, fontWeight: FontWeight.w700, fontSize: 16)),
+                                            ],
+                                          ),
                                         )
                                       ]),
+                                    )
+                                  ]),
                                 ),
                               ),
                         SizedBox(height: 16),
                         Container(
-                          decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(10)),
+                          decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(R.string.general_info.tr(),
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontWeight: FontWeight.w600)),
-                                SizedBox(height: 8),
-                                buildItem(
-                                  R.drawable.ic_person,
-                                  user.fullName!,
-                                  R.string.last_name_and_first_name.tr(),
-                                  Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  0,
-                                  callback: () {
-                                    _showDialogUpdateName();
-                                  },
-                                ),
-                                buildItem(
-                                  R.drawable.ic_birthday,
-                                  convertToUTC(user.dateOfBirth!, 'dd/MM/yyyy'),
-                                  R.string.ngay_sinh.tr(),
-                                  Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  1,
-                                  callback: () {
-                                    _showDialogUpdateBirthday();
-                                  },
-                                ),
-                                buildItem(
-                                  R.drawable.ic_gender,
-                                  user.gender == null || user.gender!.isEmpty
-                                      ? R.string.updating.tr()
-                                      : user.gender!,
-                                  R.string.gioi_tinh.tr(),
-                                  Image.asset(R.drawable.ic_right,
-                                      width: 18, height: 18),
-                                  2,
-                                  callback: () {
-                                    _showDialogUpdateGender();
-                                  },
-                                )
-                              ]),
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(R.string.general_info.tr(),
+                                style: TextStyle(color: R.color.black, fontWeight: FontWeight.w600)),
+                            SizedBox(height: 8),
+                            buildItem(
+                              R.drawable.ic_person,
+                              user.fullName!,
+                              R.string.last_name_and_first_name.tr(),
+                              Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                              0,
+                              callback: () {
+                                _showDialogUpdateName();
+                              },
+                            ),
+                            buildItem(
+                              R.drawable.ic_birthday,
+                              convertToUTC(user.dateOfBirth!, 'dd/MM/yyyy'),
+                              R.string.ngay_sinh.tr(),
+                              Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                              1,
+                              callback: () {
+                                _showDialogUpdateBirthday();
+                              },
+                            ),
+                            buildItem(
+                              R.drawable.ic_gender,
+                              user.gender == null || user.gender!.isEmpty ? R.string.updating.tr() : user.gender!,
+                              R.string.gioi_tinh.tr(),
+                              Image.asset(R.drawable.ic_right, width: 18, height: 18),
+                              2,
+                              callback: () {
+                                _showDialogUpdateGender();
+                              },
+                            )
+                          ]),
                         ),
                         SizedBox(height: 16),
                         Container(
-                          decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(10)),
+                          decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(R.string.pathological_info.tr(),
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontWeight: FontWeight.w600)),
-                                SizedBox(height: 8),
-                                buildItem(
-                                  R.drawable.ic_folder,
-                                  user.diabetesName ?? R.string.updating.tr(),
-                                  R.string.loai_benh.tr(),
-                                  null,
-                                  3,
-                                  callback: () {
-                                    _showDialogUpdateDiabetesStatus();
-                                  },
-                                ),
-                                buildItem(
-                                  R.drawable.ic_year,
-                                  convertToUTC(user.diabetesDate ?? 0, 'yyyy'),
-                                  R.string.year_illness_start.tr(),
-                                  null,
-                                  4,
-                                  callback: () {
-                                    _showDialogUpdateDiabetesStatusDate();
-                                  },
-                                )
-                              ]),
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(R.string.pathological_info.tr(),
+                                style: TextStyle(color: R.color.black, fontWeight: FontWeight.w600)),
+                            SizedBox(height: 8),
+                            buildItem(
+                              R.drawable.ic_folder,
+                              user.diabetesName ?? R.string.updating.tr(),
+                              R.string.loai_benh.tr(),
+                              null,
+                              3,
+                              callback: () {
+                                _showDialogUpdateDiabetesStatus();
+                              },
+                            ),
+                            buildItem(
+                              R.drawable.ic_year,
+                              convertToUTC(user.diabetesDate ?? 0, 'yyyy'),
+                              R.string.year_illness_start.tr(),
+                              null,
+                              4,
+                              callback: () {
+                                _showDialogUpdateDiabetesStatusDate();
+                              },
+                            )
+                          ]),
                         ),
                         SizedBox(height: 16),
                         Container(
-                          decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(10)),
+                          decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(R.string.body_info.tr(),
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontWeight: FontWeight.w600)),
-                                SizedBox(height: 8),
-                                buildItem(
-                                  R.drawable.ic_kg,
-                                  user.weight == null
-                                      ? R.string.not_updated_yet.tr()
-                                      : '${user.weight!.round()} kg',
-                                  R.string.can_nang.tr(),
-                                  null,
-                                  5,
-                                  callback: () {
-                                    showDialogWeight();
-                                  },
-                                ),
-                                buildItem(
-                                  R.drawable.ic_ruler_fill,
-                                  user.height == null
-                                      ? R.string.not_updated_yet.tr()
-                                      : '${user.height!.round()} cm',
-                                  R.string.chieu_cao.tr(),
-                                  null,
-                                  6,
-                                  callback: () {
-                                    showDialogHeight();
-                                  },
-                                )
-                              ]),
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(R.string.body_info.tr(),
+                                style: TextStyle(color: R.color.black, fontWeight: FontWeight.w600)),
+                            SizedBox(height: 8),
+                            buildItem(
+                              R.drawable.ic_kg,
+                              user.weight == null ? R.string.not_updated_yet.tr() : '${user.weight!.round()} kg',
+                              R.string.can_nang.tr(),
+                              null,
+                              5,
+                              callback: () {
+                                showDialogWeight();
+                              },
+                            ),
+                            buildItem(
+                              R.drawable.ic_ruler_fill,
+                              user.height == null ? R.string.not_updated_yet.tr() : '${user.height!.round()} cm',
+                              R.string.chieu_cao.tr(),
+                              null,
+                              6,
+                              callback: () {
+                                showDialogHeight();
+                              },
+                            )
+                          ]),
                         ),
                         SizedBox(height: 16),
                         Container(
-                          decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(10)),
+                          decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
                           padding: EdgeInsets.all(16),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(R.string.contact_info.tr(),
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontWeight: FontWeight.w600)),
-                                SizedBox(height: 8),
-                                buildItem(
-                                    R.drawable.ic_phone_info,
-                                    user.phoneNumber!,
-                                    R.string.phone_number_1.tr(),
-                                    Image.asset(R.drawable.ic_ok,
-                                        width: 24, height: 24),
-                                    7),
-                                buildItem(
-                                  R.drawable.ic_phone_info,
-                                  user.secondPhoneNumber == null ||
-                                          user.secondPhoneNumber!.isEmpty
-                                      ? R.string.not_updated_yet.tr()
-                                      : user.secondPhoneNumber!,
-                                  R.string.phone_number_2.tr(),
-                                  null,
-                                  8,
-                                  callback: () {
-                                    _showDialogUpdatePhone2();
-                                  },
-                                ),
-                                buildItem(
-                                  R.drawable.ic_email,
-                                  user.isLinkedGoogle == true
-                                      ? (user.googleEmail ?? '')
-                                      : (user.email == null || user.email!.isEmpty
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(R.string.contact_info.tr(),
+                                style: TextStyle(color: R.color.black, fontWeight: FontWeight.w600)),
+                            SizedBox(height: 8),
+                            buildItem(R.drawable.ic_phone_info, user.phoneNumber!, R.string.phone_number_1.tr(),
+                                Image.asset(R.drawable.ic_ok, width: 24, height: 24), 7),
+                            buildItem(
+                              R.drawable.ic_phone_info,
+                              user.secondPhoneNumber == null || user.secondPhoneNumber!.isEmpty
+                                  ? R.string.not_updated_yet.tr()
+                                  : user.secondPhoneNumber!,
+                              R.string.phone_number_2.tr(),
+                              null,
+                              8,
+                              callback: () {
+                                _showDialogUpdatePhone2();
+                              },
+                            ),
+                            buildItem(
+                              R.drawable.ic_email,
+                              user.isLinkedGoogle == true
+                                  ? (user.googleEmail ?? '')
+                                  : (user.email == null || user.email!.isEmpty
                                       ? R.string.not_updated_yet.tr()
                                       : user.email!),
-                                  R.string.email.tr(),
-                                  null,
-                                  9,
-                                  callback: () {
-                                    if (user.isLinkedGoogle == true) {
-                                      return;
-                                    }
-                                    _showDialogUpdateEmail();
+                              R.string.email.tr(),
+                              null,
+                              9,
+                              callback: () {
+                                if (user.isLinkedGoogle == true) {
+                                  return;
+                                }
+                                _showDialogUpdateEmail();
+                              },
+                            ),
+                            buildItem(
+                                R.drawable.ic_location,
+                                ((user.address ?? '') +
+                                            (user.address == null || user.address!.isEmpty ? '' : ', ') +
+                                            (user.ward == null ? '' : user.ward!.name!) +
+                                            (user.ward == null || user.ward!.name!.isEmpty ? '' : ', ') +
+                                            (user.district == null ? '' : user.district!.name!) +
+                                            (user.district == null || user.district!.name!.isEmpty ? '' : ', ') +
+                                            (user.province == null ? '' : user.province!.name!))
+                                        .isEmpty
+                                    ? R.string.not_updated_yet.tr()
+                                    : ((user.address ?? '') +
+                                        (user.address == null || user.address!.isEmpty ? '' : ', ') +
+                                        (user.ward == null ? '' : user.ward!.name!) +
+                                        (user.ward == null || user.ward!.name!.isEmpty ? '' : ', ') +
+                                        (user.district == null ? '' : user.district!.name!) +
+                                        (user.district == null || user.district!.name!.isEmpty ? '' : ', ') +
+                                        (user.province == null ? '' : user.province!.name!)),
+                                R.string.address.tr(),
+                                null,
+                                10, callback: () {
+                              _showDialogUpdateAddress();
+                            }),
+                            buildItem(
+                                R.drawable.ic_google,
+                                user.isLinkedGoogle == null || !user.isLinkedGoogle!
+                                    ? R.string.not_connected_yet.tr()
+                                    : user.fullName!,
+                                'Google',
+                                CupertinoSwitch(
+                                  activeColor: R.color.mainColor,
+                                  value: user.isLinkedGoogle ?? false,
+                                  onChanged: (value) {
+                                    print(value);
+                                    linkedGoogle();
                                   },
                                 ),
-                                buildItem(
-                                    R.drawable.ic_location,
-                                    ((user.address ?? '') +
-                                                (user.address ==
-                                                            null ||
-                                                        user.address!.isEmpty
-                                                    ? ''
-                                                    : ', ') +
-                                                (user
-                                                            .ward ==
-                                                        null
-                                                    ? ''
-                                                    : user.ward!.name!) +
-                                                (user
-                                                                .ward ==
-                                                            null ||
-                                                        user.ward!.name!.isEmpty
-                                                    ? ''
-                                                    : ', ') +
-                                                (user
-                                                            .district ==
-                                                        null
-                                                    ? ''
-                                                    : user.district!.name!) +
-                                                (user
-                                                                .district ==
-                                                            null ||
-                                                        user.district!.name!
-                                                            .isEmpty
-                                                    ? ''
-                                                    : ', ') +
-                                                (user
-                                                            .province ==
-                                                        null
-                                                    ? ''
-                                                    : user.province!.name!))
-                                            .isEmpty
-                                        ? R.string.not_updated_yet.tr()
-                                        : ((user
-                                                    .address ??
-                                                '') +
-                                            (user.address == null ||
-                                                    user.address!.isEmpty
-                                                ? ''
-                                                : ', ') +
-                                            (user.ward == null
-                                                ? ''
-                                                : user.ward!.name!) +
-                                            (user.ward == null ||
-                                                    user.ward!.name!.isEmpty
-                                                ? ''
-                                                : ', ') +
-                                            (user.district == null
-                                                ? ''
-                                                : user.district!.name!) +
-                                            (user.district == null ||
-                                                    user.district!.name!.isEmpty
-                                                ? ''
-                                                : ', ') +
-                                            (user.province == null
-                                                ? ''
-                                                : user.province!.name!)),
-                                    R.string.address.tr(),
-                                    null,
-                                    10, callback: () {
-                                  _showDialogUpdateAddress();
-                                }),
-                                buildItem(
-                                    R.drawable.ic_google,
-                                    user.isLinkedGoogle == null ||
-                                            !user.isLinkedGoogle!
-                                        ? R.string.not_connected_yet.tr()
-                                        : user.fullName!,
-                                    'Google',
-                                    CupertinoSwitch(
-                                      activeColor: R.color.mainColor,
-                                      value: user.isLinkedGoogle ?? false,
-                                      onChanged: (value) {
-                                        print(value);
-                                        linkedGoogle();
-                                      },
-                                    ),
-                                    11),
-                              ]),
+                                11),
+                          ]),
                         ),
                         SizedBox(height: 16),
                         GestureDetector(
@@ -601,16 +441,12 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                             _showDialogLogout();
                           },
                           child: Container(
-                              decoration: BoxDecoration(
-                                  color: R.color.white,
-                                  borderRadius: BorderRadius.circular(10)),
+                              decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
                               padding: EdgeInsets.all(16),
                               child: Row(children: [
-                                Image.asset(R.drawable.ic_logout,
-                                    width: 33, height: 33),
+                                Image.asset(R.drawable.ic_logout, width: 33, height: 33),
                                 SizedBox(width: 12),
-                                Text(R.string.logout.tr(),
-                                    style: TextStyle(color: R.color.black))
+                                Text(R.string.logout.tr(), style: TextStyle(color: R.color.black))
                               ])),
                         )
                       ]),
@@ -621,28 +457,23 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
         )));
   }
 
-  Widget buildItem(
-      String image, String title, String subTitle, Widget? subIcon, int index,
-      {VoidCallback? callback}) {
+  Widget buildItem(String image, String title, String subTitle, Widget? subIcon, int index, {VoidCallback? callback}) {
     return GestureDetector(
       onTap: callback,
       child: Container(
         color: R.color.transparent,
         padding: EdgeInsets.only(top: 8, bottom: 8),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Expanded(
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Image.asset(image, width: 33, height: 33),
               SizedBox(width: 12),
               Expanded(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title, style: TextStyle(color: R.color.black)),
-                      SizedBox(height: 2),
-                      Text(subTitle, style: TextStyle(color: R.color.captionColorGray))
-                    ]),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(title, style: TextStyle(color: R.color.black)),
+                  SizedBox(height: 2),
+                  Text(subTitle, style: TextStyle(color: R.color.captionColorGray))
+                ]),
               )
             ]),
           ),
@@ -660,11 +491,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
             padding: EdgeInsets.only(left: 8, right: 8),
             child: Row(
               children: [
-                Image.asset(R.drawable.ic_photo,
-                    width: 24, height: 24),
+                Image.asset(R.drawable.ic_photo, width: 24, height: 24),
                 SizedBox(width: 16),
-                Text(R.string.chon_trong_thu_vien.tr(),
-                    style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                Text(R.string.chon_trong_thu_vien.tr(), style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
           ),
@@ -678,11 +507,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
             padding: EdgeInsets.only(left: 8, right: 8),
             child: Row(
               children: [
-                Image.asset(R.drawable.ic_camera_black,
-                    width: 24, height: 24),
+                Image.asset(R.drawable.ic_camera_black, width: 24, height: 24),
                 SizedBox(width: 16),
-                Text(R.string.chup_anh.tr(),
-                    style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                Text(R.string.chup_anh.tr(), style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
               ],
             ),
           ),
@@ -693,8 +520,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
         )
       ],
       cancelButton: CupertinoActionSheetAction(
-        child: Text(R.string.cancel.tr(),
-            style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+        child: Text(R.string.cancel.tr(), style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
         onPressed: () {
           Navigator.pop(context);
         },
@@ -707,10 +533,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     try {
       final picker = ImagePicker();
       final pickedFile = await picker.getImage(
-          maxWidth: 1024,
-          maxHeight: 1024,
-          source: ImageSource.camera,
-          preferredCameraDevice: CameraDevice.rear);
+          maxWidth: 1024, maxHeight: 1024, source: ImageSource.camera, preferredCameraDevice: CameraDevice.rear);
       if (pickedFile != null) {
         await _cropImage(pickedFile.path);
       }
@@ -722,8 +545,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   showGallery() async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
-          maxWidth: 1024, maxHeight: 1024, source: ImageSource.gallery);
+      final pickedFile = await picker.getImage(maxWidth: 1024, maxHeight: 1024, source: ImageSource.gallery);
       if (pickedFile != null) {
         await _cropImage(pickedFile.path);
       }
@@ -744,9 +566,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
           cropStyle: CropStyle.circle,
           sourcePath: url,
           androidUiSettings: AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              initAspectRatio: CropAspectRatioPreset.square,
-              lockAspectRatio: false),
+              toolbarTitle: 'Cropper', initAspectRatio: CropAspectRatioPreset.square, lockAspectRatio: false),
           iosUiSettings: IOSUiSettings(
             minimumAspectRatio: 1.0,
           )) as FutureOr<File>);
@@ -871,11 +691,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       );
       await _googleSignIn.signOut();
       GoogleSignInAccount? account = await _googleSignIn.signIn();
-      final result = await LoginClient().linkedAccountOTP({
-        'providerName': 'Google',
-        'providerKey': account?.id,
-        'phoneNumber': user.phoneNumber
-      });
+      final result = await LoginClient()
+          .linkedAccountOTP({'providerName': 'Google', 'providerKey': account?.id, 'phoneNumber': user.phoneNumber});
       BotToast.closeAllLoading();
       if (result.isSuccess != true) {
         _showDialogError(user.phoneNumber);
@@ -892,8 +709,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
       BotToast.closeAllLoading();
       if (e is Error) {
         if (e.code == 'USER002') {
-          Message.showToastMessage(context,
-              R.string.account_already_used.tr());
+          Message.showToastMessage(context, R.string.account_already_used.tr());
         } else {
           Message.showToastMessage(context, e.message);
         }
@@ -939,8 +755,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
           BotToast.closeAllLoading();
           if (e is Error) {
             if (e.code == 'USER002') {
-              Message.showToastMessage(context,
-                  R.string.account_already_used.tr());
+              Message.showToastMessage(context, R.string.account_already_used.tr());
             } else {
               Message.showToastMessage(context, e.message);
             }
@@ -1013,8 +828,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(R.drawable.ic_check_error,
-                  width: 64, height: 64),
+              Image.asset(R.drawable.ic_check_error, width: 64, height: 64),
               SizedBox(height: 8),
               RichText(
                 textAlign: TextAlign.center,
@@ -1022,15 +836,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                   text: 'Đã gửi OTP 5 lần cho số điện thoại ',
                   style: TextStyle(color: Color(0xff172823), fontSize: 16),
                   children: <TextSpan>[
+                    TextSpan(text: phone, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     TextSpan(
-                        text: phone,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                    TextSpan(
-                        text:
-                            '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
-                        style:
-                            TextStyle(color: Color(0xff172823), fontSize: 16)),
+                        text: '.\nVui lòng kiểm tra lại hoặc đăng ký vào ngày hôm sau!',
+                        style: TextStyle(color: Color(0xff172823), fontSize: 16)),
                   ],
                 ),
               )
@@ -1071,81 +880,61 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset(R.drawable.ic_logout,
-                              width: 64, height: 64),
+                          Image.asset(R.drawable.ic_logout, width: 64, height: 64),
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
                             child: Text(R.string.confirm_logout.tr(),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: R.color.textDark,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600)),
+                                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
-                            child: Text(
-                                R.string.confirm_logout_description.tr(),
-                                textAlign: TextAlign.center,
-                                style: R.style.normalTextStyle),
+                            child: Text(R.string.confirm_logout_description.tr(),
+                                textAlign: TextAlign.center, style: R.style.normalTextStyle),
                           ),
                           Container(
                             margin: EdgeInsets.only(top: 16),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Container(
-                                          height: 43,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(200),
-                                              color: R.color.grayBorder),
-                                          child: Center(
-                                            child: Text(R.string.van_o_lai.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                          )),
+                            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                      height: 43,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                                      child: Center(
+                                        child: Text(R.string.van_o_lai.tr(),
+                                            style: TextStyle(
+                                                color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                      )),
+                                ),
+                              ),
+                              SizedBox(width: 14),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    AppSettings.logout();
+                                  },
+                                  child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                        color: R.color.red,
+                                        borderRadius: BorderRadius.circular(200),
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.centerRight,
+                                            colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                                    child: Center(
+                                      child: Text(R.string.logout.tr(),
+                                          style: TextStyle(
+                                              color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                                     ),
                                   ),
-                                  SizedBox(width: 14),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        AppSettings.logout();
-                                      },
-                                      child: Container(
-                                        height: 43,
-                                        decoration: BoxDecoration(
-                                            color: R.color.red,
-                                            borderRadius:
-                                                BorderRadius.circular(200),
-                                            gradient: LinearGradient(
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.centerRight,
-                                                colors: [
-                                                  R.color.greenGradientTop,
-                                                  R.color.greenGradientBottom
-                                                ])),
-                                        child: Center(
-                                          child: Text(R.string.logout.tr(),
-                                              style: TextStyle(
-                                                  color: R.color.white,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600)),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ]),
+                                ),
+                              ),
+                            ]),
                           ),
                         ],
                       ),
@@ -1166,20 +955,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(R.string.last_name_and_first_name.tr(),
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600)),
-                        GestureDetector(
-                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                            onTap: () {
-                              Navigator.pop(context);
-                            })
-                      ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text(R.string.last_name_and_first_name.tr(),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    GestureDetector(
+                        child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                        onTap: () {
+                          Navigator.pop(context);
+                        })
+                  ]),
                   SizedBox(height: 16),
                   Container(
                       height: 64,
@@ -1196,113 +980,96 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           decoration: InputDecoration(
                               fillColor: R.color.textDark,
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: R.color.grayComponentBorder, width: 1.0),
+                                borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: R.color.mainColor, width: 1.0),
+                                borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              contentPadding:
-                                  EdgeInsets.only(top: 0, left: 16, right: 16),
+                              contentPadding: EdgeInsets.only(top: 0, left: 16, right: 16),
                               hintText: R.string.enter_first_name_and_last_name.tr()),
                           onChanged: (value) {})),
                   Container(
                     margin: EdgeInsets.only(top: 16),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 48,
-                                width: 119,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(200),
-                                    color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                )),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          final name = textEditingController.text;
+                          if (name.isEmpty) {
+                            Message.showToastMessage(context, R.string.mes_name_empty.tr());
+                            return;
+                          } else {
+                            UserModel userInfo = AppSettings.userInfo!;
+                            userInfo = UserModel(
+                                id: userInfo.id,
+                                accountId: userInfo.accountId,
+                                username: userInfo.username,
+                                fullName: name,
+                                age: userInfo.age,
+                                phoneNumber: userInfo.phoneNumber,
+                                secondPhoneNumber: userInfo.secondPhoneNumber,
+                                gender: userInfo.gender,
+                                genderType: userInfo.genderType,
+                                createDatetime: userInfo.createDatetime,
+                                isActive: userInfo.isActive,
+                                province: userInfo.province,
+                                district: userInfo.district,
+                                height: userInfo.height,
+                                weight: userInfo.weight,
+                                ward: userInfo.ward,
+                                dateOfBirth: userInfo.dateOfBirth,
+                                diabetesStatus: userInfo.diabetesStatus,
+                                diabetesName: userInfo.diabetesName,
+                                diabetesDate: userInfo.diabetesDate,
+                                imageUrl: userInfo.imageUrl,
+                                code: userInfo.code,
+                                email: userInfo.email,
+                                address: userInfo.address,
+                                goalWaist: userInfo.goalWaist,
+                                goalWeight: userInfo.goalWeight,
+                                isLinkedFacebook: userInfo.isLinkedFacebook,
+                                isLinkedGoogle: userInfo.isLinkedGoogle,
+                                isMobileAccount: userInfo.isMobileAccount,
+                                firstLinkedAccount: userInfo.firstLinkedAccount,
+                                googleEmail: userInfo.googleEmail,
+                                glucoseUnit: userInfo.glucoseUnit,
+                                activityLevelRate: userInfo.activityLevelRate);
+                            updateUserInfo(userInfo);
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                          child: Center(
+                            child: Text(R.string.save.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              final name = textEditingController.text;
-                              if (name.isEmpty) {
-                                Message.showToastMessage(
-                                    context, R.string.mes_name_empty.tr());
-                                return;
-                              } else {
-                                UserModel userInfo = AppSettings.userInfo!;
-                                userInfo = UserModel(
-                                    id: userInfo.id,
-                                    username: userInfo.username,
-                                    fullName: name,
-                                    age: userInfo.age,
-                                    phoneNumber: userInfo.phoneNumber,
-                                    secondPhoneNumber:
-                                        userInfo.secondPhoneNumber,
-                                    gender: userInfo.gender,
-                                    genderType: userInfo.genderType,
-                                    createDatetime: userInfo.createDatetime,
-                                    isActive: userInfo.isActive,
-                                    province: userInfo.province,
-                                    district: userInfo.district,
-                                    height: userInfo.height,
-                                    weight: userInfo.weight,
-                                    ward: userInfo.ward,
-                                    dateOfBirth: userInfo.dateOfBirth,
-                                    diabetesStatus: userInfo.diabetesStatus,
-                                    diabetesName: userInfo.diabetesName,
-                                    diabetesDate: userInfo.diabetesDate,
-                                    imageUrl: userInfo.imageUrl,
-                                    code: userInfo.code,
-                                    email: userInfo.email,
-                                    address: userInfo.address,
-                                    goalWaist: userInfo.goalWaist,
-                                    goalWeight: userInfo.goalWeight,
-                                    isLinkedFacebook: userInfo.isLinkedFacebook,
-                                    isLinkedGoogle: userInfo.isLinkedGoogle,
-                                    isMobileAccount: userInfo.isMobileAccount,
-                                    firstLinkedAccount:
-                                        userInfo.firstLinkedAccount,
-                                    googleEmail: userInfo.googleEmail,
-                                    glucoseUnit: userInfo.glucoseUnit,
-                                    activityLevelRate: userInfo.activityLevelRate);
-                                updateUserInfo(userInfo);
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
-                              child: Center(
-                                child: Text(R.string.save.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              ),
-                            ),
-                          ),
-                        ]),
+                        ),
+                      ),
+                    ]),
                   ),
                 ],
               )),
@@ -1311,8 +1078,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   _showDialogUpdateBirthday() {
     final width = MediaQuery.of(context).size.width;
-    DateTime selectedDate = DateTime.fromMillisecondsSinceEpoch(
-        AppSettings.userInfo!.dateOfBirth! * 1000);
+    DateTime selectedDate = DateTime.fromMillisecondsSinceEpoch(AppSettings.userInfo!.dateOfBirth! * 1000);
     showDialog(
         context: context,
         builder: (context) => Container(
@@ -1321,119 +1087,99 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(R.string.ngay_sinh.tr(),
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600)),
-                        GestureDetector(
-                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                            onTap: () {
-                              Navigator.pop(context);
-                            })
-                      ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text(R.string.ngay_sinh.tr(),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    GestureDetector(
+                        child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                        onTap: () {
+                          Navigator.pop(context);
+                        })
+                  ]),
                   SizedBox(height: 16),
                   Container(
                       height: 250,
                       width: width - 36,
                       child: BirthDayPicker(
-                        selectedDate: DateTime.fromMillisecondsSinceEpoch(
-                            AppSettings.userInfo!.dateOfBirth! * 1000),
+                        selectedDate: DateTime.fromMillisecondsSinceEpoch(AppSettings.userInfo!.dateOfBirth! * 1000),
                         onChanged: (date) {
                           selectedDate = date;
                         },
                       )),
                   Container(
                     margin: EdgeInsets.only(top: 16),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 48,
-                                width: 119,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(200),
-                                    color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                )),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          UserModel userInfo = AppSettings.userInfo!;
+                          userInfo = UserModel(
+                              id: userInfo.id,
+                              accountId: userInfo.accountId,
+                              username: userInfo.username,
+                              fullName: userInfo.fullName,
+                              age: userInfo.age,
+                              phoneNumber: userInfo.phoneNumber,
+                              secondPhoneNumber: userInfo.secondPhoneNumber,
+                              gender: userInfo.gender,
+                              genderType: userInfo.genderType,
+                              createDatetime: userInfo.createDatetime,
+                              isActive: userInfo.isActive,
+                              province: userInfo.province,
+                              district: userInfo.district,
+                              height: userInfo.height,
+                              weight: userInfo.weight,
+                              ward: userInfo.ward,
+                              dateOfBirth: selectedDate.millisecondsSinceEpoch ~/ 1000,
+                              diabetesStatus: userInfo.diabetesStatus,
+                              diabetesName: userInfo.diabetesName,
+                              diabetesDate: userInfo.diabetesDate,
+                              imageUrl: userInfo.imageUrl,
+                              code: userInfo.code,
+                              email: userInfo.email,
+                              address: userInfo.address,
+                              goalWaist: userInfo.goalWaist,
+                              goalWeight: userInfo.goalWeight,
+                              isLinkedFacebook: userInfo.isLinkedFacebook,
+                              isLinkedGoogle: userInfo.isLinkedGoogle,
+                              isMobileAccount: userInfo.isMobileAccount,
+                              firstLinkedAccount: userInfo.firstLinkedAccount,
+                              googleEmail: userInfo.googleEmail,
+                              glucoseUnit: userInfo.glucoseUnit,
+                              activityLevelRate: userInfo.activityLevelRate);
+                          updateUserInfo(userInfo);
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                          child: Center(
+                            child: Text(R.string.yes.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              UserModel userInfo = AppSettings.userInfo!;
-                              userInfo = UserModel(
-                                  id: userInfo.id,
-                                  username: userInfo.username,
-                                  fullName: userInfo.fullName,
-                                  age: userInfo.age,
-                                  phoneNumber: userInfo.phoneNumber,
-                                  secondPhoneNumber: userInfo.secondPhoneNumber,
-                                  gender: userInfo.gender,
-                                  genderType: userInfo.genderType,
-                                  createDatetime: userInfo.createDatetime,
-                                  isActive: userInfo.isActive,
-                                  province: userInfo.province,
-                                  district: userInfo.district,
-                                  height: userInfo.height,
-                                  weight: userInfo.weight,
-                                  ward: userInfo.ward,
-                                  dateOfBirth:
-                                      selectedDate.millisecondsSinceEpoch ~/
-                                          1000,
-                                  diabetesStatus: userInfo.diabetesStatus,
-                                  diabetesName: userInfo.diabetesName,
-                                  diabetesDate: userInfo.diabetesDate,
-                                  imageUrl: userInfo.imageUrl,
-                                  code: userInfo.code,
-                                  email: userInfo.email,
-                                  address: userInfo.address,
-                                  goalWaist: userInfo.goalWaist,
-                                  goalWeight: userInfo.goalWeight,
-                                  isLinkedFacebook: userInfo.isLinkedFacebook,
-                                  isLinkedGoogle: userInfo.isLinkedGoogle,
-                                  isMobileAccount: userInfo.isMobileAccount,
-                                  firstLinkedAccount:
-                                      userInfo.firstLinkedAccount,
-                                  googleEmail: userInfo.googleEmail,
-                                  glucoseUnit: userInfo.glucoseUnit,
-                                  activityLevelRate: userInfo.activityLevelRate);
-                              updateUserInfo(userInfo);
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
-                              child: Center(
-                                child: Text(R.string.yes.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              ),
-                            ),
-                          ),
-                        ]),
+                        ),
+                      ),
+                    ]),
                   ),
                 ],
               )),
@@ -1442,8 +1188,8 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
 
   _showDialogUpdateGender() {
     final width = MediaQuery.of(context).size.width;
-    FixedExtentScrollController controller = FixedExtentScrollController(
-        initialItem: AppSettings.userInfo!.genderType == 1 ? 0 : 1);
+    FixedExtentScrollController controller =
+        FixedExtentScrollController(initialItem: AppSettings.userInfo!.genderType == 1 ? 0 : 1);
     showDialog(
         context: context,
         builder: (context) => Container(
@@ -1452,112 +1198,91 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(R.string.gioi_tinh.tr(),
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600)),
-                        GestureDetector(
-                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                            onTap: () {
-                              Navigator.pop(context);
-                            })
-                      ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text(R.string.gioi_tinh.tr(),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    GestureDetector(
+                        child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                        onTap: () {
+                          Navigator.pop(context);
+                        })
+                  ]),
                   SizedBox(height: 16),
-                  Container(
-                      height: 150,
-                      width: width - 36,
-                      child: GenderPicker(controller: controller)),
+                  Container(height: 150, width: width - 36, child: GenderPicker(controller: controller)),
                   Container(
                     margin: EdgeInsets.only(top: 16),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 48,
-                                width: 119,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(200),
-                                    color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                )),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          UserModel userInfo = AppSettings.userInfo!;
+                          userInfo = UserModel(
+                              id: userInfo.id,
+                              accountId: userInfo.accountId,
+                              username: userInfo.username,
+                              fullName: userInfo.fullName,
+                              age: userInfo.age,
+                              phoneNumber: userInfo.phoneNumber,
+                              secondPhoneNumber: userInfo.secondPhoneNumber,
+                              gender: userInfo.gender,
+                              genderType: controller.selectedItem == 0 ? 1 : 2,
+                              createDatetime: userInfo.createDatetime,
+                              isActive: userInfo.isActive,
+                              province: userInfo.province,
+                              district: userInfo.district,
+                              height: userInfo.height,
+                              weight: userInfo.weight,
+                              ward: userInfo.ward,
+                              dateOfBirth: userInfo.dateOfBirth,
+                              diabetesStatus: userInfo.diabetesStatus,
+                              diabetesName: userInfo.diabetesName,
+                              diabetesDate: userInfo.diabetesDate,
+                              imageUrl: userInfo.imageUrl,
+                              code: userInfo.code,
+                              email: userInfo.email,
+                              address: userInfo.address,
+                              goalWaist: userInfo.goalWaist,
+                              goalWeight: userInfo.goalWeight,
+                              isLinkedFacebook: userInfo.isLinkedFacebook,
+                              isLinkedGoogle: userInfo.isLinkedGoogle,
+                              isMobileAccount: userInfo.isMobileAccount,
+                              firstLinkedAccount: userInfo.firstLinkedAccount,
+                              googleEmail: userInfo.googleEmail,
+                              glucoseUnit: userInfo.glucoseUnit,
+                              activityLevelRate: userInfo.activityLevelRate);
+                          updateUserInfo(userInfo);
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                          child: Center(
+                            child: Text(R.string.yes.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              UserModel userInfo = AppSettings.userInfo!;
-                              userInfo = UserModel(
-                                  id: userInfo.id,
-                                  username: userInfo.username,
-                                  fullName: userInfo.fullName,
-                                  age: userInfo.age,
-                                  phoneNumber: userInfo.phoneNumber,
-                                  secondPhoneNumber: userInfo.secondPhoneNumber,
-                                  gender: userInfo.gender,
-                                  genderType:
-                                      controller.selectedItem == 0 ? 1 : 2,
-                                  createDatetime: userInfo.createDatetime,
-                                  isActive: userInfo.isActive,
-                                  province: userInfo.province,
-                                  district: userInfo.district,
-                                  height: userInfo.height,
-                                  weight: userInfo.weight,
-                                  ward: userInfo.ward,
-                                  dateOfBirth: userInfo.dateOfBirth,
-                                  diabetesStatus: userInfo.diabetesStatus,
-                                  diabetesName: userInfo.diabetesName,
-                                  diabetesDate: userInfo.diabetesDate,
-                                  imageUrl: userInfo.imageUrl,
-                                  code: userInfo.code,
-                                  email: userInfo.email,
-                                  address: userInfo.address,
-                                  goalWaist: userInfo.goalWaist,
-                                  goalWeight: userInfo.goalWeight,
-                                  isLinkedFacebook: userInfo.isLinkedFacebook,
-                                  isLinkedGoogle: userInfo.isLinkedGoogle,
-                                  isMobileAccount: userInfo.isMobileAccount,
-                                  firstLinkedAccount:
-                                      userInfo.firstLinkedAccount,
-                                  googleEmail: userInfo.googleEmail,
-                                  glucoseUnit: userInfo.glucoseUnit,
-                                  activityLevelRate: userInfo.activityLevelRate);
-                              updateUserInfo(userInfo);
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
-                              child: Center(
-                                child: Text(R.string.yes.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              ),
-                            ),
-                          ),
-                        ]),
+                        ),
+                      ),
+                    ]),
                   ),
                 ],
               )),
@@ -1575,20 +1300,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(R.string.loai_benh.tr(),
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600)),
-                        GestureDetector(
-                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                            onTap: () {
-                              Navigator.pop(context);
-                            })
-                      ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text(R.string.loai_benh.tr(),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    GestureDetector(
+                        child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                        onTap: () {
+                          Navigator.pop(context);
+                        })
+                  ]),
                   SizedBox(height: 16),
                   Container(
                       height: 150,
@@ -1601,90 +1321,78 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                       )),
                   Container(
                     margin: EdgeInsets.only(top: 16),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 48,
-                                width: 119,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(200),
-                                    color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                )),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          UserModel userInfo = AppSettings.userInfo!;
+                          userInfo = UserModel(
+                              id: userInfo.id,
+                              accountId: userInfo.accountId,
+                              username: userInfo.username,
+                              fullName: userInfo.fullName,
+                              age: userInfo.age,
+                              phoneNumber: userInfo.phoneNumber,
+                              secondPhoneNumber: userInfo.secondPhoneNumber,
+                              gender: userInfo.gender,
+                              genderType: userInfo.genderType,
+                              createDatetime: userInfo.createDatetime,
+                              isActive: userInfo.isActive,
+                              province: userInfo.province,
+                              district: userInfo.district,
+                              height: userInfo.height,
+                              weight: userInfo.weight,
+                              ward: userInfo.ward,
+                              dateOfBirth: userInfo.dateOfBirth,
+                              diabetesStatus: diabetesStatus,
+                              diabetesName: userInfo.diabetesName,
+                              diabetesDate: userInfo.diabetesDate,
+                              imageUrl: userInfo.imageUrl,
+                              code: userInfo.code,
+                              email: userInfo.email,
+                              address: userInfo.address,
+                              goalWaist: userInfo.goalWaist,
+                              goalWeight: userInfo.goalWeight,
+                              isLinkedFacebook: userInfo.isLinkedFacebook,
+                              isLinkedGoogle: userInfo.isLinkedGoogle,
+                              isMobileAccount: userInfo.isMobileAccount,
+                              firstLinkedAccount: userInfo.firstLinkedAccount,
+                              googleEmail: userInfo.googleEmail,
+                              glucoseUnit: userInfo.glucoseUnit,
+                              activityLevelRate: userInfo.activityLevelRate);
+                          updateUserInfo(userInfo);
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                          child: Center(
+                            child: Text(R.string.yes.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              UserModel userInfo = AppSettings.userInfo!;
-                              userInfo = UserModel(
-                                  id: userInfo.id,
-                                  username: userInfo.username,
-                                  fullName: userInfo.fullName,
-                                  age: userInfo.age,
-                                  phoneNumber: userInfo.phoneNumber,
-                                  secondPhoneNumber: userInfo.secondPhoneNumber,
-                                  gender: userInfo.gender,
-                                  genderType: userInfo.genderType,
-                                  createDatetime: userInfo.createDatetime,
-                                  isActive: userInfo.isActive,
-                                  province: userInfo.province,
-                                  district: userInfo.district,
-                                  height: userInfo.height,
-                                  weight: userInfo.weight,
-                                  ward: userInfo.ward,
-                                  dateOfBirth: userInfo.dateOfBirth,
-                                  diabetesStatus: diabetesStatus,
-                                  diabetesName: userInfo.diabetesName,
-                                  diabetesDate: userInfo.diabetesDate,
-                                  imageUrl: userInfo.imageUrl,
-                                  code: userInfo.code,
-                                  email: userInfo.email,
-                                  address: userInfo.address,
-                                  goalWaist: userInfo.goalWaist,
-                                  goalWeight: userInfo.goalWeight,
-                                  isLinkedFacebook: userInfo.isLinkedFacebook,
-                                  isLinkedGoogle: userInfo.isLinkedGoogle,
-                                  isMobileAccount: userInfo.isMobileAccount,
-                                  firstLinkedAccount:
-                                      userInfo.firstLinkedAccount,
-                                  googleEmail: userInfo.googleEmail,
-                                  glucoseUnit: userInfo.glucoseUnit,
-                                  activityLevelRate: userInfo.activityLevelRate);
-                              updateUserInfo(userInfo);
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
-                              child: Center(
-                                child: Text(R.string.yes.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              ),
-                            ),
-                          ),
-                        ]),
+                        ),
+                      ),
+                    ]),
                   ),
                 ],
               )),
@@ -1702,119 +1410,99 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(R.string.nam_phat_hien_benh.tr(),
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600)),
-                        GestureDetector(
-                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                            onTap: () {
-                              Navigator.pop(context);
-                            })
-                      ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text(R.string.nam_phat_hien_benh.tr(),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    GestureDetector(
+                        child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                        onTap: () {
+                          Navigator.pop(context);
+                        })
+                  ]),
                   SizedBox(height: 16),
                   Container(
                       height: 150,
                       width: width - 36,
                       child: DiabetesStatusDatePicker(
-                        year: DateTime.fromMillisecondsSinceEpoch(year! * 1000)
-                            .year,
+                        year: DateTime.fromMillisecondsSinceEpoch(year! * 1000).year,
                         onChanged: (data) {
                           year = data;
                         },
                       )),
                   Container(
                     margin: EdgeInsets.only(top: 16),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 48,
-                                width: 119,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(200),
-                                    color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                )),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          UserModel userInfo = AppSettings.userInfo!;
+                          userInfo = UserModel(
+                              id: userInfo.id,
+                              accountId: userInfo.accountId,
+                              username: userInfo.username,
+                              fullName: userInfo.fullName,
+                              age: userInfo.age,
+                              phoneNumber: userInfo.phoneNumber,
+                              secondPhoneNumber: userInfo.secondPhoneNumber,
+                              gender: userInfo.gender,
+                              genderType: userInfo.genderType,
+                              createDatetime: userInfo.createDatetime,
+                              isActive: userInfo.isActive,
+                              province: userInfo.province,
+                              district: userInfo.district,
+                              height: userInfo.height,
+                              weight: userInfo.weight,
+                              ward: userInfo.ward,
+                              dateOfBirth: userInfo.dateOfBirth,
+                              diabetesStatus: userInfo.diabetesStatus,
+                              diabetesName: userInfo.diabetesName,
+                              diabetesDate: DateTime.utc(year!).millisecondsSinceEpoch ~/ 1000,
+                              imageUrl: userInfo.imageUrl,
+                              code: userInfo.code,
+                              email: userInfo.email,
+                              address: userInfo.address,
+                              goalWaist: userInfo.goalWaist,
+                              goalWeight: userInfo.goalWeight,
+                              isLinkedFacebook: userInfo.isLinkedFacebook,
+                              isLinkedGoogle: userInfo.isLinkedGoogle,
+                              isMobileAccount: userInfo.isMobileAccount,
+                              firstLinkedAccount: userInfo.firstLinkedAccount,
+                              googleEmail: userInfo.googleEmail,
+                              glucoseUnit: userInfo.glucoseUnit,
+                              activityLevelRate: userInfo.activityLevelRate);
+                          updateUserInfo(userInfo);
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                          child: Center(
+                            child: Text(R.string.yes.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              UserModel userInfo = AppSettings.userInfo!;
-                              userInfo = UserModel(
-                                  id: userInfo.id,
-                                  username: userInfo.username,
-                                  fullName: userInfo.fullName,
-                                  age: userInfo.age,
-                                  phoneNumber: userInfo.phoneNumber,
-                                  secondPhoneNumber: userInfo.secondPhoneNumber,
-                                  gender: userInfo.gender,
-                                  genderType: userInfo.genderType,
-                                  createDatetime: userInfo.createDatetime,
-                                  isActive: userInfo.isActive,
-                                  province: userInfo.province,
-                                  district: userInfo.district,
-                                  height: userInfo.height,
-                                  weight: userInfo.weight,
-                                  ward: userInfo.ward,
-                                  dateOfBirth: userInfo.dateOfBirth,
-                                  diabetesStatus: userInfo.diabetesStatus,
-                                  diabetesName: userInfo.diabetesName,
-                                  diabetesDate: DateTime.utc(year!)
-                                          .millisecondsSinceEpoch ~/
-                                      1000,
-                                  imageUrl: userInfo.imageUrl,
-                                  code: userInfo.code,
-                                  email: userInfo.email,
-                                  address: userInfo.address,
-                                  goalWaist: userInfo.goalWaist,
-                                  goalWeight: userInfo.goalWeight,
-                                  isLinkedFacebook: userInfo.isLinkedFacebook,
-                                  isLinkedGoogle: userInfo.isLinkedGoogle,
-                                  isMobileAccount: userInfo.isMobileAccount,
-                                  firstLinkedAccount:
-                                      userInfo.firstLinkedAccount,
-                                  googleEmail: userInfo.googleEmail,
-                                  glucoseUnit: userInfo.glucoseUnit,
-                                  activityLevelRate: userInfo.activityLevelRate);
-                              updateUserInfo(userInfo);
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
-                              child: Center(
-                                child: Text(R.string.yes.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              ),
-                            ),
-                          ),
-                        ]),
+                        ),
+                      ),
+                    ]),
                   ),
                 ],
               )),
@@ -1834,6 +1522,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
             UserModel userInfo = AppSettings.userInfo!;
             userInfo = UserModel(
                 id: userInfo.id,
+                accountId: userInfo.accountId,
                 username: userInfo.username,
                 fullName: userInfo.fullName,
                 age: userInfo.age,
@@ -1869,8 +1558,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
           },
           title: R.string.enter_weight.tr(),
           max: 180,
-          numberDefault: (AppSettings.userInfo!.weight == null ||
-                      AppSettings.userInfo!.weight == 0
+          numberDefault: (AppSettings.userInfo!.weight == null || AppSettings.userInfo!.weight == 0
                   ? 50
                   : AppSettings.userInfo!.weight)!
               .toInt(),
@@ -1891,6 +1579,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
             UserModel userInfo = AppSettings.userInfo!;
             userInfo = UserModel(
                 id: userInfo.id,
+                accountId: userInfo.accountId,
                 username: userInfo.username,
                 fullName: userInfo.fullName,
                 age: userInfo.age,
@@ -1926,8 +1615,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
           },
           title: R.string.enter_height.tr(),
           max: 250,
-          numberDefault: (AppSettings.userInfo!.height == null ||
-                      AppSettings.userInfo!.height == 0
+          numberDefault: (AppSettings.userInfo!.height == null || AppSettings.userInfo!.height == 0
                   ? 150
                   : AppSettings.userInfo!.height)!
               .toInt(),
@@ -1947,20 +1635,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(R.string.phone_number_2.tr(),
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600)),
-                        GestureDetector(
-                            child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                            onTap: () {
-                              Navigator.pop(context);
-                            })
-                      ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text(R.string.phone_number_2.tr(),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    GestureDetector(
+                        child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                        onTap: () {
+                          Navigator.pop(context);
+                        })
+                  ]),
                   SizedBox(height: 16),
                   Container(
                       height: 54,
@@ -1974,113 +1657,97 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                           decoration: InputDecoration(
                             fillColor: R.color.textDark,
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: R.color.grayComponentBorder, width: 1.0),
+                              borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: R.color.mainColor, width: 1.0),
+                              borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            contentPadding:
-                                EdgeInsets.only(top: 0, left: 16, right: 16),
+                            contentPadding: EdgeInsets.only(top: 0, left: 16, right: 16),
                             hintText: R.string.enter_phone_number_2.tr(),
                           ),
                           onChanged: (value) {})),
                   Container(
                     margin: EdgeInsets.only(top: 16),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 48,
-                                width: 119,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(200),
-                                    color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                )),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 119,
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          final phone = textEditingController.text;
+                          if (phone.isEmpty) {
+                            Message.showToastMessage(context, R.string.ban_chua_nhap_so_dien_thoai.tr());
+                            return;
+                          } else {
+                            UserModel userInfo = AppSettings.userInfo!;
+                            userInfo = UserModel(
+                                id: userInfo.id,
+                                accountId: userInfo.accountId,
+                                username: userInfo.username,
+                                fullName: userInfo.fullName,
+                                age: userInfo.age,
+                                phoneNumber: userInfo.phoneNumber,
+                                secondPhoneNumber: phone,
+                                gender: userInfo.gender,
+                                genderType: userInfo.genderType,
+                                createDatetime: userInfo.createDatetime,
+                                isActive: userInfo.isActive,
+                                province: userInfo.province,
+                                district: userInfo.district,
+                                height: userInfo.height,
+                                weight: userInfo.weight,
+                                ward: userInfo.ward,
+                                dateOfBirth: userInfo.dateOfBirth,
+                                diabetesStatus: userInfo.diabetesStatus,
+                                diabetesName: userInfo.diabetesName,
+                                diabetesDate: userInfo.diabetesDate,
+                                imageUrl: userInfo.imageUrl,
+                                code: userInfo.code,
+                                email: userInfo.email,
+                                address: userInfo.address,
+                                goalWaist: userInfo.goalWaist,
+                                goalWeight: userInfo.goalWeight,
+                                isLinkedFacebook: userInfo.isLinkedFacebook,
+                                isLinkedGoogle: userInfo.isLinkedGoogle,
+                                isMobileAccount: userInfo.isMobileAccount,
+                                firstLinkedAccount: userInfo.firstLinkedAccount,
+                                googleEmail: userInfo.googleEmail,
+                                glucoseUnit: userInfo.glucoseUnit,
+                                activityLevelRate: userInfo.activityLevelRate);
+                            updateUserInfo(userInfo);
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Container(
+                          height: 48,
+                          width: 119,
+                          decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                          child: Center(
+                            child: Text(R.string.save.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              final phone = textEditingController.text;
-                              if (phone.isEmpty) {
-                                Message.showToastMessage(
-                                    context, R.string.ban_chua_nhap_so_dien_thoai.tr());
-                                return;
-                              } else {
-                                UserModel userInfo = AppSettings.userInfo!;
-                                userInfo = UserModel(
-                                    id: userInfo.id,
-                                    username: userInfo.username,
-                                    fullName: userInfo.fullName,
-                                    age: userInfo.age,
-                                    phoneNumber: userInfo.phoneNumber,
-                                    secondPhoneNumber: phone,
-                                    gender: userInfo.gender,
-                                    genderType: userInfo.genderType,
-                                    createDatetime: userInfo.createDatetime,
-                                    isActive: userInfo.isActive,
-                                    province: userInfo.province,
-                                    district: userInfo.district,
-                                    height: userInfo.height,
-                                    weight: userInfo.weight,
-                                    ward: userInfo.ward,
-                                    dateOfBirth: userInfo.dateOfBirth,
-                                    diabetesStatus: userInfo.diabetesStatus,
-                                    diabetesName: userInfo.diabetesName,
-                                    diabetesDate: userInfo.diabetesDate,
-                                    imageUrl: userInfo.imageUrl,
-                                    code: userInfo.code,
-                                    email: userInfo.email,
-                                    address: userInfo.address,
-                                    goalWaist: userInfo.goalWaist,
-                                    goalWeight: userInfo.goalWeight,
-                                    isLinkedFacebook: userInfo.isLinkedFacebook,
-                                    isLinkedGoogle: userInfo.isLinkedGoogle,
-                                    isMobileAccount: userInfo.isMobileAccount,
-                                    firstLinkedAccount:
-                                        userInfo.firstLinkedAccount,
-                                    googleEmail: userInfo.googleEmail,
-                                    glucoseUnit: userInfo.glucoseUnit,
-                                    activityLevelRate: userInfo.activityLevelRate);
-                                updateUserInfo(userInfo);
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: Container(
-                              height: 48,
-                              width: 119,
-                              decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
-                              child: Center(
-                                child: Text(R.string.save.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              ),
-                            ),
-                          ),
-                        ]),
+                        ),
+                      ),
+                    ]),
                   ),
                 ],
               )),
@@ -2099,6 +1766,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 UserModel userInfo = AppSettings.userInfo!;
                 userInfo = UserModel(
                     id: userInfo.id,
+                    accountId: userInfo.accountId,
                     username: userInfo.username,
                     fullName: userInfo.fullName,
                     age: userInfo.age,
@@ -2150,6 +1818,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
           callback: (address, province, district, ward) {
             userInfo = UserModel(
                 id: userInfo!.id,
+                accountId: userInfo!.accountId,
                 username: userInfo!.username,
                 fullName: userInfo!.fullName,
                 age: userInfo!.age,
@@ -2213,10 +1882,7 @@ class _EmailValidateState extends State<EmailValidate> {
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text(R.string.email.tr(),
-                style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600)),
+                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
             GestureDetector(
                 child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                 onTap: () {
@@ -2236,21 +1902,18 @@ class _EmailValidateState extends State<EmailValidate> {
                   decoration: InputDecoration(
                     fillColor: R.color.textDark,
                     enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: R.color.grayComponentBorder, width: 1.0),
+                      borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: R.color.mainColor, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    contentPadding:
-                        EdgeInsets.only(top: 0, left: 16, right: 16),
+                    contentPadding: EdgeInsets.only(top: 0, left: 16, right: 16),
                     hintText: R.string.enter_your_email.tr(),
                   ),
                   onChanged: (email) {
-                    String pattern =
-                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+                    String pattern = r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
 
                     RegExp regExp = new RegExp(pattern);
                     final isCorrect = regExp.hasMatch(email);
@@ -2268,76 +1931,61 @@ class _EmailValidateState extends State<EmailValidate> {
               ? Padding(
                   padding: EdgeInsets.only(top: 4),
                   child: Text(R.string.mes_invalid_email.tr(),
-                      style: TextStyle(
-                          color: R.color.color0xffFF5756,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400)),
+                      style: TextStyle(color: R.color.color0xffFF5756, fontSize: 14, fontWeight: FontWeight.w400)),
                 )
               : SizedBox(),
           Container(
             margin: EdgeInsets.only(top: 16),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                        height: 48,
-                        width: 119,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(200),
-                            color: R.color.grayBorder),
-                        child: Center(
-                          child: Text(R.string.cancel.tr(),
-                              style: TextStyle(
-                                  color: R.color.textDark,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600)),
-                        )),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      FocusScope.of(context).unfocus();
-                      final email = widget.controller!.text;
-                      if (email.isEmpty) {
-                        Message.showToastMessage(
-                            context, 'Bạn chưa nhập email');
-                        return;
-                      }
-                      String pattern =
-                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                    height: 48,
+                    width: 119,
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                    child: Center(
+                      child: Text(R.string.cancel.tr(),
+                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                    )),
+              ),
+              GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                  final email = widget.controller!.text;
+                  if (email.isEmpty) {
+                    Message.showToastMessage(context, 'Bạn chưa nhập email');
+                    return;
+                  }
+                  String pattern = r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
 
-                      RegExp regExp = new RegExp(pattern);
-                      final isCorrect = regExp.hasMatch(email);
-                      if (!isCorrect) {
-                        Message.showToastMessage(context, R.string.mes_invalid_email.tr());
-                        return;
-                      }
+                  RegExp regExp = new RegExp(pattern);
+                  final isCorrect = regExp.hasMatch(email);
+                  if (!isCorrect) {
+                    Message.showToastMessage(context, R.string.mes_invalid_email.tr());
+                    return;
+                  }
 
-                      widget.completion!(email);
-                    },
-                    child: Container(
-                      height: 48,
-                      width: 119,
-                      decoration: BoxDecoration(
-                          color: R.color.red,
-                          borderRadius: BorderRadius.circular(200),
-                          gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.centerRight,
-                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                      child: Center(
-                        child: Text(R.string.save.tr(),
-                            style: TextStyle(
-                                color: R.color.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600)),
-                      ),
-                    ),
+                  widget.completion!(email);
+                },
+                child: Container(
+                  height: 48,
+                  width: 119,
+                  decoration: BoxDecoration(
+                      color: R.color.red,
+                      borderRadius: BorderRadius.circular(200),
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.centerRight,
+                          colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                  child: Center(
+                    child: Text(R.string.save.tr(),
+                        style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                   ),
-                ]),
+                ),
+              ),
+            ]),
           ),
         ],
       )),
@@ -2410,9 +2058,7 @@ class _GenderPickerState extends State<GenderPicker> {
             .map((e) => Center(
                   child: Text(e == 0 ? R.string.nam.tr() : R.string.nu.tr(),
                       style: TextStyle(
-                          color: selectedItem == e
-                              ? R.color.mainColor
-                              : R.color.color0xffC0C2C5,
+                          color: selectedItem == e ? R.color.mainColor : R.color.color0xffC0C2C5,
                           fontSize: 24,
                           fontWeight: FontWeight.bold)),
                 ))
@@ -2439,8 +2085,7 @@ class _DiabetesStatusPickerState extends State<DiabetesStatusPicker> {
   @override
   void initState() {
     super.initState();
-    scrollController = FixedExtentScrollController(
-        initialItem: widget.state == null ? 0 : (widget.state! - 1));
+    scrollController = FixedExtentScrollController(initialItem: widget.state == null ? 0 : (widget.state! - 1));
     selectedItem = widget.state == null ? 0 : (widget.state! - 1);
     loadData();
   }
@@ -2475,9 +2120,7 @@ class _DiabetesStatusPickerState extends State<DiabetesStatusPicker> {
                 .map((e) => Center(
                       child: Text(diabeteStates![e]['value'],
                           style: TextStyle(
-                              color: selectedItem == e
-                                  ? R.color.mainColor
-                                  : R.color.color0xffC0C2C5,
+                              color: selectedItem == e ? R.color.mainColor : R.color.color0xffC0C2C5,
                               fontSize: 20,
                               fontWeight: FontWeight.bold)),
                     ))
@@ -2493,8 +2136,7 @@ class DiabetesStatusDatePicker extends StatefulWidget {
   DiabetesStatusDatePicker({this.year, this.onChanged});
 
   @override
-  _DiabetesStatusDatePickerState createState() =>
-      _DiabetesStatusDatePickerState();
+  _DiabetesStatusDatePickerState createState() => _DiabetesStatusDatePickerState();
 }
 
 class _DiabetesStatusDatePickerState extends State<DiabetesStatusDatePicker> {
@@ -2503,8 +2145,7 @@ class _DiabetesStatusDatePickerState extends State<DiabetesStatusDatePicker> {
   @override
   void initState() {
     super.initState();
-    scrollController =
-        FixedExtentScrollController(initialItem: widget.year! - 1900);
+    scrollController = FixedExtentScrollController(initialItem: widget.year! - 1900);
     selectedYear = widget.year! - 1900;
   }
 
@@ -2524,9 +2165,7 @@ class _DiabetesStatusDatePickerState extends State<DiabetesStatusDatePicker> {
             .map((e) => Center(
                   child: Text((e + 1900).toString(),
                       style: TextStyle(
-                          color: (selectedYear) == e
-                              ? R.color.mainColor
-                              : R.color.color0xffC0C2C5,
+                          color: (selectedYear) == e ? R.color.mainColor : R.color.color0xffC0C2C5,
                           fontSize: 24,
                           fontWeight: FontWeight.bold)),
                 ))
@@ -2550,8 +2189,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
   @override
   void initState() {
     super.initState();
-    textEditingController.text =
-        widget.model == null ? '' : widget.model!.content!;
+    textEditingController.text = widget.model == null ? '' : widget.model!.content!;
   }
 
   @override
@@ -2560,32 +2198,20 @@ class _MotivationPopupState extends State<MotivationPopup> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(
-                    widget.model == null
-                        ? R.string.new_motivation.tr()
-                        : R.string.edit_motivation.tr(),
-                    style: TextStyle(
-                        color: R.color.textDark,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600)),
-                SizedBox(height: 8),
-                Text(R.string.letters_left_count.tr(args: ['${100 - textEditingController.text.length}']),
-                    style: TextStyle(
-                        color: R.color.primaryGreyColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400))
-              ]),
-              GestureDetector(
-                  child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                  onTap: () {
-                    Navigator.pop(context);
-                  })
-            ]),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(widget.model == null ? R.string.new_motivation.tr() : R.string.edit_motivation.tr(),
+                style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+            SizedBox(height: 8),
+            Text(R.string.letters_left_count.tr(args: ['${100 - textEditingController.text.length}']),
+                style: TextStyle(color: R.color.primaryGreyColor, fontSize: 16, fontWeight: FontWeight.w400))
+          ]),
+          GestureDetector(
+              child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+              onTap: () {
+                Navigator.pop(context);
+              })
+        ]),
         SizedBox(height: 16),
         Container(
             width: MediaQuery.of(context).size.width - 36,
@@ -2601,8 +2227,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
                 decoration: InputDecoration(
                     fillColor: R.color.textDark,
                     enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: R.color.grayComponentBorder, width: 1.0),
+                      borderSide: BorderSide(color: R.color.grayComponentBorder, width: 1.0),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -2617,8 +2242,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
                 })),
         Container(
           margin: EdgeInsets.only(top: 16),
-          child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             GestureDetector(
               onTap: () {
                 Navigator.pop(context);
@@ -2626,15 +2250,10 @@ class _MotivationPopupState extends State<MotivationPopup> {
               child: Container(
                   height: 48,
                   width: 119,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(200),
-                      color: R.color.grayBorder),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
                   child: Center(
                     child: Text(R.string.cancel.tr(),
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600)),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
                   )),
             ),
             GestureDetector(
@@ -2646,12 +2265,9 @@ class _MotivationPopupState extends State<MotivationPopup> {
                   return;
                 } else {
                   widget.callback!(widget.model == null
-                      ? MotivationModel(
-                          content: content, id: null, createDateTime: null)
+                      ? MotivationModel(content: content, id: null, createDateTime: null)
                       : MotivationModel(
-                          content: content,
-                          id: widget.model!.id,
-                          createDateTime: widget.model!.createDateTime));
+                          content: content, id: widget.model!.id, createDateTime: widget.model!.createDateTime));
                   Navigator.pop(context);
                 }
               },
@@ -2667,10 +2283,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
                         colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
                 child: Center(
                   child: Text(R.string.save.tr(),
-                      style: TextStyle(
-                          color: R.color.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600)),
+                      style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
             ),
@@ -2681,8 +2294,7 @@ class _MotivationPopupState extends State<MotivationPopup> {
   }
 }
 
-class LengthLimitingTextFieldFormatterFixed
-    extends LengthLimitingTextInputFormatter {
+class LengthLimitingTextFieldFormatterFixed extends LengthLimitingTextInputFormatter {
   LengthLimitingTextFieldFormatterFixed(int maxLength) : super(maxLength);
 
   @override
@@ -2690,9 +2302,7 @@ class LengthLimitingTextFieldFormatterFixed
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    if (maxLength != null &&
-        maxLength! > 0 &&
-        newValue.text.characters.length > maxLength!) {
+    if (maxLength != null && maxLength! > 0 && newValue.text.characters.length > maxLength!) {
       // If already at the maximum and tried to enter even more, keep the old
       // value.
       if (oldValue.text.characters.length == maxLength) {

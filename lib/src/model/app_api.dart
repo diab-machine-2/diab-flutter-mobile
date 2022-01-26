@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:retrofit/http.dart';
@@ -66,8 +67,7 @@ abstract class AppApi {
   Future<UpgradeAccountResponse> getUpgradeAccount();
 
   @POST("App/PackageInterest/Input")
-  Future<CommonResponse> sendInterestFeedback(
-      @Body() SendInterestRequest request);
+  Future<CommonResponse> sendInterestFeedback(@Body() SendInterestRequest request);
 
   // Transaction
 
@@ -221,10 +221,16 @@ abstract class AppApi {
   });
 
   @GET("App/Question")
-  Future<QuestionAnswerResponse> getListQuestion(@Query("lessonModuleId") List<String>? ids);
+  Future<QuestionAnswerResponse> getListQuestion(
+      @Query('page') int page, @Query('size') int size, @Query("lessonModuleIds") List<String>? ids);
 
   @GET("App/LessonModule")
   Future<LessonModuleResponse> getListLessonModule();
+
+  @POST("App/Question/Input")
+  Future<CommonResponse> makeQuestion(
+    @Body() MakeQuestionRequest request,
+  );
 
   @GET("App/Target/GetTargetWeekStatistics")
   Future<SmartGoalStatisticResponse> getSmartGoalStatistics({
@@ -249,8 +255,7 @@ abstract class AppApi {
   );
 
   @GET("App/Lesson/{lessonId}/LessonQuizDetail")
-  Future<LessonSectionListResponse> getListQuiz(
-      @Path("lessonId") String lessonId);
+  Future<LessonSectionListResponse> getListQuiz(@Path("lessonId") String lessonId);
 
   // My Progress
   @GET("App/MyProgress")

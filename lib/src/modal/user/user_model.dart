@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 @immutable
 class UserModel {
   final String? id;
+  final String? accountId;
   final String? username;
   final String? fullName;
   final int? age;
@@ -36,93 +37,82 @@ class UserModel {
   final String? googleEmail;
   final double? activityLevelRate;
 
-  UserModel(
-      {required this.id,
-      required this.username,
-      required this.fullName,
-      required this.age,
-      required this.phoneNumber,
-      required this.secondPhoneNumber,
-      required this.gender,
-      required this.genderType,
-      required this.createDatetime,
-      required this.isActive,
-      required this.province,
-      required this.district,
-      required this.height,
-      required this.weight,
-      required this.ward,
-      required this.dateOfBirth,
-      required this.diabetesStatus,
-      required this.diabetesName,
-      required this.diabetesDate,
-      required this.imageUrl,
-      required this.code,
-      required this.email,
-      required this.address,
-      required this.goalWaist,
-      required this.goalWeight,
-      required this.isLinkedFacebook,
-      required this.isLinkedGoogle,
-      required this.isMobileAccount,
-      required this.firstLinkedAccount,
-        required this.googleEmail,
-      required this.glucoseUnit,
-      required this.activityLevelRate,
-      });
+  UserModel({
+    required this.id,
+    required this.accountId,
+    required this.username,
+    required this.fullName,
+    required this.age,
+    required this.phoneNumber,
+    required this.secondPhoneNumber,
+    required this.gender,
+    required this.genderType,
+    required this.createDatetime,
+    required this.isActive,
+    required this.province,
+    required this.district,
+    required this.height,
+    required this.weight,
+    required this.ward,
+    required this.dateOfBirth,
+    required this.diabetesStatus,
+    required this.diabetesName,
+    required this.diabetesDate,
+    required this.imageUrl,
+    required this.code,
+    required this.email,
+    required this.address,
+    required this.goalWaist,
+    required this.goalWeight,
+    required this.isLinkedFacebook,
+    required this.isLinkedGoogle,
+    required this.isMobileAccount,
+    required this.firstLinkedAccount,
+    required this.googleEmail,
+    required this.glucoseUnit,
+    required this.activityLevelRate,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-        id: json['id'],
-        username: json['username'],
-        fullName: json['fullName'],
-        age: json['age'],
-        phoneNumber: json['phoneNumber'],
-        secondPhoneNumber: json['secondPhoneNumber'],
-        gender: json['gender'],
-        genderType: json['genderType'],
-        createDatetime: json['createDatetime'],
-        isActive: json['isActive'],
-        province: json['province'] == null
-            ? null
-            : (json['province'] is String
-                ? null
-                : ProvinceModel.fromJson(json['province'])),
-        district: json['district'] == null
-            ? null
-            : (json['district'] is String
-                ? null
-                : ProvinceModel.fromJson(json['district'])),
-        height: json['height'],
-        weight: json['weight'],
-        ward: json['ward'] == null
-            ? null
-            : (json['ward'] is String
-                ? null
-                : ProvinceModel.fromJson(json['ward'])),
-        dateOfBirth: json['dateOfBirth'],
-        diabetesStatus:
-            json['diabetes'] == null ? null : json['diabetes']['status'],
-        diabetesName:
-            json['diabetes'] == null ? null : json['diabetes']['name'],
-        diabetesDate:
-            json['diabetes'] == null ? null : json['diabetes']['date'],
-        imageUrl: json['imageUrl'] == null
-            ? null
-            : ImagesModel.fromJson(json['imageUrl']),
-        code: json['code'],
-        email: json['email'],
-        address: json['address'],
-        goalWaist: json['goalWaist'],
-        goalWeight: json['goalWeight'],
-        isLinkedFacebook: json['isLinkedFacebook'],
-        isLinkedGoogle: json['isLinkedGoogle'],
-        isMobileAccount: json['isMobileAccount'],
-        firstLinkedAccount: json['firstLinkedAccount'],
-        googleEmail: json['googleEmail'],
-        glucoseUnit: json['glucoseUnit'],
-        activityLevelRate: json['activityLevelRate'],
-        );
+      id: json['id'],
+      accountId: json['accountId'],
+      username: json['username'],
+      fullName: json['fullName'],
+      age: json['age'],
+      phoneNumber: json['phoneNumber'],
+      secondPhoneNumber: json['secondPhoneNumber'],
+      gender: json['gender'],
+      genderType: json['genderType'],
+      createDatetime: json['createDatetime'],
+      isActive: json['isActive'],
+      province: json['province'] == null
+          ? null
+          : (json['province'] is String ? null : ProvinceModel.fromJson(json['province'])),
+      district: json['district'] == null
+          ? null
+          : (json['district'] is String ? null : ProvinceModel.fromJson(json['district'])),
+      height: json['height'],
+      weight: json['weight'],
+      ward: json['ward'] == null ? null : (json['ward'] is String ? null : ProvinceModel.fromJson(json['ward'])),
+      dateOfBirth: json['dateOfBirth'],
+      diabetesStatus: json['diabetes'] == null ? null : json['diabetes']['status'],
+      diabetesName: json['diabetes'] == null ? null : json['diabetes']['name'],
+      diabetesDate: json['diabetes'] == null ? null : json['diabetes']['date'],
+      imageUrl: json['imageUrl'] == null ? null : ImagesModel.fromJson(json['imageUrl']),
+      code: json['code'],
+      email: json['email'],
+      address: json['address'],
+      goalWaist: json['goalWaist'],
+      goalWeight: json['goalWeight'],
+      isLinkedFacebook: json['isLinkedFacebook'],
+      isLinkedGoogle: json['isLinkedGoogle'],
+      isMobileAccount: json['isMobileAccount'],
+      firstLinkedAccount: json['firstLinkedAccount'],
+      googleEmail: json['googleEmail'],
+      glucoseUnit: json['glucoseUnit'],
+      activityLevelRate: json['activityLevelRate'],
+    );
   }
 
   static List<UserModel> toList(List<dynamic> items) {

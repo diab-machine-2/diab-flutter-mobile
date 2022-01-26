@@ -1,22 +1,52 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/make_question_request.dart';
+import 'package:medical/src/model/response/common_response.dart';
+import 'package:medical/src/model/response/lesson_module_response.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/repo/question_answer/question_answer_client.dart';
 import '../make_question.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 
 class MakeQuestionCubit extends Cubit<MakeQuestionState> {
-  List<String> topicList = ["Chủ đề 1", "Chủ đề 2", "Chủ đề 3", "Chủ đề 4", "Chủ đề 5"];
-  String? currentTopic;
+  LessonModuleItem? currentLessonModule;
+  final AppRepository repository;
+  final List<LessonModuleItem> lessonModuleItems;
 
-  MakeQuestionCubit() : super(MakeQuestionInitial()) {
+  MakeQuestionCubit(this.repository, this.lessonModuleItems) : super(MakeQuestionInitial()) {
     // TODO
   }
 
-  setCurrentTopic(String topic) {
-    currentTopic = topic;
-    emit(MakeQuestionLoading());
+  setCurrentLessonModule(LessonModuleItem item) {
+    currentLessonModule = item;
+    emit(MakeQuestionInitial());
     emit(MakeQuestionSuccess());
   }
 
-  sendQuestion() {
+  Future<void> sendQuestion(String? body) async {
+    if (currentLessonModule == null) return;
+    var userInfo = AppSettings.userInfo;
+    if (userInfo == null) return;
+
     emit(MakeQuestionLoading());
-    emit(SendQuestionSuccess());
+    final MakeQuestionRequest request =
+        MakeQuestionRequest(body: body, lessonModuleId: currentLessonModule!.id, accountId: userInfo.accountId);
+    var response = await QuestionAnswerClient().makeQuestion(request);
+    if (response is bool && response) {
+      emit(SendQuestionSuccess());
+    } else if (response is Error) {
+      emit(SendQuestionFailure(response.message ?? ''));
+    } else if (response is String) {
+      emit(SendQuestionFailure(response));
+    }
+
+    // final ApiResult<CommonResponse> apiResult = await repository.makeQuestion(request);
+    // apiResult.when(success: (CommonResponse response) {
+    //   emit(SendQuestionSuccess());
+    // }, failure: (NetworkExceptions error) {
+    //   emit(SendQuestionFailure(NetworkExceptions.getErrorMessage(error)));
+    // });
   }
 }

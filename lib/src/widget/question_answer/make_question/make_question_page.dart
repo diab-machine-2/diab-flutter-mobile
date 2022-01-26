@@ -1,15 +1,22 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/lesson_module_response.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 //import 'package:medical/src/widgets/custom_dropdown.dart';
 import 'make_question.dart';
 
 class MakeQuestionPage extends StatefulWidget {
-  const MakeQuestionPage({Key? key}) : super(key: key);
+  final List<LessonModuleItem> lessonModuleItems;
+
+  MakeQuestionPage({Key? key, required this.lessonModuleItems}) : super(key: key);
 
   @override
   _MakeQuestionPageState createState() => _MakeQuestionPageState();
@@ -17,11 +24,14 @@ class MakeQuestionPage extends StatefulWidget {
 
 class _MakeQuestionPageState extends State<MakeQuestionPage> {
   late MakeQuestionCubit _cubit;
+  late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
-    _cubit = MakeQuestionCubit();
+    _controller = TextEditingController(text: '');
+    final AppRepository appRepository = AppRepository();
+    _cubit = MakeQuestionCubit(appRepository, widget.lessonModuleItems);
   }
 
   @override
@@ -31,8 +41,15 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
         create: (context) => _cubit,
         child: BlocListener<MakeQuestionCubit, MakeQuestionState>(
           listener: (context, state) {
-            if (state is SendQuestionSuccess) {
-              showSuccessDialog();
+            if (state is MakeQuestionLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+              if (state is SendQuestionSuccess) {
+                showSuccessDialog();
+              } else if (state is SendQuestionFailure) {
+                Message.showToastMessage(context, state.error);
+              }
             }
           },
           child: BlocBuilder<MakeQuestionCubit, MakeQuestionState>(
@@ -46,36 +63,39 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
   }
 
   Widget _buildPage(BuildContext context, MakeQuestionState state) {
-    return Container(
-      color: R.color.greenbg,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildAppBar(context),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildTopic(),
-                        SizedBox(height: 8),
-                        _buildQuestion(),
-                        Spacer(),
-                      ],
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Container(
+        color: R.color.greenbg,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildAppBar(context),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildTopic(),
+                          SizedBox(height: 8),
+                          _buildQuestion(),
+                          Spacer(),
+                        ],
+                      ),
                     ),
-                  ),
-                  _buildSendButton(),
-                ],
+                    _buildSendButton(),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -117,11 +137,11 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
             color: R.color.white,
           ),
           child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
+            child: DropdownButton<LessonModuleItem>(
               alignment: AlignmentDirectional.bottomEnd,
               isDense: true,
               isExpanded: true,
-              value: _cubit.currentTopic,
+              value: _cubit.currentLessonModule,
               icon: Icon(
                 Icons.keyboard_arrow_down,
                 size: 20,
@@ -135,15 +155,15 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              items: _cubit.topicList.map((String value) {
-                return DropdownMenuItem<String>(
+              items: _cubit.lessonModuleItems.map((LessonModuleItem value) {
+                return DropdownMenuItem<LessonModuleItem>(
                   value: value,
-                  child: Text(value),
+                  child: Text(value.name ?? ''),
                 );
               }).toList(),
               onChanged: (value) {
                 if (value != null) {
-                  _cubit.setCurrentTopic(value);
+                  _cubit.setCurrentLessonModule(value);
                 }
               },
             ),
@@ -216,6 +236,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
               hintText: "Bạn muốn hỏi bác sỹ điều gì?",
               fillColor: R.color.white),
           maxLines: 6,
+          controller: _controller,
         ),
       ],
     );
@@ -223,9 +244,9 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
 
   _buildSendButton() {
     return GestureDetector(
-      onTap: () {
-        showSuccessDialog();
-        //    _cubit.sendQuestion();
+      onTap: () async {
+        Utils.hideKeyboard(context);
+        await _cubit.sendQuestion(_controller.text);
       },
       child: Container(
           height: 48,
@@ -248,6 +269,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
   showSuccessDialog() {
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (context) {
           return AlertDialog(
             backgroundColor: R.color.greenbg,
@@ -265,6 +287,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
                       SizedBox(width: 20),
                       GestureDetector(
                         onTap: () {
+                          Navigator.pop(context);
                           Navigator.pop(context);
                         },
                         child: Image.asset(R.drawable.ic_close, width: 24, height: 24),

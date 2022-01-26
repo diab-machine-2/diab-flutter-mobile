@@ -562,9 +562,13 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<QuestionAnswerResponse> getListQuestion(ids) async {
+  Future<QuestionAnswerResponse> getListQuestion(page, size, ids) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'lessonModuleId': ids};
+    final queryParameters = <String, dynamic>{
+      r'page': page,
+      r'size': size,
+      r'lessonModuleIds': ids
+    };
     queryParameters.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
@@ -589,6 +593,22 @@ class _AppApi implements AppApi {
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = LessonModuleResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CommonResponse> makeQuestion(request) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CommonResponse>(
+            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/Question/Input',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CommonResponse.fromJson(_result.data!);
     return value;
   }
 
