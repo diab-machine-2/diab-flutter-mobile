@@ -11,11 +11,13 @@ class BloodSugarResultLayoutWidget extends StatelessWidget {
     required this.title,
     required this.child,
     this.timeToTestPerDay,
+    this.code,
     this.onTapBack,
   });
   final String title;
   final Widget child;
   final int? timeToTestPerDay;
+  final String? code;
   final VoidCallback? onTapBack;
 
   @override
@@ -24,9 +26,7 @@ class BloodSugarResultLayoutWidget extends StatelessWidget {
       backgroundColor: R.color.color0xffF4DBBD,
       body: Stack(
         alignment: AlignmentDirectional.topEnd,
-        children: timeToTestPerDay == null
-            ? _layoutWithShortAppBar(context)
-            : _layoutWithTallAppBar(context),
+        children: timeToTestPerDay == null ? _layoutWithShortAppBar(context) : _layoutWithTallAppBar(context),
       ),
     );
   }
@@ -55,18 +55,13 @@ class BloodSugarResultLayoutWidget extends StatelessWidget {
                       textDirection: ui.TextDirection.ltr,
                       text: TextSpan(
                         text: R.string.recommand_blood_sugar_test.tr(),
-                        style: TextStyle(
-                            color: R.color.primaryGreyColor,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16),
+                        style: TextStyle(color: R.color.primaryGreyColor, fontWeight: FontWeight.w400, fontSize: 16),
                         children: <TextSpan>[
                           TextSpan(
-                            text: R.string.time_per_day
-                                .tr(args: ['$timeToTestPerDay']),
-                            style: TextStyle(
-                                color: R.color.black,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16),
+                            text: code == 'K'
+                                ? R.string.time_per_week.tr(args: ['$timeToTestPerDay'])
+                                : R.string.time_per_day.tr(args: ['$timeToTestPerDay']),
+                            style: TextStyle(color: R.color.black, fontWeight: FontWeight.w700, fontSize: 16),
                           )
                         ],
                       ),

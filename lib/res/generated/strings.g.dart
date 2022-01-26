@@ -196,6 +196,7 @@ class Strings {
 	String get no_need_to_test => 'no_need_to_test';
 	String get often_testing_blood_sugar => 'often_testing_blood_sugar';
 	String get time_per_day => 'time_per_day';
+	String get time_per_week => 'time_per_week';
 	String get upgrade_to_diab_pro => 'upgrade_to_diab_pro';
 	String get survey_again => 'survey_again';
 	String get testing_schedule_suggest => 'testing_schedule_suggest';
