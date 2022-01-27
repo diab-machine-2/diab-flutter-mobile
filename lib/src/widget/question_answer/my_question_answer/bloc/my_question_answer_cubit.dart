@@ -133,6 +133,7 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
     final ApiResult<CommonResponse> apiResult = await repository.deleteQuestion(id);
     apiResult.when(success: (CommonResponse response) {
       questions.removeWhere((element) => element.id == id);
+      createLessonModules();
       emit(DeleteQuestionSuccess());
     }, failure: (NetworkExceptions error) {
       emit(DeleteQuestionFailure(NetworkExceptions.getErrorMessage(error)));
@@ -142,6 +143,7 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
   Future<void> deleteQuestionLocal(String id) async {
     emit(MyQuestionAnswerLoading());
     questions.removeWhere((element) => element.id == id);
+    createLessonModules();
     emit(DeleteQuestionSuccess());
   }
 

@@ -26,7 +26,6 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   late AllQuestionAnswerCubit _cubit;
   final ScrollController _scrollController = ScrollController();
   final RefreshController _controller = RefreshController();
-  final userInfo = AppSettings.userInfo;
 
   @override
   void initState() {
@@ -321,7 +320,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         color: R.color.white,
         margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
         elevation: 2,
-        child: questionModel.accountId == userInfo?.accountId
+        child: questionModel.accountId == _cubit.userInfo?.accountId
             ? Slidable(
                 actionPane: SlidableDrawerActionPane(),
                 secondaryActions: [

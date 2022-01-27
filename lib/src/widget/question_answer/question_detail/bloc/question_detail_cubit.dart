@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +20,9 @@ import 'package:medical/src/modal/error/error_model.dart';
 class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   QuestionModel questionModel;
   final AppRepository repository;
+  Timer? timer;
+  bool isClickSend = false;
+  final userInfo = AppSettings.userInfo;
 
   QuestionDetailCubit(this.repository, this.questionModel) : super(QuestionDetailInitial()) {
     // TODO
@@ -75,6 +80,14 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
       emit(DeleteCommentSuccess(message: id));
     }, failure: (NetworkExceptions error) {
       emit(DeleteCommentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+  }
+
+  setClickSend() {
+    isClickSend = true;
+    if (timer != null) timer!.cancel();
+    timer = Timer(Duration(seconds: 3), () {
+      isClickSend = false;
     });
   }
 }

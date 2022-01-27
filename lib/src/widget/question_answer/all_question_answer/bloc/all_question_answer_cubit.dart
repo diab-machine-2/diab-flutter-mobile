@@ -23,8 +23,8 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
   List<bool> listSelectedLessonModule = [];
   List<String> lessonModuleIds = [];
   List<QuestionModel> questions = [];
-
   List<LessonModuleItem> allLessonModules = [];
+  final userInfo = AppSettings.userInfo;
 
   AllQuestionAnswerCubit(this.repository) : super(AllQuestionAnswerInitial()) {
     initData();
@@ -139,6 +139,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     final ApiResult<CommonResponse> apiResult = await repository.deleteQuestion(id);
     apiResult.when(success: (CommonResponse response) {
       questions.removeWhere((element) => element.id == id);
+      createLessonModules();
       emit(DeleteQuestionSuccess());
     }, failure: (NetworkExceptions error) {
       emit(DeleteQuestionFailure(NetworkExceptions.getErrorMessage(error)));
@@ -148,6 +149,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
   Future<void> deleteQuestionLocal(String id) async {
     emit(AllQuestionAnswerLoading());
     questions.removeWhere((element) => element.id == id);
+    createLessonModules();
     emit(DeleteQuestionSuccess());
   }
 

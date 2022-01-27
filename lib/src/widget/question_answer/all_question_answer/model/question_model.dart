@@ -41,7 +41,7 @@ class QuestionModel {
         creatorId: json["creatorId"],
         professor: json["professor"] != null ? Account.fromJson(json["professor"]) : null,
         creatorUrl: json["creatorUrl"] != null ? Avatar.fromJson(json["creatorUrl"]) : null,
-        answers: json["answers"] == null ? null : List<Answer>.from(json["answers"].map((x) => Answer.fromJson(x))),
+        answers: json["answers"] == null ? [] : List<Answer>.from(json["answers"].map((x) => Answer.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {

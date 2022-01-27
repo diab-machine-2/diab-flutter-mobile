@@ -27,7 +27,6 @@ class QuestionDetailPage extends StatefulWidget {
 class _QuestionDetailPageState extends State<QuestionDetailPage> {
   late QuestionDetailCubit _cubit;
   late TextEditingController _controller;
-  final userInfo = AppSettings.userInfo;
 
   @override
   void initState() {
@@ -87,7 +86,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                 children: [
                   _buildHeaderItem(),
                   SizedBox(height: 12),
-                  _buildTitleItem(),
+                  _cubit.questionModel.answers!.isEmpty ? Expanded(child: _buildTitleItem()) : _buildTitleItem(),
                   Visibility(
                     visible: _cubit.questionModel.answers!.isNotEmpty,
                     child: SizedBox(height: 16),
@@ -168,7 +167,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: 0.0,
-              maxHeight: 270,
+              maxHeight: _cubit.questionModel.answers!.isEmpty ? double.infinity : 280,
             ),
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
@@ -180,7 +179,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
           ),
         ),
         SizedBox(width: 16),
-        (_cubit.questionModel.accountId == userInfo?.accountId || _cubit.questionModel.status == 0)
+        (_cubit.questionModel.accountId == _cubit.userInfo?.accountId || _cubit.questionModel.status == 0)
             ? PopupMenuButton(
                 color: R.color.color0xffFF5552,
                 child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
@@ -263,7 +262,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                   ],
                 ),
               ),
-              (answer.accountId == userInfo?.accountId || _cubit.questionModel.status == 0)
+              (answer.accountId == _cubit.userInfo?.accountId || _cubit.questionModel.status == 0)
                   ? PopupMenuButton(
                       color: R.color.color0xffFF5552,
                       child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
@@ -310,25 +309,27 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
   }
 
   _buildListComment() {
-    return Expanded(
-      child: ListView.builder(
-        // separatorBuilder: (context, index) {
-        //   return Divider(height: 0.0);
-        // },
-        itemCount: _cubit.questionModel.answers?.length ?? 0,
-        shrinkWrap: true,
-        padding: EdgeInsets.zero,
-        physics: AlwaysScrollableScrollPhysics(),
-        itemBuilder: (context, position) {
-          return _buildDoctorItemInQuestionItem(
-              _cubit.questionModel.answers != null ? _cubit.questionModel.answers![position] : null);
-        },
-      ),
-    );
+    return _cubit.questionModel.answers!.isEmpty
+        ? Container()
+        : Expanded(
+            child: ListView.builder(
+              // separatorBuilder: (context, index) {
+              //   return Divider(height: 0.0);
+              // },
+              itemCount: _cubit.questionModel.answers?.length ?? 0,
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              physics: AlwaysScrollableScrollPhysics(),
+              itemBuilder: (context, position) {
+                return _buildDoctorItemInQuestionItem(
+                    _cubit.questionModel.answers != null ? _cubit.questionModel.answers![position] : null);
+              },
+            ),
+          );
   }
 
   _buildCommentTextBox() {
-    return (_cubit.questionModel.accountId == userInfo?.accountId || _cubit.questionModel.status == 0)
+    return (_cubit.questionModel.accountId == _cubit.userInfo?.accountId || _cubit.questionModel.status == 0)
         ? Container(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Row(
@@ -360,18 +361,25 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                       height: 28,
                     ),
                     onPressed: () async {
-                      if (_controller.text.isNotEmpty) {
-                        Utils.hideKeyboard(context);
-                        await _cubit.sendComment(_controller.text);
-                        _controller.clear();
-                      } else {
-                        Message.showToastMessage(context, R.string.input_comment_required.tr());
-                      }
+                      await _submitData();
                     }),
               ],
             ),
           )
         : Container();
+  }
+
+  _submitData() async {
+    if (!_cubit.isClickSend) {
+      _cubit.setClickSend();
+      if (_controller.text.isNotEmpty) {
+        Utils.hideKeyboard(context);
+        await _cubit.sendComment(_controller.text);
+        _controller.clear();
+      } else {
+        Message.showToastMessage(context, R.string.input_comment_required.tr());
+      }
+    }
   }
 
   _showDialogDeleteQuestion(BuildContext context, String id) {

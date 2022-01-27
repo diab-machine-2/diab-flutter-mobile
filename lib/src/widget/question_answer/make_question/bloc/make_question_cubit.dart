@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -14,6 +16,9 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
   LessonModuleItem? currentLessonModule;
   final AppRepository repository;
   final List<LessonModuleItem> lessonModuleItems;
+
+  Timer? timer;
+  bool isClickSend = false;
 
   MakeQuestionCubit(this.repository, this.lessonModuleItems) : super(MakeQuestionInitial()) {}
 
@@ -46,5 +51,13 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
     // }, failure: (NetworkExceptions error) {
     //   emit(SendQuestionFailure(NetworkExceptions.getErrorMessage(error)));
     // });
+  }
+
+  setClickSend() {
+    isClickSend = true;
+    if (timer != null) timer!.cancel();
+    timer = Timer(Duration(seconds: 3), () {
+      isClickSend = false;
+    });
   }
 }

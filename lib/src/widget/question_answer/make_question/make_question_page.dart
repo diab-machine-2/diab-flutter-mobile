@@ -27,8 +27,6 @@ class MakeQuestionPage extends StatefulWidget {
 class _MakeQuestionPageState extends State<MakeQuestionPage> {
   late MakeQuestionCubit _cubit;
   late TextEditingController _controller;
-  Timer? _timer;
-  bool isClickSend = false;
 
   @override
   void initState() {
@@ -286,28 +284,19 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
   }
 
   _submitData() async {
-    if (!isClickSend) {
+    if (!_cubit.isClickSend) {
+      _cubit.setClickSend();
       if (_cubit.currentLessonModule == null) {
         Message.showToastMessage(context, R.string.input_topic_required.tr());
-        setClickSend();
         return;
       }
       if (_controller.text.trim().isEmpty) {
         Message.showToastMessage(context, R.string.input_question_required.tr());
-        setClickSend();
         return;
       }
 
       Utils.hideKeyboard(context);
       await _cubit.sendQuestion(_controller.text);
     }
-  }
-
-  setClickSend() {
-    isClickSend = true;
-    if (_timer != null) _timer!.cancel();
-    _timer = Timer(Duration(seconds: 3), () {
-      isClickSend = false;
-    });
   }
 }
