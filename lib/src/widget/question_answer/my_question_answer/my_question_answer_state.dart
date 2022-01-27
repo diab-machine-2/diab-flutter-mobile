@@ -22,6 +22,11 @@ class MyQuestionAnswerLoading extends MyQuestionAnswerState {
   String toString() => 'MyQuestionAnswerLoading';
 }
 
+class LoadmoreMyQuestionAnswerLoading extends MyQuestionAnswerState {
+  @override
+  String toString() => 'LoadmoreMyQuestionAnswerLoading';
+}
+
 class MyQuestionAnswerSuccess extends MyQuestionAnswerState {
   final String? message;
 

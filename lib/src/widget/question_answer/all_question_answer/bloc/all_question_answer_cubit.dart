@@ -25,6 +25,8 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
   List<QuestionModel> questions = [];
   List<LessonModuleItem> allLessonModules = [];
   final userInfo = AppSettings.userInfo;
+  int page = 1;
+  bool canNext = false;
 
   AllQuestionAnswerCubit(this.repository) : super(AllQuestionAnswerInitial()) {
     initData();
@@ -89,16 +91,26 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     });
   }
 
-  getQuestions({bool isShowLoading = false}) async {
+  getQuestions({bool isShowLoading = false, bool isLoadmore = false}) async {
     if (isShowLoading) {
       emit(AllQuestionAnswerLoading());
     }
     final ApiResult<QuestionAnswerResponse> apiResult =
-        await repository.getListQuestion(lessonModuleIds: lessonModuleIds);
+        await repository.getListQuestion(page: page, lessonModuleIds: lessonModuleIds);
     apiResult.when(success: (QuestionAnswerResponse response) {
+      if (response.meta != null) {
+        canNext = response.meta?.canNext ?? false;
+      } else {
+        canNext = false;
+      }
+
       if (response.data != null) {
-        questions = [];
-        questions = response.data!;
+        if (isLoadmore) {
+          questions.addAll(response.data!);
+        } else {
+          questions = [];
+          questions = response.data!;
+        }
 
         if (lessonModuleIds.isEmpty) {
           createLessonModules();
@@ -108,6 +120,14 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     }, failure: (NetworkExceptions error) {
       emit(AllQuestionAnswerFailure(NetworkExceptions.getErrorMessage(error)));
     });
+  }
+
+  loadmore() async {
+    if (canNext) {
+      page++;
+      emit(LoadmoreAllQuestionAnswerLoading());
+      getQuestions(isLoadmore: true);
+    }
   }
 
   createLessonModules() {

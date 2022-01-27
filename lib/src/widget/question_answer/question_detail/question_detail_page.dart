@@ -97,6 +97,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                   SizedBox(height: 10),
                   _buildListComment(),
                   _buildCommentTextBox(),
+                  SizedBox(height: 8),
                 ],
               ),
             ),
@@ -179,37 +180,41 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
           ),
         ),
         SizedBox(width: 16),
-        (_cubit.questionModel.accountId == _cubit.userInfo?.accountId || _cubit.questionModel.status == 0)
-            ? PopupMenuButton(
-                color: R.color.color0xffFF5552,
-                child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
-                itemBuilder: (context) {
-                  return List.generate(1, (index) {
-                    return PopupMenuItem<String>(
-                        height: 30,
-                        padding: EdgeInsets.zero,
-                        onTap: () {
-                          Future.delayed(const Duration(seconds: 0),
-                              () => _showDialogDeleteQuestion(context, _cubit.questionModel.id!));
-                        },
-                        child: Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                              SizedBox(width: 8),
-                              Text(R.string.delete_question.tr(),
-                                  style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
-                                  textAlign: TextAlign.center),
-                            ],
-                          ),
-                        ),
-                        value: 'Doge');
-                  });
-                },
-              )
-            : Container(),
+        _buildDeleteQuestion(),
       ],
+    );
+  }
+
+  _buildDeleteQuestion() {
+    if (_cubit.questionModel.status == 0) return Container();
+    if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
+    return PopupMenuButton(
+      color: R.color.color0xffFF5552,
+      child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
+      itemBuilder: (context) {
+        return List.generate(1, (index) {
+          return PopupMenuItem<String>(
+              height: 30,
+              padding: EdgeInsets.zero,
+              onTap: () {
+                Future.delayed(
+                    const Duration(seconds: 0), () => _showDialogDeleteQuestion(context, _cubit.questionModel.id!));
+              },
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+                    SizedBox(width: 8),
+                    Text(R.string.delete_question.tr(),
+                        style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.center),
+                  ],
+                ),
+              ),
+              value: 'Doge');
+        });
+      },
     );
   }
 
@@ -262,36 +267,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                   ],
                 ),
               ),
-              (answer.accountId == _cubit.userInfo?.accountId || _cubit.questionModel.status == 0)
-                  ? PopupMenuButton(
-                      color: R.color.color0xffFF5552,
-                      child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
-                      itemBuilder: (context) {
-                        return List.generate(1, (index) {
-                          return PopupMenuItem<String>(
-                              height: 30,
-                              padding: EdgeInsets.zero,
-                              onTap: () {
-                                Future.delayed(
-                                    const Duration(seconds: 0), () => _showDialogDeleteComment(context, answer.id!));
-                              },
-                              child: Container(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                                    SizedBox(width: 8),
-                                    Text(R.string.delete_comment.tr(),
-                                        style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
-                                        textAlign: TextAlign.center),
-                                  ],
-                                ),
-                              ),
-                              value: 'Doge');
-                        });
-                      },
-                    )
-                  : Container(),
+              _buildDeleteComment(answer),
             ],
           ),
           SizedBox(height: 4),
@@ -305,6 +281,38 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
           ),
         ],
       ),
+    );
+  }
+
+  _buildDeleteComment(Answer answer) {
+    if (_cubit.questionModel.status == 0) return Container();
+    if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
+    return PopupMenuButton(
+      color: R.color.color0xffFF5552,
+      child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
+      itemBuilder: (context) {
+        return List.generate(1, (index) {
+          return PopupMenuItem<String>(
+              height: 30,
+              padding: EdgeInsets.zero,
+              onTap: () {
+                Future.delayed(const Duration(seconds: 0), () => _showDialogDeleteComment(context, answer.id!));
+              },
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+                    SizedBox(width: 8),
+                    Text(R.string.delete_comment.tr(),
+                        style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.center),
+                  ],
+                ),
+              ),
+              value: 'Doge');
+        });
+      },
     );
   }
 
@@ -329,44 +337,44 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
   }
 
   _buildCommentTextBox() {
-    return (_cubit.questionModel.accountId == _cubit.userInfo?.accountId || _cubit.questionModel.status == 0)
-        ? Container(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: R.color.grayBorder, width: 1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        filled: true,
-                        hintStyle: TextStyle(color: R.color.gray),
-                        hintText: "Thêm bình luận",
-                        fillColor: R.color.white),
-                    controller: _controller,
+    if (_cubit.questionModel.status == 0) return Container();
+    if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
+    return Container(
+      padding: EdgeInsets.only(top: 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ),
-                SizedBox(width: 12),
-                FloatingActionButton(
-                    backgroundColor: R.color.greenGradientBottom,
-                    child: Image.asset(
-                      R.drawable.ic_send,
-                      width: 28,
-                      height: 28,
-                    ),
-                    onPressed: () async {
-                      await _submitData();
-                    }),
-              ],
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: R.color.grayBorder, width: 1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  filled: true,
+                  hintStyle: TextStyle(color: R.color.gray),
+                  hintText: "Thêm bình luận",
+                  fillColor: R.color.white),
+              controller: _controller,
             ),
-          )
-        : Container();
+          ),
+          SizedBox(width: 12),
+          FloatingActionButton(
+              backgroundColor: R.color.greenGradientBottom,
+              child: Image.asset(
+                R.drawable.ic_send,
+                width: 28,
+                height: 28,
+              ),
+              onPressed: () async {
+                await _submitData();
+              }),
+        ],
+      ),
+    );
   }
 
   _submitData() async {

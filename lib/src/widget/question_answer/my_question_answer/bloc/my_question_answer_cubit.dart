@@ -23,6 +23,8 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
   List<String> lessonModuleIds = [];
   List<QuestionModel> questions = [];
   var userInfo = AppSettings.userInfo;
+  int page = 1;
+  bool canNext = false;
 
   MyQuestionAnswerCubit(this.repository) : super(MyQuestionAnswerInitial()) {
     initData();
@@ -87,17 +89,27 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
     });
   }
 
-  getQuestions({bool isShowLoading = false}) async {
+  getQuestions({bool isShowLoading = false, bool isLoadmore = false}) async {
     if (isShowLoading) {
       emit(MyQuestionAnswerLoading());
     }
 
-    final ApiResult<QuestionAnswerResponse> apiResult =
-        await repository.getListQuestion(lessonModuleIds: lessonModuleIds, accountIds: [userInfo!.accountId!]);
+    final ApiResult<QuestionAnswerResponse> apiResult = await repository
+        .getListQuestion(page: page, lessonModuleIds: lessonModuleIds, accountIds: [userInfo!.accountId!]);
     apiResult.when(success: (QuestionAnswerResponse response) {
+      if (response.meta != null) {
+        canNext = response.meta!.canNext ?? false;
+      } else {
+        canNext = false;
+      }
+
       if (response.data != null) {
-        questions = [];
-        questions = response.data!;
+        if (isLoadmore) {
+          questions.addAll(response.data!);
+        } else {
+          questions = [];
+          questions = response.data!;
+        }
 
         if (lessonModuleIds.isEmpty) {
           createLessonModules();
@@ -125,6 +137,14 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
     }
     if (listSelectedLessonModule.isNotEmpty) {
       listSelectedLessonModule[0] = true;
+    }
+  }
+
+  loadmore() async {
+    if (canNext) {
+      page++;
+      emit(LoadmoreMyQuestionAnswerLoading());
+      getQuestions(isLoadmore: true);
     }
   }
 

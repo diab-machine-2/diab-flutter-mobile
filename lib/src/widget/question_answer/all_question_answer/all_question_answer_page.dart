@@ -25,6 +25,7 @@ class AllQuestionAnswerPage extends StatefulWidget {
 class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with AutomaticKeepAliveClientMixin {
   late AllQuestionAnswerCubit _cubit;
   final ScrollController _scrollController = ScrollController();
+  final ScrollController _questionScrollController = ScrollController();
   final RefreshController _controller = RefreshController();
 
   @override
@@ -32,6 +33,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
     super.initState();
     final AppRepository appRepository = AppRepository();
     _cubit = AllQuestionAnswerCubit(appRepository);
+    _questionScrollController.addListener(_scrollListener);
   }
 
   @override
@@ -75,6 +77,16 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                 _buildMakeQuestion(),
                 SizedBox(height: 8),
                 _buildQuestionList(state),
+                SizedBox(height: 16),
+                Visibility(
+                  visible: state is LoadmoreAllQuestionAnswerLoading,
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                SizedBox(height: 8),
               ],
             ),
           ),
@@ -268,6 +280,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
             ? ListView.builder(
                 itemCount: _cubit.questions.length,
                 shrinkWrap: true,
+                controller: _questionScrollController,
                 itemBuilder: (context, position) {
                   return _buildQuestionItem(_cubit.questions[position]);
                 },
@@ -277,6 +290,18 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
                 : Container(),
       ),
     );
+  }
+
+  void _scrollListener() async {
+    if (_questionScrollController.offset >= _questionScrollController.position.maxScrollExtent &&
+        !_questionScrollController.position.outOfRange) {
+      //reach the bottom
+      await _cubit.loadmore();
+    }
+    if (_questionScrollController.offset <= _questionScrollController.position.minScrollExtent &&
+        !_questionScrollController.position.outOfRange) {
+      //reach the top
+    }
   }
 
   _buildEmpty() {
@@ -320,34 +345,41 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         color: R.color.white,
         margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
         elevation: 2,
-        child: questionModel.accountId == _cubit.userInfo?.accountId
-            ? Slidable(
-                actionPane: SlidableDrawerActionPane(),
-                secondaryActions: [
-                  IconSlideAction(
-                    color: R.color.color0xffFF5552,
-                    iconWidget: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                          SizedBox(height: 8),
-                          Text(R.string.delete_question.tr(),
-                              style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
-                              textAlign: TextAlign.center),
-                        ],
-                      ),
-                    ),
-                    onTap: () {
-                      _showDialogDelete(context, questionModel.id!);
-                    },
-                  ),
-                ],
-                child: _buildQuestionItemInCard(questionModel),
-              )
-            : _buildQuestionItemInCard(questionModel),
+        child: _buildQuestionItemWithSlide(questionModel),
       ),
+    );
+  }
+
+  _buildQuestionItemWithSlide(QuestionModel questionModel) {
+    if (questionModel.accountId != _cubit.userInfo?.accountId) {
+      return _buildQuestionItemInCard(questionModel);
+    }
+    if (questionModel.status == 0) {
+      return _buildQuestionItemInCard(questionModel);
+    }
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      secondaryActions: [
+        IconSlideAction(
+          color: R.color.color0xffFF5552,
+          iconWidget: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+                SizedBox(height: 8),
+                Text(R.string.delete_question.tr(),
+                    style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
+              ],
+            ),
+          ),
+          onTap: () {
+            _showDialogDelete(context, questionModel.id!);
+          },
+        ),
+      ],
+      child: _buildQuestionItemInCard(questionModel),
     );
   }
 
