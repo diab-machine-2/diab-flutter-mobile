@@ -15,9 +15,7 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
   final AppRepository repository;
   final List<LessonModuleItem> lessonModuleItems;
 
-  MakeQuestionCubit(this.repository, this.lessonModuleItems) : super(MakeQuestionInitial()) {
-    // TODO
-  }
+  MakeQuestionCubit(this.repository, this.lessonModuleItems) : super(MakeQuestionInitial()) {}
 
   setCurrentLessonModule(LessonModuleItem item) {
     currentLessonModule = item;

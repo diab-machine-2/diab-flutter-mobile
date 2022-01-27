@@ -12,6 +12,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import '../question_answer_utils.dart';
 import 'my_question_answer.dart';
 
 class MyQuestionAnswerPage extends StatefulWidget {
@@ -72,9 +73,9 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildQuestionDoctor(),
+                _buildMakeQuestion(),
                 SizedBox(height: 8),
-                _buildQuestionList(),
+                _buildQuestionList(state),
               ],
             ),
           ),
@@ -86,8 +87,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
   _buildLessonModule(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)), // Set rounded corner radius
+        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
         boxShadow: [BoxShadow(blurRadius: 1, color: R.color.grayBorder, offset: Offset(1, 3))],
         color: Colors.white,
       ),
@@ -100,18 +100,18 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
             R.string.view_by_topic.tr(),
             style: TextStyle(color: R.color.black, fontWeight: FontWeight.w400, fontSize: 14),
           ),
-          SizedBox(height: 6),
+          SizedBox(height: 8),
           Row(
             children: [
               InkWell(
                 onTap: () {
-                  if (_cubit.currentTopic == null) return;
-                  animateToIndex(_cubit.currentTopic - 1);
+                  if (_cubit.currentLessonModule == null) return;
+                  animateToIndex(_cubit.currentLessonModule - 1);
                 },
                 child: Icon(
                   Icons.chevron_left_rounded,
                   size: 28,
-                  color: (_cubit.currentTopic) <= 0 ? R.color.captionColorGray : R.color.greenGradientBottom,
+                  color: (_cubit.currentLessonModule) <= 0 ? R.color.captionColorGray : R.color.greenGradientBottom,
                 ),
               ),
               Expanded(
@@ -120,7 +120,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
                   controller: _scrollController,
                   child: Row(
                     children: List.generate(_cubit.lessonModules.length, (index) {
-                      return _buildTopicItem(
+                      return _buildLessonModuleItem(
                           item: _cubit.lessonModules[index].name ?? '',
                           isSelected: _cubit.listSelectedLessonModule[index],
                           onSelect: () {
@@ -134,13 +134,13 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
               ),
               InkWell(
                 onTap: () {
-                  if (_cubit.currentTopic == null) return;
-                  animateToIndex(_cubit.currentTopic + 1);
+                  if (_cubit.currentLessonModule == null) return;
+                  animateToIndex(_cubit.currentLessonModule + 1);
                 },
                 child: Icon(
                   Icons.chevron_right_rounded,
                   size: 28,
-                  color: (_cubit.currentTopic) >= (_cubit.lessonModules.length - 1)
+                  color: (_cubit.currentLessonModule) >= (_cubit.lessonModules.length - 1)
                       ? R.color.captionColorGray
                       : R.color.greenGradientBottom,
                 ),
@@ -173,7 +173,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
     }
   }
 
-  _buildTopicItem({
+  _buildLessonModuleItem({
     required String item,
     required bool isSelected,
     VoidCallback? onSelect,
@@ -183,7 +183,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
       child: Container(
         alignment: Alignment.center,
         margin: const EdgeInsets.only(right: 8),
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           color: isSelected ? R.color.greenGradientBottom : R.color.grayBorder,
           border: isSelected ? Border.all(color: R.color.greenGradientBottom) : null,
@@ -206,12 +206,14 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
     );
   }
 
-  _buildQuestionDoctor() {
+  _buildMakeQuestion() {
     return GestureDetector(
       onTap: () async {
-        await Navigator.pushNamed(context, NavigatorName.make_question,
-            arguments: {'lessonModuleItems': _cubit.lessonModules});
-        _cubit.getQuestions(isShowLoading: true);
+        var result = await Navigator.pushNamed(context, NavigatorName.make_question,
+            arguments: {'lessonModuleItems': _cubit.allLessonModules});
+        if (result != null) {
+          _cubit.getQuestions(isShowLoading: true);
+        }
       },
       child: Container(
         height: 78,
@@ -240,7 +242,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
                           style:
                               TextStyle(color: R.color.greenGradientBottom, fontWeight: FontWeight.w700, fontSize: 16),
                         ),
-                        Image.asset(R.drawable.ic_right, width: 18, height: 18, color: R.color.greenGradientBottom),
+                        Image.asset(R.drawable.ic_right, width: 16, height: 16, color: R.color.greenGradientBottom),
                       ],
                     ),
                   ),
@@ -258,7 +260,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
     );
   }
 
-  _buildQuestionList() {
+  _buildQuestionList(MyQuestionAnswerState state) {
     return Expanded(
       child: SmartRefresher(
         controller: _controller,
@@ -271,7 +273,9 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
                   return _buildQuestionItem(_cubit.questions[position]);
                 },
               )
-            : _buildEmpty(),
+            : (state is MyQuestionAnswerSuccess || state is MyQuestionAnswerFailure)
+                ? _buildEmpty()
+                : Container(),
       ),
     );
   }
@@ -306,7 +310,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
               _cubit.deleteCommentLocal(questionModel.id!, id);
             }
           } else if (result is QuestionModel) {
-            _cubit.updateQuestions(result);
+            _cubit.updateQuestionsLocal(result);
           }
         }
       },
@@ -364,15 +368,18 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
             child: Divider(height: 0.5, color: R.color.grayBorder),
           ),
           SizedBox(height: 8),
-          ListView.builder(
-            itemCount: questionModel.answers?.length ?? 0,
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, position) {
-              return _buildDoctorItemInQuestionItem(
-                  questionModel.answers != null ? questionModel.answers![position] : null);
-            },
-          ),
+          // ListView.builder(
+          //   itemCount: questionModel.answers?.length ?? 0,
+          //   shrinkWrap: true,
+          //   physics: NeverScrollableScrollPhysics(),
+          //   itemBuilder: (context, position) {
+          //     return _buildDoctorItemInQuestionItem(
+          //         questionModel.answers != null ? questionModel.answers![position] : null);
+          //   },
+          // ),
+          _buildDoctorItemInQuestionItem((questionModel.answers != null && questionModel.answers!.isNotEmpty)
+              ? questionModel.answers!.last
+              : null),
         ],
       ),
     );
@@ -384,7 +391,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
       children: [
         Container(
           alignment: Alignment.center,
-          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
           decoration: BoxDecoration(
             color: true ? R.color.greenGradientBottom : R.color.grayBorder,
             border: true ? Border.all(color: R.color.greenGradientBottom) : null,
@@ -401,10 +408,11 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
             ),
           ),
         ),
+        Spacer(),
         Text(
-          _cubit.getStatus(questionModel.status ?? 0),
+          QuestionAnswerUtils.getStatus(questionModel.status ?? 0),
           style: TextStyle(
-            color: _cubit.getColorStatus(questionModel.status ?? 0),
+            color: QuestionAnswerUtils.getColorStatus(questionModel.status ?? 0),
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -421,6 +429,8 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
         fontSize: 16,
         fontWeight: FontWeight.w700,
       ),
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -436,7 +446,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
             width: 40,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
             child: answer.account?.avatar?.url == null
-                ? Container()
+                ? Icon(Icons.person, size: 24, color: R.color.white)
                 : NetWorkImageWidget(imageUrl: answer.account!.avatar!.url),
           ),
           SizedBox(width: 8),
@@ -458,8 +468,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
                   answer.account?.createDatetime == null
                       ? ''
                       : DateUtil.parseDateToString(
-                          DateTime.fromMillisecondsSinceEpoch(answer.account!.createDatetime! * 1000),
-                          'dd/MM/yyyy - hh:mm'),
+                          DateTime.fromMillisecondsSinceEpoch(answer.createDateTime! * 1000), 'dd/MM/yyyy - hh:mm'),
                   style: TextStyle(
                     color: R.color.gray,
                     fontSize: 12,
@@ -470,7 +479,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
               ],
             ),
           ),
-          Image.asset(R.drawable.ic_right, width: 14, height: 14, color: R.color.greenGradientBottom),
+          Image.asset(R.drawable.ic_right, width: 16, height: 16, color: R.color.greenGradientBottom),
         ],
       ),
     );
@@ -488,7 +497,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset(R.drawable.ic_earse, width: 40, height: 40),
+                    Image.asset(R.drawable.ic_earse, width: 44, height: 44),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(R.string.confirm_delete_question.tr(),
@@ -530,7 +539,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
                             child: Container(
                               height: 40,
                               decoration: BoxDecoration(
-                                color: R.color.red,
+                                color: R.color.attentionText,
                                 borderRadius: BorderRadius.circular(200),
                               ),
                               child: Center(

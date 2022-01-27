@@ -77,7 +77,7 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
             child: Container(
               height: 24,
               width: 24,
-              child: Image.asset(R.drawable.ic_close),
+              //    child: Image.asset(R.drawable.ic_close),
             ),
           ),
         ],

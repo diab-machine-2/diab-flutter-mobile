@@ -950,6 +950,7 @@ class Strings {
 	String get question_doctor => 'question_doctor';
 	String get ask_question => 'ask_question';
 	String get select_topic => 'select_topic';
+	String get topic => 'topic';
 	String get your_question => 'your_question';
 	String get send_question => 'send_question';
 	String get response_as_soon_as_possible => 'response_as_soon_as_possible';
@@ -966,4 +967,7 @@ class Strings {
 	String get waiting => 'waiting';
 	String get question_empty => 'question_empty';
 	String get mine => 'mine';
+	String get input_comment_required => 'input_comment_required';
+	String get input_topic_required => 'input_topic_required';
+	String get input_question_required => 'input_question_required';
 }

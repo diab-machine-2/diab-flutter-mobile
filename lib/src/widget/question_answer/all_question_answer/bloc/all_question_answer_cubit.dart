@@ -17,12 +17,14 @@ import 'package:medical/src/repo/question_answer/question_answer_client.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 
 class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
-  int currentTopic = 0;
+  int currentLessonModule = 0;
   final AppRepository repository;
   List<LessonModuleItem> lessonModules = [];
   List<bool> listSelectedLessonModule = [];
   List<String> lessonModuleIds = [];
   List<QuestionModel> questions = [];
+
+  List<LessonModuleItem> allLessonModules = [];
 
   AllQuestionAnswerCubit(this.repository) : super(AllQuestionAnswerInitial()) {
     initData();
@@ -52,13 +54,13 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
         }
       }
     }
-    currentTopic = index;
+    currentLessonModule = index;
 
     getQuestions(isShowLoading: true);
   }
 
   onAnimate(int index) {
-    currentTopic = index;
+    currentLessonModule = index;
     emit(AllQuestionAnswerLoading());
     emit(AllQuestionAnswerSuccess());
   }
@@ -75,22 +77,14 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
   getListLessonModule() async {
     final ApiResult<LessonModuleResponse> apiResult = await repository.getListLessonModule();
     apiResult.when(success: (LessonModuleResponse response) {
-      lessonModules = [];
-      lessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
+      allLessonModules = [];
+      allLessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
       if (response.data?.items != null) {
-        lessonModules.addAll(response.data!.items!);
-
-        listSelectedLessonModule = [];
-        for (var lesson in lessonModules) {
-          listSelectedLessonModule.add(false);
-        }
-        if (listSelectedLessonModule.isNotEmpty) {
-          listSelectedLessonModule[0] = true;
-        }
+        allLessonModules.addAll(response.data!.items!);
       }
     }, failure: (NetworkExceptions error) {
-      lessonModules = [];
-      lessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
+      allLessonModules = [];
+      allLessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
       //   emit(AllQuestionAnswerFailure(NetworkExceptions.getErrorMessage(error)));
     });
   }
@@ -105,6 +99,10 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
       if (response.data != null) {
         questions = [];
         questions = response.data!;
+
+        if (lessonModuleIds.isEmpty) {
+          createLessonModules();
+        }
       }
       emit(const AllQuestionAnswerSuccess());
     }, failure: (NetworkExceptions error) {
@@ -112,9 +110,28 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     });
   }
 
+  createLessonModules() {
+    lessonModules = [];
+    lessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
+    for (int i = 0; i < questions.length; i++) {
+      if (questions[i].lessonModule != null) {
+        lessonModules.add(questions[i].lessonModule!);
+      }
+    }
+    lessonModules = lessonModules.toSet().toList();
+
+    listSelectedLessonModule = [];
+    for (var lesson in lessonModules) {
+      listSelectedLessonModule.add(false);
+    }
+    if (listSelectedLessonModule.isNotEmpty) {
+      listSelectedLessonModule[0] = true;
+    }
+  }
+
   refreshData() async {
-    emit(AllQuestionAnswerInitial());
-    await initData(isRefresh: true);
+    //  emit(AllQuestionAnswerInitial());
+    await getQuestions();
   }
 
   Future<void> deleteQuestion(String id) async {
@@ -145,37 +162,11 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     emit(DeleteCommentSuccess());
   }
 
-  Future<void> updateQuestions(QuestionModel questionModel) async {
+  Future<void> updateQuestionsLocal(QuestionModel questionModel) async {
     emit(AllQuestionAnswerLoading());
     var index = questions.indexWhere((element) => element.id == questionModel.id);
     questions[index] = questionModel;
     emit(const AllQuestionAnswerSuccess());
-  }
-
-  String getStatus(int status) {
-    switch (status) {
-      case 0:
-        return R.string.closed.tr();
-      case 1:
-        return R.string.waiting.tr();
-      case 2:
-        return R.string.replied.tr();
-      default:
-        return '';
-    }
-  }
-
-  Color getColorStatus(int status) {
-    switch (status) {
-      case 0:
-        return R.color.red;
-      case 1:
-        return R.color.yellow;
-      case 2:
-        return R.color.greenGradientBottom;
-      default:
-        return R.color.transparent;
-    }
   }
 
   LessonModuleItem getLessonModule(String id) {

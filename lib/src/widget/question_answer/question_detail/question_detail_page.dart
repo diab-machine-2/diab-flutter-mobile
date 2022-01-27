@@ -13,6 +13,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
+import '../question_answer_utils.dart';
 import 'question_detail.dart';
 
 class QuestionDetailPage extends StatefulWidget {
@@ -87,11 +88,15 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                   _buildHeaderItem(),
                   SizedBox(height: 12),
                   _buildTitleItem(),
-                  SizedBox(height: 16),
-                  Divider(height: 0.5, color: R.color.grayBorder),
+                  Visibility(
+                    visible: _cubit.questionModel.answers!.isNotEmpty,
+                    child: SizedBox(height: 16),
+                  ),
+                  Visibility(
+                      visible: _cubit.questionModel.answers!.isNotEmpty,
+                      child: Divider(height: 0.5, color: R.color.grayBorder)),
                   SizedBox(height: 10),
                   _buildListComment(),
-                  SizedBox(height: 16),
                   _buildCommentTextBox(),
                 ],
               ),
@@ -127,7 +132,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
       children: [
         Container(
           alignment: Alignment.center,
-          padding: EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
           decoration: BoxDecoration(
             color: true ? R.color.greenGradientBottom : R.color.grayBorder,
             border: true ? Border.all(color: R.color.greenGradientBottom) : null,
@@ -143,9 +148,9 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
           ),
         ),
         Text(
-          _cubit.getStatus(_cubit.questionModel.status ?? 0),
+          QuestionAnswerUtils.getStatus(_cubit.questionModel.status ?? 0),
           style: TextStyle(
-            color: _cubit.getColorStatus(_cubit.questionModel.status ?? 0),
+            color: QuestionAnswerUtils.getColorStatus(_cubit.questionModel.status ?? 0),
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -160,26 +165,33 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: Text(
-            _cubit.questionModel.body ?? '',
-            style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: 0.0,
+              maxHeight: 270,
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Text(
+                _cubit.questionModel.body ?? '',
+                style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700),
+              ),
+            ),
           ),
         ),
         SizedBox(width: 16),
-        _cubit.questionModel.accountId == userInfo?.accountId
+        (_cubit.questionModel.accountId == userInfo?.accountId || _cubit.questionModel.status == 0)
             ? PopupMenuButton(
                 color: R.color.color0xffFF5552,
-                child: Center(
-                  child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
-                ),
+                child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
                 itemBuilder: (context) {
                   return List.generate(1, (index) {
                     return PopupMenuItem<String>(
                         height: 30,
                         padding: EdgeInsets.zero,
                         onTap: () {
-                          Future.delayed(
-                              const Duration(seconds: 0), () => _showDialogDelete(context, _cubit.questionModel.id!));
+                          Future.delayed(const Duration(seconds: 0),
+                              () => _showDialogDeleteQuestion(context, _cubit.questionModel.id!));
                         },
                         child: Container(
                           child: Row(
@@ -218,7 +230,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                 width: 40,
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
                 child: answer.account?.avatar?.url == null
-                    ? Container()
+                    ? Icon(Icons.person, size: 24, color: R.color.white)
                     : NetWorkImageWidget(imageUrl: answer.account!.avatar!.url),
               ),
               SizedBox(width: 8),
@@ -240,8 +252,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                       answer.account?.createDatetime == null
                           ? ''
                           : DateUtil.parseDateToString(
-                              DateTime.fromMillisecondsSinceEpoch(answer.account!.createDatetime! * 1000),
-                              'dd/MM/yyyy - hh:mm'),
+                              DateTime.fromMillisecondsSinceEpoch(answer.createDateTime! * 1000), 'dd/MM/yyyy - hh:mm'),
                       style: TextStyle(
                         color: R.color.gray,
                         fontSize: 12,
@@ -252,12 +263,10 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                   ],
                 ),
               ),
-              answer.accountId == userInfo?.accountId
+              (answer.accountId == userInfo?.accountId || _cubit.questionModel.status == 0)
                   ? PopupMenuButton(
                       color: R.color.color0xffFF5552,
-                      child: Center(
-                        child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
-                      ),
+                      child: Icon(Icons.more_vert, size: 24, color: R.color.black54),
                       itemBuilder: (context) {
                         return List.generate(1, (index) {
                           return PopupMenuItem<String>(
@@ -265,7 +274,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                               padding: EdgeInsets.zero,
                               onTap: () {
                                 Future.delayed(
-                                    const Duration(seconds: 0), () => _showDialogComment(context, answer.id!));
+                                    const Duration(seconds: 0), () => _showDialogDeleteComment(context, answer.id!));
                               },
                               child: Container(
                                 child: Row(
@@ -309,7 +318,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
         itemCount: _cubit.questionModel.answers?.length ?? 0,
         shrinkWrap: true,
         padding: EdgeInsets.zero,
-        physics: NeverScrollableScrollPhysics(),
+        physics: AlwaysScrollableScrollPhysics(),
         itemBuilder: (context, position) {
           return _buildDoctorItemInQuestionItem(
               _cubit.questionModel.answers != null ? _cubit.questionModel.answers![position] : null);
@@ -319,7 +328,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
   }
 
   _buildCommentTextBox() {
-    return _cubit.questionModel.accountId == userInfo?.accountId
+    return (_cubit.questionModel.accountId == userInfo?.accountId || _cubit.questionModel.status == 0)
         ? Container(
             padding: EdgeInsets.symmetric(vertical: 16),
             child: Row(
@@ -351,9 +360,13 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                       height: 28,
                     ),
                     onPressed: () async {
-                      Utils.hideKeyboard(context);
-                      await _cubit.sendComment(_controller.text);
-                      _controller.clear();
+                      if (_controller.text.isNotEmpty) {
+                        Utils.hideKeyboard(context);
+                        await _cubit.sendComment(_controller.text);
+                        _controller.clear();
+                      } else {
+                        Message.showToastMessage(context, R.string.input_comment_required.tr());
+                      }
                     }),
               ],
             ),
@@ -361,7 +374,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
         : Container();
   }
 
-  _showDialogDelete(BuildContext context, String id) {
+  _showDialogDeleteQuestion(BuildContext context, String id) {
     showDialog(
       context: context,
       builder: (context) {
@@ -373,9 +386,9 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset(R.drawable.ic_earse, width: 40, height: 40),
+                    Image.asset(R.drawable.ic_earse, width: 44, height: 44),
                     Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                      padding: const EdgeInsets.only(top: 16.0),
                       child: Text(R.string.confirm_delete_question.tr(),
                           textAlign: TextAlign.center,
                           style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
@@ -414,7 +427,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                             child: Container(
                               height: 40,
                               decoration: BoxDecoration(
-                                color: R.color.red,
+                                color: R.color.attentionText,
                                 borderRadius: BorderRadius.circular(200),
                               ),
                               child: Center(
@@ -443,7 +456,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
     );
   }
 
-  _showDialogComment(BuildContext context, String id) {
+  _showDialogDeleteComment(BuildContext context, String id) {
     showDialog(
       context: context,
       builder: (context) {
@@ -455,9 +468,9 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset(R.drawable.ic_earse, width: 40, height: 40),
+                    Image.asset(R.drawable.ic_earse, width: 44, height: 44),
                     Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                      padding: const EdgeInsets.only(top: 16.0),
                       child: Text(R.string.confirm_delete_comment.tr(),
                           textAlign: TextAlign.center,
                           style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
@@ -496,7 +509,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
                             child: Container(
                               height: 40,
                               decoration: BoxDecoration(
-                                color: R.color.red,
+                                color: R.color.attentionText,
                                 borderRadius: BorderRadius.circular(200),
                               ),
                               child: Center(

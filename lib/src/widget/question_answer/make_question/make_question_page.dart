@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization/src/public_ext.dart';
@@ -25,6 +27,8 @@ class MakeQuestionPage extends StatefulWidget {
 class _MakeQuestionPageState extends State<MakeQuestionPage> {
   late MakeQuestionCubit _cubit;
   late TextEditingController _controller;
+  Timer? _timer;
+  bool isClickSend = false;
 
   @override
   void initState() {
@@ -121,7 +125,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          R.string.select_topic.tr(),
+          R.string.topic.tr(),
           style: TextStyle(
             color: R.color.black,
             fontSize: 16,
@@ -150,7 +154,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
               hint: Text(
                 R.string.select_topic.tr(),
                 style: TextStyle(
-                  color: R.color.textDark,
+                  color: R.color.gray,
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),
@@ -169,41 +173,6 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
             ),
           ),
         ),
-        // Container(
-        //   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        //   decoration: BoxDecoration(
-        //     borderRadius: BorderRadius.circular(6),
-        //     border: Border.all(color: R.color.grayBorder, style: BorderStyle.solid, width: 1),
-        //     color: R.color.white,
-        //   ),
-        //   child: CustomDropdownButton<String>(
-        //     isDense: true,
-        //     isExpanded: true,
-        //     value: _cubit.currentTopic,
-        //     icon: Icon(
-        //       Icons.keyboard_arrow_down,
-        //       size: 20,
-        //       color: R.color.textDark,
-        //     ),
-        //     hint: Text(
-        //       R.string.select_topic.tr(),
-        //       style: TextStyle(
-        //         color: R.color.textDark,
-        //         fontSize: 16,
-        //         fontWeight: FontWeight.w400,
-        //       ),
-        //     ),
-        //     items: _cubit.topicList.map((String value) {
-        //       return CustomDropdownMenuItem<String>(
-        //         value: value,
-        //         child: Text(value),
-        //       );
-        //     }).toList(),
-        //     onChanged: (value) {
-        //       _cubit.setCurrentTopic(value);
-        //     },
-        //   ),
-        // ),
         SizedBox(height: 8),
       ],
     );
@@ -235,7 +204,8 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
               hintStyle: TextStyle(color: R.color.gray),
               hintText: "Bạn muốn hỏi bác sỹ điều gì?",
               fillColor: R.color.white),
-          maxLines: 6,
+          maxLines: 8,
+          maxLength: 5000,
           controller: _controller,
         ),
       ],
@@ -245,8 +215,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
   _buildSendButton() {
     return GestureDetector(
       onTap: () async {
-        Utils.hideKeyboard(context);
-        await _cubit.sendQuestion(_controller.text);
+        await _submitData();
       },
       child: Container(
           height: 48,
@@ -288,9 +257,9 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.pop(context);
+                          Navigator.pop(context, true);
                         },
-                        child: Image.asset(R.drawable.ic_close, width: 24, height: 24),
+                        child: Image.asset(R.drawable.ic_close, width: 28, height: 28),
                       ),
                     ],
                   ),
@@ -314,5 +283,31 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
             actions: <Widget>[],
           );
         });
+  }
+
+  _submitData() async {
+    if (!isClickSend) {
+      if (_cubit.currentLessonModule == null) {
+        Message.showToastMessage(context, R.string.input_topic_required.tr());
+        setClickSend();
+        return;
+      }
+      if (_controller.text.trim().isEmpty) {
+        Message.showToastMessage(context, R.string.input_question_required.tr());
+        setClickSend();
+        return;
+      }
+
+      Utils.hideKeyboard(context);
+      await _cubit.sendQuestion(_controller.text);
+    }
+  }
+
+  setClickSend() {
+    isClickSend = true;
+    if (_timer != null) _timer!.cancel();
+    _timer = Timer(Duration(seconds: 3), () {
+      isClickSend = false;
+    });
   }
 }

@@ -15,12 +15,14 @@ import 'package:medical/src/widget/question_answer/all_question_answer/model/que
 import '../my_question_answer.dart';
 
 class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
-  int currentTopic = 0;
+  int currentLessonModule = 0;
   final AppRepository repository;
   List<LessonModuleItem> lessonModules = [];
+  List<LessonModuleItem> allLessonModules = [];
   List<bool> listSelectedLessonModule = [];
   List<String> lessonModuleIds = [];
   List<QuestionModel> questions = [];
+  var userInfo = AppSettings.userInfo;
 
   MyQuestionAnswerCubit(this.repository) : super(MyQuestionAnswerInitial()) {
     initData();
@@ -50,13 +52,13 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
         }
       }
     }
-    currentTopic = index;
+    currentLessonModule = index;
 
     getQuestions(isShowLoading: true);
   }
 
   onAnimate(int index) {
-    currentTopic = index;
+    currentLessonModule = index;
     emit(MyQuestionAnswerLoading());
     emit(MyQuestionAnswerSuccess());
   }
@@ -73,22 +75,14 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
   getListLessonModule() async {
     final ApiResult<LessonModuleResponse> apiResult = await repository.getListLessonModule();
     apiResult.when(success: (LessonModuleResponse response) {
-      lessonModules = [];
-      lessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
+      allLessonModules = [];
+      allLessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
       if (response.data?.items != null) {
-        lessonModules.addAll(response.data!.items!);
-
-        listSelectedLessonModule = [];
-        for (var lesson in lessonModules) {
-          listSelectedLessonModule.add(false);
-        }
-        if (listSelectedLessonModule.isNotEmpty) {
-          listSelectedLessonModule[0] = true;
-        }
+        allLessonModules.addAll(response.data!.items!);
       }
     }, failure: (NetworkExceptions error) {
-      lessonModules = [];
-      lessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
+      allLessonModules = [];
+      allLessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
       //   emit(AllQuestionAnswerFailure(NetworkExceptions.getErrorMessage(error)));
     });
   }
@@ -97,18 +91,41 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
     if (isShowLoading) {
       emit(MyQuestionAnswerLoading());
     }
-    var userInfo = AppSettings.userInfo;
+
     final ApiResult<QuestionAnswerResponse> apiResult =
         await repository.getListQuestion(lessonModuleIds: lessonModuleIds, accountIds: [userInfo!.accountId!]);
     apiResult.when(success: (QuestionAnswerResponse response) {
       if (response.data != null) {
         questions = [];
         questions = response.data!;
+
+        if (lessonModuleIds.isEmpty) {
+          createLessonModules();
+        }
       }
       emit(const MyQuestionAnswerSuccess());
     }, failure: (NetworkExceptions error) {
       emit(MyQuestionAnswerFailure(NetworkExceptions.getErrorMessage(error)));
     });
+  }
+
+  createLessonModules() {
+    lessonModules = [];
+    lessonModules.add(LessonModuleItem(id: "0", code: "0", name: 'Tất cả'));
+    for (int i = 0; i < questions.length; i++) {
+      if (questions[i].lessonModule != null) {
+        lessonModules.add(questions[i].lessonModule!);
+      }
+    }
+    lessonModules = lessonModules.toSet().toList();
+
+    listSelectedLessonModule = [];
+    for (var lesson in lessonModules) {
+      listSelectedLessonModule.add(false);
+    }
+    if (listSelectedLessonModule.isNotEmpty) {
+      listSelectedLessonModule[0] = true;
+    }
   }
 
   Future<void> deleteQuestion(String id) async {
@@ -139,7 +156,7 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
     emit(DeleteCommentSuccess());
   }
 
-  Future<void> updateQuestions(QuestionModel questionModel) async {
+  Future<void> updateQuestionsLocal(QuestionModel questionModel) async {
     emit(MyQuestionAnswerLoading());
     var index = questions.indexWhere((element) => element.id == questionModel.id);
     questions[index] = questionModel;
@@ -147,34 +164,8 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
   }
 
   refreshData() async {
-    emit(MyQuestionAnswerInitial());
-    await initData(isRefresh: true);
-  }
-
-  String getStatus(int status) {
-    switch (status) {
-      case 0:
-        return R.string.closed.tr();
-      case 1:
-        return R.string.waiting.tr();
-      case 2:
-        return R.string.replied.tr();
-      default:
-        return '';
-    }
-  }
-
-  Color getColorStatus(int status) {
-    switch (status) {
-      case 0:
-        return R.color.red;
-      case 1:
-        return R.color.yellow;
-      case 2:
-        return R.color.greenGradientBottom;
-      default:
-        return R.color.transparent;
-    }
+    //   emit(MyQuestionAnswerInitial());
+    await getQuestions();
   }
 
   LessonModuleItem getLessonModule(String id) {
