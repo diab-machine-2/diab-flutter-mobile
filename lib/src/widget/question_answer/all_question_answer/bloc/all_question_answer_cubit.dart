@@ -167,7 +167,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
   }
 
   refreshData() async {
-    //  emit(AllQuestionAnswerInitial());
+    emit(AllQuestionAnswerInitial());
     await getQuestions();
   }
 

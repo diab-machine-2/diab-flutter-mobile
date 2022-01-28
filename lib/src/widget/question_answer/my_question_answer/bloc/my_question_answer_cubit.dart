@@ -186,7 +186,7 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
   }
 
   refreshData() async {
-    //   emit(MyQuestionAnswerInitial());
+    emit(MyQuestionAnswerInitial());
     await getQuestions();
   }
 
