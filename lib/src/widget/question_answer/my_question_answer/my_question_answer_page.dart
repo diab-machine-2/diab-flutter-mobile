@@ -3,6 +3,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -22,7 +24,7 @@ class MyQuestionAnswerPage extends StatefulWidget {
   _MyQuestionAnswerPageState createState() => _MyQuestionAnswerPageState();
 }
 
-class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with AutomaticKeepAliveClientMixin {
+class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with AutomaticKeepAliveClientMixin, Observer {
   late MyQuestionAnswerCubit _cubit;
   final ScrollController _scrollController = ScrollController();
   final ScrollController _questionScrollController = ScrollController();
@@ -31,9 +33,23 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
   @override
   void initState() {
     super.initState();
+    Observable.instance.addObserver(this);
     final AppRepository appRepository = AppRepository();
     _cubit = MyQuestionAnswerCubit(appRepository);
     _questionScrollController.addListener(_scrollListener);
+  }
+
+   @override
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    if (notifyName == 'update_my_question') {
+      _cubit.refreshData();
+    }
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -223,6 +239,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage> with Automa
         var result = await Navigator.pushNamed(context, NavigatorName.make_question,
             arguments: {'lessonModuleItems': _cubit.allLessonModules});
         if (result != null) {
+          Observable.instance.notifyObservers([], notifyName : "update_all_question");
           _cubit.getQuestions(isShowLoading: true);
         }
       },

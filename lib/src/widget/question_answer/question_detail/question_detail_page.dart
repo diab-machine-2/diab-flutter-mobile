@@ -72,11 +72,13 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
                 Navigator.pop(context);
                 Navigator.pop(context, {'type': 'question', 'id': state.message});
               } else if (state is DeleteQuestionFailure) {
+                Navigator.pop(context);
                 Message.showToastMessage(context, state.error);
               } else if (state is DeleteCommentSuccess) {
                 Navigator.pop(context);
                 //  Navigator.pop(context, {'type': 'comment', 'id': state.message});
               } else if (state is DeleteCommentFailure) {
+                Navigator.pop(context);
                 Message.showToastMessage(context, state.error);
               } else if (state is MakeCommentFailure) {
                 Message.showToastMessage(context, state.error);

@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -177,6 +178,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     apiResult.when(success: (CommonResponse response) {
       questions.removeWhere((element) => element.id == id);
       createLessonModules();
+      Observable.instance.notifyObservers([], notifyName : "update_my_question");
       emit(DeleteQuestionSuccess());
     }, failure: (NetworkExceptions error) {
       emit(DeleteQuestionFailure(NetworkExceptions.getErrorMessage(error)));
@@ -187,6 +189,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     emit(AllQuestionAnswerLoading());
     questions.removeWhere((element) => element.id == id);
     createLessonModules();
+    Observable.instance.notifyObservers([], notifyName : "update_my_question");
     emit(DeleteQuestionSuccess());
   }
 
@@ -198,6 +201,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
         question.answers!.removeWhere((element) => element.id == commentId);
       }
     }
+    Observable.instance.notifyObservers([], notifyName : "update_my_question");
     emit(DeleteCommentSuccess());
   }
 
@@ -205,6 +209,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     emit(AllQuestionAnswerLoading());
     var index = questions.indexWhere((element) => element.id == questionModel.id);
     questions[index] = questionModel;
+    Observable.instance.notifyObservers([], notifyName : "update_my_question");
     emit(const AllQuestionAnswerSuccess());
   }
 
