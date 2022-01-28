@@ -24,21 +24,41 @@ class QuestionDetailPage extends StatefulWidget {
   _QuestionDetailPageState createState() => _QuestionDetailPageState();
 }
 
-class _QuestionDetailPageState extends State<QuestionDetailPage> {
+class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBindingObserver {
   late QuestionDetailCubit _cubit;
   late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance?.addObserver(this);
     _controller = TextEditingController(text: '');
     final AppRepository appRepository = AppRepository();
     _cubit = QuestionDetailCubit(appRepository, widget.questionModel);
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance?.removeObserver(this);
+  }
+
+   @override
+  void didChangeMetrics() {
+    _cubit.keyboardHidden.then((value) { 
+      if(value){ 
+        _cubit.titleHeight = 280;
+      } else { 
+        _cubit.titleHeight = 120;
+      }
+      _cubit.refreshScreen();
+     });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+    //  resizeToAvoidBottomInset: false,
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocListener<QuestionDetailCubit, QuestionDetailState>(
@@ -75,34 +95,37 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
   Widget _buildPage(BuildContext context, QuestionDetailState state) {
     return WillPopScope(
       onWillPop: () => _backPressed(),
+      child: GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Column(
-        children: [
-          _buildAppBar(context),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildHeaderItem(),
-                  SizedBox(height: 12),
-                  _cubit.questionModel.answers!.isEmpty ? Expanded(child: _buildTitleItem()) : _buildTitleItem(),
-                  Visibility(
-                    visible: _cubit.questionModel.answers!.isNotEmpty,
-                    child: SizedBox(height: 16),
-                  ),
-                  Visibility(
-                      visible: _cubit.questionModel.answers!.isNotEmpty,
-                      child: Divider(height: 0.5, color: R.color.grayBorder)),
-                  SizedBox(height: 10),
-                  _buildListComment(),
-                  _buildCommentTextBox(),
-                  SizedBox(height: 8),
-                ],
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildAppBar(context),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
+                child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildHeaderItem(),
+                          SizedBox(height: 12),
+                          _cubit.questionModel.answers!.isEmpty ? Expanded(child: _buildTitleItem()) : _buildTitleItem(),
+                          Visibility(
+                            visible: _cubit.questionModel.answers!.isNotEmpty,
+                            child: SizedBox(height: 16),
+                          ),
+                          Visibility(
+                              visible: _cubit.questionModel.answers!.isNotEmpty,
+                              child: Divider(height: 0.5, color: R.color.grayBorder)),
+                          SizedBox(height: 8),
+                          _buildListComment(),
+                        ],
+                      ),
+                ),
               ),
-            ),
-          ),
-        ],
+            _buildCommentTextBox(),
+          ],
+        ),
       ),
     );
   }
@@ -168,7 +191,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: 0.0,
-              maxHeight: _cubit.questionModel.answers!.isEmpty ? double.infinity : 280,
+              maxHeight: _cubit.questionModel.answers!.isEmpty ? double.infinity : _cubit.titleHeight,
             ),
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
@@ -340,7 +363,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> {
     if (_cubit.questionModel.status == 0) return Container();
     if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
     return Container(
-      padding: EdgeInsets.only(top: 16),
+      padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
       child: Row(
         children: [
           Expanded(

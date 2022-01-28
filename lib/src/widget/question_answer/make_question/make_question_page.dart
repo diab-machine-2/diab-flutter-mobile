@@ -39,6 +39,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+   //   resizeToAvoidBottomInset: false,
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocListener<MakeQuestionCubit, MakeQuestionState>(
@@ -70,35 +71,31 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
       child: Container(
         color: R.color.greenbg,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildAppBar(context),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildTopic(),
-                          SizedBox(height: 8),
-                          _buildQuestion(),
-                          Spacer(),
-                        ],
-                      ),
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildAppBar(context),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                         _buildTopic(),
+                         SizedBox(height: 8),
+                         _buildQuestion(),
+                      ],
                     ),
-                    _buildSendButton(),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+              _buildSendButton(),
+            ],
+          ),
         ),
-      ),
+      
     );
   }
 
@@ -215,21 +212,22 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
       onTap: () async {
         await _submitData();
       },
-      child: Container(
-          height: 48,
-          width: 300,
-          margin: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-              color: R.color.mainColor,
-              borderRadius: BorderRadius.circular(200),
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.centerRight,
-                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-          child: Center(
-            child: Text(R.string.send_question.tr(),
-                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-          )),
+      child: Center(
+        child: Container(
+            height: 48,
+            margin: EdgeInsets.only(bottom: 16, left: 24, right: 24),
+            decoration: BoxDecoration(
+                color: R.color.mainColor,
+                borderRadius: BorderRadius.circular(200),
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.centerRight,
+                    colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+            child: Center(
+              child: Text(R.string.send_question.tr(),
+                  style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+            )),
+      ),
     );
   }
 

@@ -23,9 +23,21 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   Timer? timer;
   bool isClickSend = false;
   final userInfo = AppSettings.userInfo;
+  double titleHeight = 280;
 
   QuestionDetailCubit(this.repository, this.questionModel) : super(QuestionDetailInitial()) {
     // TODO
+  }
+
+  Future<bool> get keyboardHidden async {
+    final check = () => (WidgetsBinding.instance?.window.viewInsets.bottom ?? 0) <= 0;
+    if (!check()) return false;
+    return await Future.delayed(Duration(milliseconds: 100), () => check());
+  }
+
+  refreshScreen(){
+    emit(QuestionDetailLoading());
+    emit(QuestionDetailSuccess());
   }
 
   getQuestionById({bool isShowLoading = false}) async {

@@ -69,7 +69,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         _buildLessonModule(context),
         Expanded(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             color: R.color.greenbg,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -338,15 +338,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
           }
         }
       },
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        color: R.color.white,
-        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-        elevation: 2,
-        child: _buildQuestionItemWithSlide(questionModel),
-      ),
+      child: _buildQuestionItemWithSlide(questionModel),
     );
   }
 
@@ -360,7 +352,11 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       secondaryActions: [
-        IconSlideAction(
+        Container(
+            margin: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+            child: IconSlideAction(
           color: R.color.color0xffFF5552,
           iconWidget: Container(
             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -378,13 +374,21 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
             _showDialogDelete(context, questionModel.id!);
           },
         ),
+        ),
       ],
       child: _buildQuestionItemInCard(questionModel),
     );
   }
 
   _buildQuestionItemInCard(QuestionModel questionModel) {
-    return Container(
+    return Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        color: R.color.white,
+        margin: EdgeInsets.symmetric(vertical: 8),
+        elevation: 2,
+        child: Container(
       padding: EdgeInsets.all(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -413,6 +417,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
               : null),
         ],
       ),
+        ),
     );
   }
 
