@@ -105,11 +105,28 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
       }
 
       if (response.data != null) {
+        var tempQuestions = response.data!;
+        for(var question in tempQuestions){
+          if(question.status == 0){
+            if(question.answers != null && question.answers!.isNotEmpty){
+              bool isReplied = false;
+              for(var answer in question.answers!){
+                if(answer.accountId != userInfo?.accountId){
+                  isReplied = true;
+                  break;
+                }
+              }
+              question.status = isReplied ? 2 : 1;
+            } else {
+              question.status = 1;
+            }
+          }
+        }
         if (isLoadmore) {
-          questions.addAll(response.data!);
+          questions.addAll(tempQuestions);
         } else {
           questions = [];
-          questions = response.data!;
+          questions = tempQuestions;
         }
 
         if (lessonModuleIds.isEmpty) {

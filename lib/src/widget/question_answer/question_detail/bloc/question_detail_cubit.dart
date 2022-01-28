@@ -19,13 +19,14 @@ import 'package:medical/src/modal/error/error_model.dart';
 
 class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   QuestionModel questionModel;
+  bool isAll = true;
   final AppRepository repository;
   Timer? timer;
   bool isClickSend = false;
   final userInfo = AppSettings.userInfo;
   double titleHeight = 280;
 
-  QuestionDetailCubit(this.repository, this.questionModel) : super(QuestionDetailInitial()) {
+  QuestionDetailCubit(this.repository, this.isAll, this.questionModel) : super(QuestionDetailInitial()) {
     // TODO
   }
 
@@ -48,6 +49,22 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     apiResult.when(success: (QuestionResponse response) {
       if (response.data != null) {
         questionModel = response.data!;
+        if(isAll){
+          if(questionModel.status == 0){
+            if(questionModel.answers != null && questionModel.answers!.isNotEmpty){
+              bool isReplied = false;
+              for(var answer in questionModel.answers!){
+                if(answer.accountId != userInfo?.accountId){
+                  isReplied = true;
+                  break;
+              }
+            }
+            questionModel.status = isReplied ? 2 : 1;
+            } else {
+              questionModel.status = 1;
+            }
+          }
+        }
       }
       emit(const QuestionDetailSuccess());
     }, failure: (NetworkExceptions error) {

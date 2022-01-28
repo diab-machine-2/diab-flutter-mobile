@@ -18,7 +18,8 @@ import 'question_detail.dart';
 
 class QuestionDetailPage extends StatefulWidget {
   final QuestionModel questionModel;
-  QuestionDetailPage({Key? key, required this.questionModel}) : super(key: key);
+  final bool isAll;
+  QuestionDetailPage({Key? key, required this.questionModel, required this.isAll}) : super(key: key);
 
   @override
   _QuestionDetailPageState createState() => _QuestionDetailPageState();
@@ -34,7 +35,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
     WidgetsBinding.instance?.addObserver(this);
     _controller = TextEditingController(text: '');
     final AppRepository appRepository = AppRepository();
-    _cubit = QuestionDetailCubit(appRepository, widget.questionModel);
+    _cubit = QuestionDetailCubit(appRepository, widget.isAll, widget.questionModel);
   }
 
   @override

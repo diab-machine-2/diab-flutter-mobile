@@ -323,7 +323,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
     return GestureDetector(
       onTap: () async {
         var result = await Navigator.pushNamed(context, NavigatorName.question_detail,
-            arguments: {'questionModel': questionModel});
+            arguments: {'questionModel': questionModel, 'isAll': true});
         if (result != null) {
           if (result is Map) {
             var type = result['type'];

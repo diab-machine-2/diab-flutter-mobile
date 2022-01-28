@@ -364,7 +364,7 @@ class _AppState extends State<App> {
                       isPresent: true);
                 case NavigatorName.question_detail:
                   final data = settings.arguments as Map<String, dynamic>?;
-                  return _buildRoute(settings, QuestionDetailPage(questionModel: data!['questionModel']),
+                  return _buildRoute(settings, QuestionDetailPage(questionModel: data!['questionModel'], isAll: data['isAll']),
                       isPresent: true);
                 default:
                   return null;
