@@ -178,7 +178,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     apiResult.when(success: (CommonResponse response) {
       questions.removeWhere((element) => element.id == id);
       createLessonModules();
-      Observable.instance.notifyObservers([], notifyName : "update_my_question");
+      Observable.instance.notifyObservers([], notifyName : "update_my_question", map: {'id': id});
       emit(DeleteQuestionSuccess());
     }, failure: (NetworkExceptions error) {
       emit(DeleteQuestionFailure(NetworkExceptions.getErrorMessage(error)));
@@ -189,7 +189,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     emit(AllQuestionAnswerLoading());
     questions.removeWhere((element) => element.id == id);
     createLessonModules();
-    Observable.instance.notifyObservers([], notifyName : "update_my_question");
+ //   Observable.instance.notifyObservers([], notifyName : "update_my_question", map: {'id': id});
     emit(DeleteQuestionSuccess());
   }
 
@@ -201,7 +201,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
         question.answers!.removeWhere((element) => element.id == commentId);
       }
     }
-    Observable.instance.notifyObservers([], notifyName : "update_my_question");
+ //  Observable.instance.notifyObservers([], notifyName : "update_my_question", map: {'id': questionId, 'commentId': commentId});
     emit(DeleteCommentSuccess());
   }
 
@@ -209,7 +209,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     emit(AllQuestionAnswerLoading());
     var index = questions.indexWhere((element) => element.id == questionModel.id);
     questions[index] = questionModel;
-    Observable.instance.notifyObservers([], notifyName : "update_my_question");
+    Observable.instance.notifyObservers([], notifyName : "update_my_question", map: {'question': questionModel});
     emit(const AllQuestionAnswerSuccess());
   }
 

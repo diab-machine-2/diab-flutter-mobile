@@ -241,7 +241,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
             contentPadding: EdgeInsets.zero,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
             content: Container(
-              padding: EdgeInsets.all(8),
+              padding: EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
@@ -255,7 +255,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
                           Navigator.pop(context);
                           Navigator.pop(context, true);
                         },
-                        child: Image.asset(R.drawable.ic_close, width: 28, height: 28),
+                        child: Image.asset(R.drawable.ic_close, width: 36, height: 36),
                       ),
                     ],
                   ),

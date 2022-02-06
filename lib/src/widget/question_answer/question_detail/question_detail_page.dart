@@ -296,7 +296,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
               _buildDeleteComment(answer),
             ],
           ),
-          SizedBox(height: 4),
+          SizedBox(height: 8),
           Text(
             answer.body ?? '',
             style: TextStyle(

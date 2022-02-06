@@ -42,7 +42,24 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
    @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'update_all_question') {
+      if(map != null){
+        String? id = map['id'];
+        String? commentId = map['commentId'];
+        QuestionModel? question = map['question'];
+        if(id != null && commentId != null){
+          _cubit.deleteCommentLocal(id, commentId);
+        } else if(id != null && commentId == null){
+          _cubit.deleteQuestionLocal(id);
+        } else if(question != null){
+          _cubit.updateQuestionsLocal(question);
+        } else {
+          _controller.requestRefresh();
+          _cubit.refreshData();
+        }
+      } else {
+        _controller.requestRefresh();
       _cubit.refreshData();
+      }
     }
   }
 
@@ -240,7 +257,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
             arguments: {'lessonModuleItems': _cubit.allLessonModules});
         if (result != null) {
           Observable.instance.notifyObservers([], notifyName : "update_my_question");
-          _cubit.getQuestions(isShowLoading: true);
+          await _cubit.getQuestions(isShowLoading: true);
         }
       },
       child: Container(
@@ -347,11 +364,14 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
             var id = result['id'];
             if (type == 'question') {
               _cubit.deleteQuestionLocal(id);
+              Observable.instance.notifyObservers([], notifyName : "update_my_question", map: {'id': id});
             } else if (type == 'comment') {
               _cubit.deleteCommentLocal(questionModel.id!, id);
+              Observable.instance.notifyObservers([], notifyName : "update_my_question", map: {'id': questionModel.id!, 'commentId': id});
             }
           } else if (result is QuestionModel) {
             _cubit.updateQuestionsLocal(result);
+            Observable.instance.notifyObservers([], notifyName : "update_my_question", map: {'question': result});
           }
         }
       },
