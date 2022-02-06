@@ -13,6 +13,7 @@ import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../my_question_answer.dart';
 
 class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
@@ -26,6 +27,8 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
   var userInfo = AppSettings.userInfo;
   int page = 1;
   bool canNext = false;
+
+  final RefreshController controller = RefreshController();
 
   MyQuestionAnswerCubit(this.repository) : super(MyQuestionAnswerInitial()) {
     initData();
@@ -154,9 +157,16 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
     final ApiResult<CommonResponse> apiResult = await repository.deleteQuestion(id);
     apiResult.when(success: (CommonResponse response) {
       questions.removeWhere((element) => element.id == id);
-      createLessonModules();
+      if(currentLessonModule == 0){
+        createLessonModules();
+      }  
       Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'id': id});
       emit(DeleteQuestionSuccess());
+      if(questions.isEmpty){
+        lessonModuleIds = [];
+        controller.requestRefresh();
+        getQuestions();
+      }
     }, failure: (NetworkExceptions error) {
       emit(DeleteQuestionFailure(NetworkExceptions.getErrorMessage(error)));
     });
@@ -165,9 +175,16 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
   Future<void> deleteQuestionLocal(String id) async {
     emit(MyQuestionAnswerLoading());
     questions.removeWhere((element) => element.id == id);
-  //  createLessonModules();
+    if(currentLessonModule == 0){
+      createLessonModules();
+    }
   //  Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'id': id});
     emit(DeleteQuestionSuccess());
+    if(questions.isEmpty){
+      lessonModuleIds = [];
+      controller.requestRefresh();
+      getQuestions();
+    }
   }
 
   Future<void> deleteCommentLocal(String questionId, String commentId) async {
@@ -185,14 +202,32 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
   Future<void> updateQuestionsLocal(QuestionModel questionModel) async {
     emit(MyQuestionAnswerLoading());
     var index = questions.indexWhere((element) => element.id == questionModel.id);
-    questions[index] = questionModel;
-    Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'question': questionModel});
+    if(index >= 0){
+      questions[index] = questionModel;
+    } else {
+      bool isLessonModuleExist = currentLessonModule == 0;
+      if(!isLessonModuleExist) {
+        for(var lessonModuleId in lessonModuleIds){
+          if(questionModel.lessonModuleId == lessonModuleId){
+            isLessonModuleExist = true;
+            break;
+          }
+        }
+      }
+      if(isLessonModuleExist){
+        questions.insert(0, questionModel);
+        if(currentLessonModule == 0){
+          createLessonModules();
+        }
+      }
+    }
+ //   Observable.instance.notifyObservers([], notifyName : "update_all_question", map: {'question': questionModel});
     emit(const MyQuestionAnswerSuccess());
   }
 
-  refreshData() async {
+  refreshData({bool isShowLoading = false}) async {
     emit(MyQuestionAnswerInitial());
-    await getQuestions();
+    await getQuestions(isShowLoading: isShowLoading);
   }
 
   LessonModuleItem getLessonModule(String id) {

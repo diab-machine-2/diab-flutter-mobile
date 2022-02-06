@@ -12,6 +12,8 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
+import 'package:medical/src/widget/question_answer/all_question_answer/widget/make_question_header.dart';
+import 'package:medical/src/widget/question_answer/all_question_answer/widget/question_item.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../question_answer_utils.dart';
@@ -28,7 +30,6 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   late AllQuestionAnswerCubit _cubit;
   final ScrollController _scrollController = ScrollController();
   final ScrollController _questionScrollController = ScrollController();
-  final RefreshController _controller = RefreshController();
 
   @override
   void initState() {
@@ -53,11 +54,11 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         } else if(question != null){
           _cubit.updateQuestionsLocal(question);
         } else {
-          _controller.requestRefresh();
+          _cubit.controller.requestRefresh();
           _cubit.refreshData();
         }
       } else {
-        _controller.requestRefresh();
+        _cubit.controller.requestRefresh();
       _cubit.refreshData();
       }
     }
@@ -81,7 +82,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
             } else {
               BotToast.closeAllLoading();
               if (state is AllQuestionAnswerSuccess || state is AllQuestionAnswerFailure) {
-                _controller.refreshCompleted();
+                _cubit.controller.refreshCompleted();
               }
             }
           },
@@ -251,64 +252,22 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   }
 
   _buildMakeQuestion() {
-    return GestureDetector(
-      onTap: () async {
+    return MakeQuestionHeader(
+      callback: () async {
         var result = await Navigator.pushNamed(context, NavigatorName.make_question,
-            arguments: {'lessonModuleItems': _cubit.allLessonModules});
+        arguments: {'lessonModuleItems': _cubit.allLessonModules});
         if (result != null) {
-          Observable.instance.notifyObservers([], notifyName : "update_my_question");
           await _cubit.getQuestions(isShowLoading: true);
+          Observable.instance.notifyObservers([], notifyName : "update_my_question", map: {'question': _cubit.questions.first});
         }
       },
-      child: Container(
-        height: 78,
-        child: Stack(
-          children: [
-            Positioned(
-              bottom: 0,
-              right: 0,
-              left: 0,
-              child: Container(
-                height: 66,
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  color: R.color.white,
-                  elevation: 2,
-                  child: Container(
-                    padding: EdgeInsets.all(18),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(width: 32),
-                        Text(
-                          R.string.ask_doctor.tr(),
-                          style:
-                              TextStyle(color: R.color.greenGradientBottom, fontWeight: FontWeight.w700, fontSize: 16),
-                        ),
-                        Image.asset(R.drawable.ic_right, width: 16, height: 16, color: R.color.greenGradientBottom),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 8,
-              bottom: 5,
-              child: Image.asset(R.drawable.ic_doctor, width: 66, height: 66),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
   _buildQuestionList(AllQuestionAnswerState state) {
     return Expanded(
       child: SmartRefresher(
-        controller: _controller,
+        controller: _cubit.controller,
         onRefresh: () => _cubit.refreshData(),
         child: _cubit.questions.isNotEmpty
             ? ListView.builder(
@@ -354,8 +313,11 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
   }
 
   _buildQuestionItem(QuestionModel questionModel) {
-    return GestureDetector(
-      onTap: () async {
+    return QuestionItem(
+      questionModel: questionModel,
+      currentAccountId: _cubit.userInfo!.accountId!,
+      lessonModules: _cubit.lessonModules,
+      callbackDetail: () async {
         var result = await Navigator.pushNamed(context, NavigatorName.question_detail,
             arguments: {'questionModel': questionModel, 'isAll': true});
         if (result != null) {
@@ -375,268 +337,9 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
           }
         }
       },
-      child: _buildQuestionItemWithSlide(questionModel),
-    );
-  }
-
-  _buildQuestionItemWithSlide(QuestionModel questionModel) {
-    if (questionModel.accountId != _cubit.userInfo?.accountId) {
-      return _buildQuestionItemInCard(questionModel);
-    }
-    if (questionModel.status == 0) {
-      return _buildQuestionItemInCard(questionModel);
-    }
-    return Slidable(
-      actionPane: SlidableDrawerActionPane(),
-      secondaryActions: [
-        Container(
-            margin: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-            child: IconSlideAction(
-          color: R.color.color0xffFF5552,
-          iconWidget: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                SizedBox(height: 8),
-                Text(R.string.delete_question.tr(),
-                    style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
-              ],
-            ),
-          ),
-          onTap: () {
-            _showDialogDelete(context, questionModel.id!);
-          },
-        ),
-        ),
-      ],
-      child: _buildQuestionItemInCard(questionModel),
-    );
-  }
-
-  _buildQuestionItemInCard(QuestionModel questionModel) {
-    return Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        color: R.color.white,
-        margin: EdgeInsets.symmetric(vertical: 8),
-        elevation: 2,
-        child: Container(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeaderItem(questionModel),
-          SizedBox(height: 12),
-          _buildTitleItem(questionModel),
-          SizedBox(height: (questionModel.answers != null && questionModel.answers!.isNotEmpty) ? 16 : 0),
-          Visibility(
-            visible: questionModel.answers != null && questionModel.answers!.isNotEmpty,
-            child: Divider(height: 0.5, color: R.color.grayBorder),
-          ),
-          SizedBox(height: 8),
-          // ListView.builder(
-          //   itemCount: questionModel.answers?.length ?? 0,
-          //   shrinkWrap: true,
-          //   physics: NeverScrollableScrollPhysics(),
-          //   itemBuilder: (context, position) {
-          //     return _buildDoctorItemInQuestionItem(
-          //         questionModel.answers != null ? questionModel.answers![position] : null);
-          //   },
-          // ),
-          _buildDoctorItemInQuestionItem((questionModel.answers != null && questionModel.answers!.isNotEmpty)
-              ? questionModel.answers!.last
-              : null),
-        ],
-      ),
-        ),
-    );
-  }
-
-  _buildHeaderItem(QuestionModel questionModel) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-          decoration: BoxDecoration(
-            color: true ? R.color.greenGradientBottom : R.color.grayBorder,
-            border: true ? Border.all(color: R.color.greenGradientBottom) : null,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            questionModel.lessonModule != null
-                ? questionModel.lessonModule!.name ?? ''
-                : _cubit.getLessonModule(questionModel.lessonModuleId ?? '').name ?? '',
-            style: TextStyle(
-              color: true ? R.color.white : R.color.black,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        Spacer(),
-        Text(
-          QuestionAnswerUtils.getStatus(questionModel.status ?? 0),
-          style: TextStyle(
-            color: QuestionAnswerUtils.getColorStatus(questionModel.status ?? 0),
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-
-  _buildTitleItem(QuestionModel questionModel) {
-    return Text(
-      questionModel.body ?? '',
-      style: TextStyle(
-        color: R.color.black,
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
-      ),
-      maxLines: 3,
-      overflow: TextOverflow.ellipsis,
-    );
-  }
-
-  _buildDoctorItemInQuestionItem(Answer? answer) {
-    if (answer == null) return Container();
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-      child: Row(
-        children: [
-          Container(
-            clipBehavior: Clip.hardEdge,
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
-            child: answer.account?.avatar?.url == null
-                ? Icon(Icons.person, size: 24, color: R.color.white)
-                : NetWorkImageWidget(imageUrl: answer.account!.avatar!.url),
-          ),
-          SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  answer.account?.fullName ?? '',
-                  style: TextStyle(
-                    color: R.color.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  answer.account?.createDatetime == null
-                      ? ''
-                      : DateUtil.parseDateToString(
-                          DateTime.fromMillisecondsSinceEpoch(answer.createDateTime! * 1000), 'dd/MM/yyyy - hh:mm'),
-                  style: TextStyle(
-                    color: R.color.gray,
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Image.asset(R.drawable.ic_right, width: 16, height: 16, color: R.color.greenGradientBottom),
-        ],
-      ),
-    );
-  }
-
-  _showDialogDelete(BuildContext context, String id) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-            contentPadding: EdgeInsets.all(0),
-            content: Stack(children: [
-              Container(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(R.drawable.ic_earse, width: 44, height: 44),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(R.string.confirm_delete_question.tr(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(R.string.confirm_delete_question_subtitle.tr(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400)),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 16),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 40,
-                                decoration:
-                                    BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.back.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                                )),
-                          ),
-                        ),
-                        SizedBox(width: 14),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              await _cubit.deleteQuestion(id);
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: R.color.attentionText,
-                                borderRadius: BorderRadius.circular(200),
-                              ),
-                              child: Center(
-                                child: Text(R.string.delete.tr(),
-                                    style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ]),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: IconButton(
-                    icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }),
-              )
-            ]));
+      callbackDelete: (id) async {
+        await _cubit.deleteQuestion(id);
+        Navigator.pop(context);
       },
     );
   }
