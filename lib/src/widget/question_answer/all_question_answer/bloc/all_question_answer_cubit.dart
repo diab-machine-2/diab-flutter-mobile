@@ -188,7 +188,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
   Future<void> deleteQuestionLocal(String id) async {
     emit(AllQuestionAnswerLoading());
     questions.removeWhere((element) => element.id == id);
-    createLessonModules();
+ //   createLessonModules();
  //   Observable.instance.notifyObservers([], notifyName : "update_my_question", map: {'id': id});
     emit(DeleteQuestionSuccess());
   }
