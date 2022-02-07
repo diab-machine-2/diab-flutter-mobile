@@ -23,6 +23,7 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   final AppRepository repository;
   Timer? timer;
   bool isClickSend = false;
+  bool canRefreshScreen = true;
   final userInfo = AppSettings.userInfo;
   double titleHeight = 280;
 
@@ -37,8 +38,10 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   }
 
   refreshScreen(){
-    emit(QuestionDetailLoading());
-    emit(QuestionDetailSuccess());
+    if(canRefreshScreen){
+      emit(QuestionDetailLoading());
+      emit(QuestionDetailSuccess());
+    }
   }
 
   getQuestionById({bool isShowLoading = false}) async {
@@ -72,42 +75,66 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     });
   }
 
-  Future<void> sendComment(String? body) async {
-    var userInfo = AppSettings.userInfo;
-    if (userInfo == null) return;
+  // Future<void> sendComment(String? body) async {
+  //   var userInfo = AppSettings.userInfo;
+  //   if (userInfo == null) return;
 
+  //   emit(QuestionDetailLoading());
+  //   final MakeCommentRequest request =
+  //       MakeCommentRequest(body: body, questionId: questionModel.id, accountId: userInfo.accountId);
+  //   var response = await QuestionAnswerClient().makeComment(request);
+  //   if (response is bool && response) {
+  //     await getQuestionById();
+  //   } else if (response is Error) {
+  //     emit(MakeCommentFailure(response.message ?? ''));
+  //   } else if (response is String) {
+  //     emit(MakeCommentFailure(response));
+  //   }
+  // }
+
+  Future<void> sendComment(String? body) async {
+     var userInfo = AppSettings.userInfo;
+    if (userInfo == null) return;
+    canRefreshScreen = false;
     emit(QuestionDetailLoading());
     final MakeCommentRequest request =
-        MakeCommentRequest(body: body, questionId: questionModel.id, accountId: userInfo.accountId);
-    var response = await QuestionAnswerClient().makeComment(request);
-    if (response is bool && response) {
+        MakeCommentRequest(body: body, questionId: questionModel.id, accountId: userInfo.accountId, isComment: true);
+    final ApiResult<CommonResponse> apiResult =
+        await repository.makeComment(request);
+    apiResult.when(success: (CommonResponse response) async {
+      canRefreshScreen = true;
       await getQuestionById();
-    } else if (response is Error) {
-      emit(MakeCommentFailure(response.message ?? ''));
-    } else if (response is String) {
-      emit(MakeCommentFailure(response));
-    }
+    }, failure: (NetworkExceptions error) {
+      canRefreshScreen = true;
+      emit(MakeCommentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
   }
 
   Future<void> deleteQuestion(String id) async {
     emit(QuestionDetailLoading());
+    canRefreshScreen = false;
     final ApiResult<CommonResponse> apiResult = await repository.deleteQuestion(id);
     apiResult.when(success: (CommonResponse response) {
+      canRefreshScreen = true;
       emit(DeleteQuestionSuccess(message: id));
     }, failure: (NetworkExceptions error) {
+      canRefreshScreen = true;
       emit(DeleteQuestionFailure(NetworkExceptions.getErrorMessage(error)));
     });
   }
 
   Future<void> deleteComment(String id) async {
     emit(QuestionDetailLoading());
+    canRefreshScreen = false;
     final ApiResult<CommonResponse> apiResult = await repository.deleteComment(id);
     apiResult.when(success: (CommonResponse response) {
+      canRefreshScreen = true;
       if (questionModel.answers != null) {
         questionModel.answers!.removeWhere((element) => element.id == id);
       }
       emit(DeleteCommentSuccess(message: id));
     }, failure: (NetworkExceptions error) {
+      canRefreshScreen = true;
       emit(DeleteCommentFailure(NetworkExceptions.getErrorMessage(error)));
     });
   }

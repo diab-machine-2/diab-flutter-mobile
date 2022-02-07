@@ -95,10 +95,11 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     });
   }
 
-  getQuestions({bool isShowLoading = false, bool isLoadmore = false}) async {
+  getQuestions({bool isShowLoading = false, bool isLoadmore = false, bool isFirstPage = true,}) async {
     if (isShowLoading) {
       emit(AllQuestionAnswerLoading());
     }
+    if(isFirstPage) page = 1;
     final ApiResult<QuestionAnswerResponse> apiResult =
         await repository.getListQuestion(page: page, lessonModuleIds: lessonModuleIds);
     apiResult.when(success: (QuestionAnswerResponse response) {
@@ -111,6 +112,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
       if (response.data != null) {
         var tempQuestions = response.data!;
         for(var question in tempQuestions){
+          question.originalStatus = question.status;
           if(question.status == 0){
             if(question.answers != null && question.answers!.isNotEmpty){
               bool isReplied = false;
@@ -147,7 +149,7 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
     if (canNext) {
       page++;
       emit(LoadmoreAllQuestionAnswerLoading());
-      getQuestions(isLoadmore: true);
+      getQuestions(isLoadmore: true, isFirstPage: false);
     }
   }
 

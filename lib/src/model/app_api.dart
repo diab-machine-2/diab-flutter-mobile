@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
@@ -228,11 +229,16 @@ abstract class AppApi {
   Future<QuestionResponse> getQuestionById(@Path('id') String id);
 
   @GET("App/LessonModule")
-  Future<LessonModuleResponse> getListLessonModule();
+  Future<LessonModuleResponse> getListLessonModule(@Query('page') int page, @Query('size') int size);
 
   @POST("App/Question/Input")
   Future<CommonResponse> makeQuestion(
     @Body() MakeQuestionRequest request,
+  );
+
+   @POST("App/Question/CreateAnswer")
+  Future<CommonResponse> makeComment(
+    @Body() MakeCommentRequest request,
   );
 
   @DELETE("App/Question/Input/{id}")
@@ -240,9 +246,9 @@ abstract class AppApi {
     @Path('id') String id,
   );
 
-  @DELETE("App/Question/DeleteAnswer")
+  @DELETE("App/Question/DeleteAnswer/{id}")
   Future<CommonResponse> deleteComment(
-    @Query('id') String id,
+    @Path('id') String id,
   );
 
   @GET("App/Target/GetTargetWeekStatistics")

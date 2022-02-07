@@ -32,6 +32,7 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
     if (currentLessonModule == null) return;
     var userInfo = AppSettings.userInfo;
     if (userInfo == null) return;
+    body = body?.trim() ?? '';
 
     emit(MakeQuestionLoading());
     final MakeQuestionRequest request =

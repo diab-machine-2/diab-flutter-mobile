@@ -4,6 +4,7 @@ class QuestionModel {
   QuestionModel({
     this.id,
     this.status,
+    this.originalStatus,
     this.body,
     this.createDateTime,
     this.creator,
@@ -18,6 +19,7 @@ class QuestionModel {
 
   String? id;
   int? status;
+  int? originalStatus;
   String? body;
   int? createDateTime;
   String? creator;
@@ -32,6 +34,7 @@ class QuestionModel {
   factory QuestionModel.fromJson(Map<String, dynamic> json) => QuestionModel(
         id: json["id"],
         status: json["status"],
+        originalStatus: json['status'],
         body: json["body"],
         createDateTime: json["createDateTime"],
         creator: json["creator"],

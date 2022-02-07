@@ -112,7 +112,9 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
                         children: [
                           _buildHeaderItem(),
                           SizedBox(height: 12),
-                          _cubit.questionModel.answers!.isEmpty ? Expanded(child: _buildTitleItem()) : _buildTitleItem(),
+                          _cubit.questionModel.answers!.isEmpty ? Flexible(child: _buildTitleItem()) : _buildTitleItem(),
+                          SizedBox(height: 16),
+                          _buildAuthor(_cubit.questionModel),
                           Visibility(
                             visible: _cubit.questionModel.answers!.isNotEmpty,
                             child: SizedBox(height: 16),
@@ -186,33 +188,84 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
   }
 
   _buildTitleItem() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: 0.0,
-              maxHeight: _cubit.questionModel.answers!.isEmpty ? double.infinity : _cubit.titleHeight,
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Text(
-                _cubit.questionModel.body ?? '',
-                style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700),
+    return 
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: 0.0,
+                  maxHeight: _cubit.questionModel.answers!.isEmpty ? double.infinity : _cubit.titleHeight,
+                ),
+                child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Text(
+                        _cubit.questionModel.body ?? '',
+                        style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700),
+                      ),
+                ),
               ),
             ),
-          ),
-        ),
-        SizedBox(width: 16),
-        _buildDeleteQuestion(),
-      ],
+            SizedBox(width: 16),
+            _buildDeleteQuestion(),
+          ],
+      //  ),
+      //   SizedBox(height: 16),
+      //   _buildAuthor(_cubit.questionModel),
+      // ],
     );
   }
 
+  _buildAuthor(QuestionModel questionModel){
+    return Row(
+            children: [
+              Container(
+                clipBehavior: Clip.hardEdge,
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(90), color: R.color.grayBorder),
+                child: questionModel.creatorUrl?.url == null
+                    ? Icon(Icons.person, size: 24, color: R.color.white)
+                    : NetWorkImageWidget(imageUrl: questionModel.creatorUrl!.url),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      questionModel.creator ?? '',
+                      style: TextStyle(
+                        color: R.color.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 3),
+                    Text(
+                      questionModel.createDateTime == null
+                          ? ''
+                          : DateUtil.parseDateToString(
+                              DateTime.fromMillisecondsSinceEpoch(questionModel.createDateTime! * 1000), 'dd/MM/yyyy - hh:mm'),
+                      style: TextStyle(
+                        color: R.color.gray,
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+  }
+
   _buildDeleteQuestion() {
-    if (_cubit.questionModel.status == 0) return Container();
+    if (_cubit.questionModel.originalStatus == 0) return Container();
     if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
     return PopupMenuButton(
       color: R.color.color0xffFF5552,
@@ -293,7 +346,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
                   ],
                 ),
               ),
-              _buildDeleteComment(answer),
+              answer.accountId == _cubit.userInfo!.accountId ? _buildDeleteComment(answer) : Container(),
             ],
           ),
           SizedBox(height: 8),
@@ -311,7 +364,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
   }
 
   _buildDeleteComment(Answer answer) {
-    if (_cubit.questionModel.status == 0) return Container();
+    if (_cubit.questionModel.originalStatus == 0) return Container();
     if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
     return PopupMenuButton(
       color: R.color.color0xffFF5552,
@@ -363,7 +416,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
   }
 
   _buildCommentTextBox() {
-    if (_cubit.questionModel.status == 0) return Container();
+    if (_cubit.questionModel.originalStatus == 0) return Container();
     if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
     return Container(
       padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),

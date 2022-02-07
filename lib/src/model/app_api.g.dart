@@ -599,9 +599,9 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<LessonModuleResponse> getListLessonModule() async {
+  Future<LessonModuleResponse> getListLessonModule(page, size) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'page': page, r'size': size};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<LessonModuleResponse>(
@@ -630,6 +630,22 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<CommonResponse> makeComment(request) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CommonResponse>(
+            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, 'App/Question/CreateAnswer',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CommonResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<CommonResponse> deleteQuestion(id) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -647,12 +663,12 @@ class _AppApi implements AppApi {
   @override
   Future<CommonResponse> deleteComment(id) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'id': id};
+    final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<CommonResponse>(Options(
                 method: 'DELETE', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, 'App/Question/DeleteAnswer',
+            .compose(_dio.options, 'App/Question/DeleteAnswer/$id',
                 queryParameters: queryParameters, data: _data)
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = CommonResponse.fromJson(_result.data!);

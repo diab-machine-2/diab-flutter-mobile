@@ -7,6 +7,7 @@ import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
+import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
@@ -463,6 +464,15 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<CommonResponse>> makeComment(MakeCommentRequest request) async {
+    try {
+      final CommonResponse response = await appClient.makeComment(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<CommonResponse>> deleteQuestion(String id) async {
     try {
       final CommonResponse response = await appClient.deleteQuestion(id);
@@ -514,7 +524,7 @@ class AppRepository {
 
   Future<ApiResult<LessonModuleResponse>> getListLessonModule() async {
     try {
-      final LessonModuleResponse response = await appClient.getListLessonModule();
+      final LessonModuleResponse response = await appClient.getListLessonModule(1, 300);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

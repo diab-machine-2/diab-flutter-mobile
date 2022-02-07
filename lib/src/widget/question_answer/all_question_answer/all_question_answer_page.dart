@@ -257,7 +257,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage> with Auto
         var result = await Navigator.pushNamed(context, NavigatorName.make_question,
         arguments: {'lessonModuleItems': _cubit.allLessonModules});
         if (result != null) {
-          await _cubit.getQuestions(isShowLoading: true);
+          await _cubit.getQuestions(isShowLoading: true,);
           Observable.instance.notifyObservers([], notifyName : "update_my_question", map: {'question': _cubit.questions.first});
         }
       },

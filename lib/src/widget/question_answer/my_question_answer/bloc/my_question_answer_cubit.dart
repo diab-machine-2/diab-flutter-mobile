@@ -93,11 +93,12 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
     });
   }
 
-  getQuestions({bool isShowLoading = false, bool isLoadmore = false}) async {
+  getQuestions({bool isShowLoading = false, bool isLoadmore = false, bool isFirstPage = true}) async {
     if (isShowLoading) {
       emit(MyQuestionAnswerLoading());
     }
 
+    if(isFirstPage) page = 1;
     final ApiResult<QuestionAnswerResponse> apiResult = await repository
         .getListQuestion(page: page, lessonModuleIds: lessonModuleIds, accountIds: [userInfo!.accountId!]);
     apiResult.when(success: (QuestionAnswerResponse response) {
@@ -148,7 +149,7 @@ class MyQuestionAnswerCubit extends Cubit<MyQuestionAnswerState> {
     if (canNext) {
       page++;
       emit(LoadmoreMyQuestionAnswerLoading());
-      getQuestions(isLoadmore: true);
+      getQuestions(isLoadmore: true, isFirstPage: false);
     }
   }
 
