@@ -31,6 +31,39 @@ class QuestionModel {
   String? creatorId;
   Avatar? creatorUrl;
 
+  QuestionModel copyWith({
+    String? id,
+    int? status,
+    int? originalStatus,
+    String? body,
+    int? createDateTime,
+    String? creator,
+    String? accountId,
+    String? lessonModuleId,
+    LessonModuleItem? lessonModule,
+    Account? professor,
+    List<Answer>? answers,
+    String? creatorId,
+    Avatar? creatorUrl,
+  }) {
+    return QuestionModel(
+      id: id ?? this.id,
+      status: status ?? this.status,
+      originalStatus: originalStatus ?? this.originalStatus,
+      body: body ?? this.body,
+      createDateTime: createDateTime ?? this.createDateTime,
+      creator: creator ?? this.creator,
+      accountId: accountId ?? this.accountId,
+      lessonModule: lessonModule ?? this.lessonModule,
+      lessonModuleId: lessonModuleId ?? this.lessonModuleId,
+      professor: professor ?? this.professor,
+      answers: answers ?? this.answers,
+      creatorId: creatorId ?? this.creatorId,
+      creatorUrl: creatorUrl ?? this.creatorUrl,
+    );
+  }
+
+
   factory QuestionModel.fromJson(Map<String, dynamic> json) => QuestionModel(
         id: json["id"],
         status: json["status"],

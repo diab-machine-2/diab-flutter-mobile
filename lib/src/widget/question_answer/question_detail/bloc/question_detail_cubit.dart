@@ -51,7 +51,20 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     final ApiResult<QuestionResponse> apiResult = await repository.getQuestionById(questionModel.id!);
     apiResult.when(success: (QuestionResponse response) {
       if (response.data != null) {
-        questionModel = response.data!;
+        questionModel = questionModel.copyWith(
+          id: response.data!.id,
+          status: response.data!.status,
+          originalStatus: response.data!.originalStatus,
+          createDateTime: response.data!.createDateTime,
+          creator: response.data!.creator,
+          creatorId: response.data!.creatorId,
+          creatorUrl: response.data!.creatorUrl,
+          accountId: response.data!.accountId,
+          lessonModule: response.data!.lessonModule,
+          lessonModuleId: response.data!.lessonModuleId,
+          professor: response.data!.professor,
+          answers: response.data!.answers,
+          );
         if(isAll){
           if(questionModel.status == 0){
             if(questionModel.answers != null && questionModel.answers!.isNotEmpty){
