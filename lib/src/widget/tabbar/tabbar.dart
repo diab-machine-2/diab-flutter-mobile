@@ -25,19 +25,18 @@ import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TabbarController extends StatefulWidget {
-  const TabbarController({this.sharedCode});
+  const TabbarController({this.sharedCode, this.isRedirectFromNotification = false});
   final String? sharedCode;
+  final bool isRedirectFromNotification;
   @override
   _TabbarControllerState createState() => _TabbarControllerState();
   static _TabbarControllerState? of(BuildContext context) {
-    final _TabbarControllerState? navigator =
-        context.findAncestorStateOfType<_TabbarControllerState>();
+    final _TabbarControllerState? navigator = context.findAncestorStateOfType<_TabbarControllerState>();
     return navigator;
   }
 }
 
-class _TabbarControllerState extends State<TabbarController>
-    with SingleTickerProviderStateMixin, Observer {
+class _TabbarControllerState extends State<TabbarController> with SingleTickerProviderStateMixin, Observer {
   PageController? pageController;
   BottomTabbar? _bottomTabbar;
 
@@ -48,20 +47,22 @@ class _TabbarControllerState extends State<TabbarController>
     super.initState();
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
-      const MyPlanPage(),
-    //  Container(),
-    //  const ProfileController(hideAllBackButton: true),
+      MyPlanPage(index: widget.isRedirectFromNotification ? 0 : 1),
+      Container(),
+      const ProfileController(hideAllBackButton: true),
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
-    pageController = PageController();
-    _bottomTabbar = BottomTabbar(callback: (index) {
-      if (index == -1) {
-        _showMaterialDialog();
-      } else {
-        jumpTo(index);
-      }
-    });
+    pageController = PageController(initialPage: widget.isRedirectFromNotification ? 1 : 0);
+    _bottomTabbar = BottomTabbar(
+        index: widget.isRedirectFromNotification ? 1 : 0,
+        callback: (index) {
+          if (index == -1) {
+            _showMaterialDialog();
+          } else {
+            jumpTo(index);
+          }
+        });
 
     getNewVersion();
   }
@@ -73,11 +74,9 @@ class _TabbarControllerState extends State<TabbarController>
   }
 
   @override
-  Future<void> update(Observable observable, String? notifyName,
-      Map<dynamic, dynamic>? map) async {
+  Future<void> update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
     if (notifyName == 'unauthorized') {
-      Message.showToastMessage(context,
-          R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+      Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
       AppSettings.logout();
     }
     if (notifyName == Const.NAVIGATE_TO_MY_PLAN_TAB) {
@@ -86,8 +85,7 @@ class _TabbarControllerState extends State<TabbarController>
       await Future.delayed(
         const Duration(milliseconds: 100),
       );
-      Observable.instance
-          .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+      Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
     }
   }
 
@@ -101,15 +99,11 @@ class _TabbarControllerState extends State<TabbarController>
     return Scaffold(
       extendBody: true,
       backgroundColor: R.color.white,
-      body: PageView(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: pageController,
-          children: tabs),
+      body: PageView(physics: const NeverScrollableScrollPhysics(), controller: pageController, children: tabs),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Observable.instance
-                .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+            Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
             _showMaterialDialog();
           },
           child: Image.asset(
@@ -158,9 +152,7 @@ class _TabbarControllerState extends State<TabbarController>
             context: context,
             builder: (BuildContext context) => CupertinoAlertDialog(
                   title: Text(R.string.cap_nhat.tr()),
-                  content: Text(
-                      R.string.mes_new_version_available
-                          .tr(args: ['${status.storeVersion}']),
+                  content: Text(R.string.mes_new_version_available.tr(args: ['${status.storeVersion}']),
                       textAlign: TextAlign.center),
                   actions: <Widget>[
                     CupertinoDialogAction(
@@ -174,9 +166,7 @@ class _TabbarControllerState extends State<TabbarController>
                       child: Text(R.string.cap_nhat.tr()),
                       onPressed: () async {
                         final _url = status.appStoreLink!;
-                        await canLaunch(_url)
-                            ? await launch(_url)
-                            : throw 'Could not launch $_url';
+                        await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
                       },
                     )
                   ],
@@ -230,11 +220,9 @@ showPopupWeight() {
                 googleEmail: userInfo.googleEmail,
                 glucoseUnit: userInfo.glucoseUnit,
                 activityLevelRate: userInfo.activityLevelRate);
-            await UserClient()
-                .updateUserInfo(AppSettings.userInfo!.id, userInfo);
+            await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();
-            Navigator.pushNamed(
-                navigatorKey.currentContext!, NavigatorName.add_exercrises,
+            Navigator.pushNamed(navigatorKey.currentContext!, NavigatorName.add_exercrises,
                 arguments: {'type': 'input'});
             BotToast.closeAllLoading();
           } catch (e, _) {
@@ -242,8 +230,7 @@ showPopupWeight() {
             if (e is Error) {
               Message.showToastMessage(navigatorKey.currentContext!, e.message);
             } else {
-              Message.showToastMessage(
-                  navigatorKey.currentContext!, e.toString());
+              Message.showToastMessage(navigatorKey.currentContext!, e.toString());
             }
           }
         },

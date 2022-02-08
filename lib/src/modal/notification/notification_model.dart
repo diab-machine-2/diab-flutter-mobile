@@ -27,27 +27,29 @@ class NotificationModel {
       this.notificationType});
 
   NotificationActionType get actionType =>
-      NotificationActionExtend.getNotificationActionTypeFromIndex(
-          notificationType);
+      NotificationActionExtend.getNotificationActionTypeFromIndex(data?.notificationType ?? notificationType);
 
   @override
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     final notification = json['notification'] ?? json;
     final dataNoti = json['data'];
     return NotificationModel(
-        id: notification['id'],
-        title: notification['title'],
-        body: notification['body'],
-        topic: notification['topic'],
-        imageUrl: notification['imageUrl'] is Map
-            ? notification['imageUrl']['url']
-            : notification['imageUrl'],
-        sentDateTime: notification['sentDateTime'],
-        isRead: notification['isRead'],
-        hyperText: notification['hyperText'],
-        hyperLink: notification['hyperLink'],
-        data: dataNoti == null ? null : NotificationData.fromJson(dataNoti),
-        notificationType: notification['notificationType']);
+      id: notification['id'],
+      title: notification['title'],
+      body: notification['body'],
+      topic: notification['topic'],
+      imageUrl: notification['imageUrl'] is Map ? notification['imageUrl']['url'] : notification['imageUrl'],
+      sentDateTime: notification['sentDateTime'],
+      isRead: notification['isRead'],
+      hyperText: notification['hyperText'],
+      hyperLink: notification['hyperLink'],
+      data: dataNoti == null ? null : NotificationData.fromJson(dataNoti),
+      notificationType: notification['data'] is Map
+          ? notification['data']['notificationType'] != null
+              ? notification['data']['notificationType']
+              : notification['notificationType']
+          : notification['notificationType'],
+    );
   }
 
   static List<NotificationModel> toList(List<dynamic> items) {
@@ -60,10 +62,7 @@ class NotificationData {
   final String? remindId;
   final int notificationType;
 
-  NotificationData(
-      {required this.communicationId,
-      required this.remindId,
-      required this.notificationType});
+  NotificationData({required this.communicationId, required this.remindId, required this.notificationType});
 
   @override
   factory NotificationData.fromJson(dynamic json) {
