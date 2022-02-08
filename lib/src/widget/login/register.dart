@@ -127,11 +127,12 @@ class _RegisterControllerState extends State<RegisterController> {
                           TextFieldCustom(
                               key: referralCodeKey,
                               initText: referralCode,
+                              maxLength: 6,
                               title: R.string.references_code.tr(),
                               placeholder: R.string.input_references_code.tr(),
                               isSharedCode: true,
                               onChanged: (value) {
-                                referralCode = value;
+                                referralCode = value.trim();
                               }),
                           const SizedBox(height: 32),
                           GestureDetector(

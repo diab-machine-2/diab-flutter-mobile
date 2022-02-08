@@ -85,7 +85,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
 
   Widget _buildQrView(BuildContext context) {
     final double scanArea =
-        (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 250.0 : 400.0;
+        (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 250.0 : 450.0;
 
     return QRView(
       key: qrKey,

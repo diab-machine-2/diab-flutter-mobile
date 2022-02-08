@@ -25,8 +25,9 @@ import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TabbarController extends StatefulWidget {
-  const TabbarController({this.sharedCode});
+  const TabbarController({this.sharedCode, this.isRedirectFromNotification = false});
   final String? sharedCode;
+  final bool isRedirectFromNotification;
   @override
   _TabbarControllerState createState() => _TabbarControllerState();
   static _TabbarControllerState? of(BuildContext context) {
@@ -46,20 +47,22 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
     super.initState();
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
-      const MyPlanPage(),
-    //  Container(),
-    //  const ProfileController(hideAllBackButton: true),
+      MyPlanPage(index: widget.isRedirectFromNotification ? 0 : 1),
+      Container(),
+      const ProfileController(hideAllBackButton: true),
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
-    pageController = PageController();
-    _bottomTabbar = BottomTabbar(callback: (index) {
-      if (index == -1) {
-        _showMaterialDialog();
-      } else {
-        jumpTo(index);
-      }
-    });
+    pageController = PageController(initialPage: widget.isRedirectFromNotification ? 1 : 0);
+    _bottomTabbar = BottomTabbar(
+        index: widget.isRedirectFromNotification ? 1 : 0,
+        callback: (index) {
+          if (index == -1) {
+            _showMaterialDialog();
+          } else {
+            jumpTo(index);
+          }
+        });
 
     getNewVersion();
   }

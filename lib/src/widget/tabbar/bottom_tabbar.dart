@@ -9,8 +9,9 @@ typedef TabbarSelected = Function(int);
 
 class BottomTabbar extends StatefulWidget {
   final TabbarSelected callback;
+  final int index;
 
-  BottomTabbar({required this.callback});
+  BottomTabbar({required this.callback, required this.index});
 
   final _BottomTabbar state = _BottomTabbar();
 
@@ -24,6 +25,7 @@ class _BottomTabbar extends State<BottomTabbar> {
 
   @override
   void initState() {
+    index = widget.index;
     super.initState();
   }
 
@@ -43,15 +45,11 @@ class _BottomTabbar extends State<BottomTabbar> {
           child: Container(
             height: 60,
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-              SizedBox(width: 16),
               tabWidget(R.string.home.tr(), R.drawable.ic_home, Const.HOME_SCREEN),
-              Expanded(flex: 1, child: Container()),
               tabWidget(R.string.schedule.tr(), R.drawable.ic_plan, Const.PLAN_SCREEN),
-              SizedBox(width: 16),
-              // tabWidget(R.string.course.tr(), R.drawable.ic_course,
-              //     Const.COURSE_SCREEN),
-              // tabWidget(R.string.individual.tr(), R.drawable.ic_account,
-              //     Const.ACCOUNT_SCREEN),
+              Expanded(flex: 1, child: Container()),
+              tabWidget(R.string.course.tr(), R.drawable.ic_course, Const.COURSE_SCREEN),
+              tabWidget(R.string.individual.tr(), R.drawable.ic_account, Const.ACCOUNT_SCREEN),
             ]),
           ),
         ));
