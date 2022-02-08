@@ -155,7 +155,8 @@ class _AppState extends State<App> {
                           facebookAccount: data?['facebookAccount'],
                           appleAccount: data?['appleAccount'],
                           userInfo: data?['userInfo'],
-                          referalCode: data?['referalCode']));
+                          referalCode: data?['referalCode'],
+                          diabeteStates: data?['diabeteStates'],));
                 case NavigatorName.forgot_password:
                   return _buildRoute(settings, ForgotPasswordController());
                 case NavigatorName.new_password:

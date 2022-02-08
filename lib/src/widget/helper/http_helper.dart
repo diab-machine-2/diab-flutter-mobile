@@ -83,8 +83,35 @@ class FetchClient {
     return option;
   }
 
+  Future<Options> options3() async {
+    await checkNetwork();
+    final token = await AppSettings.getToken();
+    final user_agent = await userAgent();
+
+    final Options option = Options(
+        // headers: {
+        //   'Authorization': 'Bearer $token',
+        //   'Content-Type': 'application/json; charset=UTF-8',
+        //   'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)',
+        // },
+        followRedirects: false,
+        validateStatus: (status) {
+          return true; //status < 500;
+        });
+    print(option);
+    return option;
+  }
+
   Future<Response> fetchData({bool baseIdentify = false, required String url, Map<String, String?>? params}) async {
     final option = await options();
+    final domain = baseIdentify ? identifyBaseURL : baseURL;
+    final Dio dio = Dio();
+    logRequest(dio);
+    return dio.getUri(Uri.https(domain, url, params), options: option);
+  }
+
+   Future<Response> fetchDataNoHeaders({bool baseIdentify = false, required String url, Map<String, String?>? params}) async {
+    final option = await options3();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
