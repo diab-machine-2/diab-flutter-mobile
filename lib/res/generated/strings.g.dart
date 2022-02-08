@@ -638,6 +638,8 @@ class Strings {
 	String get lesson_can_not_learn => 'lesson_can_not_learn';
 	String get exercise_done => 'exercise_done';
 	String get joining => 'joining';
+  String get add_comment => 'add_comment';
+  String get no_result => 'no_result';
 	String get ask_for_change_roadmap => 'ask_for_change_roadmap';
 	String get road_map_changed => 'road_map_changed';
 	String get lesson_empty_no_filter => 'lesson_empty_no_filter';

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -26,12 +27,14 @@ class MakeQuestionPage extends StatefulWidget {
 
 class _MakeQuestionPageState extends State<MakeQuestionPage> {
   late MakeQuestionCubit _cubit;
+  late TextEditingController _searchLessonModuleController;
   late TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: '');
+    _searchLessonModuleController = TextEditingController(text: '');
     final AppRepository appRepository = AppRepository();
     _cubit = MakeQuestionCubit(appRepository, widget.lessonModuleItems);
   }
@@ -67,7 +70,17 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
 
   Widget _buildPage(BuildContext context, MakeQuestionState state) {
     return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: () {
+        _cubit.isShowSuggestLessonModuleList = false;
+        if(_cubit.currentLessonModule == null){
+          _searchLessonModuleController.text = '';
+        } else {
+          _searchLessonModuleController.text = _cubit.currentLessonModule?.name ?? '';
+        }
+        _cubit.textSearch = '';
+        _cubit.refresh();
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
       child: Container(
         color: R.color.greenbg,
         child: Column(
@@ -83,8 +96,8 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                         _buildTopic(),
-                         SizedBox(height: 8),
+                         _buildLessonModule(),
+                         SizedBox(height: 20),
                          _buildQuestion(),
                       ],
                     ),
@@ -114,62 +127,172 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
     );
   }
 
-  _buildTopic() {
+  _buildLessonModule() {
+    final String title = R.string.topic.tr();
+    final String hintText = R.string.select_topic.tr();
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          R.string.topic.tr(),
-          style: TextStyle(
-            color: R.color.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        SizedBox(height: 8),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: R.color.grayBorder, style: BorderStyle.solid, width: 1),
-            color: R.color.white,
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<LessonModuleItem>(
-              alignment: AlignmentDirectional.bottomEnd,
-              isDense: true,
-              isExpanded: true,
-              value: _cubit.currentLessonModule,
-              icon: Icon(
-                Icons.keyboard_arrow_down,
-                size: 20,
-                color: R.color.textDark,
-              ),
-              hint: Text(
-                R.string.select_topic.tr(),
-                style: TextStyle(
-                  color: R.color.gray,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              items: _cubit.lessonModuleItems.map((LessonModuleItem value) {
-                return DropdownMenuItem<LessonModuleItem>(
-                  value: value,
-                  child: Text(value.name ?? ''),
-                );
-              }).toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  _cubit.setCurrentLessonModule(value);
-                }
-              },
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: R.color.textDark,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
             ),
           ),
-        ),
-        SizedBox(height: 8),
-      ],
+          const SizedBox(height: 8),
+          Stack(
+              children: [
+                Visibility(
+                  visible: _cubit.suggestLessonModuleItems.isEmpty && _cubit.isShowSuggestLessonModuleList,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 64.0, left: 4, bottom: 12),
+                    child: Text(
+                      R.string.no_result.tr(),
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: _cubit.suggestLessonModuleItems.isNotEmpty && _cubit.isShowSuggestLessonModuleList,
+                  child: Container(
+                    width: double.infinity,
+                    height: min(310, _cubit.suggestLessonModuleItems.length * 48 + 70),
+                    decoration: BoxDecoration(
+                      color: R.color.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0, left: 8),
+                      child: ListView.separated(
+                            itemCount: _cubit.suggestLessonModuleItems.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              bool isSelected = _cubit.suggestLessonModuleItems[index]!.id == _cubit.currentLessonModule?.id;
+                              return InkWell(
+                                onTap: () {
+                                  _cubit.currentLessonModule = _cubit.suggestLessonModuleItems[index];
+                                  _searchLessonModuleController.text = _cubit.currentLessonModule?.name ?? '';
+                                  _cubit.textSearch = '';
+                                  _cubit.isShowSuggestLessonModuleList = false;
+                                  _cubit.refresh();
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  height: 48,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          '${_cubit.suggestLessonModuleItems[index]!.name ?? ""}',
+                                          style: TextStyle(
+                                            color: isSelected
+                                                ? R.color.mainColor
+                                                : R.color.textDark,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Visibility(
+                                        visible: isSelected,
+                                        child: Icon(
+                                          Icons.check_rounded,
+                                          size: 20,
+                                          color: R.color.accentColor,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return Container(
+                                height: 1,
+                                color: R.color.color0xffE5E5E5,
+                              );
+                            },
+                          ),
+                    ),
+                  ),
+                ),
+                Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: R.color.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          width: 1.5,
+                          color: R.color.color0xffE5E5E5,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                                onTap: (){
+                                  if(!_cubit.isShowSuggestLessonModuleList){
+                                    _cubit.isShowSuggestLessonModuleList = true;
+                                    _cubit.refresh();
+                                  }
+                                },
+                                controller: _searchLessonModuleController,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: hintText,
+                                ),
+                                style: TextStyle(
+                                  color: R.color.grey_2,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                onChanged: (text) {
+                                  _cubit.textSearch = text.trim();
+                                  _cubit.isShowSuggestLessonModuleList = true;
+                                  _cubit.refresh();
+                                },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () {
+                              if(_cubit.isShowSuggestLessonModuleList){
+                                _cubit.textSearch = '';
+                                if(_cubit.currentLessonModule == null){
+                                  _searchLessonModuleController.text = '';
+                                } else {
+                                  _searchLessonModuleController.text = _cubit.currentLessonModule?.name ?? '';
+                                }
+                              }
+                              _cubit.isShowSuggestLessonModuleList = !_cubit.isShowSuggestLessonModuleList;
+                              _cubit.refresh();
+                            },
+                            child: Icon(
+                              _cubit.isShowSuggestLessonModuleList ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                              size: 20,
+                              color: R.color.textDark,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                
+              ],
+            ),
+        ],
     );
   }
 

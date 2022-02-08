@@ -16,9 +16,26 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
   LessonModuleItem? currentLessonModule;
   final AppRepository repository;
   final List<LessonModuleItem> lessonModuleItems;
+  String textSearch = '';
 
   Timer? timer;
   bool isClickSend = false;
+  bool isShowSuggestLessonModuleList = false;
+
+  List<LessonModuleItem?> get suggestLessonModuleItems {
+    final List<LessonModuleItem?> suggestList = lessonModuleItems;
+    if (textSearch.isEmpty) return suggestList;
+    final List<LessonModuleItem?> suggestFiltered = [];
+    for (final LessonModuleItem? filterDataItem in suggestList) {
+      if (filterDataItem?.name
+              ?.toUpperCase()
+              .contains(textSearch.toUpperCase()) ==
+          true) {
+        suggestFiltered.add(filterDataItem);
+      }
+    }
+    return suggestFiltered;
+  }
 
   MakeQuestionCubit(this.repository, this.lessonModuleItems) : super(MakeQuestionInitial()) {}
 
@@ -26,6 +43,11 @@ class MakeQuestionCubit extends Cubit<MakeQuestionState> {
     currentLessonModule = item;
     emit(MakeQuestionInitial());
     emit(MakeQuestionSuccess());
+  }
+
+  void refresh() {
+    emit(MakeQuestionSuccess());
+    emit(MakeQuestionInitial());
   }
 
   Future<void> sendQuestion(String? body) async {

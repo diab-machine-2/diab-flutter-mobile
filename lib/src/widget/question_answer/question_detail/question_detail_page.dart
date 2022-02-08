@@ -112,7 +112,8 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
                         children: [
                           _buildHeaderItem(),
                           SizedBox(height: 12),
-                          _cubit.questionModel.answers!.isEmpty ? Flexible(child: _buildTitleItem()) : _buildTitleItem(),
+                          _buildTitleItem(),
+                         // _cubit.questionModel.answers!.isEmpty ? Flexible(child: _buildTitleItem()) : _buildTitleItem(),
                           SizedBox(height: 16),
                           _buildAuthor(_cubit.questionModel),
                           Visibility(
@@ -265,7 +266,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
   }
 
   _buildDeleteQuestion() {
-    if (_cubit.questionModel.originalStatus == 0) return Container();
+    if (_cubit.questionModel.status == 0) return Container();
     if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
     return PopupMenuButton(
       color: R.color.color0xffFF5552,
@@ -364,7 +365,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
   }
 
   _buildDeleteComment(Answer answer) {
-    if (_cubit.questionModel.originalStatus == 0) return Container();
+    if (_cubit.questionModel.status == 0) return Container();
     if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
     return PopupMenuButton(
       color: R.color.color0xffFF5552,
@@ -416,7 +417,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
   }
 
   _buildCommentTextBox() {
-    if (_cubit.questionModel.originalStatus == 0) return Container();
+    if (_cubit.questionModel.status == 0) return Container();
     if (_cubit.questionModel.accountId != _cubit.userInfo?.accountId) return Container();
     return Container(
       padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -435,7 +436,7 @@ class _QuestionDetailPageState extends State<QuestionDetailPage> with WidgetsBin
                   ),
                   filled: true,
                   hintStyle: TextStyle(color: R.color.gray),
-                  hintText: "Thêm bình luận",
+                  hintText: R.string.add_comment.tr(),
                   fillColor: R.color.white),
               controller: _controller,
             ),

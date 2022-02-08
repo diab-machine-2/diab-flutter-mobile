@@ -9,14 +9,11 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
-import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../all_question_answer.dart';
-import 'package:medical/src/repo/question_answer/question_answer_client.dart';
-import 'package:medical/src/modal/error/error_model.dart';
 
 class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
   int currentLessonModule = 0;
@@ -111,23 +108,23 @@ class AllQuestionAnswerCubit extends Cubit<AllQuestionAnswerState> {
 
       if (response.data != null) {
         var tempQuestions = response.data!;
-        for(var question in tempQuestions){
-          question.originalStatus = question.status;
-          if(question.status == 0){
-            if(question.answers != null && question.answers!.isNotEmpty){
-              bool isReplied = false;
-              for(var answer in question.answers!){
-                if(answer.accountId != userInfo?.accountId){
-                  isReplied = true;
-                  break;
-                }
-              }
-              question.status = isReplied ? 2 : 1;
-            } else {
-              question.status = 1;
-            }
-          }
-        }
+        // for(var question in tempQuestions){
+        //   question.originalStatus = question.status;
+        //   if(question.status == 0){
+        //     if(question.answers != null && question.answers!.isNotEmpty){
+        //       bool isReplied = false;
+        //       for(var answer in question.answers!){
+        //         if(answer.accountId != userInfo?.accountId){
+        //           isReplied = true;
+        //           break;
+        //         }
+        //       }
+        //       question.status = isReplied ? 2 : 1;
+        //     } else {
+        //       question.status = 1;
+        //     }
+        //   }
+        // }
         if (isLoadmore) {
           questions.addAll(tempQuestions);
         } else {
