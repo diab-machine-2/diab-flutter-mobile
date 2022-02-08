@@ -86,6 +86,10 @@ class Utils {
     return list == null || list.isEmpty;
   }
 
+  static void hideKeyboard(BuildContext context) {
+    FocusScope.of(context).unfocus();
+  }
+
   static bool isInteger(num value) => value is int || value == value.roundToDouble();
 
   static Color parseStringToColor(String? color) {

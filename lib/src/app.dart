@@ -56,6 +56,9 @@ import 'package:medical/src/widget/profile/schedule_activities.dart';
 import 'package:medical/src/widget/profile/schedule_glucose.dart';
 import 'package:medical/src/widget/profile/setting_schedule_glucose.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/question_answer/make_question/make_question_page.dart';
+import 'package:medical/src/widget/question_answer/question_detail/bloc/question_detail_cubit.dart';
+import 'package:medical/src/widget/question_answer/question_detail/question_detail_page.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -390,6 +393,14 @@ class _AppState extends State<App> {
                 case '/photo_view':
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(settings, PhotoView(files: data?['files'], index: data?['index']),
+                      isPresent: true);
+                case NavigatorName.make_question:
+                  final data = settings.arguments as Map<String, dynamic>?;
+                  return _buildRoute(settings, MakeQuestionPage(lessonModuleItems: data!['lessonModuleItems']),
+                      isPresent: true);
+                case NavigatorName.question_detail:
+                  final data = settings.arguments as Map<String, dynamic>?;
+                  return _buildRoute(settings, QuestionDetailPage(questionModel: data!['questionModel'], isAll: data['isAll']),
                       isPresent: true);
                 default:
                   return null;

@@ -1,4 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:medical/src/model/request/make_comment_request.dart';
+import 'package:medical/src/model/request/make_question_request.dart';
+import 'package:medical/src/model/response/lesson_module_response.dart';
+import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -220,6 +224,36 @@ abstract class AppApi {
     @Query('week') int? week,
     @Query('day') int? day,
   });
+
+  @GET("App/Question")
+  Future<QuestionAnswerResponse> getListQuestion(@Query('page') int page, @Query('size') int size,
+      @Query("lessonModuleIds") List<String>? lessonModuleIds, @Query("accountIds") List<String>? accountIds);
+
+  @GET("App/Question/{id}")
+  Future<QuestionResponse> getQuestionById(@Path('id') String id);
+
+  @GET("App/LessonModule")
+  Future<LessonModuleResponse> getListLessonModule(@Query('page') int page, @Query('size') int size);
+
+  @POST("App/Question/Input")
+  Future<CommonResponse> makeQuestion(
+    @Body() MakeQuestionRequest request,
+  );
+
+   @POST("App/Question/CreateAnswer")
+  Future<CommonResponse> makeComment(
+    @Body() MakeCommentRequest request,
+  );
+
+  @DELETE("App/Question/Input/{id}")
+  Future<CommonResponse> deleteQuestion(
+    @Path('id') String id,
+  );
+
+  @DELETE("App/Question/DeleteAnswer/{id}")
+  Future<CommonResponse> deleteComment(
+    @Path('id') String id,
+  );
 
   @GET("App/Target/GetTargetWeekStatistics")
   Future<SmartGoalStatisticResponse> getSmartGoalStatistics({

@@ -113,6 +113,7 @@ class Drawables {
 	String get ic_create_smart_goal => "lib/res/drawables/ic_create_smart_goal.png";
 	String get ic_crown_green => "lib/res/drawables/ic_crown_green.png";
 	String get ic_dinh_duong => "lib/res/drawables/ic_dinh_duong.png";
+	String get ic_doctor => "lib/res/drawables/ic_doctor.png";
 	String get ic_duong_huyet => "lib/res/drawables/ic_duong_huyet.png";
 	String get ic_earse => "lib/res/drawables/ic_earse.png";
 	String get ic_edit => "lib/res/drawables/ic_edit.png";
@@ -184,6 +185,7 @@ class Drawables {
 	String get ic_play => "lib/res/drawables/ic_play.png";
 	String get ic_pro => "lib/res/drawables/ic_pro.png";
 	String get ic_pulse => "lib/res/drawables/ic_pulse.png";
+	String get ic_qa => "lib/res/drawables/ic_qa.png";
 	String get ic_qr_scan => "lib/res/drawables/ic_qr_scan.png";
 	String get ic_question => "lib/res/drawables/ic_question.png";
 	String get ic_question_circle => "lib/res/drawables/ic_question_circle.png";
@@ -219,6 +221,7 @@ class Drawables {
 	String get ic_schedule_weight => "lib/res/drawables/ic_schedule_weight.png";
 	String get ic_search => "lib/res/drawables/ic_search.png";
 	String get ic_security => "lib/res/drawables/ic_security.png";
+	String get ic_send => "lib/res/drawables/ic_send.png";
 	String get ic_set_goal => "lib/res/drawables/ic_set_goal.png";
 	String get ic_share => "lib/res/drawables/ic_share.png";
 	String get ic_shoe_exe => "lib/res/drawables/ic_shoe_exe.png";
@@ -304,6 +307,8 @@ class Drawables {
 	String get img_nothing_chart_weight => "lib/res/drawables/img_nothing_chart_weight.png";
 	String get img_notification_empty => "lib/res/drawables/img_notification_empty.png";
 	String get img_parent => "lib/res/drawables/img_parent.png";
+	String get img_question => "lib/res/drawables/img_question.png";
+	String get img_question_empty => "lib/res/drawables/img_question_empty.png";
 	String get img_register_success => "lib/res/drawables/img_register_success.png";
 	String get img_reminder => "lib/res/drawables/img_reminder.png";
 	String get img_result_booking => "lib/res/drawables/img_result_booking.png";

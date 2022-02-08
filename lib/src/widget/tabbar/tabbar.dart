@@ -21,6 +21,7 @@ import 'package:medical/src/widget/helper/version.dart';
 import 'package:medical/src/widget/home/home.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
 import 'package:medical/src/widget/profile/profile_controller.dart';
+import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -187,73 +188,7 @@ showPopupWeight() {
           try {
             BotToast.showLoading();
             UserModel userInfo = AppSettings.userInfo!;
-            userInfo = UserModel(
-              id: userInfo.id,
-              userName: userInfo.userName,
-              fullName: userInfo.fullName,
-              age: userInfo.age,
-              phoneNumber: userInfo.phoneNumber,
-              secondPhoneNumber: userInfo.secondPhoneNumber,
-              gender: userInfo.gender,
-              genderType: userInfo.genderType,
-              createDatetime: userInfo.createDatetime,
-              isActive: userInfo.isActive,
-              province: userInfo.province,
-              district: userInfo.district,
-              height: userInfo.height,
-              weight: number?.toDouble(),
-              ward: userInfo.ward,
-              dateOfBirth: userInfo.dateOfBirth,
-              diabetesStatus: userInfo.diabetesStatus,
-              diabetesName: userInfo.diabetesName,
-              diabetesDate: userInfo.diabetesDate,
-              imageUrl: userInfo.imageUrl,
-              code: userInfo.code,
-              email: userInfo.email,
-              address: userInfo.address,
-              goalWaist: userInfo.goalWaist,
-              goalWeight: userInfo.goalWeight,
-              isLinkedFacebook: userInfo.isLinkedFacebook,
-              isLinkedGoogle: userInfo.isLinkedGoogle,
-              isMobileAccount: userInfo.isMobileAccount,
-              firstLinkedAccount: userInfo.firstLinkedAccount,
-              googleEmail: userInfo.googleEmail,
-              glucoseUnit: userInfo.glucoseUnit,
-              activityLevelRate: userInfo.activityLevelRate,
-              diabetes: userInfo.diabetes,
-              roadMapId: userInfo.roadMapId,
-              hasBreakfastSnack: userInfo.hasBreakfastSnack,
-              hasLunchSnack: userInfo.hasLunchSnack,
-              hasDinnerSnack: userInfo.hasDinnerSnack,
-              profession: userInfo.profession,
-              educationLevel: userInfo.educationLevel,
-              personality: userInfo.personality,
-              consciousnessPractice: userInfo.consciousnessPractice,
-              religion: userInfo.religion,
-              vegetarian: userInfo.vegetarian,
-              caredTopic: userInfo.caredTopic,
-              personalInterests: userInfo.personalInterests,
-              favouriteSports: userInfo.favouriteSports,
-              workingHourss: userInfo.workingHourss,
-              jobList: userInfo.jobList,
-              educationLevelList: userInfo.educationLevelList,
-              lessonTagList: userInfo.lessonTagList,
-              personalityRuleList: userInfo.personalityRuleList,
-              interestRuleList: userInfo.interestRuleList,
-              consciousnessPracticeRuleList: userInfo.consciousnessPracticeRuleList,
-              vegetarianRuleList: userInfo.vegetarianRuleList,
-              workingHourRuleList: userInfo.workingHourRuleList,
-              levelOfDiabetesRuleList: userInfo.levelOfDiabetesRuleList,
-              favouriteSportRuleList: userInfo.favouriteSportRuleList,
-              religionRuleList: userInfo.religionRuleList,
-              accountRule: userInfo.accountRule,
-              accountId: userInfo.accountId,
-              creatorId: userInfo.creatorId,
-              energyGoal: userInfo.energyGoal,
-              nation: userInfo.nation,
-              nameOfAgency: userInfo.nameOfAgency,
-              nameOfDoctor: userInfo.nameOfDoctor,
-            );
+            userInfo = userInfo.copyWith(height: number?.toDouble());
             await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();
             Navigator.pushNamed(navigatorKey.currentContext!, NavigatorName.add_exercrises,

@@ -840,6 +840,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
     UserModel userInfo = AppSettings.userInfo!;
     userInfo = UserModel(
       id: userInfo.id,
+      accountId: userInfo.accountId,
       userName: userInfo.userName,
       fullName: userInfo.fullName,
       age: userInfo.age,
@@ -898,7 +899,6 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       favouriteSportRuleList: userInfo.favouriteSportRuleList,
       religionRuleList: userInfo.religionRuleList,
       accountRule: userInfo.accountRule,
-      accountId: userInfo.accountId,
       creatorId: userInfo.creatorId,
       energyGoal: userInfo.energyGoal,
       nation: userInfo.nation,
