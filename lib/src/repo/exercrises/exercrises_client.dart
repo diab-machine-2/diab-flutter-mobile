@@ -26,33 +26,23 @@ class ExercrisesClient extends FetchClient {
         params['page'] = page.toString();
       }
       print(params);
-      final Response response =
-          await super.fetchData(url: '/App/Exercise/Category', params: params);
+      final Response response = await super.fetchData(url: '/App/Exercise/Category', params: params);
       if (response.statusCode == 200) {
-        return ExercrisesDataModel(
-            inputs:
-                ExercrisesListCategoryModel.fromJson(response.data['data']));
+        return ExercrisesDataModel(inputs: ExercrisesListCategoryModel.fromJson(response.data['data']));
       } else {
         final error = Error.fromJson(response);
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
   // lay danh sach cuong do van dong
 
-  Future<List<ExerciseIntensityModel>> fetchIntensity(
-      String? exerciseCategoryId) async {
+  Future<List<ExerciseIntensityModel>> fetchIntensity(String? exerciseCategoryId) async {
     try {
       final Response response = await super.fetchData(
-          url: '/App/Exercise/Intensity',
-          params: {
-            'takeAll': 'true',
-            'exerciseCategoryId': exerciseCategoryId
-          });
+          url: '/App/Exercise/Intensity', params: {'takeAll': 'true', 'exerciseCategoryId': exerciseCategoryId});
       if (response.statusCode == 200) {
         return ExerciseIntensityModel.toList(response.data['data']);
       } else {
@@ -60,18 +50,14 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lay danh sach hinh thuc van dong
-  Future<List<ExercriseActiveModel>> fetchActive(
-      String? exerciseCategoryId, String? exerciseIntensityId) async {
+  Future<List<ExercriseActiveModel>> fetchActive(String? exerciseCategoryId, String? exerciseIntensityId) async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/Exercise', params: {
+      final Response response = await super.fetchData(url: '/App/Exercise', params: {
         'exerciseCategoryId': exerciseCategoryId,
         'exerciseIntensityId': exerciseIntensityId,
         'takeAll': 'true'
@@ -83,18 +69,15 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lay luong calories tieu hao
-  Future fetchCalories(String? exerciseCategoryId, String? exerciseIntensityId,
-      String? exerciseId, int duration) async {
+  Future fetchCalories(
+      String? exerciseCategoryId, String? exerciseIntensityId, String? exerciseId, int duration) async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/Exercise/Calculator', params: {
+      final Response response = await super.fetchData(url: '/App/Exercise/Calculator', params: {
         'exerciseId': exerciseId,
         'exerciseIntensityId': exerciseIntensityId,
         'exerciseCategoryId': exerciseCategoryId,
@@ -107,18 +90,14 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy danh sách vận động
-  Future<InputExercrisesDataModel> fetchInput(
-      String? currentDateTime, String? periodFilterType, int? page) async {
+  Future<InputExercrisesDataModel> fetchInput(String? currentDateTime, String? periodFilterType, int? page) async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/Exercise/Input', params: {
+      final Response response = await super.fetchData(url: '/App/Exercise/Input', params: {
         'currentDateTime': currentDateTime,
         'periodFilterType': periodFilterType,
         'page': '$page',
@@ -126,25 +105,20 @@ class ExercrisesClient extends FetchClient {
       });
       if (response.statusCode == 200) {
         return InputExercrisesDataModel(
-            inputs: InputDataExercriseModel.toList(response.data['data']),
-            hasMore: response.data['meta']['canNext']);
+            inputs: InputDataExercriseModel.toList(response.data['data']), hasMore: response.data['meta']['canNext']);
       } else {
         final error = Error.fromJson(response);
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //lấy hoạt động trong ngày
-  Future<ExercriseSummaryModel> fetchDailyExercrise(
-      String? currentDateTime) async {
+  Future<ExercriseSummaryModel> fetchDailyExercrise(String? currentDateTime) async {
     try {
-      final Response response =
-          await super.fetchData(url: 'App/Exercise/Summary', params: {
+      final Response response = await super.fetchData(url: 'App/Exercise/Summary', params: {
         'currentDateTime': '$currentDateTime',
       });
       if (response.statusCode == 200) {
@@ -154,37 +128,29 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<ExercriseWalkSummaryModel?> fetchWalkExercrise(
-      String? currentDateTime) async {
+  Future<ExercriseWalkSummaryModel?> fetchWalkExercrise(String? currentDateTime) async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/Exercise/WalkSummary', params: {
+      final Response response = await super.fetchData(url: '/App/Exercise/WalkSummary', params: {
         'currentDateTime': '$currentDateTime',
       });
       if (response.statusCode == 200) {
-        return response.data['data'] == null
-            ? null
-            : ExercriseWalkSummaryModel.fromJson(response.data['data']);
+        return response.data['data'] == null ? null : ExercriseWalkSummaryModel.fromJson(response.data['data']);
       } else {
         final error = Error.fromJson(response);
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //nhập chỉ số vận động
-  Future<bool> postIndexExercrises(int date, String? timeFrameId, String note,
-      List<ExercrisesCategoryModel> exercises, List<String> files) async {
+  Future<bool> postIndexExercrises(
+      int date, String? timeFrameId, String note, List<ExercrisesCategoryModel> exercises, List<String> files) async {
     try {
       Map<String, String> params = {
         'date': date.toString(),
@@ -196,29 +162,25 @@ class ExercrisesClient extends FetchClient {
         params['exercises[$i].seq'] = exercises[i].order.toString();
         params['exercises[$i].description'] = exercises[i].description ?? '';
         params['exercises[$i].duration'] = exercises[i].duration.toString();
-        params['exercises[$i].burnedCalorie'] =
-            exercises[i].burnedCalorie.toString();
+        params['exercises[$i].burnedCalorie'] = exercises[i].burnedCalorie.toString();
       }
-      final response = await super
-          .postHttp(path: '/App/Exercise/Input', params: params, files: files);
+      final response = await super.postHttp(path: '/App/Exercise/Input', params: params, files: files);
       if (response.statusCode == 200) {
         return true;
       } else {
-        print(await response.stream.bytesToString());
-        throw response.reasonPhrase!;
+        String error = await response.stream.bytesToString();
+        print('error = $error');
+        throw Error.fromString(error);
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //lấy chi tiết vận động
   Future<InputDetailExercriseModel> fetchDetail(String? id) async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/Exercise/Input/$id');
+      final Response response = await super.fetchData(url: '/App/Exercise/Input/$id');
       if (response.statusCode == 200) {
         return InputDetailExercriseModel.fromJson(response.data['data']);
       } else {
@@ -226,18 +188,14 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //lấy xu hướng thời gian
-  Future<ExercriseTrendTimeModel> fetchExercriseTimeTrend(
-      String? currentDateTime, String? periodFilterType) async {
+  Future<ExercriseTrendTimeModel> fetchExercriseTimeTrend(String? currentDateTime, String? periodFilterType) async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/Exercise/Trend/Duration', params: {
+      final Response response = await super.fetchData(url: '/App/Exercise/Trend/Duration', params: {
         'currentDateTime': '$currentDateTime',
         'periodFilterType': '$periodFilterType',
         'takeAll': 'true',
@@ -249,21 +207,13 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
   //cập nhật chỉ số vận động
 
-  Future<bool> updateExercrises(
-      String? id,
-      int date,
-      String? timeFrameId,
-      String note,
-      List<ExercrisesCategoryModel> exercises,
-      List<String?> removalImageIds,
-      List<String> files) async {
+  Future<bool> updateExercrises(String? id, int date, String? timeFrameId, String note,
+      List<ExercrisesCategoryModel> exercises, List<String?> removalImageIds, List<String> files) async {
     try {
       Map<String, String> params = {
         'id': id ?? '',
@@ -276,12 +226,10 @@ class ExercrisesClient extends FetchClient {
         params['exercises[$i].exerciseId'] = exercises[i].exerciseId ?? '';
         params['exercises[$i].seq'] = i.toString();
         params['exercises[$i].duration'] = exercises[i].duration.toString();
-        params['exercises[$i].burnedCalorie'] =
-            exercises[i].burnedCalorie.toString();
+        params['exercises[$i].burnedCalorie'] = exercises[i].burnedCalorie.toString();
       }
       print(params);
-      final response = await super
-          .putHttp(path: '/App/Exercise/Input', params: params, files: files);
+      final response = await super.putHttp(path: '/App/Exercise/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
         print(await response.stream.bytesToString());
@@ -290,17 +238,14 @@ class ExercrisesClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // xóa chỉ số vận động
   Future<bool> deleteExercrises(String? id) async {
     try {
-      final Response response =
-          await super.delete(url: '/App/Exercise/Input/$id');
+      final Response response = await super.delete(url: '/App/Exercise/Input/$id');
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -308,18 +253,14 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //lấy xu hướng đốt calo
-  Future<ExercriseTrendCaloModel> fetchExercriseCaloTrend(
-      String? currentDateTime, String? periodFilterType) async {
+  Future<ExercriseTrendCaloModel> fetchExercriseCaloTrend(String? currentDateTime, String? periodFilterType) async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/Exercise/Trend/Calorie', params: {
+      final Response response = await super.fetchData(url: '/App/Exercise/Trend/Calorie', params: {
         'currentDateTime': '$currentDateTime',
         'periodFilterType': '$periodFilterType',
         'takeAll': 'true',
@@ -331,17 +272,14 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   //lấy hoạt động gần nhất
   Future<List<ExercrisesCategoryModel>> fetchExercriseRegularly() async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/Exercise/Regularly');
+      final Response response = await super.fetchData(url: '/App/Exercise/Regularly');
       if (response.statusCode == 200) {
         return ExercrisesCategoryModel.toList(response.data['data']);
       } else {
@@ -349,18 +287,13 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // thêm mục tiêu vận động mới
   Future<bool> addExercriseTarget(
-      int targetExerciseType,
-      int targetExerciseUnitType,
-      double value,
-      String? exerciseCategoryId) async {
+      int targetExerciseType, int targetExerciseUnitType, double value, String? exerciseCategoryId) async {
     try {
       Map<String, String?> params = {
         'targetExerciseType': targetExerciseType.toString(),
@@ -371,8 +304,7 @@ class ExercrisesClient extends FetchClient {
       if (exerciseCategoryId != null) {
         params['exerciseCategoryId'] = exerciseCategoryId;
       }
-      final Response response = await super.postUri(
-          baseOption: true, url: '/App/TargetExercise', params: params);
+      final Response response = await super.postUri(baseOption: true, url: '/App/TargetExercise', params: params);
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -380,23 +312,17 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
   // lấy xếp hạng
 
-  Future<ExerciseRankModel> fetchRank(
-      String? currentDateTime, String? periodFilterType) async {
+  Future<ExerciseRankModel> fetchRank(String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response = await super.fetchData(
           url: '/App/Exercise/Rank',
-          params: {
-            'currentDateTime': currentDateTime,
-            'periodFilterType': periodFilterType
-          });
+          params: {'currentDateTime': currentDateTime, 'periodFilterType': periodFilterType});
       if (response.statusCode == 200) {
         return ExerciseRankModel.fromJson(response.data['data']);
       } else {
@@ -404,9 +330,7 @@ class ExercrisesClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }
