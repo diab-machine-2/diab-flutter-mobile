@@ -66,7 +66,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 BotToast.closeAllLoading();
               }
               if (state is CreateGoalFailure) {
-                Message.showToastMessage(context, state.error);
+                Message.showToastMessage(context, state.error, seconds: 4);
               }
               if (state is CreateGoalCompleted) {
                 NavigationUtil.pop(context);

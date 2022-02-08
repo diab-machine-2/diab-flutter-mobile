@@ -32,8 +32,7 @@ class ExerciseTabPage extends StatefulWidget {
   _ExerciseTabPageState createState() => _ExerciseTabPageState();
 }
 
-class _ExerciseTabPageState extends State<ExerciseTabPage>
-    with AutomaticKeepAliveClientMixin<ExerciseTabPage> {
+class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAliveClientMixin<ExerciseTabPage> {
   late final ExerciseTabCubit _cubit;
   final RefreshController _controller = RefreshController();
   final ScrollController _scrollController = ScrollController();
@@ -71,8 +70,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             animateToIndex(state.newIndex, refresh: false);
           }
           if (state is ExerciseTabScrollToLesson) {
-            _exerciseScrollController.scrollToIndex(state.newIndex,
-                preferPosition: AutoScrollPosition.begin);
+            _exerciseScrollController.scrollToIndex(state.newIndex, preferPosition: AutoScrollPosition.begin);
           }
         },
         builder: (context, state) {
@@ -117,16 +115,12 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   child: SmartRefresher(
                     controller: _controller,
                     onRefresh: () => _cubit.onRefresh(isRefresh: true),
-                    child: _cubit.exerciseMovementResponse?.data?.isEmpty ==
-                            null
+                    child: _cubit.exerciseMovementResponse?.data?.isEmpty == null
                         ? const SizedBox.shrink()
                         : ListView.separated(
                             controller: _exerciseScrollController,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 20),
-                            itemCount: _cubit.isHasRoadmapUser
-                                ? 1
-                                : _cubit.dataLength + 1,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                            itemCount: _cubit.isHasRoadmapUser ? 1 : _cubit.dataLength + 1,
                             itemBuilder: (context, index) {
                               return AutoScrollTag(
                                   key: ValueKey(index),
@@ -136,8 +130,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                                       ? _buildExerciseWidget(
                                           exerciseItem: _cubit.isHasRoadmapUser
                                               ? _cubit.currentExercise
-                                              : _cubit.exerciseMovementResponse
-                                                  ?.data?[index])
+                                              : _cubit.exerciseMovementResponse?.data?[index])
                                       : SizedBox(height: 20.h));
                             },
                             separatorBuilder: (context, index) {
@@ -189,9 +182,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           child: Icon(
             Icons.chevron_left_rounded,
             size: 24,
-            color: (_cubit.currentWeekIndex ?? 0) <= 0
-                ? R.color.captionColorGray
-                : R.color.greenGradientBottom,
+            color: (_cubit.currentWeekIndex ?? 0) <= 0 ? R.color.captionColorGray : R.color.greenGradientBottom,
           ),
         ),
         Expanded(
@@ -207,10 +198,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                       _cubit.onSelectWeek(index);
                     });
               })
-                ..add(SizedBox(
-                    width: _cubit.weekStatesList.isEmpty
-                        ? MediaQuery.of(context).size.width - 96 * 2
-                        : 0)),
+                ..add(SizedBox(width: _cubit.weekStatesList.isEmpty ? MediaQuery.of(context).size.width - 96 * 2 : 0)),
             ),
           ),
         ),
@@ -222,8 +210,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           child: Icon(
             Icons.chevron_right_rounded,
             size: 24,
-            color: (_cubit.currentWeekIndex ?? 0) >=
-                    (_cubit.weekStatesList.length - 1)
+            color: (_cubit.currentWeekIndex ?? 0) >= (_cubit.weekStatesList.length - 1)
                 ? R.color.captionColorGray
                 : R.color.greenGradientBottom,
           ),
@@ -248,21 +235,17 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
               height: 87,
               width: 87,
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-              child:
-                  NetWorkImageWidget(imageUrl: exerciseItem?.image?.url ?? '')),
+              child: NetWorkImageWidget(imageUrl: exerciseItem?.image?.url ?? '')),
           const SizedBox(width: 14),
           Expanded(
             child: InkWell(
               onTap: () {
-                if (exerciseItem?.exerciseMovementStates ==
-                    Const.LESSON_CAN_NOT_LEARN) {
+                if (exerciseItem?.exerciseMovementStates == Const.LESSON_CAN_NOT_LEARN) {
                   showUpdateRequirePopup(context: context);
                   return;
                 }
-                if (exerciseItem?.exerciseMovementStates ==
-                        Const.LESSON_LOCKED ||
-                    exerciseItem?.exerciseMovementStates ==
-                        Const.LESSON_CAN_NOT_LEARN) {
+                if (exerciseItem?.exerciseMovementStates == Const.LESSON_LOCKED ||
+                    exerciseItem?.exerciseMovementStates == Const.LESSON_CAN_NOT_LEARN) {
                   _showLockedDialog();
                   return;
                 }
@@ -287,19 +270,14 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                       const SizedBox(width: 8),
                       Text(
                         '${exerciseItem.practiceTime ?? ''} ${R.string.minute.tr()}',
-                        style: TextStyle(
-                            color: R.color.grey_2,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400),
+                        style: TextStyle(color: R.color.grey_2, fontSize: 12, fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Visibility(
-                    visible: exerciseItem.exerciseMovementStates !=
-                            Const.LESSON_LOCKED &&
-                        exerciseItem.exerciseMovementStates !=
-                            Const.LESSON_CAN_NOT_LEARN,
+                    visible: exerciseItem.exerciseMovementStates != Const.LESSON_LOCKED &&
+                        exerciseItem.exerciseMovementStates != Const.LESSON_CAN_NOT_LEARN,
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 12.0),
                       child: Row(
@@ -355,7 +333,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   Widget _buildDayOffWidget() {
     if (!_cubit.isHasRoadmapUser) return const SizedBox();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 53),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
           Padding(
@@ -369,10 +347,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                 Text(
                   R.string.today_is_day_off.tr(),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
+                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -405,10 +380,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                 Text(
                   R.string.today_is_day_no_exercise.tr(),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
+                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -510,12 +482,10 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         width: 96,
         height: 32,
         decoration: BoxDecoration(
-          color: isSelected &&
-                  state.completionStatus == CompletionStatus.not_start_yet
+          color: isSelected && state.completionStatus == CompletionStatus.not_start_yet
               ? R.color.greenbg
               : state.completionStatus.statusBackgroundColor,
-          border: isSelected &&
-                  state.completionStatus != CompletionStatus.not_start_yet
+          border: isSelected && state.completionStatus != CompletionStatus.not_start_yet
               ? Border.all(color: state.completionStatus.statusIconColor)
               : null,
           borderRadius: BorderRadius.circular(200),
@@ -526,16 +496,14 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             Text(
               state.weekTitle ?? '',
               style: TextStyle(
-                color: isSelected &&
-                        state.completionStatus == CompletionStatus.not_start_yet
+                color: isSelected && state.completionStatus == CompletionStatus.not_start_yet
                     ? R.color.green
                     : state.completionStatus.statusIconColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            if (!(isSelected &&
-                state.completionStatus == CompletionStatus.not_start_yet))
+            if (!(isSelected && state.completionStatus == CompletionStatus.not_start_yet))
               state.completionStatus.weekStatusIcon
           ],
         ),
@@ -544,11 +512,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Future<void> changeRoadMap() async {
-    final newRoadmapId =
-        await NavigationUtil.navigatePage(context, const SelectRoadMapPage());
-    if (newRoadmapId is String &&
-        newRoadmapId.isNotEmpty &&
-        newRoadmapId != _cubit.roadmapId) {
+    final newRoadmapId = await NavigationUtil.navigatePage(context, const SelectRoadMapPage());
+    if (newRoadmapId is String && newRoadmapId.isNotEmpty && newRoadmapId != _cubit.roadmapId) {
       _cubit.roadmapChanged(newRoadmapId);
     }
   }
@@ -656,26 +621,19 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50.0, vertical: 30),
+                        padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 30),
                         child: Image.asset(R.drawable.img_upgrade_package),
                       ),
                       Text(
                         'Bài học chưa mở khoá!',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700),
+                        style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         'Vui lòng nâng cấp tài khoản để tập các bài tiếp theo.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
                       ),
                       const SizedBox(height: 16),
                       Row(

@@ -9,8 +9,7 @@ enum StatisticalAction {
 }
 
 class StatisticalPopup extends StatelessWidget {
-  const StatisticalPopup({Key? key, required this.hasRoadmapUser})
-      : super(key: key);
+  const StatisticalPopup({Key? key, required this.hasRoadmapUser}) : super(key: key);
   final bool hasRoadmapUser;
 
   @override
@@ -24,8 +23,7 @@ class StatisticalPopup extends StatelessWidget {
             title: 'Tiến độ của tôi',
             icon: R.drawable.ic_activity_process,
             onTap: () {
-              NavigationUtil.pop(context,
-                  result: StatisticalAction.my_progress);
+              NavigationUtil.pop(context, result: StatisticalAction.my_progress);
             },
           ),
         _buildSingleButton(
@@ -57,21 +55,21 @@ class StatisticalPopup extends StatelessWidget {
     String? icon,
     required VoidCallback onTap,
   }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        if (title?.isNotEmpty == true)
-          Text(
-            title ?? '',
-            style: TextStyle(
-              color: R.color.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (title?.isNotEmpty == true)
+            Text(
+              title ?? '',
+              style: TextStyle(
+                color: R.color.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-        GestureDetector(
-          onTap: onTap,
-          child: Container(
+          Container(
             margin: const EdgeInsets.only(left: 14, bottom: 12, right: 16),
             alignment: Alignment.center,
             width: 60,
@@ -82,10 +80,7 @@ class StatisticalPopup extends StatelessWidget {
                   ? LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.centerRight,
-                      colors: [
-                          R.color.greenGradientTop,
-                          R.color.greenGradientBottom
-                        ])
+                      colors: [R.color.greenGradientTop, R.color.greenGradientBottom])
                   : null,
               shape: BoxShape.circle,
             ),
@@ -101,8 +96,8 @@ class StatisticalPopup extends StatelessWidget {
                     height: 32,
                   ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

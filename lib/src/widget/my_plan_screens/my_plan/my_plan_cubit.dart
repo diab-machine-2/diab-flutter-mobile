@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/utils/date_utils.dart';
 import 'models/plan_type.dart';
 import 'my_plan.dart';
 
@@ -13,11 +16,7 @@ class MyPlanCubit extends Cubit<MyPlanState> {
 
   PlanType currentPlanType = PlanType.lesson;
 
-  List<PlanType> planTypeList = [
-    PlanType.goal,
-    PlanType.lesson,
-    PlanType.activity
-  ];
+  List<PlanType> planTypeList = [PlanType.goal, PlanType.lesson, PlanType.activity];
 
   UserInfoResponse? userInfo;
 
@@ -26,11 +25,9 @@ class MyPlanCubit extends Cubit<MyPlanState> {
     return index == -1 ? 0 : index;
   }
 
-  PackageType get packageType =>
-      userInfo?.data?.packageType ?? PackageType.free;
+  PackageType get packageType => userInfo?.data?.packageType ?? PackageType.free;
   String get roadmapId => userInfo?.data?.roadmapId ?? '';
-  int? get currentStudyWeek =>
-      userInfo?.data?.ownPackage?.ownRoadmap?.currentWeek;
+  int? get currentStudyWeek => userInfo?.data?.ownPackage?.ownRoadmap?.currentWeek;
 
   bool get isFreeUser => packageType == PackageType.free;
   bool get isNoRoadmapUser => packageType == PackageType.no_road_map;
@@ -51,10 +48,13 @@ class MyPlanCubit extends Cubit<MyPlanState> {
   Future<void> getCurrentUserInfo() async {
     await Future.delayed(Duration.zero);
     emit(const MyPlanLoading());
-    final ApiResult<UserInfoResponse> apiResult =
-        await repository.getCurrentUserInfo();
+    final ApiResult<UserInfoResponse> apiResult = await repository.getCurrentUserInfo();
     apiResult.when(success: (UserInfoResponse response) {
       userInfo = response;
+      if (userInfo?.data?.currentDateTime != null) {
+        AppSettings.currentDateTime = userInfo!.data!.currentDateTime!;
+      }
+
       emit(const MyPlanSuccess());
     }, failure: (NetworkExceptions error) {
       emit(MyPlanFailure(NetworkExceptions.getErrorMessage(error)));

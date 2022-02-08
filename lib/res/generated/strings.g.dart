@@ -23,6 +23,7 @@ class Strings {
 	String get error_invalid_status_code => 'error_invalid_status_code';
 	String get error_not_found_api => 'error_not_found_api';
 	String get error_can_not_connect_to_server => 'error_can_not_connect_to_server';
+	String get error_can_not_access_camera => 'error_can_not_access_camera';
 	String get current_language => 'current_language';
 	String get please_enter_email => 'please_enter_email';
 	String get please_enter_user_name => 'please_enter_user_name';
@@ -96,6 +97,7 @@ class Strings {
 	String get input_name => 'input_name';
 	String get references_code => 'references_code';
 	String get input_references_code => 'input_references_code';
+	String get scan_references_code => 'scan_references_code';
 	String get update_profile_failure => 'update_profile_failure';
 	String get detail_address => 'detail_address';
 	String get input_phone => 'input_phone';
@@ -134,6 +136,18 @@ class Strings {
 	String get show => 'show';
 	String get hide => 'hide';
 	String get camera_permission_required => 'camera_permission_required';
+	String get shared_profile_list => 'shared_profile_list';
+	String get doctor_request_share_profile => 'doctor_request_share_profile';
+	String get share_profile_for_doctor => 'share_profile_for_doctor';
+	String get share_profile_description => 'share_profile_description';
+	String get share_profile_success => 'share_profile_success';
+	String get share_profile_success_description => 'share_profile_success_description';
+	String get show_shared_list => 'show_shared_list';
+	String get stop_sharing => 'stop_sharing';
+	String get stop_sharing_description => 'stop_sharing_description';
+	String get qr_code_not_found => 'qr_code_not_found';
+	String get referral_code_not_exist => 'referral_code_not_exist';
+	String get shared_date => 'shared_date';
 	String get bloodpressurescreen => 'BloodPressureScreen';
 	String get blood_pressure_trend => 'blood_pressure_trend';
 	String get lowest => 'lowest';
@@ -177,11 +191,13 @@ class Strings {
 	String get blood_sugar_group => 'blood_sugar_group';
 	String get result => 'result';
 	String get pick_a_model => 'pick_a_model';
+	String get recommand_blood_sugar_test1 => 'recommand_blood_sugar_test1';
 	String get recommand_blood_sugar_test => 'recommand_blood_sugar_test';
 	String get recommand_blood_sugar => 'recommand_blood_sugar';
 	String get no_need_to_test => 'no_need_to_test';
 	String get often_testing_blood_sugar => 'often_testing_blood_sugar';
 	String get time_per_day => 'time_per_day';
+	String get time_per_week => 'time_per_week';
 	String get upgrade_to_diab_pro => 'upgrade_to_diab_pro';
 	String get survey_again => 'survey_again';
 	String get testing_schedule_suggest => 'testing_schedule_suggest';
@@ -193,6 +209,7 @@ class Strings {
 	String get latest_hba1c_is => 'latest_hba1c_is';
 	String get back_to_schedule => 'back_to_schedule';
 	String get blood_sugar_survey_description => 'blood_sugar_survey_description';
+	String get blood_sugar_survey_description_link => 'blood_sugar_survey_description_link';
 	String get blood_sugar_survey_done_description => 'blood_sugar_survey_done_description';
 	String get blood_sugar_survey_update_require => 'blood_sugar_survey_update_require';
 	String get survey_question_1 => 'survey_question_1';
@@ -945,6 +962,7 @@ class Strings {
 	String get day_in_week_friday => 'day_in_week_friday';
 	String get day_in_week_saturday => 'day_in_week_saturday';
 	String get day_in_week_sunday => 'day_in_week_sunday';
+	String get data_input_not_valid => 'data_input_not_valid';
 	String get statistical => 'statistical';
 	String get ask_doctor => 'ask_doctor';
 	String get replied => 'replied';
@@ -972,4 +990,9 @@ class Strings {
 	String get input_comment_required => 'input_comment_required';
 	String get input_topic_required => 'input_topic_required';
 	String get input_question_required => 'input_question_required';
+	String get food_menu_intro_title1 => 'food_menu_intro_title1';
+	String get food_menu_intro_title21 => 'food_menu_intro_title21';
+	String get food_menu_intro_title22 => 'food_menu_intro_title22';
+	String get food_menu_intro_title23 => 'food_menu_intro_title23';
+	String get food_menu_intro_title3 => 'food_menu_intro_title3';
 }

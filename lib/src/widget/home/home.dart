@@ -17,6 +17,8 @@ import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/list_service/list_service_page.dart';
 
 class HomeController extends StatefulWidget {
+  const HomeController({this.sharedCode});
+  final String? sharedCode;
   @override
   _HomeControllerState createState() => _HomeControllerState();
 }
@@ -65,68 +67,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    // DartNotificationCenter.subscribe(
-    //     channel: 'BloodPressure_change_data',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       _refresh();
-    //       checkScreen(NavigatorName.detail_blood_pressure);
-    //     });
-    // DartNotificationCenter.subscribe(
-    //     channel: 'glucose_change_data',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       _refresh();
-    //       checkScreen(NavigatorName.detail_blood_sugar);
-    //     });
-    // DartNotificationCenter.subscribe(
-    //     channel: 'Weight_change_data',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       _refresh();
-    //       checkScreen(NavigatorName.detail_bmi);
-    //     });
-    // DartNotificationCenter.subscribe(
-    //     channel: 'Emotion_change_data',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       _refresh();
-    //       checkScreen(NavigatorName.detail_emotion);
-    //     });
-    // DartNotificationCenter.subscribe(
-    //     channel: 'active_change_data',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       _refresh();
-    //       checkScreen(NavigatorName.detail_exercrises);
-    //     });
-    // DartNotificationCenter.subscribe(
-    //     channel: 'food_change_data',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       _refresh();
-    //       checkScreen(NavigatorName.detail_food);
-    //     });
-    // DartNotificationCenter.subscribe(
-    //     channel: 'hba1c_change_data',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       _refresh();
-    //       checkScreen(NavigatorName.detail_hba1c);
-    //     });
-    // DartNotificationCenter.subscribe(
-    //     channel: 'goal_calo_changed',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       _refresh();
-    //     });
-    // DartNotificationCenter.subscribe(
-    //     channel: 'refresh_home',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       _refresh();
-    //     });
-    //getData();
     TrackingManager.analytics.setCurrentScreen(screenName: 'Home');
   }
 
@@ -169,23 +109,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'BloodPressure_change_data', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'glucose_change_data', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'Weight_change_data', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'Emotion_change_data', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'active_change_data', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'food_change_data', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'hba1c_change_data', observer: this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'goal_calo_changed', observer: this);
-    // DartNotificationCenter.unsubscribe(channel: 'refresh_home', observer: this);
+
     super.dispose();
   }
 
@@ -247,7 +171,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 )),
                 child: Column(
                   children: [
-                    HomeHeader(),
+                    HomeHeader(sharedCode: widget.sharedCode),
                     Expanded(
                       child: SafeArea(
                         top: false,

@@ -118,6 +118,27 @@ class UserClient extends FetchClient {
 
   Future<bool> updateGoalInfo(GoalInfoModel model) async {
     try {
+      //  if (model.dailyWalkTargetDuration != null) {
+      //   params['dailyWalkTargetDuration'] = model.dailyWalkTargetDuration!;
+      // }
+      // if (model.dailyTargetDuration != null) {
+      //   params['dailyTargetDuration'] = model.dailyTargetDuration!;
+      // }
+      // if (model.weeklyTargetDuration != null) {
+      //   params['weeklyTargetDuration'] = model.weeklyTargetDuration!;
+      // }
+      // if (model.dailyTargetBurnedCalorie != null) {
+      //   params['dailyTargetBurnedCalorie'] = model.dailyTargetBurnedCalorie!;
+      // }
+      // if (model.dailyEnergyGoal != null) {
+      //   params['dailyEnergyGoal'] = model.dailyEnergyGoal!;
+      // }
+      // if (model.goalWaist != null) {
+      //   params['goalWaist'] = model.goalWaist!;
+      // }
+      // if (model.goalWeight != null) {
+      //   params['goalWeight'] = model.goalWeight!;
+      // }
       final Response response = await super.putData(url: '/App/Patient/Target', params: {
         'dailyWalkTargetDuration': model.dailyWalkTargetDuration,
         'dailyTargetDuration': model.dailyTargetDuration,

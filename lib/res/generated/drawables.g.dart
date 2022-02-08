@@ -21,11 +21,11 @@ class Drawables {
 	String get bg_popup => "lib/res/drawables/bg_popup.png";
 	String get bg_premium => "lib/res/drawables/bg_premium.png";
 	String get bg_pro => "lib/res/drawables/bg_pro.png";
+	String get bg_profile => "lib/res/drawables/bg_profile.png";
 	String get bg_pro_group_1 => "lib/res/drawables/bg_pro_group_1.png";
 	String get bg_pro_group_2 => "lib/res/drawables/bg_pro_group_2.png";
 	String get bg_pro_group_3 => "lib/res/drawables/bg_pro_group_3.png";
 	String get bg_pro_group_4 => "lib/res/drawables/bg_pro_group_4.png";
-	String get bg_profile => "lib/res/drawables/bg_profile.png";
 	String get bg_register_package_premium => "lib/res/drawables/bg_register_package_premium.png";
 	String get bg_register_package_pro => "lib/res/drawables/bg_register_package_pro.png";
 	String get bg_splash => "lib/res/drawables/bg_splash.png";
@@ -82,20 +82,20 @@ class Drawables {
 	String get ic_button_plus => "lib/res/drawables/ic_button_plus.png";
 	String get ic_button_plus_home => "lib/res/drawables/ic_button_plus_home.png";
 	String get ic_calendar => "lib/res/drawables/ic_calendar.png";
-	String get ic_cam_xuc => "lib/res/drawables/ic_cam_xuc.png";
 	String get ic_camera_black => "lib/res/drawables/ic_camera_black.png";
 	String get ic_camera_picker => "lib/res/drawables/ic_camera_picker.png";
+	String get ic_cam_xuc => "lib/res/drawables/ic_cam_xuc.png";
 	String get ic_can_nang => "lib/res/drawables/ic_can_nang.png";
 	String get ic_chat => "lib/res/drawables/ic_chat.png";
 	String get ic_chatting => "lib/res/drawables/ic_chatting.png";
 	String get ic_check => "lib/res/drawables/ic_check.png";
+	String get ic_checkbox => "lib/res/drawables/ic_checkbox.png";
+	String get ic_checkbox_green => "lib/res/drawables/ic_checkbox_green.png";
 	String get ic_check_circle => "lib/res/drawables/ic_check_circle.png";
 	String get ic_check_error => "lib/res/drawables/ic_check_error.png";
 	String get ic_check_mark => "lib/res/drawables/ic_check_mark.png";
 	String get ic_check_mark_bg => "lib/res/drawables/ic_check_mark_bg.png";
 	String get ic_check_success => "lib/res/drawables/ic_check_success.png";
-	String get ic_checkbox => "lib/res/drawables/ic_checkbox.png";
-	String get ic_checkbox_green => "lib/res/drawables/ic_checkbox_green.png";
 	String get ic_chevron_down => "lib/res/drawables/ic_chevron_down.png";
 	String get ic_circle_plus_exe => "lib/res/drawables/ic_circle_plus_exe.png";
 	String get ic_clear => "lib/res/drawables/ic_clear.png";
@@ -186,6 +186,7 @@ class Drawables {
 	String get ic_pro => "lib/res/drawables/ic_pro.png";
 	String get ic_pulse => "lib/res/drawables/ic_pulse.png";
 	String get ic_qa => "lib/res/drawables/ic_qa.png";
+	String get ic_qr_scan => "lib/res/drawables/ic_qr_scan.png";
 	String get ic_question => "lib/res/drawables/ic_question.png";
 	String get ic_question_circle => "lib/res/drawables/ic_question_circle.png";
 	String get ic_question_circle_fill => "lib/res/drawables/ic_question_circle_fill.png";
@@ -222,6 +223,7 @@ class Drawables {
 	String get ic_security => "lib/res/drawables/ic_security.png";
 	String get ic_send => "lib/res/drawables/ic_send.png";
 	String get ic_set_goal => "lib/res/drawables/ic_set_goal.png";
+	String get ic_share => "lib/res/drawables/ic_share.png";
 	String get ic_shoe_exe => "lib/res/drawables/ic_shoe_exe.png";
 	String get ic_show => "lib/res/drawables/ic_show.png";
 	String get ic_sick => "lib/res/drawables/ic_sick.png";
@@ -234,6 +236,7 @@ class Drawables {
 	String get ic_start_exercise => "lib/res/drawables/ic_start_exercise.png";
 	String get ic_start_exercise_bold => "lib/res/drawables/ic_start_exercise_bold.png";
 	String get ic_stopwatch => "lib/res/drawables/ic_stopwatch.png";
+	String get ic_stop_sharing => "lib/res/drawables/ic_stop_sharing.png";
 	String get ic_trash => "lib/res/drawables/ic_trash.png";
 	String get ic_trash2 => "lib/res/drawables/ic_trash2.png";
 	String get ic_trash_red => "lib/res/drawables/ic_trash_red.png";
@@ -303,6 +306,7 @@ class Drawables {
 	String get img_schedule_glucose => "lib/res/drawables/img_schedule_glucose.png";
 	String get img_select_route_successed => "lib/res/drawables/img_select_route_successed.png";
 	String get img_send_feedback_successed => "lib/res/drawables/img_send_feedback_successed.png";
+	String get img_sharing_profile => "lib/res/drawables/img_sharing_profile.png";
 	String get img_smart_goal_day_achive => "lib/res/drawables/img_smart_goal_day_achive.png";
 	String get img_smart_goal_remove => "lib/res/drawables/img_smart_goal_remove.png";
 	String get img_smart_goal_week_achive => "lib/res/drawables/img_smart_goal_week_achive.png";
@@ -322,4 +326,5 @@ class Drawables {
 	String get img_welcome_2 => "lib/res/drawables/img_welcome_2.png";
 	String get img_welcome_3 => "lib/res/drawables/img_welcome_3.png";
 	String get img_workaround => "lib/res/drawables/img_workaround.png";
+	String get splash => "lib/res/drawables/splash.png";
 }

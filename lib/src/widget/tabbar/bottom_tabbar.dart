@@ -66,6 +66,7 @@ class _BottomTabbar extends State<BottomTabbar> {
                 Image.asset(image, height: 20, color: index == screenIndex ? R.color.accentColor : R.color.gray),
                 const SizedBox(height: 4),
                 Text(title,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                         color: index == screenIndex ? R.color.accentColor : R.color.gray,
                         fontSize: 12,

@@ -55,6 +55,8 @@ class LineChartSample4 extends StatelessWidget {
           ],
           minY: 0,
           titlesData: FlTitlesData(
+            rightTitles: SideTitles(showTitles: false),
+            topTitles: SideTitles(showTitles: false),
             bottomTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 14,

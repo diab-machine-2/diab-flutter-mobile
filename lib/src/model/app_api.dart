@@ -18,6 +18,7 @@ import 'request/post_survey_request.dart';
 import 'request/send_feedback_course_request.dart';
 import 'request/send_interest_request.dart';
 import 'request/update_lesson_section_request.dart';
+import 'request/update_shared_profile_request.dart';
 import 'request/update_quiz_lesson_request.dart';
 import 'response/blood_sugar_template_response.dart';
 import 'response/common_response.dart';
@@ -39,12 +40,15 @@ import 'response/list_transaction_response.dart';
 import 'response/menu_response.dart';
 import 'response/my_lesson_response.dart';
 import 'response/my_progress_response.dart';
+import 'response/patient_info_response.dart';
 import 'response/save_survey_result_response.dart';
 import 'response/smart_goal_detail_response.dart';
 import 'response/smart_goal_list_reponse.dart';
 import 'response/smart_goal_statistic_response.dart';
 import 'response/tdee_response.dart';
+import 'response/update_shared_profile_response.dart';
 import 'response/upgrade_account_response.dart';
+import 'response/user_info_referral_code_response.dart';
 import 'response/user_info_response.dart';
 import 'response/week_states_response.dart';
 
@@ -279,4 +283,18 @@ abstract class AppApi {
   // My Progress
   @GET("App/MyProgress")
   Future<MyProgressResponse> getMyProgress({@Query('type') int? type});
+
+  //Referral, Share Profile
+  @GET("App/Patient/GetAccountInfoWithReferalOfCurrentPatient")
+  Future<PatientInfoResponse> getSharedProfile();
+
+  @PUT("App/Patient/UpdateReferalCodeFromPatient")
+  Future<UpdateSharedProfileResponse> updateSharedProfile(
+    @Body() UpdateSharedProfileRequest? request,
+  );
+
+  @GET("App/Patient/CheckDuplicateReferalAccount/{referalCode}")
+  Future<UserInfoReferralCodeResponse> getUserFromReferralCode(
+    @Path('referalCode') String referalCode,
+  );
 }

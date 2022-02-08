@@ -266,6 +266,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 }),
                             gridData: FlGridData(show: false),
                             titlesData: FlTitlesData(
+                              rightTitles: SideTitles(showTitles: false),
+                              topTitles: SideTitles(showTitles: false),
                               bottomTitles: SideTitles(
                                 showTitles: true,
                                 margin: 16,

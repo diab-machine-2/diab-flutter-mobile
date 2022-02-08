@@ -62,7 +62,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'motivation_change') {
-      loadMotivation();
+      //   loadMotivation();
     }
     if (notifyName == 'user_info_change') {
       setState(() {});
@@ -565,9 +565,9 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
           compressFormat: ImageCompressFormat.jpg,
           cropStyle: CropStyle.circle,
           sourcePath: url,
-          androidUiSettings: const AndroidUiSettings(
+          androidUiSettings: AndroidUiSettings(
               toolbarTitle: 'Cropper', initAspectRatio: CropAspectRatioPreset.square, lockAspectRatio: false),
-          iosUiSettings: const IOSUiSettings(
+          iosUiSettings: IOSUiSettings(
             minimumAspectRatio: 1.0,
           ));
 
@@ -645,6 +645,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     try {
       BotToast.showLoading();
       await UserClient().inputMotivationDiary(model.content);
+      Observable.instance.notifyObservers([], notifyName: "motivation_change");
       await loadMotivation();
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -661,6 +662,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     try {
       BotToast.showLoading();
       await UserClient().editMotivationDiary(model.id, model.content);
+      Observable.instance.notifyObservers([], notifyName: "motivation_change");
       await loadMotivation();
       BotToast.closeAllLoading();
     } catch (e, _) {

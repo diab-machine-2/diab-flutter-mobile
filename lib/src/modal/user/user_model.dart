@@ -82,24 +82,35 @@ class UserModel {
       age: json['age'],
       phoneNumber: json['phoneNumber'],
       secondPhoneNumber: json['secondPhoneNumber'],
-      gender: json['gender'],
+      gender: json['gender'].toString(),
       genderType: json['genderType'],
       createDatetime: json['createDatetime'],
       isActive: json['isActive'],
       province: json['province'] == null
           ? null
-          : (json['province'] is String ? null : ProvinceModel.fromJson(json['province'])),
+          : (json['province'] is String
+              ? null
+              : ProvinceModel.fromJson(json['province'])),
       district: json['district'] == null
           ? null
-          : (json['district'] is String ? null : ProvinceModel.fromJson(json['district'])),
+          : (json['district'] is String
+              ? null
+              : ProvinceModel.fromJson(json['district'])),
       height: json['height'],
       weight: json['weight'],
-      ward: json['ward'] == null ? null : (json['ward'] is String ? null : ProvinceModel.fromJson(json['ward'])),
+      ward: json['ward'] == null
+          ? null
+          : (json['ward'] is String
+              ? null
+              : ProvinceModel.fromJson(json['ward'])),
       dateOfBirth: json['dateOfBirth'],
-      diabetesStatus: json['diabetes'] == null ? null : json['diabetes']['status'],
+      diabetesStatus:
+          json['diabetes'] == null ? null : json['diabetes']['status'],
       diabetesName: json['diabetes'] == null ? null : json['diabetes']['name'],
       diabetesDate: json['diabetes'] == null ? null : json['diabetes']['date'],
-      imageUrl: json['imageUrl'] == null ? null : ImagesModel.fromJson(json['imageUrl']),
+      imageUrl: json['imageUrl'] == null
+          ? null
+          : ImagesModel.fromJson(json['imageUrl']),
       code: json['code'],
       email: json['email'],
       address: json['address'],

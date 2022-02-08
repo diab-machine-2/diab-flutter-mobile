@@ -8,7 +8,8 @@ import 'package:medical/src/utils/navigator_name.dart';
 class RegisterSuccess extends StatefulWidget {
   final String? phone;
   final String? password;
-  RegisterSuccess({this.phone, this.password});
+  final String? referalCode;
+  RegisterSuccess({this.phone, this.password, this.referalCode});
   @override
   _RegisterSuccessState createState() => _RegisterSuccessState();
 }
@@ -98,7 +99,7 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
     print(result);
     // if (result.access_token != null) {
     Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-        arguments: {'type': 'phone'});
+        arguments: {'type': 'phone', 'referalCode': widget.referalCode});
     // }
   }
 }

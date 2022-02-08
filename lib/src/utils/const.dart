@@ -11,7 +11,8 @@ class Const {
   static const String PLACE_KEY = "AIzaSyC7tPpmwviNXdX0_krWw5QdxOVGOJgdFmo";
 
   static const String CLIENT_ID = "4A293E78-4513-4DAF-958E-A04F93978332";
-  static const String CLIENT_SECRET = "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=";
+  static const String CLIENT_SECRET =
+      "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=";
 
   static const String ID = "ID";
   static const String CODE = "Code";
@@ -122,6 +123,9 @@ class Const {
   static const String DINNER = 'Tối';
   static const String SUBMEAL = 'Nhẹ';
 
+  static const String NAVIGATE_TO_MY_PLAN_TAB = 'Navigate_to_my_plan_tab';
+  static const String NAVIGATE_TO_ACTIVITY_TAB = 'Navigate_to_activity_tab';
+
   static const List<int> hourList = [
     0,
     1,
@@ -148,5 +152,4 @@ class Const {
     22,
   ];
   static const List<int> minuteList = [0, 15, 30, 45];
-
 }
