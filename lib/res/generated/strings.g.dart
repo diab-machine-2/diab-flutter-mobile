@@ -191,11 +191,13 @@ class Strings {
 	String get blood_sugar_group => 'blood_sugar_group';
 	String get result => 'result';
 	String get pick_a_model => 'pick_a_model';
+	String get recommand_blood_sugar_test1 => 'recommand_blood_sugar_test1';
 	String get recommand_blood_sugar_test => 'recommand_blood_sugar_test';
 	String get recommand_blood_sugar => 'recommand_blood_sugar';
 	String get no_need_to_test => 'no_need_to_test';
 	String get often_testing_blood_sugar => 'often_testing_blood_sugar';
 	String get time_per_day => 'time_per_day';
+	String get time_per_week => 'time_per_week';
 	String get upgrade_to_diab_pro => 'upgrade_to_diab_pro';
 	String get survey_again => 'survey_again';
 	String get testing_schedule_suggest => 'testing_schedule_suggest';
@@ -207,6 +209,7 @@ class Strings {
 	String get latest_hba1c_is => 'latest_hba1c_is';
 	String get back_to_schedule => 'back_to_schedule';
 	String get blood_sugar_survey_description => 'blood_sugar_survey_description';
+	String get blood_sugar_survey_description_link => 'blood_sugar_survey_description_link';
 	String get blood_sugar_survey_done_description => 'blood_sugar_survey_done_description';
 	String get blood_sugar_survey_update_require => 'blood_sugar_survey_update_require';
 	String get survey_question_1 => 'survey_question_1';
@@ -960,4 +963,9 @@ class Strings {
 	String get day_in_week_sunday => 'day_in_week_sunday';
 	String get data_input_not_valid => 'data_input_not_valid';
 	String get statistical => 'statistical';
+	String get food_menu_intro_title1 => 'food_menu_intro_title1';
+	String get food_menu_intro_title21 => 'food_menu_intro_title21';
+	String get food_menu_intro_title22 => 'food_menu_intro_title22';
+	String get food_menu_intro_title23 => 'food_menu_intro_title23';
+	String get food_menu_intro_title3 => 'food_menu_intro_title3';
 }
