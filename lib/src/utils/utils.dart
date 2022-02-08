@@ -338,6 +338,13 @@ class Utils {
     return '';
   }
 
+  static String getBMI({required double height, required double weight}) {
+    if (height == 0) return '0';
+    final double bmi = weight / pow(height / 100, 2);
+    final num mod = pow(10.0, 1);
+    return ((bmi * mod).round().toDouble() / mod).toString();
+  }
+
   static int parseStringToInt(String text) {
     try {
       final int number = double.parse(text).toInt();

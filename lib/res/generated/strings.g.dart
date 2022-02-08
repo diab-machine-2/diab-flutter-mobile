@@ -567,6 +567,7 @@ class Strings {
 	String get contact_info => 'contact_info';
 	String get phone_number_1 => 'phone_number_1';
 	String get phone_number_2 => 'phone_number_2';
+	String get enter_phone_number_1 => 'enter_phone_number_1';
 	String get enter_phone_number_2 => 'enter_phone_number_2';
 	String get not_connected_yet => 'not_connected_yet';
 	String get account_already_used => 'account_already_used';

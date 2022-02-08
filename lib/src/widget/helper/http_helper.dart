@@ -73,8 +73,7 @@ class FetchClient {
     final Options option = Options(
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type':
-              'multipart/form-data; boundary=<calculated when request is sent>',
+          'Content-Type': 'multipart/form-data; boundary=<calculated when request is sent>',
           'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)',
         },
         followRedirects: false,
@@ -84,10 +83,7 @@ class FetchClient {
     return option;
   }
 
-  Future<Response> fetchData(
-      {bool baseIdentify = false,
-      required String url,
-      Map<String, String?>? params}) async {
+  Future<Response> fetchData({bool baseIdentify = false, required String url, Map<String, String?>? params}) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
@@ -115,10 +111,7 @@ class FetchClient {
   }
 
   Future<Response> postUri(
-      {bool baseIdentify = false,
-      bool baseOption = false,
-      required String url,
-      Map<String, dynamic>? params}) async {
+      {bool baseIdentify = false, bool baseOption = false, required String url, Map<String, dynamic>? params}) async {
     final Options option = baseOption ? await options() : await options1();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
@@ -133,17 +126,12 @@ class FetchClient {
   }
 
   Future<http.StreamedResponse> postHttp(
-      {bool baseIdentify = false,
-      required String path,
-      required dynamic params,
-      List<String>? files}) async {
+      {bool baseIdentify = false, required String path, required dynamic params, List<String>? files}) async {
     final token = await AppSettings.getToken();
     final user_agent = await userAgent();
     final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'};
-    final request = http.MultipartRequest(
-        'POST',
-        Uri.parse(
-            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+    final request =
+        http.MultipartRequest('POST', Uri.parse('https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.fields.addAll(params);
 
     for (final file in files ?? []) {
@@ -157,9 +145,7 @@ class FetchClient {
   }
 
   Future<http.StreamedResponse> postHttp2(
-      {bool baseIdentify = false,
-      required String path,
-      required dynamic params}) async {
+      {bool baseIdentify = false, required String path, required dynamic params}) async {
     final token = await AppSettings.getToken();
     final user_agent = await userAgent();
     final headers = {
@@ -167,10 +153,7 @@ class FetchClient {
       'Content-Type': 'application/json',
       'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'
     };
-    final request = http.Request(
-        'POST',
-        Uri.parse(
-            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+    final request = http.Request('POST', Uri.parse('https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.body = params;
     request.headers.addAll(headers);
 
@@ -186,27 +169,22 @@ class FetchClient {
     final token = await AppSettings.getToken();
     final user_agent = await userAgent();
     final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'};
-    final request = http.MultipartRequest(
-        'PUT',
-        Uri.parse(
-            'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
+    final request =
+        http.MultipartRequest('PUT', Uri.parse('https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.fields.addAll(params);
 
     for (final file in files) {
-      final value =
-          await http.MultipartFile.fromPath(fileName ?? 'images', file);
+      final value = await http.MultipartFile.fromPath(fileName ?? 'images', file);
       request.files.add(value);
     }
 
     request.headers.addAll(headers);
 
-    return request.send();
+    http.StreamedResponse response = await request.send();
+    return response;
   }
 
-  Future<Response> putData(
-      {bool baseIdentify = false,
-      required String url,
-      Map<String, dynamic>? params}) async {
+  Future<Response> putData({bool baseIdentify = false, required String url, Map<String, dynamic>? params}) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
@@ -220,10 +198,7 @@ class FetchClient {
         options: option);
   }
 
-  Future<Response> delete(
-      {bool baseIdentify = false,
-      required String url,
-      Map<String, dynamic>? params}) async {
+  Future<Response> delete({bool baseIdentify = false, required String url, Map<String, dynamic>? params}) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
@@ -239,12 +214,7 @@ class FetchClient {
 
   logRequest(Dio dio) {
     dio.interceptors.add(PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        responseHeader: true,
-        compact: true,
-        error: true));
+        requestHeader: true, requestBody: true, responseBody: true, responseHeader: true, compact: true, error: true));
   }
 
   checkNetwork() async {
