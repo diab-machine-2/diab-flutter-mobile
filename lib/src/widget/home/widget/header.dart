@@ -13,6 +13,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/profile/widgets/motivation_popup_widget.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 
@@ -155,6 +156,24 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                         GestureDetector(
                           onTap: () {
                             Navigator.pushNamed(context, NavigatorName.notification);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            color: R.color.transparent,
+                            child: Image.asset(notificationCount! > 0 ? R.drawable.ic_bell_dot : R.drawable.ic_bell,
+                                width: 24, height: 24),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        InkWell(
+                          onTap: () async {
+                            final scanedResult = await NavigationUtil.navigatePage(
+                              context,
+                              const QRScanWidget(),
+                            );
+                            if (scanedResult is String) {
+                              ShareProfilePopup.instance.onHasSharedCode(context: context, code: scanedResult);
+                            }
                           },
                           child: Container(
                             padding: const EdgeInsets.all(4),

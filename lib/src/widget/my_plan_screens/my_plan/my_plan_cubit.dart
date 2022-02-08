@@ -10,11 +10,14 @@ import 'models/plan_type.dart';
 import 'my_plan.dart';
 
 class MyPlanCubit extends Cubit<MyPlanState> {
-  MyPlanCubit(this.repository) : super(const MyPlanInitial());
+  MyPlanCubit(this.repository, this.index) : super(const MyPlanInitial()) {
+    currentPlanType = index == 0 ? PlanType.goal : PlanType.lesson;
+  }
 
+  final int index;
   final AppRepository repository;
 
-  PlanType currentPlanType = PlanType.lesson;
+  late PlanType currentPlanType;
 
   List<PlanType> planTypeList = [PlanType.goal, PlanType.lesson, PlanType.activity];
 

@@ -9,8 +9,9 @@ typedef TabbarSelected = Function(int);
 
 class BottomTabbar extends StatefulWidget {
   final TabbarSelected callback;
+  final int index;
 
-  BottomTabbar({required this.callback});
+  BottomTabbar({required this.callback, required this.index});
 
   final _BottomTabbar state = _BottomTabbar();
 
@@ -24,6 +25,7 @@ class _BottomTabbar extends State<BottomTabbar> {
 
   @override
   void initState() {
+    index = widget.index;
     super.initState();
   }
 

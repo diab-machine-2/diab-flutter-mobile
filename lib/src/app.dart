@@ -115,20 +115,30 @@ class _AppState extends State<App> {
             onGenerateRoute: (settings) {
               switch (settings.name) {
                 case NavigatorName.tabbar:
-                String sharedCode = '';
-                if (settings.arguments != null) {
-                sharedCode = settings.arguments! as String;
-                }
-                  return _buildRoute(settings, TabbarController(sharedCode: sharedCode,));
+                  String sharedCode = '';
+                  bool isRedirectFromNotification = false;
+                  if (settings.arguments != null) {
+                    if (settings.arguments is String) {
+                      sharedCode = settings.arguments! as String;
+                    } else if (settings.arguments is Map<String, dynamic>) {
+                      final data = settings.arguments as Map<String, dynamic>?;
+                      isRedirectFromNotification = data!['isRedirectFromNotification'];
+                    }
+                  }
+                  return _buildRoute(
+                      settings,
+                      TabbarController(
+                        sharedCode: sharedCode,
+                        isRedirectFromNotification: isRedirectFromNotification,
+                      ));
                 case NavigatorName.login:
                   return _buildRoute(settings, LoginController(), isPresent: true);
                 case NavigatorName.register:
-                String sharedCode = '';
-                if (settings.arguments != null) {
-                sharedCode = settings.arguments! as String;
-                }
-                  return _buildRoute(settings, RegisterController(sharedCode),
-                      isPresent: true);
+                  String sharedCode = '';
+                  if (settings.arguments != null) {
+                    sharedCode = settings.arguments! as String;
+                  }
+                  return _buildRoute(settings, RegisterController(sharedCode), isPresent: true);
                 case NavigatorName.register_success:
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(
@@ -173,12 +183,11 @@ class _AppState extends State<App> {
                 case NavigatorName.policy:
                   return _buildRoute(settings, PolicyController(), isPresent: true);
                 case NavigatorName.step_list:
-                String sharedCode = '';
-                if (settings.arguments != null) {
-                sharedCode = settings.arguments! as String;
-                }
-                  return _buildRoute(settings, StepListController(sharedCode),
-                      isPresent: true);
+                  String sharedCode = '';
+                  if (settings.arguments != null) {
+                    sharedCode = settings.arguments! as String;
+                  }
+                  return _buildRoute(settings, StepListController(sharedCode), isPresent: true);
                 case NavigatorName.rules:
                   return _buildRoute(settings, RulesController());
                 case NavigatorName.add_hba1c:
