@@ -32,7 +32,7 @@ class DayInWeekWidget extends StatelessWidget {
                     (index) {
                       return index.isOdd
                           ? Container(
-                              margin: const EdgeInsets.only(bottom: 11.5),
+                              margin: const EdgeInsets.only(bottom: 14.5),
                               width: _getDashLength(constraints.maxWidth),
                               height: 1,
                               color: index ~/ 2 >= mark ? R.color.grayBorder : R.color.green,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -31,9 +32,7 @@ class Utils {
 
   static void setStatusColor(Color color) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: color,
-        statusBarBrightness: Brightness.light,
-        statusBarIconBrightness: Brightness.dark));
+        statusBarColor: color, statusBarBrightness: Brightness.light, statusBarIconBrightness: Brightness.dark));
   }
 
   static void showSnackBar(BuildContext context, String text) {
@@ -87,8 +86,7 @@ class Utils {
     return list == null || list.isEmpty;
   }
 
-  static bool isInteger(num value) =>
-      value is int || value == value.roundToDouble();
+  static bool isInteger(num value) => value is int || value == value.roundToDouble();
 
   static Color parseStringToColor(String? color) {
     if (isEmpty(color))
@@ -108,13 +106,11 @@ class Utils {
     return date;
   }
 
-  static String? parseStringDateToString(
-      String? dateSv, String fromFormat, String toFormat) {
+  static String? parseStringDateToString(String? dateSv, String fromFormat, String toFormat) {
     String? date = dateSv;
     if (dateSv != null)
       try {
-        date = DateFormat(toFormat, "en_US")
-            .format(DateFormat(fromFormat).parse(dateSv));
+        date = DateFormat(toFormat, "en_US").format(DateFormat(fromFormat).parse(dateSv));
       } on FormatException catch (e) {
         logger.d(e.toString());
       }
@@ -132,25 +128,22 @@ class Utils {
         barrierDismissible: dismissible,
         context: context,
         builder: (context) {
-          return AlertDialog(
-              title: isEmpty(title) ? Text(title!) : null,
-              content: Text(contentText!),
-              actions: [
-                FlatButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(R.string.close.tr()),
-                ),
-                Visibility(
-                  visible: isEmpty(submitText),
-                  child: FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      submitCallback!();
-                    },
-                    child: Text(submitText!),
-                  ),
-                )
-              ]);
+          return AlertDialog(title: isEmpty(title) ? Text(title!) : null, content: Text(contentText!), actions: [
+            FlatButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(R.string.close.tr()),
+            ),
+            Visibility(
+              visible: isEmpty(submitText),
+              child: FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  submitCallback!();
+                },
+                child: Text(submitText!),
+              ),
+            )
+          ]);
         });
   }
 
@@ -165,68 +158,51 @@ class Utils {
         barrierDismissible: dismissible,
         context: context,
         builder: (context) {
-          return AlertDialog(
-              title: title == null ? Text(title!) : null,
-              content: contentWidget,
-              actions: [
-                // FlatButton(
-                //   onPressed: () => popDialog(context),
-                //  // child: Text(R.string.close),
-                // ),
-                Visibility(
-                  visible: isEmpty(submitText),
-                  child: FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      submitCallback!();
-                    },
-                    child: Text(submitText!),
-                  ),
-                )
-              ]);
+          return AlertDialog(title: title == null ? Text(title!) : null, content: contentWidget, actions: [
+            // FlatButton(
+            //   onPressed: () => popDialog(context),
+            //  // child: Text(R.string.close),
+            // ),
+            Visibility(
+              visible: isEmpty(submitText),
+              child: FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  submitCallback!();
+                },
+                child: Text(submitText!),
+              ),
+            )
+          ]);
         });
   }
 
   static void showDialogTwoButtonAfterLayout(
-      {BuildContext? context,
-      String? title,
-      Widget? contentWidget,
-      List<Widget>? actions}) async {
+      {BuildContext? context, String? title, Widget? contentWidget, List<Widget>? actions}) async {
     onWidgetDidBuild(() => showDialog(
         barrierDismissible: false,
         context: context!,
         builder: (context) {
-          return AlertDialog(
-              title: title == null ? Text(title!) : null,
-              content: contentWidget,
-              actions: actions);
+          return AlertDialog(title: title == null ? Text(title!) : null, content: contentWidget, actions: actions);
         }));
   }
 
-  static navigateNextFocusChange(
-      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+  static navigateNextFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
 
   static Future<Uint8List> getBytesFromAsset(String path, int width) async {
     ByteData data = await rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
-        targetWidth: width);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-        .buffer
-        .asUint8List();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
   }
 
   static int? convertPriceToNumber(String price) {
     if (price == null) return null;
-    String newPrice = price
-        .replaceAll(" ", "")
-        .replaceAll("đ", "")
-        .replaceAll("₫", "")
-        .replaceAll("\$", "")
-        .replaceAll(",", "");
+    String newPrice =
+        price.replaceAll(" ", "").replaceAll("đ", "").replaceAll("₫", "").replaceAll("\$", "").replaceAll(",", "");
     try {
       return int.parse(newPrice);
     } catch (e) {
@@ -369,5 +345,12 @@ class Utils {
     } catch (_) {
       return 0;
     }
+  }
+}
+
+extension Precision on double {
+  double toPrecision(int fractionDigits) {
+    num mod = pow(10, fractionDigits.toDouble());
+    return ((this * mod).round().toDouble() / mod);
   }
 }

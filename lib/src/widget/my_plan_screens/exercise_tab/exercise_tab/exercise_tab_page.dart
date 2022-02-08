@@ -333,7 +333,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage> with AutomaticKeepAli
   Widget _buildDayOffWidget() {
     if (!_cubit.isHasRoadmapUser) return const SizedBox();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 53),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
           Padding(

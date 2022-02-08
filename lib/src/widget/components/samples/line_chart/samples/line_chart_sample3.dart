@@ -227,6 +227,8 @@ class _LineChartSample3State extends State<LineChartSample3> {
                 },
               ),
               titlesData: FlTitlesData(
+                rightTitles: SideTitles(showTitles: false),
+                topTitles: SideTitles(showTitles: false),
                 show: true,
                 leftTitles: SideTitles(
                   showTitles: true,

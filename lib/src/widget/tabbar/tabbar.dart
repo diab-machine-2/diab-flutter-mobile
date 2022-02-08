@@ -52,7 +52,7 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
       const ProfileController(hideAllBackButton: true),
     ];
     Observable.instance.addObserver(this);
-    NotificationManager.instance.requestFirebaseToken();
+    NotificationManager.instance.requestFirebaseToken(context);
     pageController = PageController(initialPage: widget.isRedirectFromNotification ? 1 : 0);
     _bottomTabbar = BottomTabbar(
         index: widget.isRedirectFromNotification ? 1 : 0,

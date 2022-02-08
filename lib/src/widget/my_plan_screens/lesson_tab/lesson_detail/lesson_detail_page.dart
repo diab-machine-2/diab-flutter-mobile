@@ -75,7 +75,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   lessonId: _cubit.lessonId,
                   lessonSectionItem: widget.lessonType != 3 ? _cubit.currentSectionDetail : null,
                   onDone: (isPassed) async {
-                    _cubit.onChangeSection(_cubit.currentSection + 1);
+                    _cubit.onChangeSection(context, _cubit.currentSection + 1);
                   })
               : Scaffold(
                   body: BackgroundPage(
@@ -193,11 +193,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         CustomBottomBarWidget(
                           isPreviousButtonActive: _cubit.isFirstSection,
                           onTapPrevious: () {
-                            _cubit.onChangeSection(_cubit.currentSection - 1);
+                            _cubit.onChangeSection(context, _cubit.currentSection - 1);
                           },
                           isNextButtonActive: !_cubit.isLastSection,
                           onTapNext: () {
-                            _cubit.onChangeSection(_cubit.currentSection + 1);
+                            _cubit.onChangeSection(context, _cubit.currentSection + 1);
                           },
                           currentPositionTitle: _cubit.sectionPosition,
                           onTapCenter: () {
@@ -275,7 +275,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           sectionList: _cubit.sectionList,
           currentSection: _cubit.currentSection,
           onChangeSection: (int newSectionIndex) {
-            _cubit.onChangeSection(newSectionIndex, isFromList: true);
+            _cubit.onChangeSection(context, newSectionIndex, isFromList: true);
           },
         );
       },

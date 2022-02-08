@@ -41,8 +41,10 @@ class CustomBottomBarWidget extends StatelessWidget {
         children: [
           //Previous button
           _buildPreviousButton(),
+          SizedBox(width: 4),
           //Center button
           _buildCenterButton(),
+          SizedBox(width: 4),
           //Next button
           _buildNextButton(),
         ],
@@ -54,7 +56,7 @@ class CustomBottomBarWidget extends StatelessWidget {
     return InkWell(
       onTap: onTapPrevious,
       child: Container(
-        width: 140,
+        width: 135,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -66,18 +68,14 @@ class CustomBottomBarWidget extends StatelessWidget {
             Icon(
               Icons.arrow_back_ios,
               size: 16,
-              color: isPreviousButtonActive
-                  ? R.color.textDark
-                  : R.color.accentColor,
+              color: isPreviousButtonActive ? R.color.textDark : R.color.accentColor,
             ),
             Text(
               previousButtonTitle ?? R.string.back.tr(),
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: isPreviousButtonActive
-                      ? R.color.textDark
-                      : R.color.accentColor,
+                  color: isPreviousButtonActive ? R.color.textDark : R.color.accentColor,
                   height: 1.43,
                   letterSpacing: 0.4),
             ),
@@ -117,7 +115,7 @@ class CustomBottomBarWidget extends StatelessWidget {
   Widget _buildNextButton() {
     if (isCompleted != null) {
       return Container(
-        width: 140,
+        width: 135,
         height: 36,
         child: ButtonWidget(
           title: R.string.complete_lesson.tr(),
@@ -143,17 +141,14 @@ class CustomBottomBarWidget extends StatelessWidget {
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: isNextButtonActive
-                      ? R.color.accentColor
-                      : R.color.textDark,
+                  color: isNextButtonActive ? R.color.accentColor : R.color.textDark,
                   height: 1.43,
                   letterSpacing: 0.4),
             ),
             Icon(
               Icons.arrow_forward_ios,
               size: 16,
-              color:
-                  isNextButtonActive ? R.color.accentColor : R.color.textDark,
+              color: isNextButtonActive ? R.color.accentColor : R.color.textDark,
             ),
           ],
         ),

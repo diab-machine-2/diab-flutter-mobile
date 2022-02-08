@@ -26,8 +26,7 @@ class ExercrisesTrendCaloChart extends StatefulWidget {
   ExercrisesTrendCaloChart({Key? key}) : super(key: key);
 
   @override
-  ExercrisesTrendCaloChartState createState() =>
-      ExercrisesTrendCaloChartState();
+  ExercrisesTrendCaloChartState createState() => ExercrisesTrendCaloChartState();
 }
 
 class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
@@ -41,8 +40,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
 
   @override
   void initState() {
-    periodFilterType =
-        ExercrisesDetailTabbarController.of(context)!.periodFilterType;
+    periodFilterType = ExercrisesDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
   }
 
@@ -53,8 +51,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
 
   Future<bool> _refresh() async {
     BlocProvider.of<ExercrisesBloc>(currentContext).add(FetchCaloTrend(
-      currentDateTime:
-          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+      currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
       periodFilterType: periodFilterType.toString(),
     ));
 
@@ -67,14 +64,12 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
     final width = MediaQuery.of(context).size.width;
     return BlocProvider<ExercrisesBloc>(
         create: (context) => ExercrisesBloc(),
-        child: BlocBuilder<ExercrisesBloc, ExercrisesState>(
-            builder: (BuildContext context, ExercrisesState state) {
+        child: BlocBuilder<ExercrisesBloc, ExercrisesState>(builder: (BuildContext context, ExercrisesState state) {
           currentContext = context;
           ExercriseTrendCaloModel? model;
           if (state is ExercrisesInitial) {
             BlocProvider.of<ExercrisesBloc>(context).add(FetchCaloTrend(
-              currentDateTime:
-                  (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+              currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
               periodFilterType: periodFilterType.toString(),
             ));
           }
@@ -85,217 +80,171 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
             model = state.model;
           }
           return model == null
-              ? Container(
-                  height: 491.5,
-                  child: Center(child: CircularProgressIndicator()))
+              ? Container(height: 491.5, child: Center(child: CircularProgressIndicator()))
               : Container(
                   color: R.color.transparent,
                   padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Text(R.string.xu_huong_dot_calo.tr(),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                                barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+                                context: context,
+                                builder: (_) => InputCalo(
+                                    title: periodFilterType == 1 || periodFilterType == 2
+                                        ? R.string.nang_luong_dot_chay_tren_ngay.tr()
+                                        : R.string.nang_luong_dot_chay_tren_tuan.tr(),
+                                    callback: (number) {
+                                      submitTarget(double.parse(number));
+                                    }));
+                          },
+                          child: Container(
+                            color: R.color.transparent,
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  R.drawable.ic_circle_plus_exe,
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                SizedBox(width: 4),
+                                Text(R.string.muc_tieu_moi.tr(),
+                                    style:
+                                        TextStyle(color: R.color.mainColor, fontSize: 14, fontWeight: FontWeight.w700)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                        width: width,
+                        decoration: BoxDecoration(
+                          color: R.color.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
                           children: [
-                            Text(R.string.xu_huong_dot_calo.tr(),
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w700)),
-                            GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                    barrierColor:
-                                        R.color.color0xff003F38.withOpacity(0.5),
-                                    context: context,
-                                    builder: (_) => InputCalo(
-                                        title: periodFilterType == 1 ||
-                                                periodFilterType == 2
-                                            ? R.string.nang_luong_dot_chay_tren_ngay.tr()
-                                            : R.string.nang_luong_dot_chay_tren_tuan.tr(),
-                                        callback: (number) {
-                                          submitTarget(double.parse(number));
-                                        }));
-                              },
-                              child: Container(
-                                color: R.color.transparent,
-                                child: Row(
+                            Padding(
+                              padding: EdgeInsets.only(top: 18, bottom: 16),
+                              child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Image.asset(
-                                      R.drawable.ic_circle_plus_exe,
-                                      width: 24,
-                                      height: 24,
+                                    Text(R.string.tong_cong.tr(), style: R.style.normalTextStyle),
+                                    Row(
+                                      children: [
+                                        Text(formatNumber(model.total),
+                                            style: TextStyle(
+                                                fontFamily: 'Viga',
+                                                color: R.color.textDark,
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w400)),
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 6.0, left: 2),
+                                          child: Text(
+                                            R.string.kcal.tr(),
+                                            style: R.style.normalTextStyle,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(width: 4),
-                                    Text(R.string.muc_tieu_moi.tr(),
-                                        style: TextStyle(
-                                            color: R.color.mainColor,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700)),
                                   ],
                                 ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        Container(
-                            width: width,
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(top: 18, bottom: 16),
-                                  child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(R.string.tong_cong.tr(),
-                                                style: R.style.normalTextStyle),
-                                            Row(
-                                              children: [
-                                                Text(formatNumber(model.total),
-                                                    style: TextStyle(
-                                                        fontFamily: 'Viga',
-                                                        color: R.color.textDark,
-                                                        fontSize: 24,
-                                                        fontWeight:
-                                                            FontWeight.w400)),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 6.0, left: 2),
-                                                  child: Text(
-                                                    R.string.kcal.tr(),
-                                                    style: R.style.normalTextStyle,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          width: 16,
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(model.targetTitle ?? '',
-                                                style: R.style.normalTextStyle),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                    model.target!
-                                                        .toInt()
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontFamily: 'Viga',
-                                                        color: R.color.green,
-                                                        fontSize: 24,
-                                                        fontWeight:
-                                                            FontWeight.w400)),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 6.0, left: 2),
-                                                  child: Text(
-                                                    model.targetUnit ?? '',
-                                                    style: R.style.normalTextStyle,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ]),
+                                SizedBox(
+                                  width: 16,
                                 ),
-                                model.trendItems.items.length == 0
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          if (AppSettings.userInfo!.weight ==
-                                                  null ||
-                                              AppSettings.userInfo!.weight ==
-                                                  0) {
-                                            showPopupWeight();
-                                          } else {
-                                            Navigator.pushNamed(
-                                                context, NavigatorName.add_exercrises,
-                                                arguments: {
-                                                  'type': 'input',
-                                                });
-                                          }
-                                        },
-                                        child: Image.asset(
-                                          R.drawable.img_excerise_calo_empty,
-                                          fit: BoxFit.cover,
-                                        ))
-                                    : Column(children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(model.targetTitle ?? '', style: R.style.normalTextStyle),
+                                    Row(
+                                      children: [
+                                        Text(model.target!.toInt().toString(),
+                                            style: TextStyle(
+                                                fontFamily: 'Viga',
+                                                color: R.color.green,
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w400)),
                                         Padding(
-                                            padding: EdgeInsets.only(
-                                                left: 8,
-                                                right: 18,
-                                                bottom: 0,
-                                                top: 8),
-                                            child: buildChart(model)),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 0, left: 16.0, bottom: 16),
-                                          child: Row(
-                                            children: [
-                                              Image.network(
-                                                touchIndex == null
-                                                    ? model
-                                                            .trendItems
-                                                            .items[model
-                                                                    .trendItems
-                                                                    .items
-                                                                    .length -
-                                                                1]
-                                                            .targetIconUrl!
-                                                            .url ??
-                                                        ''
-                                                    : model
-                                                            .trendItems
-                                                            .items[touchIndex!]
-                                                            .targetIconUrl!
-                                                            .url ??
-                                                        '',
-                                                width: 24,
-                                                height: 24,
-                                              ),
-                                              SizedBox(
-                                                width: 8,
-                                              ),
-                                              Text(
-                                                  touchIndex == null
-                                                      ? model
-                                                          .trendItems
-                                                          .items[model
-                                                                  .trendItems
-                                                                  .items
-                                                                  .length -
-                                                              1]
-                                                          .targetDescription!
-                                                      : model
-                                                          .trendItems
-                                                          .items[touchIndex!]
-                                                          .targetDescription!,
-                                                  style: R.style.normalTextStyle)
-                                            ],
+                                          padding: const EdgeInsets.only(top: 6.0, left: 2),
+                                          child: Text(
+                                            model.targetUnit ?? '',
+                                            style: R.style.normalTextStyle,
                                           ),
-                                        )
-                                      ])
-                              ],
-                            )),
-                        SizedBox(height: 16),
-                        // buildDescription(model)
-                      ]),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ]),
+                            ),
+                            model.trendItems.items.length == 0
+                                ? GestureDetector(
+                                    onTap: () {
+                                      if (AppSettings.userInfo!.weight == null || AppSettings.userInfo!.weight == 0) {
+                                        showPopupWeight();
+                                      } else {
+                                        Navigator.pushNamed(context, NavigatorName.add_exercrises, arguments: {
+                                          'type': 'input',
+                                        });
+                                      }
+                                    },
+                                    child: Image.asset(
+                                      R.drawable.img_excerise_calo_empty,
+                                      fit: BoxFit.cover,
+                                    ))
+                                : Column(children: [
+                                    Padding(
+                                        padding: EdgeInsets.only(left: 8, right: 18, bottom: 0, top: 8),
+                                        child: buildChart(model)),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 0, left: 16.0, bottom: 16),
+                                      child: Row(
+                                        children: [
+                                          Image.network(
+                                            touchIndex == null
+                                                ? model.trendItems.items[model.trendItems.items.length - 1]
+                                                        .targetIconUrl!.url ??
+                                                    ''
+                                                : model.trendItems.items[touchIndex!].targetIconUrl!.url ?? '',
+                                            width: 24,
+                                            height: 24,
+                                            errorBuilder:
+                                                (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                              return Container(
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: R.color.grayBorder,
+                                                  ),
+                                                  width: 24,
+                                                  height: 24);
+                                            },
+                                          ),
+                                          SizedBox(
+                                            width: 8,
+                                          ),
+                                          Text(
+                                              touchIndex == null
+                                                  ? model.trendItems.items[model.trendItems.items.length - 1]
+                                                      .targetDescription!
+                                                  : model.trendItems.items[touchIndex!].targetDescription!,
+                                              style: R.style.normalTextStyle)
+                                        ],
+                                      ),
+                                    )
+                                  ])
+                          ],
+                        )),
+                    SizedBox(height: 16),
+                    // buildDescription(model)
+                  ]),
                 );
         }));
   }
@@ -303,11 +252,8 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
   submitTarget(double time) async {
     try {
       BotToast.showLoading();
-      await ExercrisesClient().addExercriseTarget(
-          periodFilterType == 1 || periodFilterType == 2 ? 1 : 2,
-          2,
-          time,
-          null);
+      await ExercrisesClient()
+          .addExercriseTarget(periodFilterType == 1 || periodFilterType == 2 ? 1 : 2, 2, time, null);
       await UserClient().fetchUser();
       Message.showToastMessage(context, R.string.them_muc_tieu_thanh_cong.tr());
       _refresh();
@@ -336,37 +282,26 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
     final String color = model.last;
     final String title = model.first;
     return Row(children: [
-      Container(
-          width: 14,
-          height: 14,
-          color: Color(int.parse('0xff${color.split('#').join()}'))),
+      Container(width: 14, height: 14, color: Color(int.parse('0xff${color.split('#').join()}'))),
       SizedBox(width: 4),
       Text(title)
     ]);
   }
 
   showTable(BuildContext context) {
-    Navigator.of(context).push(PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
+    Navigator.of(context)
+        .push(PageRouteBuilder(opaque: false, pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
   }
 
   buildChart(ExercriseTrendCaloModel model) {
     final width = (MediaQuery.of(context).size.width - 200) / 5;
 
-    double minY =
-        model.trendItems.items.map<double>((e) => e.burnedCalories ?? 0).reduce(min);
-    minY = (minY * (model.trendItems.items.length == 1 ? 0.5 : 0.8))
-        .roundToDouble();
-    double maxY =
-        model.trendItems.items.map<double>((e) => e.burnedCalories ?? 0).reduce(max);
-    maxY = (maxY * (model.trendItems.items.length == 1 ? 1.5 : 1.2))
-        .roundToDouble();
+    double minY = model.trendItems.items.map<double>((e) => e.burnedCalories ?? 0).reduce(min);
+    minY = (minY * (model.trendItems.items.length == 1 ? 0.5 : 0.8)).roundToDouble();
+    double maxY = model.trendItems.items.map<double>((e) => e.burnedCalories ?? 0).reduce(max);
+    maxY = (maxY * (model.trendItems.items.length == 1 ? 1.5 : 1.2)).roundToDouble();
     final jumpValue = (maxY - minY) / 2;
-    List<double> number =
-        List.generate(3, (index) => roundAsFixed(jumpValue * index + minY))
-            .reversed
-            .toList();
+    List<double> number = List.generate(3, (index) => roundAsFixed(jumpValue * index + minY)).reversed.toList();
 
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Container(
@@ -377,10 +312,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(number.length, (index) {
               return Text(formatNumber(number[index]),
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: R.color.black,
-                      fontWeight: FontWeight.normal));
+                  style: TextStyle(fontSize: 14, color: R.color.black, fontWeight: FontWeight.normal));
             })),
       ),
       Expanded(
@@ -395,14 +327,10 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                     children: List.generate(
                         number.length,
                         (index) => Padding(
-                              padding:
-                                  EdgeInsets.only(left: 8, top: 8, bottom: 8),
+                              padding: EdgeInsets.only(left: 8, top: 8, bottom: 8),
                               child: Container(
                                 height: 1,
-                                width: ((model.trendItems.items.length < 5
-                                                ? 5
-                                                : model
-                                                    .trendItems.items.length) *
+                                width: ((model.trendItems.items.length < 5 ? 5 : model.trendItems.items.length) *
                                             (width + 20))
                                         .toDouble() -
                                     36,
@@ -410,11 +338,8 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                               ),
                             )))),
             Container(
-                width: ((model.trendItems.items.length < 5
-                            ? 5
-                            : model.trendItems.items.length) *
-                        (width + 20))
-                    .toDouble(),
+                width:
+                    ((model.trendItems.items.length < 5 ? 5 : model.trendItems.items.length) * (width + 20)).toDouble(),
                 height: 200,
                 padding: EdgeInsets.only(top: 8, bottom: 8),
                 child: BarChart(
@@ -429,14 +354,9 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                             fitInsideHorizontally: true,
                             fitInsideVertically: true,
                             tooltipBgColor: touchIndex == null
-                                ? toColor(model
-                                    .trendItems
-                                    .items[model.trendItems.items.length - 1]
-                                    .targetColor)
-                                : toColor(model
-                                    .trendItems.items[touchIndex!].targetColor),
-                            tooltipPadding: const EdgeInsets.only(
-                                top: 8, bottom: 4, left: 8, right: 8),
+                                ? toColor(model.trendItems.items[model.trendItems.items.length - 1].targetColor)
+                                : toColor(model.trendItems.items[touchIndex!].targetColor),
+                            tooltipPadding: const EdgeInsets.only(top: 8, bottom: 4, left: 8, right: 8),
                             tooltipMargin: 8,
                             getTooltipItem: (
                               BarChartGroupData group,
@@ -444,75 +364,52 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                               BarChartRodData rod,
                               int rodIndex,
                             ) {
-                              if (model.trendItems.items[groupIndex]
-                                      .burnedCalories ==
-                                  0) {
+                              if (model.trendItems.items[groupIndex].burnedCalories == 0) {
                                 return null;
                               }
                               return BarTooltipItem(
-                                model.trendItems.items[groupIndex]
-                                        .burnedCalories!
-                                        .round()
-                                        .toString() +
+                                model.trendItems.items[groupIndex].burnedCalories!.round().toString() +
                                     ' ${R.string.kcal.tr()}',
-                                TextStyle(
-                                    color: R.color.textDark,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 12),
+                                TextStyle(color: R.color.textDark, fontWeight: FontWeight.w400, fontSize: 12),
                               );
                             },
                           ),
                           touchCallback: (FlTouchEvent event, BarTouchResponse? barTouch) {
-                            if (event is! FlLongPressEnd &&
-                                event is! FlPanEndEvent) {
+                            if (event is! FlLongPressEnd && event is! FlPanEndEvent) {
                               final value = barTouch!.spot!.touchedBarGroupIndex;
                               touchIndex = value.toInt();
                             }
                             setState(() {});
                           }),
                       titlesData: FlTitlesData(
+                        rightTitles: SideTitles(showTitles: false),
+                        topTitles: SideTitles(showTitles: false),
                         show: true,
                         bottomTitles: SideTitles(
                           showTitles: true,
                           margin: 16,
                           reservedSize: -16,
-                          getTextStyles: (context, value) => TextStyle(
-                              color: R.color.black,
-                              fontSize: 10,
-                              fontWeight: FontWeight.normal),
+                          getTextStyles: (context, value) =>
+                              TextStyle(color: R.color.black, fontSize: 10, fontWeight: FontWeight.normal),
                           //margin: 10,
                           getTitles: (double value) {
-                            if (model.trendItems.items[value.toInt()]
-                                        .firstDateOfWeek !=
-                                    null &&
-                                model.trendItems.items[value.toInt()]
-                                        .lastDateOfWeek !=
-                                    null) {
-                              return convertToUTC(
-                                      model.trendItems.items[value.toInt()]
-                                          .firstDateOfWeek!,
-                                      'dd' + '-') +
-                                  convertToUTC(
-                                      model.trendItems.items[value.toInt()]
-                                          .lastDateOfWeek!,
-                                      'dd/MM');
+                            if (model.trendItems.items[value.toInt()].firstDateOfWeek != null &&
+                                model.trendItems.items[value.toInt()].lastDateOfWeek != null) {
+                              return convertToUTC(model.trendItems.items[value.toInt()].firstDateOfWeek!, 'dd' + '-') +
+                                  convertToUTC(model.trendItems.items[value.toInt()].lastDateOfWeek!, 'dd/MM');
                             }
-                            return convertToUTC(
-                                model.trendItems.items[value.toInt()].date!,
-                                'dd/MM');
+                            return convertToUTC(model.trendItems.items[value.toInt()].date!, 'dd/MM');
                           },
                         ),
                         leftTitles: SideTitles(
                           showTitles: false,
-                          getTextStyles: (context, value) => TextStyle(
-                              color: R.color.black, fontSize: 14),
+                          getTextStyles: (context, value) => TextStyle(color: R.color.black, fontSize: 14),
                         ),
                       ),
                       borderData: FlBorderData(
                         show: false,
                       ),
-                      barGroups:
-                          List.generate(model.trendItems.items.length, (index) {
+                      barGroups: List.generate(model.trendItems.items.length, (index) {
                         return buildBarChartGroupData(model, index);
                       })),
                 )),
@@ -523,19 +420,15 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                     padding: EdgeInsets.only(top: 8, bottom: 8),
                     child: Column(
                       children: [
-                        SizedBox(
-                            height: (184 -
-                                (184 * (model.target! - minY) / (maxY - minY)))),
+                        SizedBox(height: (184 - (184 * (model.target! - minY) / (maxY - minY)))),
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Container(
                             color: R.color.color0xff72CB9C,
-                            width: ((model.trendItems.items.length < 5
-                                            ? 5
-                                            : model.trendItems.items.length) *
-                                        (width + 20))
-                                    .toDouble() -
-                                13,
+                            width:
+                                ((model.trendItems.items.length < 5 ? 5 : model.trendItems.items.length) * (width + 20))
+                                        .toDouble() -
+                                    13,
                             height: 0.75,
                           ),
                         ),
@@ -549,15 +442,12 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
     ]);
   }
 
-  BarChartGroupData buildBarChartGroupData(
-      ExercriseTrendCaloModel model, int index) {
+  BarChartGroupData buildBarChartGroupData(ExercriseTrendCaloModel model, int index) {
     // final color = toColor(model.trendItems.items[index].color);
     return BarChartGroupData(
       x: index,
-      showingTooltipIndicators: touchIndex == index ||
-              (touchIndex == null && index == model.trendItems.items.length - 1)
-          ? [0]
-          : [],
+      showingTooltipIndicators:
+          touchIndex == index || (touchIndex == null && index == model.trendItems.items.length - 1) ? [0] : [],
       //barsSpace: 60,
       barRods: [
         BarChartRodData(
@@ -639,14 +529,11 @@ class _InputCaloState extends State<InputCalo> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(widget.title,
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w700)),
+                        Text(widget.title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                         IconButton(
                             // padding: EdgeInsets.only(right: 30),
                             icon: Icon(Icons.close, color: R.color.grey),
@@ -664,22 +551,14 @@ class _InputCaloState extends State<InputCalo> {
                             enableInteractiveSelection: false,
                             controller: textEditingController,
                             keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.deny(RegExp(r'[-]'))
-                            ],
+                            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'[-]'))],
                             maxLength: 5,
-                            decoration:
-                                BoxDecoration(color: R.color.transparent),
+                            decoration: BoxDecoration(color: R.color.transparent),
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.black,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w700),
+                            style: TextStyle(color: R.color.black, fontSize: 24, fontWeight: FontWeight.w700),
                             placeholder: '--',
-                            placeholderStyle: TextStyle(
-                                color: R.color.black,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w700)),
+                            placeholderStyle:
+                                TextStyle(color: R.color.black, fontSize: 24, fontWeight: FontWeight.w700)),
                       ),
                       Container(height: 1, width: 72, color: R.color.grayComponentBorder)
                     ]),
@@ -688,62 +567,48 @@ class _InputCaloState extends State<InputCalo> {
                   ]),
                   Container(
                     margin: EdgeInsets.only(top: 32, bottom: 16),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                                height: 43,
-                                width: 150,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(200),
-                                    color: R.color.grayBorder),
-                                child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                )),
+                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                            height: 43,
+                            width: 150,
+                            decoration:
+                                BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                            )),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          final calo = double.parse(textEditingController.text);
+                          if (calo <= 0) {
+                            Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian_van_dong.tr());
+                            return;
+                          }
+                          widget.callback!(textEditingController.text);
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 43,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.centerRight,
+                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
+                            borderRadius: BorderRadius.circular(200),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              final calo = double.parse(
-                                  textEditingController.text);
-                              if (calo <= 0) {
-                                Message.showToastMessage(context,
-                                    R.string.ban_chua_nhap_thoi_gian_van_dong.tr());
-                                return;
-                              }
-                              widget.callback!(textEditingController.text);
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              height: 43,
-                              width: 150,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      R.color.greenGradientTop,
-                                      R.color.greenGradientBottom
-                                    ]),
-                                borderRadius: BorderRadius.circular(200),
-                              ),
-                              child: Center(
-                                child: Text(R.string.yes.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              ),
-                            ),
+                          child: Center(
+                            child: Text(R.string.yes.tr(),
+                                style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
                           ),
-                        ]),
+                        ),
+                      ),
+                    ]),
                   ),
                 ],
               ),
