@@ -222,11 +222,11 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   //     }),
                   //const SizedBox(height: 16),
                   buildAction(R.string.profile_information.tr(), R.drawable.ic_user, 0),
-                  buildAction(R.string.user_manual.tr(), R.drawable.ic_question, 1),
-                  buildAction(R.string.information_security.tr(), R.drawable.ic_security, 2),
-                  buildAction(R.string.contact_diab.tr(), R.drawable.ic_contact, 3),
-                  buildAction(R.string.password.tr(), R.drawable.ic_password, 4),
-                  buildAction(R.string.shared_profile_list.tr(), R.drawable.ic_share, 5),
+                  buildAction(R.string.shared_profile_list.tr(), R.drawable.ic_share, 1),
+                  buildAction(R.string.user_manual.tr(), R.drawable.ic_question, 2),
+                  buildAction(R.string.information_security.tr(), R.drawable.ic_security, 3),
+                  buildAction(R.string.contact_diab.tr(), R.drawable.ic_contact, 4),
+                  buildAction(R.string.password.tr(), R.drawable.ic_password, 5),
                 ],
               ),
             )));
@@ -289,18 +289,18 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
           } else {
             Navigator.pushNamed(context, NavigatorName.profile_info);
           }
-        } else if (index == 1) {
-          Navigator.pushNamed(context, NavigatorName.manual);
+        } else if(index == 1){
+          NavigationUtil.navigatePage(context, const SharedProfilePage());
         } else if (index == 2) {
+          Navigator.pushNamed(context, NavigatorName.manual);
+        } else if (index == 3) {
           Navigator.pushNamed(context, NavigatorName.manual_detail, arguments: {
             'manual': ManualModel(id: '', question: R.string.information_security.tr(), answer: secureModel!.security)
           });
-        } else if (index == 3) {
-          Navigator.pushNamed(context, NavigatorName.contact, arguments: {'contact': secureModel});
         } else if (index == 4) {
-          Navigator.pushNamed(context, NavigatorName.change_password);
+          Navigator.pushNamed(context, NavigatorName.contact, arguments: {'contact': secureModel});
         } else if (index == 5) {
-          NavigationUtil.navigatePage(context, const SharedProfilePage());
+          Navigator.pushNamed(context, NavigatorName.change_password);
         }
       },
       child: Container(
