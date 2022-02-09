@@ -146,6 +146,7 @@ flutter:
     - lib/res/fonts/
     - lib/res/drawables/
     - lib/res/translations/
+    - lib/res/generated/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
