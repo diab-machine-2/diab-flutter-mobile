@@ -109,7 +109,7 @@ class _QRScanWidgetState extends State<QRScanWidget> {
 
   Future<void> checkValidLink(String scanedText) async {
     subcription.pause();
-    if (scanedText.contains('https://diab-portal-dev.savvycom.vn')) {
+    if (scanedText.contains('https://api.diab.com.vn')) {
       subcription.cancel();
       Navigator.pop(context, scanedText.substring(scanedText.length - 6, scanedText.length));
     }
