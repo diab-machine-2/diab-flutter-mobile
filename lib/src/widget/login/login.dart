@@ -475,13 +475,14 @@ class _LoginControllerState extends State<LoginController> {
         });
       }
 
-      final diabeteStates = await UserClient().fetchDiabeteStates();
+      //  final diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
 
       final result = await LoginClient().createPatient({
         'fullName': userName,
         'dateOfBirth': '0',
         'gender': '1',
-        'diabetesStatus': diabeteStates?.isEmpty ?? true ? '1' : diabeteStates?.first['key'].toString() ?? '',
+        //   'diabetesStatus': diabeteStates?.isEmpty ?? true ? '1' : diabeteStates?.first['key'].toString() ?? '',
+        'diabetesStatus': '1',
         'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
       });
       if (result == true) {

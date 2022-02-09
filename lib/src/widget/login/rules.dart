@@ -49,15 +49,11 @@ class _RulesControllerState extends State<RulesController> {
                 Padding(
                   padding: EdgeInsets.only(left: 16, top: 16),
                   child: Text(R.string.dieu_khoan_va_dieu_kien.tr(),
-                      style: TextStyle(
-                          color: R.color.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20)),
+                      style: TextStyle(color: R.color.black, fontWeight: FontWeight.bold, fontSize: 20)),
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 30.0, left: 16, right: 16, bottom: 16),
+                    padding: const EdgeInsets.only(top: 30.0, left: 16, right: 16, bottom: 16),
                     child: Container(
                       decoration: BoxDecoration(
                         color: R.color.white,
@@ -66,16 +62,13 @@ class _RulesControllerState extends State<RulesController> {
                       child: ListView(padding: EdgeInsets.all(16), children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 16, bottom: 16),
-                          child: Image.asset(R.drawable.img_logo,
-                              width: 87, height: 50),
+                          child: Image.asset(R.drawable.img_logo, width: 87, height: 50),
                         ),
                         Html(
                             data: term,
-                            onLinkTap:
-                                (url, context, attributes, element) async {
+                            onLinkTap: (url, context, attributes, element) async {
                               await canLaunch(url!)
-                                  ? await launch(url,
-                                      forceSafariVC: false, forceWebView: false)
+                                  ? await launch(url, forceSafariVC: false, forceWebView: false)
                                   : throw 'Could not launch $url';
                             })
                       ]),
@@ -88,10 +81,17 @@ class _RulesControllerState extends State<RulesController> {
                     child: GestureDetector(
                       onTap: () async {
                         BotToast.showLoading();
-                        await UserClient().fetchUser();
+                        final user = await UserClient().fetchUser();
                         BotToast.closeAllLoading();
-                        Navigator.popUntil(context, (route) => route.isFirst);
-                        Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+                        if (user?.phoneNumber != null && user!.phoneNumber!.isNotEmpty) {
+                          if (user.phoneNumber!.contains('User')) {
+                            Navigator.pushReplacementNamed(context, NavigatorName.update_info,
+                                arguments: {'type': 'google'});
+                          } else {
+                            Navigator.popUntil(context, (route) => route.isFirst);
+                            Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
+                          }
+                        }
                       },
                       child: Container(
                           height: 48,
@@ -100,18 +100,12 @@ class _RulesControllerState extends State<RulesController> {
                             gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.centerRight,
-                                colors: [
-                                  R.color.greenGradientTop,
-                                  R.color.greenGradientBottom
-                                ]),
+                                colors: [R.color.greenGradientTop, R.color.greenGradientBottom]),
                             borderRadius: BorderRadius.circular(200),
                           ),
                           child: Center(
                               child: Text(R.string.toi_dong_y.tr(),
-                                  style: TextStyle(
-                                      color: R.color.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500)))),
+                                  style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w500)))),
                     ),
                   ),
                 ),

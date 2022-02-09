@@ -549,13 +549,14 @@ class _RegisterControllerState extends State<RegisterController> {
         });
       }
 
-      final diabeteStates = await (UserClient().fetchDiabeteStates() as Future<List<dynamic>>);
+      //   final diabeteStates = await (UserClient().fetchDiabeteStates() as Future<List<dynamic>>);
 
       final result = await LoginClient().createPatient({
         'fullName': userName,
         'dateOfBirth': '0',
         'gender': '1',
-        'diabetesStatus': diabeteStates.isEmpty ? '1' : diabeteStates.first['key'].toString(),
+        //    'diabetesStatus': diabeteStates.isEmpty ? '1' : diabeteStates.first['key'].toString(),
+        'diabetesStatus': '1',
         'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
       });
       if (result == true) {
