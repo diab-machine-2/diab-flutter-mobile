@@ -557,7 +557,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
   _cropImage(String url) async {
     try {
       BotToast.showLoading();
-      final imageFile = await (ImageCropper.cropImage(
+      final imageFile = await ImageCropper.cropImage(
           maxWidth: 320,
           maxHeight: 320,
           aspectRatioPresets: [CropAspectRatioPreset.square],
@@ -565,13 +565,13 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
           compressFormat: ImageCompressFormat.jpg,
           cropStyle: CropStyle.circle,
           sourcePath: url,
-          androidUiSettings: AndroidUiSettings(
+          androidUiSettings: const AndroidUiSettings(
               toolbarTitle: 'Cropper', initAspectRatio: CropAspectRatioPreset.square, lockAspectRatio: false),
-          iosUiSettings: IOSUiSettings(
+          iosUiSettings: const IOSUiSettings(
             minimumAspectRatio: 1.0,
-          )) as FutureOr<File>);
+          ));
 
-      final path = imageFile.path;
+      final path = imageFile!.path;
       await uploadAvatar(path);
     } catch (_) {
       BotToast.closeAllLoading();

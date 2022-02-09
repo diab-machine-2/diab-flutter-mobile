@@ -164,8 +164,8 @@ class UserClient extends FetchClient {
     String path,
   ) async {
     try {
-      Map<String, String?> params = {
-        'patientId': patientId,
+      Map<String, String> params = {
+        'patientId': patientId!,
       };
       final response =
           await super.putHttp(path: '/App/Patient/Avatar', params: params, files: [path], fileName: 'image');

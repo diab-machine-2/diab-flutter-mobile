@@ -226,7 +226,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   buildAction(R.string.information_security.tr(), R.drawable.ic_security, 2),
                   buildAction(R.string.contact_diab.tr(), R.drawable.ic_contact, 3),
                   buildAction(R.string.password.tr(), R.drawable.ic_password, 4),
-                  buildAction(R.string.shared_profile_list.tr(), R.drawable.ic_share, 5),
+                  //     buildAction(R.string.shared_profile_list.tr(), R.drawable.ic_share, 5),
                 ],
               ),
             )));
