@@ -1,7 +1,9 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 
@@ -95,11 +97,19 @@ class _RegisterSuccessState extends State<RegisterSuccess> {
       "password": widget.password,
       "phone_number": widget.phone
     });
+    List<CategoryItemUserModel>? diabeteStates;
+    try {
+      diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
+    } catch(e){
+      BotToast.closeAllLoading();
+   //   return;
+    }
     BotToast.closeAllLoading();
     print(result);
+
     // if (result.access_token != null) {
     Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-        arguments: {'type': 'phone', 'referalCode': widget.referalCode});
+        arguments: {'type': 'phone', 'referalCode': widget.referalCode, 'diabeteStates': diabeteStates});
     // }
   }
 }

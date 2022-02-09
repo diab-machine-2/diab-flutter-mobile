@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 class CategoryItemUserModel {
   final bool? disabled;
   bool? selected;
+  int? key;
   final GroupModel? group;
   final String? text;
   final String? value;
@@ -11,6 +12,7 @@ class CategoryItemUserModel {
   CategoryItemUserModel({
     required this.disabled,
     required this.selected,
+    required this.key,
     required this.group,
     required this.text,
     required this.value,
@@ -20,6 +22,7 @@ class CategoryItemUserModel {
     return CategoryItemUserModel(
       disabled: json['disabled'],
       selected: json['selected'],
+      key: json['key'],
       group: json['group'] == null ? null : GroupModel.fromJson(json['group']),
       text: json['text'],
       value: json['value'],

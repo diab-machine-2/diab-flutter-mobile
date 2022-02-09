@@ -38,7 +38,7 @@ class FetchClient {
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json; charset=UTF-8',
-          'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)',
+          'User-Agent': 'Mobile',
         },
         followRedirects: false,
         validateStatus: (status) {
@@ -56,7 +56,7 @@ class FetchClient {
         contentType: "application/x-www-form-urlencoded",
         headers: {
           'Authorization': token,
-          'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)',
+          'User-Agent': 'Mobile',
         },
         followRedirects: false,
         validateStatus: (status) {
@@ -74,7 +74,7 @@ class FetchClient {
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'multipart/form-data; boundary=<calculated when request is sent>',
-          'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)',
+          'User-Agent': 'Mobile',
         },
         followRedirects: false,
         validateStatus: (status) {
@@ -83,8 +83,35 @@ class FetchClient {
     return option;
   }
 
+  Future<Options> options3() async {
+    await checkNetwork();
+    final token = await AppSettings.getToken();
+    final user_agent = await userAgent();
+
+    final Options option = Options(
+        // headers: {
+        //   'Authorization': 'Bearer $token',
+        //   'Content-Type': 'application/json; charset=UTF-8',
+        //   'User-Agent': 'Mobile',
+        // },
+        followRedirects: false,
+        validateStatus: (status) {
+          return true; //status < 500;
+        });
+    print(option);
+    return option;
+  }
+
   Future<Response> fetchData({bool baseIdentify = false, required String url, Map<String, String?>? params}) async {
     final option = await options();
+    final domain = baseIdentify ? identifyBaseURL : baseURL;
+    final Dio dio = Dio();
+    logRequest(dio);
+    return dio.getUri(Uri.https(domain, url, params), options: option);
+  }
+
+   Future<Response> fetchDataNoHeaders({bool baseIdentify = false, required String url, Map<String, String?>? params}) async {
+    final option = await options3();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
@@ -129,7 +156,7 @@ class FetchClient {
       {bool baseIdentify = false, required String path, required dynamic params, List<String>? files}) async {
     final token = await AppSettings.getToken();
     final user_agent = await userAgent();
-    final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'};
+    final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'Mobile'};
     final request =
         http.MultipartRequest('POST', Uri.parse('https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.fields.addAll(params);
@@ -151,7 +178,7 @@ class FetchClient {
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
-      'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'
+      'User-Agent': 'Mobile'
     };
     final request = http.Request('POST', Uri.parse('https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.body = params;
@@ -168,7 +195,7 @@ class FetchClient {
       String? fileName}) async {
     final token = await AppSettings.getToken();
     final user_agent = await userAgent();
-    final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'};
+    final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'Mobile'};
     final request =
         http.MultipartRequest('PUT', Uri.parse('https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.fields.addAll(params);

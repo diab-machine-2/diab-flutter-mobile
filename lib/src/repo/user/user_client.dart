@@ -469,6 +469,24 @@ class UserClient extends FetchClient {
     }
   }
 
+   Future<List<CategoryItemUserModel>?> fetchDiabeteStatesNoHeader() async {
+    try {
+      final Response response = await super.fetchDataNoHeaders(url: '/App/Patient/DiabeteStates');
+      if (response.statusCode == 200) {
+        if (response.data['data'] == null) {
+          return null;
+        } else {
+          return CategoryItemUserModel.toList(response.data['data']);
+        }
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
   Future<List<ProvinceModel>?> fetchProvinces() async {
     try {
       final Response response =

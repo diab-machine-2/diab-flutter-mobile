@@ -62,12 +62,24 @@ class _DiabetesStatusPickerState extends State<DiabetesStatusPicker> {
             itemExtent: 47.0,
             children: List<int>.generate(diabeteStates!.length, (i) => i)
                 .map((e) => Center(
-                      child: Text(diabeteStates![e].text ?? '',
+                      child: Text(getValue(diabeteStates![e]),
                           style: TextStyle(
                               color: selectedItem == e ? R.color.mainColor : R.color.color0xffC0C2C5,
                               fontSize: 20,
                               fontWeight: FontWeight.bold)),
                     ))
                 .toList());
+  }
+
+  String getValue(CategoryItemUserModel diabete) {
+    if(diabete.text != null){
+      return diabete.text!;
+    } else {
+      if(diabete.value != null){
+        return diabete.value!;
+      } else {
+        return '';
+      }
+    }
   }
 }
