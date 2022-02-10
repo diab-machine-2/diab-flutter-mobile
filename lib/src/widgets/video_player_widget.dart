@@ -44,8 +44,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       BetterPlayerConfiguration(
         autoPlay: true,
         handleLifecycle: true,
-        //   showPlaceholderUntilPlay: true,
-        //  placeholder: path != null ? Image.file(File(path!),) : Container(),
+        showPlaceholderUntilPlay: true,
+        placeholder: Image.asset(R.drawable.ic_thumbnail1, fit: BoxFit.fill,),
         deviceOrientationsAfterFullScreen: [
           DeviceOrientation.portraitUp,
           DeviceOrientation.portraitDown,

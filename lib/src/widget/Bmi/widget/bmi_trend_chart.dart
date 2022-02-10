@@ -161,7 +161,10 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(R.string.hien_tai.tr(),
-                                                style: R.style.normalTextStyle),
+                                                style: TextStyle(
+                                                    color: R.color.textDark,
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 14.0)),
                                             SizedBox(height: 4),
                                             Row(
                                               children: [
@@ -193,7 +196,11 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                                           right: 2),
                                                   child: Text(
                                                     R.string.kg.tr(),
-                                                    style: R.style.normalTextStyle,
+                                                    style: TextStyle(
+                                                        color: R.color.textDark,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        fontSize: 14.0),
                                                   ),
                                                 ),
                                               ],
@@ -208,7 +215,10 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(R.string.muc_tieu.tr(),
-                                                style: R.style.normalTextStyle),
+                                                style: TextStyle(
+                                                    color: R.color.textDark,
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 14.0)),
                                             SizedBox(height: 4),
                                             Row(
                                               children: [
@@ -236,7 +246,11 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                                           top: 6.0, left: 2),
                                                   child: Text(
                                                     R.string.kg.tr(),
-                                                    style: R.style.normalTextStyle,
+                                                    style: TextStyle(
+                                                        color: R.color.textDark,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        fontSize: 14.0),
                                                   ),
                                                 ),
                                               ],
@@ -375,7 +389,10 @@ class BmiTrendChartState extends State<BmiTrendChart>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(number.length, (index) {
                     return Text(number[index].toString(),
-                        style: R.style.normalTextStyle);
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: R.color.black,
+                            fontWeight: FontWeight.normal));
                   })),
             ),
             Expanded(
@@ -531,8 +548,6 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                 }),
                             gridData: FlGridData(show: false),
                             titlesData: FlTitlesData(
-                              rightTitles: SideTitles(showTitles: false),
-                              topTitles: SideTitles(showTitles: false),
                               bottomTitles: SideTitles(
                                 showTitles: true,
                                 margin: 16,
@@ -555,6 +570,31 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                   } else {
                                     return convertToUTC(date, 'dd/MM');
                                   }
+                                  //  if (value.toInt() > dates.length - 1) {
+                                  //   return '';
+                                  // }
+                                  // final date = dates[value.toInt()];
+                                  // int? dateBefore;
+                                  // if(value.toInt() > 0){
+                                  //   dateBefore = dates[value.toInt() - 1];
+                                  // }
+                                  // if(dateBefore == null){
+                                  //    if (date == null) {
+                                  //       return '';
+                                  //     } else {
+                                  //       return convertToUTC(date, 'dd/MM');
+                                  //     }
+                                  // } else {
+                                  //   if(date == dateBefore){
+                                  //     return '';
+                                  //   } else {
+                                  //     if (date == null) {
+                                  //       return '';
+                                  //     } else {
+                                  //       return convertToUTC(date, 'dd/MM');
+                                  //     }
+                                  //   }
+                                  // }
                                 },
                               ),
                               leftTitles: SideTitles(
@@ -562,6 +602,8 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                   getTitles: (double value) {
                                     return '';
                                   }),
+                              rightTitles: SideTitles(showTitles: false),
+                              topTitles: SideTitles(showTitles: false),
                             ),
                             borderData: FlBorderData(
                               show: false,
@@ -594,7 +636,10 @@ class BmiTrendChartState extends State<BmiTrendChart>
                 ),
                 Expanded(
                   child: Text(model.message!,
-                      style: R.style.normalTextStyle),
+                      style: TextStyle(
+                          color: R.color.textDark,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14.0)),
                 ),
               ],
             ),

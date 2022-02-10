@@ -183,17 +183,17 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     checkSectionComplete();
   }
 
-  Future<void> getThumbnail() async {
-    if (currentSectionDetail!.videoAddressLink != null) {
-      path = (await VideoThumbnail.thumbnailFile(
-        video: currentSectionDetail!.videoAddressLink!,
-        thumbnailPath: (await getTemporaryDirectory()).path,
-        imageFormat: ImageFormat.PNG,
-        maxHeight: 190,
-        quality: 10,
-      ));
-    }
-  }
+  // Future<void> getThumbnail() async {
+  //   if (currentSectionDetail!.videoAddressLink != null) {
+  //     path = (await VideoThumbnail.thumbnailFile(
+  //       video: currentSectionDetail!.videoAddressLink!,
+  //       thumbnailPath: (await getTemporaryDirectory()).path,
+  //       imageFormat: ImageFormat.PNG,
+  //       maxHeight: 190,
+  //       quality: 10,
+  //     ));
+  //   }
+  // }
 
   Future<void> getSectionList() async {
     await Future.delayed(Duration.zero);
