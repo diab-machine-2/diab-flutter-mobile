@@ -150,13 +150,14 @@ class _AppState extends State<App> {
                   return _buildRoute(
                       settings,
                       UpdateInfoController(
-                          type: data?['type'],
-                          googleAccount: data?['googleAccount'],
-                          facebookAccount: data?['facebookAccount'],
-                          appleAccount: data?['appleAccount'],
-                          userInfo: data?['userInfo'],
-                          referalCode: data?['referalCode'],
-                          diabeteStates: data?['diabeteStates'],));
+                        type: data?['type'],
+                        googleAccount: data?['googleAccount'],
+                        facebookAccount: data?['facebookAccount'],
+                        appleAccount: data?['appleAccount'],
+                        userInfo: data?['userInfo'],
+                        referalCode: data?['referalCode'],
+                        diabeteStates: data?['diabeteStates'],
+                      ));
                 case NavigatorName.forgot_password:
                   return _buildRoute(settings, ForgotPasswordController());
                 case NavigatorName.new_password:
@@ -190,7 +191,13 @@ class _AppState extends State<App> {
                   }
                   return _buildRoute(settings, StepListController(sharedCode), isPresent: true);
                 case NavigatorName.rules:
-                  return _buildRoute(settings, RulesController());
+                  final data = settings.arguments as Map<String, dynamic>?;
+                  return _buildRoute(
+                      settings,
+                      RulesController(
+                        googleAccount: data?['googleAccount'],
+                        appleCredential: data?['appleCredential'],
+                      ));
                 case NavigatorName.add_hba1c:
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(
@@ -401,7 +408,8 @@ class _AppState extends State<App> {
                       isPresent: true);
                 case NavigatorName.question_detail:
                   final data = settings.arguments as Map<String, dynamic>?;
-                  return _buildRoute(settings, QuestionDetailPage(questionModel: data!['questionModel'], isAll: data['isAll']),
+                  return _buildRoute(
+                      settings, QuestionDetailPage(questionModel: data!['questionModel'], isAll: data['isAll']),
                       isPresent: true);
                 default:
                   return null;

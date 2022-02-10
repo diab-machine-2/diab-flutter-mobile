@@ -9,6 +9,7 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -460,7 +461,15 @@ class _LoginControllerState extends State<LoginController> {
     }
   }
 
-  registerAccount(String? providerKey, String? externalToken, String provider, String userName, bool update) async {
+  registerAccount(
+    String? providerKey,
+    String? externalToken,
+    String provider,
+    String userName,
+    bool update, {
+    GoogleSignInAccount? googleAccount,
+    AuthorizationCredentialAppleID? appleCredential,
+  }) async {
     try {
       BotToast.showLoading();
       if (!update) {
@@ -486,7 +495,8 @@ class _LoginControllerState extends State<LoginController> {
         'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
       });
       if (result == true) {
-        Navigator.pushReplacementNamed(context, NavigatorName.rules);
+        Navigator.pushReplacementNamed(context, NavigatorName.rules,
+            arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
       }
       BotToast.closeAllLoading();
     } catch (error) {
