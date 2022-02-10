@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:better_player/better_player.dart';
@@ -19,6 +20,9 @@ class VideoPlayerWidget extends StatefulWidget {
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   BetterPlayerController? _controller;
+
+  StreamController<bool> _placeholderStreamController =
+      StreamController.broadcast();
 
   @override
   void initState() {
@@ -45,7 +49,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         autoPlay: true,
         handleLifecycle: true,
         showPlaceholderUntilPlay: true,
-        placeholder: Image.asset(R.drawable.ic_thumbnail1, fit: BoxFit.fill,),
+        expandToFill: false,
+        fit: BoxFit.fitHeight,
+        placeholder: _buildVideoPlaceholder(),
         deviceOrientationsAfterFullScreen: [
           DeviceOrientation.portraitUp,
           DeviceOrientation.portraitDown,
@@ -57,6 +63,23 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       widget.videoUrl,
     );
     _controller!.setupDataSource(betterPlayerDataSource);
+    _controller!.addEventsListener((event) async {
+          print('event.betterPlayerEventType = ${event.betterPlayerEventType}');
+          if (event.betterPlayerEventType == BetterPlayerEventType.play){
+            _placeholderStreamController.add(true);
+          }
+        },);
+  }
+
+  Widget _buildVideoPlaceholder() {
+    return StreamBuilder<bool>(
+      stream: _placeholderStreamController.stream,
+      builder: (context, snapshot) {
+        return snapshot.data ?? false
+            ? Container(color: R.color.black)
+            : Image.asset(R.drawable.ic_thumbnail1, fit: BoxFit.fill,);
+      },
+    );
   }
 
   @override
@@ -66,6 +89,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       _controller = null;
       print("Disposed controller");
     }
+    _placeholderStreamController.close();
     super.dispose();
   }
 
