@@ -463,12 +463,17 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(roundNumber(model.index!),
-                        style: TextStyle(
-                            fontFamily: 'Viga',
-                            color: toColor(model.color),
-                            fontSize: 26,
-                            fontWeight: FontWeight.w400)),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.fill,
+                        child: Text(roundNumber(model.index!),
+                            style: TextStyle(
+                                fontFamily: 'Viga',
+                                color: toColor(model.color),
+                                fontSize: 26,
+                                fontWeight: FontWeight.w400)),
+                      ),
+                    ),
                     const SizedBox(width: 4),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
@@ -543,15 +548,21 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                        model.systolic!.round().toString() +
-                            '/' +
-                            model.diastolic!.round().toString(),
-                        style: TextStyle(
-                            fontFamily: 'Viga',
-                            color: toColor(model.color),
-                            fontSize: 26,
-                            fontWeight: FontWeight.w400)),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.fill,
+                        child: Text(
+                            model.systolic!.round().toString() +
+                                '/' +
+                                model.diastolic!.round().toString(),
+                            style: TextStyle(
+                                fontFamily: 'Viga',
+                                color: toColor(model.color),
+                                fontSize: 26,
+                                fontWeight: FontWeight.w400),
+                            maxLines: 1,),
+                      ),
+                    ),
                     const SizedBox(width: 4),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
@@ -685,7 +696,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                   children: List.generate(
                       model.details!.length,
                       (index) => Padding(
-                            padding: const EdgeInsets.only(top: 8),
+                            padding: const EdgeInsets.only(top: 6),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,

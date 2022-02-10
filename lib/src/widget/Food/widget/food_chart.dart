@@ -381,6 +381,7 @@ class FoodChartState extends State<FoodChart>
                                 getTextStyles: (context, value) => TextStyle(
                                     color: R.color.black, fontSize: 14)),
                           ),
+                          gridData: FlGridData(show: false),
                           borderData: FlBorderData(
                             show: false,
                           ),

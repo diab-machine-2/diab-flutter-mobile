@@ -275,6 +275,7 @@ class HbA1CChartState extends State<HbA1CChart>
                               color: R.color.black, fontSize: 14),
                         ),
                       ),
+                      gridData: FlGridData(show: false),
                       borderData: FlBorderData(
                         show: false,
                       ),

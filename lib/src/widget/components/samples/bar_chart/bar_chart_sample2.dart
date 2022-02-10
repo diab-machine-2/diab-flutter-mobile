@@ -177,6 +177,7 @@ class BarChartSample2State extends State<BarChartSample2> {
                           },
                         ),
                       ),
+                      gridData: FlGridData(show: false),
                       borderData: FlBorderData(
                         show: false,
                       ),
