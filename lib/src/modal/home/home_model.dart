@@ -6,11 +6,11 @@ import 'package:medical/src/modal/base/images.dart';
 class HomeModel {
   final GloucoseIndexModel glucoseIndex;
   final BloodPressureIndexModel bloodPressureIndex;
-  final ExerciseIndexModel? exercise;
-  final HbA1CIndexModel hbA1CIndex;
   final WeightCardModel? weightCard;
   final EmotionCardModel? emotionCard;
   final EnergyCardModel? energyCard;
+  final ExerciseIndexModel? exercise;
+  final HbA1CIndexModel hbA1CIndex;
   final EnergyExerciseCardModel? energyExerciseCard;
 
   HomeModel(
@@ -26,24 +26,14 @@ class HomeModel {
   factory HomeModel.fromJson(Map<String, dynamic> json) {
     return HomeModel(
         glucoseIndex: GloucoseIndexModel.fromJson(json['glucoseIndex']),
-        bloodPressureIndex:
-            BloodPressureIndexModel.fromJson(json['bloodPressureIndex']),
-        exercise: json['exercise'] == null
-            ? null
-            : ExerciseIndexModel.fromJson(json['exercise']),
+        bloodPressureIndex: BloodPressureIndexModel.fromJson(json['bloodPressureIndex']),
+        exercise: json['exercise'] == null ? null : ExerciseIndexModel.fromJson(json['exercise']),
         hbA1CIndex: HbA1CIndexModel.fromJson(json['hbA1CIndex']),
-        weightCard: json['weightCard'] == null
-            ? null
-            : WeightCardModel.fromJson(json['weightCard']),
-        emotionCard: json['emotionCard'] == null
-            ? null
-            : EmotionCardModel.fromJson(json['emotionCard']),
-        energyCard: json['energyCard'] == null
-            ? null
-            : EnergyCardModel.fromJson(json['energyCard']),
-        energyExerciseCard: json['energyExerciseCard'] == null
-            ? null
-            : EnergyExerciseCardModel.fromJson(json['energyExerciseCard']));
+        weightCard: json['weightCard'] == null ? null : WeightCardModel.fromJson(json['weightCard']),
+        emotionCard: json['emotionCard'] == null ? null : EmotionCardModel.fromJson(json['emotionCard']),
+        energyCard: json['energyCard'] == null ? null : EnergyCardModel.fromJson(json['energyCard']),
+        energyExerciseCard:
+            json['energyExerciseCard'] == null ? null : EnergyExerciseCardModel.fromJson(json['energyExerciseCard']));
   }
 
   static List<HomeModel> toList(List<dynamic> items) {
@@ -70,12 +60,8 @@ class GloucoseIndexModel {
   factory GloucoseIndexModel.fromJson(Map<String, dynamic> json) {
     final unit = AppSettings.userInfo!.glucoseUnit == 1 ? R.string.mg_dl.tr() : R.string.mmol_l.tr();
     return GloucoseIndexModel(
-      index: AppSettings.userInfo!.glucoseUnit == 1
-          ? json['index']
-          : json['indexMmoll'],
-      indexChange: AppSettings.userInfo!.glucoseUnit == 1
-          ? json['indexChange']
-          : json['indexChangeMmoll'],
+      index: AppSettings.userInfo!.glucoseUnit == 1 ? json['index'] : json['indexMmoll'],
+      indexChange: AppSettings.userInfo!.glucoseUnit == 1 ? json['indexChange'] : json['indexChangeMmoll'],
       unit: unit,
       createDateTime: json['createDateTime'],
       color: json['color'],
@@ -191,10 +177,7 @@ class WeightCardModel {
   final String? weightColorCode;
 
   WeightCardModel(
-      {required this.weight,
-      required this.goalWeight,
-      required this.weightDateTime,
-      required this.weightColorCode});
+      {required this.weight, required this.goalWeight, required this.weightDateTime, required this.weightColorCode});
 
   factory WeightCardModel.fromJson(Map<String, dynamic> json) {
     return WeightCardModel(
@@ -218,9 +201,7 @@ class EmotionCardModel {
   factory EmotionCardModel.fromJson(Map<String, dynamic> json) {
     return EmotionCardModel(
       emotionDateTime: json['emotionDateTime'],
-      details: json['details'] == null
-          ? null
-          : EmotionCardItemModel.toList(json['details']),
+      details: json['details'] == null ? null : EmotionCardItemModel.toList(json['details']),
     );
   }
 
@@ -252,18 +233,13 @@ class EnergyCardModel {
   final double? consumedEnergy;
   final ImagesModel? energyIcon;
 
-  EnergyCardModel(
-      {required this.consumedEnergyDateTime,
-      required this.consumedEnergy,
-      required this.energyIcon});
+  EnergyCardModel({required this.consumedEnergyDateTime, required this.consumedEnergy, required this.energyIcon});
 
   factory EnergyCardModel.fromJson(Map<String, dynamic> json) {
     return EnergyCardModel(
       consumedEnergyDateTime: json['consumedEnergyDateTime'],
       consumedEnergy: json['consumedEnergy'],
-      energyIcon: json['energyIcon'] == null
-          ? null
-          : ImagesModel.fromJson(json['energyIcon']),
+      energyIcon: json['energyIcon'] == null ? null : ImagesModel.fromJson(json['energyIcon']),
     );
   }
 
@@ -279,17 +255,11 @@ class EnergyExerciseCardModel {
   final String? corlorCode;
 
   EnergyExerciseCardModel(
-      {required this.value,
-      required this.energyGoal,
-      required this.text,
-      required this.corlorCode});
+      {required this.value, required this.energyGoal, required this.text, required this.corlorCode});
 
   factory EnergyExerciseCardModel.fromJson(Map<String, dynamic> json) {
     return EnergyExerciseCardModel(
-        value: json['value'],
-        energyGoal: json['energyGoal'],
-        text: json['text'],
-        corlorCode: json['corlorCode']);
+        value: json['value'], energyGoal: json['energyGoal'], text: json['text'], corlorCode: json['corlorCode']);
   }
 
   static List<EnergyExerciseCardModel> toList(List<dynamic> items) {

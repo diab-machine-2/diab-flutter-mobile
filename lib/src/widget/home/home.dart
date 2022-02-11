@@ -48,6 +48,30 @@ class _HomeControllerState extends State<HomeController> with Observer {
         {'name': R.string.om.tr(), 'image': R.drawable.ic_sick}
       ]
     },
+    {
+      'name': R.string.dinh_duong.tr(),
+      'image': R.drawable.bg_food,
+      'icon': R.drawable.ic_food,
+      'dataDetail': [],
+    },
+    {
+      'name': R.string.van_dong.tr(),
+      'image': R.drawable.bg_exercise,
+      'icon': R.drawable.ic_exercise_menu,
+      'dataDetail': [],
+    },
+    {
+      'name': R.string.progress.tr(),
+      'image': '',
+      'icon': R.drawable.ic_progress,
+      'dataDetail': [],
+    },
+    {
+      'name': R.string.hba1c.tr(),
+      'image': R.drawable.bg_hba1c,
+      'icon': R.drawable.ic_hba1c_menu,
+      'dataDetail': [],
+    },
   ];
 
   var dataDetail = [{}];
@@ -200,78 +224,101 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                       icon as String?, model!.emotionCard!);
                                 }
 
+                                if (index == 4 && model != null && model!.emotionCard!.details != null) {
+                                  return _buildFood(context, index, name as String?, image as String?, icon as String?,
+                                      model!.energyCard!);
+                                }
+                                if (index == 5 && model != null && model!.emotionCard!.details != null) {
+                                  return _buildExcercise(context, index, name as String?, image as String?,
+                                      icon as String?, model!.exercise!);
+                                }
+                                if (index == 6 && model != null && model!.emotionCard!.details != null) {
+                                  return _buildProgress(context, index, name as String?, image as String?,
+                                      icon as String?, model!.hbA1CIndex);
+                                }
+                                if (index == 7 && model != null && model!.emotionCard!.details != null) {
+                                  return _buildHbA1C(context, index, name as String?, image as String?, icon as String?,
+                                      model!.hbA1CIndex);
+                                }
+
                                 return _buildItem(context, index, name as String?, image as String?, icon as String?);
                               }),
-                          const SizedBox(height: 16),
-                          Padding(
-                              padding: const EdgeInsets.only(left: 16, right: 16),
-                              child: model != null &&
-                                      (model!.energyCard!.consumedEnergy != 0 || model!.exercise!.index != 0)
-                                  ? buildFoodAndExcercise(model!)
-                                  : Container(
-                                      height: width * 160 / 343,
-                                      child: Stack(children: [
-                                        Positioned.fill(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(16),
-                                            decoration: BoxDecoration(
-                                                color: R.color.white, borderRadius: BorderRadius.circular(10)),
-                                            child: Text(R.string.dinh_duong_va_van_dong.tr(),
-                                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                                          ),
-                                        ),
-                                        Positioned(
-                                            top: 60,
-                                            bottom: 0,
-                                            left: 0,
-                                            child: Image.asset(R.drawable.bg_food_and_excersire)),
-                                        Center(
-                                            child:
-                                                Image.asset(R.drawable.ic_food_and_excersire, width: 58, height: 58)),
-                                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                          Expanded(
-                                              child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.pushNamed(context, NavigatorName.detail_food);
-                                            },
-                                            child: Container(color: R.color.transparent),
-                                          )),
-                                          Expanded(
-                                              child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.pushNamed(context, NavigatorName.detail_exercrises);
-                                            },
-                                            child: Container(color: R.color.transparent),
-                                          ))
-                                        ])
-                                      ]),
-                                    )),
-                          const SizedBox(height: 16),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 16, right: 16),
-                            child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(context, NavigatorName.detail_hba1c);
-                                },
-                                child: model != null && model!.hbA1CIndex.index != 0
-                                    ? buildHbA1C(model!.hbA1CIndex)
+                          //   const SizedBox(height: 16),
+                          Visibility(
+                            visible: false,
+                            child: Padding(
+                                padding: const EdgeInsets.only(left: 16, right: 16),
+                                child: model != null &&
+                                        (model!.energyCard!.consumedEnergy != 0 || model!.exercise!.index != 0)
+                                    ? buildFoodAndExcercise(model!)
                                     : Container(
-                                        height: width * 90 / 343,
+                                        height: width * 160 / 343,
                                         child: Stack(children: [
                                           Positioned.fill(
                                             child: Container(
                                               padding: const EdgeInsets.all(16),
                                               decoration: BoxDecoration(
                                                   color: R.color.white, borderRadius: BorderRadius.circular(10)),
-                                              child: Text(R.string.hba1c.tr(),
+                                              child: Text(R.string.dinh_duong_va_van_dong.tr(),
                                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                                             ),
                                           ),
                                           Positioned(
-                                              top: 0, bottom: 0, right: 0, child: Image.asset(R.drawable.bg_hba1c)),
-                                          Center(child: Image.asset(R.drawable.ic_hba1cn, width: 58, height: 58))
+                                              top: 60,
+                                              bottom: 0,
+                                              left: 0,
+                                              child: Image.asset(R.drawable.bg_food_and_excersire)),
+                                          Center(
+                                              child:
+                                                  Image.asset(R.drawable.ic_food_and_excersire, width: 58, height: 58)),
+                                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                            Expanded(
+                                                child: GestureDetector(
+                                              onTap: () {
+                                                Navigator.pushNamed(context, NavigatorName.detail_food);
+                                              },
+                                              child: Container(color: R.color.transparent),
+                                            )),
+                                            Expanded(
+                                                child: GestureDetector(
+                                              onTap: () {
+                                                Navigator.pushNamed(context, NavigatorName.detail_exercrises);
+                                              },
+                                              child: Container(color: R.color.transparent),
+                                            ))
+                                          ])
                                         ]),
                                       )),
+                          ),
+                          const SizedBox(height: 8),
+                          Visibility(
+                            visible: false,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 16, right: 16),
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(context, NavigatorName.detail_hba1c);
+                                  },
+                                  child: model != null && model!.hbA1CIndex.index != 0
+                                      ? buildHbA1C(model!.hbA1CIndex)
+                                      : Container(
+                                          height: width * 90 / 343,
+                                          child: Stack(children: [
+                                            Positioned.fill(
+                                              child: Container(
+                                                padding: const EdgeInsets.all(16),
+                                                decoration: BoxDecoration(
+                                                    color: R.color.white, borderRadius: BorderRadius.circular(10)),
+                                                child: Text(R.string.hba1c.tr(),
+                                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                              ),
+                                            ),
+                                            Positioned(
+                                                top: 0, bottom: 0, right: 0, child: Image.asset(R.drawable.bg_hba1c)),
+                                            Center(child: Image.asset(R.drawable.ic_hba1cn, width: 58, height: 58))
+                                          ]),
+                                        )),
+                            ),
                           ),
                           // buildServiceButton(),
                           CourseSuggest(position: 1),
@@ -299,8 +346,12 @@ class _HomeControllerState extends State<HomeController> with Observer {
           Navigator.pushNamed(context, NavigatorName.detail_emotion);
         } else if (index == 4) {
           Navigator.pushNamed(context, NavigatorName.detail_food);
-        } else if (index == 2) {
+        } else if (index == 5) {
           Navigator.pushNamed(context, NavigatorName.detail_exercrises);
+        } else if (index == 6) {
+          Navigator.pushNamed(context, NavigatorName.my_progress);
+        } else if (index == 7) {
+          Navigator.pushNamed(context, NavigatorName.detail_hba1c);
         }
 
         return;
@@ -568,6 +619,117 @@ class _HomeControllerState extends State<HomeController> with Observer {
     );
   }
 
+  Widget _buildFood(BuildContext context, int index, String? name, String? image, String? icon, EnergyCardModel model) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, NavigatorName.detail_food);
+      },
+      child: Stack(children: [
+        Positioned.fill(
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(name ?? '', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text(
+                      getStringToday(model.consumedEnergyDateTime ?? 0).isEmpty
+                          ? convertToUTC(model.consumedEnergyDateTime ?? 0, 'dd/MM/yyyy')
+                          : getStringToday(model.consumedEnergyDateTime ?? 0),
+                      style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                ]),
+                const SizedBox(height: 15),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Image.asset(R.drawable.ic_home_energy, width: 16, height: 16),
+                    const SizedBox(width: 4),
+                    Text(R.string.da_nap.tr(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400)),
+                  ],
+                ),
+                const SizedBox(height: 0),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(model == null ? '0' : formatNumber(model.consumedEnergy),
+                        style: TextStyle(
+                            fontFamily: 'Viga', color: R.color.black, fontSize: 26, fontWeight: FontWeight.w400)),
+                    const SizedBox(width: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(R.string.kcal.tr(),
+                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+        )
+      ]),
+    );
+  }
+
+  Widget _buildExcercise(
+      BuildContext context, int index, String? name, String? image, String? icon, ExerciseIndexModel model) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, NavigatorName.detail_exercrises);
+      },
+      child: Stack(children: [
+        Positioned.fill(
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(name ?? '', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text(
+                      getStringToday(model.createDateTime ?? 0).isEmpty
+                          ? convertToUTC(model.createDateTime ?? 0, 'dd/MM/yyyy')
+                          : getStringToday(model.createDateTime ?? 0),
+                      style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                ]),
+                const SizedBox(height: 15),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Image.asset(R.drawable.ic_van_dong, width: 16, height: 16, color: R.color.greenGradientBottom),
+                    const SizedBox(width: 4),
+                    Text(R.string.thoi_gian.tr(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400)),
+                  ],
+                ),
+                const SizedBox(height: 0),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(model == null ? '0' : formatNumber(model.index),
+                        style: TextStyle(
+                            fontFamily: 'Viga', color: R.color.black, fontSize: 26, fontWeight: FontWeight.w400)),
+                    const SizedBox(width: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(model.unit ?? R.string.kcal.tr(),
+                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+        )
+      ]),
+    );
+  }
+
   Widget buildHbA1C(HbA1CIndexModel model) {
     return Container(
       height: 95,
@@ -633,6 +795,140 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           ],
                         )
                     ])
+              ],
+            ),
+          ),
+        )
+      ]),
+    );
+  }
+
+  Widget _buildProgress(
+      BuildContext context, int index, String? name, String? image, String? icon, HbA1CIndexModel model) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, NavigatorName.my_progress);
+      },
+      child: Stack(children: [
+        Positioned.fill(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(name ?? '', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text(
+                      getStringToday(model.createDateTime ?? 0).isEmpty
+                          ? convertToUTC(model.createDateTime ?? 0, 'dd/MM/yyyy')
+                          : getStringToday(model.createDateTime ?? 0),
+                      style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                ]),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(model.indexChange!.round().toString() + '/' + model.index!.round().toString(),
+                            style: TextStyle(
+                                fontFamily: 'Viga',
+                                color: toColor(model.color),
+                                fontSize: 26,
+                                fontWeight: FontWeight.w400)),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(' mục tiêu ngày',
+                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                    )
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.network(model.icon?.url ?? '', width: 25, height: 25),
+                    const SizedBox(width: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text('Hoàn thành',
+                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        )
+      ]),
+    );
+  }
+
+  Widget _buildHbA1C(
+      BuildContext context, int index, String? name, String? image, String? icon, HbA1CIndexModel model) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, NavigatorName.detail_hba1c);
+      },
+      child: Stack(children: [
+        Positioned.fill(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(10)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(name ?? '', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text(
+                      getStringToday(model.createDateTime ?? 0).isEmpty
+                          ? convertToUTC(model.createDateTime ?? 0, 'dd/MM/yyyy')
+                          : getStringToday(model.createDateTime ?? 0),
+                      style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                ]),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(model.index!.round().toString(),
+                        style: TextStyle(
+                            fontFamily: 'Viga',
+                            color: toColor(model.color),
+                            fontSize: 26,
+                            fontWeight: FontWeight.w400)),
+                    const SizedBox(width: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text('%',
+                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                    )
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.network(model.icon?.url ?? '', width: 25, height: 25),
+                    const SizedBox(width: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                          (model.indexChange! > 0
+                                  ? ' Tăng '
+                                  : model.indexChange! == 0
+                                      ? ''
+                                      : 'Giảm ') +
+                              model.indexChange!.round().toString() +
+                              '%',
+                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                    )
+                  ],
+                )
               ],
             ),
           ),

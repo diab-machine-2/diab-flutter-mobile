@@ -43,6 +43,7 @@ import 'package:medical/src/widget/login/rules.dart';
 import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/my_progress/my_progress.dart';
 import 'package:medical/src/widget/notification/notification_detail.dart';
 import 'package:medical/src/widget/notification/notification_tabbar.dart';
 import 'package:medical/src/widget/profile/add_reminder.dart';
@@ -381,6 +382,8 @@ class _AppState extends State<App> {
                   return _buildRoute(settings, ScheduleActivityController());
                 case NavigatorName.manual:
                   return _buildRoute(settings, ManualController());
+                case NavigatorName.my_progress:
+                  return _buildRoute(settings, MyProgressPage());
                 case NavigatorName.manual_detail:
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(settings, ManualDetailController(model: data?['manual']));
