@@ -94,6 +94,8 @@ class LineChartSample7 extends StatelessWidget {
           ],
           minY: 0,
           titlesData: FlTitlesData(
+            rightTitles: SideTitles(showTitles: false),
+            topTitles: SideTitles(showTitles: false),
             bottomTitles: SideTitles(
                 showTitles: true,
                 getTextStyles: (context, value) => TextStyle(

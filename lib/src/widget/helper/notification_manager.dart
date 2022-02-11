@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -14,6 +15,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NotificationManager {
   static final NotificationManager instance = NotificationManager._internal();
@@ -24,14 +26,13 @@ class NotificationManager {
 
   NotificationManager._internal();
 
-  Future requestFirebaseToken() async {
+  Future requestFirebaseToken(BuildContext context) async {
     firebaseConfigure();
     final Map<String, dynamic>? deviceInfor = await getDeviceInformation();
     final String deviceId = deviceInfor != null ? deviceInfor['uuid'] : '';
     if (Platform.isIOS) {
       await FirebaseMessaging.instance.requestPermission();
-      await FirebaseMessaging.instance
-          .setForegroundNotificationPresentationOptions(
+      await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
         alert: true,
         badge: true,
         sound: true,
@@ -40,14 +41,17 @@ class NotificationManager {
     try {
       final token = await FirebaseMessaging.instance.getToken();
       print(token);
+      // Clipboard.setData(new ClipboardData(text: token)).then((_){
+      //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(token ?? 'Copied'), duration: Duration(minutes: 3),));
+      // });
+
       await LoginClient().syncToken(deviceId, token, Platform.isIOS ? 1 : 2);
     } catch (e) {
       print(e);
     }
   }
 
-  static Future<dynamic> myBackgroundMessageHandler(
-      RemoteMessage message) async {
+  static Future<dynamic> myBackgroundMessageHandler(RemoteMessage message) async {
     NotificationManager.instance.navigateNotification(message);
   }
 
@@ -59,8 +63,7 @@ class NotificationManager {
           data: NotificationData.fromJson(message.data));
 
       if (model.actionType == NotificationActionType.share_profile) {
-        ShareProfilePopup.instance
-            .onHasSharedCode(requestFromDoctor: true, code: '123456');
+        ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: '123456');
         return;
       }
       Message.showNotificationMessage(
@@ -80,8 +83,7 @@ class NotificationManager {
       navigateNotification(message);
     });
 
-    FirebaseMessaging.onBackgroundMessage(
-        (message) => myBackgroundMessageHandler(message));
+    FirebaseMessaging.onBackgroundMessage((message) => myBackgroundMessageHandler(message));
   }
 
   navigateNotification(RemoteMessage? message) {
@@ -95,40 +97,37 @@ class NotificationManager {
     );
 
     if (model.actionType == NotificationActionType.share_profile) {
-      ShareProfilePopup.instance
-          .onHasSharedCode(requestFromDoctor: true, code: '123456');
+      ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: '123456');
       return;
     }
 
     NotificationClient().readNotification(
-        model.id ?? model.data?.communicationId,
-        AppSettings.userInfo?.id,
-        model.data?.notificationType,
-        true);
+        model.id ?? model.data?.communicationId, AppSettings.userInfo?.id, model.data?.notificationType, true);
 
     switch (model.actionType) {
       case NotificationActionType.redirect_to_activity_tab:
-        Observable.instance
-            .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+        Navigator.pushReplacementNamed(navigatorKey.currentState!.context, NavigatorName.tabbar, arguments: {
+          'id': model.data?.communicationId,
+          'isRedirectFromNotification': true,
+        });
         break;
       case NotificationActionType.redirect_to_url:
-        Navigator.pushNamed(navigatorKey.currentState!.context,
-            NavigatorName.notification_detail,
+        Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.notification_detail,
             arguments: {'id': model.data?.communicationId});
         break;
       case NotificationActionType.add_reminder:
-        Navigator.pushNamed(
-            navigatorKey.currentState!.context, NavigatorName.add_reminder,
+        Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_reminder,
             arguments: {'type': 'update', 'id': model.data?.remindId});
         break;
       case NotificationActionType.add_blood_sugar:
-        Navigator.pushNamed(
-            navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
-            arguments: {'type': 'input', 'id': null});
+        Navigator.pushNamed(navigatorKey.currentState!.context, NavigatorName.add_blood_sugar,
+            arguments: {'type': 'input', 'id': model.data?.communicationId});
         break;
       case NotificationActionType.none:
         break;
       case NotificationActionType.share_profile:
+        break;
+      case NotificationActionType.redirect_date_detail:
         break;
     }
   }
@@ -173,5 +172,18 @@ class NotificationManager {
       }
     } catch (exception) {}
     return deviceInformation;
+  }
+
+  Future<void> _launchInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: false,
+        forceWebView: false,
+        headers: <String, String>{'my_header_key': 'my_header_value'},
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

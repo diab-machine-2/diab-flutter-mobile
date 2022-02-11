@@ -20,23 +20,24 @@ class TrackingManager {
   }
 
   static FirebaseAnalytics analytics = FirebaseAnalytics();
-  static FirebaseAnalyticsObserver observerFirebase =
-      FirebaseAnalyticsObserver(analytics: analytics);
+  static FirebaseAnalyticsObserver observerFirebase = FirebaseAnalyticsObserver(analytics: analytics);
 
   // Define an async function to initialize FlutterFire
   static Future<void> initializeFlutterFire() async {
     // Wait for Firebase to initialize
     await Firebase.initializeApp();
 
-    if (_kTestingCrashlytics) {
-      // Force enable crashlytics collection enabled if we're testing it.
-      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-    } else {
-      // Else only enable it in non-debug builds.
-      // You could additionally extend this to allow users to opt-in.
-      await FirebaseCrashlytics.instance
-          .setCrashlyticsCollectionEnabled(!kDebugMode);
-    }
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+
+    // if (_kTestingCrashlytics) {
+    //   // Force enable crashlytics collection enabled if we're testing it.
+    //   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+    // } else {
+    //   // Else only enable it in non-debug builds.
+    //   // You could additionally extend this to allow users to opt-in.
+    //   await FirebaseCrashlytics.instance
+    //       .setCrashlyticsCollectionEnabled(!kDebugMode);
+    // }
 
     // Pass all uncaught errors to Crashlytics.
     Function? originalOnError = FlutterError.onError;

@@ -402,13 +402,19 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 ]),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(roundNumber(model.index!),
-                        style: TextStyle(
-                            fontFamily: 'Viga',
-                            color: toColor(model.color),
-                            fontSize: 26,
-                            fontWeight: FontWeight.w400)),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(roundNumber(model.index!),
+                            style: TextStyle(
+                                fontFamily: 'Viga',
+                                color: toColor(model.color),
+                                fontSize: 26,
+                                fontWeight: FontWeight.w400)),
+                      ),
+                    ),
                     const SizedBox(width: 4),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
@@ -472,11 +478,13 @@ class _HomeControllerState extends State<HomeController> with Observer {
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(model.systolic!.round().toString() + '/' + model.diastolic!.round().toString(),
+                            maxLines: 1,
                             style: TextStyle(
                                 fontFamily: 'Viga',
                                 color: toColor(model.color),
                                 fontSize: 26,
-                                fontWeight: FontWeight.w400)),
+                                fontWeight: FontWeight.w400,
+                                overflow: TextOverflow.ellipsis)),
                       ),
                     ),
                     const SizedBox(width: 4),

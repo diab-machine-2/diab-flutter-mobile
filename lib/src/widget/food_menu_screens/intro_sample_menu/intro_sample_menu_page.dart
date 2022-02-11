@@ -62,7 +62,7 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
         background: R.drawable.bg_welcome,
         title: R.string.sample_menu.tr(),
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 28),
           shrinkWrap: true,
           children: [
             Column(
@@ -73,78 +73,94 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                   width: double.infinity,
                   height: 240,
                 ),
+                const SizedBox(height: 36),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        margin: EdgeInsets.only(top: 7),
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: R.color.black),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          R.string.food_menu_intro_title1.tr(),
+                          style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 14,
+                            letterSpacing: 0.4,
+                            height: 1.375,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 4),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        margin: EdgeInsets.only(top: 7),
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: R.color.black),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.black,
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(text: R.string.food_menu_intro_title21.tr()),
+                              TextSpan(
+                                  text: R.string.food_menu_intro_title22.tr(),
+                                  style: const TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(text: R.string.food_menu_intro_title23.tr()),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 4),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        margin: EdgeInsets.only(top: 7),
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: R.color.black),
+                      ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          R.string.food_menu_intro_title3.tr(),
+                          style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 14,
+                            letterSpacing: 0.4,
+                            height: 1.375,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 32),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    R.string.text_intro_menu.tr(),
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      letterSpacing: 0.4,
-                      height: 1.375,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  child: RichText(
-                    text: TextSpan(
-                      text: R.string.step_1.tr(),
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        letterSpacing: 0.4,
-                        height: 1.375,
-                      ),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: R.string.text_step_1.tr(),
-                            style: TextStyle(
-                              color: R.color.textDark,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 16,
-                              letterSpacing: 0.4,
-                              height: 1.375,
-                            )),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  child: RichText(
-                    text: TextSpan(
-                      text: R.string.step_2.tr(),
-                      style: TextStyle(
-                        color: R.color.textDark,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        letterSpacing: 0.4,
-                        height: 1.375,
-                      ),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: R.string.text_step_2.tr(),
-                            style: TextStyle(
-                              color: R.color.textDark,
-                              fontWeight: FontWeight.normal,
-                              fontSize: 16,
-                              letterSpacing: 0.4,
-                              height: 1.375,
-                            )),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 34),
                 Container(
                   width: 128,
                   child: ButtonWidget(
@@ -155,8 +171,7 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                         context: context,
                         builder: (_) => KcalParameterPage(
                           callback: (request) {
-                            NavigationUtil.replace(context,
-                                FoodMenuPage(createMenuRequest: request));
+                            NavigationUtil.replace(context, FoodMenuPage(createMenuRequest: request));
                           },
                         ),
                       );

@@ -2,6 +2,51 @@ import 'package:intl/intl.dart';
 import 'logger.dart';
 
 class DateUtil {
+  static bool? isAfter(int? dateTime1, int? dateTime2) {
+    DateTime? date1;
+    DateTime? date2;
+    if (dateTime1 != null) {
+      date1 = DateTime.fromMillisecondsSinceEpoch(dateTime1 * 1000);
+      date1 = DateTime(date1.year, date1.month, date1.day);
+    }
+    if (dateTime2 != null) {
+      date2 = DateTime.fromMillisecondsSinceEpoch(dateTime2 * 1000);
+      date2 = DateTime(date2.year, date2.month, date2.day);
+    }
+    if (date1 != null && date2 != null) {
+      return date1.isAfter(date2);
+    } else {
+      return null;
+    }
+  }
+
+  static bool? isBefore(int? dateTime1, int? dateTime2) {
+    DateTime? date1;
+    DateTime? date2;
+    if (dateTime1 != null) {
+      date1 = DateTime.fromMillisecondsSinceEpoch(dateTime1 * 1000);
+      date1 = DateTime(date1.year, date1.month, date1.day);
+    }
+    if (dateTime2 != null) {
+      date2 = DateTime.fromMillisecondsSinceEpoch(dateTime2 * 1000);
+      date2 = DateTime(date2.year, date2.month, date2.day);
+    }
+    if (date1 != null && date2 != null) {
+      return date1.isBefore(date2);
+    } else {
+      return null;
+    }
+  }
+
+  static bool isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+  }
+
+  static DateTime parseTimespanToDateTime(int timestamp) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    return date;
+  }
+
   static DateTime? parseStringToDate(String dateStr, String format) {
     DateTime? date;
     if (dateStr != null)
@@ -24,13 +69,11 @@ class DateUtil {
     return date;
   }
 
-  static String? parseStringDateToString(
-      String? dateSv, String fromFormat, String toFormat) {
+  static String? parseStringDateToString(String? dateSv, String fromFormat, String toFormat) {
     String? date = dateSv;
     if (dateSv != null)
       try {
-        date = DateFormat(toFormat)
-            .format(DateFormat(fromFormat).parse(dateSv));
+        date = DateFormat(toFormat).format(DateFormat(fromFormat).parse(dateSv));
       } on FormatException catch (e) {
         logger.d(e.toString());
       }

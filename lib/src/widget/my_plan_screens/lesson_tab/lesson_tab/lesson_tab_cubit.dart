@@ -59,18 +59,35 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     emit(const LessonTabInitial());
   }
 
-  Future<void> getInitData({bool isRefresh = false, bool showCurrentWeek = true}) async {
+  Future<void> getInitData({bool isRefresh = false, bool showCurrentWeek = true, int? currentWeek}) async {
     if (myPlanCubit.userInfo == null) {
       await myPlanCubit.getCurrentUserInfo();
     }
-    if (showCurrentWeek && myPlanCubit.isHasRoadmapUser) {
-      filterData.currentWeek = myPlanCubit.currentStudyWeek! - 1;
+    if (currentWeek != null) {
+      filterData.currentWeek = currentWeek;
+    } else {
+      if (showCurrentWeek && myPlanCubit.isHasRoadmapUser) {
+        filterData.currentWeek = myPlanCubit.currentStudyWeek! - 1;
+        if (filterData.currentWeek == -1) filterData.currentWeek = 0;
+      } else {
+        filterData.currentWeek = 0;
+      }
     }
+
     if (!isRefresh) emit(const LessonTabLoading());
     await getLessonWeekStates(isRefresh: isRefresh);
     await getLessonsList(isRefresh: isRefresh);
-    if (showCurrentWeek && filterData.currentWeek != null) {
-      emit(LessonTabWeekChanged(filterData.currentWeek!));
+
+    if (currentWeek != null) {
+      Timer(const Duration(milliseconds: 100), () {
+        emit(LessonTabWeekChanged(filterData.currentWeek!));
+      });
+    } else {
+      if (showCurrentWeek && filterData.currentWeek != null) {
+        Timer(const Duration(milliseconds: 100), () {
+          emit(LessonTabWeekChanged(filterData.currentWeek!));
+        });
+      }
     }
   }
 

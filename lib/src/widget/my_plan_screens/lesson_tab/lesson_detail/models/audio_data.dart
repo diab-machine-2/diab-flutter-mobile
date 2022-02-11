@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:just_audio/just_audio.dart' as JustAudio;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:medical/src/utils/date_utils.dart';
 
@@ -23,16 +24,14 @@ class AudioController {
       this.currentTime = event;
       onChanged.sink.add(audioData);
     });
-    audioPlayer.onPlayerError.listen((event) {
-    });
+    audioPlayer.onPlayerError.listen((event) {});
   }
   String url;
   PlayerState currentState;
   Duration currentTime;
   Duration totalTime;
   late AudioPlayer audioPlayer;
-  final StreamController<AudioData> onChanged =
-      StreamController<AudioData>.broadcast();
+  final StreamController<AudioData> onChanged = StreamController<AudioData>.broadcast();
 
   AudioData get audioData => AudioData(
         isPlaying: currentState == PlayerState.PLAYING,
@@ -48,8 +47,14 @@ class AudioController {
     await Future.delayed(const Duration(seconds: 1));
     pause();
     audioPlayer.seek(Duration.zero);
-    final int seconds = await audioPlayer.getDuration();
-    totalTime = Duration(seconds: seconds ~/ 1000);
+    int secondsDuration = await audioPlayer.getDuration();
+    if (secondsDuration == 0) {
+      var duration = await JustAudio.AudioPlayer().setUrl(newUrl);
+      if (duration != null) {
+        secondsDuration = duration.inSeconds * 1000;
+      }
+    }
+    totalTime = Duration(seconds: secondsDuration ~/ 1000);
     onChanged.sink.add(audioData);
   }
 
@@ -91,8 +96,7 @@ class AudioData {
 
   double get position {
     if (totalTime.inMilliseconds == 0) return 0.0;
-    final double position =
-        currentTime.inMilliseconds / totalTime.inMilliseconds;
+    final double position = currentTime.inMilliseconds / totalTime.inMilliseconds;
     if (position < 0) return 0.0;
     if (position > 1) return 1.0;
     return position;

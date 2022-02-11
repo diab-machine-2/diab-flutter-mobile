@@ -51,4 +51,6 @@ class NavigatorName {
   static const String schedule_glucose = '/schedule_glucose';
   static const String setting_schedule_glucose = '/setting_schedule_glucose';
   static const String my_progress = '/my_progress';
+  static const String make_question = '/make_question';
+  static const String question_detail = '/question_detail';
 }
