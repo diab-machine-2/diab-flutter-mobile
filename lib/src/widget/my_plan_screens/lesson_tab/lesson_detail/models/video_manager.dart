@@ -65,6 +65,7 @@ class VideoManager {
         aspectRatio: 16 / 9,
         autoDispose: false,
         expandToFill: false,
+        allowedScreenSleep: false,
         fit: BoxFit.fitHeight,
         deviceOrientationsAfterFullScreen: [
           DeviceOrientation.portraitUp,
