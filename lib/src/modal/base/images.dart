@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+
 @immutable
 class ImagesModel {
   final String? id;
@@ -8,7 +9,7 @@ class ImagesModel {
     required this.id,
     required this.url,
   });
-  
+
   @override
   factory ImagesModel.fromJson(Map<String, dynamic> json) {
     return ImagesModel(

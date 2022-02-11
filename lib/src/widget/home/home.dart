@@ -165,15 +165,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
     return true;
   }
 
-  _showChatMenu() {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.8),
-      useSafeArea: false,
-      context: context,
-      builder: (_) => FunkyOverlay(isCircular: false),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width - 32;
@@ -196,17 +187,6 @@ class _HomeControllerState extends State<HomeController> with Observer {
           return RefreshIndicator(
             onRefresh: _refresh,
             child: Scaffold(
-              // floatingActionButton: Padding(
-              //   padding: EdgeInsets.only(bottom: 56.0),
-              //   child: FloatingActionButton(
-              //     elevation: 0.5,
-              //     child: Image.asset(R.drawable.ic_chat_home, width: 32, height: 32),
-              //     backgroundColor: R.color.greenGradientBottom,
-              //     onPressed: () {
-              //       _showChatMenu();
-              //     },
-              //   ),
-              // ),
               body: Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
@@ -251,19 +231,19 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                       icon as String?, model!.emotionCard!);
                                 }
 
-                                if (index == 4 && model != null && model!.emotionCard!.details != null) {
+                                if (index == 4 && model!.energyCard!.consumedEnergy != 0) {
                                   return _buildFood(context, index, name as String?, image as String?, icon as String?,
                                       model!.energyCard!);
                                 }
-                                if (index == 5 && model != null && model!.emotionCard!.details != null) {
+                                if (index == 5 && model != null && model!.exercise!.index != 0) {
                                   return _buildExcercise(context, index, name as String?, image as String?,
                                       icon as String?, model!.exercise!);
                                 }
-                                if (index == 6 && model != null && model!.emotionCard!.details != null) {
+                                if (index == 6 && model != null && model!.processCard!.target != 0) {
                                   return _buildProgress(context, index, name as String?, image as String?,
                                       icon as String?, model!.processCard!);
                                 }
-                                if (index == 7 && model != null && model!.emotionCard!.details != null) {
+                                if (index == 7 && model != null && model!.hbA1CIndex.index != 0) {
                                   return _buildHbA1C(context, index, name as String?, image as String?, icon as String?,
                                       model!.hbA1CIndex);
                                 }
@@ -849,32 +829,27 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
-                  Text(
-                      getStringToday(model.createDateTime ?? 0).isEmpty
-                          ? convertToUTC(model.createDateTime ?? 0, 'dd/MM/yyyy')
-                          : getStringToday(model.createDateTime ?? 0),
+                  Text('Hôm nay',
                       style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
                 ]),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Text(model.targetCompeleted!.round().toString(),
+                        style: TextStyle(
+                            fontFamily: 'Viga',
+                            color: toColor(model.color),
+                            fontSize: 26,
+                            fontWeight: FontWeight.w400)),
+                    SizedBox(width: 2),
                     Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(model.target!.round().toString() + '/' + model.targetCompeleted!.round().toString(),
-                            style: TextStyle(
-                                fontFamily: 'Viga',
-                                color: toColor(model.color),
-                                fontSize: 26,
-                                fontWeight: FontWeight.w400)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text('/${model.target!.round().toString()} mục tiêu ngày',
+                            style:
+                                TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(' mục tiêu ngày',
-                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
-                    )
                   ],
                 ),
                 Row(
@@ -886,10 +861,15 @@ class _HomeControllerState extends State<HomeController> with Observer {
                       height: 25,
                     ),
                     const SizedBox(width: 4),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(getStatusProgress(model),
-                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                    Expanded(
+                      child: FittedBox(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(getStatusProgress(model),
+                              style: TextStyle(
+                                  color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                        ),
+                      ),
                     )
                   ],
                 ),
@@ -903,7 +883,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   getStatusProgress(ProcessCardModel model) {
     if (model.target != null && model.targetCompeleted != null) {
-      if (model.target! < model.targetCompeleted!) {
+      if (model.targetCompeleted! < model.target!) {
         return 'Chưa hoàn thành';
       } else if (model.target! == model.targetCompeleted!) {
         return 'Hoàn thành';

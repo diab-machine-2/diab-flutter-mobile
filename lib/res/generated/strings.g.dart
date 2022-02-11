@@ -1005,4 +1005,5 @@ class Strings {
 	String get qr_not_available => 'qr_not_available';
 	String get chat_with_coach => 'chat_with_coach';
 	String get chat_with_group => 'chat_with_group';
+	String get today => 'today';
 }

@@ -97,8 +97,8 @@ class _HorizontalMenuState extends State<HorizontalMenu> with TickerProviderStat
   /// Returns animated list of menu items
   Widget _buildMenuItemList() {
     return Positioned(
-      bottom: 128,
-      right: 15,
+      bottom: 100,
+      left: 40,
       child: ScaleTransition(
         scale: AnimationController(
           vsync: this,
@@ -118,7 +118,7 @@ class _HorizontalMenuState extends State<HorizontalMenu> with TickerProviderStat
               value: 0.0,
               duration: _duration,
             )..forward(),
-            child: Column(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: widget.items
                   .map<Widget>(
@@ -167,8 +167,8 @@ class _HorizontalMenuState extends State<HorizontalMenu> with TickerProviderStat
     );
 
     return Positioned(
-      bottom: 68,
-      right: 15,
+      bottom: 34,
+      left: MediaQuery.of(context).size.width / 2 - 28,
       child: FloatingActionButton(
         child: iconWidget,
         heroTag: widget.heroTag ?? '_HawkFabMenu_$hashCode',
@@ -202,12 +202,19 @@ class _MenuItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
+          FloatingActionButton(
+            onPressed: onTap,
+            heroTag: item.heroTag ?? '_MenuItemWidget_$hashCode',
+            child: item.icon,
+            backgroundColor: item.color ?? Theme.of(context).primaryColor,
+          ),
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 10,
-              vertical: 3,
+              vertical: 14,
             ),
             decoration: BoxDecoration(
               color: item.labelBackgroundColor ?? Colors.white,
@@ -218,14 +225,8 @@ class _MenuItemWidget extends StatelessWidget {
             ),
             child: Text(
               item.label,
-              style: TextStyle(color: item.labelColor ?? Colors.black87),
+              style: TextStyle(color: item.labelColor ?? Colors.black87, fontSize: 14, fontWeight: FontWeight.w600),
             ),
-          ),
-          FloatingActionButton(
-            onPressed: onTap,
-            heroTag: item.heroTag ?? '_MenuItemWidget_$hashCode',
-            child: item.icon,
-            backgroundColor: item.color ?? Theme.of(context).primaryColor,
           ),
         ],
       ),

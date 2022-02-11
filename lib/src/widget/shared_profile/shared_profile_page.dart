@@ -217,7 +217,7 @@ class _SharedProfilePageState extends State<SharedProfilePage> {
                       Image.asset(R.drawable.img_sharing_profile),
                       const SizedBox(height: 28),
                       Text(
-                        R.string.stop_sharing.tr(args: [userData?.fullName ?? '', userData?.nameOfAgency ?? '']),
+                        R.string.stop_sharing.tr(args: [userData?.fullName ?? '']),
                         textAlign: TextAlign.center,
                         style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
                       ),

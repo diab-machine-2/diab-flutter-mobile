@@ -276,10 +276,10 @@ class EnergyExerciseCardModel {
 }
 
 class ProcessCardModel {
-  final double? target;
-  final double? targetCompeleted;
-  final double? exerciseCompeleted;
-  final double? lessonCompeleted;
+  final int? target;
+  final int? targetCompeleted;
+  final int? exerciseCompeleted;
+  final int? lessonCompeleted;
   final bool? userFree;
   final int? createDateTime;
   final String? color;

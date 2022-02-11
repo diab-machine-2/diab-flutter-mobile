@@ -40,8 +40,7 @@ class ShareProfilePopup {
         image: R.drawable.img_sharing_profile,
         title: requestFromDoctor
             ? R.string.doctor_request_share_profile.tr(args: [userInfo?.data?.fullName ?? ''])
-            : R.string.share_profile_for_doctor
-                .tr(args: [userInfo?.data?.fullName ?? '', userInfo?.data?.nameOfAgency ?? '']),
+            : R.string.share_profile_for_doctor.tr(args: [userInfo?.data?.fullName ?? '']),
         description: R.string.share_profile_description.tr(), onTapCancel: () {
       NavigationUtil.pop(currentContext);
     }, onTapYes: () async {

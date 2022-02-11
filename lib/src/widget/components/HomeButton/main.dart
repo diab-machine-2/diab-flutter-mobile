@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -9,6 +10,7 @@ import 'package:medical/src/widget/components/HomeButton/widget/circular_menu.da
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu_item.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/horizontal_menu.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FunkyOverlay extends StatefulWidget {
   bool isCircular;
@@ -153,8 +155,8 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                     items: [
                       HorizontalMenuItem(
                         label: 'Chat với huấn luyện viên',
-                        ontap: () {
-                          print('1');
+                        ontap: () async {
+                          goToZalo('0358009000');
                         },
                         icon: Image.asset(R.drawable.ic_chat_coach, width: 32, height: 32),
                         labelColor: Colors.white,
@@ -174,5 +176,15 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                   ),
           )),
     );
+  }
+
+  goToZalo(String phone) async {
+    try {
+      launch("https://zalo.me/" + phone);
+    } on PlatformException catch (e) {
+      launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
+    } finally {
+      launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
+    }
   }
 }

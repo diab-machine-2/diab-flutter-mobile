@@ -1,6 +1,8 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:device_apps/device_apps.dart' as DeviceApp;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
@@ -11,11 +13,13 @@ import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/profile/widgets/motivation_popup_widget.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeHeader extends StatefulWidget {
   const HomeHeader({this.sharedCode});
@@ -149,11 +153,17 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                     Row(
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            //showAction(context);
-                            setState(() {
-                              isChoose = !isChoose;
-                            });
+                          onTap: () async {
+                            var isZaloAppExisted = await checkZaloAppExisted();
+                            if (isZaloAppExisted) {
+                              _showChatMenu();
+                            } else {
+                              await _goToStore();
+                            }
+
+                            // setState(() {
+                            //   isChoose = !isChoose;
+                            // });
                           },
                           child: Image.asset(R.drawable.ic_direct_chat, width: 22, height: 22),
                           // isChoose
@@ -237,6 +247,31 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                         ])
               ],
             )));
+  }
+
+  Future<bool> checkZaloAppExisted() async {
+    bool isInstalled = await DeviceApp.DeviceApps.isAppInstalled('com.zing.zalo');
+    // List<DeviceApp.Application> apps = await DeviceApp.DeviceApps.getInstalledApplications();
+    return isInstalled;
+  }
+
+  _goToStore() async {
+    try {
+      launch("market://details?id=com.zing.zalo");
+    } on PlatformException catch (e) {
+      launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
+    } finally {
+      launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
+    }
+  }
+
+  _showChatMenu() {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.8),
+      useSafeArea: false,
+      context: context,
+      builder: (_) => FunkyOverlay(isCircular: false),
+    );
   }
 
   _showDialogUpdateMotivation(MotivationModel? model) {
