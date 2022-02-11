@@ -13,6 +13,8 @@ class QuizResultWidget extends StatefulWidget {
     required this.seeResultCallback,
     required this.retryCallback,
     required this.continueLearnCallback,
+    required this.skipCallback,
+    this.rate,
   });
   final bool isQuizLesson;
   final int rightAnswer;
@@ -21,6 +23,8 @@ class QuizResultWidget extends StatefulWidget {
   final VoidCallback seeResultCallback;
   final VoidCallback retryCallback;
   final VoidCallback continueLearnCallback;
+  final VoidCallback skipCallback;
+  final double? rate;
 
   @override
   _QuizResultwidgetState createState() => _QuizResultwidgetState();
@@ -33,7 +37,7 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
   @override
   void initState() {
     super.initState();
-    rate = (widget.rightAnswer / widget.totalQuiz) * 100;
+    rate = widget.rate != null ? widget.rate! : (widget.rightAnswer / widget.totalQuiz) * 100;
     gotMaxRate = rate >= 100;
   }
 
@@ -83,11 +87,7 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
         const SizedBox(height: 10),
         Text(
           R.string.completed_quiz.tr(),
-          style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: R.color.textDark,
-              height: 1.4),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: R.color.textDark, height: 1.4),
         ),
         const SizedBox(height: 10),
         Container(
@@ -95,8 +95,7 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
           child: RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
-              text:
-                  "Bạn đã${gotMaxRate ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
+              text: "Bạn đã${gotMaxRate ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
               style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 16,
@@ -131,11 +130,7 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
               R.string.challenge_yourself_again.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: R.color.textDark,
-                  height: 1.37,
-                  letterSpacing: 0.4),
+                  fontSize: 16, fontWeight: FontWeight.w700, color: R.color.textDark, height: 1.37, letterSpacing: 0.4),
             ),
           ),
         Row(
@@ -145,14 +140,12 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
               width: 128,
               child: ButtonWidget(
                 height: 35,
-                title: suggestRetry
-                    ? R.string.skip.tr()
-                    : R.string.see_the_answer.tr(),
+                title: suggestRetry ? R.string.skip.tr() : R.string.see_the_answer.tr(),
                 textSize: 14,
                 onPressed: () {
                   NavigationUtil.pop(context);
                   if (suggestRetry) {
-                    widget.continueLearnCallback();
+                    widget.skipCallback();
                   } else {
                     widget.seeResultCallback();
                   }
@@ -166,9 +159,7 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
               width: 128,
               child: ButtonWidget(
                 height: 35,
-                title: suggestRetry
-                    ? R.string.accept.tr()
-                    : R.string.continue_learning.tr(),
+                title: suggestRetry ? R.string.accept.tr() : R.string.continue_learning.tr(),
                 textSize: 14,
                 onPressed: () {
                   NavigationUtil.pop(context);
@@ -196,11 +187,7 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
         const SizedBox(height: 10),
         Text(
           R.string.completed_quiz.tr(),
-          style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: R.color.textDark,
-              height: 1.4),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: R.color.textDark, height: 1.4),
         ),
         const SizedBox(height: 10),
         Container(

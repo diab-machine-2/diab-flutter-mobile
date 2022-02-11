@@ -456,7 +456,12 @@ class ExerciseMovementResponse {
 
   int getCurrentDayIndex(int week) {
     for (int index = 0; index < (data?.length ?? 0); index++) {
-      if (data?[index]?.completionStatus == CompletionStatus.studying) return index;
+      // if (data?[index]?.completionStatus == CompletionStatus.studying) {
+      //   return index;
+      // }
+      if (data?[index]?.isToday ?? false) {
+        return index;
+      }
     }
     return 0;
   }

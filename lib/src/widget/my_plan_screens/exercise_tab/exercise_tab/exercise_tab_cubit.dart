@@ -44,7 +44,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
   ExerciseMovementResponseData? get currentExercise {
     final ExerciseMovementResponseData? exercise =
         exerciseMovementResponse?.getExerciseFromDayInWeek(week: week ?? 1, dayIndex: currentDayIndex);
-    if (exercise?.isBlank == true) return null;
+    //if (exercise?.isBlank == true) return null;
     return exercise;
   }
 
@@ -90,15 +90,19 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
       emit(const ExerciseTabInitial());
       return;
     }
-    
+
     emit(const ExerciseTabLoading());
     if (myPlanCubit.isHasRoadmapUser) {
       currentWeekIndex = myPlanCubit.currentStudyWeek! - 1;
-      if(currentWeekIndex == -1) currentWeekIndex = 0;
+      if (currentWeekIndex == -1) currentWeekIndex = 0;
       await getWeekStates();
+    } else {
+      currentWeekIndex = 0;
     }
     await getExerciseMovement();
-    emit(ExerciseTabWeekChanged(currentWeekIndex ?? 0));
+    Timer(const Duration(milliseconds: 100), () {
+      emit(ExerciseTabWeekChanged(currentWeekIndex ?? 0));
+    });
   }
 
   Future<void> getExerciseMovement({bool isRefresh = false, bool keepSelectedDayIndex = false}) async {
@@ -127,7 +131,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
 
   Future<void> getWeekStates({bool isRefresh = false}) async {
     await Future.delayed(Duration.zero);
- //   emit(const ExerciseTabLoading());
+    //   emit(const ExerciseTabLoading());
     final ApiResult<WeekStatesResponse> apiResult = await repository.getExerciseWeekStates();
     apiResult.when(success: (WeekStatesResponse response) {
       weekStatesList.clear();
@@ -137,10 +141,10 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
         }
       }
       weekStatesList.sort((a, b) => (a.week ?? 0) - (b.week ?? 0));
-  //    emit(const ExerciseTabSuccess());
+      //    emit(const ExerciseTabSuccess());
     }, failure: (NetworkExceptions error) {
-  //    emit(ExerciseTabFailure(NetworkExceptions.getErrorMessage(error)));
+      //    emit(ExerciseTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
-  //  emit(const ExerciseTabInitial());
+    //  emit(const ExerciseTabInitial());
   }
 }

@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import '../models/schedule_type.dart';
@@ -13,6 +16,7 @@ class SmartGoalItem extends StatelessWidget {
       {required this.type,
       required this.name,
       required this.frequency,
+      this.appointmentDate,
       required this.isDone,
       required this.onTap,
       required this.onRemove});
@@ -20,6 +24,7 @@ class SmartGoalItem extends StatelessWidget {
   final String name;
   final String frequency;
   final bool isDone;
+  final int? appointmentDate;
   final VoidCallback onTap;
   final VoidCallback onRemove;
 
@@ -37,22 +42,22 @@ class SmartGoalItem extends StatelessWidget {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
             child: IconSlideAction(
               color: R.color.color0xffFF5552,
-              iconWidget: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                    const SizedBox(height: 4),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(R.string.cancel_smart_goal.tr(),
-                          style: TextStyle(
-                              color: R.color.white,
-                              fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.center),
-                    ),
-                  ]),
+              iconWidget: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+                const SizedBox(height: 4),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(R.string.cancel_smart_goal.tr(),
+                      style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
+                ),
+              ]),
               onTap: () {
-                _showDeletePopup(context);
+                bool isUnableToRemove = DateUtil.isBefore(appointmentDate, AppSettings.currentDateTime) ?? false;
+                if (isUnableToRemove) {
+                  Message.showToastMessage(context, 'Không thể hủy mục tiêu trong quá khứ!');
+                } else {
+                  _showDeletePopup(context);
+                }
               },
             ),
           ),
@@ -91,19 +96,13 @@ class SmartGoalItem extends StatelessWidget {
                     children: [
                       Text(
                         type == ScheduleType.custom ? name : type.title,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
                       ),
                       if (frequency.isNotEmpty) const SizedBox(height: 4),
                       if (frequency.isNotEmpty)
                         Text(
                           frequency,
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400),
+                          style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400),
                         ),
                     ],
                   ),
@@ -163,25 +162,18 @@ class SmartGoalItem extends StatelessWidget {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 57, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 57, vertical: 10),
                         child: Image.asset(R.drawable.img_smart_goal_remove),
                       ),
                       Text(
                         R.string.confirm_cancel_smart_goal.tr(),
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700),
+                        style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         R.string.confirm_cancel_smart_goal_description.tr(),
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400),
+                        style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400),
                       ),
                       const SizedBox(height: 16),
                       Row(

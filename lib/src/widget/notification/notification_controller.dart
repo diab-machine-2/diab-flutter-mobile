@@ -50,8 +50,7 @@ class NotificationControllerState extends State<NotificationController>
   }
 
   @override
-  void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'read_notification') {
       final firstValue = map?.values.first;
       setState(() {
@@ -149,8 +148,7 @@ class NotificationControllerState extends State<NotificationController>
               height: MediaQuery.of(context).size.height - 190,
               child: Center(
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  Image.asset(R.drawable.img_notification_empty,
-                      width: 235, height: 172),
+                  Image.asset(R.drawable.img_notification_empty, width: 235, height: 172),
                   const SizedBox(height: 24),
                   Text(
                     R.string.no_notification.tr(),
@@ -162,8 +160,7 @@ class NotificationControllerState extends State<NotificationController>
             final NotificationModel notificationModel = model[index];
             bool? isRead = notificationModel.isRead;
             if (!notificationModel.isRead! && (widget.isRemovealbe != true)) {
-              final selected = readIds
-                  .indexWhere((element) => element == notificationModel.id);
+              final selected = readIds.indexWhere((element) => element == notificationModel.id);
               if (selected != -1) {
                 isRead = true;
               }
@@ -180,18 +177,13 @@ class NotificationControllerState extends State<NotificationController>
                     : [
                         IconSlideAction(
                           color: R.color.color0xffFF5552,
-                          iconWidget: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(R.drawable.ic_trash2,
-                                    width: 24, height: 24),
-                                const SizedBox(height: 4),
-                                Text(R.string.detele_notificaiton.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontWeight: FontWeight.w500),
-                                    textAlign: TextAlign.center),
-                              ]),
+                          iconWidget: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                            Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+                            const SizedBox(height: 4),
+                            Text(R.string.detele_notificaiton.tr(),
+                                style: TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.center),
+                          ]),
                           onTap: () {
                             _showDialogDelete(context, notificationModel);
                           },
@@ -216,8 +208,7 @@ class NotificationControllerState extends State<NotificationController>
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(model.imageUrl!,
-                  width: 40, height: 40, fit: BoxFit.fill),
+              child: Image.network(model.imageUrl!, width: 40, height: 40, fit: BoxFit.fill),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -233,10 +224,7 @@ class NotificationControllerState extends State<NotificationController>
                         Expanded(
                           child: Text(
                             model.title!,
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: R.color.black),
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: R.color.black),
                           ),
                         ),
                         if (isRead != true)
@@ -256,10 +244,7 @@ class NotificationControllerState extends State<NotificationController>
                     padding: const EdgeInsets.only(left: 8),
                     child: Text(
                       convertToUTC(model.sentDateTime!, 'HH:mm - dd/MM/yyyy'),
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.gray),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.gray),
                     ),
                   ),
                 ],
@@ -273,29 +258,29 @@ class NotificationControllerState extends State<NotificationController>
 
   void _onTapNotify(NotificationModel notificationModel) {
     if ((widget.isRemovealbe != true) && !notificationModel.isRead!) {
-      Observable.instance.notifyObservers([],
-          notifyName: "read_notification", map: {'id': notificationModel.id});
-      NotificationClient().readNotification(notificationModel.id,
-          AppSettings.userInfo!.id, notificationModel.notificationType, true);
+      Observable.instance.notifyObservers([], notifyName: "read_notification", map: {'id': notificationModel.id});
+      NotificationClient()
+          .readNotification(notificationModel.id, AppSettings.userInfo!.id, notificationModel.notificationType, true);
     }
     switch (notificationModel.actionType) {
       case NotificationActionType.redirect_to_activity_tab:
         break;
       case NotificationActionType.redirect_to_url:
-        Navigator.pushNamed(context, NavigatorName.notification_detail,
-            arguments: {'id': notificationModel.id});
+        Navigator.pushNamed(context, NavigatorName.notification_detail, arguments: {'id': notificationModel.id});
         break;
       case NotificationActionType.add_reminder:
         Navigator.pushNamed(context, NavigatorName.add_reminder,
             arguments: {'type': 'update', 'id': notificationModel.id});
         break;
       case NotificationActionType.add_blood_sugar:
-        Navigator.pushNamed(context, NavigatorName.add_blood_sugar,
-            arguments: {'type': 'input', 'id': null});
+        Navigator.pushNamed(context, NavigatorName.add_blood_sugar, arguments: {'type': 'input', 'id': null});
         break;
       case NotificationActionType.none:
         break;
       case NotificationActionType.share_profile:
+        break;
+      case NotificationActionType.redirect_date_detail:
+        // TODO: Handle this case.
         break;
     }
   }
@@ -319,71 +304,58 @@ class NotificationControllerState extends State<NotificationController>
                       child: Text(
                         R.string.mes_detele_notificaiton.tr(),
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
                       child: Text(R.string.mes_detele_notificaiton.tr(),
-                          textAlign: TextAlign.center,
-                          style: R.style.normalTextStyle),
+                          textAlign: TextAlign.center, style: R.style.normalTextStyle),
                     ),
                     Container(
                       margin: const EdgeInsets.only(top: 16),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                  height: 43,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(200),
-                                      color: R.color.grayBorder),
-                                  child: Center(
-                                    child: Text(
-                                      R.string.later.tr(),
-                                      style: TextStyle(
-                                          color: R.color.textDark,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 43,
+                              decoration:
+                                  BoxDecoration(borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                              child: Center(
+                                child: Text(
+                                  R.string.later.tr(),
+                                  style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  _delete(model);
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                  height: 43,
-                                  decoration: BoxDecoration(
-                                    color: R.color.red,
-                                    borderRadius: BorderRadius.circular(200),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      R.string.delete.tr(),
-                                      style: TextStyle(
-                                          color: R.color.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              _delete(model);
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 43,
+                              decoration: BoxDecoration(
+                                color: R.color.red,
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  R.string.delete.tr(),
+                                  style: TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ),
-                          ]),
+                          ),
+                        ),
+                      ]),
                     ),
                   ],
                 ),

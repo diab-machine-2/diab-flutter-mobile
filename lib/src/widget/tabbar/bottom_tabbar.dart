@@ -9,8 +9,9 @@ typedef TabbarSelected = Function(int);
 
 class BottomTabbar extends StatefulWidget {
   final TabbarSelected callback;
+  final int index;
 
-  BottomTabbar({required this.callback});
+  BottomTabbar({required this.callback, required this.index});
 
   final _BottomTabbar state = _BottomTabbar();
 
@@ -24,6 +25,7 @@ class _BottomTabbar extends State<BottomTabbar> {
 
   @override
   void initState() {
+    index = widget.index;
     super.initState();
   }
 
@@ -42,19 +44,13 @@ class _BottomTabbar extends State<BottomTabbar> {
         child: SafeArea(
           child: Container(
             height: 60,
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  tabWidget(R.string.home.tr(), R.drawable.ic_home,
-                      Const.HOME_SCREEN),
-                  tabWidget(R.string.schedule.tr(), R.drawable.ic_plan,
-                      Const.PLAN_SCREEN),
-                  Expanded(flex: 1, child: Container()),
-                  tabWidget(R.string.course.tr(), R.drawable.ic_course,
-                      Const.COURSE_SCREEN),
-                  tabWidget(R.string.individual.tr(), R.drawable.ic_account,
-                      Const.ACCOUNT_SCREEN),
-                ]),
+            child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+              tabWidget(R.string.home.tr(), R.drawable.ic_home, Const.HOME_SCREEN),
+              tabWidget(R.string.schedule.tr(), R.drawable.ic_plan, Const.PLAN_SCREEN),
+              Expanded(flex: 1, child: Container()),
+              tabWidget(R.string.qa_title.tr(), R.drawable.ic_qa, Const.COURSE_SCREEN),
+              tabWidget(R.string.individual.tr(), R.drawable.ic_account, Const.ACCOUNT_SCREEN),
+            ]),
           ),
         ));
   }
@@ -69,26 +65,19 @@ class _BottomTabbar extends State<BottomTabbar> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(image,
-                    height: 20,
-                    color: index == screenIndex
-                        ? R.color.accentColor
-                        : R.color.gray),
+                Image.asset(image, height: 20, color: index == screenIndex ? R.color.accentColor : R.color.gray),
                 const SizedBox(height: 4),
                 Text(title,
-                textAlign: TextAlign.center,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                        color: index == screenIndex
-                            ? R.color.accentColor
-                            : R.color.gray,
+                        color: index == screenIndex ? R.color.accentColor : R.color.gray,
                         fontSize: 12,
                         fontWeight: FontWeight.bold))
               ],
             ),
           ),
           onTap: () {
-            Observable.instance
-                .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+            Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
             setState(() {
               index = screenIndex;
               widget.callback(index);

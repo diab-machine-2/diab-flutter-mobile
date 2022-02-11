@@ -31,7 +31,7 @@ class AppClient {
       ..options.receiveTimeout = _defaultReceiveTimeout
       ..options.headers = {
         'Content-Type': 'application/json; charset=UTF-8',
-        'User-Agent': 'diaB/1.1.0 (iOS 15.2; iPhone; Simulator; x86)'
+        'User-Agent': 'Mobile'
       };
 
     _dio.interceptors.add(PrettyDioLogger(

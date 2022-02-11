@@ -10,7 +10,6 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'src/utils/logger.dart';
 
 class SimpleBlocObserver extends BlocObserver {
-
   @override
   void onChange(BlocBase bloc, Change change) {
     super.onChange(bloc, change);
@@ -33,18 +32,19 @@ class SimpleBlocObserver extends BlocObserver {
 Future<void> main() async {
   Bloc.observer = SimpleBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
+
   // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
   //     statusBarColor: R.color.transparent,
   //     statusBarIconBrightness: Brightness.dark,
   //     statusBarBrightness: Brightness.light));
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  // ]);
   //await initializeDateFormatting('vi_VN');
   await Firebase.initializeApp();
   await TrackingManager.initializeFlutterFire();
 
-  runApp(Localization.getLocalizationWidget(app: App()));
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
+    runApp(Localization.getLocalizationWidget(app: App()));
+  });
 }
-
-

@@ -1,10 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_smart_goal_request.dart';
 import 'package:medical/src/model/response/create_smart_goal_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 
 import '../activity_tab/models/schedule_type.dart';
 import 'create_goal.dart';
@@ -15,11 +18,12 @@ import 'models/goal_record_type.dart';
 import 'models/repeat_type.dart';
 
 class CreateGoalCubit extends Cubit<CreateGoalState> {
-  CreateGoalCubit(this.repository, {required this.smartGoalDayList})
-      : super(const CreateGoalInitial());
+  CreateGoalCubit(this.repository, {required this.smartGoalDayList}) : super(const CreateGoalInitial());
 
   final AppRepository repository;
   final List<SmartGoalList?> smartGoalDayList;
+
+  GoalInfoModel? goalInfoModel;
 
   CreateSmartGoalData dataModel = CreateSmartGoalData();
 
@@ -37,12 +41,10 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     emit(const CreateGoalInitial());
   }
 
-  bool get showDetail => !(currentStatus != CreateGoalStatus.setup ||
-      dataModel.type == ScheduleType.custom);
+  bool get showDetail => !(currentStatus != CreateGoalStatus.setup || dataModel.type == ScheduleType.custom);
 
   SmartGoalList? getSmartGoalDataByType(ScheduleType type) {
-    final int index = smartGoalDayList
-        .indexWhere((element) => element?.type == type.typeIndex);
+    final int index = smartGoalDayList.indexWhere((element) => element?.type == type.typeIndex);
     if (index == -1) return null;
     return smartGoalDayList[index];
   }
@@ -52,13 +54,11 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
     dataModel.fillData(selectedType, smartGoalData);
   }
 
-  Future<void> setupGoal(
-      {required ScheduleType selectedType, int? subType}) async {
+  Future<void> setupGoal({required ScheduleType selectedType, int? subType}) async {
     //When chose a smart goal type for the first time
     if (dataModel.cachedType == null ||
         selectedType != dataModel.cachedType ||
-        selectedType == dataModel.cachedType &&
-            subType != dataModel.cachedSubType) {
+        selectedType == dataModel.cachedType && subType != dataModel.cachedSubType) {
       dataModel.resetData();
       fillInitialData(selectedType);
     }
@@ -70,6 +70,11 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
       dataModel.goalRecordType = GoalRecordType.frequency;
     }
     currentStatus = CreateGoalStatus.setup;
+
+    if (selectedType == ScheduleType.exercise) {
+      emit(const CreateGoalLoading());
+      await fetchGoalInfo();
+    }
     emit(const CreateGoalSuccess());
     emit(const CreateGoalInitial());
   }
@@ -81,8 +86,7 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
   }
 
   void onChangeRepeatType(String selectedRepeatType) {
-    dataModel.repeatType =
-        RepeatTypeExtend.getTypeFromString(selectedRepeatType);
+    dataModel.repeatType = RepeatTypeExtend.getTypeFromString(selectedRepeatType);
     if (dataModel.repeatType == RepeatType.day) {
       dataModel.repeatDayList.clear();
     }
@@ -91,9 +95,7 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
   }
 
   void onChangeRepeatDay(List<String> selectedDayList) {
-    dataModel.repeatDayList = selectedDayList
-        .map((e) => DayInWeekExtend.getDayInWeekFromString(e))
-        .toList();
+    dataModel.repeatDayList = selectedDayList.map((e) => DayInWeekExtend.getDayInWeekFromString(e)).toList();
     dataModel.repeatDayList.sort((a, b) => a.index - b.index);
     emit(const CreateGoalSuccess());
     emit(const CreateGoalInitial());
@@ -102,8 +104,7 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
   void onSelectStatus(CreateGoalStatus newStatus) {
     if (newStatus == currentStatus) return;
 
-    if (currentStatus == CreateGoalStatus.select_type && dataModel.type == null)
-      return;
+    if (currentStatus == CreateGoalStatus.select_type && dataModel.type == null) return;
 
     if (newStatus == CreateGoalStatus.complete) {
       if (!isValid) {
@@ -131,19 +132,44 @@ class CreateGoalCubit extends Cubit<CreateGoalState> {
       currentStatus = CreateGoalStatus.complete;
       emit(const CreateGoalSuccess());
     } else if (currentStatus == CreateGoalStatus.complete) {
+      emit(const CreateGoalLoading());
+      if (goalInfoModel != null) {
+        await updateGoalSetting(goalInfoModel!);
+      }
       await createSmartGoal();
       emit(const CreateGoalCompleted());
     }
     emit(const CreateGoalInitial());
   }
 
+  Future<void> updateGoalSetting(GoalInfoModel goalInfoModel) async {
+    await UserClient().updateGoalInfo(
+      GoalInfoModel(
+        dailyWalkTargetDuration: goalInfoModel.dailyWalkTargetDuration ?? 0,
+        dailyTargetDuration: dataModel.dailyTargetDurationNumber.toDouble(),
+        weeklyTargetDuration: goalInfoModel.weeklyTargetDuration ?? 0,
+        dailyTargetBurnedCalorie: goalInfoModel.dailyTargetBurnedCalorie ?? 0,
+        dailyEnergyGoal: goalInfoModel.dailyEnergyGoal ?? 0,
+        goalWaist: goalInfoModel.goalWaist ?? 0,
+        goalWeight: goalInfoModel.goalWeight ?? 0,
+      ),
+    );
+  }
+
+  Future<GoalInfoModel?> fetchGoalInfo() async {
+    goalInfoModel = await UserClient().fetchGoalInfo();
+    return goalInfoModel;
+  }
+
   Future<void> createSmartGoal() async {
-    emit(const CreateGoalLoading());
     late final ApiResult<CreateSmartGoalResponse> apiResult;
-    apiResult = await repository
-        .createSmartGoal(dataModel.request ?? CreateSmartGoalRequest());
+    apiResult = await repository.createSmartGoal(dataModel.request ?? CreateSmartGoalRequest());
     apiResult.when(success: (CreateSmartGoalResponse response) {
-      emit(const CreateGoalSuccess());
+      if (response.meta?.success ?? false) {
+        emit(const CreateGoalSuccess());
+      } else {
+        emit(CreateGoalFailure(response.error?.message ?? R.string.error));
+      }
     }, failure: (NetworkExceptions error) {
       emit(CreateGoalFailure(NetworkExceptions.getErrorMessage(error)));
     });

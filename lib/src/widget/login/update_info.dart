@@ -1,20 +1,23 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
+import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_date_picker2.dart';
 import 'package:medical/src/widget/HbA1C/widget/CalendarPicker/custom_year_picker.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/profile/widgets/diabetes_status_picker.dart';
+import 'package:medical/src/widget/profile/widgets/gender_picker.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class UpdateInfoController extends StatefulWidget {
   final String? type;
@@ -23,13 +26,16 @@ class UpdateInfoController extends StatefulWidget {
   final AuthorizationCredentialAppleID? appleAccount;
   final dynamic userInfo;
   final String? referalCode;
+  final List<CategoryItemUserModel>? diabeteStates;
+
   UpdateInfoController(
       {this.type,
       this.googleAccount,
       this.facebookAccount,
       this.appleAccount,
       this.userInfo,
-      this.referalCode});
+      this.referalCode, 
+      this.diabeteStates});
   @override
   _UpdateInfoControllerState createState() => _UpdateInfoControllerState();
 }
@@ -42,8 +48,9 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
   String phone = '';
   DateTime? selectedDate;
   DateTime? selectedYear;
-  dynamic diabetesStatus;
+  CategoryItemUserModel? diabetesStatus;
   int? _choosenGender;
+
   void initState() {
     super.initState();
     nameController.text = widget.type == 'phone'
@@ -356,8 +363,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                                                   Text(
                                                       diabetesStatus == null
                                                           ? R.string.chon_tinh_trang_benh.tr()
-                                                          : diabetesStatus[
-                                                              'value'],
+                                                          : diabetesStatus!.value ?? '',
                                                       style: TextStyle(
                                                           color: R.color.textDark,
                                                           fontSize: 16,
@@ -475,7 +481,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
 
   _showDialogUpdateDiabetesStatus() {
     final width = MediaQuery.of(context).size.width;
-    dynamic status = diabetesStatus;
+    CategoryItemUserModel? status = diabetesStatus;
     showDialog(
       context: context,
       builder: (context) {
@@ -502,9 +508,10 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
                   height: 150,
                   width: width - 36,
                   child: DiabetesStatusPicker(
-                    state: status == null ? null : status['key'],
+                    levelOfDiabetesList: widget.diabeteStates ?? [],
+                    state: status == null ? null : status!.key != null ? status!.key! - 1 : null,
                     onChanged: (data) {
-                      status = data;
+                      status = widget.diabeteStates![data];
                     },
                   )),
               Container(
@@ -733,7 +740,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
             ? '0'
             : (selectedDate!.millisecondsSinceEpoch ~/ 1000).toString(),
         'gender': _choosenGender.toString(),
-        'diabetesStatus': diabetesStatus['key'].toString(),
+        'diabetesStatus': diabetesStatus?.key?.toString() ?? '1',
       };
       if (widget.referalCode?.isNotEmpty == true) {
         params['referalCode'] = widget.referalCode!;

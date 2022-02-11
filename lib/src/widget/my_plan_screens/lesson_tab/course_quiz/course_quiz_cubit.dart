@@ -11,8 +11,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'course_quiz.dart';
 
 class CourseQuizCubit extends Cubit<CourseQuizState> {
-  CourseQuizCubit(this.repository,
-      {required this.lessonId, required this.lessonSectionItem})
+  CourseQuizCubit(this.repository, {required this.lessonId, required this.lessonSectionItem})
       : super(InitialCourseQuizState());
   final AppRepository repository;
 
@@ -70,8 +69,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
     return countAnswerRight;
   }
 
-  bool get isPassed =>
-      ((countAnswerRight / listQuiz.length) * 100) > minCompletePercent;
+  bool get isPassed => ((countAnswerRight / listQuiz.length) * 100) > minCompletePercent;
 
   Future<void> initData() async {
     if (!isQuizLesson) {
@@ -121,7 +119,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   }
 
   void setCompleteQuiz() {
-    if (!isPassed) return;
+    //  if (!isPassed) return;
     if (!isQuizLesson) {
       completeLearningCurrentSection();
     }
@@ -130,11 +128,9 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
 
   Future<void> getListQuiz() async {
     emit(const CourseQuizLoading());
-    final ApiResult<LessonSectionListResponse?> apiResult =
-        await repository.getListQuiz(lessonId);
+    final ApiResult<LessonSectionListResponse?> apiResult = await repository.getListQuiz(lessonId);
     apiResult.when(success: (LessonSectionListResponse? response) {
-      minCompletePercent =
-          response?.data?.minCompletePercent?.toDouble() ?? 80;
+      minCompletePercent = response?.data?.minCompletePercent?.toDouble() ?? 80;
       if (response?.data?.quizLessons?.isNotEmpty != true) {
         listQuiz = [];
       } else {
@@ -153,8 +149,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   Future<void> completeLearningCurrentSection() async {
     await Future.delayed(Duration.zero);
     emit(const CourseQuizLoading());
-    final ApiResult<CommonResponse> apiResult =
-        await repository.setCompletedLessonAccount(
+    final ApiResult<CommonResponse> apiResult = await repository.setCompletedLessonAccount(
       UpdateLessonSectionRequest(
         lessonId: lessonId,
         type: lessonSectionItem?.type,
@@ -175,8 +170,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   Future<void> setCompletedLessonQuiz() async {
     await Future.delayed(Duration.zero);
     emit(const CourseQuizLoading());
-    final ApiResult<CommonResponse> apiResult =
-        await repository.setCompletedLessonQuiz(UpdateQuizLessonRequest(
+    final ApiResult<CommonResponse> apiResult = await repository.setCompletedLessonQuiz(UpdateQuizLessonRequest(
       lessonId: lessonId,
     ));
     apiResult.when(success: (CommonResponse response) {
