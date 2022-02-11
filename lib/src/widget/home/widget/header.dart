@@ -155,12 +155,12 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                               isChoose = !isChoose;
                             });
                           },
-                          child: Image.asset(R.drawable.ic_direct_chat, width: 24, height: 24),
+                          child: Image.asset(R.drawable.ic_direct_chat, width: 22, height: 22),
                           // isChoose
                           //     ? Image.asset(R.drawable.ic_book_question_selected, width: 24, height: 24)
                           //     : Image.asset(R.drawable.ic_book_question, width: 24, height: 24),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 14),
                         InkWell(
                           onTap: () async {
                             final scanedResult = await NavigationUtil.navigatePage(

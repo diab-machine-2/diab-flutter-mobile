@@ -12,28 +12,36 @@ class HomeModel {
   final ExerciseIndexModel? exercise;
   final HbA1CIndexModel hbA1CIndex;
   final EnergyExerciseCardModel? energyExerciseCard;
+  final ProcessCardModel? processCard;
 
-  HomeModel(
-      {required this.glucoseIndex,
-      required this.bloodPressureIndex,
-      required this.exercise,
-      required this.hbA1CIndex,
-      required this.weightCard,
-      required this.emotionCard,
-      required this.energyCard,
-      required this.energyExerciseCard});
+  HomeModel({
+    required this.glucoseIndex,
+    required this.bloodPressureIndex,
+    required this.exercise,
+    required this.hbA1CIndex,
+    required this.weightCard,
+    required this.emotionCard,
+    required this.energyCard,
+    required this.energyExerciseCard,
+    required this.processCard,
+  });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
     return HomeModel(
-        glucoseIndex: GloucoseIndexModel.fromJson(json['glucoseIndex']),
-        bloodPressureIndex: BloodPressureIndexModel.fromJson(json['bloodPressureIndex']),
-        exercise: json['exercise'] == null ? null : ExerciseIndexModel.fromJson(json['exercise']),
-        hbA1CIndex: HbA1CIndexModel.fromJson(json['hbA1CIndex']),
-        weightCard: json['weightCard'] == null ? null : WeightCardModel.fromJson(json['weightCard']),
-        emotionCard: json['emotionCard'] == null ? null : EmotionCardModel.fromJson(json['emotionCard']),
-        energyCard: json['energyCard'] == null ? null : EnergyCardModel.fromJson(json['energyCard']),
-        energyExerciseCard:
-            json['energyExerciseCard'] == null ? null : EnergyExerciseCardModel.fromJson(json['energyExerciseCard']));
+      glucoseIndex: GloucoseIndexModel.fromJson(json['glucoseIndex']),
+      bloodPressureIndex: BloodPressureIndexModel.fromJson(json['bloodPressureIndex']),
+      exercise: json['exercise'] == null ? null : ExerciseIndexModel.fromJson(json['exercise']),
+      hbA1CIndex: HbA1CIndexModel.fromJson(json['hbA1CIndex']),
+      weightCard: json['weightCard'] == null ? null : WeightCardModel.fromJson(json['weightCard']),
+      emotionCard: json['emotionCard'] == null ? null : EmotionCardModel.fromJson(json['emotionCard']),
+      energyCard: json['energyCard'] == null ? null : EnergyCardModel.fromJson(json['energyCard']),
+      energyExerciseCard: json['energyExerciseCard'] == null
+          ? null
+          : EnergyExerciseCardModel.fromJson(
+              json['energyExerciseCard'],
+            ),
+      processCard: json['processCard'] == null ? null : ProcessCardModel.fromJson(json['processCard']),
+    );
   }
 
   static List<HomeModel> toList(List<dynamic> items) {
@@ -264,5 +272,44 @@ class EnergyExerciseCardModel {
 
   static List<EnergyExerciseCardModel> toList(List<dynamic> items) {
     return items.map((item) => EnergyExerciseCardModel.fromJson(item)).toList();
+  }
+}
+
+class ProcessCardModel {
+  final double? target;
+  final double? targetCompeleted;
+  final double? exerciseCompeleted;
+  final double? lessonCompeleted;
+  final bool? userFree;
+  final int? createDateTime;
+  final String? color;
+  final ImagesModel? icon;
+
+  ProcessCardModel({
+    required this.target,
+    required this.targetCompeleted,
+    required this.exerciseCompeleted,
+    required this.lessonCompeleted,
+    required this.userFree,
+    required this.createDateTime,
+    required this.color,
+    required this.icon,
+  });
+
+  factory ProcessCardModel.fromJson(Map<String, dynamic> json) {
+    return ProcessCardModel(
+      target: json['target'],
+      targetCompeleted: json['targetCompeleted'],
+      exerciseCompeleted: json['exerciseCompeleted'],
+      lessonCompeleted: json['lessonCompeleted'],
+      userFree: json['userFree'],
+      createDateTime: json['createDateTime'],
+      color: json['color'],
+      icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
+    );
+  }
+
+  static List<ProcessCardModel> toList(List<dynamic> items) {
+    return items.map((item) => ProcessCardModel.fromJson(item)).toList();
   }
 }
