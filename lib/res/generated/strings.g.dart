@@ -962,6 +962,10 @@ class Strings {
 	String get day_in_week_saturday => 'day_in_week_saturday';
 	String get day_in_week_sunday => 'day_in_week_sunday';
 	String get statistical => 'statistical';
+	String get expert_comment => 'expert_comment';
+	String get no_expert_comment => 'no_expert_comment';
+	String get comment => 'comment';
+	String get next_action => 'next_action';
 	String get progress => 'progress';
 	String get q_and_a => 'q_and_a';
 	String get ask_doctor => 'ask_doctor';

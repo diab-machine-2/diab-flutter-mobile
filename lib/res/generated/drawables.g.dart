@@ -304,6 +304,7 @@ class Drawables {
   String get img_goal => "lib/res/drawables/img_goal.png";
   String get img_gym_trainer => "lib/res/drawables/img_gym_trainer.png";
   String get img_hotline => "lib/res/drawables/img_hotline.png";
+  String get ic_expert_comment => "lib/res/drawables/ic_expert_comment.png";
   String get img_learn_result_high => "lib/res/drawables/img_learn_result_high.png";
   String get img_learn_result_medium => "lib/res/drawables/img_learn_result_medium.png";
   String get img_lesson_locked => "lib/res/drawables/img_lesson_locked.png";
