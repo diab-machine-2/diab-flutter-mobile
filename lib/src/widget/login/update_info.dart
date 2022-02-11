@@ -621,8 +621,11 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       }
 
       if (widget.type == 'google') {
-        final result = await LoginClient().registerWithSocial(
-            {'providerName': 'Google', 'providerKey': widget.googleAccount!.id, 'phoneNumber': phone});
+        final result = await LoginClient().registerWithSocial({
+          'providerName': 'Google',
+          'providerKey': widget.googleAccount!.id,
+          'phoneNumber': phone,
+        });
         Navigator.pushNamed(context, NavigatorName.verify, arguments: {
           'type': 'google',
           'otp': result.token,

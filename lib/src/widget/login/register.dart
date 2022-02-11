@@ -463,7 +463,8 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.closeAllLoading();
       if (user == null) {
         registerAccount(
-            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), true);
+            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), true,
+            googleAccount: account, appleCredential: null);
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
@@ -473,7 +474,8 @@ class _RegisterControllerState extends State<RegisterController> {
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
         registerAccount(
-            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), false);
+            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), false,
+            googleAccount: account, appleCredential: null);
       } else if (error is PlatformException && error.code == 'network_error') {
         Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       } else {
@@ -516,7 +518,8 @@ class _RegisterControllerState extends State<RegisterController> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'apple', 'appleAccount': credential});
         registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
-            credential.givenName ?? R.string.user_name_default.tr(), true);
+            credential.givenName ?? R.string.user_name_default.tr(), true,
+            googleAccount: null, appleCredential: credential);
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
@@ -525,7 +528,8 @@ class _RegisterControllerState extends State<RegisterController> {
       BotToast.closeAllLoading();
       if (error is Error && error.code == '5' && credential != null) {
         registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
-            credential.givenName ?? R.string.user_name_default.tr(), false);
+            credential.givenName ?? R.string.user_name_default.tr(), false,
+            googleAccount: null, appleCredential: credential);
       } else if (error is PlatformException && error.code == 'network_error') {
         Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       } else {
@@ -534,7 +538,15 @@ class _RegisterControllerState extends State<RegisterController> {
     }
   }
 
-  registerAccount(String? providerKey, String? externalToken, String provider, String userName, bool update) async {
+  registerAccount(
+    String? providerKey,
+    String? externalToken,
+    String provider,
+    String userName,
+    bool update, {
+    GoogleSignInAccount? googleAccount,
+    AuthorizationCredentialAppleID? appleCredential,
+  }) async {
     try {
       BotToast.showLoading();
       if (!update) {
@@ -560,7 +572,8 @@ class _RegisterControllerState extends State<RegisterController> {
         'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
       });
       if (result == true) {
-        Navigator.pushReplacementNamed(context, NavigatorName.rules);
+        Navigator.pushReplacementNamed(context, NavigatorName.rules,
+            arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
       }
       BotToast.closeAllLoading();
     } catch (error) {

@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -90,20 +91,29 @@ class _RulesControllerState extends State<RulesController> {
                       onTap: () async {
                         BotToast.showLoading();
                         final user = await UserClient().fetchUser();
-                        BotToast.closeAllLoading();
                         if (user?.phoneNumber != null && user!.phoneNumber!.isNotEmpty) {
                           if (user.phoneNumber!.contains('User')) {
-                            if (widget.googleAccount != null) {
-                              Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-                                  arguments: {'type': 'google', 'googleAccount': widget.googleAccount});
-                            } else if (widget.appleCredential != null) {
-                              Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-                                  arguments: {'type': 'apple', 'appleAccount': widget.appleCredential});
+                            if (widget.googleAccount != null || widget.appleCredential != null) {
+                              List<CategoryItemUserModel>? diabeteStates;
+                              try {
+                                diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
+                              } catch (e) {
+                                BotToast.closeAllLoading();
+                              }
+                              BotToast.closeAllLoading();
+                              Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
+                                'type': 'google',
+                                'googleAccount': widget.googleAccount,
+                                'appleAccount': widget.appleCredential,
+                                'diabeteStates': diabeteStates
+                              });
                             } else {
+                              BotToast.closeAllLoading();
                               Navigator.popUntil(context, (route) => route.isFirst);
                               Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
                             }
                           } else {
+                            BotToast.closeAllLoading();
                             Navigator.popUntil(context, (route) => route.isFirst);
                             Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
                           }
