@@ -656,8 +656,6 @@ class Strings {
 	String get lesson_can_not_learn => 'lesson_can_not_learn';
 	String get exercise_done => 'exercise_done';
 	String get joining => 'joining';
-  String get add_comment => 'add_comment';
-  String get no_result => 'no_result';
 	String get ask_for_change_roadmap => 'ask_for_change_roadmap';
 	String get road_map_changed => 'road_map_changed';
 	String get lesson_empty_no_filter => 'lesson_empty_no_filter';
@@ -963,8 +961,9 @@ class Strings {
 	String get day_in_week_friday => 'day_in_week_friday';
 	String get day_in_week_saturday => 'day_in_week_saturday';
 	String get day_in_week_sunday => 'day_in_week_sunday';
-	String get data_input_not_valid => 'data_input_not_valid';
 	String get statistical => 'statistical';
+	String get progress => 'progress';
+	String get q_and_a => 'q_and_a';
 	String get ask_doctor => 'ask_doctor';
 	String get replied => 'replied';
 	String get view_by_topic => 'view_by_topic';
@@ -991,6 +990,9 @@ class Strings {
 	String get input_comment_required => 'input_comment_required';
 	String get input_topic_required => 'input_topic_required';
 	String get input_question_required => 'input_question_required';
+	String get no_result => 'no_result';
+	String get add_comment => 'add_comment';
+	String get data_input_not_valid => 'data_input_not_valid';
 	String get food_menu_intro_title1 => 'food_menu_intro_title1';
 	String get food_menu_intro_title21 => 'food_menu_intro_title21';
 	String get food_menu_intro_title22 => 'food_menu_intro_title22';

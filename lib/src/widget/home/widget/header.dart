@@ -107,7 +107,14 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                         BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(21)),
                                     child: user.imageUrl!.url == null
                                         ? Icon(Icons.person, size: 42, color: R.color.mainColor)
-                                        : Image.network(user.imageUrl!.url!, width: 42, height: 42)),
+                                        : Image.network(
+                                            user.imageUrl!.url ?? '',
+                                            width: 42,
+                                            height: 42,
+                                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                              return Icon(Icons.person, size: 42, color: R.color.mainColor);
+                                            },
+                                          )),
                               ),
                               Container(
                                 width: 20,
@@ -148,50 +155,20 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                               isChoose = !isChoose;
                             });
                           },
-                          child: isChoose
-                              ? Image.asset(R.drawable.ic_book_question_selected, width: 24, height: 24)
-                              : Image.asset(R.drawable.ic_book_question, width: 24, height: 24),
+                          child: Image.asset(R.drawable.ic_direct_chat, width: 24, height: 24),
+                          // isChoose
+                          //     ? Image.asset(R.drawable.ic_book_question_selected, width: 24, height: 24)
+                          //     : Image.asset(R.drawable.ic_book_question, width: 24, height: 24),
                         ),
-                        const SizedBox(width: 16),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, NavigatorName.notification);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            color: R.color.transparent,
-                            child: Image.asset(notificationCount! > 0 ? R.drawable.ic_bell_dot : R.drawable.ic_bell,
-                                width: 24, height: 24),
-                          ),
-                        ),
-                        // InkWell(
-                        //   onTap: () async {
-                        //     final scanedResult = await NavigationUtil.navigatePage(
-                        //       context,
-                        //       const QRScanWidget(),
-                        //     );
-                        //     if (scanedResult is String) {
-                        //       ShareProfilePopup.instance.onHasSharedCode(context: context, code: scanedResult);
-                        //     }
-                        //   },
-                        //   child: Container(
-                        //     padding: const EdgeInsets.all(4),
-                        //     color: R.color.transparent,
-                        //     child: Image.asset(notificationCount! > 0 ? R.drawable.ic_bell_dot : R.drawable.ic_bell,
-                        //         width: 24, height: 24),
-                        //   ),
-                        // ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 12),
                         InkWell(
                           onTap: () async {
-                            final scanedResult =
-                                await NavigationUtil.navigatePage(
+                            final scanedResult = await NavigationUtil.navigatePage(
                               context,
                               const QRScanWidget(),
                             );
                             if (scanedResult is String) {
-                              ShareProfilePopup.instance.onHasSharedCode(
-                                  context: context, code: scanedResult);
+                              ShareProfilePopup.instance.onHasSharedCode(context: context, code: scanedResult);
                             }
                           },
                           child: Container(
@@ -203,6 +180,18 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                               width: 24,
                               height: 24,
                             ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, NavigatorName.notification);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            color: R.color.transparent,
+                            child: Image.asset(notificationCount! > 0 ? R.drawable.ic_bell_dot : R.drawable.ic_bell,
+                                width: 24, height: 24),
                           ),
                         ),
                       ],

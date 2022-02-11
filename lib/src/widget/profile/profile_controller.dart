@@ -109,7 +109,14 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                         decoration: BoxDecoration(color: R.color.mainColor, borderRadius: BorderRadius.circular(52)),
                         child: user.imageUrl!.url == null
                             ? Icon(Icons.person, size: 104, color: R.color.white)
-                            : Image.network(user.imageUrl!.url!, width: 104, height: 104)),
+                            : Image.network(
+                                user.imageUrl!.url!,
+                                width: 104,
+                                height: 104,
+                                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                  return Icon(Icons.person, size: 100, color: R.color.white);
+                                },
+                              )),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -289,7 +296,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
           } else {
             Navigator.pushNamed(context, NavigatorName.profile_info);
           }
-        } else if(index == 1){
+        } else if (index == 1) {
           NavigationUtil.navigatePage(context, const SharedProfilePage());
         } else if (index == 2) {
           Navigator.pushNamed(context, NavigatorName.manual);

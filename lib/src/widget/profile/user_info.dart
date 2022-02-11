@@ -162,7 +162,15 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                           color: R.color.mainColor, borderRadius: BorderRadius.circular(80)),
                                       child: user.imageUrl!.url == null
                                           ? Icon(Icons.person, size: 160, color: R.color.white)
-                                          : Image.network(user.imageUrl!.url!, width: 160, height: 160),
+                                          : Image.network(
+                                              user.imageUrl!.url!,
+                                              width: 160,
+                                              height: 160,
+                                              errorBuilder:
+                                                  (BuildContext context, Object error, StackTrace? stackTrace) {
+                                                return Icon(Icons.person, size: 160, color: R.color.white);
+                                              },
+                                            ),
                                     ),
                                   ),
                                   Image.asset(R.drawable.ic_camera_picker, width: 50, height: 50)
