@@ -9,6 +9,7 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -389,7 +390,8 @@ class _LoginControllerState extends State<LoginController> {
       BotToast.closeAllLoading();
       if (user == null) {
         registerAccount(
-            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), true);
+            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), true,
+            googleAccount: account, appleCredential: null);
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'google', 'googleAccount': account});
       } else {
@@ -399,7 +401,8 @@ class _LoginControllerState extends State<LoginController> {
     } catch (error) {
       if (error is Error && error.code == '5' && account != null) {
         registerAccount(
-            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), false);
+            account.id, authen.accessToken, 'Google', account.displayName ?? R.string.user_name_default.tr(), false,
+            googleAccount: account, appleCredential: null);
       } else if (error is PlatformException && error.code == 'network_error') {
         Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       } else {
@@ -442,7 +445,8 @@ class _LoginControllerState extends State<LoginController> {
         // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
         //     arguments: {'type': 'apple', 'appleAccount': credential});
         registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
-            credential.givenName ?? R.string.user_name_default.tr(), true);
+            credential.givenName ?? R.string.user_name_default.tr(), true,
+            googleAccount: null, appleCredential: credential);
       } else {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacementNamed(context, NavigatorName.tabbar);
@@ -451,7 +455,8 @@ class _LoginControllerState extends State<LoginController> {
       BotToast.closeAllLoading();
       if (error is Error && error.code == '5' && credential != null) {
         registerAccount(credential.userIdentifier, credential.identityToken, 'Apple',
-            credential.givenName ?? R.string.user_name_default.tr(), false);
+            credential.givenName ?? R.string.user_name_default.tr(), false,
+            googleAccount: null, appleCredential: credential);
       } else if (error is PlatformException && error.code == 'network_error') {
         Message.showToastMessage(context, R.string.error_can_not_connect_to_server.tr());
       } else {
@@ -460,7 +465,15 @@ class _LoginControllerState extends State<LoginController> {
     }
   }
 
-  registerAccount(String? providerKey, String? externalToken, String provider, String userName, bool update) async {
+  registerAccount(
+    String? providerKey,
+    String? externalToken,
+    String provider,
+    String userName,
+    bool update, {
+    GoogleSignInAccount? googleAccount,
+    AuthorizationCredentialAppleID? appleCredential,
+  }) async {
     try {
       BotToast.showLoading();
       if (!update) {
@@ -475,17 +488,19 @@ class _LoginControllerState extends State<LoginController> {
         });
       }
 
-      final diabeteStates = await UserClient().fetchDiabeteStates();
+      //  final diabeteStates = await UserClient().fetchDiabeteStatesNoHeader();
 
       final result = await LoginClient().createPatient({
         'fullName': userName,
         'dateOfBirth': '0',
         'gender': '1',
-        'diabetesStatus': diabeteStates?.isEmpty ?? true ? '1' : diabeteStates?.first['key'].toString() ?? '',
+        //   'diabetesStatus': diabeteStates?.isEmpty ?? true ? '1' : diabeteStates?.first['key'].toString() ?? '',
+        'diabetesStatus': '1',
         'diabetesDate': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()
       });
       if (result == true) {
-        Navigator.pushReplacementNamed(context, NavigatorName.rules);
+        Navigator.pushReplacementNamed(context, NavigatorName.rules,
+            arguments: {'googleAccount': googleAccount, 'appleCredential': appleCredential});
       }
       BotToast.closeAllLoading();
     } catch (error) {

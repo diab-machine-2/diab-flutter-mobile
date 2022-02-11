@@ -32,7 +32,10 @@ class ShareProfilePopup {
   }) async {
     final BuildContext currentContext = context ?? navigatorKey.currentState!.context;
     final UserInfoReferralCodeResponse? userInfo = await _getSharedProfile(currentContext, code: code);
-    if (userInfo?.isUserExists != true || userInfo?.notValidPosition == true) return;
+    if (userInfo?.isUserExists != true || userInfo?.notValidPosition == true) {
+      Message.showToastMessage(context!, R.string.qr_not_available.tr());
+      return;
+    }
     showPopup(currentContext,
         image: R.drawable.img_sharing_profile,
         title: requestFromDoctor
@@ -81,7 +84,7 @@ class ShareProfilePopup {
               onTap: () {},
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.only(top: 12, bottom: 16, left: 16, right: 16),
+                padding: const EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 16),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   gradient: LinearGradient(
@@ -96,6 +99,18 @@ class ShareProfilePopup {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(width: 20),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Image.asset(R.drawable.ic_close, width: 28, height: 28),
+                          ),
+                        ],
+                      ),
                       Image.asset(image),
                       const SizedBox(height: 24),
                       Text(

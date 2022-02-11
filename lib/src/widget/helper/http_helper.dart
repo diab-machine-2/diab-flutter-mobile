@@ -12,7 +12,7 @@ class FetchClient {
   static String get identifyBaseURL {
     // return 'is.diab.com.vn';
     //return 'id.savvycom.asia';
-     return 'diab-id-dev.savvycom.vn';
+    return 'diab-id-staging.savvycom.vn';
     // return 'diab-id-staging.savvycom.vn';
     // return 'is.stg.diab.cptech.vn';
     // return 'is.dev.diab.cptech.vn';
@@ -22,7 +22,7 @@ class FetchClient {
   static String get baseURL {
     // return 'api.diab.com.vn';
     // return 'diab-api-staging.savvycom.vn';
-     return 'diab-api-dev.savvycom.vn';
+    return 'diab-api-staging.savvycom.vn';
     //return 'api.savvycom.asia';
     // return 'api.stg.diab.cptech.vn';
     // return 'api.mobile.dev.diab.cptech.vn';
@@ -110,7 +110,8 @@ class FetchClient {
     return dio.getUri(Uri.https(domain, url, params), options: option);
   }
 
-   Future<Response> fetchDataNoHeaders({bool baseIdentify = false, required String url, Map<String, String?>? params}) async {
+  Future<Response> fetchDataNoHeaders(
+      {bool baseIdentify = false, required String url, Map<String, String?>? params}) async {
     final option = await options3();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
@@ -175,11 +176,7 @@ class FetchClient {
       {bool baseIdentify = false, required String path, required dynamic params}) async {
     final token = await AppSettings.getToken();
     final user_agent = await userAgent();
-    final headers = {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-      'User-Agent': 'Mobile'
-    };
+    final headers = {'Authorization': 'Bearer $token', 'Content-Type': 'application/json', 'User-Agent': 'Mobile'};
     final request = http.Request('POST', Uri.parse('https://' + (baseIdentify ? identifyBaseURL : baseURL) + path));
     request.body = params;
     request.headers.addAll(headers);

@@ -37,8 +37,8 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
     return await Future.delayed(Duration(milliseconds: 100), () => check());
   }
 
-  refreshScreen(){
-    if(canRefreshScreen){
+  refreshScreen() {
+    if (canRefreshScreen) {
       emit(QuestionDetailLoading());
       emit(QuestionDetailSuccess());
     }
@@ -63,18 +63,18 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
           lessonModuleId: response.data!.lessonModuleId,
           professor: response.data!.professor,
           answers: response.data!.answers,
-          );
-        if(isAll){
-          if(questionModel.status == 0){
-            if(questionModel.answers != null && questionModel.answers!.isNotEmpty){
+        );
+        if (isAll) {
+          if (questionModel.status == 0) {
+            if (questionModel.answers != null && questionModel.answers!.isNotEmpty) {
               bool isReplied = false;
-              for(var answer in questionModel.answers!){
-                if(answer.accountId != userInfo?.accountId){
+              for (var answer in questionModel.answers!) {
+                if (answer.accountId != userInfo?.accountId) {
                   isReplied = true;
                   break;
+                }
               }
-            }
-            questionModel.status = isReplied ? 2 : 1;
+              questionModel.status = isReplied ? 2 : 1;
             } else {
               questionModel.status = 1;
             }
@@ -105,14 +105,13 @@ class QuestionDetailCubit extends Cubit<QuestionDetailState> {
   // }
 
   Future<void> sendComment(String? body) async {
-     var userInfo = AppSettings.userInfo;
+    var userInfo = AppSettings.userInfo;
     if (userInfo == null) return;
     canRefreshScreen = false;
     emit(QuestionDetailLoading());
-    final MakeCommentRequest request =
-        MakeCommentRequest(body: body, questionId: questionModel.id, accountId: userInfo.accountId, isComment: true);
-    final ApiResult<CommonResponse> apiResult =
-        await repository.makeComment(request);
+    final MakeCommentRequest request = MakeCommentRequest(
+        body: body?.trim() ?? '', questionId: questionModel.id, accountId: userInfo.accountId, isComment: true);
+    final ApiResult<CommonResponse> apiResult = await repository.makeComment(request);
     apiResult.when(success: (CommonResponse response) async {
       canRefreshScreen = true;
       await getQuestionById();

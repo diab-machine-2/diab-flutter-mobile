@@ -192,7 +192,13 @@ class _AppState extends State<App> {
                   }
                   return _buildRoute(settings, StepListController(sharedCode), isPresent: true);
                 case NavigatorName.rules:
-                  return _buildRoute(settings, RulesController());
+                  final data = settings.arguments as Map<String, dynamic>?;
+                  return _buildRoute(
+                      settings,
+                      RulesController(
+                        googleAccount: data?['googleAccount'],
+                        appleCredential: data?['appleCredential'],
+                      ));
                 case NavigatorName.add_hba1c:
                   final data = settings.arguments as Map<String, dynamic>?;
                   return _buildRoute(

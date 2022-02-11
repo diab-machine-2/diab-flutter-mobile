@@ -7,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/patient_info_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
@@ -34,37 +35,61 @@ class _SharedProfilePageState extends State<SharedProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => _cubit,
-      child: Scaffold(
-        body: CommonPage(
-          background: R.drawable.bg_lesson_detail,
-          title: R.string.shared_profile_list.tr(),
-          showCloseBackButton: true,
-          child: BlocConsumer<SharedProfileCubit, SharedProfileState>(
-            listener: (context, state) {
-              if (state is SharedProfileLoading) {
-                BotToast.showLoading();
-              } else {
-                BotToast.closeAllLoading();
-              }
-              if (state is SharedProfileFailure) {
-                Message.showToastMessage(context, state.error);
-              }
-            },
+    return Scaffold(
+      body: BlocProvider(
+        create: (context) => _cubit,
+        child: BlocListener<SharedProfileCubit, SharedProfileState>(
+          listener: (context, state) {
+            if (state is SharedProfileLoading) {
+              BotToast.showLoading();
+            } else {
+              BotToast.closeAllLoading();
+            }
+            if (state is SharedProfileFailure) {
+              Message.showToastMessage(context, state.error);
+            }
+          },
+          child: BlocBuilder<SharedProfileCubit, SharedProfileState>(
             builder: (context, state) {
-              return ListView(
-                padding: const EdgeInsets.fromLTRB(16, 40, 16, 20),
-                children: List.generate(
-                    _cubit.sharedList.length,
-                    (index) => _buildSingleProfile(
-                          _cubit.sharedList[index],
-                        )),
-              );
+              return _buildPage(context, state);
             },
           ),
         ),
       ),
+    );
+  }
+
+  _buildPage(BuildContext context, SharedProfileState state) {
+    return Column(
+      children: [
+        _buildAppBar(context),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+            shrinkWrap: true,
+            children: List.generate(
+                _cubit.sharedList.length,
+                (index) => _buildSingleProfile(
+                      _cubit.sharedList[index],
+                    )),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _buildAppBar(BuildContext context) {
+    return CustomAppBar(
+      backgroundColor: R.color.transparent,
+      title: Text(R.string.shared_profile_list.tr(),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark)),
+      leadingIcon: IconButton(
+          splashColor: R.color.transparent,
+          highlightColor: R.color.transparent,
+          icon: Icon(Icons.arrow_back, color: R.color.textDark),
+          onPressed: () {
+            Navigator.pop(context);
+          }),
     );
   }
 
@@ -92,33 +117,31 @@ class _SharedProfilePageState extends State<SharedProfilePage> {
                   userData?.fullName ?? '',
                   style: TextStyle(
                     color: R.color.grey_1,
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 if (userData?.nameOfAgency?.isNotEmpty == true)
                   Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: 3),
                     child: Text(
                       userData?.nameOfAgency ?? '',
                       style: const TextStyle(
                         color: Color(0xff888C9F),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),
                 if (userData?.sharedDate != null)
                   Padding(
-                    padding: const EdgeInsets.only(top: 1),
+                    padding: const EdgeInsets.only(top: 3),
                     child: Text(
-                      R.string.shared_date.tr(args: [
-                        DateFormat('dd/MM/yyyy').format(userData!.sharedDate)
-                      ]),
+                      R.string.shared_date.tr(args: [DateFormat('dd/MM/yyyy').format(userData!.sharedDate)]),
                       style: const TextStyle(
                         color: Color(0xff888C9F),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),
@@ -164,7 +187,7 @@ class _SharedProfilePageState extends State<SharedProfilePage> {
               onTap: () {},
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 16),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   gradient: LinearGradient(
@@ -179,26 +202,30 @@ class _SharedProfilePageState extends State<SharedProfilePage> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      Image.asset(R.drawable.img_sharing_profile),
-                      const SizedBox(height: 24),
-                      Text(
-                        R.string.stop_sharing.tr(args: [
-                          userData?.fullName ?? '',
-                          userData?.nameOfAgency ?? ''
-                        ]),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(width: 20),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Image.asset(R.drawable.ic_close, width: 28, height: 28),
+                          ),
+                        ],
                       ),
+                      Image.asset(R.drawable.img_sharing_profile),
+                      const SizedBox(height: 28),
+                      Text(
+                        R.string.stop_sharing.tr(args: [userData?.fullName ?? '', userData?.nameOfAgency ?? '']),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 8),
                       Text(
                         R.string.stop_sharing_description.tr(),
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
+                        style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w400),
                       ),
                       const SizedBox(height: 20),
                       Row(

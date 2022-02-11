@@ -1002,4 +1002,5 @@ class Strings {
 	String get food_menu_intro_title22 => 'food_menu_intro_title22';
 	String get food_menu_intro_title23 => 'food_menu_intro_title23';
 	String get food_menu_intro_title3 => 'food_menu_intro_title3';
+	String get qr_not_available => 'qr_not_available';
 }
