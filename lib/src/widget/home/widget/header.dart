@@ -244,11 +244,15 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   }
 
   Future<bool> checkZaloAppExisted() async {
-    bool isInstalled = await LaunchApp.isAppInstalled(
+    var isInstalled = await LaunchApp.isAppInstalled(
       androidPackageName: 'com.zing.zalo',
       iosUrlScheme: 'zalo://',
     );
-    return isInstalled;
+    if (isInstalled is bool) return isInstalled;
+    if (isInstalled is int) {
+      return isInstalled == 1 ? true : false;
+    }
+    return false;
   }
 
   goToStore() {
