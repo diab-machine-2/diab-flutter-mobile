@@ -235,7 +235,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                       icon as String?, model!.emotionCard!);
                                 }
 
-                                if (index == 4 && model!.energyCard!.consumedEnergy != 0) {
+                                if (index == 4 && model != null && model!.energyCard!.consumedEnergy != 0) {
                                   return _buildFood(context, index, name as String?, image as String?, icon as String?,
                                       model!.energyCard!);
                                 }
@@ -866,27 +866,29 @@ class _HomeControllerState extends State<HomeController> with Observer {
                     ),
                   ],
                 ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    NetWorkImageWidget(
-                      imageUrl: model.icon?.url ?? '',
-                      width: 25,
-                      height: 25,
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: FittedBox(
+                if ((model.userFree ?? true) == false)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      NetWorkImageWidget(imageUrl: model.icon?.url ?? '', width: 25, height: 25),
+                      const SizedBox(width: 6),
+                      Flexible(
                         child: Padding(
                           padding: const EdgeInsets.only(top: 8),
-                          child: Text(getStatusProgress(model),
-                              style: TextStyle(
-                                  color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              getStatusProgress(model),
+                              style:
+                                  TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ),
-                      ),
-                    )
-                  ],
-                ),
+                      )
+                    ],
+                  ),
               ],
             ),
           ),
@@ -896,10 +898,10 @@ class _HomeControllerState extends State<HomeController> with Observer {
   }
 
   getStatusProgress(ProcessCardModel model) {
-    if (model.target != null && model.targetCompeleted != null) {
-      if (model.targetCompeleted! < model.target!) {
+    if (model.exercise != null && model.exerciseCompeleted != null) {
+      if (model.exerciseCompeleted! < model.exercise!) {
         return 'Chưa hoàn thành';
-      } else if (model.target! == model.targetCompeleted!) {
+      } else if (model.exercise! == model.exerciseCompeleted!) {
         return 'Hoàn thành';
       } else {
         return '';

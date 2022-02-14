@@ -62,9 +62,7 @@ class UserPositionMappings {
     id = json['id']?.toString();
     accountId = json['accountId']?.toString();
     positionId = json['positionId']?.toString();
-    position = (json['position'] != null)
-        ? UserPosition.fromJson(json['position'])
-        : null;
+    position = (json['position'] != null) ? UserPosition.fromJson(json['position']) : null;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -413,21 +411,26 @@ class UserInfoReferralCodeResponse {
   });
 
   bool get isUserExists =>
-      data?.fullName != null &&
-          data?.username != null &&
-          data?.phoneNumber != null ||
-      data?.secondPhoneNumber != null;
+      data?.fullName != null && data?.username != null && data?.phoneNumber != null || data?.secondPhoneNumber != null;
 
-  bool get notValidPosition => ['coach', 'coach manager', 'head coach']
-      .contains(data?.accountPositionMappings?.first?.position?.code);
+  bool get notValidPosition {
+    if (data?.accountPositionMappings != null) {
+      for (var account in data!.accountPositionMappings!) {
+        if (account?.position?.code != null) {
+          if (account!.position!.code!.toUpperCase() == 'COACH' ||
+              account.position!.code!.toUpperCase() == 'COACHMANAGER' ||
+              account.position!.code!.toUpperCase() == 'HEADCOACH') {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
 
   UserInfoReferralCodeResponse.fromJson(Map<String, dynamic> json) {
-    meta = (json['meta'] != null)
-        ? UserInfoReferralCodeResponseMeta.fromJson(json['meta'])
-        : null;
-    data = (json['data'] != null)
-        ? UserInfoReferralCodeResponseData.fromJson(json['data'])
-        : null;
+    meta = (json['meta'] != null) ? UserInfoReferralCodeResponseMeta.fromJson(json['meta']) : null;
+    data = (json['data'] != null) ? UserInfoReferralCodeResponseData.fromJson(json['data']) : null;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};

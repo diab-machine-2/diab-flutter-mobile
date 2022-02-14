@@ -279,6 +279,7 @@ class ProcessCardModel {
   final int? target;
   final int? targetCompeleted;
   final int? exerciseCompeleted;
+  final int? exercise;
   final int? lessonCompeleted;
   final bool? userFree;
   final int? createDateTime;
@@ -289,6 +290,7 @@ class ProcessCardModel {
     required this.target,
     required this.targetCompeleted,
     required this.exerciseCompeleted,
+    required this.exercise,
     required this.lessonCompeleted,
     required this.userFree,
     required this.createDateTime,
@@ -301,6 +303,7 @@ class ProcessCardModel {
       target: json['target'] ?? 0,
       targetCompeleted: json['targetCompeleted'] ?? 0,
       exerciseCompeleted: json['exerciseCompeleted'] ?? 0,
+      exercise: json['exercise'] ?? 0,
       lessonCompeleted: json['lessonCompeleted'] ?? 0,
       userFree: json['userFree'] ?? true,
       createDateTime: json['createDateTime'] ?? 0,
