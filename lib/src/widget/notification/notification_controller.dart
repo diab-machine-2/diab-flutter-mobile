@@ -243,7 +243,7 @@ class NotificationControllerState extends State<NotificationController>
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Text(
-                      convertToUTC(model.sentDateTime!, 'HH:mm - dd/MM/yyyy'),
+                      convertToUTC(model.sentDateTime ?? 0, 'HH:mm - dd/MM/yyyy'),
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.gray),
                     ),
                   ),

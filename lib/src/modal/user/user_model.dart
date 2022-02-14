@@ -1,5 +1,5 @@
 import 'package:medical/src/modal/base/images.dart';
-import 'package:medical/src/widget/question_answer/all_question_answer/model/question_model.dart';
+import 'package:medical/src/modal/user/update_profile_request.dart';
 import 'package:meta/meta.dart';
 
 import 'category_item_user_model.dart';

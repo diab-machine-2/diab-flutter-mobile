@@ -26,6 +26,7 @@ class FunkyOverlay extends StatefulWidget {
 
 class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderStateMixin {
   GlobalKey<CircularMenuState> menuKey = GlobalKey();
+  var user = AppSettings.userInfo;
 
   @override
   void initState() {
@@ -159,7 +160,14 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                       HorizontalMenuItem(
                         label: 'Chat với huấn luyện viên',
                         ontap: () async {
-                          goToZalo('0358009000');
+                          if (user?.trainingGroups != null && user!.trainingGroups!.isNotEmpty) {
+                            if (user!.trainingGroups!.first.trainingGroup?.account != null) {
+                              String? phone = user!.trainingGroups!.first.trainingGroup!.account!.phoneNumber;
+                              if (phone != null && phone.isNotEmpty) {
+                                goToZaloCoach(phone);
+                              }
+                            }
+                          }
                         },
                         icon: Image.asset(R.drawable.ic_chat_coach, width: 32, height: 32),
                         labelColor: Colors.white,
@@ -168,7 +176,14 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                       HorizontalMenuItem(
                         label: 'Chat nhóm',
                         ontap: () {
-                          goToZalo('0358009000');
+                          if (user?.trainingGroups != null && user!.trainingGroups!.isNotEmpty) {
+                            if (user!.trainingGroups!.first.trainingGroup?.account != null) {
+                              String? linkZalo = user!.trainingGroups!.first.trainingGroup!.linkZalo;
+                              if (linkZalo != null && linkZalo.isNotEmpty) {
+                                goToZaloGroup(linkZalo);
+                              }
+                            }
+                          }
                         },
                         icon: Image.asset(R.drawable.ic_chat_group, width: 32, height: 32),
                         labelColor: Colors.white,
@@ -181,7 +196,7 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
     );
   }
 
-  goToZalo(String phone) async {
+  goToZaloCoach(String phone) async {
     try {
       // await LaunchApp.openApp(
       //   androidPackageName: 'com.zing.zalo',
@@ -190,6 +205,14 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
       //   // openStore: false
       // );
       launch("https://zalo.me/" + phone);
+    } on PlatformException catch (e) {
+      goToStore();
+    }
+  }
+
+  goToZaloGroup(String linkZalo) async {
+    try {
+      launch(linkZalo);
     } on PlatformException catch (e) {
       goToStore();
     }
