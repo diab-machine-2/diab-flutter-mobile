@@ -8,6 +8,7 @@ import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/user/category_user_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -16,6 +17,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AppSettings {
   static UserModel? userInfo;
+  static List<SmartGoalList?> smartGoalDayList = [];
   static CategoryUserModel? categoryUserModel;
   static int? currentDateTime;
 

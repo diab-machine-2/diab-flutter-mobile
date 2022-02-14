@@ -7,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
@@ -16,6 +17,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/list_service/list_service_page.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 class HomeController extends StatefulWidget {
@@ -86,6 +88,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   int page = 1;
   bool isLoading = false;
+
+  var user = AppSettings.userInfo;
 
   HomeModel? model;
 
@@ -342,7 +346,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   Widget _buildItem(BuildContext context, int index, String? name, String? image, String? icon) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (index == 0)
           Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
         else if (index == 1) {
@@ -356,7 +360,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
         } else if (index == 5) {
           Navigator.pushNamed(context, NavigatorName.detail_exercrises);
         } else if (index == 6) {
-          Navigator.pushNamed(context, NavigatorName.my_progress);
+          await NavigationUtil.navigatePage(context, CreateGoalPage(AppSettings.smartGoalDayList));
+          //    Navigator.pushNamed(context, NavigatorName.my_progress);
         } else if (index == 7) {
           Navigator.pushNamed(context, NavigatorName.detail_hba1c);
         }
@@ -814,8 +819,17 @@ class _HomeControllerState extends State<HomeController> with Observer {
   Widget _buildProgress(
       BuildContext context, int index, String? name, String? image, String? icon, ProcessCardModel model) {
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, NavigatorName.my_progress);
+      onTap: () async {
+        if (model.target != null && model.target != 0) {
+          if (model.userFree ?? true) {
+            // await Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: {
+            //   'isRedirectFromNotification': true,
+            // });
+            Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
+          } else {
+            await Navigator.pushNamed(context, NavigatorName.my_progress);
+          }
+        }
       },
       child: Stack(children: [
         Positioned.fill(

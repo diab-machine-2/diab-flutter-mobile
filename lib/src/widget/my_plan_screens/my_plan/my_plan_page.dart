@@ -20,7 +20,7 @@ import 'my_plan.dart';
 
 class MyPlanPage extends StatefulWidget {
   final int index;
-  MyPlanPage({this.index = 1});
+  MyPlanPage({this.index = 0});
 
   @override
   State<MyPlanPage> createState() => _MyPlanPageState();
