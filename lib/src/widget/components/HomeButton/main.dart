@@ -185,8 +185,6 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
       launch("https://zalo.me/" + phone);
     } on PlatformException catch (e) {
       goToStore();
-    } finally {
-      goToStore();
     }
   }
 

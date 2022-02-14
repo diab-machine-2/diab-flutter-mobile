@@ -1,5 +1,7 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
-import 'package:device_apps/device_apps.dart' as DeviceApp;
+import 'package:device_apps/device_apps.dart' as DeviceAppsLib;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -152,25 +154,27 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                     ),
                     Row(
                       children: [
-                        GestureDetector(
+                        InkWell(
                           onTap: () async {
-                            //var isZaloAppExisted = await checkZaloAppExisted();
-                            //   if (isZaloAppExisted) {
-                            _showChatMenu();
-                            //   } else {
-                            //     await _goToStore();
-                            //    }
-
-                            // setState(() {
-                            //   isChoose = !isChoose;
-                            // });
+                            var isZaloAppExisted = await checkZaloAppExisted();
+                            if (isZaloAppExisted) {
+                              showChatMenu();
+                            } else {
+                              goToStore();
+                            }
                           },
-                          child: Image.asset(R.drawable.ic_direct_chat, width: 22, height: 22),
-                          // isChoose
-                          //     ? Image.asset(R.drawable.ic_book_question_selected, width: 24, height: 24)
-                          //     : Image.asset(R.drawable.ic_book_question, width: 24, height: 24),
+                          child: Container(
+                            padding: EdgeInsets.only(bottom: 4, top: 4, right: 4, left: 16),
+                            color: R.color.transparent,
+                            child: Image.asset(
+                              R.drawable.ic_direct_chat,
+                              color: R.color.white,
+                              width: 24,
+                              height: 24,
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 14),
+                        const SizedBox(width: 8),
                         InkWell(
                           onTap: () async {
                             final scanedResult = await NavigationUtil.navigatePage(
@@ -193,8 +197,8 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: () {
+                        InkWell(
+                          onTap: () async {
                             Navigator.pushNamed(context, NavigatorName.notification);
                           },
                           child: Container(
@@ -250,22 +254,28 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   }
 
   Future<bool> checkZaloAppExisted() async {
-    bool isInstalled = await DeviceApp.DeviceApps.isAppInstalled('com.zing.zalo');
-    // List<DeviceApp.Application> apps = await DeviceApp.DeviceApps.getInstalledApplications();
-    return isInstalled;
-  }
-
-  _goToStore() async {
-    try {
-      launch("market://details?id=com.zing.zalo");
-    } on PlatformException catch (e) {
-      launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
-    } finally {
-      launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
+    if (Platform.isAndroid) {
+      bool isInstalled = await DeviceAppsLib.DeviceApps.isAppInstalled('com.zing.zalo');
+      return isInstalled;
+    } else {
+      /// TODO
+      return true;
     }
   }
 
-  _showChatMenu() {
+  goToStore() {
+    if (Platform.isIOS) {
+      try {
+        launch('https://apps.apple.com/vn/app/zalo/id579523206');
+      } on PlatformException catch (e) {}
+    } else {
+      try {
+        launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
+      } on PlatformException catch (e) {}
+    }
+  }
+
+  showChatMenu() {
     showDialog(
       barrierColor: R.color.color0xff003F38.withOpacity(0.8),
       useSafeArea: false,
