@@ -21,12 +21,14 @@ import 'package:medical/src/widget/helper/version.dart';
 import 'package:medical/src/widget/home/home.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
 import 'package:medical/src/widget/profile/profile_controller.dart';
+import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TabbarController extends StatefulWidget {
-  const TabbarController({this.sharedCode});
+  const TabbarController({this.sharedCode, this.isRedirectFromNotification = false});
   final String? sharedCode;
+  final bool isRedirectFromNotification;
   @override
   _TabbarControllerState createState() => _TabbarControllerState();
   static _TabbarControllerState? of(BuildContext context) {
@@ -46,20 +48,23 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
     super.initState();
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
-      MyPlanPage(),
-      //  Container(),
-      //  const ProfileController(hideAllBackButton: true),
+      //   MyPlanPage(index: widget.isRedirectFromNotification ? 0 : 1),
+      MyPlanPage(index: 0),
+      QuestionAnswerPage(),
+      const ProfileController(hideAllBackButton: true),
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
-    pageController = PageController();
-    _bottomTabbar = BottomTabbar(callback: (index) {
-      if (index == -1) {
-        _showMaterialDialog();
-      } else {
-        jumpTo(index);
-      }
-    });
+    pageController = PageController(initialPage: widget.isRedirectFromNotification ? 1 : 0);
+    _bottomTabbar = BottomTabbar(
+        index: widget.isRedirectFromNotification ? 1 : 0,
+        callback: (index) {
+          if (index == -1) {
+            _showMaterialDialog();
+          } else {
+            jumpTo(index);
+          }
+        });
 
     getNewVersion();
   }
@@ -184,39 +189,7 @@ showPopupWeight() {
           try {
             BotToast.showLoading();
             UserModel userInfo = AppSettings.userInfo!;
-            userInfo = UserModel(
-                id: userInfo.id,
-                username: userInfo.username,
-                fullName: userInfo.fullName,
-                age: userInfo.age,
-                phoneNumber: userInfo.phoneNumber,
-                secondPhoneNumber: userInfo.secondPhoneNumber,
-                gender: userInfo.gender,
-                genderType: userInfo.genderType,
-                createDatetime: userInfo.createDatetime,
-                isActive: userInfo.isActive,
-                province: userInfo.province,
-                district: userInfo.district,
-                height: userInfo.height,
-                weight: number?.toDouble(),
-                ward: userInfo.ward,
-                dateOfBirth: userInfo.dateOfBirth,
-                diabetesStatus: userInfo.diabetesStatus,
-                diabetesName: userInfo.diabetesName,
-                diabetesDate: userInfo.diabetesDate,
-                imageUrl: userInfo.imageUrl,
-                code: userInfo.code,
-                email: userInfo.email,
-                address: userInfo.address,
-                goalWaist: userInfo.goalWaist,
-                goalWeight: userInfo.goalWeight,
-                isLinkedFacebook: userInfo.isLinkedFacebook,
-                isLinkedGoogle: userInfo.isLinkedGoogle,
-                isMobileAccount: userInfo.isMobileAccount,
-                firstLinkedAccount: userInfo.firstLinkedAccount,
-                googleEmail: userInfo.googleEmail,
-                glucoseUnit: userInfo.glucoseUnit,
-                activityLevelRate: userInfo.activityLevelRate);
+            userInfo = userInfo.copyWith(height: number?.toDouble());
             await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();
             Navigator.pushNamed(navigatorKey.currentContext!, NavigatorName.add_exercrises,

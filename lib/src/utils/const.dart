@@ -1,18 +1,16 @@
 class Const {
-  static const String HOST_URL = "https://api.diab.com.vn/";
-  // static const String HOST_URL = "https://diab-api-staging.savvycom.vn/";
+//  static const String HOST_URL = "https://api.savvycom.asia/";
+  static const String HOST_URL = "https://diab-api-dev.savvycom.vn/";
 
   static const String API_URL = "${HOST_URL}api/";
 
-  static const String HOST_GOOGLE_MAP_URL =
-      "https://maps.googleapis.com/maps/api/";
+  static const String HOST_GOOGLE_MAP_URL = "https://maps.googleapis.com/maps/api/";
   static const String ANDROID_KEY = "AIzaSyAVRrZKBfIphjlPiua9y5Pk4CJ3oaddGp0";
   static const String IOS_KEY = "AIzaSyB6P1Tq9lnnZPjkUJmAlTjUE1uqMVfTLFA";
   static const String PLACE_KEY = "AIzaSyC7tPpmwviNXdX0_krWw5QdxOVGOJgdFmo";
 
   static const String CLIENT_ID = "4A293E78-4513-4DAF-958E-A04F93978332";
-  static const String CLIENT_SECRET =
-      "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=";
+  static const String CLIENT_SECRET = "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=";
 
   static const String ID = "ID";
   static const String CODE = "Code";
@@ -88,6 +86,16 @@ class Const {
   static const int LESSON_LEARNING = 2;
   static const int LESSON_LOCKED = 3;
   static const int LESSON_CAN_NOT_LEARN = 4;
+
+  static const int JOB_TYPE = 12;
+  static const int EDUCATION_LEVEL_TYPE = 13;
+  static const int LEVEL_OF_DIABETES_TYPE = 10;
+  static const int PERSONALITY_TYPE = 1;
+  static const int CONSCIOUSNESS_PRATICE_TYPE = 4;
+  static const int VEGETERIAN_TYPE = 8;
+  static const int WORKING_HOURS_TYPE = 9;
+  static const int INTERESTS_TYPE = 2;
+  static const int LESSON_TAG_TYPE = 0;
 
   static const int LESSON_SECTION_TYPE_VIDEO = 1;
   static const int LESSON_SECTION_TYPE_AUDIO = 2;

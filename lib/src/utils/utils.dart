@@ -86,6 +86,10 @@ class Utils {
     return list == null || list.isEmpty;
   }
 
+  static void hideKeyboard(BuildContext context) {
+    FocusScope.of(context).unfocus();
+  }
+
   static bool isInteger(num value) => value is int || value == value.roundToDouble();
 
   static Color parseStringToColor(String? color) {
@@ -336,6 +340,13 @@ class Utils {
     if (index >= 0 && index < 6) return 'T${index + 2}';
     if (index == 6) return 'CN';
     return '';
+  }
+
+  static String getBMI({required double height, required double weight}) {
+    if (height == 0) return '0';
+    final double bmi = weight / pow(height / 100, 2);
+    final num mod = pow(10.0, 1);
+    return ((bmi * mod).round().toDouble() / mod).toString();
   }
 
   static int parseStringToInt(String text) {

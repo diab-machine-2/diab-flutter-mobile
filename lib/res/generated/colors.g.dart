@@ -1,5 +1,3 @@
-// GENERATED CODE - DO NOT MODIFY
-
 import 'dart:ui';
 
 class Colors {

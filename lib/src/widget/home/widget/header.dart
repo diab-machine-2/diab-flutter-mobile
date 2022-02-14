@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
@@ -11,10 +14,14 @@ import 'package:medical/src/repo/notification/notification_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/profile/widgets/motivation_popup_widget.dart';
 import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 
 class HomeHeader extends StatefulWidget {
   const HomeHeader({this.sharedCode});
@@ -106,7 +113,14 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                         BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(21)),
                                     child: user.imageUrl!.url == null
                                         ? Icon(Icons.person, size: 42, color: R.color.mainColor)
-                                        : Image.network(user.imageUrl!.url!, width: 42, height: 42)),
+                                        : Image.network(
+                                            user.imageUrl!.url ?? '',
+                                            width: 42,
+                                            height: 42,
+                                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                              return Icon(Icons.person, size: 42, color: R.color.mainColor);
+                                            },
+                                          )),
                               ),
                               Container(
                                 width: 20,
@@ -140,20 +154,41 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                     ),
                     Row(
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            //showAction(context);
-                            setState(() {
-                              isChoose = !isChoose;
-                            });
+                        InkWell(
+                          onTap: () async {
+                            var isZaloAppExisted = await checkZaloAppExisted();
+                            if (isZaloAppExisted) {
+                              showChatMenu();
+                            } else {
+                              goToStore();
+                            }
                           },
-                          child: isChoose
-                              ? Image.asset(R.drawable.ic_book_question_selected, width: 24, height: 24)
-                              : Image.asset(R.drawable.ic_book_question, width: 24, height: 24),
+                          child: Container(
+                            padding: EdgeInsets.only(bottom: 4, top: 4, right: 4, left: 16),
+                            color: R.color.transparent,
+                            child: Image.asset(R.drawable.ic_direct_chat, color: R.color.white, width: 24, height: 24),
+                          ),
                         ),
                         const SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: () {
+                        InkWell(
+                          onTap: () async {
+                            final scanedResult = await NavigationUtil.navigatePage(
+                              context,
+                              const QRScanWidget(),
+                            );
+                            if (scanedResult is String) {
+                              ShareProfilePopup.instance.onHasSharedCode(context: context, code: scanedResult);
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            color: R.color.transparent,
+                            child: Image.asset(R.drawable.ic_qr_scan, color: R.color.white, width: 24, height: 24),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        InkWell(
+                          onTap: () async {
                             Navigator.pushNamed(context, NavigatorName.notification);
                           },
                           child: Container(
@@ -163,30 +198,6 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                 width: 24, height: 24),
                           ),
                         ),
-                        //const SizedBox(width: 8),
-                        // InkWell(
-                        //   onTap: () async {
-                        //     final scanedResult =
-                        //         await NavigationUtil.navigatePage(
-                        //       context,
-                        //       const QRScanWidget(),
-                        //     );
-                        //     if (scanedResult is String) {
-                        //       ShareProfilePopup.instance.onHasSharedCode(
-                        //           context: context, code: scanedResult);
-                        //     }
-                        //   },
-                        //   child: Container(
-                        //     padding: const EdgeInsets.all(4),
-                        //     color: R.color.transparent,
-                        //     child: Image.asset(
-                        //       R.drawable.ic_qr_scan,
-                        //       color: R.color.white,
-                        //       width: 24,
-                        //       height: 24,
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     )
                   ],
@@ -230,6 +241,39 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                         ])
               ],
             )));
+  }
+
+  Future<bool> checkZaloAppExisted() async {
+    var isInstalled = await LaunchApp.isAppInstalled(
+      androidPackageName: 'com.zing.zalo',
+      iosUrlScheme: 'zalo://',
+    );
+    if (isInstalled is bool) return isInstalled;
+    if (isInstalled is int) {
+      return isInstalled == 1 ? true : false;
+    }
+    return false;
+  }
+
+  goToStore() {
+    if (Platform.isIOS) {
+      try {
+        launch('https://apps.apple.com/vn/app/zalo/id579523206');
+      } on PlatformException catch (e) {}
+    } else {
+      try {
+        launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
+      } on PlatformException catch (e) {}
+    }
+  }
+
+  showChatMenu() {
+    showDialog(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.8),
+      useSafeArea: false,
+      context: context,
+      builder: (_) => FunkyOverlay(isCircular: false),
+    );
   }
 
   _showDialogUpdateMotivation(MotivationModel? model) {

@@ -1,5 +1,3 @@
-// GENERATED CODE - DO NOT MODIFY
-
 class Dimens {
 	double get very_tiny_text_size => 8;
 	double get tiny_text_size => 10;

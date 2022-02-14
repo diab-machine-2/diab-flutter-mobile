@@ -109,7 +109,14 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                         decoration: BoxDecoration(color: R.color.mainColor, borderRadius: BorderRadius.circular(52)),
                         child: user.imageUrl!.url == null
                             ? Icon(Icons.person, size: 104, color: R.color.white)
-                            : Image.network(user.imageUrl!.url!, width: 104, height: 104)),
+                            : Image.network(
+                                user.imageUrl!.url!,
+                                width: 104,
+                                height: 104,
+                                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                  return Icon(Icons.person, size: 100, color: R.color.white);
+                                },
+                              )),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -222,11 +229,11 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   //     }),
                   //const SizedBox(height: 16),
                   buildAction(R.string.profile_information.tr(), R.drawable.ic_user, 0),
-                  buildAction(R.string.user_manual.tr(), R.drawable.ic_question, 1),
-                  buildAction(R.string.information_security.tr(), R.drawable.ic_security, 2),
-                  buildAction(R.string.contact_diab.tr(), R.drawable.ic_contact, 3),
-                  buildAction(R.string.password.tr(), R.drawable.ic_password, 4),
-                  //     buildAction(R.string.shared_profile_list.tr(), R.drawable.ic_share, 5),
+                  buildAction(R.string.shared_profile_list.tr(), R.drawable.ic_share, 1),
+                  buildAction(R.string.user_manual.tr(), R.drawable.ic_question, 2),
+                  buildAction(R.string.information_security.tr(), R.drawable.ic_security, 3),
+                  buildAction(R.string.contact_diab.tr(), R.drawable.ic_contact, 4),
+                  buildAction(R.string.password.tr(), R.drawable.ic_password, 5),
                 ],
               ),
             )));
@@ -290,17 +297,17 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
             Navigator.pushNamed(context, NavigatorName.profile_info);
           }
         } else if (index == 1) {
-          Navigator.pushNamed(context, NavigatorName.manual);
+          NavigationUtil.navigatePage(context, const SharedProfilePage());
         } else if (index == 2) {
+          Navigator.pushNamed(context, NavigatorName.manual);
+        } else if (index == 3) {
           Navigator.pushNamed(context, NavigatorName.manual_detail, arguments: {
             'manual': ManualModel(id: '', question: R.string.information_security.tr(), answer: secureModel!.security)
           });
-        } else if (index == 3) {
-          Navigator.pushNamed(context, NavigatorName.contact, arguments: {'contact': secureModel});
         } else if (index == 4) {
-          Navigator.pushNamed(context, NavigatorName.change_password);
+          Navigator.pushNamed(context, NavigatorName.contact, arguments: {'contact': secureModel});
         } else if (index == 5) {
-          NavigationUtil.navigatePage(context, const SharedProfilePage());
+          Navigator.pushNamed(context, NavigatorName.change_password);
         }
       },
       child: Container(

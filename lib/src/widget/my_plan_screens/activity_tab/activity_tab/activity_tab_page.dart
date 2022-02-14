@@ -17,6 +17,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/expert_comment/expert_comment_page.dart';
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
@@ -802,6 +803,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           _showReportBottomSheet();
           break;
         case StatisticalAction.chatting:
+          final result = await NavigationUtil.navigatePage(context, const ExpertCommentPage());
           break;
         default:
       }
