@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:device_apps/device_apps.dart' as DeviceAppsLib;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +21,7 @@ import 'package:medical/src/widget/profile/widgets/motivation_popup_widget.dart'
 import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 
 class HomeHeader extends StatefulWidget {
   const HomeHeader({this.sharedCode});
@@ -166,12 +166,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                           child: Container(
                             padding: EdgeInsets.only(bottom: 4, top: 4, right: 4, left: 16),
                             color: R.color.transparent,
-                            child: Image.asset(
-                              R.drawable.ic_direct_chat,
-                              color: R.color.white,
-                              width: 24,
-                              height: 24,
-                            ),
+                            child: Image.asset(R.drawable.ic_direct_chat, color: R.color.white, width: 24, height: 24),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -188,12 +183,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             color: R.color.transparent,
-                            child: Image.asset(
-                              R.drawable.ic_qr_scan,
-                              color: R.color.white,
-                              width: 24,
-                              height: 24,
-                            ),
+                            child: Image.asset(R.drawable.ic_qr_scan, color: R.color.white, width: 24, height: 24),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -254,13 +244,11 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
   }
 
   Future<bool> checkZaloAppExisted() async {
-    if (Platform.isAndroid) {
-      bool isInstalled = await DeviceAppsLib.DeviceApps.isAppInstalled('com.zing.zalo');
-      return isInstalled;
-    } else {
-      /// TODO
-      return true;
-    }
+    bool isInstalled = await LaunchApp.isAppInstalled(
+      androidPackageName: 'com.zing.zalo',
+      iosUrlScheme: 'zalo://',
+    );
+    return isInstalled;
   }
 
   goToStore() {
