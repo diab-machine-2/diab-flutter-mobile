@@ -43,7 +43,7 @@ class VideoManager {
 
     if (sourceList.isNotEmpty) {
       this.controller = BetterPlayerController(
-        const BetterPlayerConfiguration(
+       BetterPlayerConfiguration(
           placeholder: Image.asset(R.drawable.ic_thumbnail1, fit: BoxFit.fill),
           showPlaceholderUntilPlay: true,
           aspectRatio: 16 / 9,
