@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:better_player/better_player.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
+import 'package:medical/res/R.dart';
 
 class VideoManager {
   BetterPlayerController? controller;
@@ -40,9 +43,18 @@ class VideoManager {
 
     if (sourceList.isNotEmpty) {
       this.controller = BetterPlayerController(
-        const BetterPlayerConfiguration(
+       BetterPlayerConfiguration(
+          placeholder: Image.asset(R.drawable.ic_thumbnail1, fit: BoxFit.fill),
+          showPlaceholderUntilPlay: true,
           aspectRatio: 16 / 9,
-          autoPlay: true,
+          autoDispose: false,
+          expandToFill: false,
+          allowedScreenSleep: false,
+          fit: BoxFit.fitHeight,
+          deviceOrientationsOnFullScreen: [
+            DeviceOrientation.portraitUp,
+            DeviceOrientation.portraitDown,
+          ],
         ),
       );
       var betterPlayerDataSource = BetterPlayerDataSource(

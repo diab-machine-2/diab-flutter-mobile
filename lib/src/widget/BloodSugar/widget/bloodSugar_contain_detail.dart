@@ -92,8 +92,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                       padding: EdgeInsets.only(
                                           top: 16,
                                           bottom: 16,
-                                          left: 12,
-                                          right: 12),
+                                          left: 10,
+                                          right: 10),
                                       decoration: BoxDecoration(
                                         color: R.color.white,
                                         borderRadius: BorderRadius.circular(16),
@@ -148,8 +148,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                     padding: EdgeInsets.only(
                                         top: 16,
                                         bottom: 16,
-                                        left: 12,
-                                        right: 12),
+                                        left: 10,
+                                        right: 10),
                                     decoration: BoxDecoration(
                                       color: R.color.white,
                                       borderRadius: BorderRadius.circular(16),
@@ -210,8 +210,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                       padding: EdgeInsets.only(
                                           top: 16,
                                           bottom: 16,
-                                          left: 12,
-                                          right: 12),
+                                          left: 10,
+                                          right: 10),
                                       decoration: BoxDecoration(
                                         color: R.color.white,
                                         borderRadius: BorderRadius.circular(16),

@@ -393,6 +393,32 @@ class BloodSugarChartState extends State<BloodSugarChart>
                               } else {
                                 return convertToUTC(date, 'dd/MM');
                               }
+                              // if (value.toInt() > dates.length - 1) {
+                              //       return '';
+                              //     }
+                              //     final date = dates[value.toInt()];
+                              //     int? dateBefore;
+                              //     if(value.toInt() > 0){
+                              //       dateBefore = dates[value.toInt() - 1];
+                              //     }
+                              //     if(dateBefore == null){
+                              //        if (date == null) {
+                              //           return '';
+                              //         } else {
+                              //           return convertToUTC(date, 'dd/MM');
+                              //         }
+                              //     } else {
+                              //       if(date == dateBefore){
+                              //         return '';
+                              //       } else {
+                              //         if (date == null) {
+                              //           return '';
+                              //         } else {
+                              //           return convertToUTC(date, 'dd/MM');
+                              //         }
+                              //       }
+                              //     }
+
                             },
                           ),
                           leftTitles: SideTitles(

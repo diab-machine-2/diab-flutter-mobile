@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import '../models/report_data.dart';
@@ -20,7 +21,7 @@ class ReportListWidget extends StatelessWidget {
         MediaQuery.of(context).padding.bottom -
         54;
 
-    final double countHight = reportList.length * 48.0 + 216;
+    final double countHight = reportList.isEmpty ? 240 : reportList.length * 48.0 + 216;
 
     return SafeArea(
       child: Container(
@@ -61,9 +62,11 @@ class ReportListWidget extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            if(reportList.isNotEmpty)
+              const SizedBox(height: 8),
             Expanded(
-              child: ListView.builder(
+              child: reportList.isEmpty ? Center(child: Container(padding: EdgeInsets.symmetric(horizontal: 20), child: Text(R.string.no_report.tr(), style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w600), textAlign: TextAlign.center,),),) : 
+                ListView.builder(
                 physics: countHight > height
                     ? const AlwaysScrollableScrollPhysics()
                     : const NeverScrollableScrollPhysics(),

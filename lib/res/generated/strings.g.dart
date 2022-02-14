@@ -1003,6 +1003,7 @@ class Strings {
 	String get food_menu_intro_title22 => 'food_menu_intro_title22';
 	String get food_menu_intro_title23 => 'food_menu_intro_title23';
 	String get food_menu_intro_title3 => 'food_menu_intro_title3';
+	String get no_report => 'no_report';
 	String get qr_not_available => 'qr_not_available';
 	String get chat_with_coach => 'chat_with_coach';
 	String get chat_with_group => 'chat_with_group';

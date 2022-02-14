@@ -27,7 +27,7 @@ class VideoWidget extends StatefulWidget {
 
 class _VideoWidgetState extends State<VideoWidget> {
   String? url;
-  var path;
+//  var path;
   VideoManager? videoManager;
 
   @override
@@ -39,26 +39,25 @@ class _VideoWidgetState extends State<VideoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return (path != null && path.isNotEmpty)
-        ? BetterPlayer(controller: videoManager!.controller!)
-        : Center(
-            child: CircularProgressIndicator(),
-          );
+    return BetterPlayer(controller: videoManager!.controller!);
   }
 
   Future<void> getThumbnail() async {
     if (url != null) {
-      path = (await VideoThumbnail.thumbnailFile(
-        video: url!,
-        thumbnailPath: (await getTemporaryDirectory()).path,
-        imageFormat: ImageFormat.PNG,
-        maxHeight: 190,
-        quality: 10,
-      ));
+      // path = (await VideoThumbnail.thumbnailFile(
+      //   video: url!,
+      //   thumbnailPath: (await getTemporaryDirectory()).path,
+      //   imageFormat: ImageFormat.PNG,
+      //   maxHeight: 190,
+      //   quality: 10,
+        
+      // ));
+      // print('pathVideo = $path');
 
       videoManager = VideoManager(
           url: url,
-          placeHolder: path != null ? Image.file(File(path!)) : Container(),
+      //    placeHolder: path != null ? Image.file(File(path!)) : Container(),
+          placeHolder: Image.asset(R.drawable.ic_thumbnail1, fit: BoxFit.fill,),
           onExitFullScreen: () {},
           onCompleted: () {
             widget.callback();
@@ -67,7 +66,7 @@ class _VideoWidgetState extends State<VideoWidget> {
           });
       widget.setVideoManager(videoManager!);
 
-      setState(() {});
+ //     setState(() {});
     }
   }
 }

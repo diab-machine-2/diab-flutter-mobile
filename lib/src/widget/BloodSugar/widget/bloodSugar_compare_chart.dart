@@ -278,6 +278,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                   getTextStyles: (context, value) => TextStyle(
                                       color: R.color.black, fontSize: 14)),
                             ),
+                            gridData: FlGridData(show: false),
                             borderData: FlBorderData(
                               show: false,
                             ),

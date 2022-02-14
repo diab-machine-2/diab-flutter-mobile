@@ -27,17 +27,17 @@ class TrackingManager {
     // Wait for Firebase to initialize
     await Firebase.initializeApp();
 
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  //  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
 
-    // if (_kTestingCrashlytics) {
-    //   // Force enable crashlytics collection enabled if we're testing it.
-    //   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-    // } else {
-    //   // Else only enable it in non-debug builds.
-    //   // You could additionally extend this to allow users to opt-in.
-    //   await FirebaseCrashlytics.instance
-    //       .setCrashlyticsCollectionEnabled(!kDebugMode);
-    // }
+    if (_kTestingCrashlytics) {
+      // Force enable crashlytics collection enabled if we're testing it.
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+    } else {
+      // Else only enable it in non-debug builds.
+      // You could additionally extend this to allow users to opt-in.
+      await FirebaseCrashlytics.instance
+          .setCrashlyticsCollectionEnabled(!kDebugMode);
+    }
 
     // Pass all uncaught errors to Crashlytics.
     Function? originalOnError = FlutterError.onError;

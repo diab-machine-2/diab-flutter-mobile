@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:medical/res/R.dart';
 
 class VideoManager {
   VideoManager({
@@ -19,6 +21,9 @@ class VideoManager {
   Widget? placeHolder;
   bool finishedVideo = false;
   bool hasVideo = false;
+
+  StreamController<bool> _placeholderStreamController =
+      StreamController.broadcast();
 
   BetterPlayerController? get controller => hasVideo ? _controller : null;
 
@@ -55,27 +60,40 @@ class VideoManager {
     if (url?.isNotEmpty != true) return;
     final BetterPlayerController newController = BetterPlayerController(
       BetterPlayerConfiguration(
-        placeholder: placeHolder == null ? Container() : placeHolder,
+        placeholder: placeHolder == null ? Container(color: R.color.black) : _buildVideoPlaceholder(),
         showPlaceholderUntilPlay: true,
         aspectRatio: 16 / 9,
         autoDispose: false,
+        expandToFill: false,
+        allowedScreenSleep: false,
+        fit: BoxFit.fitHeight,
         deviceOrientationsAfterFullScreen: [
           DeviceOrientation.portraitUp,
           DeviceOrientation.portraitDown,
         ],
       ),
-      betterPlayerDataSource: BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        url!,
-      ),
+      // betterPlayerDataSource: BetterPlayerDataSource(
+      //   BetterPlayerDataSourceType.network,
+      //   url!,
+      //  ),
     )..addEventsListener(
         (event) async {
           if (event.betterPlayerEventType == BetterPlayerEventType.hideFullscreen && onExitFullScreen != null) {
             await Future.delayed(const Duration(seconds: 1));
             onExitFullScreen!.call();
           }
+          print('event.betterPlayerEventType = ${event.betterPlayerEventType}');
+          if (event.betterPlayerEventType == BetterPlayerEventType.play){
+            _placeholderStreamController.add(true);
+          }
         },
       );
+
+    BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
+      BetterPlayerDataSourceType.network,
+      url!,
+    );
+    newController.setupDataSource(betterPlayerDataSource);
     newController.videoPlayerController?.addListener(() async {
       if (Platform.isIOS) {
         if ((newController.videoPlayerController!.value.position.inMilliseconds) ==
@@ -97,6 +115,17 @@ class VideoManager {
     _controller = newController;
   }
 
+  Widget _buildVideoPlaceholder() {
+    return StreamBuilder<bool>(
+      stream: _placeholderStreamController.stream,
+      builder: (context, snapshot) {
+        return snapshot.data ?? false
+            ? Container(color: R.color.black)
+            : placeHolder!;
+      },
+    );
+  }
+
   void stopCache() {
     _controller?.stopPreCache(
       BetterPlayerDataSource(
@@ -107,6 +136,7 @@ class VideoManager {
   }
 
   void disposeAllVideo() {
+    _placeholderStreamController.close();
     this._controller?.dispose(forceDispose: true);
   }
 }

@@ -67,11 +67,13 @@ class _LessonTabPageState extends State<LessonTabPage> with AutomaticKeepAliveCl
           }
           if (state is LessonTabScrollToLesson) {
             if (_lessonScrollController.hasClients) {
-              _lessonScrollController.animateTo(
-                127.0 * state.newIndex,
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.ease,
-              );
+              if(_cubit.lessonsList != null && _cubit.lessonsList!.length > 5){
+                 _lessonScrollController.animateTo(
+                  127.0 * state.newIndex,
+                  duration: const Duration(milliseconds: 0),
+                  curve: Curves.ease,
+                );
+              }
             }
           }
         },

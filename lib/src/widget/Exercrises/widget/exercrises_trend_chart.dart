@@ -401,6 +401,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                             getTextStyles: (context, value) =>
                                 TextStyle(color: R.color.black, fontSize: 14, fontWeight: FontWeight.w400)),
                       ),
+                      gridData: FlGridData(show: false),
                       borderData: FlBorderData(
                         show: false,
                       ),
