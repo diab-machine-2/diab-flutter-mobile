@@ -48,7 +48,8 @@ class _TabbarControllerState extends State<TabbarController> with SingleTickerPr
     super.initState();
     tabs = [
       HomeController(sharedCode: widget.sharedCode),
-      MyPlanPage(index: widget.isRedirectFromNotification ? 0 : 1),
+      //   MyPlanPage(index: widget.isRedirectFromNotification ? 0 : 1),
+      MyPlanPage(index: 0),
       QuestionAnswerPage(),
       const ProfileController(hideAllBackButton: true),
     ];

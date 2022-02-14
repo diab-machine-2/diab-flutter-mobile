@@ -32,16 +32,20 @@ class ShareProfilePopup {
   }) async {
     final BuildContext currentContext = context ?? navigatorKey.currentState!.context;
     final UserInfoReferralCodeResponse? userInfo = await _getSharedProfile(currentContext, code: code);
-    if (userInfo?.isUserExists != true || userInfo?.notValidPosition == true) {
+    if (userInfo?.isUserExists != true) {
       Message.showToastMessage(context!, R.string.qr_not_available.tr());
+      return;
+    }
+    if (userInfo?.notValidPosition == true) {
+      Message.showToastMessage(
+          context!, R.string.unable_share_doctor_profile.tr(args: [userInfo?.data?.fullName ?? '']));
       return;
     }
     showPopup(currentContext,
         image: R.drawable.img_sharing_profile,
         title: requestFromDoctor
             ? R.string.doctor_request_share_profile.tr(args: [userInfo?.data?.fullName ?? ''])
-            : R.string.share_profile_for_doctor
-                .tr(args: [userInfo?.data?.fullName ?? '', userInfo?.data?.nameOfAgency ?? '']),
+            : R.string.share_profile_for_doctor.tr(args: [userInfo?.data?.fullName ?? '']),
         description: R.string.share_profile_description.tr(), onTapCancel: () {
       NavigationUtil.pop(currentContext);
     }, onTapYes: () async {

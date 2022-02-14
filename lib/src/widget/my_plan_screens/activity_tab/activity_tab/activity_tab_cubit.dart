@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
@@ -98,6 +99,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     apiResult.when(success: (SmartGoalListReponse response) {
       smartGoalDayList = response.data?.daily ?? [];
       smartGoalWeekList = response.data?.weekly ?? [];
+
+      AppSettings.smartGoalDayList = response.data?.daily ?? [];
 
       congratulationState.currentDate = DateUtil.parseTimespanToDateTime(currentDay!);
 

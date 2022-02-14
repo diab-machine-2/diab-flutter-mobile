@@ -460,6 +460,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                     .toList(),
                                 selectedDialogTitle: "Chọn tính cách",
                                 isShowSelectedDialog: true,
+                                isRequiredSelection: false,
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(user.personalityRuleList!, selectedIndexList,
                                       CategoryType.PERSONALITY_TYPE, false);
@@ -477,6 +478,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                     .toList(),
                                 isShowSelectedDialog: true,
                                 isMultipleChoice: true,
+                                isRequiredSelection: false,
                                 selectedDialogTitle: "Chọn sở thích",
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(
@@ -495,6 +497,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                     .toList(),
                                 selectedDialogTitle: "Chọn môn thể thao",
                                 isShowSelectedDialog: true,
+                                isRequiredSelection: false,
                                 isMultipleChoice: true,
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(user.favouriteSportRuleList!, selectedIndexList,
@@ -512,6 +515,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                     .map((e) => e.text ?? '')
                                     .toList(),
                                 isShowSelectedDialog: true,
+                                isRequiredSelection: false,
                                 selectedDialogTitle: "Chọn thực hành tâm thức",
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(user.consciousnessPracticeRuleList!, selectedIndexList,
@@ -529,6 +533,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                     .map((e) => e.text ?? '')
                                     .toList(),
                                 isShowSelectedDialog: true,
+                                isRequiredSelection: false,
                                 selectedDialogTitle: "Chọn tôn giáo",
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(
@@ -546,6 +551,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                     .map((e) => e.text ?? '')
                                     .toList(),
                                 isShowSelectedDialog: true,
+                                isRequiredSelection: false,
                                 selectedDialogTitle: "Chọn ăn chay",
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(
@@ -565,6 +571,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                                 selectedDialogTitle: "Chọn khung giờ trao đổi với coach ưa thích",
                                 isShowSelectedDialog: true,
                                 isMultipleChoice: true,
+                                isRequiredSelection: false,
                                 callback: (selectedIndexList) {
                                   updateCategoryUser(user.workingHourRuleList!, selectedIndexList,
                                       CategoryType.WORKING_HOURS_TYPE, true);
@@ -1976,6 +1983,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
     bool isShowSelectedDialog = false,
     bool isMultipleChoice = false,
     bool isTitleFromSelectedCategory = true,
+    bool isRequiredSelection = true,
   }) {
     title = isTitleFromSelectedCategory ? getTitleFromSelectedList(selectedList) : title;
     return GestureDetector(
@@ -1987,6 +1995,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController> with Obse
                 return SelectBottomSheetWidget(
                   title: selectedDialogTitle,
                   selectedList: selectedList,
+                  isRequiredSelection: isRequiredSelection,
                   elementList: elementList,
                   isMultipleChoice: isMultipleChoice,
                   onSelected: (typeList) {

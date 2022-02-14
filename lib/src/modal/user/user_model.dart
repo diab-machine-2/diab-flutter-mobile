@@ -60,6 +60,7 @@ class UserModel {
   final List<InfoModel>? personalInterests;
   final List<InfoModel>? favouriteSports;
   final List<InfoModel>? workingHourss;
+  final List<TrainingGroupModel>? trainingGroups;
 
   final List<CategoryItemUserModel>? jobList;
   final List<CategoryItemUserModel>? educationLevelList;
@@ -96,6 +97,7 @@ class UserModel {
     required this.height,
     required this.weight,
     required this.ward,
+    required this.trainingGroups,
     required this.dateOfBirth,
     required this.diabetesStatus,
     required this.diabetesName,
@@ -197,6 +199,7 @@ class UserModel {
     List<InfoModel>? personalInterests,
     List<InfoModel>? favouriteSports,
     List<InfoModel>? workingHourss,
+    List<TrainingGroupModel>? trainingGroups,
     List<CategoryItemUserModel>? jobList,
     List<CategoryItemUserModel>? educationLevelList,
     List<CategoryItemUserModel>? lessonTagList,
@@ -264,6 +267,7 @@ class UserModel {
         personalInterests: personalInterests ?? this.personalInterests,
         favouriteSports: favouriteSports ?? this.favouriteSports,
         workingHourss: workingHourss ?? this.workingHourss,
+        trainingGroups: trainingGroups ?? this.trainingGroups,
         jobList: jobList ?? this.jobList,
         educationLevelList: educationLevelList ?? this.educationLevelList,
         lessonTagList: lessonTagList ?? this.lessonTagList,
@@ -339,6 +343,7 @@ class UserModel {
       favouriteSports: json['favouriteSports'],
       workingHourss: json['workingHourss'],
       jobList: CategoryItemUserModel.toList(json['jobList']),
+      trainingGroups: TrainingGroupModel.toList(json['trainingGroups']),
       educationLevelList: CategoryItemUserModel.toList(json['educationLevelList']),
       lessonTagList: CategoryItemUserModel.toList(json['lessonTagList']),
       interestRuleList: CategoryItemUserModel.toList(json['interestRuleList']),
@@ -426,5 +431,101 @@ class DiabeteModel {
 
   static List<DiabeteModel> toList(List<dynamic> items) {
     return items.map((item) => DiabeteModel.fromJson(item)).toList();
+  }
+}
+
+class TrainingGroupModel {
+  final String? trainingGroupId;
+  final String? patientId;
+  final TrainingGroup? trainingGroup;
+
+  TrainingGroupModel({
+    required this.trainingGroupId,
+    required this.patientId,
+    required this.trainingGroup,
+  });
+
+  factory TrainingGroupModel.fromJson(Map<String, dynamic> json) {
+    return TrainingGroupModel(
+      trainingGroupId: json['trainingGroupId'],
+      patientId: json['patientId'],
+      trainingGroup: json['trainingGroup'] == null ? null : TrainingGroup.fromJson(json['trainingGroup']),
+    );
+  }
+
+  static List<TrainingGroupModel> toList(List<dynamic> items) {
+    return items.map((item) => TrainingGroupModel.fromJson(item)).toList();
+  }
+}
+
+class TrainingGroup {
+  final String? name;
+  final String? description;
+  final int? status;
+  final String? accountId;
+  final String? coverId;
+  final String? linkZalo;
+  final int? maxMember;
+  final AccountCoach? account;
+
+  TrainingGroup({
+    required this.name,
+    required this.description,
+    required this.status,
+    required this.accountId,
+    required this.coverId,
+    required this.linkZalo,
+    required this.maxMember,
+    required this.account,
+  });
+
+  factory TrainingGroup.fromJson(Map<String, dynamic> json) {
+    return TrainingGroup(
+      name: json['name'],
+      description: json['description'],
+      status: json['status'],
+      accountId: json['accountId'],
+      coverId: json['coverId'],
+      linkZalo: json['linkZalo'],
+      maxMember: json['maxMember'],
+      account: json['account'] == null ? null : AccountCoach.fromJson(json['account']),
+    );
+  }
+
+  static List<TrainingGroup> toList(List<dynamic> items) {
+    return items.map((item) => TrainingGroup.fromJson(item)).toList();
+  }
+}
+
+class AccountCoach {
+  final String? username;
+  final String? firstName;
+  final String? lastName;
+  final String? fullNameSearch;
+  final String? phoneNumber;
+  final String? secondPhoneNumber;
+
+  AccountCoach({
+    required this.username,
+    required this.firstName,
+    required this.lastName,
+    required this.fullNameSearch,
+    required this.phoneNumber,
+    required this.secondPhoneNumber,
+  });
+
+  factory AccountCoach.fromJson(Map<String, dynamic> json) {
+    return AccountCoach(
+      username: json['username'],
+      firstName: json['firstName'],
+      lastName: json['lastName'],
+      fullNameSearch: json['lastName'],
+      phoneNumber: json['phoneNumber'],
+      secondPhoneNumber: json['secondPhoneNumber'],
+    );
+  }
+
+  static List<AccountCoach> toList(List<dynamic> items) {
+    return items.map((item) => AccountCoach.fromJson(item)).toList();
   }
 }

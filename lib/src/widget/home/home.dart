@@ -7,14 +7,18 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_%20suggest.dart';
+import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/list_service/list_service_page.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal_page.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 class HomeController extends StatefulWidget {
   const HomeController({this.sharedCode});
@@ -25,7 +29,12 @@ class HomeController extends StatefulWidget {
 
 class _HomeControllerState extends State<HomeController> with Observer {
   var data = [
-    {'name': R.string.duong_huyet.tr(), 'image': '', 'icon': R.drawable.ic_blood_sugar, 'dataDetail': []},
+    {
+      'name': R.string.duong_huyet.tr(),
+      'image': R.drawable.bg_blood,
+      'icon': R.drawable.ic_blood_sugar,
+      'dataDetail': [],
+    },
     {
       'name': R.string.huyet_ap.tr(),
       'image': R.drawable.bg_blood_presser,
@@ -79,6 +88,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   int page = 1;
   bool isLoading = false;
+
+  var user = AppSettings.userInfo;
 
   HomeModel? model;
 
@@ -224,19 +235,19 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                       icon as String?, model!.emotionCard!);
                                 }
 
-                                if (index == 4 && model != null && model!.emotionCard!.details != null) {
+                                if (index == 4 && model != null && model!.energyCard!.consumedEnergy != 0) {
                                   return _buildFood(context, index, name as String?, image as String?, icon as String?,
                                       model!.energyCard!);
                                 }
-                                if (index == 5 && model != null && model!.emotionCard!.details != null) {
+                                if (index == 5 && model != null && model!.exercise!.index != 0) {
                                   return _buildExcercise(context, index, name as String?, image as String?,
                                       icon as String?, model!.exercise!);
                                 }
-                                if (index == 6 && model != null && model!.emotionCard!.details != null) {
+                                if (index == 6 && model != null && model!.processCard!.target != 0) {
                                   return _buildProgress(context, index, name as String?, image as String?,
-                                      icon as String?, model!.hbA1CIndex);
+                                      icon as String?, model!.processCard!);
                                 }
-                                if (index == 7 && model != null && model!.emotionCard!.details != null) {
+                                if (index == 7 && model != null && model!.hbA1CIndex.index != 0) {
                                   return _buildHbA1C(context, index, name as String?, image as String?, icon as String?,
                                       model!.hbA1CIndex);
                                 }
@@ -335,7 +346,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
 
   Widget _buildItem(BuildContext context, int index, String? name, String? image, String? icon) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (index == 0)
           Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
         else if (index == 1) {
@@ -349,7 +360,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
         } else if (index == 5) {
           Navigator.pushNamed(context, NavigatorName.detail_exercrises);
         } else if (index == 6) {
-          Navigator.pushNamed(context, NavigatorName.my_progress);
+          await NavigationUtil.navigatePage(context, CreateGoalPage(AppSettings.smartGoalDayList));
+          //    Navigator.pushNamed(context, NavigatorName.my_progress);
         } else if (index == 7) {
           Navigator.pushNamed(context, NavigatorName.detail_hba1c);
         }
@@ -429,7 +441,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Image.network(model.icon?.url ?? '', width: 25, height: 25),
+                      NetWorkImageWidget(imageUrl: model.icon?.url ?? '', width: 25, height: 25),
                       const SizedBox(width: 4),
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
@@ -498,7 +510,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.network(model.icon?.url ?? '', width: 25, height: 25),
+                    NetWorkImageWidget(imageUrl: model.icon?.url ?? '', width: 25, height: 25),
                     const SizedBox(width: 4),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
@@ -606,7 +618,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                     style:
                                         TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400)),
                                 const SizedBox(width: 4),
-                                Image.network(model.details![index].icon!.url ?? '', width: 25, height: 25),
+                                NetWorkImageWidget(
+                                    imageUrl: model.details![index].icon!.url ?? '', width: 25, height: 25),
                               ],
                             ),
                           )),
@@ -781,7 +794,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Image.network(model.icon?.url ?? '', width: 25, height: 25),
+                            NetWorkImageWidget(imageUrl: model.icon?.url ?? '', width: 25, height: 25),
                             const SizedBox(width: 4),
                             Padding(
                               padding: const EdgeInsets.only(top: 8),
@@ -804,10 +817,19 @@ class _HomeControllerState extends State<HomeController> with Observer {
   }
 
   Widget _buildProgress(
-      BuildContext context, int index, String? name, String? image, String? icon, HbA1CIndexModel model) {
+      BuildContext context, int index, String? name, String? image, String? icon, ProcessCardModel model) {
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, NavigatorName.my_progress);
+      onTap: () async {
+        if (model.target != null && model.target != 0) {
+          if (model.userFree ?? true) {
+            // await Navigator.pushReplacementNamed(context, NavigatorName.tabbar, arguments: {
+            //   'isRedirectFromNotification': true,
+            // });
+            Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
+          } else {
+            await Navigator.pushNamed(context, NavigatorName.my_progress);
+          }
+        }
       },
       child: Stack(children: [
         Positioned.fill(
@@ -821,52 +843,72 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
-                  Text(
-                      getStringToday(model.createDateTime ?? 0).isEmpty
-                          ? convertToUTC(model.createDateTime ?? 0, 'dd/MM/yyyy')
-                          : getStringToday(model.createDateTime ?? 0),
+                  Text('Hôm nay',
                       style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
                 ]),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Text(model.targetCompeleted!.round().toString(),
+                        style: TextStyle(
+                            fontFamily: 'Viga',
+                            color: toColor(model.color),
+                            fontSize: 26,
+                            fontWeight: FontWeight.w400)),
+                    SizedBox(width: 2),
                     Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(model.indexChange!.round().toString() + '/' + model.index!.round().toString(),
-                            style: TextStyle(
-                                fontFamily: 'Viga',
-                                color: toColor(model.color),
-                                fontSize: 26,
-                                fontWeight: FontWeight.w400)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text('/${model.target!.round().toString()} mục tiêu ngày',
+                            style:
+                                TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(' mục tiêu ngày',
-                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
-                    )
                   ],
                 ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.network(model.icon?.url ?? '', width: 25, height: 25),
-                    const SizedBox(width: 4),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text('Hoàn thành',
-                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
-                    )
-                  ],
-                )
+                if ((model.userFree ?? true) == false)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      NetWorkImageWidget(imageUrl: model.icon?.url ?? '', width: 25, height: 25),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              getStatusProgress(model),
+                              style:
+                                  TextStyle(color: R.color.captionColorGray, fontSize: 14, fontWeight: FontWeight.w400),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
               ],
             ),
           ),
         )
       ]),
     );
+  }
+
+  getStatusProgress(ProcessCardModel model) {
+    if (model.exercise != null && model.exerciseCompeleted != null) {
+      if (model.exerciseCompeleted! < model.exercise!) {
+        return 'Chưa hoàn thành';
+      } else if (model.exercise! == model.exerciseCompeleted!) {
+        return 'Hoàn thành';
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
   }
 
   Widget _buildHbA1C(
@@ -913,7 +955,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.network(model.icon?.url ?? '', width: 25, height: 25),
+                    NetWorkImageWidget(imageUrl: model.icon?.url ?? '', width: 25, height: 25),
                     const SizedBox(width: 4),
                     Padding(
                       padding: const EdgeInsets.only(top: 8),

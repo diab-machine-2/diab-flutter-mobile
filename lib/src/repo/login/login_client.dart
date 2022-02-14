@@ -130,15 +130,18 @@ class LoginClient extends FetchClient {
 
   Future<bool> createPatient(Map<String, String> params) async {
     try {
-      final response = await super.postHttp(path: '/App/Patient/Input', params: params);
-      logger.i(response.request);
+      // final response = await super.postHttp(path: '/App/Patient/Input', params: params);
+      final response = await super.postData(url: '/App/Patient/Input', params: FormData.fromMap(params));
+      logger.i(response.requestOptions);
       logger.i(response.headers);
       if (response.statusCode == 200) {
         print('register success');
         return true;
       } else {
-        final error = await response.stream.bytesToString();
-        throw Error.fromString(error);
+        final error = Error.fromJson(response);
+        throw error;
+        // final error = await response.stream.bytesToString();
+        // throw Error.fromString(error);
       }
     } catch (e) {
       logger.e(e.toString());

@@ -137,6 +137,7 @@ class Strings {
 	String get hide => 'hide';
 	String get camera_permission_required => 'camera_permission_required';
 	String get shared_profile_list => 'shared_profile_list';
+	String get unable_share_doctor_profile => 'unable_share_doctor_profile';
 	String get doctor_request_share_profile => 'doctor_request_share_profile';
 	String get share_profile_for_doctor => 'share_profile_for_doctor';
 	String get share_profile_description => 'share_profile_description';
@@ -1003,4 +1004,9 @@ class Strings {
 	String get food_menu_intro_title23 => 'food_menu_intro_title23';
 	String get food_menu_intro_title3 => 'food_menu_intro_title3';
 	String get qr_not_available => 'qr_not_available';
+	String get chat_with_coach => 'chat_with_coach';
+	String get chat_with_group => 'chat_with_group';
+	String get today => 'today';
+	String get chua_hoan_thanh => 'chua_hoan_thanh';
+	String get hoan_thanh => 'hoan_thanh';
 }

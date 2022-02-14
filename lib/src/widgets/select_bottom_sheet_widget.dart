@@ -12,6 +12,7 @@ class SelectBottomSheetWidget extends StatefulWidget {
     this.elementList = const [],
     required this.onSelected,
     this.isMultipleChoice = false,
+    this.isRequiredSelection = true,
   });
 
   final String title;
@@ -19,6 +20,8 @@ class SelectBottomSheetWidget extends StatefulWidget {
   final List<String> elementList;
   final Function(List<String>) onSelected;
   final bool isMultipleChoice;
+  final bool isRequiredSelection;
+
   @override
   _SelectBottomSheetWidgetState createState() => _SelectBottomSheetWidgetState();
 }
@@ -110,7 +113,11 @@ class _SelectBottomSheetWidgetState extends State<SelectBottomSheetWidget> {
                       }
                     } else {
                       if (!isClickSave) {
-                        Message.showToastMessage(context, 'Bạn hãy hoàn thành các thông tin bắt buộc nhé!');
+                        if (widget.isRequiredSelection) {
+                          Message.showToastMessage(context, 'Bạn hãy hoàn thành các thông tin bắt buộc nhé!');
+                        } else {
+                          Navigator.pop(context);
+                        }
                       }
                       isClickSave = true;
                       if (_timer != null) _timer!.cancel();

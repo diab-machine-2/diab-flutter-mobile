@@ -887,6 +887,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       personalInterests: userInfo.personalInterests,
       favouriteSports: userInfo.favouriteSports,
       workingHourss: userInfo.workingHourss,
+      trainingGroups: userInfo.trainingGroups,
       jobList: userInfo.jobList,
       educationLevelList: userInfo.educationLevelList,
       lessonTagList: userInfo.lessonTagList,

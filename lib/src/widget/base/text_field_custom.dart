@@ -104,6 +104,9 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                           child: TextField(
                               controller: textEditingController,
                               //keyboardType: TextInputType,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(widget.maxLength),
+                              ],
                               autofocus: widget.autoFocus,
                               maxLength: widget.maxLength,
                               obscureText: !showPassword && widget.isPassword,
@@ -117,6 +120,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
                                   border: InputBorder.none,
                                   contentPadding: const EdgeInsets.only(top: -22),
                                   hintText: widget.placeholder,
+                                  counterText: "",
                                   hintStyle: TextStyle(
                                       fontFamily: 'roboto',
                                       color: R.color.textDark,

@@ -6,6 +6,7 @@ class Drawables {
   String get bg_apple_home => "lib/res/drawables/bg_apple_home.png";
   String get bg_apple_orange => "lib/res/drawables/bg_apple_orange.png";
   String get bg_blood_presser => "lib/res/drawables/bg_blood_presser.png";
+  String get bg_blood => "lib/res/drawables/bg_blood.png";
   String get bg_card_my_plan => "lib/res/drawables/bg_card_my_plan.png";
   String get bg_des => "lib/res/drawables/bg_des.png";
   String get bg_detail => "lib/res/drawables/bg_detail.png";
@@ -30,7 +31,6 @@ class Drawables {
   String get bg_pro_group_2 => "lib/res/drawables/bg_pro_group_2.png";
   String get bg_pro_group_3 => "lib/res/drawables/bg_pro_group_3.png";
   String get bg_pro_group_4 => "lib/res/drawables/bg_pro_group_4.png";
-  String get bg_profile => "lib/res/drawables/bg_profile.png";
   String get bg_register_package_premium => "lib/res/drawables/bg_register_package_premium.png";
   String get bg_register_package_pro => "lib/res/drawables/bg_register_package_pro.png";
   String get bg_splash => "lib/res/drawables/bg_splash.png";
@@ -92,6 +92,9 @@ class Drawables {
   String get ic_camera_picker => "lib/res/drawables/ic_camera_picker.png";
   String get ic_can_nang => "lib/res/drawables/ic_can_nang.png";
   String get ic_chat => "lib/res/drawables/ic_chat.png";
+  String get ic_chat_coach => "lib/res/drawables/ic_chat_coach.png";
+  String get ic_chat_group => "lib/res/drawables/ic_chat_group.png";
+  String get ic_chat_home => "lib/res/drawables/ic_chat_home.png";
   String get ic_chatting => "lib/res/drawables/ic_chatting.png";
   String get ic_check => "lib/res/drawables/ic_check.png";
   String get ic_check_circle => "lib/res/drawables/ic_check_circle.png";
