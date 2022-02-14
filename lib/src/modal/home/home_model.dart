@@ -298,12 +298,12 @@ class ProcessCardModel {
 
   factory ProcessCardModel.fromJson(Map<String, dynamic> json) {
     return ProcessCardModel(
-      target: json['target'],
-      targetCompeleted: json['targetCompeleted'],
-      exerciseCompeleted: json['exerciseCompeleted'],
-      lessonCompeleted: json['lessonCompeleted'],
-      userFree: json['userFree'],
-      createDateTime: json['createDateTime'],
+      target: json['target'] ?? 0,
+      targetCompeleted: json['targetCompeleted'] ?? 0,
+      exerciseCompeleted: json['exerciseCompeleted'] ?? 0,
+      lessonCompeleted: json['lessonCompeleted'] ?? 0,
+      userFree: json['userFree'] ?? true,
+      createDateTime: json['createDateTime'] ?? 0,
       color: json['color'],
       icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
     );

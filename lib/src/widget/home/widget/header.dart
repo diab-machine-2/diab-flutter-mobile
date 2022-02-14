@@ -154,12 +154,12 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                       children: [
                         GestureDetector(
                           onTap: () async {
-                            var isZaloAppExisted = await checkZaloAppExisted();
-                            if (isZaloAppExisted) {
-                              _showChatMenu();
-                            } else {
-                              await _goToStore();
-                            }
+                            //var isZaloAppExisted = await checkZaloAppExisted();
+                            //   if (isZaloAppExisted) {
+                            _showChatMenu();
+                            //   } else {
+                            //     await _goToStore();
+                            //    }
 
                             // setState(() {
                             //   isChoose = !isChoose;

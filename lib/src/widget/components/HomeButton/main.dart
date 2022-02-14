@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -165,7 +167,7 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                       HorizontalMenuItem(
                         label: 'Chat nhóm',
                         ontap: () {
-                          print('2');
+                          goToStore();
                         },
                         icon: Image.asset(R.drawable.ic_chat_group, width: 32, height: 32),
                         labelColor: Colors.white,
@@ -182,9 +184,21 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
     try {
       launch("https://zalo.me/" + phone);
     } on PlatformException catch (e) {
-      launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
+      goToStore();
     } finally {
-      launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
+      goToStore();
+    }
+  }
+
+  goToStore() {
+    if (Platform.isIOS) {
+      try {
+        launch('https://apps.apple.com/vn/app/zalo/id579523206');
+      } on PlatformException catch (e) {}
+    } else {
+      try {
+        launch("https://play.google.com/store/apps/details?id=com.zing.zalo");
+      } on PlatformException catch (e) {}
     }
   }
 }
