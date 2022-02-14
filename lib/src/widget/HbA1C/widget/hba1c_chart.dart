@@ -252,6 +252,8 @@ class HbA1CChartState extends State<HbA1CChart>
                         ),
                       ),
                       titlesData: FlTitlesData(
+                        rightTitles: SideTitles(showTitles: false),
+                        topTitles: SideTitles(showTitles: false),
                         show: true,
                         bottomTitles: SideTitles(
                           showTitles: true,
@@ -273,6 +275,7 @@ class HbA1CChartState extends State<HbA1CChart>
                               color: R.color.black, fontSize: 14),
                         ),
                       ),
+                      gridData: FlGridData(show: false),
                       borderData: FlBorderData(
                         show: false,
                       ),
@@ -332,6 +335,8 @@ class HbA1CChartState extends State<HbA1CChart>
                             }),
                       ),
                       titlesData: FlTitlesData(
+                        rightTitles: SideTitles(showTitles: false),
+                        topTitles: SideTitles(showTitles: false),
                         bottomTitles: SideTitles(
                           margin: 16,
                           reservedSize: -16,

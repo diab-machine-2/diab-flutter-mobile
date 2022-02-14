@@ -107,6 +107,8 @@ class LineChartSample1State extends State<LineChartSample1> {
         show: false,
       ),
       titlesData: FlTitlesData(
+        rightTitles: SideTitles(showTitles: false),
+        topTitles: SideTitles(showTitles: false),
         bottomTitles: SideTitles(
           showTitles: true,
           reservedSize: 22,
@@ -261,6 +263,8 @@ class LineChartSample1State extends State<LineChartSample1> {
         show: false,
       ),
       titlesData: FlTitlesData(
+        rightTitles: SideTitles(showTitles: false),
+        topTitles: SideTitles(showTitles: false),
         bottomTitles: SideTitles(
           showTitles: true,
           reservedSize: 22,

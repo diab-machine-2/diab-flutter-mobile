@@ -124,6 +124,8 @@ class BarChartSample2State extends State<BarChartSample2> {
                             });
                           }),
                       titlesData: FlTitlesData(
+                        rightTitles: SideTitles(showTitles: false),
+                              topTitles: SideTitles(showTitles: false),
                         show: true,
                         bottomTitles: SideTitles(
                           showTitles: true,
@@ -175,6 +177,7 @@ class BarChartSample2State extends State<BarChartSample2> {
                           },
                         ),
                       ),
+                      gridData: FlGridData(show: false),
                       borderData: FlBorderData(
                         show: false,
                       ),

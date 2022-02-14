@@ -1,6 +1,4 @@
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
-import 'package:medical/src/modal/exercrises/exercrises_categogy_request.dart';
-import 'package:meta/meta.dart';
 
 class InputDetailExercriseModel {
   final String? id;

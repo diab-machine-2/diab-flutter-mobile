@@ -22,7 +22,7 @@ class ActionListPanel extends StatelessWidget {
     },
     {
       'name': R.string.van_dong.tr(),
-      'icon': R.drawable.ic_excersire,
+      'icon': R.drawable.ic_exercise,
     },
     {
       'name': R.string.dinh_duong.tr(),
@@ -131,7 +131,7 @@ class ActionListPanel extends StatelessWidget {
                               : FontWeight.w400,
                           color: selectedIndex == index
                               ? R.color.mainColor
-                              : R.color.color0xff454649)),
+                              : R.color.grey_1)),
                 ],
               ),
               selectedIndex == index

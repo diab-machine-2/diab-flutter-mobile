@@ -6,12 +6,13 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+
+import 'daily_nutrition/daily_nutrition.dart';
 
 class FoodDetailController extends StatefulWidget {
   FoodDetailController({Key? key}) : super(key: key);
@@ -239,8 +240,16 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                       index];
                                                               return GestureDetector(
                                                                 onTap: () {
-                                                                  Navigator.pushNamed(context, NavigatorName.add_food,
-                                                                      arguments: {'type': 'input', 'id': null});
+                                                                  NavigationUtil
+                                                                      .navigatePage(
+                                                                    context,
+                                                                    DailyNutritionPage(
+                                                                      type:
+                                                                          'update',
+                                                                      id: inputModel
+                                                                          .id,
+                                                                    ),
+                                                                  );
                                                                 },
                                                                 child:
                                                                     Container(
@@ -283,23 +292,27 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                                 child: Row(
                                                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                                   children: [
-                                                                                    Row(children: [
-                                                                                      Container(
-                                                                                        width: 50,
-                                                                                        height: 50,
-                                                                                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
-                                                                                        child: Image.network(food.image!.url ?? ''),
-                                                                                      ),
-                                                                                      SizedBox(width: 12),
-                                                                                      Column(
-                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                        children: [
-                                                                                          Text(food.name!, style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w500)),
-                                                                                          SizedBox(height: 4),
-                                                                                          food.code == 'OtherUneditable' ? SizedBox() :Text(food.text!, style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal))
-                                                                                        ],
-                                                                                      )
-                                                                                    ]),
+                                                                                    Expanded(
+                                                                                      child: Row(children: [
+                                                                                        Container(
+                                                                                          width: 50,
+                                                                                          height: 50,
+                                                                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
+                                                                                          child: Image.network(food.image!.url ?? ''),
+                                                                                        ),
+                                                                                        SizedBox(width: 12),
+                                                                                        Expanded(
+                                                                                          child: Column(
+                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                            children: [
+                                                                                              Text(food.name!, style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w500)),
+                                                                                              const SizedBox(height: 4),
+                                                                                              if (food.code == 'OtherUneditable') const SizedBox() else Text(food.text!, style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal))
+                                                                                            ],
+                                                                                          ),
+                                                                                        )
+                                                                                      ]),
+                                                                                    ),
                                                                                     Row(
                                                                                       children: [
                                                                                         Text(food.calorie!.round().toString(), style: TextStyle(fontFamily: 'Viga', color: R.color.black, fontSize: 20, fontWeight: FontWeight.w400)),

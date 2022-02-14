@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class ExercriseWalkSummaryModel {
   final String? id;
   final double? targetDuration;
@@ -8,7 +8,7 @@ class ExercriseWalkSummaryModel {
   final ImagesUrlModel? targetIconUrl;
   final String? targetDescription;
 
-  ExercriseWalkSummaryModel({
+  const ExercriseWalkSummaryModel({
     required this.id,
     required this.targetDuration,
     required this.factDuration,

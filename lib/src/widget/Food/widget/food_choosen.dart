@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 typedef FoodCallback = Function(List<FoodModel>);
 
@@ -158,18 +158,10 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                                   SizedBox(
                                     width: 50,
                                     height: 50,
-                                    child: CachedNetworkImage(
-                                      imageUrl: foods[index].image!.url ?? '',
+                                    child: NetWorkImageWidget(
+                                      imageUrl: foods[index].image!.url,
                                       width: 50,
                                       height: 50,
-                                      placeholder: (_, __) {
-                                        return const Center(
-                                            child: CircularProgressIndicator());
-                                      },
-                                      errorWidget: (_, __, ___) {
-                                        return Image.asset(
-                                            R.drawable.ic_food_default);
-                                      },
                                     ),
                                   ),
                                   SizedBox(width: 16),

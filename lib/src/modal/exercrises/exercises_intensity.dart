@@ -1,12 +1,12 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class ExerciseIntensityModel {
   final String? id;
   final String? name;
   final String? note;
   final double? rate;
 
-  ExerciseIntensityModel({
+  const ExerciseIntensityModel({
     required this.id,
     required this.name,
     required this.note,

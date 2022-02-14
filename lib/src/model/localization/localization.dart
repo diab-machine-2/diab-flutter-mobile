@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/const.dart';
 
 import 'csv_loader/csv_asset_loader.dart';
@@ -14,7 +15,7 @@ class Localization {
           supportedLocales: supportedLanguage,
           path: languageFilePath,
           fallbackLocale: defaultLanguage,
-          startLocale: Locale(Const.VI),
+          startLocale: Locale(AppPreference().appLanguage),
           assetLoader: CsvAssetLoader(),
           child: app
     );
@@ -23,8 +24,10 @@ class Localization {
   static changeLanguage(BuildContext context, String newLanguageCode) {
     if (newLanguageCode == Const.EN) {
       context.locale = Localization.supportedLanguage[0];
+      appPreference.saveAppLanguage(Localization.supportedLanguage[0].languageCode);
     } else {
       context.locale = Localization.supportedLanguage[1];
+      appPreference.saveAppLanguage(Localization.supportedLanguage[1].languageCode);
     }
   }
 }

@@ -157,10 +157,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(R.string.hien_tai.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14.0)),
+                                                style: R.style.normalTextStyle),
                                             Row(
                                               children: [
                                                 // model. ?
@@ -192,11 +189,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                                           right: 2),
                                                   child: Text(
                                                     R.string.cm.tr(),
-                                                    style: TextStyle(
-                                                        color: R.color.textDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14.0),
+                                                    style: R.style.normalTextStyle,
                                                   ),
                                                 ),
                                               ],
@@ -211,10 +204,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(R.string.muc_tieu.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.textDark,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14.0)),
+                                                style: R.style.normalTextStyle),
                                             Row(
                                               children: [
                                                 model.goal == null
@@ -242,11 +232,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                                           top: 6.0, left: 2),
                                                   child: Text(
                                                     R.string.cm.tr(),
-                                                    style: TextStyle(
-                                                        color: R.color.textDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14.0),
+                                                    style: R.style.normalTextStyle,
                                                   ),
                                                 ),
                                               ],
@@ -383,10 +369,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(number.length, (index) {
                     return Text(number[index].toString(),
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: R.color.black,
-                            fontWeight: FontWeight.normal));
+                        style: R.style.normalTextStyle);
                   })),
             ),
             Expanded(
@@ -512,6 +495,8 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                 }),
                             gridData: FlGridData(show: false),
                             titlesData: FlTitlesData(
+                              rightTitles: SideTitles(showTitles: false),
+                              topTitles: SideTitles(showTitles: false),
                               bottomTitles: SideTitles(
                                 showTitles: true,
                                 margin: 16,
@@ -573,10 +558,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                 ),
                 Expanded(
                   child: Text(model.message!,
-                      style: TextStyle(
-                          color: R.color.textDark,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14.0)),
+                      style: R.style.normalTextStyle),
                 ),
               ],
             ),

@@ -1,0 +1,386 @@
+import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/list_transaction_response.dart';
+import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/detail_package/detail_package.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/upgrade_account/upgrade_account.dart';
+import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/upgrade_package_widget.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import 'my_package.dart';
+
+class MyPackagePage extends StatefulWidget {
+  @override
+  _MyPackagePageState createState() => _MyPackagePageState();
+}
+
+class _MyPackagePageState extends State<MyPackagePage> {
+  final RefreshController _controller = RefreshController();
+  late MyPackageCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    final AppRepository repository = AppRepository();
+    _cubit = MyPackageCubit(repository);
+    _cubit.getOwnPackageCode();
+    _cubit.getListTransaction();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: BlocProvider(
+        create: (context) => _cubit,
+        child: BlocConsumer<MyPackageCubit, MyPackageState>(
+          listener: (context, state) {
+            if (state is MyPackageFailure) {
+              Message.showToastMessage(context, state.error);
+            }
+          },
+          builder: (
+            BuildContext context,
+            MyPackageState state,
+          ) {
+            if (state is MyPackageLoading) {
+              BotToast.showLoading();
+            } else {
+              _controller.refreshCompleted();
+              _controller.loadComplete();
+              BotToast.closeAllLoading();
+            }
+            return buildPage(context, state);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget buildPage(BuildContext context, MyPackageState state) {
+    String? code = _cubit.ownCode;
+    bool isBasic = code?.isEmpty == true || code == 'Const.BASIC';
+    return CommonPage(
+      title: R.string.my_package.tr(),
+      background: R.drawable.bg_welcome,
+      child: SmartRefresher(
+        controller: _controller,
+        onRefresh: () {
+          _cubit.getOwnPackageCode();
+          _cubit.getListTransaction(isRefresh: true);
+        },
+        child: ListView(
+          padding: EdgeInsets.all(16),
+          shrinkWrap: true,
+          children: [
+            Visibility(
+              visible: isBasic,
+              child: UpgradePackageWidget(
+                onClickUpgrade: () {
+                  NavigationUtil.navigatePage(
+                      context, UpgradeAccountPage(code: 'Const.PRO'));
+                },
+              ),
+            ),
+            Visibility(
+                visible: !Utils.isEmpty(code) ,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    listTransactionWidget(_cubit.listActiveTransaction),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(horizontal: 40),
+                      child: ButtonWidget(
+                        title: R.string.renewal_package_pro.tr(),
+                        onPressed: () {
+                          NavigationUtil.navigatePage(
+                              context, UpgradeAccountPage(code: 'Const.PRO'));
+                        },
+                      ),
+                    ),
+                  ],
+                )),
+            SizedBox(
+              height: 50,
+            ),
+            Text(
+              R.string.history_transaction.tr(),
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: R.color.accentColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 20,
+                letterSpacing: 0.08,
+                height: 1.4,
+              ),
+            ),
+            listTransactionWidget(_cubit.listExpiredTransaction)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget listTransactionWidget(List<TransactionData> list) {
+    return ListView.separated(
+        shrinkWrap: true,
+        padding: EdgeInsets.symmetric(/*horizontal: 16, */ vertical: 20),
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: list.length,
+        separatorBuilder: (context, index) => Container(
+              margin: EdgeInsets.symmetric(vertical: 24, horizontal: 10),
+              alignment: Alignment.center,
+              color: R.color.grayBorder,
+            ),
+        itemBuilder: (context, index) => transactionWidget(list[index]));
+  }
+
+  Widget transactionWidget(TransactionData data) {
+    bool isExpired = data.isExpired == true;
+    bool isPackageSuspended = data.isPackageSuspended == true;
+    bool isEmptyCurrent = Utils.isEmpty(_cubit.listActiveTransaction);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                data.packageName ?? "",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 20,
+                  letterSpacing: 0.08,
+                  height: 1.4,
+                ),
+              ),
+            ),
+            Spacer(),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color:
+                      isExpired ? R.color.grayBorder : R.color.color0xFFC3E8D3,
+                ),
+                padding: EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                child: Text(
+                  isExpired
+                      ? R.string.status_expired.tr()
+                      : R.string.status_actived.tr(),
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: isExpired ? R.color.grey_2 : R.color.green,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                    letterSpacing: 0.2,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 12,
+        ),
+        Row(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                R.string.number_month
+                    .tr(args: [data.monthUsed?.toString() ?? ""]),
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 16,
+                  letterSpacing: 0.4,
+                  height: 1.375,
+                ),
+              ),
+            ),
+            Spacer(),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                R.string.time_period.tr(args: [
+                  DateUtil.parseStringDateToString(data.startDate,
+                          Const.DATE_TIME_SV_FORMAT, Const.DATE_FORMAT) ??
+                      "",
+                  DateUtil.parseStringDateToString(data.endDate,
+                          Const.DATE_TIME_SV_FORMAT, Const.DATE_FORMAT) ??
+                      ""
+                ]),
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 16,
+                  letterSpacing: 0.4,
+                  height: 1.375,
+                ),
+              ),
+            ),
+          ],
+        ),
+        Visibility(
+          visible: !isExpired,
+          child: Padding(
+            padding: EdgeInsets.only(top: 12),
+            child: Row(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    R.string.next_renewal.tr(),
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      letterSpacing: 0.4,
+                      height: 1.375,
+                    ),
+                  ),
+                ),
+                Spacer(),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    DateUtil.parseStringDateToString(data.endDate,
+                            Const.DATE_TIME_SV_FORMAT, Const.DATE_FORMAT) ??
+                        "",
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      letterSpacing: 0.4,
+                      height: 1.375,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 12,
+        ),
+        Row(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                R.string.service_price.tr(),
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 16,
+                  letterSpacing: 0.4,
+                  height: 1.375,
+                ),
+              ),
+            ),
+            Spacer(),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                Utils.formatMoney(data.totalPrice) ?? "",
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 16,
+                  letterSpacing: 0.4,
+                  height: 1.375,
+                ),
+              ),
+            ),
+          ],
+        ),
+        Visibility(
+          visible: isExpired,
+          child: Padding(
+            padding: EdgeInsets.only(top: 12),
+            child: isPackageSuspended
+                ? Text(R.string.package_deactivate.tr(),
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      color: R.color.red,
+                      fontWeight: FontWeight.w400,
+                      fontStyle: FontStyle.italic,
+                      fontSize: 14,
+                      letterSpacing: 0.2,
+                      height: 1.42857,
+                    ))
+                : Row(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (_cubit.ownCode == 'Const.PRO') {
+                              NavigationUtil.navigatePage(context,
+                                  DetailPackagePage(code: 'Const.PRO'));
+                            } else {
+                              NavigationUtil.navigatePage(context,
+                                  UpgradeAccountPage(code: 'Const.PREMIUM'));
+                            }
+                          },
+                          child: Text(
+                            R.string.see_detail.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: R.color.accentColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              letterSpacing: 0.4,
+                              height: 1.42857,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      Visibility(
+                        visible: Utils.isEmpty(_cubit.ownCode),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            width: 96 ,
+                            child: ButtonWidget(
+                              title: R.string.repurchase.tr(),
+                              textSize: 14,
+                              height: 32,
+                              onPressed: () {
+                                if (!Utils.isEmpty(data.packageCode))
+                                  NavigationUtil.navigatePage(
+                                    context, UpgradeAccountPage(code: data.packageCode!));
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+}

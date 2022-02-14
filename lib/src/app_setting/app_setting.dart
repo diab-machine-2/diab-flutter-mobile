@@ -5,89 +5,73 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/modal/home/home_model.dart';
+import 'package:medical/src/modal/user/user_model.dart';
+import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
-import 'package:medical/src/modal/user/user_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSettings {
-  static Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
   static UserModel? userInfo;
+  static int? currentDateTime;
 
   static Future<bool> saveToken(String? token) async {
-    final SharedPreferences prefs = await _prefs;
-    if (token == null)
-      return false;
-    await prefs.setString('token', token);
+    appPreference.setData(Const.TOKEN, token);
     return true;
   }
 
   static Future<String> getToken() async {
-    final SharedPreferences prefs = await _prefs;
-    final token = prefs.getString('token') ?? '';
+    final token = appPreference.getData(Const.TOKEN) ?? '';
     print(token);
     return token;
   }
 
   static Future<bool> clearToken() async {
-    final SharedPreferences prefs = await _prefs;
-    await prefs.setString('token', '');
+    appPreference.removeData(Const.TOKEN);
     return true;
   }
 
   static Future<bool> saveRefreshToken(String? token) async {
-    if (token == null)
-      return false;
-    final SharedPreferences prefs = await _prefs;
-    await prefs.setString('refresh_token', token);
+    appPreference.setData(Const.REFRESH_TOKEN, token);
     return true;
   }
 
   static Future<String> getRefreshToken() async {
-    final SharedPreferences prefs = await _prefs;
-    final token = prefs.getString('refresh_token') ?? '';
+    final token = appPreference.getData(Const.REFRESH_TOKEN) ?? '';
     print(token);
     return token;
   }
 
   static Future<bool> clearRefreshToken() async {
-    final SharedPreferences prefs = await _prefs;
-    await prefs.setString('refresh_token', '');
+    appPreference.removeData(Const.REFRESH_TOKEN);
     return true;
   }
 
   static Future<bool> saveTokenLifeTime(int time) async {
-    final SharedPreferences prefs = await _prefs;
     final now = DateTime.now().millisecondsSinceEpoch;
-    await prefs.setInt('token_life_time', now + time);
+    appPreference.setData('token_life_time', now + time);
     return true;
   }
 
   static Future<int> getTokenLifeTime() async {
-    final SharedPreferences prefs = await _prefs;
-    final time = prefs.getInt('token_life_time') ?? 0;
+    final time = appPreference.getIntData('token_life_time') ?? 0;
     return time;
   }
 
   static Future<bool> clearTokenLifeTime() async {
-    final SharedPreferences prefs = await _prefs;
-    await prefs.setInt('token_life_time', 0);
+    appPreference.removeData('token_life_time');
     return true;
   }
 
-  static Future<bool> saveHome(Map<String, dynamic> data) async {
+  static Future<bool> saveHome(Map<String, dynamic>? data) async {
     final jsonString = jsonEncode(data);
-    final SharedPreferences prefs = await _prefs;
-    await prefs.setString('home_data', jsonString);
+    appPreference.setData('home_data', jsonString);
     return true;
   }
 
   static Future<HomeModel?> getHome() async {
-    final SharedPreferences prefs = await _prefs;
-    final userData = prefs.getString('home_data') ?? '';
+    final userData = appPreference.getData('home_data') ?? '';
     if (userData.isEmpty) {
       return null;
     }
@@ -97,21 +81,18 @@ class AppSettings {
   }
 
   static Future<bool> deleteHomeData() async {
-    final SharedPreferences prefs = await _prefs;
-    await prefs.setString('home_data', '');
+    appPreference.removeData('home_data');
     return true;
   }
 
   static Future<bool> saveSettings(dynamic setting) async {
     final jsonString = jsonEncode(setting);
-    final SharedPreferences prefs = await _prefs;
-    await prefs.setString('setting', jsonString);
+    appPreference.setData('setting', jsonString);
     return true;
   }
 
   static Future<dynamic> getSettings() async {
-    final SharedPreferences prefs = await _prefs;
-    final settingData = prefs.getString('setting') ?? '';
+    final settingData = appPreference.getData('setting') ?? '';
     final jsonData = json.decode(settingData);
     return jsonData;
   }
@@ -122,7 +103,7 @@ class AppSettings {
     if (tokenLifetime > now) {
       return true;
     } else {
-      Observable.instance.notifyObservers([], notifyName : "token_time_out");
+      Observable.instance.notifyObservers([], notifyName: "token_time_out");
       // DartNotificationCenter.post(channel: 'token_time_out');
       await logout();
       return false;
@@ -131,8 +112,8 @@ class AppSettings {
 
   static Future<bool> logout() async {
     try {
-      navigatorKey.currentState?.popUntil((route) => route.isFirst);
-      navigatorKey.currentState?.pushReplacementNamed(NavigatorName.step_list);
+      navigatorKey.currentState!.popUntil((route) => route.isFirst);
+      navigatorKey.currentState!.pushReplacementNamed(NavigatorName.step_list);
       await FetchClient().checkNetwork();
       await LoginClient().logout();
       await clearToken();

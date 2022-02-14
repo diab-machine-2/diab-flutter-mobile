@@ -1,5 +1,6 @@
 class Const {
-  static const String HOST_URL = "http://diab-api-dev.savvycom.vn/";
+  static const String HOST_URL = "https://api.diab.com.vn/";
+  // static const String HOST_URL = "https://diab-api-staging.savvycom.vn/";
 
   static const String API_URL = "${HOST_URL}api/";
 
@@ -8,6 +9,10 @@ class Const {
   static const String ANDROID_KEY = "AIzaSyAVRrZKBfIphjlPiua9y5Pk4CJ3oaddGp0";
   static const String IOS_KEY = "AIzaSyB6P1Tq9lnnZPjkUJmAlTjUE1uqMVfTLFA";
   static const String PLACE_KEY = "AIzaSyC7tPpmwviNXdX0_krWw5QdxOVGOJgdFmo";
+
+  static const String CLIENT_ID = "4A293E78-4513-4DAF-958E-A04F93978332";
+  static const String CLIENT_SECRET =
+      "oTxBinRm9NpNen3rs++jN9sWXvOkya60nuffhv6x304=";
 
   static const String ID = "ID";
   static const String CODE = "Code";
@@ -45,6 +50,7 @@ class Const {
   static const String DATE_TIME_CREATE_SV_FORMAT = "yyyy-MM-dd HH:mm:ss";
   static const String DATE_REQUEST_FORMAT = "MM-dd-yyyy";
   static const String DATE_FORMAT = "dd/MM/yyyy";
+  static const String FULL_DATE_FORMAT = "EEEE, dd/MM/yyyy";
   static const String DATE_FORMAT_TASK = "yyyy-MM-dd";
   static const String DATE_FORMAT_POST = "HH:mm dd/MM/yyyy";
   static const String DATE = "EEE";
@@ -54,6 +60,8 @@ class Const {
   static const String TIME = "hh:mm aa";
 
   static const String key_app_language = "AppLanguage";
+
+  static const String HIDE_OVERLAY_KEY = "HideOverlayKey";
 
   static const int TYPE_WEB = 0;
   static const int TYPE_EMAIL = 1;
@@ -75,6 +83,17 @@ class Const {
 
   static const int maxMedia = 5;
 
+  static const int LESSON_NOT_LEARN = 0;
+  static const int LESSON_LEARNT = 1;
+  static const int LESSON_LEARNING = 2;
+  static const int LESSON_LOCKED = 3;
+  static const int LESSON_CAN_NOT_LEARN = 4;
+
+  static const int LESSON_SECTION_TYPE_VIDEO = 1;
+  static const int LESSON_SECTION_TYPE_AUDIO = 2;
+  static const int LESSON_SECTION_TYPE_TEXT = 3;
+  static const int LESSON_SECTION_TYPE_QUIZ = 4;
+
   static const String EN = "en";
   static const String VI = "vi";
 
@@ -90,10 +109,6 @@ class Const {
   static const String PARENT = 'parent';
   static const String GUARDIAN = 'guardian';
 
-  static const String PRO = "pro";
-  static const String BASIC = "basic";
-  static const String PREMIUM = "premium";
-
   static const String TEMPLATE_NONE = 'NONE';
   static const String TEMPLATE_D = 'D';
   static const String TEMPLATE_OP = 'OP';
@@ -102,4 +117,39 @@ class Const {
   static const String TEMPLATE_B = 'B';
   static const String TEMPLATE_K = 'K';
   static const String TEMPLATE_FGHI = 'FGHI';
+
+  static const String BREAKFAST = 'Sáng';
+  static const String LUNCH = 'Trưa';
+  static const String DINNER = 'Tối';
+  static const String SUBMEAL = 'Nhẹ';
+
+  static const String NAVIGATE_TO_MY_PLAN_TAB = 'Navigate_to_my_plan_tab';
+  static const String NAVIGATE_TO_ACTIVITY_TAB = 'Navigate_to_activity_tab';
+
+  static const List<int> hourList = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+  ];
+  static const List<int> minuteList = [0, 15, 30, 45];
 }

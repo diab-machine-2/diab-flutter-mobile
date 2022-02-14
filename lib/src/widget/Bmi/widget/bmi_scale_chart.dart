@@ -294,7 +294,7 @@ class BmiScaleChartState extends State<BmiScaleChart>
                               startWidth: 0.2,
                               endWidth: 0.2,
                               sizeUnit: GaugeSizeUnit.factor,
-                              color: R.color.color0xffF58220),
+                              color: R.color.orange_1),
                           GaugeRange(
                               startValue: 8.2,
                               endValue: 15.8,

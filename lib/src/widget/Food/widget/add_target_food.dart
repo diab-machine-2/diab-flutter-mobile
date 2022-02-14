@@ -1,17 +1,17 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Food/widget/calculator_TDEE.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 typedef NumCallback = Function(int);
 
 class AddTargetFood extends StatefulWidget {
+  const AddTargetFood({this.goal});
+
   final int? goal;
-  final NumCallback? callback;
-  AddTargetFood({this.goal, this.callback});
   @override
   AddTargetFoodState createState() => AddTargetFoodState();
 }
@@ -50,19 +50,19 @@ class AddTargetFoodState extends State<AddTargetFood> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(R.string.nang_luong_nap_tren_ngay.tr(),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700)),
                                 IconButton(
-                                    // padding: EdgeInsets.only(right: 30),
-                                    icon: Icon(Icons.close, color: R.color.grey),
+                                    icon:
+                                        Icon(Icons.close, color: R.color.grey),
                                     onPressed: () {
                                       Navigator.pop(context);
                                     })
                               ],
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -108,20 +108,18 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                           color: R.color.grayComponentBorder)
                                     ]),
                                     Text(R.string.kcal.tr(),
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 16,
                                         )),
-                                    SizedBox(
-                                      width: 16,
-                                    )
+                                    const SizedBox(width: 16)
                                   ],
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Container(
-                            margin: EdgeInsets.only(top: 16, bottom: 16),
+                            margin: const EdgeInsets.only(top: 16, bottom: 16),
                             child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
@@ -150,11 +148,13 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                       FocusScope.of(context).unfocus();
                                       if (selectedCalo == 0) {
                                         Message.showToastMessage(
-                                            context, R.string.ban_chua_nhap_gia_tri.tr());
+                                            context,
+                                            R.string.ban_chua_nhap_gia_tri
+                                                .tr());
                                         return;
                                       }
-                                      widget.callback!(selectedCalo!.toInt());
-                                      Navigator.pop(context);
+                                      Navigator.pop(
+                                          context, selectedCalo!.toInt());
                                     },
                                     child: Container(
                                       height: 43,
@@ -188,15 +188,15 @@ class AddTargetFoodState extends State<AddTargetFood> {
                                     height: 1,
                                     width: 88,
                                     color: R.color.color0xffE5E5E5),
-                                SizedBox(width: 16),
+                                const SizedBox(width: 16),
                                 Text(R.string.or.tr()),
-                                SizedBox(width: 16),
+                                const SizedBox(width: 16),
                                 Container(
                                     height: 1,
                                     width: 88,
                                     color: R.color.color0xffE5E5E5)
                               ]),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           GestureDetector(
                             onTap: () {
                               showDialog(
@@ -216,17 +216,20 @@ class AddTargetFoodState extends State<AddTargetFood> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(R.string.tinh_lai_theo_cong_thuc_tdee.tr(),
+                                  Text(
+                                      R.string.tinh_lai_theo_cong_thuc_tdee
+                                          .tr(),
                                       style: TextStyle(
                                           color: R.color.mainColor,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16)),
-                                  Icon(Icons.arrow_forward, color: R.color.mainColor)
+                                  Icon(Icons.arrow_forward,
+                                      color: R.color.mainColor)
                                 ],
                               ),
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                         ]),
                   ),
                 ))));

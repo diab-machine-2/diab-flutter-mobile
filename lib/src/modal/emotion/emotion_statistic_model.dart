@@ -1,14 +1,14 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/emotion/emotion_statistic_item_model.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class EmotionStatisticModel {
   final String? note;
   final ImagesModel? noteIcon;
   final ImagesModel? noteImage;
   final List<EmotionStatisticItemModel> emotions;
 
-  EmotionStatisticModel(
+  const EmotionStatisticModel(
       {required this.note,
       required this.noteIcon,
       required this.noteImage,

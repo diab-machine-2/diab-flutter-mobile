@@ -1,11 +1,11 @@
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class TrendItemModel {
   final int? date;
   final List<TrendModel> subTrends;
 
-  TrendItemModel({required this.date, required this.subTrends});
+  const TrendItemModel({required this.date, required this.subTrends});
   @override
   factory TrendItemModel.fromJson(Map<String, dynamic> json) {
     return TrendItemModel(

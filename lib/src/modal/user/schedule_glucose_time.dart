@@ -1,12 +1,12 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class ScheduleGlucoseTimeModel {
   final int? beforeEat;
   final int? afterEat;
   final int? beforeSleeping;
   final int? glucoseUnit;
 
-  ScheduleGlucoseTimeModel(
+  const ScheduleGlucoseTimeModel(
       {required this.beforeEat,
       required this.afterEat,
       required this.beforeSleeping,

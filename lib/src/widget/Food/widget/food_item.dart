@@ -1,8 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
@@ -10,18 +8,21 @@ import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/widget/Food/widget/food_choose_quantity.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 typedef FoodItemCallback = Function(FoodModel, int);
 
 class FoodItem extends StatelessWidget {
-  FoodItem(
+  const FoodItem(
       {required this.model,
       required this.selectedModel,
       required this.index,
       this.isSearch = false,
       this.isCategory = false,
       this.categoryId,
-      required this.callback});
+      required this.callback,
+      required this.kcalLeft,
+      });
 
   final FoodModel model;
   final FoodModel? selectedModel;
@@ -30,6 +31,7 @@ class FoodItem extends StatelessWidget {
   final bool isCategory;
   final String? categoryId;
   final FoodItemCallback callback;
+  final double? kcalLeft;
 
   @override
   Widget build(BuildContext context) {
@@ -58,16 +60,10 @@ class FoodItem extends StatelessWidget {
             SizedBox(
               width: 50,
               height: 50,
-              child: CachedNetworkImage(
+              child: NetWorkImageWidget(
                 imageUrl: model.image == null ? '' : model.image!.url ?? '',
                 width: 50,
                 height: 50,
-                placeholder: (_, __) {
-                  return const Center(child: CircularProgressIndicator());
-                },
-                errorWidget: (_, __, ___) {
-                  return Image.asset(R.drawable.ic_food_default);
-                },
               ),
             ),
             SizedBox(width: 16),
@@ -85,7 +81,7 @@ class FoodItem extends StatelessWidget {
                           child: Text(
                               selectedModel!.code == 'OtherUneditable'
                                   ? '${R.string.da_an.tr()} ${formatNumber((selectedModel?.quantity ?? 0) * (selectedModel?.calorie ?? 0))} kcal'
-                                  : '${R.string.da_an.tr()} ${roundAsFixed((selectedModel?.portion ?? 0) * (selectedModel?.quantity ?? 0))} ${(selectedModel?.unit ?? 0)}, ${formatNumber((selectedModel?.quantity ?? 0) * (selectedModel?.calorie ?? 0))} kcal',
+                                  : '${R.string.da_an.tr()} ${roundAsFixed(selectedModel?.portion ?? 0)} ${selectedModel?.unit}, ${formatNumber((selectedModel?.portion ?? 0) * (selectedModel?.calorie ?? 0) )} ${R.string.kcal.tr()}',
                               style: TextStyle(
                                   color: R.color.black,
                                   fontWeight: FontWeight.w400)),
@@ -96,23 +92,10 @@ class FoodItem extends StatelessWidget {
             SizedBox(width: 8),
             GestureDetector(
               onTap: () {
-                final newModel = FoodModel(
-                    id: model.id,
-                    code: model.code,
-                    name: model.name,
-                    portion: model.portion,
-                    unit: model.unit,
-                    calorie: model.calorie,
-                    glucose: model.glucose,
-                    lipid: model.lipid,
-                    protein: model.protein,
-                    fibre: model.fibre,
-                    image: model.image,
-                    liked: !(model.liked ?? true),
-                    text: model.text,
-                    description: model.description,
-                    foodCategoryId: model.foodCategoryId,
-                    quantity: model.quantity);
+                final newModel = model.copyWith(
+                  mealId: selectedModel?.mealId,
+                  liked: !(model.liked ?? true),
+                );
                 callback(newModel, index);
                 likeFood(context);
               },
@@ -135,8 +118,11 @@ class FoodItem extends StatelessWidget {
           model: model,
           selectedModel: selectedModel,
           categoryId: categoryId,
-          callback: (value) {}),
+          callback: (value) {},
+          kcalLeft: kcalLeft,
+          ),
     );
+    
   }
 
   likeFood(BuildContext context) async {

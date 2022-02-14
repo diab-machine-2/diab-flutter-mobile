@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/model/localization/localization.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -11,17 +10,16 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'src/utils/logger.dart';
 
 class SimpleBlocObserver extends BlocObserver {
-
   @override
   void onChange(BlocBase bloc, Change change) {
     super.onChange(bloc, change);
-    logger.i('${bloc.runtimeType} $change');
+    // logger.i('${bloc.runtimeType} $change');
   }
 
   @override
   void onTransition(Bloc bloc, Transition transition) {
     super.onTransition(bloc, transition);
-    logger.i(transition);
+    // logger.i(transition);
   }
 
   @override
@@ -31,21 +29,22 @@ class SimpleBlocObserver extends BlocObserver {
   }
 }
 
-void main() async {
+Future<void> main() async {
   Bloc.observer = SimpleBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
+
   // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
   //     statusBarColor: R.color.transparent,
   //     statusBarIconBrightness: Brightness.dark,
   //     statusBarBrightness: Brightness.light));
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  // ]);
   //await initializeDateFormatting('vi_VN');
   await Firebase.initializeApp();
   await TrackingManager.initializeFlutterFire();
 
-  runApp(Localization.getLocalizationWidget(app: App()));
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
+    runApp(Localization.getLocalizationWidget(app: App()));
+  });
 }
-
-

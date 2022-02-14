@@ -171,10 +171,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(number.length, (index) {
                     return Text(number[index].toString(),
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: R.color.black,
-                            fontWeight: FontWeight.normal));
+                        style: R.style.normalTextStyle);
                   })),
             ),
             Expanded(
@@ -269,6 +266,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 }),
                             gridData: FlGridData(show: false),
                             titlesData: FlTitlesData(
+                              rightTitles: SideTitles(showTitles: false),
+                              topTitles: SideTitles(showTitles: false),
                               bottomTitles: SideTitles(
                                 showTitles: true,
                                 margin: 16,

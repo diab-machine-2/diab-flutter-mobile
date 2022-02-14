@@ -1,6 +1,4 @@
-import 'package:medical/src/modal/notification/notification_data_model.dart';
-import 'package:meta/meta.dart';
-import 'dart:convert';
+import 'notification_type.dart';
 
 class NotificationModel {
   final String? id;
@@ -28,10 +26,13 @@ class NotificationModel {
       this.data,
       this.notificationType});
 
+  NotificationActionType get actionType =>
+      NotificationActionExtend.getNotificationActionTypeFromIndex(
+          notificationType);
+
   @override
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
-    final notification =
-        json['notification'] == null ? json : json['notification'];
+    final notification = json['notification'] ?? json;
     final dataNoti = json['data'];
     return NotificationModel(
         id: notification['id'],

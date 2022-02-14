@@ -1,21 +1,20 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_statistic_diet_model.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 import 'add_target_food.dart';
 
 class FoodChart extends StatefulWidget {
-  FoodChart({Key? key}) : super(key: key);
+  const FoodChart({Key? key}) : super(key: key);
   @override
   FoodChartState createState() => FoodChartState();
 }
@@ -78,61 +77,57 @@ class FoodChartState extends State<FoodChart>
           return model == null
               ? Container(
                   height: 491.5,
-                  child: Center(child: CircularProgressIndicator()))
+                  child: const Center(child: CircularProgressIndicator()))
               : Container(
                   color: R.color.transparent,
-                  padding: EdgeInsets.all(18),
+                  padding: const EdgeInsets.all(18),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(R.string.dinh_duong_da_nap_theo_ngay.tr(),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w700)),
-                        SizedBox(height: 20),
-                        (isEnergyTab
-                                ? model.energyChart.length == 0
-                                : model.carbChart.length == 0)
-                            ? GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                    barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-                                    context: context,
-                                    builder: (_) => AddTargetFood(
-                                        goal: 23,
-                                        callback: (number) {
-
-                                        }),
-                                  );
-                                },
-                                child: Image.asset(
-                                  R.drawable.img_food_empty,
-                                ),
-                              )
-                            : Container(
-                                width: width,
-                                decoration: BoxDecoration(
-                                  color: R.color.white,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Padding(
-                                    padding: EdgeInsets.only(
-                                        left: 8,
-                                        right: 16,
-                                        bottom: 16,
-                                        top: 16),
-                                    child: Column(
-                                      children: [
-                                        buildChart(model),
-                                        buildDescription(model)
-                                      ],
-                                    )))
+                        const SizedBox(height: 20),
+                        if (isEnergyTab
+                            ? model.energyChart.isEmpty
+                            : model.carbChart.isEmpty)
+                          GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                barrierColor:
+                                    R.color.color0xff003F38.withOpacity(0.5),
+                                context: context,
+                                builder: (_) => const AddTargetFood(
+                                    goal: 23),
+                              );
+                            },
+                            child: Image.asset(
+                              R.drawable.img_food_empty,
+                            ),
+                          )
+                        else
+                          Container(
+                              width: width,
+                              decoration: BoxDecoration(
+                                color: R.color.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8, right: 16, bottom: 16, top: 16),
+                                  child: Column(
+                                    children: [
+                                      buildChart(model),
+                                      buildDescription(model)
+                                    ],
+                                  )))
                       ]),
                 );
         }));
   }
 
   Widget buildDescription(FoodDietModel model) {
-    List<Widget> items = [];
+    final List<Widget> items = [];
     model.legends.forEach((element) {
       items.add(buildDescriptionItem(element));
     });
@@ -143,30 +138,21 @@ class FoodChartState extends State<FoodChart>
   Widget buildDescriptionItem(LegendModel model) {
     return Row(children: [
       Container(width: 14, height: 14, color: toColor(model.colorCode)),
-      SizedBox(width: 4),
-      Text(model.text!)
+      const SizedBox(width: 4),
+      Text(model.text ?? '')
     ]);
   }
-
-  // showDialog(BuildContext context) {
-    //Navigator.pushNamed(context, NavigatorName.hba1c_tabble);
-    // Navigator.of(context).push(PageRouteBuilder(
-    //     opaque: false,
-    //     pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
-  // }
 
   String getToolTips(FoodDietModel model) {
     final data = isEnergyTab
         ? model.energyChart[touchIndex]
         : model.carbChart[touchIndex];
 
-    List<String> numbers = [];
-    // double total = 0;
-    // data.details.forEach((element) {
-    //   total += element.value;
-    // });
+    final List<String> numbers = [];
     data.details.forEach((element) {
-      numbers.add(element.percentValue!.toStringAsFixed(1) + '%');
+      if (element.percentValue != null) {
+        numbers.add(element.percentValue!.toStringAsFixed(1) + '%');
+      }
     });
     return '${R.string.total.tr()}: ${formatNumber(data.value)} ${isEnergyTab ? R.string.kcal.tr() : 'g'}\n' +
         numbers.join(' - ');
@@ -177,27 +163,15 @@ class FoodChartState extends State<FoodChart>
 
     final data = isEnergyTab ? model.energyChart : model.carbChart;
 
-    // final maxValue = data
-    //     .map<double>((e) => e.details
-    //         .reduce((a, b) => EnergyItemModel(
-    //             value: a.value + b.value, percentValue: 0, colorCode: ''))
-    //         .value)
-    //     .reduce(max)
-    //     .round();
-    // final jumpValue = (maxValue / 4).round();
-    // final maxY = jumpValue * 4;
-    // List<int> number = List.generate(5, (index) => (jumpValue * index).round())
-    //     .reversed
-    //     .toList();
-
     double minY = data
         .map<double>((e) =>
-            (e.details.map<double>((element) => element.value ?? 0).reduce(min))).reduce(min);
+            e.details.map<double>((element) => element.value ?? 0).reduce(min))
+        .reduce(min);
     minY = (minY * (data.length == 1 ? 0.5 : 0.8)).roundToDouble();
-    double maxY = data.map<double>((e) => (e.value ?? 0)).reduce(max);
+    double maxY = data.map<double>((e) => e.value ?? 0).reduce(max);
     maxY = (maxY * (data.length == 1 ? 1.5 : 1.2)).roundToDouble();
     final jumpValue = (maxY - minY) / 4;
-    List<int> number =
+    final List<int> number =
         List.generate(5, (index) => (jumpValue * index + minY).round())
             .reversed
             .toList();
@@ -205,7 +179,7 @@ class FoodChartState extends State<FoodChart>
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(top: 16, bottom: 16),
+          padding: const EdgeInsets.only(top: 16, bottom: 16),
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             GestureDetector(
               onTap: () {
@@ -216,7 +190,7 @@ class FoodChartState extends State<FoodChart>
               child: Container(
                   height: 32,
                   width: 135,
-                  padding: EdgeInsets.only(left: 18, right: 18),
+                  padding: const EdgeInsets.only(left: 18, right: 18),
                   decoration: BoxDecoration(
                       color:
                           isEnergyTab ? R.color.mainColor : R.color.transparent,
@@ -238,7 +212,7 @@ class FoodChartState extends State<FoodChart>
                                 : FontWeight.w400)),
                   )),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             GestureDetector(
               onTap: () {
                 setState(() {
@@ -301,7 +275,7 @@ class FoodChartState extends State<FoodChart>
                         children: List.generate(
                             number.length,
                             (index) => Padding(
-                                  padding: EdgeInsets.only(
+                                  padding: const EdgeInsets.only(
                                       left: 8, top: 8, bottom: 8),
                                   child: Container(
                                     height: 1,
@@ -335,7 +309,7 @@ class FoodChartState extends State<FoodChart>
                             (width + 20))
                         .toDouble(),
                     height: 300,
-                    padding: EdgeInsets.only(top: 8, bottom: 8),
+                    padding: const EdgeInsets.only(top: 8, bottom: 8),
                     child: BarChart(
                       BarChartData(
                           alignment: BarChartAlignment.spaceAround,
@@ -349,9 +323,9 @@ class FoodChartState extends State<FoodChart>
                               if (event is! FlLongPressEnd &&
                                   event is! FlPanEndEvent) {
                                 final value =
-                                    barTouch!.spot!.touchedBarGroupIndex;
+                                    barTouch?.spot?.touchedBarGroupIndex;
                                 setState(() {
-                                  touchIndex = value.toInt();
+                                  touchIndex = value?.toInt() ?? -1;
                                 });
                               } else {
                                 touchIndex = -1;
@@ -385,6 +359,8 @@ class FoodChartState extends State<FoodChart>
                             ),
                           ),
                           titlesData: FlTitlesData(
+                            rightTitles: SideTitles(showTitles: false),
+                            topTitles: SideTitles(showTitles: false),
                             show: true,
                             bottomTitles: SideTitles(
                               margin: 16,
@@ -405,6 +381,7 @@ class FoodChartState extends State<FoodChart>
                                 getTextStyles: (context, value) => TextStyle(
                                     color: R.color.black, fontSize: 14)),
                           ),
+                          gridData: FlGridData(show: false),
                           borderData: FlBorderData(
                             show: false,
                           ),
@@ -419,7 +396,7 @@ class FoodChartState extends State<FoodChart>
                                 index);
                           })),
                     )),
-                SizedBox(height: 340)
+                const SizedBox(height: 340)
               ]),
             ),
           )
@@ -432,9 +409,6 @@ class FoodChartState extends State<FoodChart>
     double totalValue = 0;
     return BarChartGroupData(
       x: index,
-      // showingTooltipIndicators:
-      //     index == model.energyChart.length - 1 ? [0] : [],
-      //barsSpace: 60,
       barRods: [
         BarChartRodData(
             width: 20,

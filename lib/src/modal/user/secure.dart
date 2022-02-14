@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 
+@immutable
 class SecureModel {
   final String? email;
   final String? support;

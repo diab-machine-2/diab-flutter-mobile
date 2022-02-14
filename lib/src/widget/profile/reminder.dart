@@ -13,7 +13,6 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 
@@ -46,7 +45,6 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'schedule_change') {
       loadData();
     }
@@ -354,10 +352,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer  
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.mes_detele_notificaiton.tr(),
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400)),
+                            style: R.style.normalTextStyle),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 16),

@@ -47,15 +47,26 @@ class Colors {
 	Color get red => Color(0xffE53935);
 	Color get greenbg => Color(0xffE6F6ED);
 	Color get gray => Color(0xffA1A3A6);
+	Color get gray_1 => Color(0xff515356);
 	Color get grayCaption => Color(0xff9C9C9C);
 	Color get greenGradientTop => Color(0xff4BB2AB);
 	Color get greenGradientBottom => Color(0xff008479);
 	Color get main_1 => Color(0xff01645A);
 	Color get color0xffFF5756 => Color(0xffFF5756);
+	Color get grey_1 => Color(0xff454649);
 	Color get grey_2 => Color(0xff787A7D);
 	Color get main_6 => Color(0xFFE4F5F5);
 	Color get attentionText => Color(0xffAF0000);
 	Color get blue_6 => Color(0xffD5EFFF);
+	Color get labelColor => Color(0xff3C3C43);
+	Color get orange_1 => Color(0xffF58220);
+	Color get grey_6 => Color(0xffF5F7FA);
+	Color get orange_6 => Color(0xffFEEDDC);
+	Color get tagColor => Color(0xffF3F6F9);
+	Color get shadowColor => Color(0xff38476D);
+	Color get mediaTitle => Color(0xff6F6F6F);
+	Color get textFieldGrey => Color(0xff8D8D8D);
+	Color get buttonRoundColor => Color(0xffDBF0EE);
 	Color get color0xffE5E5E5 => Color(0xffE5E5E5);
 	Color get color0xff003F38 => Color(0xff003F38);
 	Color get color0xffBEC0C8 => Color(0xffBEC0C8);
@@ -66,7 +77,6 @@ class Colors {
 	Color get color0xffD6D8E0 => Color(0xffD6D8E0);
 	Color get color0xFFFDC798 => Color(0xFFFDC798);
 	Color get color0xffEFEFEF => Color(0xffEFEFEF);
-	Color get color0xffF58220 => Color(0xffF58220);
 	Color get color0xff50C087 => Color(0xff50C087);
 	Color get color0xff7589a2 => Color(0xff7589a2);
 	Color get color0xffFFE3E3 => Color(0xffFFE3E3);
@@ -91,10 +101,8 @@ class Colors {
 	Color get color0xffFF5552 => Color(0xffFF5552);
 	Color get color0xffDFF6EC => Color(0xffDFF6EC);
 	Color get color0xffD3EFEE => Color(0xffD3EFEE);
-	Color get color0xffFEEDDC => Color(0xffFEEDDC);
 	Color get color0xffFCF8DA => Color(0xffFCF8DA);
 	Color get color0xffFDE9E9 => Color(0xffFDE9E9);
 	Color get color0xff737072 => Color(0xff737072);
-	Color get color0xffF5F7FA => Color(0xffF5F7FA);
-	Color get color0xff454649 => Color(0xff454649);
+	Color get color0xff004E47 => Color(0xff004E47);
 }

@@ -1,6 +1,4 @@
-import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
-import 'package:meta/meta.dart';
 
 class FoodDataModel {
   final List<FoodModel> foods;

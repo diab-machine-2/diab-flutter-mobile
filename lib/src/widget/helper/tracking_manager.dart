@@ -20,13 +20,14 @@ class TrackingManager {
   }
 
   static FirebaseAnalytics analytics = FirebaseAnalytics();
-  static FirebaseAnalyticsObserver observerFirebase =
-      FirebaseAnalyticsObserver(analytics: analytics);
+  static FirebaseAnalyticsObserver observerFirebase = FirebaseAnalyticsObserver(analytics: analytics);
 
   // Define an async function to initialize FlutterFire
   static Future<void> initializeFlutterFire() async {
     // Wait for Firebase to initialize
     await Firebase.initializeApp();
+
+  //  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
 
     if (_kTestingCrashlytics) {
       // Force enable crashlytics collection enabled if we're testing it.

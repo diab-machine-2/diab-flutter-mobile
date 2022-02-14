@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class TrendWeightModel {
   final double? safeWeightFrom;
   final double? safeWeightTo;
@@ -11,7 +11,7 @@ class TrendWeightModel {
   final String? iconUrl;
   final List<TrendItemWeightModel>? trendItems;
 
-  TrendWeightModel({
+  const TrendWeightModel({
     required this.safeWeightFrom,
     required this.safeWeightTo,
     required this.current,

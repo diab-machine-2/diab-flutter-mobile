@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class CustomerModel {
   final String? id;
   final String? code;
@@ -8,7 +8,7 @@ class CustomerModel {
   final String? address;
   final String? avatarLink;
 
-  CustomerModel(
+  const CustomerModel(
       {required this.id,
       required this.code,
       required this.name,

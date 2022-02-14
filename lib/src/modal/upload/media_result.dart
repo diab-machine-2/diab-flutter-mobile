@@ -1,12 +1,12 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class MediaResultModel {
   final String? fileName;
   final String? mimeType;
   final int? size;
   final String? link;
 
-  MediaResultModel(
+  const MediaResultModel(
       {required this.fileName,
       required this.mimeType,
       required this.size,

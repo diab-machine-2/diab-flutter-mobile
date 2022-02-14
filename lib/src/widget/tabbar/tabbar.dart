@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -6,45 +7,51 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/components/HomeButton/main.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/version.dart';
-import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:medical/src/widget/home/home.dart';
-import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
+import 'package:medical/src/widget/profile/profile_controller.dart';
+import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class TabbarController extends StatefulWidget {
-  final _TabbarControllerState currentTabbar = _TabbarControllerState();
+  const TabbarController({this.sharedCode});
+  final String? sharedCode;
   @override
-  _TabbarControllerState createState() => currentTabbar;
+  _TabbarControllerState createState() => _TabbarControllerState();
   static _TabbarControllerState? of(BuildContext context) {
-    final _TabbarControllerState? navigator =
-        context.findAncestorStateOfType<_TabbarControllerState>();
+    final _TabbarControllerState? navigator = context.findAncestorStateOfType<_TabbarControllerState>();
     return navigator;
   }
 }
 
-class _TabbarControllerState extends State<TabbarController>
-    with SingleTickerProviderStateMixin, Observer {
+class _TabbarControllerState extends State<TabbarController> with SingleTickerProviderStateMixin, Observer {
   PageController? pageController;
   BottomTabbar? _bottomTabbar;
 
-  final List<Widget> tabs = [
-    HomeController(),
-  ];
+  late final List<Widget> tabs;
 
   @override
   void initState() {
     super.initState();
+    tabs = [
+      HomeController(sharedCode: widget.sharedCode),
+      MyPlanPage(),
+      //  Container(),
+      //  const ProfileController(hideAllBackButton: true),
+    ];
     Observable.instance.addObserver(this);
-    NotificationManager.instance.requestFirebaseToken();
+    NotificationManager.instance.requestFirebaseToken(context);
     pageController = PageController();
     _bottomTabbar = BottomTabbar(callback: (index) {
       if (index == -1) {
@@ -54,31 +61,28 @@ class _TabbarControllerState extends State<TabbarController>
       }
     });
 
-    // DartNotificationCenter.subscribe(
-    //     channel: 'unauthorized',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       Message.showToastMessage(
-    //           context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
-    //       AppSettings.logout();
-    //     });
-
     getNewVersion();
   }
 
-  // @override
-  // void dispose() {
-  //   Observable.instance.removeObserver(this);
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
+  Future<void> update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) async {
     if (notifyName == 'unauthorized') {
-      Message.showToastMessage(
-          context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
+      Message.showToastMessage(context, R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
       AppSettings.logout();
+    }
+    if (notifyName == Const.NAVIGATE_TO_MY_PLAN_TAB) {
+      NavigationUtil.popToFirst(context);
+      jumpTo(1);
+      await Future.delayed(
+        const Duration(milliseconds: 100),
+      );
+      Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
     }
   }
 
@@ -92,13 +96,11 @@ class _TabbarControllerState extends State<TabbarController>
     return Scaffold(
       extendBody: true,
       backgroundColor: R.color.white,
-      body: PageView(
-          physics: NeverScrollableScrollPhysics(),
-          controller: pageController,
-          children: tabs),
+      body: PageView(physics: const NeverScrollableScrollPhysics(), controller: pageController, children: tabs),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
           onPressed: () {
+            Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
             _showMaterialDialog();
           },
           child: Image.asset(
@@ -147,8 +149,7 @@ class _TabbarControllerState extends State<TabbarController>
             context: context,
             builder: (BuildContext context) => CupertinoAlertDialog(
                   title: Text(R.string.cap_nhat.tr()),
-                  content: Text(
-                    R.string.mes_new_version_available.tr(args: ['${status.storeVersion}']),
+                  content: Text(R.string.mes_new_version_available.tr(args: ['${status.storeVersion}']),
                       textAlign: TextAlign.center),
                   actions: <Widget>[
                     CupertinoDialogAction(
@@ -162,9 +163,7 @@ class _TabbarControllerState extends State<TabbarController>
                       child: Text(R.string.cap_nhat.tr()),
                       onPressed: () async {
                         final _url = status.appStoreLink!;
-                        await canLaunch(_url)
-                            ? await launch(_url)
-                            : throw 'Could not launch $_url';
+                        await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
                       },
                     )
                   ],
@@ -218,8 +217,7 @@ showPopupWeight() {
                 googleEmail: userInfo.googleEmail,
                 glucoseUnit: userInfo.glucoseUnit,
                 activityLevelRate: userInfo.activityLevelRate);
-            await UserClient()
-                .updateUserInfo(AppSettings.userInfo!.id, userInfo);
+            await UserClient().updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();
             Navigator.pushNamed(navigatorKey.currentContext!, NavigatorName.add_exercrises,
                 arguments: {'type': 'input'});
@@ -229,14 +227,12 @@ showPopupWeight() {
             if (e is Error) {
               Message.showToastMessage(navigatorKey.currentContext!, e.message);
             } else {
-              Message.showToastMessage(
-                  navigatorKey.currentContext!, e.toString());
+              Message.showToastMessage(navigatorKey.currentContext!, e.toString());
             }
           }
         },
         title: R.string.update_weight.tr(),
-        subTitle:
-            R.string.update_weight_description.tr(),
+        subTitle: R.string.update_weight_description.tr(),
         max: 200,
         numberDefault: 50,
         unit: R.string.kg.tr()),

@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,10 +13,12 @@ import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/Food/widget/food_of_category.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 class CategoryFood extends StatefulWidget {
   final List<FoodModel> foods;
-  CategoryFood({required this.foods});
+  final double? suggestKcal;
+  CategoryFood({required this.foods, this.suggestKcal});
   @override
   _CategoryFoodState createState() => _CategoryFoodState();
 }
@@ -159,11 +160,11 @@ class _CategoryFoodState extends State<CategoryFood>
                                           SizedBox(
                                             width: 50,
                                             height: 50,
-                                            child:  Image.network(category
+                                            child: NetWorkImageWidget(
+                                              imageUrl: category
                                                       .subCategories[index]
                                                       .image
-                                                      .url ??
-                                                  '',
+                                                      .url,
                                               width: 50,
                                               height: 50,
                                             ),
@@ -214,7 +215,11 @@ class _CategoryFoodState extends State<CategoryFood>
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => FoodOfCategory(
-          category: category, foods: selectedFoods, callback: (value) {}),
+          category: category,
+        foods: selectedFoods,
+        callback: (value) {},
+        suggestKcal: widget.suggestKcal,
+      ),
     );
   }
 }

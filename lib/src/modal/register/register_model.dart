@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class RegisterModel {
   final String? token;
   final int? remainingRequestCount;

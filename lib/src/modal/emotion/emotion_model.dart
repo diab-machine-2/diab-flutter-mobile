@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class EmotionModel {
   final String? id;
   final String? code;
@@ -11,7 +11,7 @@ class EmotionModel {
   final int? status;
   final String? imageUrl;
 
-  EmotionModel({
+  const EmotionModel({
     required this.id,
     required this.code,
     required this.vietnameseName,

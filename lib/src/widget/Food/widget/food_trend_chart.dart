@@ -8,7 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -97,8 +97,13 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                 : model.carbChart.items.length == 0)
                             ? GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, NavigatorName.add_food,
-                                      arguments: {'type': 'input', 'id': null});
+                                  NavigationUtil.navigatePage(
+                                    context,
+                                    DailyNutritionPage(
+                                      type: 'input',
+                                      id: null,
+                                    ),
+                                  );
                                 },
                                 child:
                                     Image.asset(R.drawable.img_food_empty),
@@ -214,10 +219,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(number.length, (index) {
                     return Text(formatNumber(number[index].toDouble()),
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: R.color.black,
-                            fontWeight: FontWeight.normal));
+                        style: R.style.normalTextStyle);
                   })),
             ),
             SizedBox(width: 8),
@@ -338,9 +340,9 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                   if (lineTouch!.lineBarSpots!.length == 1 &&
                                       event is! FlLongPressEnd &&
                                       event is! FlPanEndEvent) {
-                                    final value = lineTouch.lineBarSpots![0].x;
+                                    final value = lineTouch.lineBarSpots?[0].x;
                                     setState(() {
-                                      touchIndex = value.toInt();
+                                      touchIndex = value?.toInt() ?? -1;
                                     });
                                   } else {
                                     touchIndex = -1;
@@ -348,6 +350,8 @@ class FoodTrendChartState extends State<FoodTrendChart>
                                 }),
                             gridData: FlGridData(show: false),
                             titlesData: FlTitlesData(
+                              rightTitles: SideTitles(showTitles: false),
+                              topTitles: SideTitles(showTitles: false),
                               bottomTitles: SideTitles(
                                 showTitles: true,
                                 margin: 16,
@@ -402,7 +406,7 @@ class FoodTrendChartState extends State<FoodTrendChart>
         : [
             LineChartBarData(
               spots: List.generate(model.items.length, (index) {
-                return FlSpot((index).toDouble(), model.items[index].value!);
+                return FlSpot(index.toDouble(), model.items[index].value!);
               }),
               isCurved: false,
               colors: [R.color.black],

@@ -1,11 +1,11 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class FoodDietModel {
   final List<LegendModel> legends;
   final List<EnergyModel> energyChart;
   final List<EnergyModel> carbChart;
 
-  FoodDietModel(
+  const FoodDietModel(
       {required this.legends,
       required this.energyChart,
       required this.carbChart});

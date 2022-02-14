@@ -1,10 +1,9 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/foundation.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercrises_active.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 typedef TimeCallback = Function(ExercriseActiveModel?);
 

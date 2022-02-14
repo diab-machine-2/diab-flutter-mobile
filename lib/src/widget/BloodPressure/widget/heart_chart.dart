@@ -164,10 +164,7 @@ class HeartChartState extends State<HeartChart>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(number.length, (index) {
                     return Text(number[index].toString(),
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: R.color.black,
-                            fontWeight: FontWeight.normal));
+                        style: R.style.normalTextStyle);
                   })),
             ),
             Expanded(
@@ -259,6 +256,8 @@ class HeartChartState extends State<HeartChart>
                                 }),
                             gridData: FlGridData(show: false),
                             titlesData: FlTitlesData(
+                              rightTitles: SideTitles(showTitles: false),
+                              topTitles: SideTitles(showTitles: false),
                               bottomTitles: SideTitles(
                                 showTitles: true,
                                 margin: 16,

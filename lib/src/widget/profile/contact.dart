@@ -1,6 +1,6 @@
-import 'dart:async';
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/secure.dart';
@@ -8,7 +8,6 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class ContactController extends StatefulWidget {
   final SecureModel? model;
@@ -118,10 +117,7 @@ class _ContactControllerState extends State<ContactController> {
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.mes_call_diab.tr(),
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400)),
+                            style: R.style.normalTextStyle),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 16),

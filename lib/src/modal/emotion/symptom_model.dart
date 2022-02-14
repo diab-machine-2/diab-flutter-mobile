@@ -1,12 +1,12 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class SymptomModel {
   final String? id;
   final String? name;
   final ImagesModel icon;
 
-  SymptomModel({
+  const SymptomModel({
     required this.id,
     required this.name,
     required this.icon,

@@ -1,18 +1,18 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class BloodPressureDetailController extends StatefulWidget {
   BloodPressureDetailController({Key? key}) : super(key: key);
@@ -72,7 +72,6 @@ class BloodPressureDetailControllerState
 
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'BloodPressure_change_data') {
       _refresh();
     }

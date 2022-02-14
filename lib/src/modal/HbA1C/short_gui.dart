@@ -1,14 +1,12 @@
-import 'dart:collection';
-
 import 'package:meta/meta.dart';
-
+@immutable
 class ShortGuiModel {
   final String content1;
   final String content2;
   final String content3;
   final String content4;
 
-  ShortGuiModel(
+  const ShortGuiModel(
       {required this.content1,
       required this.content2,
       required this.content3,

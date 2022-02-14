@@ -30,7 +30,6 @@ class NavigatorName {
   static const String detail_bmi = '/detail_bmi';
   static const String bmi = '/bmi';
   static const String add_bmi = '/add_bmi';
-  static const String add_food = '/add_food';
   static const String add_emo = '/add_emo';
   static const String add_symbo = '/add_symbo';
   static const String add_work = '/add_work';
@@ -52,5 +51,4 @@ class NavigatorName {
   static const String add_reminder = '/add_reminder';
   static const String schedule_glucose = '/schedule_glucose';
   static const String setting_schedule_glucose = '/setting_schedule_glucose';
-  static const String photo_view = '/photo_view';
 }

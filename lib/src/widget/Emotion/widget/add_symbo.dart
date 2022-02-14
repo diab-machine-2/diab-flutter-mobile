@@ -152,10 +152,7 @@ class _AddSymboControllerState extends BaseState<AddSymboController> {
                         Center(
                           child: Text(
                               R.string.nhan_tiep_tuc_neu_ban_khong_co_trieu_chung_nao.tr(),
-                              style: TextStyle(
-                                  color: R.color.textDark,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400)),
+                              style: R.style.normalTextStyle),
                         ),
                         GridView.builder(
                             physics: NeverScrollableScrollPhysics(),

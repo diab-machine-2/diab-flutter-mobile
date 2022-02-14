@@ -1,11 +1,11 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class BloodPressureTrendModel {
   final TrendModel trendItems;
   final List<String>? legends;
   final List<String>? colors;
 
-  BloodPressureTrendModel(
+  const BloodPressureTrendModel(
       {required this.trendItems,
       required this.legends,
       required this.colors});

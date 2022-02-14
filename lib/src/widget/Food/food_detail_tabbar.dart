@@ -6,16 +6,17 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
+import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
 import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'daily_nutrition/daily_nutrition.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
   @override
@@ -47,20 +48,8 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(vsync: this, length: 2);
+    _tabController = TabController(vsync: this, length: 2);
     Observable.instance.addObserver(this);
-    // DartNotificationCenter.subscribe(
-    //     channel: 'food_change_data',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       if (overviewKey.currentState != null) {
-    //         overviewKey.currentState!.reloadData(periodFilterType);
-    //       }
-    //       if (detailKey.currentState != null) {
-    //         detailKey.currentState!.reloadData(periodFilterType);
-    //       }
-    //     });
-
     checkShowDes();
     loadDescription();
   }
@@ -68,7 +57,6 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    // TODO: implement update
     if (notifyName == 'food_change_data') {
       if (overviewKey.currentState != null) {
         overviewKey.currentState!.reloadData(periodFilterType);
@@ -82,13 +70,11 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
-    // DartNotificationCenter.unsubscribe(
-    //     channel: 'food_change_data', observer: this);
     super.dispose();
   }
 
   checkShowDes() async {
-    Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
     final showDes = prefs.getBool('show_des_food');
     prefs.setBool('show_des_food', false);
@@ -105,75 +91,99 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: CustomAppBar(
-              backgroundColor: R.color.white,
-              title: Text(R.string.dinh_duong.tr(),
-                  style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.textDark)),
-              leadingIcon: GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      barrierColor: R.color.color0xff003F38.withOpacity(0.3),
-                      useSafeArea: false,
-                      context: context,
-                      builder: (_) => ActionListPanel(selectedIndex: 4),
-                    );
-                  },
-                  child: Icon(Icons.format_list_bulleted,
-                      color: R.color.textDark)),
-              actions: [
-                CustomActionDescription(
-                    key: customActionDesKey,
-                    callback: (value) {
-                      customTabbarKey.currentState!.showDescription();
-                    }),
-                IconButton(
-                    icon: Icon(Icons.close, color: R.color.black),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }),
-                SizedBox(
-                  width: 12,
-                ),
-              ]),
-          body: Column(children: [
-            CustomTabbarImage(
-                key: customTabbarKey,
-                tabController: _tabController,
-                data: des,
-                callback: (periodFilter) {
-                  periodFilterType = periodFilter;
-                  overviewKey.currentState!.reloadData(periodFilterType);
-                  if (detailKey.currentState != null) {
-                    detailKey.currentState!.reloadData(periodFilterType);
-                  }
-                }),
-            Expanded(
-                child: TabBarView(controller: _tabController, children: [
-              FoodOverviewController(key: overviewKey),
-              FoodDetailController(key: detailKey)
-            ])),
-          ]),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.pushNamed(context, NavigatorName.add_food,
-                  arguments: {'type': 'input', 'id': null});
+    return Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: CustomAppBar(
+            backgroundColor: R.color.white,
+            title: Text(R.string.dinh_duong.tr(),
+                style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.textDark)),
+            leadingIcon: GestureDetector(
+                onTap: () {
+                  showDialog(
+                    barrierColor: R.color.color0xff003F38.withOpacity(0.3),
+                    useSafeArea: false,
+                    context: context,
+                    builder: (_) => ActionListPanel(selectedIndex: 4),
+                  );
+                },
+                child:
+                    Icon(Icons.format_list_bulleted, color: R.color.textDark)),
+            actions: [
+              CustomActionDescription(
+                  key: customActionDesKey,
+                  callback: (value) {
+                    customTabbarKey.currentState!.showDescription();
+                  }),
+              IconButton(
+                  icon: Icon(Icons.close, color: R.color.black),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              const SizedBox(width: 12),
+            ]),
+        body: Column(children: [
+          GestureDetector(
+            onTap: () async {
+              await NavigationUtil.navigatePage(context, const FoodMenuPage());
+              overviewKey.currentState!.reloadData(periodFilterType);
             },
-            child:
-                Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
-          )),
-    );
+            child: Container(
+              color: R.color.white,
+              padding: const EdgeInsets.only(top: 14, bottom: 14, right: 18),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Image.asset(
+                    R.drawable.ic_bowl_of_food,
+                    width: 24,
+                    height: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    R.string.food_menu.tr(),
+                    style: TextStyle(
+                      color: R.color.greenGradientBottom,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          CustomTabbarImage(
+              key: customTabbarKey,
+              tabController: _tabController,
+              data: des,
+              callback: (periodFilter) {
+                periodFilterType = periodFilter;
+                overviewKey.currentState!.reloadData(periodFilterType);
+                if (detailKey.currentState != null) {
+                  detailKey.currentState!.reloadData(periodFilterType);
+                }
+              }),
+          Expanded(
+              child: TabBarView(controller: _tabController, children: [
+            FoodOverviewController(key: overviewKey),
+            FoodDetailController(key: detailKey)
+          ])),
+        ]),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            NavigationUtil.navigatePage(
+                context, const DailyNutritionPage(type: 'input', id: null));
+          },
+          child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
+        ));
   }
 }
 
 class CustomTabbarImage extends StatefulWidget {
-  CustomTabbarImage(
+  const CustomTabbarImage(
       {Key? key,
       required this.tabController,
       this.callback,
@@ -202,16 +212,16 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
       color: R.color.white,
       child: Column(
         children: [
-          showDes
-              ? Padding(
-                  padding: EdgeInsets.only(left: 16, right: 16),
-                  child: Description(
-                      input: false,
-                      data: widget.data,
-                      titleDetail:
-                          R.string.che_do_dinh_duong_benh_tieu_duong.tr()),
-                )
-              : SizedBox(),
+          if (showDes)
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: Description(
+                  input: false,
+                  data: widget.data,
+                  titleDetail: R.string.che_do_dinh_duong_benh_tieu_duong.tr()),
+            )
+          else
+            const SizedBox(),
           Row(
               //alignment: Alignment.centerLeft,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -224,8 +234,8 @@ class CustomTabbarImageState extends State<CustomTabbarImage> {
                         fontWeight: FontWeight.w600,
                         color: R.color.mainColor),
                     unselectedLabelColor: R.color.captionColorGray,
-                    unselectedLabelStyle:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                    unselectedLabelStyle: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w400),
                     tabs: [
                       Tab(text: R.string.bieu_do.tr()),
                       Tab(text: R.string.detail.tr()),
@@ -250,7 +260,7 @@ typedef ActionFilterCallback = Function(int);
 class ActionFilter extends StatefulWidget {
   final ActionFilterCallback? callback;
 
-  ActionFilter({this.callback});
+  const ActionFilter({this.callback});
 
   @override
   _ActionFilterState createState() => _ActionFilterState();
@@ -268,11 +278,11 @@ class _ActionFilterState extends State<ActionFilter> {
       },
       child: Container(
         color: R.color.transparent,
-        padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
+        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
         child: Row(
           children: [
             Image.asset(R.drawable.ic_filter, width: 24, height: 24),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             Padding(
               padding: const EdgeInsets.only(top: 6),
               child: Text(name,
@@ -288,11 +298,8 @@ class _ActionFilterState extends State<ActionFilter> {
   }
 
   showActionFilter(BuildContext context) {
-    // setState(() {
-    //   this.isChoose = !isChoose;
-    // });
     showModalBottomSheet(
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
         backgroundColor: R.color.white,
         context: context,

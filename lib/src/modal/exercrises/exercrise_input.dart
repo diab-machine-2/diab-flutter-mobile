@@ -1,11 +1,11 @@
 import 'package:meta/meta.dart';
-
+@immutable
 class InputDataExercriseModel {
   final int? date;
   final double? sumBurnedCalorie;
   final List<InputExercriseModel> exerciseInput;
 
-  InputDataExercriseModel({
+  const InputDataExercriseModel({
     required this.date,
     required this.sumBurnedCalorie,
     required this.exerciseInput,

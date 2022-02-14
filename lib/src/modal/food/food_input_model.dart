@@ -1,12 +1,12 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:meta/meta.dart';
-
+@immutable
 class MealDayItemModel {
   final int? date;
   final List<MealItemModel> mealItems;
 
-  MealDayItemModel({required this.date, required this.mealItems});
+  const MealDayItemModel({required this.date, required this.mealItems});
   @override
   factory MealDayItemModel.fromJson(Map<String, dynamic> json) {
     return MealDayItemModel(

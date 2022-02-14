@@ -171,10 +171,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(number.length, (index) {
                     return Text(number[index].toString(),
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: R.color.black,
-                            fontWeight: FontWeight.normal));
+                        style: R.style.normalTextStyle);
                   })),
             ),
             Expanded(
@@ -257,6 +254,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                               ),
                             ),
                             titlesData: FlTitlesData(
+                              rightTitles: SideTitles(showTitles: false),
+                              topTitles: SideTitles(showTitles: false),
                               show: true,
                               bottomTitles: SideTitles(
                                 showTitles: true,
@@ -279,6 +278,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                   getTextStyles: (context, value) => TextStyle(
                                       color: R.color.black, fontSize: 14)),
                             ),
+                            gridData: FlGridData(show: false),
                             borderData: FlBorderData(
                               show: false,
                             ),

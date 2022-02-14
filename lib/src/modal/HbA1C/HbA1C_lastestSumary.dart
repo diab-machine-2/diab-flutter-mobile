@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:medical/src/modal/base/images.dart';
-import 'package:meta/meta.dart';
 
 class LastestSummaryModel {
   final double? hbA1C;

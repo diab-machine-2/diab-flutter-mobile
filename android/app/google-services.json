@@ -14,11 +14,35 @@
       },
       "oauth_client": [
         {
+          "client_id": "116899682757-6bmrpvdlm703d1h68j3t3ahf3ilfcntg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vbhc.diab",
+            "certificate_hash": "405b276b6218381e77850e0576574f50e1207494"
+          }
+        },
+        {
+          "client_id": "116899682757-71u9g8ihe5qqvfsaekp6g1vloskm36s2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vbhc.diab",
+            "certificate_hash": "5881bca87d93ceb25ee38259086c27e47fdd9a44"
+          }
+        },
+        {
           "client_id": "116899682757-g67f9qfvd5rto58clbp9bil9sm2veam3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.vbhc.diab",
             "certificate_hash": "02f572d311582e9d6b768f49337f1fea1cc88266"
+          }
+        },
+        {
+          "client_id": "116899682757-i3fiui4ratu3jf5ep72taiht8m7nnne1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vbhc.diab",
+            "certificate_hash": "0ee386e883aa8dacf7a04490d494c646edd52072"
           }
         },
         {
@@ -47,10 +71,11 @@
               "client_type": 3
             },
             {
-              "client_id": "116899682757-jft0pqq5kgva741rro06ob2r87o7isvo.apps.googleusercontent.com",
+              "client_id": "116899682757-4kn786hdp9h20piq394theg9r4tcfha5.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.vbhc.diab"
+                "bundle_id": "vn.com.diab",
+                "app_store_id": "1589000596"
               }
             }
           ]
