@@ -45,8 +45,13 @@ class UserClient extends FetchClient {
         if (response.data['data'] == null) {
           return null;
         } else {
-          final user = UserModel.fromJson(response.data['data']);
-          AppSettings.userInfo = user;
+          UserModel? user;
+          try {
+            user = UserModel.fromJson(response.data['data']);
+            AppSettings.userInfo = user;
+          } catch(error){
+            print(error.toString());
+          }
 
           //await fetchUserInfo(user.patientId);
           Observable.instance.notifyObservers([], notifyName: "user_info_change");

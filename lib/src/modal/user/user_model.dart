@@ -13,6 +13,7 @@ class UserModel {
   final String? fullName;
   final int? age;
   final PackageAccountModel? packageAccount;
+  final String? packageName;
   final String? phoneNumber;
   final String? secondPhoneNumber;
   final String? gender;
@@ -99,6 +100,7 @@ class UserModel {
     required this.weight,
     required this.ward,
     required this.packageAccount,
+    required this.packageName,
     required this.trainingGroups,
     required this.dateOfBirth,
     required this.diabetesStatus,
@@ -177,6 +179,7 @@ class UserModel {
     ProvinceModel? district,
     ProvinceModel? ward,
     PackageAccountModel? packageAccount,
+    String? packageName,
     String? address,
     double? goalWaist,
     double? goalWeight,
@@ -227,6 +230,7 @@ class UserModel {
         fullName: fullName ?? this.fullName,
         age: age ?? this.age,
         packageAccount: packageAccount ?? this.packageAccount,
+        packageName: packageName ?? this.packageName,
         phoneNumber: phoneNumber ?? this.phoneNumber,
         secondPhoneNumber: secondPhoneNumber ?? this.secondPhoneNumber,
         gender: gender ?? this.gender,
@@ -295,7 +299,8 @@ class UserModel {
       accountId: json['accountId'],
       creatorId: json['creatorId'],
       userName: json['userName'],
-      packageAccount: json['packageAccount'],
+      packageAccount: json['packageAccount'] == null ? null : PackageAccountModel.fromJson(json['packageAccount']),
+      packageName: json['packageName'],
       fullName: json['fullName'],
       age: json['age'],
       phoneNumber: json['phoneNumber'],
@@ -349,7 +354,7 @@ class UserModel {
       favouriteSports: json['favouriteSports'],
       workingHourss: json['workingHourss'],
       jobList: CategoryItemUserModel.toList(json['jobList']),
-      trainingGroups: TrainingGroupModel.toList(json['trainingGroups']),
+      trainingGroups: json['trainingGroups'] == null ? [] : TrainingGroupModel.toList(json['trainingGroups']),
       educationLevelList: CategoryItemUserModel.toList(json['educationLevelList']),
       lessonTagList: CategoryItemUserModel.toList(json['lessonTagList']),
       interestRuleList: CategoryItemUserModel.toList(json['interestRuleList']),

@@ -243,7 +243,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                   return _buildExcercise(context, index, name as String?, image as String?,
                                       icon as String?, model!.exercise!);
                                 }
-                                if (index == 6 && model != null && model!.processCard!.target != 0) {
+                                if (index == 6 && model != null && model!.processCard != null && model!.processCard!.target != 0) {
                                   return _buildProgress(context, index, name as String?, image as String?,
                                       icon as String?, model!.processCard!);
                                 }
@@ -705,10 +705,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(name ?? '', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
-                  Text(
-                      getStringToday(model.createDateTime ?? 0).isEmpty
-                          ? convertToUTC(model.createDateTime ?? 0, 'dd/MM/yyyy')
-                          : getStringToday(model.createDateTime ?? 0),
+                  Text('Hôm nay',
                       style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
                 ]),
                 Row(

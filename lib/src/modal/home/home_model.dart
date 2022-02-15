@@ -313,7 +313,7 @@ class ProcessCardModel {
       lessonCompeleted: json['lessonCompeleted'] ?? 0,
       userFree: json['userFree'] ?? true,
       createDateTime: json['createDateTime'] ?? 0,
-      color: json['color'],
+      color: json['color'] ?? '',
       icon: json['icon'] == null ? null : ImagesModel.fromJson(json['icon']),
     );
   }

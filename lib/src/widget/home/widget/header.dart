@@ -145,7 +145,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                       fontWeight: FontWeight.w700,
                                     )),
                                 const SizedBox(height: 4),
-                                Text(user.packageAccount?.package?.name ?? R.string.thanh_vien_co_ban.tr(),
+                                Text((user.packageName != null && user.packageName!.isNotEmpty) ? user.packageName! : R.string.thanh_vien_co_ban.tr(),
                                     style: TextStyle(color: R.color.white, fontSize: 14, fontWeight: FontWeight.w400))
                               ]),
                             ),
