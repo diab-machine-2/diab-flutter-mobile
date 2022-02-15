@@ -12,6 +12,7 @@ import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/circular_menu_item.dart';
 import 'package:medical/src/widget/components/HomeButton/widget/horizontal_menu.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -165,9 +166,11 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                               String? phone = user!.trainingGroups!.first.trainingGroup!.account!.phoneNumber;
                               if (phone != null && phone.isNotEmpty) {
                                 goToZaloCoach(phone);
+                                return;
                               }
                             }
                           }
+                          Message.showToastMessage(context, 'Không tìm thấy số điện thoại');
                         },
                         icon: Image.asset(R.drawable.ic_chat_coach, width: 32, height: 32),
                         labelColor: Colors.white,
@@ -181,9 +184,11 @@ class FunkyOverlayState extends State<FunkyOverlay> with SingleTickerProviderSta
                               String? linkZalo = user!.trainingGroups!.first.trainingGroup!.linkZalo;
                               if (linkZalo != null && linkZalo.isNotEmpty) {
                                 goToZaloGroup(linkZalo);
+                                return;
                               }
                             }
                           }
+                          Message.showToastMessage(context, 'Không tìm thấy nhóm');
                         },
                         icon: Image.asset(R.drawable.ic_chat_group, width: 32, height: 32),
                         labelColor: Colors.white,

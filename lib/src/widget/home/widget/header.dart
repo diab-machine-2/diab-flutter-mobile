@@ -169,7 +169,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                             child: Image.asset(R.drawable.ic_direct_chat, color: R.color.white, width: 24, height: 24),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 10),
                         InkWell(
                           onTap: () async {
                             final scanedResult = await NavigationUtil.navigatePage(
@@ -186,7 +186,7 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                             child: Image.asset(R.drawable.ic_qr_scan, color: R.color.white, width: 24, height: 24),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 10),
                         InkWell(
                           onTap: () async {
                             Navigator.pushNamed(context, NavigatorName.notification);
