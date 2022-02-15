@@ -120,6 +120,8 @@ class BloodPressureIndexModel {
 class ExerciseIndexModel {
   final double? index;
   final double? indexChange;
+  final double? facExercise;
+  final double? targetExercise;
   final String? unit;
   final int? createDateTime;
   final String? color;
@@ -128,6 +130,8 @@ class ExerciseIndexModel {
   ExerciseIndexModel(
       {required this.index,
       required this.indexChange,
+      required this.facExercise,
+      required this.targetExercise,
       required this.unit,
       required this.createDateTime,
       required this.color,
@@ -137,6 +141,8 @@ class ExerciseIndexModel {
     return ExerciseIndexModel(
       index: json['index'],
       indexChange: json['indexChange'],
+      facExercise: json['facExercise'] ?? 0,
+      targetExercise: json['targetExercise'] ?? 0,
       unit: json['unit'],
       createDateTime: json['createDateTime'],
       color: json['color'],

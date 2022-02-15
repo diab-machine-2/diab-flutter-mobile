@@ -89,12 +89,25 @@ class NotificationManager {
   navigateNotification(RemoteMessage? message) {
     if (message == null) return;
     Observable.instance.notifyObservers([], notifyName: "reload_notification");
+    var user = AppSettings.userInfo;
 
-    final NotificationModel model = NotificationModel(
+    NotificationModel model = NotificationModel(
       title: message.notification?.title,
       body: message.notification?.body ?? '',
       data: NotificationData.fromJson(message.data),
     );
+
+    if (user != null) {
+      if (model.title != null && user.fullName != null) {
+        model.title = model.title!.replaceAll('{Username}}', user.fullName!);
+      }
+      if (model.body != null && user.fullName != null) {
+        model.body = model.body!.replaceAll('{Username}}', user.fullName!);
+      }
+      if (model.topic != null && user.fullName != null) {
+        model.topic = model.topic!.replaceAll('{Username}}', user.fullName!);
+      }
+    }
 
     if (model.actionType == NotificationActionType.share_profile) {
       ShareProfilePopup.instance.onHasSharedCode(requestFromDoctor: true, code: '123456');

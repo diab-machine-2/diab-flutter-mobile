@@ -117,13 +117,14 @@ class _BloodSugarStartSurveyPageState extends State<BloodSugarStartSurveyPage> {
                                     ));
                               },
                               onShowResult: () {
-                                NavigationUtil.navigatePage(
-                                  context,
-                                  BloodSugarScheduleTemplatePage(
-                                    templateCode: _cubit.surveyCode,
-                                    comeFromBloodSugarScreen: widget.comeFromBloodSugarScreen,
-                                  ),
-                                );
+                                Navigator.pop(context);
+                                // NavigationUtil.navigatePage(
+                                //   context,
+                                //   BloodSugarScheduleTemplatePage(
+                                //     templateCode: _cubit.surveyCode,
+                                //     comeFromBloodSugarScreen: widget.comeFromBloodSugarScreen,
+                                //   ),
+                                // );
                               },
                             ),
                           ],

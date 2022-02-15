@@ -12,6 +12,7 @@ class UserModel {
   final String? userName;
   final String? fullName;
   final int? age;
+  final PackageAccountModel? packageAccount;
   final String? phoneNumber;
   final String? secondPhoneNumber;
   final String? gender;
@@ -97,6 +98,7 @@ class UserModel {
     required this.height,
     required this.weight,
     required this.ward,
+    required this.packageAccount,
     required this.trainingGroups,
     required this.dateOfBirth,
     required this.diabetesStatus,
@@ -163,6 +165,7 @@ class UserModel {
     String? email,
     double? height,
     double? weight,
+    String? package,
     int? dateOfBirth,
     int? diabetesStatus,
     String? diabetesName,
@@ -173,6 +176,7 @@ class UserModel {
     ProvinceModel? province,
     ProvinceModel? district,
     ProvinceModel? ward,
+    PackageAccountModel? packageAccount,
     String? address,
     double? goalWaist,
     double? goalWeight,
@@ -222,6 +226,7 @@ class UserModel {
         userName: username ?? this.userName,
         fullName: fullName ?? this.fullName,
         age: age ?? this.age,
+        packageAccount: packageAccount ?? this.packageAccount,
         phoneNumber: phoneNumber ?? this.phoneNumber,
         secondPhoneNumber: secondPhoneNumber ?? this.secondPhoneNumber,
         gender: gender ?? this.gender,
@@ -290,6 +295,7 @@ class UserModel {
       accountId: json['accountId'],
       creatorId: json['creatorId'],
       userName: json['userName'],
+      packageAccount: json['packageAccount'],
       fullName: json['fullName'],
       age: json['age'],
       phoneNumber: json['phoneNumber'],

@@ -239,7 +239,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                   return _buildFood(context, index, name as String?, image as String?, icon as String?,
                                       model!.energyCard!);
                                 }
-                                if (index == 5 && model != null && model!.exercise!.index != 0) {
+                                if (index == 5 && model != null && model!.exercise!.targetExercise != 0) {
                                   return _buildExcercise(context, index, name as String?, image as String?,
                                       icon as String?, model!.exercise!);
                                 }
@@ -711,27 +711,48 @@ class _HomeControllerState extends State<HomeController> with Observer {
                           : getStringToday(model.createDateTime ?? 0),
                       style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
                 ]),
-                const SizedBox(height: 15),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Image.asset(R.drawable.ic_van_dong, width: 16, height: 16, color: R.color.greenGradientBottom),
-                    const SizedBox(width: 4),
-                    Text(R.string.thoi_gian.tr(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400)),
-                  ],
-                ),
-                const SizedBox(height: 0),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(model == null ? '0' : formatNumber(model.index),
+                    Text(model.facExercise!.round().toString(),
                         style: TextStyle(
-                            fontFamily: 'Viga', color: R.color.black, fontSize: 26, fontWeight: FontWeight.w400)),
-                    const SizedBox(width: 4),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(model.unit ?? R.string.kcal.tr(),
-                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                            fontFamily: 'Viga',
+                            color: toColor(model.color),
+                            fontSize: 26,
+                            fontWeight: FontWeight.w400)),
+                    SizedBox(width: 2),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text('/${model.targetExercise!.round().toString()} phút',
+                            style:
+                                TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400)),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.network(
+                      model.icon?.url ?? '',
+                      width: 25,
+                      height: 25,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container();
+                      },
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 0),
+                        child: Text(
+                          getPercentExercise(model),
+                          style: TextStyle(color: R.color.captionColorGray, fontSize: 12, fontWeight: FontWeight.w400),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     )
                   ],
                 ),
@@ -908,6 +929,14 @@ class _HomeControllerState extends State<HomeController> with Observer {
       }
     } else {
       return '';
+    }
+  }
+
+  String getPercentExercise(ExerciseIndexModel model) {
+    if (model.targetExercise != 0) {
+      return (model.facExercise! / model.targetExercise! * 100).round().toString() + '%';
+    } else {
+      return '0%';
     }
   }
 

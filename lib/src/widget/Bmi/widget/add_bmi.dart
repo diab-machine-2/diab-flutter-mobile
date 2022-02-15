@@ -843,6 +843,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController> {
       accountId: userInfo.accountId,
       userName: userInfo.userName,
       fullName: userInfo.fullName,
+      packageAccount: userInfo.packageAccount,
       age: userInfo.age,
       phoneNumber: userInfo.phoneNumber,
       secondPhoneNumber: userInfo.secondPhoneNumber,

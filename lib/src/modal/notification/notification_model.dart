@@ -2,9 +2,9 @@ import 'notification_type.dart';
 
 class NotificationModel {
   final String? id;
-  final String? title;
-  final String? body;
-  final String? topic;
+  String? title;
+  String? body;
+  String? topic;
   final String? imageUrl;
   final int? sentDateTime;
   final bool? isRead;
